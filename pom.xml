@@ -72,6 +72,19 @@
         </developerConnection>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>jayway.release</id>
+            <name>Jayway Release Repo</name>
+            <url>http://192.168.0.146:8081/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>jayway.snapshot</id>
+            <name>Jayway Snapshot Repo</name>
+            <url>http://192.168.0.146:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <developers>
         <developer>
             <id>rickard</id>
