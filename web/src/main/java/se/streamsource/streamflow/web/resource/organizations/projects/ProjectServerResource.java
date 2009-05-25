@@ -28,6 +28,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.domain.project.Role;
 import se.streamsource.streamflow.web.domain.project.Roles;
@@ -51,12 +53,27 @@ public class ProjectServerResource
     {
         ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
 
+        UnitOfWork uow = uowf.currentUnitOfWork();
         try
         {
-            Participant user = uowf.currentUnitOfWork().get(Participant.class, query.description().get());
+            Participant user = uow.get(Participant.class, query.description().get());
             builder.prototype().entity().set(EntityReference.getEntityReference(user));
         } catch (NoSuchEntityException e)
         {
+            // try looking up a group in the organization
+            String org = getRequest().getAttributes().get("organization").toString();
+
+            Groups.GroupsState groups = uow.get(Groups.GroupsState.class, org);
+
+            for (Group group : groups.groups())
+            {
+                if (query.description().get().equals(group.getDescription()))
+                {
+                    builder.prototype().entity().set(EntityReference.getEntityReference(group));
+                    return builder.newInstance();
+                }
+            }
+
         }
         return builder.newInstance();
     }
