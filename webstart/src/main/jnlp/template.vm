@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp
+    spec="1.0+"
+    codebase="$$codebase"
+    href="$outputFile">
+  <information>
+    <title>StreamFlow</title>
+    <homepage href="http://www.streamsource.se"/>
+    <vendor>StreamSource</vendor>
+    <description kind="one-line">StreamFlow client</description>
+    <description kind="short">This is the StreamFlow client</description>
+    <description kind="tooltip">StreamFlow</description>
+    <icon
+      width="48"
+      height="48"
+      href="images/database_48.png"/>
+    <icon
+      kind="splash"
+      href="images/database_48.png"/>
+    <offline-allowed/>
+  </information>
+  <security>
+     <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.5+"
+     java-vm-args="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+     initial-heap-size="64m"
+     max-heap-size="300m"
+     />
+     $dependencies
+  </resources>
+
+  <application-desc main-class="$mainClass"/>
+</jnlp>

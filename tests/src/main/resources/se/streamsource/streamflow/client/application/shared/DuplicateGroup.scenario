@@ -1,0 +1,13 @@
+Scenario: create duplicate group
+
+Given an account
+When username is rickardoberg and password is rickardoberg
+And user registers
+
+Given an organizational unit
+When group named Developers is created
+Then exception is not thrown
+And group named Developers is added
+
+When group named Developers is created
+Then DuplicateDescriptionException is thrown

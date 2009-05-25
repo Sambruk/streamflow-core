@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+    http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
+    <servlet>
+        <servlet-name>JnlpDownloadServlet</servlet-name>
+        <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>StreamFlowServlet</servlet-name>
+        <servlet-class>se.streamsource.streamflow.web.servlet.StreamFlowServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>JnlpDownloadServlet</servlet-name>
+        <url-pattern>*.jnlp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>StreamFlowServlet</servlet-name>
+        <url-pattern>/streamflow/*</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+</web-app>

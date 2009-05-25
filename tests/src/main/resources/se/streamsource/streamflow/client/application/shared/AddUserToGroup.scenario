@@ -1,0 +1,24 @@
+Scenario: add user to group
+
+Given an account
+When username is rickardoberg and password is rickardoberg
+And user registers
+
+Given an organizational unit
+And a group named Developers
+And a user named rickardoberg
+When user is added as participant
+Then participant is added
+
+Scenario: add user to group twice gives exception
+
+Given an account
+When username is rickardoberg and password is rickardoberg
+And user registers
+
+Given an organizational unit
+Given a group named Developers
+Given a user named rickardoberg
+When user is added as participant
+And user is added as participant
+Then DuplicateParticipantException is thrown

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>se.streamsource.streamflow</groupId>
+    <artifactId>streamflow</artifactId>
+    <name>StreamFlow (Build POM)</name>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <!-- This POM is ONLY to initiate the modules to be built. -->
+    <properties>
+        <version.qi4j-core>0.8-SNAPSHOT</version.qi4j-core>
+        <version.qi4j-lib>0.8-SNAPSHOT</version.qi4j-lib>
+        <version.qi4j-ext>0.8-SNAPSHOT</version.qi4j-ext>
+        <version.streamflow>0.1-SNAPSHOT</version.streamflow>
+        <version.restlet>1.2-SNAPSHOT</version.restlet>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>ops4j-snapshot</id>
+            <url>http://repository.ops4j.org/mvn-snapshots</url>
+        </repository>
+        <repository>
+            <id>ops4j-repository</id>
+            <url>http://repository.ops4j.org/maven2</url>
+        </repository>
+        <repository>
+            <id>javadev-repository</id>
+            <url>http://download.java.net/maven/2</url>
+        </repository>
+        <repository>
+            <id>prefuse-repository</id>
+            <url>http://complexitymap.com/repository/</url>
+        </repository>
+        <repository>
+          <id>aduna</id>
+          <url>http://repo.aduna-software.org/maven2/releases/</url>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>maven-restlet</id>
+          <name>Public online Restlet repository</name>
+          <url>http://maven.restlet.org</url>
+        </repository>
+        <repository>
+            <id>webstart</id>
+            <url>http://repository.codehaus.org/</url>
+        </repository>
+        <repository>
+            <id>Apache</id>
+            <url>http://mirrors.sunsite.dk/maven2/</url>
+        </repository>
+    </repositories>
+
+    <modules>
+        <module>common</module>
+        <module>client</module>
+        <module>web</module>
+        <module>tests</module>
+        <module>webstart</module>
+        <module>war</module>
+    </modules>
+
+    <scm>
+        <connection>scm:svn:https://source.waygroup.se/svn/streamsource/streamline/streamflow</connection>
+        <developerConnection>scm:svn:https://source.waygroup.se/svn/streamsource/streamline/streamflow
+        </developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>rickard</id>
+            <name>Rickard Öberg</name>
+            <email>rickard.oberg@jayway.se</email>
+            <url>http://www.jayway.se</url>
+            <organization>Jayway</organization>
+            <organizationUrl>http://www.jayway.se</organizationUrl>
+            <roles>
+                <role>Innovator</role>
+                <role>Developer</role>
+            </roles>
+            <timezone>UTC+8</timezone>
+        </developer>
+        <developer>
+            <id>mads</id>
+            <name>Mads Enevoldsen</name>
+            <email>mads.enevoldsen@jayway.dk</email>
+            <url>http://www.jayway.dk</url>
+            <organization>Jayway</organization>
+            <organizationUrl>http://www.jayway.dk</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>UTC+1</timezone>
+        </developer>
+        <developer>
+            <id>ulrik</id>
+            <name>Ulrik Sandberg</name>
+            <email>ulrik.sandberg@jayway.se</email>
+            <url>http://www.jayway.se</url>
+            <organization>Jayway</organization>
+            <organizationUrl>http://www.jayway.se</organizationUrl>
+            <roles>
+                <role>Project Admin</role>
+            </roles>
+            <timezone>UTC+1</timezone>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>Michael Hunger</name>
+            <email>michael.hunger at jexp dot de</email>
+            <organization>JEXP</organization>
+            <organizationUrl>http://www.jexp.de</organizationUrl>
+            <timezone>UTC+1</timezone>
+        </contributor>
+    </contributors>
+
+    <inceptionYear>2008</inceptionYear>
+    <url>http://www.streamsource.se</url>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>1.0-alpha-6</version>
+            </extension>
+        </extensions>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <tag>${build.tag}</tag>
+                    <username>${scm.username}</username>
+                    <password>${scm.password}</password>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>ISO-8859-1</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>once</forkMode>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*TestCase.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <licenses>
+        <license>
+            <name>Apache License v2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+            <comments>Copyrights retained by each developer.</comments>
+        </license>
+    </licenses>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Domain -->
+            <dependency>
+                <groupId>se.streamsource.streamflow</groupId>
+                <artifactId>streamflow-common</artifactId>
+                <version>${version.streamflow}</version>
+            </dependency>
+
+            <!-- Qi4j -->
+            <dependency>
+                <groupId>org.qi4j.core</groupId>
+                <artifactId>qi4j-core-api</artifactId>
+                <version>${version.qi4j-core}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qi4j.core</groupId>
+                <artifactId>qi4j-core-spi</artifactId>
+                <version>${version.qi4j-core}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.qi4j.core</groupId>
+                <artifactId>qi4j-core-bootstrap</artifactId>
+                <version>${version.qi4j-core}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.qi4j.core</groupId>
+                <artifactId>qi4j-core-runtime</artifactId>
+                <version>${version.qi4j-core}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qi4j.core</groupId>
+                <artifactId>qi4j-core-testsupport</artifactId>
+                <version>${version.qi4j-core}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Libraries -->
+            <dependency>
+                <groupId>org.qi4j.library</groupId>
+                <artifactId>qi4j-lib-constraints</artifactId>
+                <version>${version.qi4j-lib}</version>
+            </dependency>
+
+            <!-- REST -->
+            <dependency>
+                <groupId>org.qi4j.extension</groupId>
+                <artifactId>qi4j-rest</artifactId>
+                <version>${version.qi4j-ext}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qi4j.library</groupId>
+                <artifactId>qi4j-lib-rdf</artifactId>
+                <version>${version.qi4j-lib}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.restlet</groupId>
+                <artifactId>org.restlet</artifactId>
+                <version>${version.restlet}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.restlet</groupId>
+                <artifactId>org.restlet.ext.xml</artifactId>
+                <version>${version.restlet}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>2.3</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.4</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.14</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
