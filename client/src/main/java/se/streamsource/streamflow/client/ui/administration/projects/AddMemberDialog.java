@@ -79,15 +79,17 @@ public class AddMemberDialog
         try
         {
             // get the selected users and groups and add them as members 
-            Set<ListItemValue> users;
             if (addUsersview.getModel().getSelected() != null)
             {
-                users = addUsersview.getModel().getSelected().keySet();
+                Set<ListItemValue> users = addUsersview.getModel().getSelected().keySet();
                 projectModel.addMembers(users.toArray(new ListItemValue[users.size()]));
             }
 
-            Set<ListItemValue> groups = addGroupsView.getModel().getSelected().keySet();
-            projectModel.addMembers(groups.toArray(new ListItemValue[groups.size()]));
+            if (addGroupsView.getModel().getSelected() != null)
+            {
+                Set<ListItemValue> groups = addGroupsView.getModel().getSelected().keySet();
+                projectModel.addMembers(groups.toArray(new ListItemValue[groups.size()]));
+            }
         } catch (Exception e)
         {
             // TODO
