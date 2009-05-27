@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard √ñberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,21 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.util.Set;
+
+import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 /**
  * JAVADOC
@@ -42,18 +50,26 @@ public class AddMemberDialog
     @Service
     ProjectModel projectModel;
 
-    private JTextField nameField;
+    Dimension dialogSize = new Dimension(600,300);
+    private AddGroupsView addGroupsView;
+    private AddUsersView addUsersview;
 
-    public AddMemberDialog(@Service ApplicationContext context)
+    public AddMemberDialog(@Service ApplicationContext context,
+                           @Uses AddUsersView addUsersView,
+                           @Uses AddGroupsView addGroupsView)
     {
         super(new BorderLayout());
 
         setActionMap(context.getActionMap(this));
+        this.addGroupsView = addGroupsView;
+        this.addUsersview = addUsersView;
 
-        JPanel dialog = new JPanel(new BorderLayout());
-        dialog.add(new JLabel("#Enter name of user or group to add"), BorderLayout.WEST);
-        nameField = new JTextField();
-        dialog.add(nameField, BorderLayout.CENTER);
+        JSplitPane dialog = new JSplitPane();
+
+        dialog.setLeftComponent(addUsersView);
+        dialog.setRightComponent(addGroupsView);
+        dialog.setPreferredSize(dialogSize);
+        setPreferredSize(dialogSize);
         add(dialog, BorderLayout.NORTH);
     }
 
@@ -62,15 +78,22 @@ public class AddMemberDialog
     {
         try
         {
-            projectModel.addMember(nameField.getText());
+            // get the selected users and groups and add them as members 
+            Set<ListItemValue> users;
+            if (addUsersview.getModel().getSelected() != null)
+            {
+                users = addUsersview.getModel().getSelected().keySet();
+                projectModel.addMembers(users.toArray(new ListItemValue[users.size()]));
+            }
 
-            WindowUtils.findJDialog(this).dispose();
-
+            Set<ListItemValue> groups = addGroupsView.getModel().getSelected().keySet();
+            projectModel.addMembers(groups.toArray(new ListItemValue[groups.size()]));
         } catch (Exception e)
         {
             // TODO
             e.printStackTrace();
         }
+        WindowUtils.findJDialog(this).dispose();
     }
 
     @Action

@@ -57,6 +57,7 @@ import se.streamsource.streamflow.client.ui.shared.SharedInboxModel;
 import se.streamsource.streamflow.client.ui.shared.SharedInboxView;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
@@ -65,6 +66,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
@@ -306,18 +309,17 @@ public class StreamFlowApplication
     @Action
     public void removeMember()
     {
-/*
-        ListItemValue selected = (DefaultMutableTreeNode) projectView.getMembers().getSelectionPath().getPathComponent(1);
-
-        try
+        if (projectView.getMembers().getSelectionPath() != null)
         {
-            projectModel.removeMember(selected.entity().get());
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
+            TreeNodeValue selected = (TreeNodeValue) projectView.getMembers().getSelectionPath().getPathComponent(1);
+            try
+            {
+                projectModel.removeMember(selected.entity().get());
+            } catch (ResourceException e)
+            {
+                e.printStackTrace();
+            }
         }
-*/
-
     }
 
     @Action

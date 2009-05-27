@@ -25,6 +25,8 @@ import se.streamsource.streamflow.client.resource.organizations.projects.members
 import se.streamsource.streamflow.domain.DuplicateException;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 
 import javax.swing.event.TreeModelListener;
@@ -138,6 +140,16 @@ public class ProjectModel
         refresh();
     }
 
+    public void addMembers(ListItemValue... members) throws ResourceException
+    {
+        for (ListItemValue value: members)
+        {
+            MemberClientResource member = project.members().member(value.entity().get().identity());
+            member.put(null);
+        }
+        refresh();
+    }
+
     public void removeMember(EntityReference entityReference) throws ResourceException
     {
         MemberClientResource member = project.members().member(entityReference.identity());
@@ -160,4 +172,8 @@ public class ProjectModel
     }
 
 
+    public ListValue findPartcipants(String participantName) throws ResourceException
+    {
+        return project.findParticipants(participantName);
+    }
 }

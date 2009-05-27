@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard √ñberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,10 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.project.Projects;
-import se.streamsource.streamflow.web.domain.project.Role;
-import se.streamsource.streamflow.web.domain.project.Roles;
-import se.streamsource.streamflow.web.domain.project.SharedProjectEntity;
+import se.streamsource.streamflow.web.domain.project.*;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 
 /**
  * Mapped to:
@@ -61,7 +60,7 @@ public class ProjectServerResource
         } catch (NoSuchEntityException e)
         {
             // try looking up a group in the organization
-            String org = getRequest().getAttributes().get("organization").toString();
+            /*String org = getRequest().getAttributes().get("organization").toString();
 
             Groups.GroupsState groups = uow.get(Groups.GroupsState.class, org);
 
@@ -72,7 +71,7 @@ public class ProjectServerResource
                     builder.prototype().entity().set(EntityReference.getEntityReference(group));
                     return builder.newInstance();
                 }
-            }
+            }*/
 
         }
         return builder.newInstance();
@@ -97,6 +96,26 @@ public class ProjectServerResource
         }
         return builder.newInstance();
     }
+
+
+    public ListValue findParticipants(DescriptionValue query)
+    {
+        // TODO when query api is fixed, this must be corrected
+        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        try
+        {
+            Participant user = uow.get(Participant.class, query.description().get());
+            builder.prototype().entity().set(EntityReference.getEntityReference(user));
+            listBuilder.addListItem(user.participantDescription(), builder.newInstance().entity().get());
+        } catch (NoSuchEntityException e)
+        {
+        }
+        return listBuilder.newList();
+    }
+
+
 
     @Override
     protected Representation delete() throws ResourceException
@@ -124,4 +143,5 @@ public class ProjectServerResource
 
         return null;
     }
+
 }

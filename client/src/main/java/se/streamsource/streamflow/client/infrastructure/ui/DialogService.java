@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard √ñberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,6 @@ public class DialogService
               new JButton(cancel)));
       dialog.getContentPane().add(BorderLayout.CENTER, main);
 */
-        dialog.setMinimumSize(new Dimension(300, 200));
         dialog.pack();
         dialog.setLocationRelativeTo(SwingUtilities.windowForComponent(component));
         dialog.setVisible(true);

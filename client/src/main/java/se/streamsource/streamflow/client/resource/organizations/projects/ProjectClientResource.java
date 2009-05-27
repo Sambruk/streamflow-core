@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard √ñberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,5 +66,12 @@ public class ProjectClientResource
         ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
         builder.prototype().description().set(roleName);
         return query("findRole", builder.newInstance(), EntityReferenceValue.class);
+    }
+
+    public ListValue findParticipants(String participantName) throws ResourceException
+    {
+        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        builder.prototype().description().set(participantName);
+        return query("findParticipants", builder.newInstance(), ListValue.class);
     }
 }
