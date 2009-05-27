@@ -29,6 +29,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
 
 /**
  * JAVADOC
@@ -39,22 +40,16 @@ public class AddUsersView
     private AddUsersModel addUsersModel;
     private JTextField nameField;
 
-    @Structure
-    ValueBuilderFactory vbf;
-
     public AddUsersView(@Service final ProjectModel projectModel,
-                        @Uses AddUsersModel addUsersModel)
+                        @Uses AddUsersModel addUsersModel,
+                        @Structure ValueBuilderFactory vbf)
     {
         super(new BorderLayout());
         this.addUsersModel = addUsersModel;
 
+        addUsersModel.setUsers(vbf.newValueBuilder(ListValue.class).newInstance());
         nameField = new JTextField();
-        nameField.addKeyListener(new KeyListener()
-        {
-            public void keyTyped(KeyEvent keyEvent) { }
-
-            public void keyPressed(KeyEvent keyEvent) { }
-
+        nameField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent keyEvent)
             {
                 try

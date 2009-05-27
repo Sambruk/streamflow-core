@@ -66,7 +66,6 @@ public class AddUsersModel
 
     public Object getValueAt(int row, int column)
     {
-        if (users==null) return null;
         switch (column)
         {
             case 0: return selected.get(users.items().get().get(row));
@@ -94,7 +93,6 @@ public class AddUsersModel
 
     public int getRowCount()
     {
-        if (users==null) return 0;
         return users.items().get().size();
     }
 
