@@ -37,28 +37,9 @@ public class ProjectClientResource
         super(context, reference);
     }
 
-    public ListValue participants() throws ResourceException
-    {
-        return query("participants", ListValue.class);
-    }
-
     public MembersClientResource members()
     {
         return getSubResource("members", MembersClientResource.class);
-    }
-
-    public void addMember(EntityReference participant) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
-        builder.prototype().entity().set(participant);
-        putCommand("addMember", builder.newInstance());
-    }
-
-    public EntityReferenceValue findParticipant(String participant) throws ResourceException
-    {
-        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
-        builder.prototype().description().set(participant);
-        return query("findParticipant", builder.newInstance(), EntityReferenceValue.class);
     }
 
     public EntityReferenceValue findRole(String roleName) throws ResourceException
@@ -66,12 +47,5 @@ public class ProjectClientResource
         ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
         builder.prototype().description().set(roleName);
         return query("findRole", builder.newInstance(), EntityReferenceValue.class);
-    }
-
-    public ListValue findParticipants(String participantName) throws ResourceException
-    {
-        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
-        builder.prototype().description().set(participantName);
-        return query("findParticipants", builder.newInstance(), ListValue.class);
     }
 }

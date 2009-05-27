@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.groups;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -33,13 +33,14 @@ import java.util.HashSet;
 
 import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 /**
  * JAVADOC
  */
-public class AddMemberDialog
+public class AddParticipantsDialog
         extends JPanel
 {
     @Structure
@@ -49,13 +50,14 @@ public class AddMemberDialog
     UnitOfWorkFactory uowf;
 
     @Service
-    ProjectModel projectModel;
+    GroupModel groupModel;
+
 
     Dimension dialogSize = new Dimension(600,300);
     private AddGroupsView addGroupsView;
     private AddUsersView addUsersview;
 
-    public AddMemberDialog(@Service ApplicationContext context,
+    public AddParticipantsDialog(@Service ApplicationContext context,
                            @Uses AddUsersView addUsersView,
                            @Uses AddGroupsView addGroupsView)
     {
@@ -82,10 +84,10 @@ public class AddMemberDialog
             Set<ListItemValue> users = addUsersview.getModel().getSelected().keySet();
             Set<ListItemValue> groups = addGroupsView.getModel().getSelected().keySet();
 
-            Set<ListItemValue> selected = new HashSet<ListItemValue>(groups.size() + users.size());
+            Set<ListItemValue> selected = new HashSet<ListItemValue>(users.size() + groups.size());
             selected.addAll(users);
             selected.addAll(groups);
-            projectModel.addMembers(selected);
+            groupModel.addParticipants(selected);
         } catch (Exception e)
         {
             // TODO

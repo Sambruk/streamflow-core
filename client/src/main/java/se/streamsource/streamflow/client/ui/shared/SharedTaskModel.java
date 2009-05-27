@@ -21,7 +21,6 @@ public class SharedTaskModel
 {
 /*
     private SharedTask sharedTask;
-    private CallAuthentication auth;
 
     public SharedTaskModel()
     {
@@ -32,15 +31,9 @@ public class SharedTaskModel
         return sharedTask;
     }
 
-    public CallAuthentication callAuthentication()
-    {
-        return auth;
-    }
-
-    public void setSharedTask(SharedTask sharedTask, CallAuthentication auth)
+    public void setSharedTask(SharedTask sharedTask)
     {
         this.sharedTask = sharedTask;
-        this.auth = auth;
     }
 */
 }

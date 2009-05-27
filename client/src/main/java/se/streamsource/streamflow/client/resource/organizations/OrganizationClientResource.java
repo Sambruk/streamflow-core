@@ -15,9 +15,15 @@
 package se.streamsource.streamflow.client.resource.organizations;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Context;
+import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
 /**
  * JAVADOC
@@ -25,8 +31,20 @@ import se.streamsource.streamflow.client.resource.organizations.organizationalun
 public class OrganizationClientResource
         extends OrganizationalUnitClientResource
 {
+    @Structure
+    protected ValueBuilderFactory vbf;
+
+
     public OrganizationClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
+
+    public ListValue findParticipants(String participantName) throws ResourceException
+    {
+        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        builder.prototype().description().set(participantName);
+        return query("findParticipants", builder.newInstance(), ListValue.class);
+    }
+
 }

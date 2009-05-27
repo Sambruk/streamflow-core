@@ -32,6 +32,7 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.util.Collection;
 
 /**
  * JAVADOC
@@ -129,18 +130,7 @@ public class ProjectModel
         }
     }
 
-    public void addMember(String participant) throws DuplicateException, RegistrationException, NoSuchUserException, ResourceException
-    {
-        EntityReferenceValue value = project.findParticipant(participant);
-        if (value.entity().get() == null)
-            throw new NoSuchUserException(participant);
-
-        MemberClientResource member = project.members().member(value.entity().get().identity());
-        member.put(null);
-        refresh();
-    }
-
-    public void addMembers(ListItemValue... members) throws ResourceException
+    public void addMembers(Collection<ListItemValue> members) throws ResourceException
     {
         for (ListItemValue value: members)
         {
@@ -171,9 +161,4 @@ public class ProjectModel
         refresh();
     }
 
-
-    public ListValue findPartcipants(String participantName) throws ResourceException
-    {
-        return project.findParticipants(participantName);
-    }
 }

@@ -33,10 +33,19 @@ public class OrganizationalUnitAdministrationModel
     @Service
     RolesModel rolesModel;
 
+    private OrganizationClientResource organization;
+
     public void setOrganization(OrganizationClientResource organization) throws ResourceException
     {
+        this.organization = organization;
         groupsModel.setGroups(organization.groups());
         projectsModel.setProjects(organization.projects());
         rolesModel.setRoles(organization.roles());
     }
+
+    public OrganizationClientResource getOrganization()
+    {
+        return organization;
+    }
+    
 }

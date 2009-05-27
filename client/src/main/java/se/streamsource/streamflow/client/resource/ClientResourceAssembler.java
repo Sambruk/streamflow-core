@@ -22,6 +22,8 @@ import se.streamsource.streamflow.client.resource.organizations.OrganizationClie
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
@@ -69,6 +71,8 @@ public class ClientResourceAssembler
 
                 GroupsClientResource.class,
                 GroupClientResource.class,
+                ParticipantsClientResource.class,
+                ParticipantClientResource.class,
 
                 ProjectsClientResource.class,
                 ProjectClientResource.class,

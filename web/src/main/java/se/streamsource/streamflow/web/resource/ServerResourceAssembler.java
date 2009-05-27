@@ -21,6 +21,8 @@ import se.streamsource.streamflow.web.resource.organizations.OrganizationServerR
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
@@ -67,6 +69,8 @@ public class ServerResourceAssembler
 
                 GroupsServerResource.class,
                 GroupServerResource.class,
+                ParticipantsServerResource.class,
+                ParticipantServerResource.class,
 
                 ProjectsServerResource.class,
                 ProjectServerResource.class,

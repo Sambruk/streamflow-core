@@ -18,6 +18,10 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
+import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersModel;
+import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsModel;
+import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsView;
 
 /**
  * JAVADOC
@@ -35,8 +39,14 @@ public class GroupAdministrationAssembler
         UIAssemblers.addMV(module, GroupModel.class,
                 GroupView.class);
 
+        UIAssemblers.addMV(module, AddUsersModel.class,
+                AddUsersView.class);
+
+        UIAssemblers.addMV(module, AddGroupsModel.class,
+                AddGroupsView.class);
+
         UIAssemblers.addDialogs(module,
                 NewGroupDialog.class,
-                AddParticipantDialog.class);
+                AddParticipantsDialog.class);
     }
 }

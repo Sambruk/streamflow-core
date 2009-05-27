@@ -27,6 +27,11 @@ import java.util.Map;
 public class AddGroupsModel
         extends AbstractTableModel
 {
+    public AddGroupsModel()
+    {
+        clearSelection();
+    }
+
     public void setGroups(ListValue groups)
     {
         this.groups = groups;

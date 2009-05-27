@@ -15,18 +15,66 @@
 package se.streamsource.streamflow.web.resource.organizations;
 
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 
 /**
  * Mapped to /organizations/{organization}
  */
 public class OrganizationServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
+    @Structure
+    protected UnitOfWorkFactory uowf;
+
+    @Structure
+    ValueBuilderFactory vbf;
+
+    @Override
+    protected Representation get(Variant variant) throws ResourceException
+    {
+        if (getRequest().getResourceRef().hasQuery())
+        {
+           return super.get(variant);
+        }
+        return get();    
+    }
+
     @Override
     protected Representation get() throws ResourceException
     {
         return getHtml("resources/organization.html");
     }
+
+    public ListValue findParticipants(DescriptionValue query)
+    {
+        // TODO when query api is fixed, this must be corrected
+        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        try
+        {
+            Participant user = uow.get(Participant.class, query.description().get());
+            builder.prototype().entity().set(EntityReference.getEntityReference(user));
+            listBuilder.addListItem(user.participantDescription(), builder.newInstance().entity().get());
+        } catch (NoSuchEntityException e)
+        {
+        }
+        return listBuilder.newList();
+    }
+
 }

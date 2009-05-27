@@ -36,7 +36,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class GroupServerResource
         extends CommandQueryServerResource
 {
-    public ListValue participants()
+    /*public ListValue participants()
     {
         ListValueBuilder builder = new ListValueBuilder(vbf);
         UnitOfWork uow = uowf.currentUnitOfWork();
@@ -47,7 +47,7 @@ public class GroupServerResource
             builder.addListItem(participant.participantDescription(), EntityReference.getEntityReference(participant));
         }
         return builder.newList();
-    }
+    }*/
 
     @Override
     protected Representation delete() throws ResourceException
@@ -76,7 +76,7 @@ public class GroupServerResource
         return null;
     }
 
-    public void addParticipant(EntityReferenceValue participantId)
+    /*public void addParticipant(EntityReferenceValue participantId)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         Participant participant = uow.get(Participant.class, participantId.entity().get().identity());
@@ -85,5 +85,5 @@ public class GroupServerResource
         Participants participants = uow.get(GroupEntity.class, identity);
 
         participants.addParticipant(participant);
-    }
+    }*/
 }

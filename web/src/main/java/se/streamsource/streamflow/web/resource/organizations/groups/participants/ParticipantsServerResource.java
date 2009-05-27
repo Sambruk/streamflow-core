@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.organizations.groups;
+package se.streamsource.streamflow.web.resource.organizations.groups.participants;
 
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
@@ -21,46 +21,37 @@ import se.streamsource.streamflow.domain.organization.DuplicateDescriptionExcept
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
-import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.group.*;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /organizations/{organization}/groups
+ * /organizations/{organization}/groups/{group}/participants
  */
-public class GroupsServerResource
+public class ParticipantsServerResource
         extends CommandQueryServerResource
 {
-    public ListValue groups()
-    {
-        String identity = getRequest().getAttributes().get("organization").toString();
-        Groups.GroupsState groups = uowf.currentUnitOfWork().get(Groups.GroupsState.class, identity);
-
-        ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (Group group : groups.groups())
-        {
-            builder.addListItem(group.getDescription(), EntityReference.getEntityReference(group));
-        }
-        return builder.newList();
-    }
-
-    // post???
-    public void newGroup(DescriptionValue value) throws DuplicateDescriptionException
+    public ListValue participants()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        EntityBuilder<GroupEntity> builder = uow.newEntityBuilder(GroupEntity.class);
-
         String identity = getRequest().getAttributes().get("organization").toString();
+        Groups.GroupsState groups = uow.get(Groups.GroupsState.class, identity);
 
-        Groups groups = uow.get(Groups.class, identity);
+        ListValueBuilder builder = new ListValueBuilder(vbf);
+        String groupId = getRequest().getAttributes().get("group").toString();
+        for (Group group : groups.groups())
+        {
+            if (group.identity().get().equals(groupId))
+            {
+                Participants.ParticipantsState participants = uow.get(Participants.ParticipantsState.class, groupId);
+                for (Participant participant : participants.participants())
+                {
+                    builder.addListItem(participant.participantDescription(), EntityReference.getEntityReference(participant));
+                }
+                return builder.newList();
+            }
+        }
 
-        GroupEntity groupState = builder.prototype();
-        groupState.description().set(value.description().get());
-
-        Group group = builder.newInstance();
-
-        groups.addGroup(group);
+        return builder.newList();
     }
 }

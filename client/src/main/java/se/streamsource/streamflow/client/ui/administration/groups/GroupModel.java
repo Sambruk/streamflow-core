@@ -20,10 +20,13 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ConnectionException;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
+import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 
 import javax.swing.DefaultListModel;
+import java.util.Collection;
 
 /**
  * JAVADOC
@@ -42,16 +45,9 @@ public class GroupModel
         refresh();
     }
 
-    public void addParticipant(EntityReferenceValue participant) throws ResourceException
+    public void removeParticipant(EntityReference participant) throws ResourceException
     {
-        group.addParticipant(participant);
-        refresh();
-    }
-
-    public void removeParticipant(EntityReference entityReference)
-    {
-        // TODO Delete participant
-
+        group.participants().participant(participant.identity()).delete();
         refresh();
     }
 
@@ -60,7 +56,7 @@ public class GroupModel
         clear();
         try
         {
-            for (ListItemValue value : group.participants().items().get())
+            for (ListItemValue value : group.participants().participants().items().get())
             {
                 addElement(value);
             }
@@ -71,4 +67,13 @@ public class GroupModel
     }
 
 
+    public void addParticipants(Collection<ListItemValue> participants) throws ResourceException
+    {
+        for (ListItemValue value: participants)
+        {
+            ParticipantClientResource participant = group.participants().participant(value.entity().get().identity());
+            participant.put(null);
+        }
+        refresh();
+    }
 }

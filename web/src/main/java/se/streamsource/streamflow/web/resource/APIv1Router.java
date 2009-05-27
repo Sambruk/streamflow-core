@@ -23,6 +23,8 @@ import se.streamsource.streamflow.web.resource.organizations.OrganizationServerR
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
@@ -71,6 +73,8 @@ public class APIv1Router
         attach("/organizations/{organization}", createServerResourceFinder(OrganizationServerResource.class));
         attach("/organizations/{organization}/groups", createServerResourceFinder(GroupsServerResource.class));
         attach("/organizations/{organization}/groups/{group}", createServerResourceFinder(GroupServerResource.class));
+        attach("/organizations/{organization}/groups/{group}/participants", createServerResourceFinder(ParticipantsServerResource.class));
+        attach("/organizations/{organization}/groups/{group}/participants/{participant}", createServerResourceFinder(ParticipantServerResource.class));
         attach("/organizations/{organization}/projects", createServerResourceFinder(ProjectsServerResource.class));
         attach("/organizations/{organization}/projects/{project}", createServerResourceFinder(ProjectServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members", createServerResourceFinder(MembersServerResource.class));

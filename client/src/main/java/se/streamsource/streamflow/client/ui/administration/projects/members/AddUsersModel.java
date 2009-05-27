@@ -27,6 +27,12 @@ import java.util.Map;
 public class AddUsersModel
         extends AbstractTableModel
 {
+
+    public AddUsersModel()
+    {
+        clearSelection();
+    }
+
     public void setUsers(ListValue users)
     {
         this.users = users;

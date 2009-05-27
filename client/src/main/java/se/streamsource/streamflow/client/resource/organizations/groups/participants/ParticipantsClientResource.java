@@ -12,31 +12,37 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.organizations.groups;
+package se.streamsource.streamflow.client.resource.organizations.groups.participants;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
-import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
+import se.streamsource.streamflow.resource.roles.DescriptionValue;
+
+import javax.naming.directory.Attributes;
 
 /**
  * JAVADOC
  */
-public class GroupClientResource
+public class ParticipantsClientResource
         extends CommandQueryClientResource
 {
-    public GroupClientResource(@Uses Context context, @Uses Reference reference)
+    public ParticipantsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public ParticipantsClientResource participants() throws ResourceException
+    public ParticipantClientResource participant(String id)
     {
-        return getSubResource("participants", ParticipantsClientResource.class);
+        return getSubResource(id, ParticipantClientResource.class);
+    }
+
+    public ListValue participants() throws ResourceException
+    {
+        return query("participants", ListValue.class);
     }
 }

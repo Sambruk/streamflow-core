@@ -37,12 +37,7 @@ import org.restlet.data.Protocol;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.ui.administration.groups.AddParticipantDialog;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupModel;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupView;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
-import se.streamsource.streamflow.client.ui.administration.groups.NewGroupDialog;
+import se.streamsource.streamflow.client.ui.administration.groups.*;
 import se.streamsource.streamflow.client.ui.administration.projects.AddMemberDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.AddRoleDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.NewProjectDialog;
@@ -259,14 +254,20 @@ public class StreamFlowApplication
     public void addParticipant()
     {
         uowf.nestedUnitOfWork();
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(AddParticipantDialog.class).newInstance());
+        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(AddParticipantsDialog.class).newInstance());
     }
 
     @Action
     public void removeParticipant()
     {
         ListItemValue value = (ListItemValue) groupView.getParticipantList().getSelectedValue();
-        groupModel.removeParticipant(value.entity().get());
+        try
+        {
+            groupModel.removeParticipant(value.entity().get());
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     // Project administration actions -------------------------------

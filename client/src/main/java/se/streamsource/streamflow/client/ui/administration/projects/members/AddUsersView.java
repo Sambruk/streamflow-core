@@ -22,6 +22,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 
@@ -40,7 +41,7 @@ public class AddUsersView
     private AddUsersModel addUsersModel;
     private JTextField nameField;
 
-    public AddUsersView(@Service final ProjectModel projectModel,
+    public AddUsersView(@Service final OrganizationalUnitAdministrationModel organizationModel,
                         @Uses AddUsersModel addUsersModel,
                         @Structure ValueBuilderFactory vbf)
     {
@@ -54,7 +55,7 @@ public class AddUsersView
             {
                 try
                 {
-                    ListValue list = projectModel.findPartcipants(nameField.getText());
+                    ListValue list = organizationModel.getOrganization().findParticipants(nameField.getText());
                     getModel().setUsers(list);
                 } catch (ResourceException e)
                 {
