@@ -18,7 +18,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.roles.DetailView;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.ActionMap;
 import javax.swing.JComponent;
@@ -61,8 +62,14 @@ public class AdministrationView
                 {
                     final DetailView admin = (DetailView) e.getPath().getLastPathComponent();
 
-                    JComponent detail = admin.detailView();
-                    setRightComponent(detail);
+                    try
+                    {
+                        JComponent detail = admin.detailView();
+                        setRightComponent(detail);
+                    } catch (ResourceException e1)
+                    {
+                        e1.printStackTrace();
+                    }
                 }
             }
         });

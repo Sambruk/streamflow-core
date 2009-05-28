@@ -21,7 +21,7 @@ import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.Individual;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.domain.roles.DetailView;
+import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;

@@ -12,12 +12,19 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.shared.user.inbox.task;
+package se.streamsource.streamflow.web.resource.users.shared.user.inbox;
 
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.user.UserSpecification;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.web.domain.task.Assignable;
+import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.SharedTask;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -38,16 +45,35 @@ public class SharedUserTaskServerResource
         inbox.completeTask(task);
     }
 
-    public void describe(DescriptionValue descriptionValue) throws ResourceException
+    public void describe(DescriptionValue descriptionValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
         describable.describe(descriptionValue.description().get());
     }
 
-    @Override
-    protected Representation delete() throws ResourceException
+    public void assignTo(UserSpecification user)
     {
-        return super.delete();
+        String taskId = (String) getRequest().getAttributes().get("task");
+        Assignable assignable = uowf.currentUnitOfWork().get(Assignable.class, taskId);
+        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, user.username().get());
+        assignable.assignTo(assignee);
+    }
+
+    @Override
+    protected Representation delete(Variant variant) throws ResourceException
+    {
+        try
+        {
+            String taskId = (String) getRequest().getAttributes().get("task");
+            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
+            SharedTask sharedTask = uow.get(SharedTask.class, taskId);
+            uow.remove(sharedTask);
+            uow.complete();
+        } catch (UnitOfWorkCompletionException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -30,12 +30,11 @@ public class SharedUIAssembler
         module.addObjects(
                 SharedNode.class,
                 SharedUserNode.class,
-                SharedUserInboxesNode.class,
+                SharedUserAllInboxesNode.class,
+                SharedUserAllAssignmentsNode.class,
                 SharedUserInboxNode.class,
-                SharedProjectsNode.class,
-                AllInboxesNode.class,
-                InboxNode.class,
-                InboxTaskNode.class);
+                SharedUserAssignmentsNode.class,
+                SharedProjectsNode.class);
 
         UIAssemblers.addMV(module,
                 SharedModel.class,
@@ -46,11 +45,12 @@ public class SharedUIAssembler
                 SharedInboxModel.class,
                 SharedInboxView.class);
 
-        UIAssemblers.addViews(module, SharedTaskView.class, SharedToolbarView.class);
-        UIAssemblers.addDialogs(module, AddSharedTaskDialog.class);
+        UIAssemblers.addMV(module,
+                SharedAssignmentsModel.class,
+                SharedAssignmentsView.class);
 
-        UIAssemblers.addViews(module,
-                SharedInboxToolbarView.class);
+        UIAssemblers.addViews(module, SharedTaskView.class);
+        UIAssemblers.addDialogs(module, AddSharedTaskDialog.class);
 
         UIAssemblers.addModels(module, SharedTaskModel.class);
     }

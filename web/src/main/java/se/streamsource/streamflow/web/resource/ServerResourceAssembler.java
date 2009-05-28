@@ -21,8 +21,8 @@ import se.streamsource.streamflow.web.resource.organizations.OrganizationServerR
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
+import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
@@ -37,8 +37,9 @@ import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.SharedServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.SharedUserServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.assignments.SharedUserAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.shared.user.inbox.task.SharedUserTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserTaskServerResource;
 
 /**
  * JAVADOC
@@ -61,6 +62,8 @@ public class ServerResourceAssembler
                 SharedUserServerResource.class,
                 SharedUserInboxServerResource.class,
                 SharedUserTaskServerResource.class,
+
+                SharedUserAssignmentsServerResource.class,
 
                 // /organizations
                 OrganizationsServerResource.class,

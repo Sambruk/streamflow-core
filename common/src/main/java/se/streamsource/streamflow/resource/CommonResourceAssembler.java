@@ -19,10 +19,13 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.domain.user.UserSpecification;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
@@ -45,11 +48,14 @@ public class CommonResourceAssembler
                 NewSharedTaskCommand.class).visibleIn(Visibility.application);
 
         // Queries
-        module.addValues(TasksQuery.class).visibleIn(Visibility.application);
+        module.addValues(UserSpecification.class, TasksQuery.class).visibleIn(Visibility.application);
 
         // Result values
-        module.addValues(ListValue.class, ListItemValue.class, InboxTaskListValue.class,
+        module.addValues(ListValue.class, ListItemValue.class,
+                InboxTaskListValue.class,
                 InboxTaskValue.class,
+                AssignmentsTaskListValue.class,
+                AssignedTaskValue.class,
                 TreeValue.class, TreeNodeValue.class).visibleIn(Visibility.application);
     }
 }

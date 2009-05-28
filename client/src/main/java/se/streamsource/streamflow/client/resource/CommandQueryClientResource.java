@@ -181,7 +181,7 @@ public class CommandQueryClientResource
         StringRepresentation json = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON);
 
         Reference ref = getReference();
-        Reference operationRef = ref.clone().addSegment(operation);
+        Reference operationRef = ref.clone().addQueryParameter("operation", operation);
         setReference(operationRef);
         try
         {

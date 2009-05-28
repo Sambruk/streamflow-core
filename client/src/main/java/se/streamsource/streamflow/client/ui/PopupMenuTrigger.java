@@ -12,36 +12,35 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
+package se.streamsource.streamflow.client.ui;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
+import javax.swing.JPopupMenu;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
- * JAVADOC
+ * Generic trigger for opening up a popup menu.
  */
-@Mixins(OwnableTask.OwnableTaskMixin.class)
-public interface OwnableTask
+public class PopupMenuTrigger extends MouseAdapter
 {
-    void ownedBy(TaskOwner owner);
+    private final JPopupMenu popup;
 
-    interface OwnableTaskState
+    public PopupMenuTrigger(JPopupMenu popup)
     {
-        @Optional
-        Association<TaskOwner> owner();
+        this.popup = popup;
     }
 
-    class OwnableTaskMixin
-            implements OwnableTask
+    public void mousePressed(MouseEvent e)
     {
-        @This
-        OwnableTaskState state;
+        mouseReleased(e);
+    }
 
-        public void ownedBy(TaskOwner owner)
+    public void mouseReleased(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
         {
-            state.owner().set(owner);
+            popup.show(e.getComponent(),
+                    e.getX(), e.getY());
         }
     }
 }

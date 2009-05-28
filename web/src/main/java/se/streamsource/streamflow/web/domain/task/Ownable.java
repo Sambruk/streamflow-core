@@ -12,21 +12,36 @@
  *
  */
 
-package se.streamsource.streamflow.application.shared.inbox;
+package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.domain.roles.Notable;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 
 /**
  * JAVADOC
  */
-public interface NewSharedTaskCommand
-        extends ValueComposite, Describable.DescribableState, Notable.NotableState
+@Mixins(Ownable.OwnableMixin.class)
+public interface Ownable
 {
-    @Optional
-    Property<EntityReference> parentTask();
+    void ownedBy(Owner owner);
+
+    interface OwnableState
+    {
+        @Optional
+        Association<Owner> owner();
+    }
+
+    class OwnableMixin
+            implements Ownable
+    {
+        @This
+        OwnableState state;
+
+        public void ownedBy(Owner owner)
+        {
+            state.owner().set(owner);
+        }
+    }
 }

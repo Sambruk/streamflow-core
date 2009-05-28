@@ -28,8 +28,6 @@ public interface Participants
 {
     void addParticipant(Participant newParticipant);
 
-    boolean isParticipant(Participant participant);
-
     void removeParticipant(Participant participant);
 
     interface ParticipantsState
@@ -48,23 +46,13 @@ public interface Participants
 
         public void addParticipant(Participant participant)
         {
-            if (!isParticipant(participant))
+            if (!state.participants().contains(participant))
                 state.participants().add(state.participants().count(), participant);
         }
 
         public void removeParticipant(Participant participant)
         {
             state.participants().remove(participant);
-        }
-
-        public boolean isParticipant(Participant participant)
-        {
-            for (Participant participant1 : state.participants())
-            {
-                if (participant1.equals(participant))
-                    return true;
-            }
-            return false;
         }
     }
 

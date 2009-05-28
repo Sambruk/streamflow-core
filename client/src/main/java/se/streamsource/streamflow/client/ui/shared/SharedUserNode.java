@@ -26,11 +26,15 @@ import se.streamsource.streamflow.client.domain.individual.Individual;
 public class SharedUserNode
         extends DefaultMutableTreeTableNode
 {
-    public SharedUserNode(@Uses Individual individual, @Structure ObjectBuilderFactory obf, @Uses SharedUserInboxesNode inboxes)
+    public SharedUserNode(@Uses Individual individual,
+                          @Structure ObjectBuilderFactory obf,
+                          @Uses SharedUserAllInboxesNode allInboxes,
+                          @Uses SharedUserAllAssignmentsNode allAssignments)
     {
         super(individual);
 
-        add(inboxes);
+        add(allInboxes);
+        add(allAssignments);
     }
 
     @Override

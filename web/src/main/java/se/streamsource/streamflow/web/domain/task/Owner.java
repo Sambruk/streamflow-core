@@ -12,32 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.shared;
+package se.streamsource.streamflow.web.domain.task;
 
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import se.streamsource.streamflow.domain.roles.DetailView;
-
-import javax.swing.JComponent;
+import org.qi4j.api.entity.Identity;
 
 /**
  * JAVADOC
  */
-public class AllInboxesNode
-        extends DefaultMutableTreeTableNode
-        implements DetailView
+public interface Owner
+        extends Identity
 {
-    public JComponent detailView()
-    {
-        return new JXTable();
-    }
-
-    @Override
-    public Object getValueAt(int column)
-    {
-        if (column == 0)
-            return "Inboxes";
-        else
-            return null;
-    }
 }

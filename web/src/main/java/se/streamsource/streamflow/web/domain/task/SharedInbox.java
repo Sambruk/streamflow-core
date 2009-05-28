@@ -31,7 +31,10 @@ public interface SharedInbox
             implements SharedInbox
     {
         @This
-        TaskOwner owner;
+        Owner owner;
+
+        @This
+        Assignee assignee;
 
         public void receiveTask(SharedTaskEntity task)
         {
@@ -40,6 +43,9 @@ public interface SharedInbox
 
         public void completeTask(SharedTask task)
         {
+            // Ensure that task is assigned to user first
+            task.assignTo(assignee);
+
             // Complete task
             task.complete();
         }

@@ -14,12 +14,14 @@
 
 package se.streamsource.streamflow.resource.inbox;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import se.streamsource.streamflow.domain.task.TaskStates;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -36,4 +38,7 @@ public interface InboxTaskValue
     Property<Date> creationDate();
 
     Property<TaskStates> status();
+
+    @UseDefaults
+    Property<List<InboxTaskValue>> subTasks();
 }

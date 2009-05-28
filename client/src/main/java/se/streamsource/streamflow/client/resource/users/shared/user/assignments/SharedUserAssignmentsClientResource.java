@@ -12,39 +12,41 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.inbox;
+package se.streamsource.streamflow.client.resource.users.shared.user.assignments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.domain.user.UserSpecification;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserTaskClientResource;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
+import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 /**
  * JAVADOC
  */
-public class SharedUserTaskClientResource
+public class SharedUserAssignmentsClientResource
         extends CommandQueryClientResource
 {
-    public SharedUserTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public SharedUserAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public void complete() throws ResourceException
+    public AssignmentsTaskListValue tasks(TasksQuery query) throws ResourceException
     {
-        postCommand("complete");
+        return query("tasks", query, AssignmentsTaskListValue.class);
     }
 
-    public void describe(DescriptionValue descriptionValue) throws ResourceException
+    public void newtask(NewSharedTaskCommand command) throws ResourceException
     {
-        putCommand("describe", descriptionValue);
+        postCommand("newtask", command);
     }
 
-    public void assignTo(UserSpecification userSpecification) throws ResourceException
+    public SharedUserTaskClientResource task(String id)
     {
-        putCommand("assignTo", userSpecification);
+        return getSubResource(id, SharedUserTaskClientResource.class);
     }
 }

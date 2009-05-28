@@ -12,32 +12,16 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.shared;
+package se.streamsource.streamflow.client.ui;
 
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import se.streamsource.streamflow.domain.roles.DetailView;
+import org.restlet.resource.ResourceException;
 
 import javax.swing.JComponent;
 
 /**
  * JAVADOC
  */
-public class AllDelegationsNode
-        extends DefaultMutableTreeTableNode
-        implements DetailView
+public interface DetailView
 {
-    public JComponent detailView()
-    {
-        return new JXTable();
-    }
-
-    @Override
-    public Object getValueAt(int column)
-    {
-        if (column == 0)
-            return "Delegations";
-        else
-            return null;
-    }
+    JComponent detailView() throws ResourceException;
 }

@@ -97,4 +97,9 @@ public class AddSharedTaskDialog
         uowf.currentUnitOfWork().discard();
         WindowUtils.findJDialog(this).dispose();
     }
+
+    public ValueBuilder<NewSharedTaskCommand> getCommandBuilder()
+    {
+        return commandBuilder;
+    }
 }

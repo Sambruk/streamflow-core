@@ -29,7 +29,7 @@ public interface SharedTaskReceiver
             implements SharedTaskReceiver
     {
         @This
-        TaskOwner owner;
+        Owner owner;
 
         public void receiveTask(SharedTask task)
         {

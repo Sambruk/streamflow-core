@@ -14,19 +14,32 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.entity.EntityComposite;
-import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.domain.roles.Notable;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 
 /**
- * JAVADOC
+ * Manages the path of the task from the initial task down to this one. Each
+ * subtask will hence have a record of from where it came from.
  */
-public interface SharedSubTaskEntity
-        extends EntityComposite,
-        // Roles
-        Assignable,
-        Describable,
-        Notable,
-        TaskStatus
+@Mixins(TaskPath.TaskPathMixin.class)
+public interface TaskPath
 {
+    Iterable<SharedTask> getPath();
+
+    interface TaskPathState
+    {
+        ManyAssociation<SharedTask> path();
+    }
+
+    class TaskPathMixin
+        implements TaskPath
+    {
+        @This TaskPathState state;
+
+        public Iterable<SharedTask> getPath()
+        {
+            return state.path();
+        }
+    }
 }

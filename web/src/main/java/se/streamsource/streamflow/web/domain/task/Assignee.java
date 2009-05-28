@@ -14,9 +14,12 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.entity.Identity;
+
 /**
  * JAVADOC
  */
 public interface Assignee
+        extends Identity
 {
 }

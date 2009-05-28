@@ -21,7 +21,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
-import se.streamsource.streamflow.domain.roles.DetailView;
+import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 
 import javax.swing.JComponent;

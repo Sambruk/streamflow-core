@@ -26,12 +26,12 @@ import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.Individual;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 
 /**
  * JAVADOC
  */
-public class SharedUserInboxesNode
+public class SharedUserAllAssignmentsNode
         extends DefaultMutableTreeTableNode
 {
     ObjectBuilderFactory obf;
@@ -41,7 +41,7 @@ public class SharedUserInboxesNode
 
     private Restlet client;
 
-    public SharedUserInboxesNode(@Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
+    public SharedUserAllAssignmentsNode(@Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
     {
         super(individual);
         this.client = client;
@@ -60,8 +60,8 @@ public class SharedUserInboxesNode
                 try
                 {
                     UserClientResource user = account.user(client);
-                    SharedUserInboxClientResource userInboxResource = user.shared().user().inbox();
-                    add(obf.newObjectBuilder(SharedUserInboxNode.class).use(account.settings(), userInboxResource).newInstance());
+                    SharedUserAssignmentsClientResource userAssignmentsResource = user.shared().user().assignments();
+                    add(obf.newObjectBuilder(SharedUserAssignmentsNode.class).use(account.settings(), userAssignmentsResource).newInstance());
                 } catch (ResourceException e)
                 {
                     e.printStackTrace();
@@ -74,6 +74,6 @@ public class SharedUserInboxesNode
     @Override
     public Object getValueAt(int column)
     {
-        return "Inboxes";
+        return "Assignments";
     }
 }

@@ -12,14 +12,16 @@
  *
  */
 
-package se.streamsource.streamflow.domain.roles;
+package se.streamsource.streamflow.domain.user;
 
-import javax.swing.JComponent;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC
  */
-public interface DetailView
+public interface UserSpecification
+        extends ValueComposite
 {
-    JComponent detailView();
+    Property<String> username();
 }

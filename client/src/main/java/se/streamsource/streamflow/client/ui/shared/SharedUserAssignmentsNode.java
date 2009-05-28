@@ -23,7 +23,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;
@@ -31,7 +31,7 @@ import javax.swing.JComponent;
 /**
  * JAVADOC
  */
-public class SharedUserInboxNode
+public class SharedUserAssignmentsNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
@@ -45,15 +45,15 @@ public class SharedUserInboxNode
     Restlet client;
 
     @Service
-    SharedInboxView view;
+    SharedAssignmentsView view;
 
     @Service
-    SharedInboxModel model;
+    SharedAssignmentsModel model;
 
     @Uses
     private AccountSettingsValue settings;
 
-    public SharedUserInboxNode(@Uses SharedUserInboxClientResource inbox)
+    public SharedUserAssignmentsNode(@Uses SharedUserAssignmentsClientResource inbox)
     {
         super(inbox, false);
     }
@@ -64,14 +64,14 @@ public class SharedUserInboxNode
         return settings.name().get();
     }
 
-    SharedUserInboxClientResource inbox()
+    SharedUserAssignmentsClientResource assignments()
     {
-        return (SharedUserInboxClientResource) getUserObject();
+        return (SharedUserAssignmentsClientResource) getUserObject();
     }
 
     public JComponent detailView() throws ResourceException
     {
-        model.setInbox(inbox());
+        model.setAssignments(assignments());
         return view;
     }
 

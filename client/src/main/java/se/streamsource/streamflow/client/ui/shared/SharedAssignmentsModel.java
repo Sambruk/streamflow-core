@@ -21,11 +21,11 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.domain.user.UserSpecification;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
@@ -34,7 +34,7 @@ import java.util.Date;
 /**
  * JAVADOC
  */
-public class SharedInboxModel
+public class SharedAssignmentsModel
         extends AbstractTreeTableModel
 {
     @Structure
@@ -42,21 +42,21 @@ public class SharedInboxModel
 
     TasksQuery query;
 
-    InboxTaskListValue tasks;
+    AssignmentsTaskListValue tasks;
 
     String[] columnNames = {"", "Description", "Created on"};
     Class[] columnClasses = {Boolean.class, String.class, Date.class};
     boolean[] columnEditable = {true, false, false};
 
     @Override
-    public SharedUserInboxClientResource getRoot()
+    public SharedUserAssignmentsClientResource getRoot()
     {
-        return (SharedUserInboxClientResource) super.getRoot();
+        return (SharedUserAssignmentsClientResource) super.getRoot();
     }
 
-    public void setInbox(SharedUserInboxClientResource inbox) throws ResourceException
+    public void setAssignments(SharedUserAssignmentsClientResource assignmentsClientResource) throws ResourceException
     {
-        root = inbox;
+        root = assignmentsClientResource;
         refresh();
     }
 
@@ -82,7 +82,7 @@ public class SharedInboxModel
     @Override
     public boolean isLeaf(Object node)
     {
-        return node instanceof InboxTaskValue;
+        return node instanceof AssignedTaskValue;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class SharedInboxModel
 
     public int getChildCount(Object parent)
     {
-        if (parent instanceof SharedUserInboxClientResource)
+        if (parent instanceof SharedUserAssignmentsClientResource)
             return tasks.tasks().get().size();
         else
             return 0;
@@ -106,7 +106,7 @@ public class SharedInboxModel
 
     public int getIndexOfChild(Object parent, Object child)
     {
-        if (parent instanceof SharedUserInboxClientResource)
+        if (parent instanceof SharedUserAssignmentsClientResource)
             return tasks.tasks().get().indexOf(child);
         else
             return -1;
@@ -125,9 +125,9 @@ public class SharedInboxModel
 
     public Object getValueAt(Object node, int column)
     {
-        if (node instanceof InboxTaskValue)
+        if (node instanceof AssignedTaskValue)
         {
-            InboxTaskValue task = (InboxTaskValue) node;
+            AssignedTaskValue task = (AssignedTaskValue) node;
             switch (column)
             {
                 case 0:
@@ -154,20 +154,11 @@ public class SharedInboxModel
                     Boolean completed = (Boolean) value;
                     if (completed)
                     {
-                        InboxTaskValue taskValue = (InboxTaskValue) node;
+                        AssignedTaskValue taskValue = (AssignedTaskValue) node;
                         EntityReference task = taskValue.task().get();
                         getRoot().task(task.identity()).complete();
 
                         taskValue.status().set(TaskStates.COMPLETED);
-                        /*
-
-                                                // If success, then remove node
-                                                int idx = tasks.tasks().get().indexOf(node);
-                                                ValueBuilder<InboxTaskListValue> builder = vbf.newValueBuilder(InboxTaskListValue.class).withPrototype(tasks);
-                                                builder.prototype().tasks().get().remove(node);
-                                                tasks = builder.newInstance();
-                                                modelSupport.fireChildRemoved(new TreePath(getRoot()),idx ,node);
-                        */
                     }
                     break;
                 }
@@ -175,7 +166,7 @@ public class SharedInboxModel
                 case 1:
                 {
                     String newDescription = (String) value;
-                    InboxTaskValue taskValue = (InboxTaskValue) node;
+                    AssignedTaskValue taskValue = (AssignedTaskValue) node;
                     EntityReference task = taskValue.task().get();
                     ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
                     builder.prototype().description().set(newDescription);
@@ -197,7 +188,7 @@ public class SharedInboxModel
 
     public void refresh() throws ResourceException
     {
-        tasks = getRoot().tasks(query).<InboxTaskListValue>buildWith().prototype();
+        tasks = getRoot().tasks(query).<AssignmentsTaskListValue>buildWith().prototype();
         modelSupport.fireNewRoot();
     }
 
@@ -218,7 +209,5 @@ public class SharedInboxModel
         ValueBuilder<UserSpecification> builder = vbf.newValueBuilder(UserSpecification.class);
         builder.prototype().username().set(username);
         getRoot().task(id).assignTo(builder.newInstance());
-
-        refresh();
     }
 }

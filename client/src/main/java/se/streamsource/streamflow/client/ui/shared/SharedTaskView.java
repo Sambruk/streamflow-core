@@ -14,13 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.shared;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-
 import javax.swing.JPanel;
 
 /**
@@ -29,13 +22,16 @@ import javax.swing.JPanel;
 public class SharedTaskView
         extends JPanel
 {
+/*
     private StateBinder sharedTaskBinder;
 
     @Service
     SharedTaskModel model;
+*/
 
-    public SharedTaskView(@Service ApplicationContext appContext)
+    public SharedTaskView()
     {
+/*
         FormLayout layout = new FormLayout(
                 "right:max(40dlu;p), 4dlu, 200dlu, 7dlu, " // 1st major column
                         + "right:max(40dlu;p), 4dlu, 80dlu",        // 2nd major column
@@ -48,21 +44,11 @@ public class SharedTaskView
 //        SharedTask template = sharedTaskBinder.bindingTemplate(SharedTask.class);
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
+*/
 /*
         bb.appendSeparator(shared_task_separator)
                 .appendLine(description_label, TEXTFIELD, template.description())
                 .appendLine(note_label, TEXTAREA, template.note());
 */
-    }
-
-    @Override
-    public void setVisible(boolean aFlag)
-    {
-        super.setVisible(aFlag);
-
-        if (aFlag)
-        {
-//            sharedTaskBinder.updateWith(model.sharedTask());
-        }
     }
 }

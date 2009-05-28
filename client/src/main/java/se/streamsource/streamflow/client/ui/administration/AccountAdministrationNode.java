@@ -22,7 +22,7 @@ import org.restlet.Restlet;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.domain.roles.DetailView;
+import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 

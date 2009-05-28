@@ -229,9 +229,9 @@ public class CommandQueryServerResource
     }
 
     @Override
-    protected Representation put(Representation representation) throws ResourceException
+    protected Representation put(Representation representation, Variant variant) throws ResourceException
     {
-        return post(representation);
+        return post(representation, variant);
     }
 
     private Method getResourceMethod(String operation)

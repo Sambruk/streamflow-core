@@ -27,9 +27,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
-import static se.streamsource.streamflow.client.ui.shared.SharedInboxResources.*;
-import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
+import static se.streamsource.streamflow.client.ui.shared.SharedAssignmentsResources.*;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 import javax.swing.AbstractAction;
@@ -54,20 +53,20 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * JAVADOC
  */
-public class SharedInboxView
+public class SharedAssignmentsView
         extends JTabbedPane
 {
     private JXTreeTable taskTable;
 
-    public SharedInboxView(@Service final ActionMap am,
-                           @Service final SharedInboxModel model,
+    public SharedAssignmentsView(@Service final ActionMap am,
+                           @Service final SharedAssignmentsModel model,
                            @Service final SharedTaskView detailView,
                            @Service final SharedTaskModel detailModel,
                            @Structure ObjectBuilderFactory obf,
@@ -84,13 +83,17 @@ public class SharedInboxView
             e.printStackTrace();
         }
 
+        // Popup
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(am.get("removeSharedTask"));
+
         // Toolbar
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEtchedBorder());
 
         javax.swing.Action addAction = am.get("addSharedTask");
         toolbar.add(new JButton(addAction));
-        javax.swing.Action refreshAction = am.get("refreshSharedInbox");
+        javax.swing.Action refreshAction = am.get("refreshSharedAssignments");
         toolbar.add(new JButton(refreshAction));
 
         // Table
@@ -112,10 +115,8 @@ public class SharedInboxView
         taskTable.getColumn(2).setMaxWidth(120);
         taskTable.setAutoCreateColumnsFromModel(false);
 
-        JPanel det = new JPanel();
-        det.add(detailView);
-        addTab(text(inbox_tab), panel);
-        addTab(text(detail_tab), det);
+        addTab(text(assignments_tab), panel);
+        addTab(text(detail_tab), detailView);
 
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "details");
         getActionMap().put("details", new AbstractAction()
@@ -125,8 +126,8 @@ public class SharedInboxView
                 setSelectedIndex(1);
             }
         });
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "inbox");
-        getActionMap().put("inbox", new AbstractAction()
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "assignments");
+        getActionMap().put("assignments", new AbstractAction()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -168,7 +169,7 @@ public class SharedInboxView
             {
                 if (e.getClickCount() == 2)
                 {
-                    setSelectedIndex(1);
+                    setSelectedComponent(detailView);
                 }
             }
         });
@@ -177,19 +178,13 @@ public class SharedInboxView
         {
             public void valueChanged(TreeSelectionEvent e)
             {
-                am.get("removeSharedTasks").setEnabled(e.getPath() != null);
+                am.get("removeSharedAssignedTasks").setEnabled(e.getPath() != null);
             }
         });
 
         taskTable.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(taskTable.getSearchable()).newInstance());
 
         taskTable.addHighlighter(HighlighterFactory.createAlternateStriping());
-
-        // Popup
-        JPopupMenu popup = new JPopupMenu();
-        popup.add(am.get("removeSharedTasks"));
-        popup.add(am.get("assignTasksToMe"));
-        taskTable.addMouseListener(new PopupMenuTrigger(popup));
     }
 
     public JXTreeTable getTaskTable()
@@ -197,19 +192,19 @@ public class SharedInboxView
         return taskTable;
     }
 
-    public InboxTaskValue getSelectedTask()
+    public AssignedTaskValue getSelectedTask()
     {
-        return (InboxTaskValue) getTaskTable().getPathForRow(getTaskTable().getSelectedRow()).getLastPathComponent();
+        return (AssignedTaskValue) getTaskTable().getPathForRow(getTaskTable().getSelectedRow()).getLastPathComponent();
     }
 
-    public Iterable<InboxTaskValue> getSelectedTasks()
+    public Iterable<AssignedTaskValue> getSelectedTasks()
     {
         int[] rows = getTaskTable().getSelectedRows();
-        List<InboxTaskValue> tasks = new ArrayList<InboxTaskValue>();
+        List<AssignedTaskValue> tasks = new ArrayList<AssignedTaskValue>();
         for (int i = 0; i < rows.length; i++)
         {
             int row = rows[i];
-            InboxTaskValue task = (InboxTaskValue) getTaskTable().getPathForRow(row).getLastPathComponent();
+            AssignedTaskValue task = (AssignedTaskValue) getTaskTable().getPathForRow(row).getLastPathComponent();
             tasks.add(task);
         }
         return tasks;

@@ -14,9 +14,7 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.ManyAssociation;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.domain.roles.Taggable;
@@ -32,11 +30,10 @@ public interface SharedTaskEntity
         Describable.DescribableState,
         DueOn.DueOnState,
         Notable.NotableState,
-        OwnableTask.OwnableTaskState,
+        Ownable.OwnableState,
         Taggable.TaggableState,
         TaskStatus.TaskStatusState,
+        TaskPath.TaskPathState,
         EntityComposite
 {
-    @Aggregated
-    ManyAssociation<SharedSubTask> subTasks();
 }

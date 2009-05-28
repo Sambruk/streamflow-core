@@ -37,7 +37,12 @@ import org.restlet.data.Protocol;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.ui.administration.groups.*;
+import se.streamsource.streamflow.client.ui.administration.groups.AddParticipantsDialog;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupModel;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupView;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
+import se.streamsource.streamflow.client.ui.administration.groups.NewGroupDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.AddMemberDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.AddRoleDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.NewProjectDialog;
@@ -48,11 +53,14 @@ import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView
 import se.streamsource.streamflow.client.ui.administration.roles.NewRoleDialog;
 import se.streamsource.streamflow.client.ui.navigator.NavigatorView;
 import se.streamsource.streamflow.client.ui.shared.AddSharedTaskDialog;
+import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsModel;
+import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsView;
 import se.streamsource.streamflow.client.ui.shared.SharedInboxModel;
 import se.streamsource.streamflow.client.ui.shared.SharedInboxView;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
@@ -61,8 +69,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
@@ -215,12 +221,69 @@ public class StreamFlowApplication
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), dialog);
     }
 
-    @Action
-    public void removeSharedTask() throws ResourceException
+    @Action()
+    public void addSharedSubTask()
     {
-        InboxTaskValue selected = (InboxTaskValue) sharedInboxView.getTaskTable().getPathForRow(sharedInboxView.getTaskTable().getSelectedRow()).getLastPathComponent();
-        sharedInboxModel.removeTask(selected.task().get().identity());
+        // Show dialog
+        AddSharedTaskDialog dialog = addSharedTaskDialogs.newInstance();
+        InboxTaskValue selected = sharedInboxView.getSelectedTask();
+        dialog.getCommandBuilder().prototype().parentTask().set(selected.task().get());
+        dialogs.showOkCancelHelpDialog(this.getMainFrame(), dialog);
     }
+
+    @Action
+    public void assignTasksToMe() throws ResourceException
+    {
+        Iterable<InboxTaskValue> selectedTasks = sharedInboxView.getSelectedTasks();
+        String username = navigatorView.getShared().getSelectedUser();
+        for (InboxTaskValue selectedTask : selectedTasks)
+        {
+            sharedInboxModel.assignTo(selectedTask.task().get().identity(), username);
+        }
+    }
+
+    @Action
+    public void refreshSharedInbox() throws ResourceException
+    {
+        sharedInboxModel.refresh();
+    }
+
+    @Action
+    public void removeSharedTasks() throws ResourceException
+    {
+        Iterable<InboxTaskValue> selected = sharedInboxView.getSelectedTasks();
+        for (InboxTaskValue taskValue : selected)
+        {
+            sharedInboxModel.removeTask(taskValue.task().get().identity());
+        }
+    }
+
+    @Action
+    public void forwardSharedTasksTo()
+    {
+        
+    }
+
+    // Sahred user assignments actions ------------------------------
+    @Service SharedAssignmentsView sharedAssignmentsView;
+    @Service SharedAssignmentsModel sharedAssignmentsModel;
+
+    @Action
+    public void refreshSharedAssignments() throws ResourceException
+    {
+        sharedAssignmentsModel.refresh();
+    }
+
+    @Action
+    public void removeSharedAssignedTasks() throws ResourceException
+    {
+        Iterable<AssignedTaskValue> selected = sharedAssignmentsView.getSelectedTasks();
+        for (AssignedTaskValue taskValue : selected)
+        {
+            sharedAssignmentsModel.removeTask(taskValue.task().get().identity());
+        }
+    }
+
 
     // Group administration actions ---------------------------------
     @Service

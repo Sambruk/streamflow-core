@@ -27,7 +27,7 @@ import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.SharedInbox;
-import se.streamsource.streamflow.web.domain.task.TaskOwner;
+import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
 
 /**
@@ -40,7 +40,7 @@ public interface UserEntity
 
         // Roles
         OrganizationParticipations,
-        TaskOwner,
+        Owner,
         Contactable,
         Participant,
         Delegatee,

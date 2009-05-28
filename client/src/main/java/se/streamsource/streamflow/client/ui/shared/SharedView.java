@@ -18,8 +18,9 @@ import org.jdesktop.swingx.JXTreeTable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
-import se.streamsource.streamflow.domain.roles.DetailView;
+import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -49,7 +50,6 @@ public class SharedView
 
     public SharedView(@Service ActionMap am,
                       @Service SharedModel model,
-                      @Service final SharedToolbarView toolbxarView,
                       @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
@@ -113,7 +113,13 @@ public class SharedView
                 if (path != null && path.getLastPathComponent() instanceof DetailView)
                 {
                     DetailView view = (DetailView) path.getLastPathComponent();
-                    pane.setRightComponent(view.detailView());
+                    try
+                    {
+                        pane.setRightComponent(view.detailView());
+                    } catch (ResourceException e1)
+                    {
+                        e1.printStackTrace();
+                    }
                 }
             }
         });
@@ -124,6 +130,16 @@ public class SharedView
     public JXTreeTable getSharedTree()
     {
         return sharedTree;
+    }
+
+    public String getSelectedUser()
+    {
+        int selected = sharedTree.getSelectedRow();
+        if (selected == -1)
+            return null;
+
+        SharedUserInboxNode userInboxNode = (SharedUserInboxNode) sharedTree.getPathForRow(selected).getPathComponent(3);
+        return userInboxNode.getSettings().userName().get();
     }
 
     public JSplitPane getPane()
@@ -138,4 +154,5 @@ public class SharedView
 
         sharedTree.expandAll();
     }
+
 }

@@ -12,11 +12,10 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.shared.user.inbox;
+package se.streamsource.streamflow.web.resource.users.shared.user.assignments;
 
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
@@ -25,14 +24,12 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
-import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
-import se.streamsource.streamflow.web.domain.task.Ownable;
-import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.SharedTask;
 import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskPath;
@@ -44,35 +41,33 @@ import java.util.List;
 
 /**
  * Mapped to:
- * /users/{user}/shared/user/inbox
+ * /users/{user}/shared/user/assignments
  */
-public class SharedUserInboxServerResource
+public class SharedUserAssignmentsServerResource
         extends CommandQueryServerResource
 {
-    public InboxTaskListValue tasks(TasksQuery query)
+    public AssignmentsTaskListValue tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, id);
+        Assignments assignments = uow.get(Assignments.class, id);
 
-        // Find all Active tasks with specific owner which have not yet been assigned
+        // Find all Active tasks assigned to "me"
         QueryBuilder<SharedTaskEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedTaskEntity.class);
-        Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
-        Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
+        Property<String> idProp = templateFor(Assignable.AssignableState.class).assignedTo().get().identity();
         queryBuilder.where(and(
-                eq(ownableId, id),
-                isNull(assignee),
+                eq(idProp, id),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
-        Query<SharedTaskEntity> inboxQuery = queryBuilder.newQuery();
-        inboxQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
+        Query<SharedTaskEntity> assignmentsQuery = queryBuilder.newQuery();
+        assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
-        ValueBuilder<InboxTaskValue> builder = vbf.newValueBuilder(InboxTaskValue.class);
-        InboxTaskValue prototype = builder.prototype();
-        ValueBuilder<InboxTaskListValue> listBuilder = vbf.newValueBuilder(InboxTaskListValue.class);
-        List<InboxTaskValue> list = listBuilder.prototype().tasks().get();
+        ValueBuilder<AssignedTaskValue> builder = vbf.newValueBuilder(AssignedTaskValue.class);
+        AssignedTaskValue prototype = builder.prototype();
+        ValueBuilder<AssignmentsTaskListValue> listBuilder = vbf.newValueBuilder(AssignmentsTaskListValue.class);
+        List<AssignedTaskValue> list = listBuilder.prototype().tasks().get();
         EntityReference ref = EntityReference.parseEntityReference(id);
-        for (SharedTaskEntity sharedTask : inboxQuery)
+        for (SharedTaskEntity sharedTask : assignmentsQuery)
         {
             prototype.owner().set(ref);
             prototype.task().set(EntityReference.getEntityReference(sharedTask));

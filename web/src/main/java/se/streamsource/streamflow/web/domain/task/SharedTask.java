@@ -28,7 +28,8 @@ public interface SharedTask
         Describable,
         DueOn,
         Notable,
-        OwnableTask,
-        TaskStatus
+        Ownable,
+        TaskStatus,
+        TaskPath
 {
 }

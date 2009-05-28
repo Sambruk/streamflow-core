@@ -12,19 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
+package se.streamsource.streamflow.resource.assignment;
 
-import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.domain.roles.Notable;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface SharedSubTask
-        extends
-        Assignable,
-        Describable,
-        Notable,
-        TaskStatus
+public interface AssignmentsTaskListValue
+        extends ValueComposite
 {
+    @UseDefaults
+    Property<List<AssignedTaskValue>> tasks();
 }

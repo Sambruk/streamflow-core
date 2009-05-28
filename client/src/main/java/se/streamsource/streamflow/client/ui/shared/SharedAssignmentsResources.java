@@ -12,14 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
-
-import org.qi4j.api.entity.Identity;
+package se.streamsource.streamflow.client.ui.shared;
 
 /**
  * JAVADOC
  */
-public interface TaskOwner
-        extends Identity
+enum SharedAssignmentsResources
 {
+    assignments_tab, detail_tab,
+
+    description_column_header,
+    created_column_header,
+
+    add_shared_task_title,
+    shared_task_separator,
+    description_label,
+    note_label;
 }

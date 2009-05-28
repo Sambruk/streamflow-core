@@ -12,16 +12,33 @@
  *
  */
 
-package se.streamsource.streamflow.application.administration.query;
+package se.streamsource.streamflow.resource.assignment;
 
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.domain.task.TaskStates;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface UserQuery
+public interface AssignedTaskValue
         extends ValueComposite
 {
-    Property<String> username();
+    Property<EntityReference> owner();
+
+    Property<EntityReference> task();
+
+    Property<String> description();
+
+    Property<Date> creationDate();
+
+    Property<TaskStates> status();
+
+    @UseDefaults
+    Property<List<AssignedTaskValue>> subTasks();
 }

@@ -22,8 +22,8 @@ import se.streamsource.streamflow.client.resource.organizations.OrganizationClie
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
+import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
@@ -39,6 +39,7 @@ import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.SharedClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserTaskClientResource;
 
@@ -61,7 +62,9 @@ public class ClientResourceAssembler
                 SharedClientResource.class,
                 SharedUserClientResource.class,
                 SharedUserInboxClientResource.class,
-                SharedUserTaskClientResource.class).visibleIn(Visibility.application);
+                SharedUserTaskClientResource.class,
+
+                SharedUserAssignmentsClientResource.class).visibleIn(Visibility.application);
 
         // /organizations
         module.addObjects(OrganizationClientResource.class,

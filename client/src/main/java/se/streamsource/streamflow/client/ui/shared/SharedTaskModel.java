@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.ui.shared;
  */
 public class SharedTaskModel
 {
+    
 /*
     private SharedTask sharedTask;
 
