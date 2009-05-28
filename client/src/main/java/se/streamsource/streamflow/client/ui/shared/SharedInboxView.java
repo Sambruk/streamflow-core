@@ -16,6 +16,8 @@ package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.decorator.ComponentAdapter;
+import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.CheckBoxProvider;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
@@ -27,6 +29,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import static se.streamsource.streamflow.client.ui.shared.SharedInboxResources.*;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
@@ -49,14 +52,15 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * JAVADOC
@@ -147,6 +151,15 @@ public class SharedInboxView
                 return format.format(time);
             }
         }));
+
+        taskTable.addHighlighter(HighlighterFactory.createAlternateStriping());
+        taskTable.addHighlighter(new FontHighlighter(new HighlightPredicate()
+        {
+            public boolean isHighlighted(Component component, ComponentAdapter componentAdapter)
+            {
+                return !(Boolean) componentAdapter.getValue(3);
+            }
+        }, taskTable.getFont().deriveFont(Font.BOLD), taskTable.getFont()));
         taskTable.setEditable(true);
         taskTable.addTreeSelectionListener(new TreeSelectionListener()
         {
@@ -158,6 +171,28 @@ public class SharedInboxView
                     setEnabledAt(1, true);
                 } else
                     setEnabledAt(1, false);
+            }
+        });
+
+        taskTable.addTreeSelectionListener(new TreeSelectionListener()
+        {
+            public void valueChanged(TreeSelectionEvent e)
+            {
+                try
+                {
+                    InboxTaskValue task = getSelectedTask();
+                    if (task != null)
+                    {
+                        if (!task.isRead().get())
+                        {
+                            model.markAsRead(task.task().get().identity());
+                            task.isRead().set(true);
+                        }
+                    }
+                } catch (ResourceException e1)
+                {
+                    e1.printStackTrace();
+                }
             }
         });
 
@@ -183,8 +218,6 @@ public class SharedInboxView
 
         taskTable.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(taskTable.getSearchable()).newInstance());
 
-        taskTable.addHighlighter(HighlighterFactory.createAlternateStriping());
-
         // Popup
         JPopupMenu popup = new JPopupMenu();
         popup.add(am.get("removeSharedTasks"));
@@ -199,7 +232,11 @@ public class SharedInboxView
 
     public InboxTaskValue getSelectedTask()
     {
-        return (InboxTaskValue) getTaskTable().getPathForRow(getTaskTable().getSelectedRow()).getLastPathComponent();
+        int selectedRow = getTaskTable().getSelectedRow();
+        if (selectedRow == -1)
+            return null;
+        else
+            return (InboxTaskValue) getTaskTable().getPathForRow(selectedRow).getLastPathComponent();
     }
 
     public Iterable<InboxTaskValue> getSelectedTasks()

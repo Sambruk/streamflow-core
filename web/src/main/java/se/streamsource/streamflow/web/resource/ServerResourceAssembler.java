@@ -39,7 +39,7 @@ import se.streamsource.streamflow.web.resource.users.shared.SharedServerResource
 import se.streamsource.streamflow.web.resource.users.shared.user.SharedUserServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.assignments.SharedUserAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxTaskServerResource;
 
 /**
  * JAVADOC
@@ -61,7 +61,7 @@ public class ServerResourceAssembler
                 SharedServerResource.class,
                 SharedUserServerResource.class,
                 SharedUserInboxServerResource.class,
-                SharedUserTaskServerResource.class,
+                SharedUserInboxTaskServerResource.class,
 
                 SharedUserAssignmentsServerResource.class,
 

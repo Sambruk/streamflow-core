@@ -39,9 +39,12 @@ import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.SharedClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignedTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegatedTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxTaskClientResource;
 
 /**
  * JAVADOC
@@ -62,9 +65,15 @@ public class ClientResourceAssembler
                 SharedClientResource.class,
                 SharedUserClientResource.class,
                 SharedUserInboxClientResource.class,
-                SharedUserTaskClientResource.class,
+                SharedUserInboxTaskClientResource.class,
 
-                SharedUserAssignmentsClientResource.class).visibleIn(Visibility.application);
+                SharedUserAssignmentsClientResource.class,
+                SharedUserAssignedTaskClientResource.class,
+
+                SharedUserDelegationsClientResource.class,
+                SharedUserDelegatedTaskClientResource.class
+
+                ).visibleIn(Visibility.application);
 
         // /organizations
         module.addObjects(OrganizationClientResource.class,

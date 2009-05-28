@@ -23,7 +23,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.domain.user.UserSpecification;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
@@ -202,12 +201,5 @@ public class SharedAssignmentsModel
     public void removeTask(String id) throws ResourceException
     {
         getRoot().task(id).delete();
-    }
-
-    public void assignTo(String id, String username) throws ResourceException
-    {
-        ValueBuilder<UserSpecification> builder = vbf.newValueBuilder(UserSpecification.class);
-        builder.prototype().username().set(username);
-        getRoot().task(id).assignTo(builder.newInstance());
     }
 }

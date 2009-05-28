@@ -14,9 +14,39 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+
 /**
  * JAVADOC
  */
+@Mixins(Delegations.DelegationsMixin.class)
 public interface Delegations
 {
+    void accept(SharedTask task);
+    void reject(SharedTask task);
+    void completeTask(SharedTask task);
+
+    class DelegationsMixin
+        implements Delegations
+    {
+        @This
+        Assignee assignee;
+
+        public void accept(SharedTask task)
+        {
+            task.assignTo(assignee);
+        }
+
+        public void reject(SharedTask task)
+        {
+            task.reject();
+        }
+
+        public void completeTask(SharedTask task)
+        {
+            task.assignTo(assignee);
+            task.complete();
+        }
+    }
 }

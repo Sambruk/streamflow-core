@@ -12,14 +12,33 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
+package se.streamsource.streamflow.client.ui.shared;
 
-import org.qi4j.api.entity.Identity;
+import org.jdesktop.swingx.renderer.DefaultTableRenderer;
+import org.jdesktop.swingx.renderer.StringValue;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * JAVADOC
  */
-public interface Delegatee
-    extends Identity
+public class SharedTaskRenderer
+    extends DefaultTableRenderer
 {
+    public SharedTaskRenderer()
+    {
+        super(new StringValue()
+        {
+            private SimpleDateFormat format = new SimpleDateFormat();
+
+            public String getString(Object value)
+            {
+                Date time = (Date) value;
+                return format.format(time);
+            }
+        });
+    }
+
+    
 }

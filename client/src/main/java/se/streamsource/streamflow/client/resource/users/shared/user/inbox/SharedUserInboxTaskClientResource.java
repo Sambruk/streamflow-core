@@ -12,40 +12,43 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.assignments;
+package se.streamsource.streamflow.client.resource.users.shared.user.inbox;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
-import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
 /**
  * JAVADOC
  */
-public class SharedUserAssignmentsClientResource
+public class SharedUserInboxTaskClientResource
         extends CommandQueryClientResource
 {
-    public SharedUserAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
+    public SharedUserInboxTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public AssignmentsTaskListValue tasks(TasksQuery query) throws ResourceException
+    public void complete() throws ResourceException
     {
-        return query("tasks", query, AssignmentsTaskListValue.class);
+        postCommand("complete");
     }
 
-    public void newtask(NewSharedTaskCommand command) throws ResourceException
+    public void describe(DescriptionValue descriptionValue) throws ResourceException
     {
-        postCommand("newtask", command);
+        putCommand("describe", descriptionValue);
     }
 
-    public SharedUserAssignedTaskClientResource task(String id)
+    public void assignToMe() throws ResourceException
     {
-        return getSubResource(id, SharedUserAssignedTaskClientResource.class);
+        putCommand("assignToMe");
+    }
+
+    public void markAsRead() throws ResourceException
+    {
+        putCommand("markAsRead");
     }
 }

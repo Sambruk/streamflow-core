@@ -235,10 +235,9 @@ public class StreamFlowApplication
     public void assignTasksToMe() throws ResourceException
     {
         Iterable<InboxTaskValue> selectedTasks = sharedInboxView.getSelectedTasks();
-        String username = navigatorView.getShared().getSelectedUser();
         for (InboxTaskValue selectedTask : selectedTasks)
         {
-            sharedInboxModel.assignTo(selectedTask.task().get().identity(), username);
+            sharedInboxModel.assignToMe(selectedTask.task().get().identity());
         }
     }
 

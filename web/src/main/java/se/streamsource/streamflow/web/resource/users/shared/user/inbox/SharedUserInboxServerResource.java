@@ -79,6 +79,7 @@ public class SharedUserInboxServerResource
             prototype.creationDate().set(sharedTask.createdOn().get());
             prototype.description().set(sharedTask.description().get());
             prototype.status().set(sharedTask.status().get());
+            prototype.isRead().set(sharedTask.isRead().get());
             list.add(builder.newInstance());
         }
 

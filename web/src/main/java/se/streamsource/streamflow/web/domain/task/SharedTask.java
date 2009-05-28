@@ -27,6 +27,7 @@ public interface SharedTask
         Delegatable,
         Describable,
         DueOn,
+        IsRead,
         Notable,
         Ownable,
         TaskStatus,

@@ -26,6 +26,8 @@ import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
+import se.streamsource.streamflow.resource.delegation.DelegationsTaskListValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
@@ -56,6 +58,8 @@ public class CommonResourceAssembler
                 InboxTaskValue.class,
                 AssignmentsTaskListValue.class,
                 AssignedTaskValue.class,
+                DelegationsTaskListValue.class,
+                DelegatedTaskValue.class,
                 TreeValue.class, TreeNodeValue.class).visibleIn(Visibility.application);
     }
 }

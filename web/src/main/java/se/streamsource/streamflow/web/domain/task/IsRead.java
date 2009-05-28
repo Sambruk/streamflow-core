@@ -14,35 +14,41 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
 
 /**
  * JAVADOC
  */
-@Mixins(Assignable.AssignableMixin.class)
-public interface Assignable
+@Mixins(IsRead.IsReadMixin.class)
+public interface IsRead
 {
-    void assignTo(Assignee assignee);
+    void markAsRead();
 
-    interface AssignableState
+    void markAsUnread();
+
+    interface IsReadState
     {
-        @Optional
-        Association<Assignee> assignedTo();
+        @UseDefaults
+        Property<Boolean> isRead();
     }
 
-    class AssignableMixin
-            implements Assignable
+    class IsReadMixin
+        implements IsRead
     {
         @This
-        AssignableState state;
+        IsReadState state;
 
-        public void assignTo(Assignee assignee)
+        public void markAsRead()
         {
-            if (!assignee.equals(state.assignedTo().get()))
-                state.assignedTo().set(assignee);
+            state.isRead().set(true);
+        }
+
+        public void markAsUnread()
+        {
+            state.isRead().set(false);
         }
     }
 }

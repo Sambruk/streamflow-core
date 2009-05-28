@@ -21,10 +21,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.domain.user.UserSpecification;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.web.domain.task.Assignable;
-import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.SharedTask;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -33,7 +30,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * Mapped to:
  * /users/{user}/shared/user/inbox/{task}
  */
-public class SharedUserTaskServerResource
+public class SharedUserInboxTaskServerResource
         extends CommandQueryServerResource
 {
     public void complete()
@@ -52,12 +49,34 @@ public class SharedUserTaskServerResource
         describable.describe(descriptionValue.description().get());
     }
 
-    public void assignTo(UserSpecification user)
+    public void assignToMe()
     {
         String taskId = (String) getRequest().getAttributes().get("task");
-        Assignable assignable = uowf.currentUnitOfWork().get(Assignable.class, taskId);
-        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, user.username().get());
-        assignable.assignTo(assignee);
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        SharedTask task = uow.get(SharedTask.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        inbox.assignToMe(task);
+    }
+
+    public void markAsRead()
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        SharedTask task = uow.get(SharedTask.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        inbox.markAsRead(task);
+    }
+
+    public void markAsUnRead()
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        SharedTask task = uow.get(SharedTask.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        inbox.markAsUnread(task);
     }
 
     @Override

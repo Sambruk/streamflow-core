@@ -40,7 +40,7 @@ import se.streamsource.streamflow.web.resource.users.shared.SharedServerResource
 import se.streamsource.streamflow.web.resource.users.shared.user.SharedUserServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.assignments.SharedUserAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxTaskServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
 /**
@@ -66,9 +66,9 @@ public class APIv1Router
         attach("/users/{user}/shared/user", createServerResourceFinder(SharedUserServerResource.class));
 
         attach("/users/{user}/shared/user/inbox", createServerResourceFinder(SharedUserInboxServerResource.class));
-        attach("/users/{user}/shared/user/inbox/{task}", createServerResourceFinder(SharedUserTaskServerResource.class));
+        attach("/users/{user}/shared/user/inbox/{task}", createServerResourceFinder(SharedUserInboxTaskServerResource.class));
         attach("/users/{user}/shared/user/assignments", createServerResourceFinder(SharedUserAssignmentsServerResource.class));
-        attach("/users/{user}/shared/user/assignments/{task}", createServerResourceFinder(SharedUserTaskServerResource.class));
+        attach("/users/{user}/shared/user/assignments/{task}", createServerResourceFinder(SharedUserInboxTaskServerResource.class));
         attach("/users/{user}/administration", createServerResourceFinder(UserAdministrationServerResource.class));
 
         // OrganizationalUnits

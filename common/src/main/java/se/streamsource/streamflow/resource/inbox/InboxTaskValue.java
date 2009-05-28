@@ -39,6 +39,8 @@ public interface InboxTaskValue
 
     Property<TaskStates> status();
 
+    Property<Boolean> isRead();
+
     @UseDefaults
     Property<List<InboxTaskValue>> subTasks();
 }

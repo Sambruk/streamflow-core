@@ -23,7 +23,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.domain.user.UserSpecification;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
@@ -136,6 +135,8 @@ public class SharedInboxModel
                     return task.description().get();
                 case 2:
                     return task.creationDate().get();
+                case 3:
+                    return task.isRead().get();
             }
         }
 
@@ -213,12 +214,15 @@ public class SharedInboxModel
         getRoot().task(id).delete();
     }
 
-    public void assignTo(String id, String username) throws ResourceException
+    public void assignToMe(String id) throws ResourceException
     {
-        ValueBuilder<UserSpecification> builder = vbf.newValueBuilder(UserSpecification.class);
-        builder.prototype().username().set(username);
-        getRoot().task(id).assignTo(builder.newInstance());
+        getRoot().task(id).assignToMe();
 
         refresh();
+    }
+
+    public void markAsRead(String id) throws ResourceException
+    {
+        getRoot().task(id).markAsRead();
     }
 }

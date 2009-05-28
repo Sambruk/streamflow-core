@@ -12,14 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
+package se.streamsource.streamflow.resource.delegation;
 
-import org.qi4j.api.entity.Identity;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface Delegatee
-    extends Identity
+public interface DelegationsTaskListValue
+        extends ValueComposite
 {
+    @UseDefaults
+    Property<List<DelegatedTaskValue>> tasks();
 }

@@ -44,8 +44,8 @@ public class SharedUserInboxClientResource
         postCommand("newtask", command);
     }
 
-    public SharedUserTaskClientResource task(String id)
+    public SharedUserInboxTaskClientResource task(String id)
     {
-        return getSubResource(id, SharedUserTaskClientResource.class);
+        return getSubResource(id, SharedUserInboxTaskClientResource.class);
     }
 }

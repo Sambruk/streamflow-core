@@ -175,10 +175,19 @@ public class CommandQueryClientResource
         }
     }
 
+    protected void putCommand(String operation) throws ResourceException
+    {
+        putCommand(operation, null);
+    }
+
     protected void putCommand(String operation, ValueComposite command) throws ResourceException
     {
 
-        StringRepresentation json = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON);
+        Representation commandRepresentation;
+        if (command != null)
+            commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON);
+        else
+            commandRepresentation = new EmptyRepresentation();
 
         Reference ref = getReference();
         Reference operationRef = ref.clone().addQueryParameter("operation", operation);
@@ -190,7 +199,7 @@ public class CommandQueryClientResource
             {
                 try
                 {
-                    put(json);
+                    put(commandRepresentation);
                     break;
                 } catch (ResourceException e)
                 {

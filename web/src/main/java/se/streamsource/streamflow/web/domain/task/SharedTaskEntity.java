@@ -27,8 +27,10 @@ public interface SharedTaskEntity
         // State
         Assignable.AssignableState,
         CreatedOn.CreatedOnState,
+        Delegatable.DelegatableState,
         Describable.DescribableState,
         DueOn.DueOnState,
+        IsRead.IsReadState,
         Notable.NotableState,
         Ownable.OwnableState,
         Taggable.TaggableState,

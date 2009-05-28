@@ -16,17 +16,39 @@ package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 
 /**
  * JAVADOC
  */
+@Mixins(Delegatable.DelegatableMixin.class)
 public interface Delegatable
 {
-//    void delegateTo(Delegatee delegatee);
+    void delegateTo(Delegatee delegatee);
+
+    void reject();
 
     interface DelegatableState
     {
         @Optional
         Association<Delegatee> delegatedTo();
+    }
+
+    class DelegatableMixin
+        implements Delegatable
+    {
+        @This
+        DelegatableState state;
+
+        public void delegateTo(Delegatee delegatee)
+        {
+            state.delegatedTo().set(delegatee);
+        }
+
+        public void reject()
+        {
+            state.delegatedTo().set(null);
+        }
     }
 }

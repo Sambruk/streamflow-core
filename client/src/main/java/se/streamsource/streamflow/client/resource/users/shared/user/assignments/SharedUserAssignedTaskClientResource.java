@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.inbox;
+package se.streamsource.streamflow.client.resource.users.shared.user.assignments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -25,10 +25,10 @@ import se.streamsource.streamflow.domain.user.UserSpecification;
 /**
  * JAVADOC
  */
-public class SharedUserTaskClientResource
+public class SharedUserAssignedTaskClientResource
         extends CommandQueryClientResource
 {
-    public SharedUserTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public SharedUserAssignedTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
