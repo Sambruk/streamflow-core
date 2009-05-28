@@ -55,7 +55,7 @@ public class AddUsersView
             {
                 try
                 {
-                    ListValue list = organizationModel.getOrganization().findParticipants(nameField.getText());
+                    ListValue list = organizationModel.getOrganization().findUsers(nameField.getText());
                     getModel().setUsers(list);
                 } catch (ResourceException e)
                 {

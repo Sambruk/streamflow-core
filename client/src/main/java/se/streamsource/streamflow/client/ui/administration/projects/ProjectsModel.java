@@ -15,13 +15,13 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import org.restlet.representation.StringRepresentation;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
+import se.streamsource.streamflow.client.ConnectionException;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
 import javax.swing.DefaultListModel;
 
@@ -52,10 +52,15 @@ public class ProjectsModel
         }
     }
 
-    public void removeProject(String id) throws ResourceException
+    public void removeProject(String id)
     {
-        projects.project(id).delete();
-        refresh();
+        try {
+            projects.project(id).delete();
+            refresh();
+        } catch(ResourceException e)
+        {
+            throw new ConnectionException("Could not delete project");
+        }
     }
 
     public ProjectClientResource getProjectResource(String id)
@@ -63,12 +68,20 @@ public class ProjectsModel
         return projects.project(id);
     }
 
-    public void newProject(String text) throws ResourceException
+    public void newProject(String projectName)
     {
-        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
-        builder.prototype().description().set(text);
-        projects.newProject(builder.newInstance());
+        /*ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        builder.prototype().description().set(projectName);
+        projects.newProject(builder.newInstance());*/
 
-        refresh();
+        try
+        {
+            projects.post(new StringRepresentation(projectName));
+            refresh();
+        } catch (ResourceException e)
+        {
+            throw new ConnectionException("Could not create project");
+        }
+
     }
 }

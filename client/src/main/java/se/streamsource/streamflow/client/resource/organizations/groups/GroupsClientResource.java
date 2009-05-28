@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.resource.organizations.groups;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
+import org.restlet.representation.Representation;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
@@ -36,6 +37,12 @@ public class GroupsClientResource
     public ListValue groups() throws ResourceException
     {
         return query("groups", ListValue.class);
+    }
+
+    @Override
+    public Representation get() throws ResourceException
+    {
+        return super.get();
     }
 
     public void newGroup(DescriptionValue value) throws ResourceException

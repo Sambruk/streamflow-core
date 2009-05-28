@@ -67,13 +67,19 @@ public class GroupModel
     }
 
 
-    public void addParticipants(Collection<ListItemValue> participants) throws ResourceException
+    public void addParticipants(Collection<ListItemValue> participants)
     {
-        for (ListItemValue value: participants)
+        try
         {
-            ParticipantClientResource participant = group.participants().participant(value.entity().get().identity());
-            participant.put(null);
+            for (ListItemValue value: participants)
+            {
+                ParticipantClientResource participant = group.participants().participant(value.entity().get().identity());
+                participant.put(null);
+            }
+            refresh();
+        } catch (ResourceException e)
+        {
+            throw new ConnectionException("Could not add participants");
         }
-        refresh();
     }
 }

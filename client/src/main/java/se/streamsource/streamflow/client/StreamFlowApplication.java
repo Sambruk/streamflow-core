@@ -246,7 +246,6 @@ public class StreamFlowApplication
     public void removeGroup()
     {
         ListItemValue selected = (ListItemValue) groupsView.getGroupList().getSelectedValue();
-
         groupsModel.removeGroup(selected.entity().get().identity());
     }
 
@@ -291,14 +290,7 @@ public class StreamFlowApplication
     public void removeProject()
     {
         ListItemValue selected = (ListItemValue) projectsView.getProjectList().getSelectedValue();
-
-        try
-        {
-            projectsModel.removeProject(selected.entity().get().identity());
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
+        projectsModel.removeProject(selected.entity().get().identity());
     }
 
     @Action
@@ -313,13 +305,7 @@ public class StreamFlowApplication
         if (projectView.getMembers().getSelectionPath() != null)
         {
             TreeNodeValue selected = (TreeNodeValue) projectView.getMembers().getSelectionPath().getPathComponent(1);
-            try
-            {
-                projectModel.removeMember(selected.entity().get());
-            } catch (ResourceException e)
-            {
-                e.printStackTrace();
-            }
+            projectModel.removeMember(selected.entity().get());
         }
     }
 

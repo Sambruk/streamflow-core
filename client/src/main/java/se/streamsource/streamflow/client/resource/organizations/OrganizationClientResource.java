@@ -40,11 +40,17 @@ public class OrganizationClientResource
         super(context, reference);
     }
 
-    public ListValue findParticipants(String participantName) throws ResourceException
+    public ListValue findUsers(String participantName) throws ResourceException
     {
         ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
         builder.prototype().description().set(participantName);
-        return query("findParticipants", builder.newInstance(), ListValue.class);
+        return query("findUsers", builder.newInstance(), ListValue.class);
     }
 
+    public ListValue findGroups(String groupName) throws ResourceException
+    {
+        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        builder.prototype().description().set(groupName);
+        return query("findGroups", builder.newInstance(), ListValue.class);        
+    }
 }

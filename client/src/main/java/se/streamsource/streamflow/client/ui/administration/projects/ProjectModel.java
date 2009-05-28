@@ -130,22 +130,32 @@ public class ProjectModel
         }
     }
 
-    public void addMembers(Collection<ListItemValue> members) throws ResourceException
+    public void addMembers(Collection<ListItemValue> members)
     {
-        for (ListItemValue value: members)
+        try
         {
-            MemberClientResource member = project.members().member(value.entity().get().identity());
-            member.put(null);
+            for (ListItemValue value: members)
+            {
+                MemberClientResource member = project.members().member(value.entity().get().identity());
+                member.put(null);
+            }
+            refresh();
+        } catch (ResourceException e)
+        {
+            throw new ConnectionException("Could not add members");
         }
-        refresh();
     }
 
-    public void removeMember(EntityReference entityReference) throws ResourceException
+    public void removeMember(EntityReference entityReference)
     {
-        MemberClientResource member = project.members().member(entityReference.identity());
-        member.delete();
-
-        refresh();
+        try
+        {
+            project.members().member(entityReference.identity()).delete();
+            refresh();
+        } catch (ResourceException e)
+        {
+            throw new ConnectionException("Could not remove member");
+        }
     }
 
     public void addRole(String roleName, String member) throws ResourceException

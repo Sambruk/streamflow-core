@@ -17,6 +17,11 @@ package se.streamsource.streamflow.web.resource.organizations.projects;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -25,6 +30,8 @@ import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.domain.project.SharedProject;
 import se.streamsource.streamflow.web.domain.project.SharedProjectEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+
+import java.io.IOException;
 
 /**
  * Mapped to:
@@ -46,9 +53,10 @@ public class ProjectsServerResource
         return builder.newList();
     }
 
-    public void newProject(DescriptionValue value) throws DuplicateDescriptionException
+    @Override
+    protected Representation post(Representation entity, Variant variant) throws ResourceException
     {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Project"));
         EntityBuilder<SharedProjectEntity> builder = uow.newEntityBuilder(SharedProjectEntity.class);
 
         String identity = getRequest().getAttributes().get("organization").toString();
@@ -56,10 +64,31 @@ public class ProjectsServerResource
         Projects projects = uow.get(Projects.class, identity);
 
         SharedProjectEntity projectState = builder.prototype();
-        projectState.description().set(value.description().get());
+        try
+        {
+            projectState.description().set(entity.getText());
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
         SharedProject project = builder.newInstance();
 
-        projects.addProject(project);
+        try
+        {
+            projects.addProject(project);
+        } catch (DuplicateDescriptionException e)
+        {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            uow.complete();
+        } catch (UnitOfWorkCompletionException e)
+        {
+            uow.discard();
+        }
+        return null;
     }
 }

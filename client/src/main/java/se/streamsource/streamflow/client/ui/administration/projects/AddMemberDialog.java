@@ -77,21 +77,14 @@ public class AddMemberDialog
     @Action
     public void execute()
     {
-        try
-        {
-            Set<ListItemValue> users = addUsersview.getModel().getSelected().keySet();
-            Set<ListItemValue> groups = addGroupsView.getModel().getSelected().keySet();
+        Set<ListItemValue> users = addUsersview.getModel().getSelected().keySet();
+        Set<ListItemValue> groups = addGroupsView.getModel().getSelected().keySet();
 
-            Set<ListItemValue> selected = new HashSet<ListItemValue>(groups.size() + users.size());
-            selected.addAll(users);
-            selected.addAll(groups);
-            projectModel.addMembers(selected);
-        } catch (Exception e)
-        {
-            // TODO
-            e.printStackTrace();
-        }
+        Set<ListItemValue> selected = new HashSet<ListItemValue>(groups.size() + users.size());
+        selected.addAll(users);
+        selected.addAll(groups);
         WindowUtils.findJDialog(this).dispose();
+        projectModel.addMembers(selected);
     }
 
     @Action

@@ -19,6 +19,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -36,21 +37,8 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class GroupServerResource
         extends CommandQueryServerResource
 {
-    /*public ListValue participants()
-    {
-        ListValueBuilder builder = new ListValueBuilder(vbf);
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String identity = getRequest().getAttributes().get("group").toString();
-        Participants.ParticipantsState participants = uow.get(Participants.ParticipantsState.class, identity);
-        for (Participant participant : participants.participants())
-        {
-            builder.addListItem(participant.participantDescription(), EntityReference.getEntityReference(participant));
-        }
-        return builder.newList();
-    }*/
-
     @Override
-    protected Representation delete() throws ResourceException
+    protected Representation delete(Variant variant) throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete group"));
 
@@ -76,14 +64,4 @@ public class GroupServerResource
         return null;
     }
 
-    /*public void addParticipant(EntityReferenceValue participantId)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Participant participant = uow.get(Participant.class, participantId.entity().get().identity());
-
-        String identity = getRequest().getAttributes().get("group").toString();
-        Participants participants = uow.get(GroupEntity.class, identity);
-
-        participants.addParticipant(participant);
-    }*/
 }

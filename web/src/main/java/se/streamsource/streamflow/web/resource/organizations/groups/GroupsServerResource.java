@@ -17,6 +17,12 @@ package se.streamsource.streamflow.web.resource.organizations.groups;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.usecase.Usecase;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -26,6 +32,8 @@ import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
+import java.io.IOException;
+
 /**
  * Mapped to:
  * /organizations/{organization}/groups
@@ -33,6 +41,8 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class GroupsServerResource
         extends CommandQueryServerResource
 {
+
+    // get???
     public ListValue groups()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
@@ -43,13 +53,14 @@ public class GroupsServerResource
         {
             builder.addListItem(group.getDescription(), EntityReference.getEntityReference(group));
         }
+        
         return builder.newList();
     }
 
-    // post???
-    public void newGroup(DescriptionValue value) throws DuplicateDescriptionException
+    @Override
+    protected Representation post(Representation representation, Variant variant) throws ResourceException
     {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Group"));
         EntityBuilder<GroupEntity> builder = uow.newEntityBuilder(GroupEntity.class);
 
         String identity = getRequest().getAttributes().get("organization").toString();
@@ -57,10 +68,33 @@ public class GroupsServerResource
         Groups groups = uow.get(Groups.class, identity);
 
         GroupEntity groupState = builder.prototype();
-        groupState.description().set(value.description().get());
+        try
+        {
+            groupState.description().set(representation.getText());
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
         Group group = builder.newInstance();
 
-        groups.addGroup(group);
+        try
+        {
+            groups.addGroup(group);
+        } catch (DuplicateDescriptionException e)
+        {
+            //throw new ResourceException
+            e.printStackTrace();
+        }
+
+        try
+        {
+            uow.complete();
+        } catch (UnitOfWorkCompletionException e)
+        {
+            uow.discard();
+        }
+
+        return null;
     }
 }

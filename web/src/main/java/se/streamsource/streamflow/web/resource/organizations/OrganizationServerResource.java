@@ -24,13 +24,22 @@ import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.query.Query;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.group.Group;
+import se.streamsource.streamflow.web.domain.group.GroupEntity;
+import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
+
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Mapped to /organizations/{organization}
@@ -60,19 +69,62 @@ public class OrganizationServerResource
         return getHtml("resources/organization.html");
     }
 
-    public ListValue findParticipants(DescriptionValue query)
+    public ListValue findUsers(DescriptionValue query)
     {
-        // TODO when query api is fixed, this must be corrected
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
         ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+
+        if (query.description().get().length() > 0)
+        {
+            QueryBuilder<UserEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(UserEntity.class);
+            queryBuilder.where(QueryExpressions.matches(
+                    QueryExpressions.templateFor(UserEntity.class).userName(), "^" + query.description().get()));
+            Query<UserEntity> users = queryBuilder.newQuery();
+
+            try
+            {
+                for (Participant participant : users)
+                {
+                    builder.prototype().entity().set(EntityReference.getEntityReference(participant));
+                    listBuilder.addListItem(participant.participantDescription(), builder.newInstance().entity().get());
+                }
+            } catch (Exception e)
+            {
+                //e.printStackTrace();
+            }
+        }
+        return listBuilder.newList();
+    }
+
+
+    public ListValue findGroups(DescriptionValue query)
+    {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        try
+
+        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+
+        if (query.description().get().length() > 0)
         {
-            Participant user = uow.get(Participant.class, query.description().get());
-            builder.prototype().entity().set(EntityReference.getEntityReference(user));
-            listBuilder.addListItem(user.participantDescription(), builder.newInstance().entity().get());
-        } catch (NoSuchEntityException e)
-        {
+            QueryBuilder<GroupEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
+            queryBuilder.where(
+                QueryExpressions.matches(
+                    QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.description().get()));
+            Query<GroupEntity> groups = queryBuilder.newQuery();
+
+            try
+            {
+                for (Participant participant : groups)
+                {
+                    builder.prototype().entity().set(EntityReference.getEntityReference(participant));
+                    listBuilder.addListItem(participant.participantDescription(), builder.newInstance().entity().get());
+                }
+            } catch (Exception e)
+            {
+                //e.printStackTrace();
+            }
         }
         return listBuilder.newList();
     }

@@ -52,32 +52,8 @@ public class NewProjectDialog
     @Action
     public void execute()
     {
-        try
-        {
-            projectsModel.newProject(nameField.getText());
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
+        projectsModel.newProject(nameField.getText());
         WindowUtils.findJDialog(this).dispose();
-/*
-        try
-        {
-            contextBuilder.prototype().description().set(nameField.getText());
-
-            NewProjectContext context = contextBuilder.newInstance();
-            // TODO Handle Duplicate Exception properly
-            commands.newProject(context);
-            WindowUtils.findJDialog(this).dispose();
-
-            listController.refresh();
-
-        } catch (Exception e)
-        {
-            // TODO
-            e.printStackTrace();
-        }
-*/
     }
 
     @Action

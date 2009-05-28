@@ -56,16 +56,8 @@ public class NewGroupDialog
     @Action
     public void execute()
     {
-        try
-        {
-            groupsModel.newGroup(nameField.getText());
-            WindowUtils.findJDialog(this).dispose();
-
-        } catch (Exception e)
-        {
-            // TODO
-            e.printStackTrace();
-        }
+        groupsModel.newGroup(nameField.getText());
+        WindowUtils.findJDialog(this).dispose();
     }
 
     @Action

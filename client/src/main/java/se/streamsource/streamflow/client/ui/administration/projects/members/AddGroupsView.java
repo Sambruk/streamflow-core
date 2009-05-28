@@ -20,16 +20,20 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * JAVADOC
@@ -38,14 +42,44 @@ public class AddGroupsView
         extends JPanel
 {
     private AddGroupsModel addGroupsModel;
+    private JTextField nameField;
 
-    public AddGroupsView(@Service GroupsModel groupsModel,
-                         @Uses AddGroupsModel addGroupsModel)
+    public AddGroupsView(@Service final OrganizationalUnitAdministrationModel organizationModel,
+                         @Uses AddGroupsModel addGroupsModel,
+                         @Structure ValueBuilderFactory vbf)
     {
         super(new BorderLayout());
         this.addGroupsModel = addGroupsModel;
 
-        add(new JLabel("#Select Groups to be added"), BorderLayout.NORTH);
+        addGroupsModel.setGroups(vbf.newValueBuilder(ListValue.class).newInstance());
+        nameField = new JTextField();
+        nameField.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent keyEvent)
+            {
+                try
+                {
+                    ListValue list = organizationModel.getOrganization().findGroups(nameField.getText());
+                    getModel().setGroups(list);
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+        nameField.setColumns(10);
+        JPanel searchLine = new JPanel(new BorderLayout());
+        searchLine.add(new JLabel("#Search groups"), BorderLayout.CENTER);
+        searchLine.add(nameField, BorderLayout.LINE_END);
+        add(searchLine, BorderLayout.NORTH);
+        JXTable groupsTable = new JXTable(addGroupsModel);
+        groupsTable.getColumn(0).setMaxWidth(40);
+        groupsTable.getColumn(0).setResizable(false);
+        JScrollPane groupsScrollPane = new JScrollPane(groupsTable);
+        add(groupsScrollPane);
+
+
+
+        /*add(new JLabel("#Select Groups to be added"), BorderLayout.NORTH);
         try
         {
             ListValue groups = groupsModel.getGroups().groups();
@@ -59,8 +93,10 @@ public class AddGroupsView
         memberGroupsTable.getColumn(0).setResizable(false);
         JScrollPane groupsScrollPane = new JScrollPane(memberGroupsTable);
         add(groupsScrollPane);
-    }
+        */
 
+
+    }
 
     public AddGroupsModel getModel()
     {

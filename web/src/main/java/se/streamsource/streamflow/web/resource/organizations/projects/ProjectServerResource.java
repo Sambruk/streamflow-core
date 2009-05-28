@@ -24,6 +24,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
@@ -48,35 +49,6 @@ public class ProjectServerResource
     @Structure
     ValueBuilderFactory vbf;
 
-    public EntityReferenceValue findParticipant(DescriptionValue query)
-    {
-        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
-
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        try
-        {
-            Participant user = uow.get(Participant.class, query.description().get());
-            builder.prototype().entity().set(EntityReference.getEntityReference(user));
-        } catch (NoSuchEntityException e)
-        {
-            // try looking up a group in the organization
-            /*String org = getRequest().getAttributes().get("organization").toString();
-
-            Groups.GroupsState groups = uow.get(Groups.GroupsState.class, org);
-
-            for (Group group : groups.groups())
-            {
-                if (query.description().get().equals(group.getDescription()))
-                {
-                    builder.prototype().entity().set(EntityReference.getEntityReference(group));
-                    return builder.newInstance();
-                }
-            }*/
-
-        }
-        return builder.newInstance();
-    }
-
     public EntityReferenceValue findRole(DescriptionValue query)
     {
         ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
@@ -98,27 +70,8 @@ public class ProjectServerResource
     }
 
 
-    public ListValue findParticipants(DescriptionValue query)
-    {
-        // TODO when query api is fixed, this must be corrected
-        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        try
-        {
-            Participant user = uow.get(Participant.class, query.description().get());
-            builder.prototype().entity().set(EntityReference.getEntityReference(user));
-            listBuilder.addListItem(user.participantDescription(), builder.newInstance().entity().get());
-        } catch (NoSuchEntityException e)
-        {
-        }
-        return listBuilder.newList();
-    }
-
-
-
     @Override
-    protected Representation delete() throws ResourceException
+    protected Representation delete(Variant variant) throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete project"));
 
