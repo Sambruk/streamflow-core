@@ -85,7 +85,7 @@ public class SharedAssignmentsView
 
         // Popup
         JPopupMenu popup = new JPopupMenu();
-        popup.add(am.get("removeSharedTask"));
+        popup.add(am.get("removeSharedTasks"));
 
         // Toolbar
         JPanel toolbar = new JPanel();
