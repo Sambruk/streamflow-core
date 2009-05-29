@@ -36,6 +36,7 @@ public class AddGroupsModel
     {
         this.groups = groups;
         clearSelection();
+        fireTableDataChanged();
     }
 
     public void clearSelection()

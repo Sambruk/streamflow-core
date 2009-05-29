@@ -73,7 +73,10 @@ public class MemberRoleServerResource
         String id = getRequest().getAttributes().get("project").toString();
         SharedProject project = uow.get(SharedProject.class, id);
 
-        project.removeMember(participant);
+        String roleName = getRequest().getAttributes().get("role").toString();
+        Role role = uow.get(Role.class, roleName);
+
+        project.removeRole(participant, role);
 
         try
         {

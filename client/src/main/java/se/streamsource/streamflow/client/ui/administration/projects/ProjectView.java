@@ -18,42 +18,59 @@ import org.jdesktop.swingx.JXTree;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTree;
+import javax.swing.*;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.util.ArrayList;
 
 /**
  * JAVADOC
  */
 public class ProjectView
-        extends JPanel
+        extends JSplitPane
 {
-    @Structure
-    ObjectBuilderFactory obf;
-
-    @Service
-    DialogService dialogs;
-
-    private ProjectModel model;
     public JXTree memberRoleTree;
 
-    public ProjectView(@Service ActionMap am, @Service ProjectModel model)
+    public ProjectView(@Service ActionMap am,
+                       @Service final ProjectModel model,
+                       @Service final MemberRolesModel memberRolesModel,
+                       @Service final MemberRolesView memberRolesView)
     {
-        super(new BorderLayout());
-        this.model = model;
+        super();
+        JPanel projectView = new JPanel(new BorderLayout());
 
         setActionMap(am);
 
         memberRoleTree = new JXTree(model);
         memberRoleTree.setRootVisible(false);
         memberRoleTree.setShowsRootHandles(true);
+        memberRoleTree.addTreeSelectionListener(new TreeSelectionListener() {
+
+                public void valueChanged(TreeSelectionEvent treeSelectionEvent)
+                {
+                    TreePath newPath = treeSelectionEvent.getNewLeadSelectionPath();
+                    if (newPath == null)
+                    {
+                        memberRolesModel.clear();
+                    } else
+                    {
+                        TreeNodeValue value = (TreeNodeValue) newPath.getPathComponent(1);
+                        memberRolesModel.setMember(model.getProject().members().member(value.entity().get().identity()));
+                        setRightComponent(memberRolesView);
+                    }
+                }
+            }
+        );
 
         memberRoleTree.setCellRenderer(new DefaultTreeCellRenderer()
         {
@@ -70,13 +87,15 @@ public class ProjectView
             }
         });
 
-        add(memberRoleTree, BorderLayout.CENTER);
+        projectView.add(memberRoleTree, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("addMember")));
         toolbar.add(new JButton(am.get("removeMember")));
-        toolbar.add(new JButton(am.get("addMemberRole")));
-        add(toolbar, BorderLayout.SOUTH);
+        projectView.add(toolbar, BorderLayout.SOUTH);
+
+        setLeftComponent(projectView);
+        setRightComponent(memberRolesView);
     }
 
     public JXTree getMembers()

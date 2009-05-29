@@ -53,6 +53,7 @@ public class MemberRolesServerResource
             }
 
         }
-        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+        return builder.newList();
+        //throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
     }
 }

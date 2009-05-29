@@ -52,13 +52,7 @@ public class NewRoleDialog
     @Action
     public void execute()
     {
-        try
-        {
-            rolesModel.newRole(nameField.getText());
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
+        rolesModel.newRole(nameField.getText());
         WindowUtils.findJDialog(this).dispose();
     }
 

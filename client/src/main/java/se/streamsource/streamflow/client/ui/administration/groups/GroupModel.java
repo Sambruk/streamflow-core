@@ -37,6 +37,11 @@ public class GroupModel
     @Structure
     ValueBuilderFactory vbf;
 
+    public GroupClientResource getGroup()
+    {
+        return group;
+    }
+
     private GroupClientResource group;
 
     public void setGroup(GroupClientResource resource)
@@ -45,10 +50,18 @@ public class GroupModel
         refresh();
     }
 
-    public void removeParticipant(EntityReference participant) throws ResourceException
+    public void removeParticipant(EntityReference participant)
     {
-        group.participants().participant(participant.identity()).delete();
-        refresh();
+
+        try
+        {
+            group.participants().participant(participant.identity()).delete();
+            refresh();
+        } catch (ResourceException e)
+        {
+            throw new ConnectionException("Could not remove partcipant");
+        }
+
     }
 
     private void refresh()

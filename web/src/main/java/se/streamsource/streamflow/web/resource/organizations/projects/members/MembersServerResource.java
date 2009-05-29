@@ -63,6 +63,7 @@ public class MembersServerResource
             memberNodebuilder.prototype().description().set(participant.participantDescription());
             memberNodebuilder.prototype().entity().set(EntityReference.getEntityReference(participant));
 
+            /*
             // Create role nodes
             ValueBuilder<TreeNodeValue> roleNodebuilder = vbf.newValueBuilder(TreeNodeValue.class);
             for (EntityReference roleReference : member.roles().get())
@@ -71,7 +72,7 @@ public class MembersServerResource
                 roleNodebuilder.prototype().description().set(role.getDescription());
                 roleNodebuilder.prototype().entity().set(roleReference);
                 memberNodebuilder.prototype().children().get().add(roleNodebuilder.newInstance());
-            }
+            }*/
 
             builder.prototype().roots().get().add(memberNodebuilder.newInstance());
         }

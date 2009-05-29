@@ -16,14 +16,17 @@ package se.streamsource.streamflow.client.resource.organizations.projects.member
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
+import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * JAVADOC
  */
 public class MemberRolesClientResource
-        extends BaseClientResource
+        extends CommandQueryClientResource
 {
     public MemberRolesClientResource(@Uses Context context, @Uses Reference reference)
     {
@@ -33,5 +36,10 @@ public class MemberRolesClientResource
     public MemberRoleClientResource role(String id)
     {
         return getSubResource(id, MemberRoleClientResource.class);
+    }
+
+    public ListValue roles() throws ResourceException
+    {
+        return query("roles", ListValue.class);
     }
 }

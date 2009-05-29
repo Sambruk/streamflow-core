@@ -42,10 +42,4 @@ public class ProjectClientResource
         return getSubResource("members", MembersClientResource.class);
     }
 
-    public EntityReferenceValue findRole(String roleName) throws ResourceException
-    {
-        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
-        builder.prototype().description().set(roleName);
-        return query("findRole", builder.newInstance(), EntityReferenceValue.class);
-    }
 }

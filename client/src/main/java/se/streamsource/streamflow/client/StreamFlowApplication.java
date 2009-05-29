@@ -44,7 +44,6 @@ import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.groups.NewGroupDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.AddMemberDialog;
-import se.streamsource.streamflow.client.ui.administration.projects.AddRoleDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.NewProjectDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectView;
@@ -322,13 +321,7 @@ public class StreamFlowApplication
     public void removeParticipant()
     {
         ListItemValue value = (ListItemValue) groupView.getParticipantList().getSelectedValue();
-        try
-        {
-            groupModel.removeParticipant(value.entity().get());
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        groupModel.removeParticipant(value.entity().get());
     }
 
     // Project administration actions -------------------------------
@@ -370,13 +363,6 @@ public class StreamFlowApplication
             projectModel.removeMember(selected.entity().get());
         }
     }
-
-    @Action
-    public void addMemberRole()
-    {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObject(AddRoleDialog.class));
-    }
-
 
     // Role administration actions ----------------------------------
 

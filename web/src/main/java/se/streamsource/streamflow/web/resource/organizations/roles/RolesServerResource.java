@@ -17,6 +17,11 @@ package se.streamsource.streamflow.web.resource.organizations.roles;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -25,6 +30,8 @@ import se.streamsource.streamflow.web.domain.project.Role;
 import se.streamsource.streamflow.web.domain.project.RoleEntity;
 import se.streamsource.streamflow.web.domain.project.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+
+import java.io.IOException;
 
 /**
  * Mapped to:
@@ -46,9 +53,10 @@ public class RolesServerResource
         return builder.newList();
     }
 
-    public void newRole(DescriptionValue value) throws DuplicateDescriptionException
+    @Override
+    protected Representation post(Representation entity, Variant variant) throws ResourceException
     {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Role"));
         EntityBuilder<RoleEntity> builder = uow.newEntityBuilder(RoleEntity.class);
 
         String identity = getRequest().getAttributes().get("organization").toString();
@@ -56,10 +64,27 @@ public class RolesServerResource
         Roles roles = uow.get(Roles.class, identity);
 
         RoleEntity roleEntity = builder.prototype();
-        roleEntity.description().set(value.description().get());
+        try
+        {
+            roleEntity.description().set(entity.getText());
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
         Role role = builder.newInstance();
 
         roles.addRole(role);
+
+        try
+        {
+            uow.complete();
+        } catch (UnitOfWorkCompletionException e)
+        {
+            uow.discard();
+        }
+
+        return null;
     }
+
 }

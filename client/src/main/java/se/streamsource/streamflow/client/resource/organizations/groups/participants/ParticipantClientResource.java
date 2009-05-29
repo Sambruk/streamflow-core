@@ -33,10 +33,4 @@ public class ParticipantClientResource
     {
         super(context, reference);
     }
-
-    @Override
-    public Representation put(Object o) throws ResourceException
-    {
-        return super.put(o);
-    }
 }

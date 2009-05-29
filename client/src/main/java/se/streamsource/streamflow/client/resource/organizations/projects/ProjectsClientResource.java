@@ -38,11 +38,6 @@ public class ProjectsClientResource
         return query("projects", ListValue.class);
     }
 
-    public void newProject(DescriptionValue value) throws ResourceException
-    {
-        postCommand("newProject", value);
-    }
-
     public ProjectClientResource project(String id)
     {
         return getSubResource(id, ProjectClientResource.class);

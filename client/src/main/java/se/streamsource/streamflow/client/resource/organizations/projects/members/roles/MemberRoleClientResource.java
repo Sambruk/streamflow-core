@@ -31,10 +31,4 @@ public class MemberRoleClientResource
     {
         super(context, reference);
     }
-
-    @Override
-    public Representation put(Object entity) throws ResourceException
-    {
-        return super.put(entity);
-    }
 }

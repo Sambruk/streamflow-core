@@ -108,7 +108,7 @@ public class OrganizationServerResource
 
         if (query.description().get().length() > 0)
         {
-            QueryBuilder<GroupEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
+         /*   QueryBuilder<GroupEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
             queryBuilder.where(
                 QueryExpressions.matches(
                     QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.description().get()));
@@ -125,7 +125,20 @@ public class OrganizationServerResource
             {
                 //e.printStackTrace();
             }
+        }*/
+
+            //hack for the moment
+    
+            String org = getRequest().getAttributes().get("organization").toString();
+            Groups.GroupsState groups = uow.get(Groups.GroupsState.class, org);
+
+            for (Group group: groups.groups())
+            {
+                builder.prototype().entity().set(EntityReference.getEntityReference(group));
+                listBuilder.addListItem(group.getDescription(), builder.newInstance().entity().get());
+            }
         }
+
         return listBuilder.newList();
     }
 

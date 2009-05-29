@@ -18,6 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import org.restlet.representation.StringRepresentation;
 import se.streamsource.streamflow.client.ConnectionException;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -43,13 +44,17 @@ public class RolesModel
         this.roles = roles;
     }
 
-    public void newRole(String description) throws ResourceException
+    public void newRole(String description)
     {
-        ValueBuilder<DescriptionValue> commandBuilder = vbf.newValueBuilder(DescriptionValue.class);
-        commandBuilder.prototype().description().set(description);
-        roles.newRole(commandBuilder.newInstance());
+        try
+        {
+            roles.post(new StringRepresentation(description));
+            refresh();
+        } catch (ResourceException e)
+        {
+            throw new ConnectionException("Could not create role");
+        }
 
-        refresh();
     }
 
     public void removeRole(String id)

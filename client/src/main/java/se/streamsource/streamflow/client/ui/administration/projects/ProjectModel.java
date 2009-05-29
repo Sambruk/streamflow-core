@@ -40,6 +40,11 @@ import java.util.Collection;
 public class ProjectModel
         implements TreeModel
 {
+    public ProjectClientResource getProject()
+    {
+        return project;
+    }
+
     private ProjectClientResource project;
     private TreeValue root;
     private TreeModelSupport modelSupport = new TreeModelSupport(this);
@@ -51,7 +56,6 @@ public class ProjectModel
     public void setProject(ProjectClientResource project)
     {
         this.project = project;
-
         refresh();
     }
 
@@ -157,18 +161,4 @@ public class ProjectModel
             throw new ConnectionException("Could not remove member");
         }
     }
-
-    public void addRole(String roleName, String member) throws ResourceException
-    {
-        EntityReferenceValue role = project.findRole(roleName);
-        if (role.entity().get() == null)
-        {
-            throw new IllegalArgumentException("No role named: " + roleName + " found");
-        }
-
-        project.members().member(member).roles().role(role.entity().get().identity()).put(null);
-
-        refresh();
-    }
-
 }

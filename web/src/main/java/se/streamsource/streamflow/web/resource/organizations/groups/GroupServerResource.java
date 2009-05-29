@@ -37,6 +37,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class GroupServerResource
         extends CommandQueryServerResource
 {
+    // TODO before deleting look through all projects and groups containing the group
     @Override
     protected Representation delete(Variant variant) throws ResourceException
     {

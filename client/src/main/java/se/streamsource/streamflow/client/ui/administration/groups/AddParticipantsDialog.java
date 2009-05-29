@@ -57,6 +57,9 @@ public class AddParticipantsDialog
     private AddGroupsView addGroupsView;
     private AddUsersView addUsersview;
 
+    @Service
+    GroupsView groupsView;
+
     public AddParticipantsDialog(@Service ApplicationContext context,
                            @Uses AddUsersView addUsersView,
                            @Uses AddGroupsView addGroupsView)
@@ -85,6 +88,10 @@ public class AddParticipantsDialog
         Set<ListItemValue> selected = new HashSet<ListItemValue>(users.size() + groups.size());
         selected.addAll(users);
         selected.addAll(groups);
+
+        // remove the current group, it cannot be added to itself
+        ListItemValue selectedItem = (ListItemValue) groupsView.getGroupList().getSelectedValue();
+        selected.remove(selectedItem);
         WindowUtils.findJDialog(this).dispose();
         groupModel.addParticipants(selected);
     }

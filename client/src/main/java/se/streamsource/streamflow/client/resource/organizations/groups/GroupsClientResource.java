@@ -45,11 +45,6 @@ public class GroupsClientResource
         return super.get();
     }
 
-    public void newGroup(DescriptionValue value) throws ResourceException
-    {
-        postCommand("newGroup", value);
-    }
-
     public GroupClientResource group(String id)
     {
         return getSubResource(id, GroupClientResource.class);

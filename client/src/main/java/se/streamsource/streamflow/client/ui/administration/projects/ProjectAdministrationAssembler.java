@@ -45,10 +45,12 @@ public class ProjectAdministrationAssembler
         UIAssemblers.addMV(module, AddUsersModel.class,
                 AddUsersView.class);
 
+        UIAssemblers.addMV(module, MemberRolesModel.class,
+                MemberRolesView.class);
+
         UIAssemblers.addDialogs(module,
                 NewProjectDialog.class,
                 RemoveProjectDialog.class,
-                AddMemberDialog.class,
-                AddRoleDialog.class);
+                AddMemberDialog.class);
     }
 }

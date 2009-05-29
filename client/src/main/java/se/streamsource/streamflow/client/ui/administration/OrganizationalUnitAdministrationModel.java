@@ -20,6 +20,7 @@ import se.streamsource.streamflow.client.resource.organizations.OrganizationClie
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
+import se.streamsource.streamflow.client.ConnectionException;
 
 /**
  * JAVADOC

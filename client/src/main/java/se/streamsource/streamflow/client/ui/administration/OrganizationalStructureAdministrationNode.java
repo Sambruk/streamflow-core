@@ -71,8 +71,7 @@ public class OrganizationalStructureAdministrationNode
 
     public JComponent detailView()
     {
-        try
-        {
+        try {
             model.setOrganization(resource);
             return view;
         } catch (ResourceException e)

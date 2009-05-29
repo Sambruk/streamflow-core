@@ -36,19 +36,24 @@ public class ProjectsModel
 
     ProjectsClientResource projects;
 
-    public void setProjects(ProjectsClientResource projects) throws ResourceException
+    public void setProjects(ProjectsClientResource projects) 
     {
         this.projects = projects;
-
         refresh();
     }
 
-    private void refresh() throws ResourceException
+    private void refresh()
     {
         clear();
-        for (ListItemValue value : projects.projects().items().get())
+        try
         {
-            addElement(value);
+            for (ListItemValue value : projects.projects().items().get())
+            {
+                addElement(value);
+            }
+        } catch (ResourceException e)
+        {
+            throw new ConnectionException("Could not refresh projects model");
         }
     }
 
@@ -70,10 +75,6 @@ public class ProjectsModel
 
     public void newProject(String projectName)
     {
-        /*ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
-        builder.prototype().description().set(projectName);
-        projects.newProject(builder.newInstance());*/
-
         try
         {
             projects.post(new StringRepresentation(projectName));
