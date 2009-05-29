@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Mads Enevoldsen. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,13 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects.members;
 
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-
-import javax.swing.table.AbstractTableModel;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * JAVADOC
  */
-public class AddUsersModel
+public class AddProjectsModel
         extends AbstractTableSelectionModel
 {
-
-    String[] columnNames = {"Add", "User Name"};
+    String[] columnNames = {"Add", "Project Name"};
 
     public String[] getColumnNames()
     {

@@ -14,70 +14,32 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects.members;
 
-import org.jdesktop.swingx.JXTable;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
-import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyAdapter;
 
 /**
  * JAVADOC
  */
 public class AddUsersView
-        extends JPanel
+        extends AbstractTableSelectionView
 {
-    private AddUsersModel addUsersModel;
-    private JTextField nameField;
-
-    public AddUsersView(@Service final OrganizationalUnitAdministrationModel organizationModel,
-                        @Uses AddUsersModel addUsersModel,
+    /*@Service
+    OrganizationalUnitAdministrationModel organizationModel;
+*/
+    public AddUsersView(@Uses AddUsersModel model,
                         @Structure ValueBuilderFactory vbf)
     {
-        super(new BorderLayout());
-        this.addUsersModel = addUsersModel;
-
-        addUsersModel.setUsers(vbf.newValueBuilder(ListValue.class).newInstance());
-        nameField = new JTextField();
-        nameField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent keyEvent)
-            {
-                try
-                {
-                    ListValue list = organizationModel.getOrganization().findUsers(nameField.getText());
-                    getModel().setUsers(list);
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-        nameField.setColumns(10);
-        JPanel searchLine = new JPanel(new BorderLayout());
-        searchLine.add(new JLabel("#Search users"), BorderLayout.CENTER);
-        searchLine.add(nameField, BorderLayout.LINE_END);
-        add(searchLine, BorderLayout.NORTH);
-        JXTable usersTable = new JXTable(addUsersModel);
-        usersTable.getColumn(0).setMaxWidth(40);
-        usersTable.getColumn(0).setResizable(false);
-        JScrollPane usersScrollPane = new JScrollPane(usersTable);
-        add(usersScrollPane);
+        super(model, vbf);
     }
 
-
-    public AddUsersModel getModel()
+    protected String searchLineString()
     {
-        return addUsersModel;
+        return "#Search users";
     }
+
+    /*protected ListValue findValues(String userName) throws ResourceException
+    {
+        return organizationModel.getOrganization().findUsers(userName);
+    }*/
 }

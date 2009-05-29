@@ -1,0 +1,88 @@
+/*
+ * Copyright (c) 2009, Mads Enevoldsen. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package se.streamsource.streamflow.client.ui.administration.projects.members;
+
+import org.jdesktop.swingx.JXTable;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyListener;
+
+/**
+ * JAVADOC
+ */
+public abstract class AbstractTableSelectionView
+        extends JPanel
+{
+
+    protected abstract String searchLineString();
+
+    public String searchText()
+    {
+        return nameField.getText();
+    }
+    //protected abstract ListValue findValues(String valueName) throws ResourceException;
+
+    protected AbstractTableSelectionModel model;
+    private JTextField nameField;
+
+    public AbstractTableSelectionView(AbstractTableSelectionModel model,
+                                      @Structure ValueBuilderFactory vbf)
+    {
+        super(new BorderLayout());
+        this.model = model;
+
+        model.setModel(vbf.newValueBuilder(ListValue.class).newInstance());
+        nameField = new JTextField();
+        /*nameField.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent keyEvent)
+            {
+                try
+                {
+                    ListValue list = findValues(nameField.getText());
+                    getModel().setModel(list);
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });*/
+        nameField.setColumns(10);
+        JPanel searchLine = new JPanel(new BorderLayout());
+        searchLine.add(new JLabel(searchLineString()), BorderLayout.CENTER);
+        searchLine.add(nameField, BorderLayout.LINE_END);
+        add(searchLine, BorderLayout.NORTH);
+
+        JXTable projectsTable = new JXTable(getModel());
+        projectsTable.getColumn(0).setMaxWidth(40);
+        projectsTable.getColumn(0).setResizable(false);
+        JScrollPane projectsScrollPane = new JScrollPane(projectsTable);
+        add(projectsScrollPane);
+    }
+
+
+    public void setKeyListener(KeyListener listener)
+    {
+        nameField.addKeyListener(listener);
+    }
+
+    public AbstractTableSelectionModel getModel()
+    {
+        return model;
+    }
+}

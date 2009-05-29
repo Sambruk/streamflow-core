@@ -27,7 +27,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
@@ -37,27 +37,11 @@ import org.restlet.data.Protocol;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.ui.administration.groups.AddParticipantsDialog;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupModel;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupView;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
-import se.streamsource.streamflow.client.ui.administration.groups.NewGroupDialog;
-import se.streamsource.streamflow.client.ui.administration.projects.AddMemberDialog;
-import se.streamsource.streamflow.client.ui.administration.projects.NewProjectDialog;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectView;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
+import se.streamsource.streamflow.client.ui.administration.groups.*;
+import se.streamsource.streamflow.client.ui.administration.projects.*;
 import se.streamsource.streamflow.client.ui.administration.roles.NewRoleDialog;
 import se.streamsource.streamflow.client.ui.navigator.NavigatorView;
-import se.streamsource.streamflow.client.ui.shared.AddSharedTaskDialog;
-import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsModel;
-import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsView;
-import se.streamsource.streamflow.client.ui.shared.SharedDelegationsModel;
-import se.streamsource.streamflow.client.ui.shared.SharedDelegationsView;
-import se.streamsource.streamflow.client.ui.shared.SharedInboxModel;
-import se.streamsource.streamflow.client.ui.shared.SharedInboxView;
+import se.streamsource.streamflow.client.ui.shared.*;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
@@ -66,13 +50,8 @@ import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UnsupportedLookAndFeelException;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
@@ -208,6 +187,8 @@ public class StreamFlowApplication
     // Shared users inbox actions ------------------------------------
     @Uses
     private ObjectBuilder<AddSharedTaskDialog> addSharedTaskDialogs;
+    @Uses
+    private ObjectBuilder<ForwardSharedTasksDialog> forwardSharedTasksDialog;
 
     @Service
     SharedInboxView sharedInboxView;
@@ -272,7 +253,9 @@ public class StreamFlowApplication
     @Action
     public void forwardSharedTasksTo()
     {
-        
+        uowf.nestedUnitOfWork();
+        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(ForwardSharedTasksDialog.class).newInstance());
+
     }
 
     // Shared user assignments actions ------------------------------

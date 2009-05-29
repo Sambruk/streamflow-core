@@ -26,6 +26,7 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.SharedTask;
+import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -70,6 +71,18 @@ public class SharedUserInboxTaskServerResource
         SharedInbox inbox = uow.get(SharedInbox.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
         inbox.delegate(task, delegatee);
+    }
+
+    public void forward(EntityReferenceValue reference)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        SharedTaskEntity task = uow.get(SharedTaskEntity.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        SharedInbox receiverInbox = uow.get(SharedInbox.class, reference.entity().get().identity());
+        receiverInbox.receiveTask(task);
+        //inbox.remove();
     }
 
     public void markAsRead()

@@ -61,4 +61,11 @@ public class SharedUserInboxTaskClientResource
         builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
         putCommand("delegate", builder.newInstance());
     }
+
+    public void forward(String receiverId) throws ResourceException
+    {
+        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        builder.prototype().entity().set(EntityReference.parseEntityReference(receiverId));
+        putCommand("forward", builder.newInstance());
+    }
 }

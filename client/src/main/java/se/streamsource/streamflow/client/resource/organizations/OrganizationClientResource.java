@@ -53,4 +53,11 @@ public class OrganizationClientResource
         builder.prototype().description().set(groupName);
         return query("findGroups", builder.newInstance(), ListValue.class);        
     }
+
+    public ListValue findProjects(String projectName) throws ResourceException
+    {
+        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        builder.prototype().description().set(projectName);
+        return query("findProjects", builder.newInstance(), ListValue.class);
+    }
 }

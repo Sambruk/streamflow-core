@@ -61,10 +61,8 @@ public class MemberRolesModel
 
     private void propagateAllRoles() throws ResourceException
     {
-        if (allRoles == null)
-        {
-            allRoles = organizationModel.getOrganization().roles().roles().items().get();
-        }
+        // maybe do some kind of caching of this
+        allRoles = organizationModel.getOrganization().roles().roles().items().get();
     }
 
     List<ListItemValue> memberRoles;

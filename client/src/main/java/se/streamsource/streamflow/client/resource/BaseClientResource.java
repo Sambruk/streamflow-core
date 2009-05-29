@@ -125,7 +125,7 @@ public class BaseClientResource
             return linkList;
         } catch (Exception e)
         {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not find link", e);
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not findValues link", e);
         }
     }
 

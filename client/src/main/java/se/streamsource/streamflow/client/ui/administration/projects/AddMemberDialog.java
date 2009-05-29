@@ -22,15 +22,17 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.HashSet;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 /**
@@ -48,21 +50,53 @@ public class AddMemberDialog
     @Service
     ProjectModel projectModel;
 
+    @Service
+    OrganizationalUnitAdministrationModel organizationModel;
+
+
     Dimension dialogSize = new Dimension(600,300);
-    private AddGroupsView addGroupsView;
     private AddUsersView addUsersview;
+    private AddGroupsView addGroupsView;
 
     public AddMemberDialog(@Service ApplicationContext context,
-                           @Uses AddUsersView addUsersView,
-                           @Uses AddGroupsView addGroupsView)
+                           @Uses final AddUsersView addUsersView,
+                           @Uses final AddGroupsView addGroupsView)
     {
         super(new BorderLayout());
 
         setActionMap(context.getActionMap(this));
-        this.addGroupsView = addGroupsView;
         this.addUsersview = addUsersView;
+        this.addGroupsView = addGroupsView;
 
         JSplitPane dialog = new JSplitPane();
+
+        addUsersView.setKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent keyEvent)
+            {
+                try
+                {
+                    ListValue list = organizationModel.getOrganization().findUsers(addUsersView.searchText());
+                    addUsersView.getModel().setModel(list);
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+        addGroupsView.setKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent keyEvent)
+            {
+                try
+                {
+                    ListValue list = organizationModel.getOrganization().findGroups(addGroupsView.searchText());
+                    addGroupsView.getModel().setModel(list);
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
 
         dialog.setLeftComponent(addUsersView);
         dialog.setRightComponent(addGroupsView);
@@ -74,12 +108,9 @@ public class AddMemberDialog
     @Action
     public void execute()
     {
-        Set<ListItemValue> users = addUsersview.getModel().getSelected().keySet();
-        Set<ListItemValue> groups = addGroupsView.getModel().getSelected().keySet();
+        Set<ListItemValue> selected = addUsersview.getModel().getSelected();
+        selected.addAll(addGroupsView.getModel().getSelected());
 
-        Set<ListItemValue> selected = new HashSet<ListItemValue>(groups.size() + users.size());
-        selected.addAll(users);
-        selected.addAll(groups);
         projectModel.addMembers(selected);
         WindowUtils.findWindow(this).dispose();
     }

@@ -221,6 +221,7 @@ public class SharedInboxView
         Action removeTaskAction = am.get("removeSharedTasks");
         popup.add(removeTaskAction);
         popup.add(assignAction);
+        popup.add(am.get("forwardSharedTasksTo"));
         taskTable.addMouseListener(new PopupMenuTrigger(popup));
         taskTable.addTreeSelectionListener(new SelectionActionEnabler(removeTaskAction, assignAction, delegateTasksFromInbox));
     }

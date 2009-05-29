@@ -15,17 +15,21 @@
 package se.streamsource.streamflow.client.resource.users;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.SharedClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
 /**
  * JAVADOC
  */
 public class UserClientResource
-        extends BaseClientResource
+        extends CommandQueryClientResource
 {
     public UserClientResource(@Uses Context context, @Uses Reference reference)
     {
@@ -41,4 +45,26 @@ public class UserClientResource
     {
         return getSubResource("administration", UserAdministrationClientResource.class);
     }
+
+    public ListValue findUsers(String participantName) throws ResourceException
+    {
+        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        builder.prototype().description().set(participantName);
+        return query("findUsers", builder.newInstance(), ListValue.class);
+    }
+
+    public ListValue findGroups(String groupName) throws ResourceException
+    {
+        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        builder.prototype().description().set(groupName);
+        return query("findGroups", builder.newInstance(), ListValue.class);
+    }
+
+    public ListValue findProjects(String projectName) throws ResourceException
+    {
+        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        builder.prototype().description().set(projectName);
+        return query("findProjects", builder.newInstance(), ListValue.class);
+    }
+
 }

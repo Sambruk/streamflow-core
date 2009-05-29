@@ -33,6 +33,8 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.project.Projects;
+import se.streamsource.streamflow.web.domain.project.SharedProject;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -136,5 +138,28 @@ public class OrganizationServerResource
 
         return listBuilder.newList();
     }
+
+    public ListValue findProjects(DescriptionValue query)
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+
+        if (query.description().get().length() > 0)
+        {
+            String org = getRequest().getAttributes().get("organization").toString();
+            Projects.ProjectsState projects = uow.get(Projects.ProjectsState.class, org);
+
+            for (SharedProject project: projects.projects())
+            {
+                builder.prototype().entity().set(EntityReference.getEntityReference(project));
+                listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
+            }
+        }
+
+        return listBuilder.newList();
+    }
+
 
 }

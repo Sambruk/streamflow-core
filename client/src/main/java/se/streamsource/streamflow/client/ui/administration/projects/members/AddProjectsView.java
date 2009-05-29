@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Mads Enevoldsen. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,26 +21,25 @@ import org.qi4j.api.value.ValueBuilderFactory;
 /**
  * JAVADOC
  */
-public class AddGroupsView
+public class AddProjectsView
         extends AbstractTableSelectionView
 {
     /*@Service
-    OrganizationalUnitAdministrationModel organizationModel;
-*/
-    public AddGroupsView(@Uses AddGroupsModel addGroupsModel,
-                         @Structure ValueBuilderFactory vbf)
+    OrganizationalUnitAdministrationModel organizationModel;*/
+
+    public AddProjectsView(@Uses AddProjectsModel model,
+                           @Structure ValueBuilderFactory vbf)
     {
-        super(addGroupsModel, vbf);
+        super(model, vbf);
     }
 
     protected String searchLineString()
     {
-        return "#Search groups";
+        return "#Search projects";
     }
 
-    /*protected ListValue findValues(String groupName) throws ResourceException
+    /*protected ListValue findValues(String projectName) throws ResourceException
     {
-        return organizationModel.getOrganization().findGroups(groupName);
+        return organizationModel.getOrganization().findProjects(projectName);
     }*/
-
 }

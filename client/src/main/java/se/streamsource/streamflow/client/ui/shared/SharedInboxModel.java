@@ -230,4 +230,10 @@ public class SharedInboxModel
         getRoot().task(taskId).delegate(delegateeId);
         refresh();
     }
+
+    public void forward(String taskId, String receiverId) throws ResourceException
+    {
+        getRoot().task(taskId).forward(receiverId);
+        refresh();
+    }
 }
