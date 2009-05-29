@@ -14,27 +14,26 @@
 
 package se.streamsource.streamflow.client.ui.shared;
 
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.task.general.SharedUserInboxTaskGeneralClientResource;
+
 /**
  * JAVADOC
  */
-public class SharedTaskModel
+public class SharedInboxTaskDetailModel
 {
-    
-/*
-    private SharedTask sharedTask;
+    private SharedUserInboxTaskGeneralClientResource sharedTask;
 
-    public SharedTaskModel()
+    public SharedInboxTaskDetailModel()
     {
     }
 
-    public SharedTask sharedTask()
+    public SharedUserInboxTaskGeneralClientResource sharedTask()
     {
         return sharedTask;
     }
 
-    public void setSharedTask(SharedTask sharedTask)
+    public void setResource(SharedUserInboxTaskGeneralClientResource sharedTask)
     {
         this.sharedTask = sharedTask;
     }
-*/
 }

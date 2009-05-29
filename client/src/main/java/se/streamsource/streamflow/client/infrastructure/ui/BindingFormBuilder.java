@@ -24,6 +24,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -55,7 +56,7 @@ public class BindingFormBuilder
                 {
                     public Component newField()
                     {
-                        return new JTextArea(10, 30);
+                        return new JScrollPane(new JTextArea(10, 30));
                     }
                 },
         CHECKBOX

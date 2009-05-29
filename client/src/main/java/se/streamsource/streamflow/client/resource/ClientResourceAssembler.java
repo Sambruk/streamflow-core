@@ -45,6 +45,7 @@ import se.streamsource.streamflow.client.resource.users.shared.user.delegations.
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.task.general.SharedUserInboxTaskGeneralClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskClientResource;
 
@@ -68,6 +69,7 @@ public class ClientResourceAssembler
                 SharedUserClientResource.class,
                 SharedUserInboxClientResource.class,
                 SharedUserInboxTaskClientResource.class,
+                SharedUserInboxTaskGeneralClientResource.class,
 
                 SharedUserAssignmentsClientResource.class,
                 SharedUserAssignedTaskClientResource.class,

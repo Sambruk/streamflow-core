@@ -43,6 +43,7 @@ import se.streamsource.streamflow.web.resource.users.shared.user.delegations.Sha
 import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.inbox.task.general.SharedUserInboxTaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskServerResource;
 
@@ -68,6 +69,7 @@ public class ServerResourceAssembler
 
                 SharedUserInboxServerResource.class,
                 SharedUserInboxTaskServerResource.class,
+                SharedUserInboxTaskGeneralServerResource.class,
 
                 SharedUserAssignmentsServerResource.class,
                 SharedUserAssignedTaskServerResource.class,

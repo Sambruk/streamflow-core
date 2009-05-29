@@ -14,31 +14,24 @@
 
 package se.streamsource.streamflow.client.ui.shared;
 
-import org.jdesktop.swingx.renderer.DefaultTableRenderer;
-import org.jdesktop.swingx.renderer.StringValue;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import javax.swing.JLabel;
+import javax.swing.JTabbedPane;
 
 /**
  * JAVADOC
  */
-public class SharedTaskRenderer
-    extends DefaultTableRenderer
+public class SharedInboxTaskDetailView
+        extends JTabbedPane
 {
-    public SharedTaskRenderer()
+    public SharedInboxTaskDetailView(@Service ApplicationContext appContext,
+                                     @Service SharedInboxGeneralTaskDetailView generalView)
     {
-        super(new StringValue()
-        {
-            private SimpleDateFormat format = new SimpleDateFormat();
-
-            public String getString(Object value)
-            {
-                Date time = (Date) value;
-                return format.format(time);
-            }
-        });
+        addTab("General", generalView);
+        addTab("Metadata", new JLabel("TODO"));
+        addTab("Comments", new JLabel("TODO"));
+        addTab("Attachments", new JLabel("TODO"));
     }
-
-    
 }

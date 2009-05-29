@@ -63,8 +63,8 @@ public class SharedDelegationsView
 
     public SharedDelegationsView(@Service final ActionMap am,
                            @Service final SharedDelegationsModel model,
-                           @Service final SharedTaskView detailView,
-                           @Service final SharedTaskModel detailModel,
+                           @Service final SharedDelegationsTaskDetailView detailView,
+                           @Service final SharedInboxTaskDetailModel detailModel,
                            @Structure ObjectBuilderFactory obf,
                            @Structure ValueBuilderFactory vbf)
     {

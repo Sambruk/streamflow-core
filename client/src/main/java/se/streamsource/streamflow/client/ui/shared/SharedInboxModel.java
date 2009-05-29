@@ -17,16 +17,16 @@ package se.streamsource.streamflow.client.ui.shared;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import static se.streamsource.streamflow.client.ui.shared.SharedInboxResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
 import java.util.Date;
 
@@ -43,9 +43,14 @@ public class SharedInboxModel
 
     InboxTaskListValue tasks;
 
-    String[] columnNames = {"", "Description", "Created on"};
+    String[] columnNames;
     Class[] columnClasses = {Boolean.class, String.class, Date.class};
     boolean[] columnEditable = {true, false, false};
+
+    public SharedInboxModel()
+    {
+        columnNames = new String[]{"", text(description_column_header), text(created_column_header)};
+    }
 
     @Override
     public SharedUserInboxClientResource getRoot()
@@ -160,30 +165,7 @@ public class SharedInboxModel
                         getRoot().task(task.identity()).complete();
 
                         taskValue.status().set(TaskStates.COMPLETED);
-                        /*
-
-                                                // If success, then remove node
-                                                int idx = tasks.tasks().get().indexOf(node);
-                                                ValueBuilder<InboxTaskListValue> builder = vbf.newValueBuilder(InboxTaskListValue.class).withPrototype(tasks);
-                                                builder.prototype().tasks().get().remove(node);
-                                                tasks = builder.newInstance();
-                                                modelSupport.fireChildRemoved(new TreePath(getRoot()),idx ,node);
-                        */
                     }
-                    break;
-                }
-
-                case 1:
-                {
-                    String newDescription = (String) value;
-                    InboxTaskValue taskValue = (InboxTaskValue) node;
-                    EntityReference task = taskValue.task().get();
-                    ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
-                    builder.prototype().description().set(newDescription);
-                    getRoot().task(task.identity()).describe(builder.newInstance());
-
-                    // Update description
-                    taskValue.description().set(newDescription);
                     break;
                 }
             }

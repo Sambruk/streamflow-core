@@ -76,6 +76,15 @@ public class SharedUIAssembler
         UIAssemblers.addViews(module, SharedTaskView.class);
         UIAssemblers.addDialogs(module, AddSharedTaskDialog.class, ForwardSharedTasksDialog.class);
 
-        UIAssemblers.addModels(module, SharedTaskModel.class);
+        UIAssemblers.addMV(module,
+                SharedInboxTaskDetailModel.class,
+                SharedInboxTaskDetailView.class);
+
+        UIAssemblers.addViews(module,
+                SharedAssignmentsTaskDetailView.class,
+                SharedDelegationsTaskDetailView.class,
+                SharedWaitingForTaskDetailView.class,
+                SharedInboxGeneralTaskDetailView.class
+        );
     }
 }

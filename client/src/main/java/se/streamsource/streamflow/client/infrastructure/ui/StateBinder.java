@@ -26,8 +26,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,10 +39,12 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -62,6 +66,7 @@ public class StateBinder
         registerBinder(defaultBinder,
                 JTextField.class,
                 JTextArea.class,
+                JScrollPane.class,
                 JPasswordField.class,
                 JCheckBox.class);
 
@@ -176,6 +181,16 @@ public class StateBinder
                     return null;
             }
         });
+    }
+
+    public Component[] boundComponents()
+    {
+        List<Component> components = new ArrayList<Component>();
+        for (Binding binding : bindings)
+        {
+            components.add(binding.component);
+        }
+        return components.toArray(new Component[components.size()]);
     }
 
     private static class BinderPropertyInstance
@@ -332,6 +347,10 @@ public class StateBinder
                 });
 
                 return binding;
+            } else if (component instanceof JScrollPane)
+            {
+                JScrollPane pane = (JScrollPane) component;
+                return bind(pane.getViewport().getView(), property);
             } else if (component instanceof JCheckBox)
             {
                 final JCheckBox checkBox = (JCheckBox) component;
@@ -350,9 +369,9 @@ public class StateBinder
 
         public void updateComponent(Component component, Object value)
         {
-            if (component instanceof JTextField)
+            if (component instanceof JTextComponent)
             {
-                JTextField textField = (JTextField) component;
+                JTextComponent textField = (JTextComponent) component;
                 String text = value.toString();
                 textField.setText(text);
 

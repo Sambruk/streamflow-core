@@ -40,17 +40,14 @@ import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.Action;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -74,8 +71,8 @@ public class SharedInboxView
 
     public SharedInboxView(@Service final ActionMap am,
                            @Service final SharedInboxModel model,
-                           @Service final SharedTaskView detailView,
-                           @Service final SharedTaskModel detailModel,
+                           @Service final SharedInboxTaskDetailView detailView,
+                           @Service final SharedInboxTaskDetailModel detailModel,
                            @Structure ObjectBuilderFactory obf,
                            @Structure ValueBuilderFactory vbf)
     {
@@ -125,13 +122,14 @@ public class SharedInboxView
         JPanel det = new JPanel();
         det.add(detailView);
         addTab(text(inbox_tab), panel);
-        addTab(text(detail_tab), det);
+        addTab(text(detail_tab), detailView);
 
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "details");
         getActionMap().put("details", new AbstractAction()
         {
             public void actionPerformed(ActionEvent e)
             {
+                detailModel.setResource(model.getRoot().task(getSelectedTask().task().get().identity()).general());
                 setSelectedIndex(1);
             }
         });
@@ -209,7 +207,7 @@ public class SharedInboxView
             {
                 if (e.getClickCount() == 2)
                 {
-                    setSelectedIndex(1);
+                    getActionMap().get("details").actionPerformed(null);
                 }
             }
         });
@@ -253,14 +251,11 @@ public class SharedInboxView
         return tasks;
     }
 
-    class CompletedCellRenderer
-            extends JCheckBox
-            implements TableCellRenderer
+    @Override
+    public void addNotify()
     {
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
-        {
-            return this;
-        }
-    }
+        super.addNotify();
 
+        setSelectedIndex(0);
+    }
 }

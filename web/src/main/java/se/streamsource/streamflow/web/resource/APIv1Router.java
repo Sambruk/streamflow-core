@@ -44,12 +44,13 @@ import se.streamsource.streamflow.web.resource.users.shared.user.delegations.Sha
 import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.inbox.task.general.SharedUserInboxTaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
 /**
- * JAVADOC
+ * Router for v1 of the StreamFlow REST API.
  */
 public class APIv1Router
         extends Router
@@ -72,6 +73,7 @@ public class APIv1Router
 
         attach("/users/{user}/shared/user/inbox", createServerResourceFinder(SharedUserInboxServerResource.class));
         attach("/users/{user}/shared/user/inbox/{task}", createServerResourceFinder(SharedUserInboxTaskServerResource.class));
+        attach("/users/{user}/shared/user/inbox/{task}/general", createServerResourceFinder(SharedUserInboxTaskGeneralServerResource.class));
         attach("/users/{user}/shared/user/assignments", createServerResourceFinder(SharedUserAssignmentsServerResource.class));
         attach("/users/{user}/shared/user/assignments/{task}", createServerResourceFinder(SharedUserAssignedTaskServerResource.class));
         attach("/users/{user}/shared/user/delegations", createServerResourceFinder(SharedUserDelegationsServerResource.class));

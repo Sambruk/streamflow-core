@@ -63,8 +63,8 @@ public class SharedWaitingForView
 
     public SharedWaitingForView(@Service final ActionMap am,
                            @Service final SharedWaitingForModel model,
-                           @Service final SharedTaskView detailView,
-                           @Service final SharedTaskModel detailModel,
+                           @Service final SharedWaitingForTaskDetailView detailView,
+                           @Service final SharedInboxTaskDetailModel detailModel,
                            @Structure ObjectBuilderFactory obf,
                            @Structure ValueBuilderFactory vbf)
     {

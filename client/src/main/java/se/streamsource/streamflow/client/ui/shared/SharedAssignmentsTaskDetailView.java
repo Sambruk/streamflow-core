@@ -14,40 +14,24 @@
 
 package se.streamsource.streamflow.client.ui.shared;
 
-import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
-import org.qi4j.api.injection.scope.Uses;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+
+import javax.swing.JLabel;
+import javax.swing.JTabbedPane;
 
 /**
  * JAVADOC
  */
-public class SharedModel
-        extends DefaultTreeTableModel
+public class SharedAssignmentsTaskDetailView
+        extends JTabbedPane
 {
-    public SharedModel(@Uses SharedNode root)
+    public SharedAssignmentsTaskDetailView(@Service ApplicationContext appContext,
+                                     @Service SharedInboxGeneralTaskDetailView generalView)
     {
-        super(root);
-    }
-
-    @Override
-    public int getColumnCount()
-    {
-        return 1;
-    }
-
-    @Override
-    public Class<?> getColumnClass(int column)
-    {
-        switch (column)
-        {
-            case 0:
-                return String.class;
-        }
-        return super.getColumnClass(column);
-    }
-
-    @Override
-    public boolean isCellEditable(Object o, int i)
-    {
-        return false;
+        addTab("General", new JLabel("TODO"));
+        addTab("Metadata", new JLabel("TODO"));
+        addTab("Comments", new JLabel("TODO"));
+        addTab("Attachments", new JLabel("TODO"));
     }
 }

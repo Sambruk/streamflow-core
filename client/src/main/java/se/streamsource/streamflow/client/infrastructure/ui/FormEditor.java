@@ -22,31 +22,29 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.Component;
-import java.awt.Container;
 
 /**
  * JAVADOC
  */
 public class FormEditor
 {
-    Container formContainer;
+    Component[] components;
     boolean editing = false;
 
-    public FormEditor(Container formContainer)
+    public FormEditor(Component... components)
     {
-        this.formContainer = formContainer;
-        init(formContainer);
+        this.components = components;
+        init(components);
         view();
     }
 
-    private void init(Container formContainer)
+    private void init(Component... components)
     {
-        Component[] components = formContainer.getComponents();
         for (Component component : components)
         {
             if (component instanceof JPanel)
             {
-                init((Container) component);
+                init(((JPanel)component).getComponents());
             } else if (component instanceof JPasswordField)
             {
                 setVisible(component, false);
@@ -91,17 +89,16 @@ public class FormEditor
     public void view()
     {
         editing = false;
-        view(formContainer);
+        view(components);
     }
 
-    private void view(Container formContainer)
+    private void view(Component... components)
     {
-        Component[] components = formContainer.getComponents();
         for (Component component : components)
         {
             if (component instanceof JPanel)
             {
-                view((Container) component);
+                view(((JPanel) component).getComponents());
             } else if (component instanceof JLabel)
             {
                 // Do nothing
@@ -113,25 +110,23 @@ public class FormEditor
                 final JComponent text = (JComponent) component;
                 text.setEnabled(false);
             }
+            component.doLayout();
         }
-
-        formContainer.doLayout();
     }
 
     public void edit()
     {
         editing = true;
-        edit(formContainer);
+        edit(components);
     }
 
-    private void edit(Container formContainer)
+    private void edit(Component... components)
     {
-        Component[] components = formContainer.getComponents();
         for (Component component : components)
         {
             if (component instanceof JPanel)
             {
-                edit((Container) component);
+                edit(((JPanel) component).getComponents());
             } else if (component instanceof JLabel)
             {
                 // Do nothing

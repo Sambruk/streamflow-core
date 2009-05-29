@@ -69,8 +69,8 @@ public class SharedAssignmentsView
 
     public SharedAssignmentsView(@Service final ActionMap am,
                            @Service final SharedAssignmentsModel model,
-                           @Service final SharedTaskView detailView,
-                           @Service final SharedTaskModel detailModel,
+                           @Service final SharedAssignmentsTaskDetailView detailView,
+                           @Service final SharedInboxTaskDetailModel detailModel,
                            @Structure ObjectBuilderFactory obf,
                            @Structure ValueBuilderFactory vbf)
     {

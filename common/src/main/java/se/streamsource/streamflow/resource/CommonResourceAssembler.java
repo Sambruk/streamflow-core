@@ -31,6 +31,7 @@ import se.streamsource.streamflow.resource.delegation.DelegationsTaskListValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.inbox.InboxTaskGeneralValue;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
@@ -58,6 +59,7 @@ public class CommonResourceAssembler
         module.addValues(ListValue.class, ListItemValue.class,
                 InboxTaskListValue.class,
                 InboxTaskValue.class,
+                InboxTaskGeneralValue.class,
                 AssignmentsTaskListValue.class,
                 AssignedTaskValue.class,
                 DelegationsTaskListValue.class,

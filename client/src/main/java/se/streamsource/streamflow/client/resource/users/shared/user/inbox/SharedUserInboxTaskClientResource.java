@@ -21,6 +21,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.task.general.SharedUserInboxTaskGeneralClientResource;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 
@@ -33,6 +34,11 @@ public class SharedUserInboxTaskClientResource
     public SharedUserInboxTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
+    }
+
+    public SharedUserInboxTaskGeneralClientResource general()
+    {
+        return getSubResource("general", SharedUserInboxTaskGeneralClientResource.class);
     }
 
     public void complete() throws ResourceException
