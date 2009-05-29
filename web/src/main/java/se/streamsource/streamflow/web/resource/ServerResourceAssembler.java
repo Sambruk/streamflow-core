@@ -37,9 +37,14 @@ import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.SharedServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.SharedUserServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.assignments.SharedUserAssignedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.assignments.SharedUserAssignmentsServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegatedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskServerResource;
 
 /**
  * JAVADOC
@@ -60,10 +65,18 @@ public class ServerResourceAssembler
 
                 SharedServerResource.class,
                 SharedUserServerResource.class,
+
                 SharedUserInboxServerResource.class,
                 SharedUserInboxTaskServerResource.class,
 
                 SharedUserAssignmentsServerResource.class,
+                SharedUserAssignedTaskServerResource.class,
+
+                SharedUserDelegationsServerResource.class,
+                SharedUserDelegatedTaskServerResource.class,
+
+                SharedUserWaitingForServerResource.class,
+                SharedUserWaitingForTaskServerResource.class,
 
                 // /organizations
                 OrganizationsServerResource.class,

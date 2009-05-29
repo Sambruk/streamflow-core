@@ -19,37 +19,38 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListValue;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListValue;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskValue;
 
 import java.util.Date;
 
 /**
  * JAVADOC
  */
-public class SharedDelegationsModel
+public class SharedWaitingForModel
         extends AbstractTreeTableModel
 {
     @Structure
     ValueBuilderFactory vbf;
 
-    DelegationsTaskListValue tasks;
+    WaitingForTaskListValue tasks;
 
-    String[] columnNames = {"", "Description", "Delegated from", "Created on"};
-    Class[] columnClasses = {Boolean.class, String.class, String.class, Date.class};
-    boolean[] columnEditable = {true, false, false, false};
+    String[] columnNames = {"", "Description", "Delegated to", "Assigned to", "Delegated on"};
+    Class[] columnClasses = {Boolean.class, String.class, String.class, String.class, Date.class};
+    boolean[] columnEditable = {true, false, false, false, false};
 
     @Override
-    public SharedUserDelegationsClientResource getRoot()
+    public SharedUserWaitingForClientResource getRoot()
     {
-        return (SharedUserDelegationsClientResource) super.getRoot();
+        return (SharedUserWaitingForClientResource) super.getRoot();
     }
 
-    public void setDelegations(SharedUserDelegationsClientResource delegationsClientResource) throws ResourceException
+    public void setWaitingFor(SharedUserWaitingForClientResource waitingForClientResource) throws ResourceException
     {
-        root = delegationsClientResource;
+        root = waitingForClientResource;
         refresh();
     }
 
@@ -68,7 +69,7 @@ public class SharedDelegationsModel
     @Override
     public boolean isLeaf(Object node)
     {
-        return node instanceof DelegatedTaskValue;
+        return node instanceof WaitingForTaskValue;
     }
 
     @Override
@@ -84,7 +85,7 @@ public class SharedDelegationsModel
 
     public int getChildCount(Object parent)
     {
-        if (parent instanceof SharedUserDelegationsClientResource)
+        if (parent instanceof SharedUserWaitingForClientResource)
             return tasks.tasks().get().size();
         else
             return 0;
@@ -92,7 +93,7 @@ public class SharedDelegationsModel
 
     public int getIndexOfChild(Object parent, Object child)
     {
-        if (parent instanceof SharedUserDelegationsClientResource)
+        if (parent instanceof SharedUserWaitingForClientResource)
             return tasks.tasks().get().indexOf(child);
         else
             return -1;
@@ -100,7 +101,7 @@ public class SharedDelegationsModel
 
     public int getColumnCount()
     {
-        return 4;
+        return 5;
     }
 
     @Override
@@ -111,9 +112,9 @@ public class SharedDelegationsModel
 
     public Object getValueAt(Object node, int column)
     {
-        if (node instanceof DelegatedTaskValue)
+        if (node instanceof WaitingForTaskValue)
         {
-            DelegatedTaskValue task = (DelegatedTaskValue) node;
+            WaitingForTaskValue task = (WaitingForTaskValue) node;
             switch (column)
             {
                 case 0:
@@ -121,8 +122,10 @@ public class SharedDelegationsModel
                 case 1:
                     return task.description().get();
                 case 2:
-                    return task.delegatedFrom().get();
+                    return task.delegatedTo().get();
                 case 3:
+                    return task.assignedTo().get();
+                case 4:
                     return task.delegatedOn().get();
             }
         }
@@ -162,19 +165,12 @@ public class SharedDelegationsModel
 
     public void refresh() throws ResourceException
     {
-        tasks = getRoot().tasks().<DelegationsTaskListValue>buildWith().prototype();
+        tasks = getRoot().tasks().<WaitingForTaskListValue>buildWith().prototype();
         modelSupport.fireNewRoot();
     }
 
-    public void assignToMe(String id) throws ResourceException
+    public void delegate(String task, String delegatee) throws ResourceException
     {
-        getRoot().task(id).assignToMe();
-        refresh();
-    }
-
-    public void reject(String id) throws ResourceException
-    {
-        getRoot().task(id).reject();
-        refresh();
+        getRoot().task(task).delegate(delegatee);
     }
 }

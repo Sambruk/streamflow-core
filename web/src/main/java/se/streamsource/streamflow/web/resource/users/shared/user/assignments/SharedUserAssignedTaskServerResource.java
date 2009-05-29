@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.shared.user.inbox;
+package se.streamsource.streamflow.web.resource.users.shared.user.assignments;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -22,17 +22,17 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.SharedTask;
+import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/shared/user/inbox/{task}
+ * /users/{user}/shared/user/assignments/{task}
  */
-public class SharedUserInboxTaskServerResource
+public class SharedUserAssignedTaskServerResource
         extends CommandQueryServerResource
 {
     public void complete()
@@ -51,56 +51,23 @@ public class SharedUserInboxTaskServerResource
         describable.describe(descriptionValue.description().get());
     }
 
-    public void assignToMe()
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
-        inbox.assignToMe(task);
-    }
-
-    public void delegate(EntityReferenceValue reference)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
-        Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
-        inbox.delegate(task, delegatee);
-    }
-
-    public void markAsRead()
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
-        inbox.markAsRead(task);
-    }
-
-    public void markAsUnRead()
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
-        inbox.markAsUnread(task);
-    }
-
     @Override
     protected Representation delete(Variant variant) throws ResourceException
     {
         try
         {
-            String taskId = (String) getRequest().getAttributes().get("task");
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
-            SharedTask sharedTask = uow.get(SharedTask.class, taskId);
-            uow.remove(sharedTask);
+            String userId = (String) getRequest().getAttributes().get("user");
+            String taskId = (String) getRequest().getAttributes().get("task");
+            Owner owner = uow.get(Owner.class, userId);
+            SharedTaskEntity sharedTask = uow.get(SharedTaskEntity.class, taskId);
+
+            if (sharedTask.owner().get().equals(owner))
+            {
+                // Only delete task if user owns it
+                uow.remove(sharedTask);
+            }
+            
             uow.complete();
         } catch (UnitOfWorkCompletionException e)
         {

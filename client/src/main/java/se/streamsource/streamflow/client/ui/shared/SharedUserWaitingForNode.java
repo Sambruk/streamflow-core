@@ -19,7 +19,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;
@@ -27,22 +27,22 @@ import javax.swing.JComponent;
 /**
  * JAVADOC
  */
-public class SharedUserAssignmentsNode
+public class SharedUserWaitingForNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
     @Service
-    SharedAssignmentsView view;
+    SharedWaitingForView view;
 
     @Service
-    SharedAssignmentsModel model;
+    SharedWaitingForModel model;
 
     @Uses
     private AccountSettingsValue settings;
 
-    public SharedUserAssignmentsNode(@Uses SharedUserAssignmentsClientResource assignmentsClientResource)
+    public SharedUserWaitingForNode(@Uses SharedUserWaitingForClientResource waitingForClientResource)
     {
-        super(assignmentsClientResource, false);
+        super(waitingForClientResource, false);
     }
 
     @Override
@@ -51,14 +51,14 @@ public class SharedUserAssignmentsNode
         return settings.name().get();
     }
 
-    SharedUserAssignmentsClientResource assignments()
+    SharedUserWaitingForClientResource waitingFor()
     {
-        return (SharedUserAssignmentsClientResource) getUserObject();
+        return (SharedUserWaitingForClientResource) getUserObject();
     }
 
     public JComponent detailView() throws ResourceException
     {
-        model.setAssignments(assignments());
+        model.setWaitingFor(waitingFor());
         return view;
     }
 

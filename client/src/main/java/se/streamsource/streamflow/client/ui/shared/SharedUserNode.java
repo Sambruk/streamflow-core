@@ -29,12 +29,16 @@ public class SharedUserNode
     public SharedUserNode(@Uses Individual individual,
                           @Structure ObjectBuilderFactory obf,
                           @Uses SharedUserAllInboxesNode allInboxes,
-                          @Uses SharedUserAllAssignmentsNode allAssignments)
+                          @Uses SharedUserAllAssignmentsNode allAssignments,
+                          @Uses SharedUserAllDelegationsNode allDelegations,
+                          @Uses SharedUserAllWaitingForNode allWaitingFor)
     {
         super(individual);
 
         add(allInboxes);
         add(allAssignments);
+        add(allDelegations);
+        add(allWaitingFor);
     }
 
     @Override

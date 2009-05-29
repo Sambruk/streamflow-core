@@ -19,33 +19,18 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * JAVADOC
  */
 @Concerns(GroupEntity.GroupLifeycleConcern.class)
-@Mixins(GroupEntity.ParticipantMixin.class)
 public interface GroupEntity
         extends Group,
         Describable.DescribableState,
         Participants.ParticipantsState,
         EntityComposite
 {
-    abstract class ParticipantMixin
-            implements Participant
-    {
-        @This
-        DescribableState state;
-
-        public String participantDescription()
-        {
-            return state.description().get();
-        }
-    }
-
     class GroupLifeycleConcern
             extends ConcernOf<Lifecycle>
             implements Lifecycle

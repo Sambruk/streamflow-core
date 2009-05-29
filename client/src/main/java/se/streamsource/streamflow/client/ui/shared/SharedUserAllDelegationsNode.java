@@ -25,19 +25,19 @@ import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.Individual;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
 
 /**
  * JAVADOC
  */
-public class SharedUserAllInboxesNode
+public class SharedUserAllDelegationsNode
         extends DefaultMutableTreeTableNode
 {
     ObjectBuilderFactory obf;
 
     private Restlet client;
 
-    public SharedUserAllInboxesNode(@Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
+    public SharedUserAllDelegationsNode(@Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
     {
         super(individual);
         this.client = client;
@@ -56,8 +56,8 @@ public class SharedUserAllInboxesNode
                 try
                 {
                     UserClientResource user = account.user(client);
-                    SharedUserInboxClientResource userInboxResource = user.shared().user().inbox();
-                    add(obf.newObjectBuilder(SharedUserInboxNode.class).use(account.settings(), userInboxResource).newInstance());
+                    SharedUserDelegationsClientResource userDelegationsResource = user.shared().user().delegations();
+                    add(obf.newObjectBuilder(SharedUserDelegationsNode.class).use(account.settings(), userDelegationsResource).newInstance());
                 } catch (ResourceException e)
                 {
                     e.printStackTrace();
@@ -70,6 +70,6 @@ public class SharedUserAllInboxesNode
     @Override
     public Object getValueAt(int column)
     {
-        return "Inboxes";
+        return "Delegations";
     }
 }

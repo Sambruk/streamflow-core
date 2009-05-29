@@ -29,9 +29,12 @@ public interface SharedInbox
 
     void assignToMe(SharedTask task);
 
+    void delegate(SharedTask task, Delegatee delegatee);
+
     void markAsRead(SharedTask task);
 
     void markAsUnread(SharedTask task);
+
 
     class SharedInboxMixin
             implements SharedInbox
@@ -59,6 +62,11 @@ public interface SharedInbox
         public void assignToMe(SharedTask task)
         {
             task.assignTo(assignee);
+        }
+
+        public void delegate(SharedTask task, Delegatee delegatee)
+        {
+            task.delegateTo(delegatee);
         }
 
         public void markAsRead(SharedTask task)

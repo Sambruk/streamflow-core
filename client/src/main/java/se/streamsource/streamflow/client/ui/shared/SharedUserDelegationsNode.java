@@ -19,7 +19,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;
@@ -27,22 +27,22 @@ import javax.swing.JComponent;
 /**
  * JAVADOC
  */
-public class SharedUserAssignmentsNode
+public class SharedUserDelegationsNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
     @Service
-    SharedAssignmentsView view;
+    SharedDelegationsView view;
 
     @Service
-    SharedAssignmentsModel model;
+    SharedDelegationsModel model;
 
     @Uses
     private AccountSettingsValue settings;
 
-    public SharedUserAssignmentsNode(@Uses SharedUserAssignmentsClientResource assignmentsClientResource)
+    public SharedUserDelegationsNode(@Uses SharedUserDelegationsClientResource delegationsClientResource)
     {
-        super(assignmentsClientResource, false);
+        super(delegationsClientResource, false);
     }
 
     @Override
@@ -51,14 +51,14 @@ public class SharedUserAssignmentsNode
         return settings.name().get();
     }
 
-    SharedUserAssignmentsClientResource assignments()
+    SharedUserDelegationsClientResource delegations()
     {
-        return (SharedUserAssignmentsClientResource) getUserObject();
+        return (SharedUserDelegationsClientResource) getUserObject();
     }
 
     public JComponent detailView() throws ResourceException
     {
-        model.setAssignments(assignments());
+        model.setDelegations(delegations());
         return view;
     }
 

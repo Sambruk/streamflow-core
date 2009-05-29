@@ -28,6 +28,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
@@ -46,6 +47,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.Action;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellRenderer;
@@ -92,8 +94,12 @@ public class SharedInboxView
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEtchedBorder());
 
-        javax.swing.Action addAction = am.get("addSharedTask");
+        javax.swing.Action addAction = am.get("newSharedTask");
         toolbar.add(new JButton(addAction));
+        Action assignAction = am.get("assignTasksToMe");
+        toolbar.add(new JButton(assignAction));
+        Action delegateTasksFromInbox = am.get("delegateTasksFromInbox");
+        toolbar.add(new JButton(delegateTasksFromInbox));
         javax.swing.Action refreshAction = am.get("refreshSharedInbox");
         toolbar.add(new JButton(refreshAction));
 
@@ -180,13 +186,13 @@ public class SharedInboxView
             {
                 try
                 {
-                    InboxTaskValue task = getSelectedTask();
-                    if (task != null)
+                    Iterable<InboxTaskValue> task = getSelectedTasks();
+                    for (InboxTaskValue taskValue : task)
                     {
-                        if (!task.isRead().get())
+                        if (!taskValue.isRead().get())
                         {
-                            model.markAsRead(task.task().get().identity());
-                            task.isRead().set(true);
+                            model.markAsRead(taskValue.task().get().identity());
+                            taskValue.isRead().set(true);
                         }
                     }
                 } catch (ResourceException e1)
@@ -208,21 +214,15 @@ public class SharedInboxView
             }
         });
 
-        taskTable.addTreeSelectionListener(new TreeSelectionListener()
-        {
-            public void valueChanged(TreeSelectionEvent e)
-            {
-                am.get("removeSharedTasks").setEnabled(e.getPath() != null);
-            }
-        });
-
         taskTable.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(taskTable.getSearchable()).newInstance());
 
         // Popup
         JPopupMenu popup = new JPopupMenu();
-        popup.add(am.get("removeSharedTasks"));
-        popup.add(am.get("assignTasksToMe"));
+        Action removeTaskAction = am.get("removeSharedTasks");
+        popup.add(removeTaskAction);
+        popup.add(assignAction);
         taskTable.addMouseListener(new PopupMenuTrigger(popup));
+        taskTable.addTreeSelectionListener(new SelectionActionEnabler(removeTaskAction, assignAction, delegateTasksFromInbox));
     }
 
     public JXTreeTable getTaskTable()

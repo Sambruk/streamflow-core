@@ -24,32 +24,26 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.shared.SharedAssignmentsResources.*;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
-import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import static se.streamsource.streamflow.client.ui.shared.SharedDelegationsResources.*;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.Action;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -62,13 +56,13 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public class SharedAssignmentsView
+public class SharedDelegationsView
         extends JTabbedPane
 {
     private JXTreeTable taskTable;
 
-    public SharedAssignmentsView(@Service final ActionMap am,
-                           @Service final SharedAssignmentsModel model,
+    public SharedDelegationsView(@Service final ActionMap am,
+                           @Service final SharedDelegationsModel model,
                            @Service final SharedTaskView detailView,
                            @Service final SharedTaskModel detailModel,
                            @Structure ObjectBuilderFactory obf,
@@ -76,23 +70,10 @@ public class SharedAssignmentsView
     {
         super();
 
-        TasksQuery query = vbf.newValue(TasksQuery.class);
-        try
-        {
-            model.setQuery(query);
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
-
-        // Toolbar
-        JPanel toolbar = new JPanel();
-        toolbar.setBorder(BorderFactory.createEtchedBorder());
-
-        javax.swing.Action addAction = am.get("newSharedTask");
-        toolbar.add(new JButton(addAction));
-        javax.swing.Action refreshAction = am.get("refreshSharedAssignments");
-        toolbar.add(new JButton(refreshAction));
+        // Popup
+        JPopupMenu popup = new JPopupMenu();
+        Action removeAction = am.get("removeSharedTasks");
+        popup.add(removeAction);
 
         // Table
         JPanel panel = new JPanel(new BorderLayout());
@@ -103,17 +84,16 @@ public class SharedAssignmentsView
         JScrollPane taskScrollPane = new JScrollPane(taskTable);
 
         panel.add(taskScrollPane, BorderLayout.CENTER);
-        panel.add(toolbar, BorderLayout.SOUTH);
 
 
         taskTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
         taskTable.getColumn(0).setMaxWidth(30);
         taskTable.getColumn(0).setResizable(false);
-        taskTable.getColumn(2).setPreferredWidth(120);
-        taskTable.getColumn(2).setMaxWidth(120);
+        taskTable.getColumn(3).setPreferredWidth(120);
+        taskTable.getColumn(3).setMaxWidth(120);
         taskTable.setAutoCreateColumnsFromModel(false);
 
-        addTab(text(assignments_tab), panel);
+        addTab(text(delegations_tab), panel);
         addTab(text(detail_tab), detailView);
 
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "details");
@@ -176,12 +156,18 @@ public class SharedAssignmentsView
 
         taskTable.addHighlighter(HighlighterFactory.createAlternateStriping());
 
-        // Popup
-        JPopupMenu popup = new JPopupMenu();
-        Action removeAction = am.get("removeSharedTasks");
-        popup.add(removeAction);
+        // Toolbar
+        JPanel toolbar = new JPanel();
+        toolbar.setBorder(BorderFactory.createEtchedBorder());
+        javax.swing.Action acceptAction = am.get("assignDelegatedTasksToMe");
+        toolbar.add(new JButton(acceptAction));
+        javax.swing.Action rejectAction = am.get("rejectUserDelegations");
+        toolbar.add(new JButton(rejectAction));
+        javax.swing.Action refreshAction = am.get("refreshSharedDelegations");
+        toolbar.add(new JButton(refreshAction));
+        panel.add(toolbar, BorderLayout.SOUTH);
 
-        taskTable.addTreeSelectionListener(new SelectionActionEnabler(removeAction));
+        taskTable.addTreeSelectionListener(new SelectionActionEnabler(acceptAction, rejectAction, removeAction));
     }
 
     public JXTreeTable getTaskTable()
@@ -189,32 +175,25 @@ public class SharedAssignmentsView
         return taskTable;
     }
 
-    public AssignedTaskValue getSelectedTask()
+    public DelegatedTaskValue getSelectedTask()
     {
-        return (AssignedTaskValue) getTaskTable().getPathForRow(getTaskTable().getSelectedRow()).getLastPathComponent();
+        int selectedRow = getTaskTable().getSelectedRow();
+        if (selectedRow == -1)
+            return null;
+        else
+            return (DelegatedTaskValue) getTaskTable().getPathForRow(selectedRow).getLastPathComponent();
     }
 
-    public Iterable<AssignedTaskValue> getSelectedTasks()
+    public Iterable<DelegatedTaskValue> getSelectedTasks()
     {
         int[] rows = getTaskTable().getSelectedRows();
-        List<AssignedTaskValue> tasks = new ArrayList<AssignedTaskValue>();
+        List<DelegatedTaskValue> tasks = new ArrayList<DelegatedTaskValue>();
         for (int i = 0; i < rows.length; i++)
         {
             int row = rows[i];
-            AssignedTaskValue task = (AssignedTaskValue) getTaskTable().getPathForRow(row).getLastPathComponent();
+            DelegatedTaskValue task = (DelegatedTaskValue) getTaskTable().getPathForRow(row).getLastPathComponent();
             tasks.add(task);
         }
         return tasks;
     }
-
-    class CompletedCellRenderer
-            extends JCheckBox
-            implements TableCellRenderer
-    {
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
-        {
-            return this;
-        }
-    }
-
 }

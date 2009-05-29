@@ -32,8 +32,12 @@ public class SharedUIAssembler
                 SharedUserNode.class,
                 SharedUserAllInboxesNode.class,
                 SharedUserAllAssignmentsNode.class,
+                SharedUserAllDelegationsNode.class,
+                SharedUserAllWaitingForNode.class,
                 SharedUserInboxNode.class,
                 SharedUserAssignmentsNode.class,
+                SharedUserDelegationsNode.class,
+                SharedUserWaitingForNode.class,
                 SharedProjectsNode.class);
 
         UIAssemblers.addMV(module,
@@ -48,6 +52,14 @@ public class SharedUIAssembler
         UIAssemblers.addMV(module,
                 SharedAssignmentsModel.class,
                 SharedAssignmentsView.class);
+
+        UIAssemblers.addMV(module,
+                SharedDelegationsModel.class,
+                SharedDelegationsView.class);
+
+        UIAssemblers.addMV(module,
+                SharedWaitingForModel.class,
+                SharedWaitingForView.class);
 
         UIAssemblers.addViews(module, SharedTaskView.class);
         UIAssemblers.addDialogs(module, AddSharedTaskDialog.class);

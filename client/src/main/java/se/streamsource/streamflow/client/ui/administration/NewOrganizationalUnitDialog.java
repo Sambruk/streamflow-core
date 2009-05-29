@@ -80,6 +80,6 @@ public class NewOrganizationalUnitDialog
     @Action
     public void close()
     {
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 }

@@ -16,11 +16,7 @@ package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
@@ -35,15 +31,6 @@ public class SharedUserInboxNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
-    @Structure
-    ObjectBuilderFactory obf;
-
-    @Structure
-    ValueBuilderFactory vbf;
-
-    @Service
-    Restlet client;
-
     @Service
     SharedInboxView view;
 

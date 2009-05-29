@@ -34,6 +34,8 @@ import se.streamsource.streamflow.resource.inbox.TasksQuery;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListValue;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskValue;
 
 /**
  * JAVADOC
@@ -60,6 +62,8 @@ public class CommonResourceAssembler
                 AssignedTaskValue.class,
                 DelegationsTaskListValue.class,
                 DelegatedTaskValue.class,
+                WaitingForTaskListValue.class,
+                WaitingForTaskValue.class,
                 TreeValue.class, TreeNodeValue.class).visibleIn(Visibility.application);
     }
 }

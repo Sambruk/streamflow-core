@@ -17,29 +17,45 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import javax.swing.Action;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
 
 /**
- * Enable an action if a list has a selection
+ * Enable actions if a list has a selection
  */
-public class ListSelectionActionEnabler
-        implements ListSelectionListener
+public class SelectionActionEnabler
+        implements ListSelectionListener, TreeSelectionListener
 {
-    private Action action;
+    private Action[] action;
 
-    public ListSelectionActionEnabler(Action action)
+    public SelectionActionEnabler(Action... action)
     {
         this.action = action;
-        action.setEnabled(false);
+        for (int i = 0; i < action.length; i++)
+        {
+            Action action1 = action[i];
+            action1.setEnabled(false);
+        }
     }
 
     public void valueChanged(ListSelectionEvent e)
     {
         if (!e.getValueIsAdjusting())
         {
-            if (e.getFirstIndex() == -1)
-                action.setEnabled(false);
-            else
-                action.setEnabled(true);
+            for (int i = 0; i < action.length; i++)
+            {
+                Action action1 = action[i];
+                action1.setEnabled(e.getFirstIndex() != -1);
+            }
+        }
+    }
+
+    public void valueChanged(TreeSelectionEvent e)
+    {
+        for (int i = 0; i < action.length; i++)
+        {
+            Action action1 = action[i];
+            action1.setEnabled(e.getNewLeadSelectionPath() != null);
         }
     }
 }

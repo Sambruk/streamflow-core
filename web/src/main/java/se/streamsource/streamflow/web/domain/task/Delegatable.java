@@ -18,6 +18,9 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -27,12 +30,15 @@ public interface Delegatable
 {
     void delegateTo(Delegatee delegatee);
 
-    void reject();
+    void rejectDelegation();
 
     interface DelegatableState
     {
         @Optional
         Association<Delegatee> delegatedTo();
+
+        @Optional
+        Property<Date> delegatedOn();
     }
 
     class DelegatableMixin
@@ -44,11 +50,13 @@ public interface Delegatable
         public void delegateTo(Delegatee delegatee)
         {
             state.delegatedTo().set(delegatee);
+            state.delegatedOn().set(new Date());
         }
 
-        public void reject()
+        public void rejectDelegation()
         {
             state.delegatedTo().set(null);
+            state.delegatedOn().set(null);
         }
     }
 }

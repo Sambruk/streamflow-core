@@ -44,7 +44,7 @@ public class MembersServerResource
         for (MemberValue member : members.members().get().members().get())
         {
             Participant participant = uow.get(Participant.class, member.participant().get().identity());
-            builder.addListItem(participant.participantDescription(), EntityReference.getEntityReference(participant));
+            builder.addListItem(participant.getDescription(), EntityReference.getEntityReference(participant));
         }
         return builder.newList();
     }
@@ -60,7 +60,7 @@ public class MembersServerResource
         {
             ValueBuilder<TreeNodeValue> memberNodebuilder = vbf.newValueBuilder(TreeNodeValue.class);
             Participant participant = uow.get(Participant.class, member.participant().get().identity());
-            memberNodebuilder.prototype().description().set(participant.participantDescription());
+            memberNodebuilder.prototype().description().set(participant.getDescription());
             memberNodebuilder.prototype().entity().set(EntityReference.getEntityReference(participant));
 
             /*

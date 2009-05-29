@@ -19,7 +19,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
@@ -35,9 +34,6 @@ public class SharedUserAllAssignmentsNode
         extends DefaultMutableTreeTableNode
 {
     ObjectBuilderFactory obf;
-
-    @Structure
-    ValueBuilderFactory vbf;
 
     private Restlet client;
 

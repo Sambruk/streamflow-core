@@ -24,10 +24,4 @@ enum SharedDelegationsResources
     description_column_header,
     created_column_header,
     delegated_from_header,
-    delegated_by_header,
-
-    add_shared_task_title,
-    shared_task_separator,
-    description_label,
-    note_label;
 }

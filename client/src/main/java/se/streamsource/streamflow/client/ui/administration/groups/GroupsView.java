@@ -21,7 +21,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.ListSelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.ActionMap;
@@ -71,7 +71,7 @@ public class GroupsView
         toolbar.add(new JButton(am.get("removeGroup")));
         add(toolbar, BorderLayout.SOUTH);
 
-        groupList.addListSelectionListener(new ListSelectionActionEnabler(am.get("removeGroup")));
+        groupList.addListSelectionListener(new SelectionActionEnabler(am.get("removeGroup")));
         groupList.addListSelectionListener(new ListSelectionListener()
         {
             public void valueChanged(ListSelectionEvent e)

@@ -12,26 +12,17 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
-
-import org.qi4j.api.entity.EntityComposite;
-import se.streamsource.streamflow.domain.roles.Describable;
+package se.streamsource.streamflow.client.ui.shared;
 
 /**
  * JAVADOC
  */
-public interface SharedProjectEntity
-        extends EntityComposite, 
-        // Roles
-        SharedProject,
-        Describable,
-        Members,
-        ProjectStatus,
-
-        // State
-        Members.MembersState,
-        Describable.DescribableState,
-        ProjectStatus.ProjectStatusState
-
+enum SharedWaitingForResources
 {
+    waitingfor_tab, detail_tab,
+
+    description_column_header,
+    delegated_on_column_header,
+    delegated_to_header,
+    assigned_to_header,
 }

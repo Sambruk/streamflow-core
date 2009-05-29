@@ -12,33 +12,33 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.assignments;
+package se.streamsource.streamflow.client.resource.users.shared.user.waitingfor;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListValue;
 
 /**
  * JAVADOC
  */
-public class SharedUserAssignedTaskClientResource
+public class SharedUserWaitingForClientResource
         extends CommandQueryClientResource
 {
-    public SharedUserAssignedTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public SharedUserWaitingForClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public void complete() throws ResourceException
+    public WaitingForTaskListValue tasks() throws ResourceException
     {
-        postCommand("complete");
+        return query("tasks", WaitingForTaskListValue.class);
     }
 
-    public void describe(DescriptionValue descriptionValue) throws ResourceException
+    public SharedUserWaitingForTaskClientResource task(String id)
     {
-        putCommand("describe", descriptionValue);
+        return getSubResource(id, SharedUserWaitingForTaskClientResource.class);
     }
 }

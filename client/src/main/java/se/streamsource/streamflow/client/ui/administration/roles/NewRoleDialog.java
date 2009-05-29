@@ -53,12 +53,12 @@ public class NewRoleDialog
     public void execute()
     {
         rolesModel.newRole(nameField.getText());
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 
     @Action
     public void close()
     {
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 }

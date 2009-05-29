@@ -14,32 +14,27 @@
 
 package se.streamsource.streamflow.web.resource.organizations;
 
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.query.Query;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
-import se.streamsource.streamflow.web.domain.group.Groups;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
-
-import java.util.regex.PatternSyntaxException;
+import se.streamsource.streamflow.web.domain.group.Group;
+import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to /organizations/{organization}
@@ -88,7 +83,7 @@ public class OrganizationServerResource
                 for (Participant participant : users)
                 {
                     builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                    listBuilder.addListItem(participant.participantDescription(), builder.newInstance().entity().get());
+                    listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
                 }
             } catch (Exception e)
             {
@@ -119,7 +114,7 @@ public class OrganizationServerResource
                 for (Participant participant : groups)
                 {
                     builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                    listBuilder.addListItem(participant.participantDescription(), builder.newInstance().entity().get());
+                    listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
                 }
             } catch (Exception e)
             {

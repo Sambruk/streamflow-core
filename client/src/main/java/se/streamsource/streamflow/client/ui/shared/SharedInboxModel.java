@@ -205,8 +205,7 @@ public class SharedInboxModel
     public void newTask(NewSharedTaskCommand command) throws ResourceException
     {
         getRoot().newtask(command);
-        modelSupport.fireNewRoot();
-        tasks = null;
+        refresh();
     }
 
     public void removeTask(String id) throws ResourceException
@@ -224,5 +223,11 @@ public class SharedInboxModel
     public void markAsRead(String id) throws ResourceException
     {
         getRoot().task(id).markAsRead();
+    }
+
+    public void delegate(String taskId, String delegateeId) throws ResourceException
+    {
+        getRoot().task(taskId).delegate(delegateeId);
+        refresh();
     }
 }

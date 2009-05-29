@@ -18,8 +18,10 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 
 /**
  * JAVADOC
@@ -40,5 +42,15 @@ public class SharedUserClientResource
     public SharedUserAssignmentsClientResource assignments()
     {
         return getSubResource("assignments", SharedUserAssignmentsClientResource.class);
+    }
+
+    public SharedUserDelegationsClientResource delegations()
+    {
+        return getSubResource("delegations", SharedUserDelegationsClientResource.class);
+    }
+
+    public SharedUserWaitingForClientResource waitingFor()
+    {
+        return getSubResource("waitingfor", SharedUserWaitingForClientResource.class);
     }
 }

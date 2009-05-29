@@ -25,19 +25,19 @@ import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.Individual;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 
 /**
  * JAVADOC
  */
-public class SharedUserAllInboxesNode
+public class SharedUserAllWaitingForNode
         extends DefaultMutableTreeTableNode
 {
     ObjectBuilderFactory obf;
 
     private Restlet client;
 
-    public SharedUserAllInboxesNode(@Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
+    public SharedUserAllWaitingForNode(@Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
     {
         super(individual);
         this.client = client;
@@ -56,8 +56,8 @@ public class SharedUserAllInboxesNode
                 try
                 {
                     UserClientResource user = account.user(client);
-                    SharedUserInboxClientResource userInboxResource = user.shared().user().inbox();
-                    add(obf.newObjectBuilder(SharedUserInboxNode.class).use(account.settings(), userInboxResource).newInstance());
+                    SharedUserWaitingForClientResource userWaitingForResource = user.shared().user().waitingFor();
+                    add(obf.newObjectBuilder(SharedUserWaitingForNode.class).use(account.settings(), userWaitingForResource).newInstance());
                 } catch (ResourceException e)
                 {
                     e.printStackTrace();
@@ -70,6 +70,6 @@ public class SharedUserAllInboxesNode
     @Override
     public Object getValueAt(int column)
     {
-        return "Inboxes";
+        return "Waiting for";
     }
 }

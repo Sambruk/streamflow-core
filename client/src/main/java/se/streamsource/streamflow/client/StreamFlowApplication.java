@@ -54,12 +54,15 @@ import se.streamsource.streamflow.client.ui.navigator.NavigatorView;
 import se.streamsource.streamflow.client.ui.shared.AddSharedTaskDialog;
 import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsModel;
 import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsView;
+import se.streamsource.streamflow.client.ui.shared.SharedDelegationsModel;
+import se.streamsource.streamflow.client.ui.shared.SharedDelegationsView;
 import se.streamsource.streamflow.client.ui.shared.SharedInboxModel;
 import se.streamsource.streamflow.client.ui.shared.SharedInboxView;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
@@ -213,7 +216,7 @@ public class StreamFlowApplication
     SharedInboxModel sharedInboxModel;
 
     @Action()
-    public void addSharedTask()
+    public void newSharedTask()
     {
         // Show dialog
         AddSharedTaskDialog dialog = addSharedTaskDialogs.newInstance();
@@ -241,6 +244,16 @@ public class StreamFlowApplication
     }
 
     @Action
+    public void delegateTasksFromInbox() throws ResourceException
+    {
+        Iterable<InboxTaskValue> selectedTasks = sharedInboxView.getSelectedTasks();
+        for (InboxTaskValue selectedTask : selectedTasks)
+        {
+            sharedInboxModel.delegate(selectedTask.task().get().identity(), "administrator");
+        }
+    }
+
+    @Action
     public void refreshSharedInbox() throws ResourceException
     {
         sharedInboxModel.refresh();
@@ -262,7 +275,7 @@ public class StreamFlowApplication
         
     }
 
-    // Sahred user assignments actions ------------------------------
+    // Shared user assignments actions ------------------------------
     @Service SharedAssignmentsView sharedAssignmentsView;
     @Service SharedAssignmentsModel sharedAssignmentsModel;
 
@@ -282,6 +295,42 @@ public class StreamFlowApplication
         }
     }
 
+    // Shared user delegations actions ------------------------------
+    @Service SharedDelegationsView sharedDelegationsView;
+    @Service SharedDelegationsModel sharedDelegationsModel;
+
+    @Action
+    public void refreshSharedDelegations() throws ResourceException
+    {
+        sharedDelegationsModel.refresh();
+    }
+
+    @Action
+    public void assignDelegatedTasksToMe() throws ResourceException
+    {
+        Iterable<DelegatedTaskValue> task = sharedDelegationsView.getSelectedTasks();
+        for (DelegatedTaskValue delegatedTaskValue : task)
+        {
+            sharedDelegationsModel.assignToMe(delegatedTaskValue.task().get().identity());
+        }
+    }
+
+    @Action
+    public void rejectUserDelegations() throws ResourceException
+    {
+        Iterable<DelegatedTaskValue> task = sharedDelegationsView.getSelectedTasks();
+        for (DelegatedTaskValue delegatedTaskValue : task)
+        {
+            sharedDelegationsModel.reject(delegatedTaskValue.task().get().identity());
+        }
+    }
+
+    // Shared user waiting for actions ------------------------------
+    @Action
+    public void delegateWaitingForTask()
+    {
+
+    }
 
     // Group administration actions ---------------------------------
     @Service

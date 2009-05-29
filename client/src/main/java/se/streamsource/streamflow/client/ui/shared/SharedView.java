@@ -91,7 +91,7 @@ public class SharedView
         JScrollPane sharedScroll = new JScrollPane(sharedTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        pane.setDividerLocation(300);
+        pane.setDividerLocation(200);
         pane.setResizeWeight(0);
 
         pane.setRightComponent(new JPanel());
@@ -99,7 +99,7 @@ public class SharedView
         JPanel sharedOutline = new JPanel(new BorderLayout());
         sharedOutline.add(sharedScroll, BorderLayout.CENTER);
 //        sharedOutline.add(toolbarView, BorderLayout.SOUTH);
-        sharedOutline.setMinimumSize(new Dimension(300, 400));
+        sharedOutline.setMinimumSize(new Dimension(150, 400));
 
         pane.setLeftComponent(sharedOutline);
 

@@ -31,9 +31,14 @@ public class SharedUserDelegatedTaskClientResource
         super(context, reference);
     }
 
-    public void accept() throws ResourceException
+    public void complete() throws ResourceException
     {
-        putCommand("accept");
+        putCommand("complete");
+    }
+
+    public void assignToMe() throws ResourceException
+    {
+        putCommand("assignToMe");
     }
 
     public void reject() throws ResourceException

@@ -15,12 +15,12 @@
 package se.streamsource.streamflow.web.domain.group;
 
 import org.qi4j.api.entity.Identity;
+import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * JAVADOC
  */
 public interface Participant
-        extends Identity
+        extends Identity, Describable
 {
-    String participantDescription();
 }

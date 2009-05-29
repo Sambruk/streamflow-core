@@ -22,19 +22,16 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
-import java.util.Set;
-import java.util.HashSet;
-
 import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -83,13 +80,13 @@ public class AddMemberDialog
         Set<ListItemValue> selected = new HashSet<ListItemValue>(groups.size() + users.size());
         selected.addAll(users);
         selected.addAll(groups);
-        WindowUtils.findJDialog(this).dispose();
         projectModel.addMembers(selected);
+        WindowUtils.findWindow(this).dispose();
     }
 
     @Action
     public void close()
     {
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 }

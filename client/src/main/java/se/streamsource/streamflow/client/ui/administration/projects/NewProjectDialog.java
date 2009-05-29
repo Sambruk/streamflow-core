@@ -18,7 +18,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import org.restlet.resource.ResourceException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -53,12 +52,12 @@ public class NewProjectDialog
     public void execute()
     {
         projectsModel.newProject(nameField.getText());
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 
     @Action
     public void close()
     {
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 }

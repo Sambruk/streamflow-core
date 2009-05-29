@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.shared.user.assignments;
+package se.streamsource.streamflow.web.resource.users.shared.user.delegations;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -20,35 +20,46 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.SharedInbox;
+import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.SharedTask;
-import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/shared/user/assignments/{task}
+ * /users/{user}/shared/user/delegations/{task}
  */
-public class SharedUserAssignmentsTaskServerResource
+public class SharedUserDelegatedTaskServerResource
         extends CommandQueryServerResource
 {
+
     public void complete()
     {
         String id = (String) getRequest().getAttributes().get("user");
         String taskId = (String) getRequest().getAttributes().get("task");
-        SharedTask task = uowf.currentUnitOfWork().get(SharedTask.class, taskId);
-        SharedInbox inbox = uowf.currentUnitOfWork().get(SharedInbox.class, id);
-        inbox.completeTask(task);
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        SharedTask task = uow.get(SharedTask.class, taskId);
+        Delegations delegations = uow.get(Delegations.class, id);
+        delegations.completeTask(task);
     }
 
-    public void describe(DescriptionValue descriptionValue)
+    public void assignToMe()
     {
+        String id = (String) getRequest().getAttributes().get("user");
         String taskId = (String) getRequest().getAttributes().get("task");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
-        describable.describe(descriptionValue.description().get());
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Delegations user = uow.get(Delegations.class, id);
+        SharedTask task = uow.get(SharedTask.class, taskId);
+        user.assignToMe(task);
+    }
+
+    public void reject()
+    {
+        String id = (String) getRequest().getAttributes().get("user");
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        SharedTask task = uow.get(SharedTask.class, taskId);
+        Delegations user = uow.get(Delegations.class, id);
+        user.reject(task);
     }
 
     @Override
@@ -56,18 +67,10 @@ public class SharedUserAssignmentsTaskServerResource
     {
         try
         {
-            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
-            String userId = (String) getRequest().getAttributes().get("user");
             String taskId = (String) getRequest().getAttributes().get("task");
-            Owner owner = uow.get(Owner.class, userId);
-            SharedTaskEntity sharedTask = uow.get(SharedTaskEntity.class, taskId);
-
-            if (sharedTask.owner().get().equals(owner))
-            {
-                // Only delete task if user owns it
-                uow.remove(sharedTask);
-            }
-            
+            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
+            SharedTask sharedTask = uow.get(SharedTask.class, taskId);
+            uow.remove(sharedTask);
             uow.complete();
         } catch (UnitOfWorkCompletionException e)
         {

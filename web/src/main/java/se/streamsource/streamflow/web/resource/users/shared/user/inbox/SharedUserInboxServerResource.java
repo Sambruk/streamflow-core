@@ -31,6 +31,8 @@ import se.streamsource.streamflow.resource.inbox.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
+import se.streamsource.streamflow.web.domain.task.Delegatable;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.SharedTask;
@@ -59,9 +61,11 @@ public class SharedUserInboxServerResource
         QueryBuilder<SharedTaskEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedTaskEntity.class);
         Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
         Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
+        Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         queryBuilder.where(and(
                 eq(ownableId, id),
                 isNull(assignee),
+                isNull(delegatee),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
         Query<SharedTaskEntity> inboxQuery = queryBuilder.newQuery();

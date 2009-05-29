@@ -14,14 +14,14 @@
 
 package se.streamsource.streamflow.web.resource.organizations.groups.participants;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.web.domain.group.*;
+import se.streamsource.streamflow.web.domain.group.Group;
+import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.group.Participants;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -46,7 +46,7 @@ public class ParticipantsServerResource
                 Participants.ParticipantsState participants = uow.get(Participants.ParticipantsState.class, groupId);
                 for (Participant participant : participants.participants())
                 {
-                    builder.addListItem(participant.participantDescription(), EntityReference.getEntityReference(participant));
+                    builder.addListItem(participant.getDescription(), EntityReference.getEntityReference(participant));
                 }
                 return builder.newList();
             }

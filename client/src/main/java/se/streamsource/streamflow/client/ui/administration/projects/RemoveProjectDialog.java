@@ -73,6 +73,6 @@ public class RemoveProjectDialog
     @Action
     public void close()
     {
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 }

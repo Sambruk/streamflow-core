@@ -23,7 +23,7 @@ import org.qi4j.api.mixin.Mixins;
 @Mixins(Delegations.DelegationsMixin.class)
 public interface Delegations
 {
-    void accept(SharedTask task);
+    void assignToMe(SharedTask task);
     void reject(SharedTask task);
     void completeTask(SharedTask task);
 
@@ -33,14 +33,15 @@ public interface Delegations
         @This
         Assignee assignee;
 
-        public void accept(SharedTask task)
+        public void assignToMe(SharedTask task)
         {
             task.assignTo(assignee);
         }
 
         public void reject(SharedTask task)
         {
-            task.reject();
+            task.markAsUnread();
+            task.rejectDelegation();
         }
 
         public void completeTask(SharedTask task)

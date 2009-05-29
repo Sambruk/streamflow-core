@@ -88,14 +88,14 @@ public class AddSharedTaskDialog
 
         inboxModel.newTask(command);
 
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 
     @Action
     public void close()
     {
         uowf.currentUnitOfWork().discard();
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 
     public ValueBuilder<NewSharedTaskCommand> getCommandBuilder()

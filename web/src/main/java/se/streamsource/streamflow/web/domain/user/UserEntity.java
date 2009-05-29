@@ -14,59 +14,75 @@
 
 package se.streamsource.streamflow.web.domain.user;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.Lifecycle;
+import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.contact.Contactable;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
-import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
 
 /**
  * JAVADOC
  */
-@Mixins(UserEntity.ParticipantMixin.class)
+@Concerns(UserEntity.LifecycleConcern.class)
 public interface UserEntity
         extends EntityComposite,
         Lifecycle,
 
         // Roles
+        Assignee,
+        Assignments,
+        Contactable,
+        Delegatee,
+        Delegations,
+        Describable,
         OrganizationParticipations,
         Owner,
-        Contactable,
         Participant,
-        Delegatee,
-        Assignee,
         SharedInbox,
-        Delegations,
-        Assignments,
         WaitingFor,
+
         // State
         Contactable.ContactableState,
-        OrganizationParticipations.OrganizationParticipationsState
+        OrganizationParticipations.OrganizationParticipationsState,
+        Describable.DescribableState
 {
     public static final String ADMINISTRATOR_USERNAME = "administrator";
 
     //        @Immutable
     Property<String> userName();
 
-    abstract class ParticipantMixin
-            implements Participant
+    class LifecycleConcern
+        extends ConcernOf<Lifecycle>
+        implements Lifecycle
     {
         @This
-        UserEntity user;
+        Identity identity;
+        @This DescribableState state;
 
-        public String participantDescription()
+        public void create() throws LifecycleException
         {
-            return user.userName().get();
+            state.description().set(identity.identity().get());
+
+            next.create();
+        }
+
+        public void remove() throws LifecycleException
+        {
+            next.remove();
         }
     }
 }

@@ -12,33 +12,37 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.assignments;
+package se.streamsource.streamflow.client.resource.users.shared.user.waitingfor;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.entity.EntityReference;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 
 /**
  * JAVADOC
  */
-public class SharedUserAssignedTaskClientResource
+public class SharedUserWaitingForTaskClientResource
         extends CommandQueryClientResource
 {
-    public SharedUserAssignedTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public SharedUserWaitingForTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
     public void complete() throws ResourceException
     {
-        postCommand("complete");
+        putCommand("complete");
     }
 
-    public void describe(DescriptionValue descriptionValue) throws ResourceException
+    public void delegate(String delegateeId) throws ResourceException
     {
-        putCommand("describe", descriptionValue);
+        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
+        putCommand("delegate", builder.newInstance());
     }
 }

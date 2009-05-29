@@ -12,26 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.resource.waitingfor;
 
-import org.qi4j.api.entity.EntityComposite;
-import se.streamsource.streamflow.domain.roles.Describable;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface SharedProjectEntity
-        extends EntityComposite, 
-        // Roles
-        SharedProject,
-        Describable,
-        Members,
-        ProjectStatus,
-
-        // State
-        Members.MembersState,
-        Describable.DescribableState,
-        ProjectStatus.ProjectStatusState
-
+public interface WaitingForTaskListValue
+        extends ValueComposite
 {
+    @UseDefaults
+    Property<List<WaitingForTaskValue>> tasks();
 }

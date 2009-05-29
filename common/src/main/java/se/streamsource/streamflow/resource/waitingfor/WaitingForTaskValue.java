@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.resource.delegation;
+package se.streamsource.streamflow.resource.waitingfor;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
@@ -26,19 +26,22 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public interface DelegatedTaskValue
+public interface WaitingForTaskValue
         extends ValueComposite
 {
     Property<EntityReference> task();
 
     Property<String> description();
 
-    Property<String> delegatedFrom();
+    Property<String> delegatedTo();
+
+    @UseDefaults
+    Property<String> assignedTo();
 
     Property<Date> delegatedOn();
 
     Property<TaskStates> status();
 
     @UseDefaults
-    Property<List<DelegatedTaskValue>> subTasks();
+    Property<List<WaitingForTaskValue>> subTasks();
 }

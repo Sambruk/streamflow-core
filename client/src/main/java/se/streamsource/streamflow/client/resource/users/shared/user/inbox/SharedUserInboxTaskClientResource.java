@@ -14,12 +14,15 @@
 
 package se.streamsource.streamflow.client.resource.users.shared.user.inbox;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 
 /**
  * JAVADOC
@@ -50,5 +53,12 @@ public class SharedUserInboxTaskClientResource
     public void markAsRead() throws ResourceException
     {
         putCommand("markAsRead");
+    }
+
+    public void delegate(String delegateeId) throws ResourceException
+    {
+        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
+        putCommand("delegate", builder.newInstance());
     }
 }

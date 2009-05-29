@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.shared.user.delegations;
+package se.streamsource.streamflow.web.resource.users.shared.user.waitingfor;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -26,30 +26,11 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/shared/user/delegations/{task}
+ * /users/{user}/shared/user/waitingfor/{task}
  */
-public class SharedUserDelegationsTaskServerResource
+public class SharedUserWaitingForTaskServerResource
         extends CommandQueryServerResource
 {
-    public void accept()
-    {
-        String id = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Delegations user = uow.get(Delegations.class, id);
-        SharedTask task = uow.get(SharedTask.class, taskId);
-        user.accept(task);
-    }
-
-    public void reject()
-    {
-        String id = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
-        Delegations user = uow.get(Delegations.class, id);
-        user.reject(task);
-    }
 
     public void complete()
     {

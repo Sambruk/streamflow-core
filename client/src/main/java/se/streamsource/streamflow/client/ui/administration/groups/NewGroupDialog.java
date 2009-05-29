@@ -57,12 +57,12 @@ public class NewGroupDialog
     public void execute()
     {
         groupsModel.newGroup(nameField.getText());
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 
     @Action
     public void close()
     {
-        WindowUtils.findJDialog(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 }

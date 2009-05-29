@@ -54,6 +54,7 @@
                 <artifactId>maven-jetty-plugin</artifactId>
                 <version>6.1.4</version>
                 <configuration>
+                    <webApp>${basedir}/target/streamflow-0.1</webApp>
                 </configuration>
             </plugin>
 
