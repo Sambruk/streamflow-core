@@ -38,10 +38,9 @@ import java.util.Set;
 /**
  * JAVADOC
  */
-public class ForwardSharedTasksDialog
+public class DelegateSharedTasksDialog
         extends JPanel
 {
-
     @Structure
     UnitOfWorkFactory uowf;
 
@@ -58,20 +57,19 @@ public class ForwardSharedTasksDialog
     private AddUsersView addUsersview;
     private AddProjectsView addProjectsView;
 
-    public ForwardSharedTasksDialog(@Service ApplicationContext context,
+    public DelegateSharedTasksDialog(@Service ApplicationContext context,
                                     @Uses final AddUsersView addUsersView,
                                     @Uses final AddProjectsView addProjectsView,
                                     @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
-        this.setName("#Search user or project to send to");
+        setName("#Search user or project to delegate to");
         setActionMap(context.getActionMap(this));
         this.addUsersview = addUsersView;
         this.addProjectsView = addProjectsView;
 
         JSplitPane dialog = new JSplitPane();
-
 
         final UsersIndividualSearch usersSearch = obf.newObjectBuilder(UsersIndividualSearch.class).use(addUsersView).newInstance();
         addUsersview.getSearchInputField().addKeyListener(new KeyAdapter(){
@@ -90,7 +88,7 @@ public class ForwardSharedTasksDialog
                 projectsSearch.search();
             }
         });
-
+        
         dialog.setLeftComponent(addUsersView);
         dialog.setRightComponent(addProjectsView);
         dialog.setPreferredSize(dialogSize);
@@ -111,13 +109,14 @@ public class ForwardSharedTasksDialog
                 Iterable<InboxTaskValue> selectedTasks = sharedInboxView.getSelectedTasks();
                 for (InboxTaskValue selectedTask : selectedTasks)
                 {
-                    sharedInboxModel.forward(selectedTask.task().get().identity(), theSelected.entity().get().identity());
+                    sharedInboxModel.delegate(selectedTask.task().get().identity(), theSelected.entity().get().identity());
                 }
             } catch(ResourceException e)
             {
                 e.printStackTrace();
             }
         }
+
         WindowUtils.findWindow(this).dispose();
     }
 

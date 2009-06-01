@@ -80,6 +80,7 @@ public class SharedUserInboxTaskServerResource
         SharedTaskEntity task = uow.get(SharedTaskEntity.class, taskId);
         SharedInbox receiverInbox = uow.get(SharedInbox.class, reference.entity().get().identity());
         receiverInbox.receiveTask(task);
+        receiverInbox.markAsUnread(task);
     }
 
     public void markAsRead()

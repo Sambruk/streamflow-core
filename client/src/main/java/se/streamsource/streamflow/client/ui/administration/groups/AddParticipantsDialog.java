@@ -20,15 +20,10 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AbstractTableSelectionView;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsView;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.*;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,16 +38,10 @@ public class AddParticipantsDialog
         extends JPanel
 {
     @Structure
-    ValueBuilderFactory vbf;
-
-    @Structure
     UnitOfWorkFactory uowf;
 
     @Service
     GroupModel groupModel;
-
-    @Service
-    OrganizationalUnitAdministrationModel organizationModel;
 
     Dimension dialogSize = new Dimension(600,300);
     private AbstractTableSelectionView addGroupsView;
@@ -63,7 +52,8 @@ public class AddParticipantsDialog
 
     public AddParticipantsDialog(@Service ApplicationContext context,
                            @Uses final AddUsersView addUsersView,
-                           @Uses final AddGroupsView addGroupsView)
+                           @Uses final AddGroupsView addGroupsView,
+                           @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
@@ -71,30 +61,22 @@ public class AddParticipantsDialog
         this.addGroupsView = addGroupsView;
         this.addUsersview = addUsersView;
 
-        addUsersView.setKeyListener(new KeyAdapter() {
+
+        final UsersOrganizationSearch usersSearch = obf.newObjectBuilder(UsersOrganizationSearch.class).use(addUsersView).newInstance();
+        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter(){
+            @Override
             public void keyReleased(KeyEvent keyEvent)
             {
-                try
-                {
-                    ListValue list = organizationModel.getOrganization().findUsers(addUsersView.searchText());
-                    addUsersView.getModel().setModel(list);
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
+                usersSearch.search();
             }
         });
-        addGroupsView.setKeyListener(new KeyAdapter() {
+
+        final GroupsOrganizationSearch groupsSearch = obf.newObjectBuilder(GroupsOrganizationSearch.class).use(addGroupsView).newInstance();
+        addGroupsView.getSearchInputField().addKeyListener(new KeyAdapter(){
+            @Override
             public void keyReleased(KeyEvent keyEvent)
             {
-                try
-                {
-                    ListValue list = organizationModel.getOrganization().findGroups(addGroupsView.searchText());
-                    addGroupsView.getModel().setModel(list);
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
+                groupsSearch.search();
             }
         });
 

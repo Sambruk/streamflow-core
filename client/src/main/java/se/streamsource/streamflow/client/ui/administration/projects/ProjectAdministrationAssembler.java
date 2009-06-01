@@ -18,10 +18,7 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsView;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.*;
 
 /**
  * JAVADOC
@@ -52,5 +49,8 @@ public class ProjectAdministrationAssembler
                 NewProjectDialog.class,
                 RemoveProjectDialog.class,
                 AddMemberDialog.class);
+        
+        module.addObjects(UsersOrganizationSearch.class,
+                GroupsOrganizationSearch.class);
     }
 }

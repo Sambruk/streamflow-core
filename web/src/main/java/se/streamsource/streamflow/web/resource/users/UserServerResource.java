@@ -21,6 +21,7 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -40,8 +41,12 @@ public class UserServerResource
         extends CommandQueryServerResource
 {
     @Override
-    protected Representation get() throws ResourceException
+    protected Representation get(Variant variant) throws ResourceException
     {
+        if (getRequest().getResourceRef().hasQuery())
+        {
+           return super.get(variant);
+        }
         return getHtml("resources/user.html");
     }
 

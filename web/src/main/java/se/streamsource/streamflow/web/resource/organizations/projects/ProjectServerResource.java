@@ -28,13 +28,11 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.roles.DescriptionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
-import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.group.Groups;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.project.*;
+import se.streamsource.streamflow.web.domain.project.Projects;
+import se.streamsource.streamflow.web.domain.project.Role;
+import se.streamsource.streamflow.web.domain.project.Roles;
+import se.streamsource.streamflow.web.domain.project.SharedProjectEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 
 /**
  * Mapped to:
@@ -48,6 +46,12 @@ public class ProjectServerResource
 
     @Structure
     ValueBuilderFactory vbf;
+
+    @Override
+    protected Representation get(Variant variant) throws ResourceException
+    {
+        return getHtml("resources/sharedproject.html");
+    }
 
     public EntityReferenceValue findRole(DescriptionValue query)
     {

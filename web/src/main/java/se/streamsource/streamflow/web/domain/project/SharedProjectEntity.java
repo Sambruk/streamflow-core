@@ -16,6 +16,9 @@ package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.EntityComposite;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.SharedInbox;
 
 /**
  * JAVADOC
@@ -25,8 +28,11 @@ public interface SharedProjectEntity
         // Roles
         SharedProject,
         Describable,
+        Delegatee,
         Members,
         ProjectStatus,
+        SharedInbox,
+        Owner,
 
         // State
         Members.MembersState,

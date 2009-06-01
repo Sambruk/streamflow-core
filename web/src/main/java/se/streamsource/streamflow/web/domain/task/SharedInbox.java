@@ -48,7 +48,6 @@ public interface SharedInbox
         public void receiveTask(SharedTaskEntity task)
         {
             task.ownedBy(owner);
-            task.isRead().set(Boolean.FALSE);
         }
 
         public void completeTask(SharedTask task)

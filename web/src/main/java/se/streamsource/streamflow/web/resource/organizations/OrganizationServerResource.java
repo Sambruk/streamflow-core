@@ -57,12 +57,6 @@ public class OrganizationServerResource
         {
            return super.get(variant);
         }
-        return get();    
-    }
-
-    @Override
-    protected Representation get() throws ResourceException
-    {
         return getHtml("resources/organization.html");
     }
 

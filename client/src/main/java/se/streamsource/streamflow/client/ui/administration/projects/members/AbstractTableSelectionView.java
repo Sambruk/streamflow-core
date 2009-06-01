@@ -21,7 +21,6 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyListener;
 
 /**
  * JAVADOC
@@ -36,7 +35,6 @@ public abstract class AbstractTableSelectionView
     {
         return nameField.getText();
     }
-    //protected abstract ListValue findValues(String valueName) throws ResourceException;
 
     protected AbstractTableSelectionModel model;
     private JTextField nameField;
@@ -49,19 +47,6 @@ public abstract class AbstractTableSelectionView
 
         model.setModel(vbf.newValueBuilder(ListValue.class).newInstance());
         nameField = new JTextField();
-        /*nameField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent keyEvent)
-            {
-                try
-                {
-                    ListValue list = findValues(nameField.getText());
-                    getModel().setModel(list);
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });*/
         nameField.setColumns(10);
         JPanel searchLine = new JPanel(new BorderLayout());
         searchLine.add(new JLabel(searchLineString()), BorderLayout.CENTER);
@@ -75,10 +60,9 @@ public abstract class AbstractTableSelectionView
         add(projectsScrollPane);
     }
 
-
-    public void setKeyListener(KeyListener listener)
+    public JTextField getSearchInputField()
     {
-        nameField.addKeyListener(listener);
+        return nameField;
     }
 
     public AbstractTableSelectionModel getModel()

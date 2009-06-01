@@ -42,7 +42,9 @@ public class SharedUIAssembler
                 SharedUserAssignmentsNode.class,
                 SharedUserDelegationsNode.class,
                 SharedUserWaitingForNode.class,
-                SharedProjectsNode.class);
+                SharedProjectsNode.class,
+                UsersIndividualSearch.class,
+                ProjectsIndividualSearch.class);
 
         UIAssemblers.addMV(module,
                 SharedModel.class,
@@ -74,7 +76,9 @@ public class SharedUIAssembler
                 AddProjectsView.class);
 
         UIAssemblers.addViews(module, SharedTaskView.class);
-        UIAssemblers.addDialogs(module, AddSharedTaskDialog.class, ForwardSharedTasksDialog.class);
+        UIAssemblers.addDialogs(module, AddSharedTaskDialog.class,
+                ForwardSharedTasksDialog.class,
+                DelegateSharedTasksDialog.class);
 
         UIAssemblers.addMV(module,
                 SharedInboxTaskDetailModel.class,

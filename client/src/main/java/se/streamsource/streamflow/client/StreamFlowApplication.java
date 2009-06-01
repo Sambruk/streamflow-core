@@ -227,11 +227,8 @@ public class StreamFlowApplication
     @Action
     public void delegateTasksFromInbox() throws ResourceException
     {
-        Iterable<InboxTaskValue> selectedTasks = sharedInboxView.getSelectedTasks();
-        for (InboxTaskValue selectedTask : selectedTasks)
-        {
-            sharedInboxModel.delegate(selectedTask.task().get().identity(), "administrator");
-        }
+        uowf.nestedUnitOfWork();
+        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(DelegateSharedTasksDialog.class).newInstance());
     }
 
     @Action
@@ -255,7 +252,6 @@ public class StreamFlowApplication
     {
         uowf.nestedUnitOfWork();
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(ForwardSharedTasksDialog.class).newInstance());
-
     }
 
     // Shared user assignments actions ------------------------------

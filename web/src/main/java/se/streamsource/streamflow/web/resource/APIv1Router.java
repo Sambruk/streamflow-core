@@ -28,6 +28,7 @@ import se.streamsource.streamflow.web.resource.organizations.groups.participants
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.inbox.ProjectInboxServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRoleServerResource;
@@ -91,6 +92,7 @@ public class APIv1Router
         attach("/organizations/{organization}/groups/{group}/participants/{participant}", createServerResourceFinder(ParticipantServerResource.class));
         attach("/organizations/{organization}/projects", createServerResourceFinder(ProjectsServerResource.class));
         attach("/organizations/{organization}/projects/{project}", createServerResourceFinder(ProjectServerResource.class));
+        attach("/organizations/{organization}/projects/{project}/inbox", createServerResourceFinder(ProjectInboxServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members", createServerResourceFinder(MembersServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members/{member}", createServerResourceFinder(MemberServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members/{member}/roles", createServerResourceFinder(MemberRolesServerResource.class));
@@ -98,8 +100,6 @@ public class APIv1Router
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));
-
-
     }
 
     private Finder createServerResourceFinder(Class<? extends ServerResource> resource)
