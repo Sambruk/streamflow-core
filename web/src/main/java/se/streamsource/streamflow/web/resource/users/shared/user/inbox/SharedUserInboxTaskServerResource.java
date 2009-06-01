@@ -78,11 +78,8 @@ public class SharedUserInboxTaskServerResource
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
         SharedTaskEntity task = uow.get(SharedTaskEntity.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
         SharedInbox receiverInbox = uow.get(SharedInbox.class, reference.entity().get().identity());
         receiverInbox.receiveTask(task);
-        //inbox.remove();
     }
 
     public void markAsRead()
