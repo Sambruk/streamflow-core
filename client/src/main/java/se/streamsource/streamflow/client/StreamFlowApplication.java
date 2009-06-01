@@ -260,7 +260,6 @@ public class StreamFlowApplication
     @Action
     public void delegateTasksFromInbox() throws ResourceException
     {
-        uowf.nestedUnitOfWork();
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(DelegateSharedTasksDialog.class).newInstance());
     }
 
@@ -365,7 +364,6 @@ public class StreamFlowApplication
     public void addGroup()
     {
         ValueBuilder<DescriptionDTO> newGroupBuilder = vbf.newValueBuilder(DescriptionDTO.class);
-        uowf.nestedUnitOfWork();
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(NewGroupDialog.class).use(newGroupBuilder).newInstance());
     }
 
@@ -379,7 +377,6 @@ public class StreamFlowApplication
     @Action
     public void addParticipant()
     {
-        uowf.nestedUnitOfWork();
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(AddParticipantsDialog.class).newInstance());
     }
 
