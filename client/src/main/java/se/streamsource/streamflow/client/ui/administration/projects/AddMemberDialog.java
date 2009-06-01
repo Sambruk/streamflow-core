@@ -19,12 +19,11 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddGroupsView;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.GroupsOrganizationSearch;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.UsersOrganizationSearch;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -47,24 +46,26 @@ public class AddMemberDialog
     ProjectModel projectModel;
 
     Dimension dialogSize = new Dimension(600,300);
-    private AddUsersView addUsersview;
-    private AddGroupsView addGroupsView;
+    private TableSelectionView addUsersView;
+    private TableSelectionView addGroupsView;
 
     public AddMemberDialog(@Service ApplicationContext context,
-                           @Structure ObjectBuilderFactory obf,
-                           @Uses final AddUsersView addUsersView,
-                           @Uses final AddGroupsView addGroupsView)
+                           @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
         setActionMap(context.getActionMap(this));
-        this.addUsersview = addUsersView;
-        this.addGroupsView = addGroupsView;
+
+        TableMultipleSelectionModel usersModel = obf.newObject(TableMultipleSelectionModel.class);
+        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, "#Search users").newInstance();
+
+        TableMultipleSelectionModel groupsModel = obf.newObject(TableMultipleSelectionModel.class);
+        this.addGroupsView= obf.newObjectBuilder(TableSelectionView.class).use(groupsModel, "#Search groups").newInstance();
 
         JSplitPane dialog = new JSplitPane();
 
         final UsersOrganizationSearch usersSearch = obf.newObjectBuilder(UsersOrganizationSearch.class).use(addUsersView).newInstance();
-        addUsersview.getSearchInputField().addKeyListener(new KeyAdapter(){
+        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter(){
             @Override
             public void keyReleased(KeyEvent keyEvent)
             {
@@ -91,8 +92,8 @@ public class AddMemberDialog
     @Action
     public void execute()
     {
-        Set<ListItemValue> selected = addUsersview.getModel().getSelected();
-        selected.addAll(addGroupsView.getModel().getSelected());
+        Set<ListItemValue> selected = ((TableMultipleSelectionModel)addUsersView.getModel()).getSelected();
+        selected.addAll(((TableMultipleSelectionModel)addGroupsView.getModel()).getSelected());
 
         projectModel.addMembers(selected);
         WindowUtils.findWindow(this).dispose();

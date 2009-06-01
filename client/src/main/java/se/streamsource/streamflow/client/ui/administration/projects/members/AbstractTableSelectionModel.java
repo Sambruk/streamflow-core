@@ -14,53 +14,42 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects.members;
 
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
 
-/**
- * Helper class that given a model consisting of a ListValue
- * gives a selection view with a check box next to all elements
- * of the list. The method getSelected returns a set of all
- * the checked elements of the ListValue
- *
- * Subclass it and
- */
-public abstract class AbstractTableSelectionModel
+public abstract class AbstractTableSelectionModel<T>
         extends AbstractTableModel
 {
 
-    public abstract String[] getColumnNames();
+    abstract public T getSelected();
+
+    public void setColumnNames(String... columnNames)
+    {
+        this.columnNames = columnNames;
+    }
+
+    String[] columnNames;
 
     public AbstractTableSelectionModel()
     {
         clearSelection();
     }
 
+    public ListValue getModel()
+    {
+        return model;
+    }
+
     private ListValue model;
-    private Map<ListItemValue, Boolean> selected;
 
     public void setModel(ListValue projects)
     {
         this.model = projects;
         clearSelection();
-        fireTableDataChanged();
     }
 
-    public void clearSelection()
-    {
-        selected = new HashMap<ListItemValue, Boolean>();
-    }
-
-    public Set<ListItemValue> getSelected()
-    {
-        return new HashSet<ListItemValue>(selected.keySet());
-    }
+    abstract public void clearSelection();
 
     Class[] columnClasses = {Boolean.class, String.class};
     boolean[] columnEditable = {true, false};
@@ -77,31 +66,10 @@ public abstract class AbstractTableSelectionModel
         return columnEditable[column];
     }
 
-    public Object getValueAt(int row, int column)
-    {
-        switch (column)
-        {
-            case 0: return selected.get(model.items().get().get(row));
-            case 1: return model.items().get().get(row).description().get();
-        }
-        return null;
-    }
-
-    @Override
-    public void setValueAt(Object value, int row, int column)
-    {
-        if (!(Boolean) value)
-        {
-            selected.remove(model.items().get().get(row));
-        } else
-        {
-            selected.put(model.items().get().get(row), Boolean.TRUE);
-        }
-    }
-
     public String getColumnName(int column)
     {
-        return getColumnNames()[column];
+        if (columnNames == null) return "";
+        return columnNames[column];
     }
 
     public int getRowCount()

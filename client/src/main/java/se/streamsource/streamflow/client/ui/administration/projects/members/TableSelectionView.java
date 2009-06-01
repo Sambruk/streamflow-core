@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.administration.projects.members;
 
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -25,11 +26,9 @@ import java.awt.*;
 /**
  * JAVADOC
  */
-public abstract class AbstractTableSelectionView
+public class TableSelectionView
         extends JPanel
 {
-
-    protected abstract String searchLineString();
 
     public String searchText()
     {
@@ -39,8 +38,9 @@ public abstract class AbstractTableSelectionView
     protected AbstractTableSelectionModel model;
     private JTextField nameField;
 
-    public AbstractTableSelectionView(AbstractTableSelectionModel model,
-                                      @Structure ValueBuilderFactory vbf)
+    public TableSelectionView(@Structure ValueBuilderFactory vbf,
+                              @Uses AbstractTableSelectionModel model,
+                              @Uses String searchLineString)
     {
         super(new BorderLayout());
         this.model = model;
@@ -49,7 +49,7 @@ public abstract class AbstractTableSelectionView
         nameField = new JTextField();
         nameField.setColumns(10);
         JPanel searchLine = new JPanel(new BorderLayout());
-        searchLine.add(new JLabel(searchLineString()), BorderLayout.CENTER);
+        searchLine.add(new JLabel(searchLineString), BorderLayout.CENTER);
         searchLine.add(nameField, BorderLayout.LINE_END);
         add(searchLine, BorderLayout.NORTH);
 

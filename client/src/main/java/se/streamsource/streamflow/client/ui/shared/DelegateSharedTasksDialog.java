@@ -19,21 +19,21 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddProjectsView;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TableModelEvent;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Set;
 
 /**
  * JAVADOC
@@ -54,25 +54,29 @@ public class DelegateSharedTasksDialog
     SharedInboxModel sharedInboxModel;
 
     Dimension dialogSize = new Dimension(600,300);
-    private AddUsersView addUsersview;
-    private AddProjectsView addProjectsView;
+    private TableSelectionView addUsersView;
+    private TableSelectionView addProjectsView;
 
     public DelegateSharedTasksDialog(@Service ApplicationContext context,
-                                    @Uses final AddUsersView addUsersView,
-                                    @Uses final AddProjectsView addProjectsView,
                                     @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
         setName("#Search user or project to delegate to");
         setActionMap(context.getActionMap(this));
-        this.addUsersview = addUsersView;
-        this.addProjectsView = addProjectsView;
+
+        TableSingleSelectionModel usersModel = obf.newObject(TableSingleSelectionModel.class);
+        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, "#Search users").newInstance();
+
+        TableSingleSelectionModel projectsModel = obf.newObject(TableSingleSelectionModel.class);
+        this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, "#Search projects").newInstance();
+
+
 
         JSplitPane dialog = new JSplitPane();
 
         final UsersIndividualSearch usersSearch = obf.newObjectBuilder(UsersIndividualSearch.class).use(addUsersView).newInstance();
-        addUsersview.getSearchInputField().addKeyListener(new KeyAdapter(){
+        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter(){
             @Override
             public void keyReleased(KeyEvent keyEvent)
             {
@@ -88,6 +92,28 @@ public class DelegateSharedTasksDialog
                 projectsSearch.search();
             }
         });
+        addProjectsView.getModel().addTableModelListener(new TableModelListener(){
+
+            public void tableChanged(TableModelEvent tableModelEvent)
+            {
+                if (TableModelEvent.UPDATE == tableModelEvent.getType())
+                {
+                    addUsersView.getModel().clearSelection();
+                }
+            }
+        });
+
+        addUsersView.getModel().addTableModelListener(new TableModelListener(){
+
+            public void tableChanged(TableModelEvent tableModelEvent)
+            {
+                if (TableModelEvent.UPDATE == tableModelEvent.getType())
+                {
+                    addProjectsView.getModel().clearSelection();
+                }
+            }
+        });
+
         
         dialog.setLeftComponent(addUsersView);
         dialog.setRightComponent(addProjectsView);
@@ -99,17 +125,20 @@ public class DelegateSharedTasksDialog
     @Action
     public void execute()
     {
-        Set<ListItemValue> selected = addUsersview.getModel().getSelected();
-        selected.addAll(addProjectsView.getModel().getSelected());
-        if (selected.size() == 1)
+        ListItemValue selected = ((TableSingleSelectionModel) addUsersView.getModel()).getSelected();
+        if (selected == null)
         {
-            ListItemValue theSelected = (ListItemValue) selected.toArray()[0];
+            selected = ((TableSingleSelectionModel) addProjectsView.getModel()).getSelected();
+        }
+
+        if (selected != null)
+        {
             try
             {
                 Iterable<InboxTaskDTO> selectedTasks = sharedInboxView.getSelectedTasks();
                 for (InboxTaskDTO selectedTask : selectedTasks)
                 {
-                    sharedInboxModel.delegate(selectedTask.task().get().identity(), theSelected.entity().get().identity());
+                    sharedInboxModel.delegate(selectedTask.task().get().identity(), selected.entity().get().identity());
                 }
             } catch(ResourceException e)
             {

@@ -20,7 +20,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AbstractTableSelectionView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class ProjectsIndividualSearch
 {
 
     @Uses
-    AbstractTableSelectionView view;
+    TableSelectionView view;
 
     @Service
     IndividualRepository individual;

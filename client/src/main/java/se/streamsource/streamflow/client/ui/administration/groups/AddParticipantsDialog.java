@@ -19,10 +19,12 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.ui.administration.projects.members.*;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.GroupsOrganizationSearch;
+import se.streamsource.streamflow.client.ui.administration.projects.members.UsersOrganizationSearch;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -44,23 +46,24 @@ public class AddParticipantsDialog
     GroupModel groupModel;
 
     Dimension dialogSize = new Dimension(600,300);
-    private AbstractTableSelectionView addGroupsView;
-    private AbstractTableSelectionView addUsersview;
+    private TableSelectionView addGroupsView;
+    private TableSelectionView addUsersView;
 
     @Service
     GroupsView groupsView;
 
     public AddParticipantsDialog(@Service ApplicationContext context,
-                           @Uses final AddUsersView addUsersView,
-                           @Uses final AddGroupsView addGroupsView,
-                           @Structure ObjectBuilderFactory obf)
+                                 @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
         setActionMap(context.getActionMap(this));
-        this.addGroupsView = addGroupsView;
-        this.addUsersview = addUsersView;
 
+        TableMultipleSelectionModel usersModel = obf.newObject(TableMultipleSelectionModel.class);
+        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, "#Search users").newInstance();
+
+        TableMultipleSelectionModel groupsModel = obf.newObject(TableMultipleSelectionModel.class);
+        this.addGroupsView= obf.newObjectBuilder(TableSelectionView.class).use(groupsModel, "#Search groups").newInstance();
 
         final UsersOrganizationSearch usersSearch = obf.newObjectBuilder(UsersOrganizationSearch.class).use(addUsersView).newInstance();
         addUsersView.getSearchInputField().addKeyListener(new KeyAdapter(){
@@ -92,8 +95,8 @@ public class AddParticipantsDialog
     @Action
     public void execute()
     {
-        Set<ListItemValue> selected = addUsersview.getModel().getSelected();
-        selected.addAll(addGroupsView.getModel().getSelected());
+        Set<ListItemValue> selected = ((TableMultipleSelectionModel)addUsersView.getModel()).getSelected();
+        selected.addAll(((TableMultipleSelectionModel)addGroupsView.getModel()).getSelected());
 
         // remove the current group, it cannot be added to itself
         ListItemValue selectedItem = (ListItemValue) groupsView.getGroupList().getSelectedValue();

@@ -49,7 +49,7 @@ public class ProjectsView
     UnitOfWorkFactory uowf;
     public JList projectList;
 
-    public ProjectsView(@Service ActionMap am, @Service final ProjectsModel model)
+    public ProjectsView(@Service ActionMap am, @Service ProjectsModel model)
     {
         super(new BorderLayout());
         this.model = model;

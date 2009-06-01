@@ -19,21 +19,21 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddProjectsView;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Set;
 
 /**
  * JAVADOC
@@ -55,25 +55,27 @@ public class ForwardSharedTasksDialog
     SharedInboxModel sharedInboxModel;
 
     Dimension dialogSize = new Dimension(600,300);
-    private AddUsersView addUsersview;
-    private AddProjectsView addProjectsView;
+    private TableSelectionView addUsersview;
+    private TableSelectionView addProjectsView;
 
     public ForwardSharedTasksDialog(@Service ApplicationContext context,
-                                    @Uses final AddUsersView addUsersView,
-                                    @Uses final AddProjectsView addProjectsView,
                                     @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
         this.setName("#Search user or project to send to");
         setActionMap(context.getActionMap(this));
-        this.addUsersview = addUsersView;
-        this.addProjectsView = addProjectsView;
+
+        TableSingleSelectionModel usersModel = obf.newObject(TableSingleSelectionModel.class);
+        this.addUsersview = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, "#Search users").newInstance();
+
+        TableSingleSelectionModel projectsModel = obf.newObject(TableSingleSelectionModel.class);
+        this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, "#Search projects").newInstance();
 
         JSplitPane dialog = new JSplitPane();
 
 
-        final UsersIndividualSearch usersSearch = obf.newObjectBuilder(UsersIndividualSearch.class).use(addUsersView).newInstance();
+        final UsersIndividualSearch usersSearch = obf.newObjectBuilder(UsersIndividualSearch.class).use(addUsersview).newInstance();
         addUsersview.getSearchInputField().addKeyListener(new KeyAdapter(){
             @Override
             public void keyReleased(KeyEvent keyEvent)
@@ -91,7 +93,29 @@ public class ForwardSharedTasksDialog
             }
         });
 
-        dialog.setLeftComponent(addUsersView);
+        addProjectsView.getModel().addTableModelListener(new TableModelListener(){
+
+            public void tableChanged(TableModelEvent tableModelEvent)
+            {
+                if (TableModelEvent.UPDATE == tableModelEvent.getType())
+                {
+                    addUsersview.getModel().clearSelection();
+                }
+            }
+        });
+        
+        addUsersview.getModel().addTableModelListener(new TableModelListener(){
+
+            public void tableChanged(TableModelEvent tableModelEvent)
+            {
+                if (TableModelEvent.UPDATE == tableModelEvent.getType()) 
+                {
+                    addProjectsView.getModel().clearSelection();
+                }
+            }
+        });
+
+        dialog.setLeftComponent(addUsersview);
         dialog.setRightComponent(addProjectsView);
         dialog.setPreferredSize(dialogSize);
         setPreferredSize(dialogSize);
@@ -101,17 +125,20 @@ public class ForwardSharedTasksDialog
     @Action
     public void execute()
     {
-        Set<ListItemValue> selected = addUsersview.getModel().getSelected();
-        selected.addAll(addProjectsView.getModel().getSelected());
-        if (selected.size() == 1)
+        ListItemValue selected = ((TableSingleSelectionModel) addUsersview.getModel()).getSelected();
+        if (selected == null)
         {
-            ListItemValue theSelected = (ListItemValue) selected.toArray()[0];
+            selected = ((TableSingleSelectionModel) addProjectsView.getModel()).getSelected();
+        }
+
+        if (selected != null)
+        {
             try
             {
                 Iterable<InboxTaskDTO> selectedTasks = sharedInboxView.getSelectedTasks();
                 for (InboxTaskDTO selectedTask : selectedTasks)
                 {
-                    sharedInboxModel.forward(selectedTask.task().get().identity(), theSelected.entity().get().identity());
+                    sharedInboxModel.forward(selectedTask.task().get().identity(), selected.entity().get().identity());
                 }
             } catch(ResourceException e)
             {

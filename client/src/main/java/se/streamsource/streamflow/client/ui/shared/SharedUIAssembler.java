@@ -18,10 +18,9 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddProjectsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddProjectsView;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 
 /**
  * JAVADOC
@@ -46,6 +45,10 @@ public class SharedUIAssembler
                 UsersIndividualSearch.class,
                 ProjectsIndividualSearch.class);
 
+        UIAssemblers.addModels(module, TableMultipleSelectionModel.class,
+                TableSingleSelectionModel.class);
+        UIAssemblers.addViews(module, TableSelectionView.class);
+
         UIAssemblers.addMV(module,
                 SharedModel.class,
                 SharedView.class);
@@ -66,14 +69,6 @@ public class SharedUIAssembler
         UIAssemblers.addMV(module,
                 SharedWaitingForModel.class,
                 SharedWaitingForView.class);
-
-        UIAssemblers.addMV(module,
-                AddUsersModel.class,
-                AddUsersView.class);
-
-        UIAssemblers.addMV(module,
-                AddProjectsModel.class,
-                AddProjectsView.class);
 
         UIAssemblers.addViews(module, SharedTaskView.class);
         UIAssemblers.addDialogs(module, AddSharedTaskDialog.class,

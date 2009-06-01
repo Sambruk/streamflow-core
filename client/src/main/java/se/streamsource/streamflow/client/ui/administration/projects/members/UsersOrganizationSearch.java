@@ -23,7 +23,7 @@ public class UsersOrganizationSearch
 {
 
     @Uses
-    AbstractTableSelectionView view;
+    TableSelectionView view;
 
     @Service
     OrganizationalUnitAdministrationModel organizationModel;

@@ -28,19 +28,17 @@ public class ProjectAdministrationAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        UIAssemblers.addViews(module, ProjectAdminView.class);
+        UIAssemblers.addModels(module, TableMultipleSelectionModel.class);
+
+        UIAssemblers.addViews(module, ProjectAdminView.class,
+                TableSelectionView.class);
+
 
         UIAssemblers.addMV(module, ProjectsModel.class,
                 ProjectsView.class);
 
         UIAssemblers.addMV(module, ProjectModel.class,
                 ProjectView.class);
-
-        UIAssemblers.addMV(module, AddGroupsModel.class,
-                AddGroupsView.class);
-
-        UIAssemblers.addMV(module, AddUsersModel.class,
-                AddUsersView.class);
 
         UIAssemblers.addMV(module, MemberRolesModel.class,
                 MemberRolesView.class);
