@@ -42,9 +42,6 @@ public class ForwardSharedTasksDialog
         extends JPanel
 {
 
-    @Structure
-    UnitOfWorkFactory uowf;
-
     @Service
     ProjectModel projectModel;
 
@@ -59,10 +56,13 @@ public class ForwardSharedTasksDialog
     private TableSelectionView addProjectsView;
 
     public ForwardSharedTasksDialog(@Service ApplicationContext context,
-                                    @Structure ObjectBuilderFactory obf)
+                                    @Structure ObjectBuilderFactory obf,
+                                    @Structure UnitOfWorkFactory uowf)
     {
         super(new BorderLayout());
 
+        uowf.newUnitOfWork();
+        
         this.setName("#Search user or project to send to");
         setActionMap(context.getActionMap(this));
 
