@@ -17,17 +17,12 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.jdesktop.swingx.tree.TreeModelSupport;
 import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.administration.query.NoSuchUserException;
-import se.streamsource.streamflow.application.administration.query.RegistrationException;
 import se.streamsource.streamflow.client.ConnectionException;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
-import se.streamsource.streamflow.domain.DuplicateException;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;

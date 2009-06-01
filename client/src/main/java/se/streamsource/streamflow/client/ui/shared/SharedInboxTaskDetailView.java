@@ -27,11 +27,12 @@ public class SharedInboxTaskDetailView
         extends JTabbedPane
 {
     public SharedInboxTaskDetailView(@Service ApplicationContext appContext,
-                                     @Service SharedInboxGeneralTaskDetailView generalView)
+                                     @Service SharedInboxGeneralTaskDetailView generalView,
+                                     @Service SharedInboxCommentsTaskDetailView commentsView)
     {
         addTab("General", generalView);
         addTab("Metadata", new JLabel("TODO"));
-        addTab("Comments", new JLabel("TODO"));
+        addTab("Comments", commentsView);
         addTab("Attachments", new JLabel("TODO"));
     }
 }

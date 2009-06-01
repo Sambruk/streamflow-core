@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.domain;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
+import se.streamsource.streamflow.web.domain.comment.CommentAssembler;
 import se.streamsource.streamflow.web.domain.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.domain.task.SharedTaskAssembler;
 import se.streamsource.streamflow.web.domain.user.UserAssembler;
@@ -31,6 +32,7 @@ public class WebDomainAssembler
         new OrganizationAssembler().assemble(domainLayer.newModuleAssembly("Organization"));
         new SharedTaskAssembler().assemble(domainLayer.newModuleAssembly("Task"));
         new UserAssembler().assemble(domainLayer.newModuleAssembly("User"));
-        new CommonResourceAssembler().assemble(domainLayer.newModuleAssembly("Values"));
+        new CommentAssembler().assemble(domainLayer.newModuleAssembly("Comments"));
+        new CommonResourceAssembler().assemble(domainLayer.newModuleAssembly("Common"));
     }
 }

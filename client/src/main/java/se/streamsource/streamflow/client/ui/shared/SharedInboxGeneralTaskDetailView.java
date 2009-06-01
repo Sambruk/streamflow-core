@@ -27,7 +27,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.FormEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.resource.inbox.InboxTaskGeneralValue;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.JPanel;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class SharedInboxGeneralTaskDetailView
     @Service
     SharedInboxTaskDetailModel model;
     public FormEditor editor;
-    public ValueBuilder<InboxTaskGeneralValue> valueBuilder;
+    public ValueBuilder<TaskGeneralDTO> valueBuilder;
 
     public SharedInboxGeneralTaskDetailView(@Service ApplicationContext appContext)
     {
@@ -56,7 +56,7 @@ public class SharedInboxGeneralTaskDetailView
 
         sharedTaskBinder = new StateBinder();
         sharedTaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        InboxTaskGeneralValue template = sharedTaskBinder.bindingTemplate(InboxTaskGeneralValue.class);
+        TaskGeneralDTO template = sharedTaskBinder.bindingTemplate(TaskGeneralDTO.class);
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
         bb
@@ -92,7 +92,7 @@ public class SharedInboxGeneralTaskDetailView
             {
                 if (model.sharedTask() != null)
                 {
-                    InboxTaskGeneralValue general = model.sharedTask().general();
+                    TaskGeneralDTO general = model.sharedTask().general().general();
                     valueBuilder = general.buildWith();
                     sharedTaskBinder.updateWith(valueBuilder.prototype());
                 }

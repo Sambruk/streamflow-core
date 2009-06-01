@@ -19,7 +19,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListValue;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 
 /**
  * JAVADOC
@@ -32,9 +32,9 @@ public class SharedUserWaitingForClientResource
         super(context, reference);
     }
 
-    public WaitingForTaskListValue tasks() throws ResourceException
+    public WaitingForTaskListDTO tasks() throws ResourceException
     {
-        return query("tasks", WaitingForTaskListValue.class);
+        return query("tasks", WaitingForTaskListDTO.class);
     }
 
     public SharedUserWaitingForTaskClientResource task(String id)

@@ -23,7 +23,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 /**
  * JAVADOC
@@ -42,21 +42,21 @@ public class OrganizationClientResource
 
     public ListValue findUsers(String participantName) throws ResourceException
     {
-        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
         builder.prototype().description().set(participantName);
         return query("findUsers", builder.newInstance(), ListValue.class);
     }
 
     public ListValue findGroups(String groupName) throws ResourceException
     {
-        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
         builder.prototype().description().set(groupName);
         return query("findGroups", builder.newInstance(), ListValue.class);        
     }
 
     public ListValue findProjects(String projectName) throws ResourceException
     {
-        ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
         builder.prototype().description().set(projectName);
         return query("findProjects", builder.newInstance(), ListValue.class);
     }

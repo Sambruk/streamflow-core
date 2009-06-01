@@ -21,7 +21,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
@@ -41,7 +41,7 @@ public class SharedUserWaitingForTaskClientResource
 
     public void delegate(String delegateeId) throws ResourceException
     {
-        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
         putCommand("delegate", builder.newInstance());
     }

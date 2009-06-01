@@ -19,7 +19,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 /**
  * JAVADOC
@@ -37,7 +37,7 @@ public class SharedUserAssignedTaskClientResource
         postCommand("complete");
     }
 
-    public void describe(DescriptionValue descriptionValue) throws ResourceException
+    public void describe(DescriptionDTO descriptionValue) throws ResourceException
     {
         putCommand("describe", descriptionValue);
     }

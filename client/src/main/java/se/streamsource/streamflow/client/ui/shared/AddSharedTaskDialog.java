@@ -94,7 +94,6 @@ public class AddSharedTaskDialog
     @Action
     public void close()
     {
-        uowf.currentUnitOfWork().discard();
         WindowUtils.findWindow(this).dispose();
     }
 

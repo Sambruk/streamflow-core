@@ -23,8 +23,8 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListValue;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
+import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
@@ -43,7 +43,7 @@ import java.util.List;
 public class SharedUserDelegationsServerResource
         extends CommandQueryServerResource
 {
-    public DelegationsTaskListValue tasks()
+    public DelegationsTaskListDTO tasks()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
@@ -61,10 +61,10 @@ public class SharedUserDelegationsServerResource
         Query<SharedTaskEntity> delegationsQuery = queryBuilder.newQuery();
         delegationsQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
-        ValueBuilder<DelegatedTaskValue> builder = vbf.newValueBuilder(DelegatedTaskValue.class);
-        DelegatedTaskValue prototype = builder.prototype();
-        ValueBuilder<DelegationsTaskListValue> listBuilder = vbf.newValueBuilder(DelegationsTaskListValue.class);
-        List<DelegatedTaskValue> list = listBuilder.prototype().tasks().get();
+        ValueBuilder<DelegatedTaskDTO> builder = vbf.newValueBuilder(DelegatedTaskDTO.class);
+        DelegatedTaskDTO prototype = builder.prototype();
+        ValueBuilder<DelegationsTaskListDTO> listBuilder = vbf.newValueBuilder(DelegationsTaskListDTO.class);
+        List<DelegatedTaskDTO> list = listBuilder.prototype().tasks().get();
         for (SharedTaskEntity sharedTask : delegationsQuery)
         {
             Owner owner = uow.get(Owner.class, sharedTask.owner().get().identity().get());

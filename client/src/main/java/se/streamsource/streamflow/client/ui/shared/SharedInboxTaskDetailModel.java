@@ -14,26 +14,38 @@
 
 package se.streamsource.streamflow.client.ui.shared;
 
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.task.general.SharedUserInboxTaskGeneralClientResource;
+import org.qi4j.api.injection.scope.Service;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxTaskClientResource;
+
+import java.io.IOException;
 
 /**
  * JAVADOC
  */
 public class SharedInboxTaskDetailModel
 {
-    private SharedUserInboxTaskGeneralClientResource sharedTask;
+    private SharedUserInboxTaskClientResource sharedTask;
+
+    @Service TaskCommentsModel comments;
 
     public SharedInboxTaskDetailModel()
     {
     }
 
-    public SharedUserInboxTaskGeneralClientResource sharedTask()
+    public SharedUserInboxTaskClientResource sharedTask()
     {
         return sharedTask;
     }
 
-    public void setResource(SharedUserInboxTaskGeneralClientResource sharedTask)
+    public TaskCommentsModel comments()
+    {
+        return comments;
+    }
+
+    public void setResource(SharedUserInboxTaskClientResource sharedTask) throws IOException, ResourceException
     {
         this.sharedTask = sharedTask;
+        comments.setResource(sharedTask.comments());
     }
 }

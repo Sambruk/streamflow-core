@@ -27,7 +27,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
@@ -37,23 +37,50 @@ import org.restlet.data.Protocol;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.ui.administration.groups.*;
-import se.streamsource.streamflow.client.ui.administration.projects.*;
+import se.streamsource.streamflow.client.ui.administration.groups.AddParticipantsDialog;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupModel;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupView;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
+import se.streamsource.streamflow.client.ui.administration.groups.NewGroupDialog;
+import se.streamsource.streamflow.client.ui.administration.projects.AddMemberDialog;
+import se.streamsource.streamflow.client.ui.administration.projects.NewProjectDialog;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectView;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
 import se.streamsource.streamflow.client.ui.administration.roles.NewRoleDialog;
 import se.streamsource.streamflow.client.ui.navigator.NavigatorView;
-import se.streamsource.streamflow.client.ui.shared.*;
+import se.streamsource.streamflow.client.ui.shared.AddCommentDialog;
+import se.streamsource.streamflow.client.ui.shared.AddSharedTaskDialog;
+import se.streamsource.streamflow.client.ui.shared.DelegateSharedTasksDialog;
+import se.streamsource.streamflow.client.ui.shared.ForwardSharedTasksDialog;
+import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsModel;
+import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsView;
+import se.streamsource.streamflow.client.ui.shared.SharedDelegationsModel;
+import se.streamsource.streamflow.client.ui.shared.SharedDelegationsView;
+import se.streamsource.streamflow.client.ui.shared.SharedInboxModel;
+import se.streamsource.streamflow.client.ui.shared.SharedInboxView;
+import se.streamsource.streamflow.client.ui.shared.SharedView;
+import se.streamsource.streamflow.client.ui.shared.TaskCommentsModel;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
+import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -150,6 +177,9 @@ public class StreamFlowApplication
     }
 
     // Controller actions -------------------------------------------
+    @Service
+    SharedView sharedView;
+
     // Menu actions
     // Account menu
     @Action
@@ -196,6 +226,9 @@ public class StreamFlowApplication
     @Service
     SharedInboxModel sharedInboxModel;
 
+    @Service
+    TaskCommentsModel taskCommentsModel;
+
     @Action()
     public void newSharedTask()
     {
@@ -209,7 +242,7 @@ public class StreamFlowApplication
     {
         // Show dialog
         AddSharedTaskDialog dialog = addSharedTaskDialogs.newInstance();
-        InboxTaskValue selected = sharedInboxView.getSelectedTask();
+        InboxTaskDTO selected = sharedInboxView.getSelectedTask();
         dialog.getCommandBuilder().prototype().parentTask().set(selected.task().get());
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), dialog);
     }
@@ -217,8 +250,8 @@ public class StreamFlowApplication
     @Action
     public void assignTasksToMe() throws ResourceException
     {
-        Iterable<InboxTaskValue> selectedTasks = sharedInboxView.getSelectedTasks();
-        for (InboxTaskValue selectedTask : selectedTasks)
+        Iterable<InboxTaskDTO> selectedTasks = sharedInboxView.getSelectedTasks();
+        for (InboxTaskDTO selectedTask : selectedTasks)
         {
             sharedInboxModel.assignToMe(selectedTask.task().get().identity());
         }
@@ -240,8 +273,8 @@ public class StreamFlowApplication
     @Action
     public void removeSharedTasks() throws ResourceException
     {
-        Iterable<InboxTaskValue> selected = sharedInboxView.getSelectedTasks();
-        for (InboxTaskValue taskValue : selected)
+        Iterable<InboxTaskDTO> selected = sharedInboxView.getSelectedTasks();
+        for (InboxTaskDTO taskValue : selected)
         {
             sharedInboxModel.removeTask(taskValue.task().get().identity());
         }
@@ -250,8 +283,13 @@ public class StreamFlowApplication
     @Action
     public void forwardSharedTasksTo()
     {
-        uowf.nestedUnitOfWork();
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(ForwardSharedTasksDialog.class).newInstance());
+    }
+
+    @Action
+    public void addTaskComment() throws ResourceException, IOException
+    {
+        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(AddCommentDialog.class).newInstance());
     }
 
     // Shared user assignments actions ------------------------------
@@ -267,10 +305,10 @@ public class StreamFlowApplication
     @Action
     public void removeSharedAssignedTasks() throws ResourceException
     {
-        Iterable<AssignedTaskValue> selected = sharedAssignmentsView.getSelectedTasks();
-        for (AssignedTaskValue taskValue : selected)
+        Iterable<AssignedTaskDTO> selected = sharedAssignmentsView.getSelectedTasks();
+        for (AssignedTaskDTO taskDTO : selected)
         {
-            sharedAssignmentsModel.removeTask(taskValue.task().get().identity());
+            sharedAssignmentsModel.removeTask(taskDTO.task().get().identity());
         }
     }
 
@@ -287,8 +325,8 @@ public class StreamFlowApplication
     @Action
     public void assignDelegatedTasksToMe() throws ResourceException
     {
-        Iterable<DelegatedTaskValue> task = sharedDelegationsView.getSelectedTasks();
-        for (DelegatedTaskValue delegatedTaskValue : task)
+        Iterable<DelegatedTaskDTO> task = sharedDelegationsView.getSelectedTasks();
+        for (DelegatedTaskDTO delegatedTaskValue : task)
         {
             sharedDelegationsModel.assignToMe(delegatedTaskValue.task().get().identity());
         }
@@ -297,8 +335,8 @@ public class StreamFlowApplication
     @Action
     public void rejectUserDelegations() throws ResourceException
     {
-        Iterable<DelegatedTaskValue> task = sharedDelegationsView.getSelectedTasks();
-        for (DelegatedTaskValue delegatedTaskValue : task)
+        Iterable<DelegatedTaskDTO> task = sharedDelegationsView.getSelectedTasks();
+        for (DelegatedTaskDTO delegatedTaskValue : task)
         {
             sharedDelegationsModel.reject(delegatedTaskValue.task().get().identity());
         }
@@ -326,7 +364,7 @@ public class StreamFlowApplication
     @Action
     public void addGroup()
     {
-        ValueBuilder<DescriptionValue> newGroupBuilder = vbf.newValueBuilder(DescriptionValue.class);
+        ValueBuilder<DescriptionDTO> newGroupBuilder = vbf.newValueBuilder(DescriptionDTO.class);
         uowf.nestedUnitOfWork();
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(NewGroupDialog.class).use(newGroupBuilder).newInstance());
     }

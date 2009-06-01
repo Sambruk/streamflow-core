@@ -45,7 +45,8 @@ import se.streamsource.streamflow.web.resource.users.shared.user.delegations.Sha
 import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.shared.user.inbox.task.general.SharedUserInboxTaskGeneralServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.task.comments.SharedUserTaskCommentsServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.task.general.SharedUserTaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
@@ -74,13 +75,14 @@ public class APIv1Router
 
         attach("/users/{user}/shared/user/inbox", createServerResourceFinder(SharedUserInboxServerResource.class));
         attach("/users/{user}/shared/user/inbox/{task}", createServerResourceFinder(SharedUserInboxTaskServerResource.class));
-        attach("/users/{user}/shared/user/inbox/{task}/general", createServerResourceFinder(SharedUserInboxTaskGeneralServerResource.class));
         attach("/users/{user}/shared/user/assignments", createServerResourceFinder(SharedUserAssignmentsServerResource.class));
         attach("/users/{user}/shared/user/assignments/{task}", createServerResourceFinder(SharedUserAssignedTaskServerResource.class));
         attach("/users/{user}/shared/user/delegations", createServerResourceFinder(SharedUserDelegationsServerResource.class));
         attach("/users/{user}/shared/user/delegations/{task}", createServerResourceFinder(SharedUserDelegatedTaskServerResource.class));
         attach("/users/{user}/shared/user/waitingfor", createServerResourceFinder(SharedUserWaitingForServerResource.class));
         attach("/users/{user}/shared/user/waitingfor/{task}", createServerResourceFinder(SharedUserWaitingForTaskServerResource.class));
+        attach("/users/{user}/shared/user/{view}/{task}/general", createServerResourceFinder(SharedUserTaskGeneralServerResource.class));
+        attach("/users/{user}/shared/user/{view}/{task}/comments", createServerResourceFinder(SharedUserTaskCommentsServerResource.class));
         attach("/users/{user}/administration", createServerResourceFinder(UserAdministrationServerResource.class));
 
         // OrganizationalUnits

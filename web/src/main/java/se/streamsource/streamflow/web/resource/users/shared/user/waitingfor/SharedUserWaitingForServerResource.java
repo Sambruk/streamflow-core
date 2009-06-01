@@ -23,8 +23,8 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListValue;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskValue;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Ownable;
@@ -43,7 +43,7 @@ import java.util.List;
 public class SharedUserWaitingForServerResource
         extends CommandQueryServerResource
 {
-    public WaitingForTaskListValue tasks()
+    public WaitingForTaskListDTO tasks()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
@@ -61,10 +61,10 @@ public class SharedUserWaitingForServerResource
         Query<SharedTaskEntity> waitingForQuery = queryBuilder.newQuery();
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
-        ValueBuilder<WaitingForTaskValue> builder = vbf.newValueBuilder(WaitingForTaskValue.class);
-        WaitingForTaskValue prototype = builder.prototype();
-        ValueBuilder<WaitingForTaskListValue> listBuilder = vbf.newValueBuilder(WaitingForTaskListValue.class);
-        List<WaitingForTaskValue> list = listBuilder.prototype().tasks().get();
+        ValueBuilder<WaitingForTaskDTO> builder = vbf.newValueBuilder(WaitingForTaskDTO.class);
+        WaitingForTaskDTO prototype = builder.prototype();
+        ValueBuilder<WaitingForTaskListDTO> listBuilder = vbf.newValueBuilder(WaitingForTaskListDTO.class);
+        List<WaitingForTaskDTO> list = listBuilder.prototype().tasks().get();
         for (SharedTaskEntity sharedTask : waitingForQuery)
         {
             Assignee assignee = sharedTask.assignedTo().get();

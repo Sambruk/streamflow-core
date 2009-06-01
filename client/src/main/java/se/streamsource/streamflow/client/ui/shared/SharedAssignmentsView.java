@@ -29,7 +29,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import static se.streamsource.streamflow.client.ui.shared.SharedAssignmentsResources.*;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 import javax.swing.AbstractAction;
@@ -189,19 +189,19 @@ public class SharedAssignmentsView
         return taskTable;
     }
 
-    public AssignedTaskValue getSelectedTask()
+    public AssignedTaskDTO getSelectedTask()
     {
-        return (AssignedTaskValue) getTaskTable().getPathForRow(getTaskTable().getSelectedRow()).getLastPathComponent();
+        return (AssignedTaskDTO) getTaskTable().getPathForRow(getTaskTable().getSelectedRow()).getLastPathComponent();
     }
 
-    public Iterable<AssignedTaskValue> getSelectedTasks()
+    public Iterable<AssignedTaskDTO> getSelectedTasks()
     {
         int[] rows = getTaskTable().getSelectedRows();
-        List<AssignedTaskValue> tasks = new ArrayList<AssignedTaskValue>();
+        List<AssignedTaskDTO> tasks = new ArrayList<AssignedTaskDTO>();
         for (int i = 0; i < rows.length; i++)
         {
             int row = rows[i];
-            AssignedTaskValue task = (AssignedTaskValue) getTaskTable().getPathForRow(row).getLastPathComponent();
+            AssignedTaskDTO task = (AssignedTaskDTO) getTaskTable().getPathForRow(row).getLastPathComponent();
             tasks.add(task);
         }
         return tasks;

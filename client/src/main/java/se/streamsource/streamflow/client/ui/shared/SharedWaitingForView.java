@@ -28,7 +28,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnable
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import static se.streamsource.streamflow.client.ui.shared.SharedWaitingForResources.*;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -173,23 +173,23 @@ public class SharedWaitingForView
         return taskTable;
     }
 
-    public DelegatedTaskValue getSelectedTask()
+    public DelegatedTaskDTO getSelectedTask()
     {
         int selectedRow = getTaskTable().getSelectedRow();
         if (selectedRow == -1)
             return null;
         else
-            return (DelegatedTaskValue) getTaskTable().getPathForRow(selectedRow).getLastPathComponent();
+            return (DelegatedTaskDTO) getTaskTable().getPathForRow(selectedRow).getLastPathComponent();
     }
 
-    public Iterable<DelegatedTaskValue> getSelectedTasks()
+    public Iterable<DelegatedTaskDTO> getSelectedTasks()
     {
         int[] rows = getTaskTable().getSelectedRows();
-        List<DelegatedTaskValue> tasks = new ArrayList<DelegatedTaskValue>();
+        List<DelegatedTaskDTO> tasks = new ArrayList<DelegatedTaskDTO>();
         for (int i = 0; i < rows.length; i++)
         {
             int row = rows[i];
-            DelegatedTaskValue task = (DelegatedTaskValue) getTaskTable().getPathForRow(row).getLastPathComponent();
+            DelegatedTaskDTO task = (DelegatedTaskDTO) getTaskTable().getPathForRow(row).getLastPathComponent();
             tasks.add(task);
         }
         return tasks;

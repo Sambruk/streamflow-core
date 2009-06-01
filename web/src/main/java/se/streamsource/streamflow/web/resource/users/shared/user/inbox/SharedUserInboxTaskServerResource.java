@@ -21,8 +21,8 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.SharedTask;
@@ -45,7 +45,7 @@ public class SharedUserInboxTaskServerResource
         inbox.completeTask(task);
     }
 
-    public void describe(DescriptionValue descriptionValue)
+    public void describe(DescriptionDTO descriptionValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
@@ -62,7 +62,7 @@ public class SharedUserInboxTaskServerResource
         inbox.assignToMe(task);
     }
 
-    public void delegate(EntityReferenceValue reference)
+    public void delegate(EntityReferenceDTO reference)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
@@ -73,7 +73,7 @@ public class SharedUserInboxTaskServerResource
         inbox.delegate(task, delegatee);
     }
 
-    public void forward(EntityReferenceValue reference)
+    public void forward(EntityReferenceDTO reference)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();

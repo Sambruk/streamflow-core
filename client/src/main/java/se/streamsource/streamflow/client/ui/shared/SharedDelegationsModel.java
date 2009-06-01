@@ -21,8 +21,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListValue;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
+import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 
 import java.util.Date;
 
@@ -35,7 +35,7 @@ public class SharedDelegationsModel
     @Structure
     ValueBuilderFactory vbf;
 
-    DelegationsTaskListValue tasks;
+    DelegationsTaskListDTO tasks;
 
     String[] columnNames = {"", "Description", "Delegated from", "Created on"};
     Class[] columnClasses = {Boolean.class, String.class, String.class, Date.class};
@@ -68,7 +68,7 @@ public class SharedDelegationsModel
     @Override
     public boolean isLeaf(Object node)
     {
-        return node instanceof DelegatedTaskValue;
+        return node instanceof DelegatedTaskDTO;
     }
 
     @Override
@@ -111,9 +111,9 @@ public class SharedDelegationsModel
 
     public Object getValueAt(Object node, int column)
     {
-        if (node instanceof DelegatedTaskValue)
+        if (node instanceof DelegatedTaskDTO)
         {
-            DelegatedTaskValue task = (DelegatedTaskValue) node;
+            DelegatedTaskDTO task = (DelegatedTaskDTO) node;
             switch (column)
             {
                 case 0:
@@ -142,7 +142,7 @@ public class SharedDelegationsModel
                     Boolean completed = (Boolean) value;
                     if (completed)
                     {
-                        DelegatedTaskValue taskValue = (DelegatedTaskValue) node;
+                        DelegatedTaskDTO taskValue = (DelegatedTaskDTO) node;
                         EntityReference task = taskValue.task().get();
                         getRoot().task(task.identity()).complete();
 
@@ -162,7 +162,7 @@ public class SharedDelegationsModel
 
     public void refresh() throws ResourceException
     {
-        tasks = getRoot().tasks().<DelegationsTaskListValue>buildWith().prototype();
+        tasks = getRoot().tasks().<DelegationsTaskListDTO>buildWith().prototype();
         modelSupport.fireNewRoot();
     }
 

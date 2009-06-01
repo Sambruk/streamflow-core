@@ -15,14 +15,12 @@
 package se.streamsource.streamflow.client.ui.administration.groups;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import org.restlet.representation.StringRepresentation;
 import se.streamsource.streamflow.client.ConnectionException;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
 
 import javax.swing.DefaultListModel;
 

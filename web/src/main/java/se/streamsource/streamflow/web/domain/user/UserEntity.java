@@ -33,6 +33,7 @@ import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
+import se.streamsource.streamflow.web.domain.comment.Commenter;
 
 /**
  * JAVADOC
@@ -45,6 +46,7 @@ public interface UserEntity
         // Roles
         Assignee,
         Assignments,
+        Commenter,
         Contactable,
         Delegatee,
         Delegations,

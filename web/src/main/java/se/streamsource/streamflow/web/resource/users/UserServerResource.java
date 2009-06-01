@@ -25,8 +25,8 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.SharedProject;
@@ -50,11 +50,11 @@ public class UserServerResource
         return getHtml("resources/user.html");
     }
 
-    public ListValue findUsers(DescriptionValue query)
+    public ListValue findUsers(DescriptionDTO query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
         if (query.description().get().length() > 0)
@@ -80,11 +80,11 @@ public class UserServerResource
     }
 
 
-    public ListValue findGroups(DescriptionValue query)
+    public ListValue findGroups(DescriptionDTO query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
         if (query.description().get().length() > 0)
@@ -111,11 +111,11 @@ public class UserServerResource
         return listBuilder.newList();
     }
 
-    public ListValue findProjects(DescriptionValue query)
+    public ListValue findProjects(DescriptionDTO query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
         if (query.description().get().length() > 0)

@@ -24,19 +24,22 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
-import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
+import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
-import se.streamsource.streamflow.resource.inbox.InboxTaskGeneralValue;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.comment.NewCommentCommand;
+import se.streamsource.streamflow.resource.comment.CommentDTO;
+import se.streamsource.streamflow.resource.comment.CommentsDTO;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListValue;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskValue;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 /**
  * JAVADOC
@@ -48,24 +51,26 @@ public class CommonResourceAssembler
     {
         // Commands
         module.addValues(RegisterUserCommand.class,
-                DescriptionValue.class,
-                EntityReferenceValue.class,
-                NewSharedTaskCommand.class).visibleIn(Visibility.application);
+                DescriptionDTO.class,
+                EntityReferenceDTO.class,
+                NewSharedTaskCommand.class, NewCommentCommand.class).visibleIn(Visibility.application);
 
         // Queries
         module.addValues(UserSpecification.class, TasksQuery.class).visibleIn(Visibility.application);
 
         // Result values
         module.addValues(ListValue.class, ListItemValue.class,
-                InboxTaskListValue.class,
-                InboxTaskValue.class,
-                InboxTaskGeneralValue.class,
-                AssignmentsTaskListValue.class,
-                AssignedTaskValue.class,
-                DelegationsTaskListValue.class,
-                DelegatedTaskValue.class,
-                WaitingForTaskListValue.class,
-                WaitingForTaskValue.class,
+                InboxTaskListDTO.class,
+                InboxTaskDTO.class,
+                TaskGeneralDTO.class,
+                CommentsDTO.class,
+                CommentDTO.class,
+                AssignmentsTaskListDTO.class,
+                AssignedTaskDTO.class,
+                DelegationsTaskListDTO.class,
+                DelegatedTaskDTO.class,
+                WaitingForTaskListDTO.class,
+                WaitingForTaskDTO.class,
                 TreeValue.class, TreeNodeValue.class).visibleIn(Visibility.application);
     }
 }

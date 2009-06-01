@@ -20,7 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 /**
  * JAVADOC
@@ -38,7 +38,7 @@ public class OrganizationalUnitsClientResource
         return query("organizationalUnits", ListValue.class);
     }
 
-    public void newOrganizationalUnit(DescriptionValue value) throws ResourceException
+    public void newOrganizationalUnit(DescriptionDTO value) throws ResourceException
     {
         postCommand("newOrganizationalUnit", value);
     }

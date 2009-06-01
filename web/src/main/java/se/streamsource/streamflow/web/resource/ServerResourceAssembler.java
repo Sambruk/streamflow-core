@@ -38,13 +38,14 @@ import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.SharedServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.SharedUserServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.task.general.SharedUserTaskGeneralServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.task.comments.SharedUserTaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.assignments.SharedUserAssignedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.assignments.SharedUserAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegatedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.shared.user.inbox.task.general.SharedUserInboxTaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskServerResource;
 
@@ -70,7 +71,6 @@ public class ServerResourceAssembler
 
                 SharedUserInboxServerResource.class,
                 SharedUserInboxTaskServerResource.class,
-                SharedUserInboxTaskGeneralServerResource.class,
 
                 SharedUserAssignmentsServerResource.class,
                 SharedUserAssignedTaskServerResource.class,
@@ -81,6 +81,9 @@ public class ServerResourceAssembler
                 SharedUserWaitingForServerResource.class,
                 SharedUserWaitingForTaskServerResource.class,
 
+                SharedUserTaskGeneralServerResource.class,
+                SharedUserTaskCommentsServerResource.class,
+                
                 // /organizations
                 OrganizationsServerResource.class,
                 OrganizationServerResource.class,

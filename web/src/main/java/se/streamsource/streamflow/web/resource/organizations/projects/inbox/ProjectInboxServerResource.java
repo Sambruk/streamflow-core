@@ -23,8 +23,8 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.*;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -38,7 +38,7 @@ import java.util.List;
 public class ProjectInboxServerResource
         extends CommandQueryServerResource
 {
-    public InboxTaskListValue tasks(TasksQuery query)
+    public InboxTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("project");
@@ -57,10 +57,10 @@ public class ProjectInboxServerResource
         Query<SharedTaskEntity> inboxQuery = queryBuilder.newQuery();
         inboxQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
-        ValueBuilder<InboxTaskValue> builder = vbf.newValueBuilder(InboxTaskValue.class);
-        InboxTaskValue prototype = builder.prototype();
-        ValueBuilder<InboxTaskListValue> listBuilder = vbf.newValueBuilder(InboxTaskListValue.class);
-        List<InboxTaskValue> list = listBuilder.prototype().tasks().get();
+        ValueBuilder<InboxTaskDTO> builder = vbf.newValueBuilder(InboxTaskDTO.class);
+        InboxTaskDTO prototype = builder.prototype();
+        ValueBuilder<InboxTaskListDTO> listBuilder = vbf.newValueBuilder(InboxTaskListDTO.class);
+        List<InboxTaskDTO> list = listBuilder.prototype().tasks().get();
         EntityReference ref = EntityReference.parseEntityReference(id);
         for (SharedTaskEntity sharedTask : inboxQuery)
         {

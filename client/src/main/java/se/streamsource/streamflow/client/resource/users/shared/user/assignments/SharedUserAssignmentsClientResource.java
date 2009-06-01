@@ -20,7 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 /**
@@ -34,9 +34,9 @@ public class SharedUserAssignmentsClientResource
         super(context, reference);
     }
 
-    public AssignmentsTaskListValue tasks(TasksQuery query) throws ResourceException
+    public AssignmentsTaskListDTO tasks(TasksQuery query) throws ResourceException
     {
-        return query("tasks", query, AssignmentsTaskListValue.class);
+        return query("tasks", query, AssignmentsTaskListDTO.class);
     }
 
     public void newtask(NewSharedTaskCommand command) throws ResourceException

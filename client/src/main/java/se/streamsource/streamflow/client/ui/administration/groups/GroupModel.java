@@ -21,9 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ConnectionException;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 
 import javax.swing.DefaultListModel;
 import java.util.Collection;

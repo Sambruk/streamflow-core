@@ -24,8 +24,8 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
 import static se.streamsource.streamflow.client.ui.shared.SharedInboxResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 import java.util.Date;
@@ -41,7 +41,7 @@ public class SharedInboxModel
 
     TasksQuery query;
 
-    InboxTaskListValue tasks;
+    InboxTaskListDTO tasks;
 
     String[] columnNames;
     Class[] columnClasses = {Boolean.class, String.class, Date.class};
@@ -86,7 +86,7 @@ public class SharedInboxModel
     @Override
     public boolean isLeaf(Object node)
     {
-        return node instanceof InboxTaskValue;
+        return node instanceof InboxTaskDTO;
     }
 
     @Override
@@ -129,9 +129,9 @@ public class SharedInboxModel
 
     public Object getValueAt(Object node, int column)
     {
-        if (node instanceof InboxTaskValue)
+        if (node instanceof InboxTaskDTO)
         {
-            InboxTaskValue task = (InboxTaskValue) node;
+            InboxTaskDTO task = (InboxTaskDTO) node;
             switch (column)
             {
                 case 0:
@@ -160,7 +160,7 @@ public class SharedInboxModel
                     Boolean completed = (Boolean) value;
                     if (completed)
                     {
-                        InboxTaskValue taskValue = (InboxTaskValue) node;
+                        InboxTaskDTO taskValue = (InboxTaskDTO) node;
                         EntityReference task = taskValue.task().get();
                         getRoot().task(task.identity()).complete();
 
@@ -180,7 +180,7 @@ public class SharedInboxModel
 
     public void refresh() throws ResourceException
     {
-        tasks = getRoot().tasks(query).<InboxTaskListValue>buildWith().prototype();
+        tasks = getRoot().tasks(query).<InboxTaskListDTO>buildWith().prototype();
         modelSupport.fireNewRoot();
     }
 

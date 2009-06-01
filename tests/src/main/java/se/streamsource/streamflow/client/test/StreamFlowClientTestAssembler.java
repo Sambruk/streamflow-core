@@ -16,6 +16,9 @@ package se.streamsource.streamflow.client.test;
 
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.restlet.Restlet;
+import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowClientAssembler;
 
 /**
@@ -34,6 +37,15 @@ public class StreamFlowClientTestAssembler
     @Override
     protected void assembleUILayer(LayerAssembly uiLayer) throws AssemblyException
     {
-        uiLayer.newModuleAssembly("Test").addObjects(testClass);
+        super.assembleUILayer(uiLayer);
+
+        ModuleAssembly moduleAssembly = uiLayer.newModuleAssembly("Test");
+        moduleAssembly.addObjects(testClass);
+        moduleAssembly.importServices(Restlet.class);
+        uiLayer.applicationAssembly().setMetaInfo(new Restlet());
+        StreamFlowApplication application = new StreamFlowApplication();
+        uiLayer.applicationAssembly().setMetaInfo(application);
+        uiLayer.applicationAssembly().setMetaInfo(application.getContext());
+        uiLayer.applicationAssembly().setMetaInfo(application.getMainFrame().getRootPane().getActionMap());
     }
 }

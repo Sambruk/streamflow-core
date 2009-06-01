@@ -21,9 +21,10 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.task.general.SharedUserInboxTaskGeneralClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
+import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.SharedUserTaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.task.general.SharedUserTaskGeneralClientResource;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
@@ -36,9 +37,14 @@ public class SharedUserInboxTaskClientResource
         super(context, reference);
     }
 
-    public SharedUserInboxTaskGeneralClientResource general()
+    public SharedUserTaskGeneralClientResource general()
     {
-        return getSubResource("general", SharedUserInboxTaskGeneralClientResource.class);
+        return getSubResource("general", SharedUserTaskGeneralClientResource.class);
+    }
+
+    public SharedUserTaskCommentsClientResource comments()
+    {
+        return getSubResource("comments", SharedUserTaskCommentsClientResource.class);
     }
 
     public void complete() throws ResourceException
@@ -46,7 +52,7 @@ public class SharedUserInboxTaskClientResource
         postCommand("complete");
     }
 
-    public void describe(DescriptionValue descriptionValue) throws ResourceException
+    public void describe(DescriptionDTO descriptionValue) throws ResourceException
     {
         putCommand("describe", descriptionValue);
     }
@@ -63,14 +69,14 @@ public class SharedUserInboxTaskClientResource
 
     public void delegate(String delegateeId) throws ResourceException
     {
-        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
         putCommand("delegate", builder.newInstance());
     }
 
     public void forward(String receiverId) throws ResourceException
     {
-        ValueBuilder<EntityReferenceValue> builder = vbf.newValueBuilder(EntityReferenceValue.class);
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         builder.prototype().entity().set(EntityReference.parseEntityReference(receiverId));
         putCommand("forward", builder.newInstance());
     }

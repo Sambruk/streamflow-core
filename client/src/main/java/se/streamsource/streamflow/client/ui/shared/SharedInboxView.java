@@ -33,7 +33,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import static se.streamsource.streamflow.client.ui.shared.SharedInboxResources.*;
-import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
+import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 import javax.swing.AbstractAction;
@@ -60,6 +60,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.io.IOException;
 
 /**
  * JAVADOC
@@ -129,8 +130,17 @@ public class SharedInboxView
         {
             public void actionPerformed(ActionEvent e)
             {
-                detailModel.setResource(model.getRoot().task(getSelectedTask().task().get().identity()).general());
-                setSelectedIndex(1);
+                try
+                {
+                    detailModel.setResource(model.getRoot().task(getSelectedTask().task().get().identity()));
+                    setSelectedIndex(1);
+                } catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                } catch (ResourceException e1)
+                {
+                    e1.printStackTrace();
+                }
             }
         });
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "inbox");
@@ -184,8 +194,8 @@ public class SharedInboxView
             {
                 try
                 {
-                    Iterable<InboxTaskValue> task = getSelectedTasks();
-                    for (InboxTaskValue taskValue : task)
+                    Iterable<InboxTaskDTO> task = getSelectedTasks();
+                    for (InboxTaskDTO taskValue : task)
                     {
                         if (!taskValue.isRead().get())
                         {
@@ -229,23 +239,23 @@ public class SharedInboxView
         return taskTable;
     }
 
-    public InboxTaskValue getSelectedTask()
+    public InboxTaskDTO getSelectedTask()
     {
         int selectedRow = getTaskTable().getSelectedRow();
         if (selectedRow == -1)
             return null;
         else
-            return (InboxTaskValue) getTaskTable().getPathForRow(selectedRow).getLastPathComponent();
+            return (InboxTaskDTO) getTaskTable().getPathForRow(selectedRow).getLastPathComponent();
     }
 
-    public Iterable<InboxTaskValue> getSelectedTasks()
+    public Iterable<InboxTaskDTO> getSelectedTasks()
     {
         int[] rows = getTaskTable().getSelectedRows();
-        List<InboxTaskValue> tasks = new ArrayList<InboxTaskValue>();
+        List<InboxTaskDTO> tasks = new ArrayList<InboxTaskDTO>();
         for (int i = 0; i < rows.length; i++)
         {
             int row = rows[i];
-            InboxTaskValue task = (InboxTaskValue) getTaskTable().getPathForRow(row).getLastPathComponent();
+            InboxTaskDTO task = (InboxTaskDTO) getTaskTable().getPathForRow(row).getLastPathComponent();
             tasks.add(task);
         }
         return tasks;

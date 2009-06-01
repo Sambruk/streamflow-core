@@ -22,7 +22,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 
 /**
- * JAVADOC
+ * New task command
  */
 public interface NewSharedTaskCommand
         extends ValueComposite, Describable.DescribableState, Notable.NotableState

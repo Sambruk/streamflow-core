@@ -24,8 +24,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
-import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignments;
@@ -46,7 +46,7 @@ import java.util.List;
 public class SharedUserAssignmentsServerResource
         extends CommandQueryServerResource
 {
-    public AssignmentsTaskListValue tasks(TasksQuery query)
+    public AssignmentsTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
@@ -62,10 +62,10 @@ public class SharedUserAssignmentsServerResource
         Query<SharedTaskEntity> assignmentsQuery = queryBuilder.newQuery();
         assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
-        ValueBuilder<AssignedTaskValue> builder = vbf.newValueBuilder(AssignedTaskValue.class);
-        AssignedTaskValue prototype = builder.prototype();
-        ValueBuilder<AssignmentsTaskListValue> listBuilder = vbf.newValueBuilder(AssignmentsTaskListValue.class);
-        List<AssignedTaskValue> list = listBuilder.prototype().tasks().get();
+        ValueBuilder<AssignedTaskDTO> builder = vbf.newValueBuilder(AssignedTaskDTO.class);
+        AssignedTaskDTO prototype = builder.prototype();
+        ValueBuilder<AssignmentsTaskListDTO> listBuilder = vbf.newValueBuilder(AssignmentsTaskListDTO.class);
+        List<AssignedTaskDTO> list = listBuilder.prototype().tasks().get();
         EntityReference ref = EntityReference.parseEntityReference(id);
         for (SharedTaskEntity sharedTask : assignmentsQuery)
         {

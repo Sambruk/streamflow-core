@@ -25,7 +25,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
 import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.domain.project.SharedProject;
 import se.streamsource.streamflow.web.domain.project.SharedProjectEntity;

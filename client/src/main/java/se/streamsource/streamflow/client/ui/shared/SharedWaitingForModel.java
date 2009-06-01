@@ -21,9 +21,9 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskValue;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListValue;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskValue;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 import java.util.Date;
 
@@ -36,7 +36,7 @@ public class SharedWaitingForModel
     @Structure
     ValueBuilderFactory vbf;
 
-    WaitingForTaskListValue tasks;
+    WaitingForTaskListDTO tasks;
 
     String[] columnNames = {"", "Description", "Delegated to", "Assigned to", "Delegated on"};
     Class[] columnClasses = {Boolean.class, String.class, String.class, String.class, Date.class};
@@ -69,7 +69,7 @@ public class SharedWaitingForModel
     @Override
     public boolean isLeaf(Object node)
     {
-        return node instanceof WaitingForTaskValue;
+        return node instanceof WaitingForTaskDTO;
     }
 
     @Override
@@ -112,9 +112,9 @@ public class SharedWaitingForModel
 
     public Object getValueAt(Object node, int column)
     {
-        if (node instanceof WaitingForTaskValue)
+        if (node instanceof WaitingForTaskDTO)
         {
-            WaitingForTaskValue task = (WaitingForTaskValue) node;
+            WaitingForTaskDTO task = (WaitingForTaskDTO) node;
             switch (column)
             {
                 case 0:
@@ -145,7 +145,7 @@ public class SharedWaitingForModel
                     Boolean completed = (Boolean) value;
                     if (completed)
                     {
-                        DelegatedTaskValue taskValue = (DelegatedTaskValue) node;
+                        DelegatedTaskDTO taskValue = (DelegatedTaskDTO) node;
                         EntityReference task = taskValue.task().get();
                         getRoot().task(task.identity()).complete();
 
@@ -165,7 +165,7 @@ public class SharedWaitingForModel
 
     public void refresh() throws ResourceException
     {
-        tasks = getRoot().tasks().<WaitingForTaskListValue>buildWith().prototype();
+        tasks = getRoot().tasks().<WaitingForTaskListDTO>buildWith().prototype();
         modelSupport.fireNewRoot();
     }
 

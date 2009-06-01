@@ -23,10 +23,10 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskValue;
-import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 import java.util.Date;
 
@@ -41,7 +41,7 @@ public class SharedAssignmentsModel
 
     TasksQuery query;
 
-    AssignmentsTaskListValue tasks;
+    AssignmentsTaskListDTO tasks;
 
     String[] columnNames = {"", "Description", "Created on"};
     Class[] columnClasses = {Boolean.class, String.class, Date.class};
@@ -81,7 +81,7 @@ public class SharedAssignmentsModel
     @Override
     public boolean isLeaf(Object node)
     {
-        return node instanceof AssignedTaskValue;
+        return node instanceof AssignedTaskDTO;
     }
 
     @Override
@@ -124,9 +124,9 @@ public class SharedAssignmentsModel
 
     public Object getValueAt(Object node, int column)
     {
-        if (node instanceof AssignedTaskValue)
+        if (node instanceof AssignedTaskDTO)
         {
-            AssignedTaskValue task = (AssignedTaskValue) node;
+            AssignedTaskDTO task = (AssignedTaskDTO) node;
             switch (column)
             {
                 case 0:
@@ -153,11 +153,11 @@ public class SharedAssignmentsModel
                     Boolean completed = (Boolean) value;
                     if (completed)
                     {
-                        AssignedTaskValue taskValue = (AssignedTaskValue) node;
-                        EntityReference task = taskValue.task().get();
+                        AssignedTaskDTO taskDTO = (AssignedTaskDTO) node;
+                        EntityReference task = taskDTO.task().get();
                         getRoot().task(task.identity()).complete();
 
-                        taskValue.status().set(TaskStates.COMPLETED);
+                        taskDTO.status().set(TaskStates.COMPLETED);
                     }
                     break;
                 }
@@ -165,14 +165,14 @@ public class SharedAssignmentsModel
                 case 1:
                 {
                     String newDescription = (String) value;
-                    AssignedTaskValue taskValue = (AssignedTaskValue) node;
-                    EntityReference task = taskValue.task().get();
-                    ValueBuilder<DescriptionValue> builder = vbf.newValueBuilder(DescriptionValue.class);
+                    AssignedTaskDTO taskDTO = (AssignedTaskDTO) node;
+                    EntityReference task = taskDTO.task().get();
+                    ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
                     builder.prototype().description().set(newDescription);
                     getRoot().task(task.identity()).describe(builder.newInstance());
 
                     // Update description
-                    taskValue.description().set(newDescription);
+                    taskDTO.description().set(newDescription);
                     break;
                 }
             }
@@ -187,7 +187,7 @@ public class SharedAssignmentsModel
 
     public void refresh() throws ResourceException
     {
-        tasks = getRoot().tasks(query).<AssignmentsTaskListValue>buildWith().prototype();
+        tasks = getRoot().tasks(query).<AssignmentsTaskListDTO>buildWith().prototype();
         modelSupport.fireNewRoot();
     }
 

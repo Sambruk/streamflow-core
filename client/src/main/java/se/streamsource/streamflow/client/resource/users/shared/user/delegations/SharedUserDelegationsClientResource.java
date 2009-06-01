@@ -19,7 +19,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListValue;
+import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 
 /**
  * JAVADOC
@@ -32,9 +32,9 @@ public class SharedUserDelegationsClientResource
         super(context, reference);
     }
 
-    public DelegationsTaskListValue tasks() throws ResourceException
+    public DelegationsTaskListDTO tasks() throws ResourceException
     {
-        return query("tasks", DelegationsTaskListValue.class);
+        return query("tasks", DelegationsTaskListDTO.class);
     }
 
     public SharedUserDelegatedTaskClientResource task(String id)

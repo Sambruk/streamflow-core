@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.domain.task;
 
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.web.domain.comment.Commentable;
 
 /**
  * Shared tasks are aggregate roots.
@@ -31,6 +32,7 @@ public interface SharedTask
         Notable,
         Ownable,
         TaskStatus,
-        TaskPath
+        TaskPath,
+        Commentable
 {
 }

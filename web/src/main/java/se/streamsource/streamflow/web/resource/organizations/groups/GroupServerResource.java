@@ -14,20 +14,14 @@
 
 package se.streamsource.streamflow.web.resource.organizations.groups;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceValue;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
-import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.group.Participants;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**

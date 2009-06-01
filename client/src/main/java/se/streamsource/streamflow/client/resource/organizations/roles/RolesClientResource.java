@@ -20,7 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.DescriptionValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 /**
  * JAVADOC
@@ -38,7 +38,7 @@ public class RolesClientResource
         return query("roles", ListValue.class);
     }
 
-    public void newRole(DescriptionValue value) throws ResourceException
+    public void newRole(DescriptionDTO value) throws ResourceException
     {
         postCommand("newRole", value);
     }

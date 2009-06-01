@@ -27,7 +27,7 @@ import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel
 import se.streamsource.streamflow.client.ui.administration.projects.members.AddProjectsView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.AddUsersView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskValue;
+import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -106,8 +106,8 @@ public class DelegateSharedTasksDialog
             ListItemValue theSelected = (ListItemValue) selected.toArray()[0];
             try
             {
-                Iterable<InboxTaskValue> selectedTasks = sharedInboxView.getSelectedTasks();
-                for (InboxTaskValue selectedTask : selectedTasks)
+                Iterable<InboxTaskDTO> selectedTasks = sharedInboxView.getSelectedTasks();
+                for (InboxTaskDTO selectedTask : selectedTasks)
                 {
                     sharedInboxModel.delegate(selectedTask.task().get().identity(), theSelected.entity().get().identity());
                 }

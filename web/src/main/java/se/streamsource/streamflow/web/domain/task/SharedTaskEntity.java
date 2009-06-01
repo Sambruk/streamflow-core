@@ -18,6 +18,7 @@ import org.qi4j.api.entity.EntityComposite;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.domain.roles.Taggable;
+import se.streamsource.streamflow.web.domain.comment.Commentable;
 
 /**
  * JAVADOC
@@ -26,6 +27,7 @@ public interface SharedTaskEntity
         extends SharedTask,
         // State
         Assignable.AssignableState,
+        Commentable.CommentableState,
         CreatedOn.CreatedOnState,
         Delegatable.DelegatableState,
         Describable.DescribableState,
