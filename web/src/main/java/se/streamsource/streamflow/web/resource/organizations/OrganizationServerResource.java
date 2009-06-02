@@ -30,11 +30,10 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.domain.project.SharedProject;
+import se.streamsource.streamflow.web.domain.project.SharedProjectEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -99,9 +98,8 @@ public class OrganizationServerResource
 
         if (query.description().get().length() > 0)
         {
-         /*   QueryBuilder<GroupEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
-            queryBuilder.where(
-                QueryExpressions.matches(
+            QueryBuilder<GroupEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
+            queryBuilder.where(QueryExpressions.matches(
                     QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.description().get()));
             Query<GroupEntity> groups = queryBuilder.newQuery();
 
@@ -116,20 +114,7 @@ public class OrganizationServerResource
             {
                 //e.printStackTrace();
             }
-        }*/
-
-            //hack for the moment
-    
-            String org = getRequest().getAttributes().get("organization").toString();
-            Groups.GroupsState groups = uow.get(Groups.GroupsState.class, org);
-
-            for (Group group: groups.groups())
-            {
-                builder.prototype().entity().set(EntityReference.getEntityReference(group));
-                listBuilder.addListItem(group.getDescription(), builder.newInstance().entity().get());
-            }
         }
-
         return listBuilder.newList();
     }
 
@@ -142,16 +127,23 @@ public class OrganizationServerResource
 
         if (query.description().get().length() > 0)
         {
-            String org = getRequest().getAttributes().get("organization").toString();
-            Projects.ProjectsState projects = uow.get(Projects.ProjectsState.class, org);
+            QueryBuilder<SharedProjectEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedProjectEntity.class);
+            queryBuilder.where(QueryExpressions.matches(
+                    QueryExpressions.templateFor(SharedProjectEntity.class).description(), "^" + query.description().get()));
+            Query<SharedProjectEntity> projects = queryBuilder.newQuery();
 
-            for (SharedProject project: projects.projects())
+            try
             {
-                builder.prototype().entity().set(EntityReference.getEntityReference(project));
-                listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
+                for (SharedProject project : projects)
+                {
+                    builder.prototype().entity().set(EntityReference.getEntityReference(project));
+                    listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
+                }
+            } catch (Exception e)
+            {
+                //e.printStackTrace();
             }
         }
-
         return listBuilder.newList();
     }
 
