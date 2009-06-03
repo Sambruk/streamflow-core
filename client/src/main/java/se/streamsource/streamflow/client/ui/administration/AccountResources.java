@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.administration;
 /**
  * JAVADOC
  */
-enum AccountResources
+public enum AccountResources
 {
     account_separator,
     name_label,
@@ -26,5 +26,5 @@ enum AccountResources
     password_label,
     testconnection_separator,
     connected_separator,
-    registration_separator;
+    registration_separator
 }

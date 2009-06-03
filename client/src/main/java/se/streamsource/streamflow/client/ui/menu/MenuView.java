@@ -52,10 +52,10 @@ public class MenuView
         menu("fileMenu",
                 "---",
                 "quit");
-/*
-        menu("accountMenu",
-                "administration");
-*/
+
+        menu("settingsMenu",
+                "manageAccounts");
+
     }
 
     private void menu(String menuName, String... actionNames)

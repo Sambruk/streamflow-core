@@ -28,5 +28,9 @@ public class MenuAssembler
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
         UIAssemblers.addViews(module, MenuView.class);
+
+        UIAssemblers.addDialogs(module, CreateAccountDialog.class, AccountsDialog.class);
+
+        UIAssemblers.addModels(module, AccountsModel.class);
     }
 }
