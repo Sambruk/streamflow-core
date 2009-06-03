@@ -18,6 +18,9 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -31,6 +34,9 @@ public interface Assignable
     {
         @Optional
         Association<Assignee> assignedTo();
+
+        @Optional
+        Property<Date> assignedOn();
     }
 
     class AssignableMixin
@@ -42,7 +48,10 @@ public interface Assignable
         public void assignTo(Assignee assignee)
         {
             if (!assignee.equals(state.assignedTo().get()))
+            {
                 state.assignedTo().set(assignee);
+                state.assignedOn().set(new Date());
+            }
         }
     }
 }

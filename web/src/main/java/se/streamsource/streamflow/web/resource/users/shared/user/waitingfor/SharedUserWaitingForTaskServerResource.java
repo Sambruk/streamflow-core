@@ -22,6 +22,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.SharedTask;
+import se.streamsource.streamflow.web.domain.task.SharedInbox;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -40,6 +41,16 @@ public class SharedUserWaitingForTaskServerResource
         SharedTask task = uow.get(SharedTask.class, taskId);
         Delegations delegations = uow.get(Delegations.class, id);
         delegations.completeTask(task);
+    }
+
+    public void markAsRead()
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        SharedTask task = uow.get(SharedTask.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        inbox.markAsRead(task);
     }
 
     @Override

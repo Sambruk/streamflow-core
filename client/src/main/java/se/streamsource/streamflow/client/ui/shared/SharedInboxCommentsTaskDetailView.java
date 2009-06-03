@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.shared;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
@@ -69,7 +70,7 @@ public class SharedInboxCommentsTaskDetailView
                 {
                     CommentDTO commentDTO = (CommentDTO) model.getElementAt(i);
                     String text = commentDTO.text().get().replace("\n", "<br/>");
-                    JLabel comment = new JLabel("<html><b>"+commentDTO.commenter().get()+", "+commentDTO.creationDate().get()+"</b><p>"+ text +"</p></html>");
+                    JLabel comment = new JLabel("<html><b>"+commentDTO.commenter().get()+", "+commentDTO.creationDate().get()+"</b>"+(commentDTO.isPublic().get() ? " ("+ i18n.text(TaskDetailsResources.public_comment)+")": "")+"<p>"+ text +"</p></html>");
                     comments.add(comment);
                 }
                 SharedInboxCommentsTaskDetailView.this.validate();

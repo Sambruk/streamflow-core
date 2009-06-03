@@ -26,10 +26,9 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.resource.comment.CommentType;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
 import javax.swing.JPanel;
@@ -70,8 +69,11 @@ public class AddCommentDialog
         sharedTaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
         NewCommentCommand template = sharedTaskBinder.bindingTemplate(NewCommentCommand.class);
 
+        
+
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
-        bb.appendLine(TaskDetailsResources.comment_label, TEXTAREA, template.text());
+        bb.appendLine(TaskDetailsResources.comment_public_label, CHECKBOX, template.isPublic());
+        bb.appendLine(TaskDetailsResources.comment_text_label, TEXTAREA, template.text());
 
         // Create command builder
         commandBuilder = vbf.newValueBuilder(NewCommentCommand.class);
@@ -86,7 +88,6 @@ public class AddCommentDialog
         // Create command instance
         commandBuilder.prototype().commenter().set(new EntityReference(sharedView.getSelectedUser()));
         commandBuilder.prototype().creationDate().set(new Date());
-        commandBuilder.prototype().commentType().set(CommentType.PUBLIC);
         final NewCommentCommand command = commandBuilder.newInstance();
 
         commentsModel.addComment(command);

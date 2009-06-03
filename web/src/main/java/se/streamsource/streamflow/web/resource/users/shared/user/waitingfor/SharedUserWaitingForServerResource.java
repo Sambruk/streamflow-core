@@ -23,15 +23,16 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
+import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.IsRead;
 import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
-import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
@@ -50,13 +51,17 @@ public class SharedUserWaitingForServerResource
         WaitingFor waitingFor = uow.get(WaitingFor.class, id);
 
         // Find all Active delegated tasks owned by "me"
+        // or Completed delegated tasks that are marked as unread
         QueryBuilder<SharedTaskEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedTaskEntity.class);
         Property<String> idProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         queryBuilder.where(and(
-                eq(idProp, id),
-                isNotNull(delegatee),
-                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
+                                eq(idProp, id),
+                                isNotNull(delegatee),
+                                or(
+                                    eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
+                                    and(notEq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
+                                        eq(templateFor(IsRead.IsReadState.class).isRead(), false)))));
 
         Query<SharedTaskEntity> waitingForQuery = queryBuilder.newQuery();
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
@@ -75,6 +80,7 @@ public class SharedUserWaitingForServerResource
             prototype.delegatedOn().set(sharedTask.delegatedOn().get());
             prototype.description().set(sharedTask.description().get());
             prototype.status().set(sharedTask.status().get());
+            prototype.isRead().set(sharedTask.isRead().get());
             list.add(builder.newInstance());
         }
 

@@ -34,5 +34,6 @@ public interface NewCommentCommand
     @UseDefaults
     Property<String> text();
 
-    Property<CommentType> commentType();
+    @UseDefaults
+    Property<Boolean> isPublic();
 }

@@ -15,16 +15,20 @@
 package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.domain.task.TaskStates;
 
 import java.util.Date;
 
 /**
  * JAVADOC
  */
+@Concerns(Delegatable.UnreadOnStatusChangeConcern.class)
 @Mixins(Delegatable.DelegatableMixin.class)
 public interface Delegatable
 {
@@ -57,6 +61,35 @@ public interface Delegatable
         {
             state.delegatedTo().set(null);
             state.delegatedOn().set(null);
+        }
+    }
+
+    abstract class UnreadOnStatusChangeConcern
+        extends ConcernOf<TaskStatus>
+        implements TaskStatus
+    {
+        @This DelegatableState state;
+        @This TaskStatusState status;
+        @This IsRead isRead;
+
+        public void complete()
+        {
+            next.complete();
+
+            if (state.delegatedTo().get() != null && !status.status().get().equals(TaskStates.ACTIVE))
+            {
+                isRead.markAsUnread();
+            }
+        }
+
+        public void drop()
+        {
+            next.drop();
+
+            if (state.delegatedTo().get() != null && !status.status().get().equals(TaskStates.ACTIVE))
+            {
+                isRead.markAsUnread();
+            }
         }
     }
 }

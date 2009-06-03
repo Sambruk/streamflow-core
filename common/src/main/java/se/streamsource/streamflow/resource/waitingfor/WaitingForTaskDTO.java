@@ -42,6 +42,8 @@ public interface WaitingForTaskDTO
 
     Property<TaskStates> status();
 
+    Property<Boolean> isRead();
+
     @UseDefaults
     Property<List<WaitingForTaskDTO>> subTasks();
 }

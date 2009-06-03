@@ -69,6 +69,8 @@ public class SharedInboxView
         extends JTabbedPane
 {
     private JXTreeTable taskTable;
+    private SharedInboxModel model;
+    private SharedInboxTaskDetailModel detailModel;
 
     public SharedInboxView(@Service final ActionMap am,
                            @Service final SharedInboxModel model,
@@ -78,6 +80,9 @@ public class SharedInboxView
                            @Structure ValueBuilderFactory vbf)
     {
         super();
+        this.model = model;
+        this.detailModel = detailModel;
+
 
         TasksQuery query = vbf.newValue(TasksQuery.class);
         try
@@ -130,17 +135,7 @@ public class SharedInboxView
         {
             public void actionPerformed(ActionEvent e)
             {
-                try
-                {
-                    detailModel.setResource(model.getRoot().task(getSelectedTask().task().get().identity()));
-                    setSelectedIndex(1);
-                } catch (IOException e1)
-                {
-                    e1.printStackTrace();
-                } catch (ResourceException e1)
-                {
-                    e1.printStackTrace();
-                }
+                setSelectedIndex(1);
             }
         });
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "inbox");
@@ -232,6 +227,26 @@ public class SharedInboxView
         popup.add(am.get("forwardSharedTasksTo"));
         taskTable.addMouseListener(new PopupMenuTrigger(popup));
         taskTable.addTreeSelectionListener(new SelectionActionEnabler(removeTaskAction, assignAction, delegateTasksFromInbox));
+    }
+
+    @Override
+    public void setSelectedIndex(int index)
+    {
+        try
+        {
+            if (index == 1)
+            {
+                InboxTaskDTO dto = getSelectedTask();
+                detailModel.setResource(model.getRoot().task(dto.task().get().identity()));
+            }
+            super.setSelectedIndex(index);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public JXTreeTable getTaskTable()

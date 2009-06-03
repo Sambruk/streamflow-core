@@ -16,6 +16,8 @@ package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.decorator.ComponentAdapter;
+import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.CheckBoxProvider;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
@@ -24,13 +26,16 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.client.ui.FontHighlighter;
 import static se.streamsource.streamflow.client.ui.shared.SharedWaitingForResources.*;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -39,11 +44,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
-import javax.swing.Action;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -155,6 +161,36 @@ public class SharedWaitingForView
         taskTable.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(taskTable.getSearchable()).newInstance());
 
         taskTable.addHighlighter(HighlighterFactory.createAlternateStriping());
+        taskTable.addHighlighter(new FontHighlighter(new HighlightPredicate()
+        {
+            public boolean isHighlighted(Component component, ComponentAdapter componentAdapter)
+            {
+                return !(Boolean) componentAdapter.getValue(5);
+            }
+        }, taskTable.getFont().deriveFont(Font.BOLD), taskTable.getFont()));
+
+        taskTable.addTreeSelectionListener(new TreeSelectionListener()
+        {
+            public void valueChanged(TreeSelectionEvent e)
+            {
+                try
+                {
+                    Iterable<WaitingForTaskDTO> task = getSelectedTasks();
+                    for (WaitingForTaskDTO taskValue : task)
+                    {
+                        if (!taskValue.isRead().get())
+                        {
+                            model.markAsRead(taskValue.task().get().identity());
+                            taskValue.isRead().set(true);
+                        }
+                    }
+                } catch (ResourceException e1)
+                {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
 
         // Toolbar
         JPanel toolbar = new JPanel();
@@ -173,23 +209,23 @@ public class SharedWaitingForView
         return taskTable;
     }
 
-    public DelegatedTaskDTO getSelectedTask()
+    public WaitingForTaskDTO getSelectedTask()
     {
         int selectedRow = getTaskTable().getSelectedRow();
         if (selectedRow == -1)
             return null;
         else
-            return (DelegatedTaskDTO) getTaskTable().getPathForRow(selectedRow).getLastPathComponent();
+            return (WaitingForTaskDTO) getTaskTable().getPathForRow(selectedRow).getLastPathComponent();
     }
 
-    public Iterable<DelegatedTaskDTO> getSelectedTasks()
+    public Iterable<WaitingForTaskDTO> getSelectedTasks()
     {
         int[] rows = getTaskTable().getSelectedRows();
-        List<DelegatedTaskDTO> tasks = new ArrayList<DelegatedTaskDTO>();
+        List<WaitingForTaskDTO> tasks = new ArrayList<WaitingForTaskDTO>();
         for (int i = 0; i < rows.length; i++)
         {
             int row = rows[i];
-            DelegatedTaskDTO task = (DelegatedTaskDTO) getTaskTable().getPathForRow(row).getLastPathComponent();
+            WaitingForTaskDTO task = (WaitingForTaskDTO) getTaskTable().getPathForRow(row).getLastPathComponent();
             tasks.add(task);
         }
         return tasks;

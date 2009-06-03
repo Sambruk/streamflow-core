@@ -88,11 +88,16 @@ public class BindingFormBuilder
 
     public BindingFormBuilder appendLine(Enum resourceKey, Fields fieldType, Property property, Object... args)
     {
+        return appendLine(resourceKey, fieldType.newField(), property, args);
+    }
+
+    public BindingFormBuilder appendLine(Enum resourceKey, Component component, Property property, Object... args)
+    {
         String resource = getResource(resourceKey, args);
 
         JLabel label = formBuilder.append(resource);
         formBuilder.nextLine();
-        Component component = stateBinder.bind(fieldType.newField(), property);
+        stateBinder.bind(component, property);
         formBuilder.append(component);
         label.setLabelFor(component);
         formBuilder.nextLine();

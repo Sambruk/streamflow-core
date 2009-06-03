@@ -54,8 +54,6 @@ import java.util.Set;
  */
 public class StateBinder
 {
-    private Object source;
-
     ResourceBundle errorMessages;
     Map<Class<? extends Component>, Binder> binders = new HashMap<Class<? extends Component>, Binder>();
     Set<Binding> bindings = new HashSet<Binding>();

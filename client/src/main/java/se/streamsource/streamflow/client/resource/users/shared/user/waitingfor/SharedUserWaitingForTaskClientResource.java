@@ -39,6 +39,11 @@ public class SharedUserWaitingForTaskClientResource
         putCommand("complete");
     }
 
+    public void markAsRead() throws ResourceException
+    {
+        putCommand("markAsRead");
+    }
+
     public void delegate(String delegateeId) throws ResourceException
     {
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);

@@ -19,5 +19,7 @@ package se.streamsource.streamflow.client.ui.shared;
  */
 enum TaskDetailsResources
 {
-    comment_label, add_comment_title
+    comment_text_label,
+    comment_public_label,
+    public_comment, add_comment_title
 }

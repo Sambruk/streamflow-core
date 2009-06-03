@@ -70,7 +70,7 @@ public class SharedUserTaskCommentsServerResource
             Commenter commenter = uow.get(Commenter.class, commentValue.commenter().get().identity());
             commentBuilder.prototype().commenter().set(commenter.getDescription());
             commentBuilder.prototype().text().set(commentValue.text().get());
-            commentBuilder.prototype().commentType().set(commentValue.commentType().get());
+            commentBuilder.prototype().isPublic().set(commentValue.isPublic().get());
             list.add(commentBuilder.newInstance());
         }
         uow.discard();
@@ -91,7 +91,7 @@ public class SharedUserTaskCommentsServerResource
             prototype.commenter().set(comment.commenter().get());
             prototype.creationDate().set(comment.creationDate().get());
             prototype.text().set(comment.text().get());
-            prototype.commentType().set(comment.commentType().get());
+            prototype.isPublic().set(comment.isPublic().get());
             commentable.addComment(builder.newInstance());
             uow.complete();
         } catch (Exception e)

@@ -14,10 +14,10 @@
 
 package se.streamsource.streamflow.web.domain.comment;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.resource.comment.CommentType;
 
 import java.util.Date;
 
@@ -30,5 +30,7 @@ public interface CommentValue
     Property<EntityReference> commenter();
     Property<Date> creationDate();
     Property<String> text();
-    Property<CommentType> commentType();
+    
+    @UseDefaults
+    Property<Boolean> isPublic();
 }

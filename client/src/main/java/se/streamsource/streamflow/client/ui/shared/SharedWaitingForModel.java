@@ -21,9 +21,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 
 import java.util.Date;
 
@@ -127,6 +126,8 @@ public class SharedWaitingForModel
                     return task.assignedTo().get();
                 case 4:
                     return task.delegatedOn().get();
+                case 5:
+                    return task.isRead().get();
             }
         }
 
@@ -145,7 +146,7 @@ public class SharedWaitingForModel
                     Boolean completed = (Boolean) value;
                     if (completed)
                     {
-                        DelegatedTaskDTO taskValue = (DelegatedTaskDTO) node;
+                        WaitingForTaskDTO taskValue = (WaitingForTaskDTO) node;
                         EntityReference task = taskValue.task().get();
                         getRoot().task(task.identity()).complete();
 
@@ -172,5 +173,10 @@ public class SharedWaitingForModel
     public void delegate(String task, String delegatee) throws ResourceException
     {
         getRoot().task(task).delegate(delegatee);
+    }
+
+    public void markAsRead(String id) throws ResourceException
+    {
+        getRoot().task(id).markAsRead();
     }
 }

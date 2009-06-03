@@ -31,5 +31,5 @@ public interface CommentDTO
 
     Property<String> text();
 
-    Property<CommentType> commentType();
+    Property<Boolean> isPublic();
 }

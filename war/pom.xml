@@ -54,7 +54,14 @@
                 <artifactId>maven-jetty-plugin</artifactId>
                 <version>6.1.4</version>
                 <configuration>
-                    <webApp>${basedir}/target/streamflow-0.1</webApp>
+                    <connectors>
+                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                            <port>8040</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
+                    <webApp>${basedir}/target/streamflow-0.1.war</webApp>
+                    <contextPath>streamflow</contextPath>
                 </configuration>
             </plugin>
 
