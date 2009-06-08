@@ -24,6 +24,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.Individual;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 
@@ -70,6 +71,6 @@ public class SharedUserAllAssignmentsNode
     @Override
     public Object getValueAt(int column)
     {
-        return "Assignments";
+        return i18n.text(SharedResources.assignments_node);
     }
 }

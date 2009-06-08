@@ -22,6 +22,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
@@ -43,7 +45,7 @@ public class SharedAssignmentsModel
 
     AssignmentsTaskListDTO tasks;
 
-    String[] columnNames = {"", "Description", "Created on"};
+    String[] columnNames = {"", text(description_column_header), text(created_column_header)};
     Class[] columnClasses = {Boolean.class, String.class, Date.class};
     boolean[] columnEditable = {true, false, false};
 

@@ -17,9 +17,10 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.jdesktop.swingx.tree.TreeModelSupport;
 import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ConnectionException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
@@ -125,7 +126,7 @@ public class ProjectModel
             modelSupport.fireNewRoot();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not refresh list of members", e);
+            throw new OperationException(AdministrationResources.could_not_refresh_list_of_members, e);
         }
     }
 
@@ -141,7 +142,7 @@ public class ProjectModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not add members");
+            throw new OperationException(AdministrationResources.could_not_add_members, e);
         }
     }
 
@@ -153,7 +154,7 @@ public class ProjectModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not remove member");
+            throw new OperationException(AdministrationResources.could_not_remove_member, e);
         }
     }
 }

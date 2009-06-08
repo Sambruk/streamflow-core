@@ -49,8 +49,8 @@ public class NavigatorView
         this.menu = menu;
         addTab(text(workspace_label), workspace);
         addTab(text(shared_label), shared);
-        addTab("Overview", new JLabel("Overview"));
-        addTab("Administration", administration);
+        addTab(text(overview_label), new JLabel("Overview"));
+        addTab(text(administration_label), administration);
 
         setMnemonicAt(1, mnemonic(workspace_label_mnemonic));
         setMnemonicAt(0, mnemonic(shared_label_mnemonic));

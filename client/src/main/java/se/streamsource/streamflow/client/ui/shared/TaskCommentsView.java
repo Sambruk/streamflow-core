@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui.shared;
 
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
@@ -30,18 +30,17 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
-import java.io.IOException;
 
 /**
  * JAVADOC
  */
-public class SharedInboxCommentsTaskDetailView
+public class TaskCommentsView
         extends JPanel
 {
     public ValueBuilder<TaskGeneralDTO> valueBuilder;
     private TaskCommentsModel model;
 
-    public SharedInboxCommentsTaskDetailView(@Service ActionMap am,
+    public TaskCommentsView(@Service ActionMap am,
                                              @Service final TaskCommentsModel model)
     {
         super(new BorderLayout());
@@ -70,10 +69,10 @@ public class SharedInboxCommentsTaskDetailView
                 {
                     CommentDTO commentDTO = (CommentDTO) model.getElementAt(i);
                     String text = commentDTO.text().get().replace("\n", "<br/>");
-                    JLabel comment = new JLabel("<html><b>"+commentDTO.commenter().get()+", "+commentDTO.creationDate().get()+"</b>"+(commentDTO.isPublic().get() ? " ("+ i18n.text(TaskDetailsResources.public_comment)+")": "")+"<p>"+ text +"</p></html>");
+                    JLabel comment = new JLabel("<html><b>"+commentDTO.commenter().get()+", "+commentDTO.creationDate().get()+"</b>"+(commentDTO.isPublic().get() ? " ("+ i18n.text(SharedResources.public_comment)+")": "")+"<p>"+ text +"</p></html>");
                     comments.add(comment);
                 }
-                SharedInboxCommentsTaskDetailView.this.validate();
+                TaskCommentsView.this.validate();
             }
         });
 
@@ -91,12 +90,9 @@ public class SharedInboxCommentsTaskDetailView
             try
             {
                 model.refresh();
-            } catch (IOException e)
+            } catch (Exception e)
             {
-                e.printStackTrace();
-            } catch (ResourceException e)
-            {
-                e.printStackTrace();
+                throw new OperationException(SharedResources.could_not_refresh_comments, e);
             }
         }
     }

@@ -12,14 +12,13 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.shared;
+package se.streamsource.streamflow.client.infrastructure.ui;
 
 /**
  * JAVADOC
  */
-enum TaskDetailsResources
+public interface Refreshable
 {
-    comment_text_label,
-    comment_public_label,
-    public_comment, add_comment_title
+    public void refresh()
+        throws Exception;
 }

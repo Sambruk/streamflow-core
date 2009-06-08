@@ -18,9 +18,10 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ConnectionException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListModel;
@@ -57,7 +58,7 @@ public class GroupModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not remove partcipant");
+            throw new OperationException(AdministrationResources.could_not_remove_participant, e);
         }
 
     }
@@ -73,7 +74,7 @@ public class GroupModel
             }
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not refresh list of participants", e);
+            throw new OperationException(AdministrationResources.could_not_refresh_list_of_participants, e);
         }
     }
 
@@ -90,7 +91,7 @@ public class GroupModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not add participants");
+            throw new OperationException(AdministrationResources.could_not_add_participants, e);
         }
     }
 }

@@ -17,12 +17,7 @@ package se.streamsource.streamflow.client.ui.shared;
 /**
  * JAVADOC
  */
-enum SharedWaitingForResources
+public class WaitingForTaskCommentsModel
+    extends TaskCommentsModel
 {
-    waitingfor_tab, detail_tab,
-
-    description_column_header,
-    delegated_on_column_header,
-    delegated_to_header,
-    assigned_to_header,
 }

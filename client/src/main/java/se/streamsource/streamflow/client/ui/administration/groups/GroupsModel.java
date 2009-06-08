@@ -16,10 +16,11 @@ package se.streamsource.streamflow.client.ui.administration.groups;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
 import org.restlet.representation.StringRepresentation;
-import se.streamsource.streamflow.client.ConnectionException;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListModel;
@@ -54,7 +55,7 @@ public class GroupsModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not create groups", e);
+            throw new OperationException(AdministrationResources.could_not_create_group, e);
         }
     }
 
@@ -66,7 +67,7 @@ public class GroupsModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not remove groups", e);
+            throw new OperationException(AdministrationResources.could_not_remove_group, e);
         }
     }
 
@@ -81,7 +82,7 @@ public class GroupsModel
             }
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not refresh list of groups", e);
+            throw new OperationException(AdministrationResources.could_not_refresh_list_of_groups, e);
         }
     }
 

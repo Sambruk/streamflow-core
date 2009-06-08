@@ -19,10 +19,12 @@ package se.streamsource.streamflow.client.ui.navigator;
  */
 public enum NavigatorResources
 {
-    shared_label,
-    shared_label_mnemonic,
     workspace_label,
     workspace_label_mnemonic,
-    search_label,
-    search_label_mnemonic
+    shared_label,
+    shared_label_mnemonic,
+    overview_label,
+    overview_label_mnemonic,
+    administration_label,
+    administration_label_mnemonic
 }

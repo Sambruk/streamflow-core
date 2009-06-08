@@ -20,6 +20,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
@@ -37,7 +39,7 @@ public class SharedDelegationsModel
 
     DelegationsTaskListDTO tasks;
 
-    String[] columnNames = {"", "Description", "Delegated from", "Created on"};
+    String[] columnNames = {"", text(description_column_header), text(delegated_from_header), text(delegated_on_header), text(created_column_header)};
     Class[] columnClasses = {Boolean.class, String.class, String.class, Date.class};
     boolean[] columnEditable = {true, false, false, false};
 

@@ -15,10 +15,50 @@
 package se.streamsource.streamflow.client.ui.shared;
 
 /**
- * JAVADOC
+ * i18n resources for the "Shared" view
  */
 enum SharedResources
 {
     shared_node,
-    inbox_node
+    inbox_node,
+
+    inbox_tab, detail_tab,
+
+    description_column_header,
+    created_column_header,
+
+    add_shared_task_title,
+    shared_task_separator,
+    description_label,
+    note_label,
+
+    assignments_tab,
+
+    delegations_tab,
+    delegated_from_header,
+
+    waitingfor_tab,
+
+    delegated_on_header,
+    delegated_to_header,
+    assigned_to_header,
+
+    comment_text_label,
+    comment_public_label,
+    public_comment,
+    could_not_refresh_comments,
+    user_node,
+    projects_node,
+    inboxes_node,
+
+    assignments_node,
+    delegations_node,
+    waitingfor_node,
+
+    general_tab,
+    metadata_tab,
+    comments_tab,
+    attachments_tab,
+
+    add_comment_title
 }

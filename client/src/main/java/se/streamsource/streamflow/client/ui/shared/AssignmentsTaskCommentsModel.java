@@ -17,15 +17,7 @@ package se.streamsource.streamflow.client.ui.shared;
 /**
  * JAVADOC
  */
-enum SharedAssignmentsResources
+public class AssignmentsTaskCommentsModel
+    extends TaskCommentsModel
 {
-    assignments_tab, detail_tab,
-
-    description_column_header,
-    created_column_header,
-
-    add_shared_task_title,
-    shared_task_separator,
-    description_label,
-    note_label;
 }

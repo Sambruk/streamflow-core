@@ -23,7 +23,7 @@ import static org.jbehave.util.JUnit4Ensure.*;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Restlet;
-import se.streamsource.streamflow.client.ConnectionException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
@@ -67,7 +67,7 @@ public class LoginSteps
         {
             account.server(client).version();
             result = "Ok";
-        } catch (ConnectionException e)
+        } catch (OperationException e)
         {
             result = e.getMessage();
         }

@@ -65,14 +65,17 @@ public class FormEditor
 
                     public void changedUpdate(DocumentEvent e)
                     {
-                        if (text.getText().equals(""))
+                        if (!isEditing())
                         {
-                            setVisible(text, false);
-                        } else
-                        {
-                            if (!text.isVisible())
+                            if (text.getText().equals(""))
                             {
-                                setVisible(text, true);
+                                setVisible(text, false);
+                            } else
+                            {
+                                if (!text.isVisible())
+                                {
+                                    setVisible(text, true);
+                                }
                             }
                         }
                     }

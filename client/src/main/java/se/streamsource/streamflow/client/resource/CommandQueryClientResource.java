@@ -33,7 +33,6 @@ import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ConnectionException;
 
 import java.io.IOException;
 
@@ -94,7 +93,7 @@ public class CommandQueryClientResource
                 return returnValue;
             } catch (IOException e)
             {
-                throw new ConnectionException(e.getMessage(), e);
+                throw new ResourceException(e);
             }
         } else if (getResponse().getStatus().equals(Status.SERVER_ERROR_INTERNAL))
         {
@@ -103,26 +102,26 @@ public class CommandQueryClientResource
                 try
                 {
                     Object exception = new ObjectRepresentation(result).getObject();
-                    throw new ConnectionException("Could not process query", (Throwable) exception);
+                    throw new ResourceException((Throwable) exception);
                 } catch (IOException e)
                 {
-                    throw new ConnectionException(e.getMessage());
+                    throw new ResourceException(e);
                 } catch (ClassNotFoundException e)
                 {
-                    throw new ConnectionException(e.getMessage());
+                    throw new ResourceException(e);
                 }
             }
 
-            throw new ConnectionException(getResponse().getEntityAsText());
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, getResponse().getEntityAsText());
         } else
         {
             try
             {
                 String text = getResponseEntity().getText();
-                throw new ConnectionException(text);
+                throw new ResourceException(getResponse().getStatus(), text);
             } catch (IOException e)
             {
-                throw new ConnectionException("Could not get response text");
+                throw new ResourceException(e);
             }
         }
     }

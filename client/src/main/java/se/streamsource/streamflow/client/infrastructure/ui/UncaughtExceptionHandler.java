@@ -34,6 +34,11 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
     @Service
     StreamFlowApplication main;
 
+    public void uncaughtException(Throwable e)
+    {
+        uncaughtException(Thread.currentThread(), e);
+    }
+
     public void uncaughtException(Thread t, Throwable e)
     {
         while (e instanceof InvocationTargetException)

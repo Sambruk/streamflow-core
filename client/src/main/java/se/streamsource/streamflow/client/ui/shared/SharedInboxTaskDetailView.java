@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
@@ -28,11 +29,19 @@ public class SharedInboxTaskDetailView
 {
     public SharedInboxTaskDetailView(@Service ApplicationContext appContext,
                                      @Service SharedInboxGeneralTaskDetailView generalView,
-                                     @Service SharedInboxCommentsTaskDetailView commentsView)
+                                     @Service InboxTaskCommentsView commentsView,
+                                     @Service final TaskGeneralModel generalModel)
     {
-        addTab("General", generalView);
-        addTab("Metadata", new JLabel("TODO"));
-        addTab("Comments", commentsView);
-        addTab("Attachments", new JLabel("TODO"));
+        addTab(i18n.text(SharedResources.general_tab), generalView);
+        addTab(i18n.text(SharedResources.metadata_tab), new JLabel("TODO"));
+        addTab(i18n.text(SharedResources.comments_tab), commentsView);
+        addTab(i18n.text(SharedResources.attachments_tab), new JLabel("TODO"));
+    }
+
+    @Override
+    public void setVisible(boolean aFlag)
+    {
+        super.setVisible(aFlag);
+        getSelectedComponent().setVisible(aFlag);
     }
 }

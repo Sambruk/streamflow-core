@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.Individual;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 /**
  * JAVADOC
@@ -44,6 +45,6 @@ public class SharedUserNode
     @Override
     public Object getValueAt(int column)
     {
-        return "User";
+        return i18n.text(SharedResources.user_node);
     }
 }

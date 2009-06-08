@@ -31,7 +31,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
-import static se.streamsource.streamflow.client.ui.shared.SharedWaitingForResources.*;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 import javax.swing.AbstractAction;
@@ -199,7 +199,7 @@ public class SharedWaitingForView
         toolbar.add(new JButton(delegateAction));
         Action refreshAction = am.get("refreshSharedWaitingFor");
         toolbar.add(new JButton(refreshAction));
-        panel.add(toolbar, BorderLayout.SOUTH);
+        panel.add(toolbar, BorderLayout.NORTH);
 
         taskTable.addTreeSelectionListener(new SelectionActionEnabler(delegateAction, removeAction));
     }

@@ -143,7 +143,7 @@ public class AccountView
                     try
                     {
                         model.account().server();
-                    } catch (ConnectionException e)
+                    } catch (OperationException e)
                     {
                         throw new IllegalArgumentException(e.getMessage());
                     }

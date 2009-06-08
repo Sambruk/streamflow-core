@@ -16,10 +16,11 @@ package se.streamsource.streamflow.client.ui.administration.roles;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
 import org.restlet.representation.StringRepresentation;
-import se.streamsource.streamflow.client.ConnectionException;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListModel;
@@ -50,7 +51,7 @@ public class RolesModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not create role");
+            throw new OperationException(AdministrationResources.could_not_create_role, e);
         }
 
     }
@@ -63,7 +64,7 @@ public class RolesModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not remove role", e);
+            throw new OperationException(AdministrationResources.could_not_remove_role, e);
         }
     }
 
@@ -78,7 +79,7 @@ public class RolesModel
             }
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not refresh list of roles", e);
+            throw new OperationException(AdministrationResources.could_not_refresh_list_of_roles, e);
         }
     }
 

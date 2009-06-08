@@ -27,7 +27,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.shared.SharedDelegationsResources.*;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 
 import javax.swing.AbstractAction;
@@ -165,7 +165,7 @@ public class SharedDelegationsView
         toolbar.add(new JButton(rejectAction));
         javax.swing.Action refreshAction = am.get("refreshSharedDelegations");
         toolbar.add(new JButton(refreshAction));
-        panel.add(toolbar, BorderLayout.SOUTH);
+        panel.add(toolbar, BorderLayout.NORTH);
 
         taskTable.addTreeSelectionListener(new SelectionActionEnabler(acceptAction, rejectAction, removeAction));
     }

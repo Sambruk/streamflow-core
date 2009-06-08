@@ -12,12 +12,12 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.shared;
 
 /**
  * JAVADOC
  */
-public enum ProjectsResources
+public class InboxTaskCommentsModel
+    extends TaskCommentsModel
 {
-    name_label
 }

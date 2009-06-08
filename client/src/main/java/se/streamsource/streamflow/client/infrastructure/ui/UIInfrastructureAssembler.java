@@ -34,6 +34,7 @@ public class UIInfrastructureAssembler
                 SearchFocus.class
         ).visibleIn(Visibility.layer);
 
+        module.importServices(UncaughtExceptionHandler.class).importedBy(NewObjectImporter.class).visibleIn(Visibility.application);
         module.addServices(
                 ExceptionHandlerService.class).instantiateOnStartup();
         module.addServices(ContainerUnitOfWorkService.class).visibleIn(Visibility.layer);

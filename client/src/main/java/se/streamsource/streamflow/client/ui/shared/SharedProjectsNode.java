@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.shared;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.domain.individual.Individual;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 /**
  * JAVADOC
@@ -32,6 +33,6 @@ public class SharedProjectsNode
     @Override
     public Object getValueAt(int column)
     {
-        return "Projects";
+        return i18n.text(SharedResources.projects_node);
     }
 }

@@ -263,11 +263,14 @@ public class StreamFlowApplication
     @Action
     public void assignTasksToMe() throws ResourceException
     {
+        int selection = sharedInboxView.getTaskTable().getSelectedRow();
         Iterable<InboxTaskDTO> selectedTasks = sharedInboxView.getSelectedTasks();
         for (InboxTaskDTO selectedTask : selectedTasks)
         {
             sharedInboxModel.assignToMe(selectedTask.task().get().identity());
         }
+        sharedInboxView.getTaskTable().getSelectionModel().setSelectionInterval(selection, selection);
+        sharedInboxView.repaint();
     }
 
     @Action

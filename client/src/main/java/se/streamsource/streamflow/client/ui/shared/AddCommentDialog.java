@@ -57,7 +57,7 @@ public class AddCommentDialog
         this.commentsModel = commentsModel;
         setActionMap(appContext.getActionMap(this));
 
-        setName(i18n.text(TaskDetailsResources.add_comment_title));
+        setName(i18n.text(SharedResources.add_comment_title));
 
         FormLayout layout = new FormLayout(
                 "200dlu",
@@ -72,8 +72,8 @@ public class AddCommentDialog
         
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
-        bb.appendLine(TaskDetailsResources.comment_public_label, CHECKBOX, template.isPublic());
-        bb.appendLine(TaskDetailsResources.comment_text_label, TEXTAREA, template.text());
+        bb.appendLine(SharedResources.comment_public_label, CHECKBOX, template.isPublic());
+        bb.appendLine(SharedResources.comment_text_label, TEXTAREA, template.text());
 
         // Create command builder
         commandBuilder = vbf.newValueBuilder(NewCommentCommand.class);

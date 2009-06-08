@@ -28,7 +28,7 @@ import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import static se.streamsource.streamflow.client.ui.shared.SharedInboxResources.*;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
 
 import javax.swing.JPanel;
 
@@ -53,7 +53,7 @@ public class AddSharedTaskDialog
         this.inboxModel = inboxModel;
         setActionMap(appContext.getActionMap(this));
 
-        setName(appContext.getResourceMap(SharedInboxResources.class).getString(SharedInboxResources.add_shared_task_title.toString()));
+        setName(appContext.getResourceMap(SharedResources.class).getString(SharedResources.add_shared_task_title.toString()));
 
         FormLayout layout = new FormLayout(
                 "200dlu",
@@ -71,7 +71,7 @@ public class AddSharedTaskDialog
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
         bb.appendLine(description_label, TEXTFIELD, template.description())
-                .appendLine(SharedInboxResources.note_label, TEXTAREA, template.note());
+                .appendLine(SharedResources.note_label, TEXTAREA, template.note());
 
         // Create command builder
         commandBuilder = vbf.newValueBuilder(NewSharedTaskCommand.class);

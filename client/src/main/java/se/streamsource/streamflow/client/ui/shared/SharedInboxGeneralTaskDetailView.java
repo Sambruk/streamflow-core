@@ -20,17 +20,17 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.data.MediaType;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.FormEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.JPanel;
-import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
@@ -38,15 +38,20 @@ import java.io.IOException;
 public class SharedInboxGeneralTaskDetailView
         extends JPanel
 {
+    @Service
+    UncaughtExceptionHandler exception;
+
     private StateBinder sharedTaskBinder;
 
-    @Service
-    SharedInboxTaskDetailModel model;
+    TaskGeneralModel model;
+
     public FormEditor editor;
     public ValueBuilder<TaskGeneralDTO> valueBuilder;
 
-    public SharedInboxGeneralTaskDetailView(@Service ApplicationContext appContext)
+    public SharedInboxGeneralTaskDetailView(@Service ApplicationContext appContext,
+                                            @Service final TaskGeneralModel model)
     {
+        this.model = model;
         setActionMap(appContext.getActionMap(this));
         FormLayout layout = new FormLayout(
                 "200dlu",
@@ -60,11 +65,21 @@ public class SharedInboxGeneralTaskDetailView
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
         bb
-        .appendLine(SharedInboxResources.description_label, TEXTFIELD, template.description())
-        .appendLine(SharedInboxResources.note_label, TEXTAREA, template.note())
+        .appendLine(SharedResources.description_label, TEXTFIELD, template.description())
+        .appendLine(SharedResources.note_label, TEXTAREA, template.note())
         .appendToggleButtonLine(getActionMap().get("edit"));
 
         editor = new FormEditor(sharedTaskBinder.boundComponents());
+
+        model.addObserver(new Observer()
+        {
+            public void update(Observable o, Object arg)
+            {
+                TaskGeneralDTO general = model.getGeneral();
+                valueBuilder = general.buildWith();
+                sharedTaskBinder.updateWith(valueBuilder.prototype());
+            }
+        });
     }
 
     @Action
@@ -77,7 +92,7 @@ public class SharedInboxGeneralTaskDetailView
             editor.view();
 
             // Update settings
-            model.sharedTask().put(new StringRepresentation(valueBuilder.newInstance().toJSON(), MediaType.APPLICATION_JSON));
+            model.updateGeneral(valueBuilder.newInstance());
         }
     }
 
@@ -87,22 +102,12 @@ public class SharedInboxGeneralTaskDetailView
         super.setVisible(aFlag);
 
         if (aFlag)
-        {
             try
             {
-                if (model.sharedTask() != null)
-                {
-                    TaskGeneralDTO general = model.sharedTask().general().general();
-                    valueBuilder = general.buildWith();
-                    sharedTaskBinder.updateWith(valueBuilder.prototype());
-                }
-            } catch (IOException e)
+                model.refresh();
+            } catch (Exception e)
             {
-                e.printStackTrace();
-            } catch (ResourceException e)
-            {
-                e.printStackTrace();
+                exception.uncaughtException(e);
             }
-        }
     }
 }

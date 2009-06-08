@@ -14,9 +14,8 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 
@@ -30,12 +29,11 @@ public interface ExceptionHandlerService
     class ActivatableMixin
             implements Activatable
     {
-        @Structure
-        ObjectBuilderFactory obf;
+        @Service UncaughtExceptionHandler handler;
 
         public void activate() throws Exception
         {
-            Thread.setDefaultUncaughtExceptionHandler(obf.newObject(UncaughtExceptionHandler.class));
+            Thread.setDefaultUncaughtExceptionHandler(handler);
 
         }
 
@@ -44,6 +42,7 @@ public interface ExceptionHandlerService
             Thread.setDefaultUncaughtExceptionHandler(null);
         }
 
+        
     }
 
 }

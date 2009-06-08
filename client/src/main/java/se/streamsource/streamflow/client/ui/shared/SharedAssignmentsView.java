@@ -28,7 +28,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.shared.SharedAssignmentsResources.*;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
@@ -102,8 +102,8 @@ public class SharedAssignmentsView
 
         JScrollPane taskScrollPane = new JScrollPane(taskTable);
 
+        panel.add(toolbar, BorderLayout.NORTH);
         panel.add(taskScrollPane, BorderLayout.CENTER);
-        panel.add(toolbar, BorderLayout.SOUTH);
 
 
         taskTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));

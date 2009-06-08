@@ -20,6 +20,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
@@ -37,7 +39,7 @@ public class SharedWaitingForModel
 
     WaitingForTaskListDTO tasks;
 
-    String[] columnNames = {"", "Description", "Delegated to", "Assigned to", "Delegated on"};
+    String[] columnNames = {"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
     Class[] columnClasses = {Boolean.class, String.class, String.class, String.class, Date.class};
     boolean[] columnEditable = {true, false, false, false, false};
 

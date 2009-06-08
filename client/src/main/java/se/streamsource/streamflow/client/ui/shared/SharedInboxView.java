@@ -32,7 +32,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnable
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
-import static se.streamsource.streamflow.client.ui.shared.SharedInboxResources.*;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
@@ -114,15 +114,15 @@ public class SharedInboxView
 
         JScrollPane taskScrollPane = new JScrollPane(taskTable);
 
+        panel.add(toolbar, BorderLayout.NORTH);
         panel.add(taskScrollPane, BorderLayout.CENTER);
-        panel.add(toolbar, BorderLayout.SOUTH);
 
 
         taskTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
         taskTable.getColumn(0).setMaxWidth(30);
         taskTable.getColumn(0).setResizable(false);
-        taskTable.getColumn(2).setPreferredWidth(120);
-        taskTable.getColumn(2).setMaxWidth(120);
+        taskTable.getColumn(2).setPreferredWidth(150);
+        taskTable.getColumn(2).setMaxWidth(150);
         taskTable.setAutoCreateColumnsFromModel(false);
 
         JPanel det = new JPanel();

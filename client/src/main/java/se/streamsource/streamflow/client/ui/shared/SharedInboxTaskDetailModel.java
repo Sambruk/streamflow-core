@@ -21,31 +21,20 @@ import se.streamsource.streamflow.client.resource.users.shared.user.inbox.Shared
 import java.io.IOException;
 
 /**
- * JAVADOC
+ * Model for task details.
  */
 public class SharedInboxTaskDetailModel
 {
-    private SharedUserInboxTaskClientResource sharedTask;
-
     @Service TaskCommentsModel comments;
+    @Service TaskGeneralModel general;
 
     public SharedInboxTaskDetailModel()
     {
     }
 
-    public SharedUserInboxTaskClientResource sharedTask()
-    {
-        return sharedTask;
-    }
-
-    public TaskCommentsModel comments()
-    {
-        return comments;
-    }
-
     public void setResource(SharedUserInboxTaskClientResource sharedTask) throws IOException, ResourceException
     {
-        this.sharedTask = sharedTask;
         comments.setResource(sharedTask.comments());
+        general.setResource(sharedTask.general());
     }
 }

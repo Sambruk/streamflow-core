@@ -12,21 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.client.ui.shared;
+
+import org.qi4j.api.injection.scope.Service;
+
+import javax.swing.ActionMap;
 
 /**
- * Exception thrown by client-side if something goes wrong in accessing the server-side REST API.
+ * JAVADOC
  */
-public class ConnectionException
-        extends RuntimeException
+public class InboxTaskCommentsView
+    extends TaskCommentsView
 {
-    public ConnectionException(String message)
+    public InboxTaskCommentsView(@Service ActionMap am,
+                                             @Service final TaskCommentsModel model)
     {
-        super(message);
-    }
-
-    public ConnectionException(String message, Throwable cause)
-    {
-        super(message, cause);
+        super(am, model);
     }
 }

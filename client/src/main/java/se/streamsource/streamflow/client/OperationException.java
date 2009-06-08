@@ -12,16 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.shared;
+package se.streamsource.streamflow.client;
+
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 /**
- * JAVADOC
+ * Exception thrown by model in the client if something goes wrong in accessing the server-side REST API.
+ *
+ * The constructor requires that you provide an enumeration key as the message. This is then used with the
+ * {@link i18n} class to get the actual message. This ensures that all messages use i18n properly.
  */
-enum SharedDelegationsResources
+public class OperationException
+        extends RuntimeException
 {
-    delegations_tab, detail_tab,
-
-    description_column_header,
-    created_column_header,
-    delegated_from_header,
+    public OperationException(Enum messageEnum, Throwable cause)
+    {
+        super(i18n.text(messageEnum), cause);
+    }
 }

@@ -14,7 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.shared;
 
+import org.qi4j.api.injection.scope.Service;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.SharedUserTaskCommentsClientResource;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
@@ -28,6 +30,9 @@ import java.io.IOException;
 public class TaskCommentsModel
     extends AbstractListModel
 {
+    @Service
+    UncaughtExceptionHandler exception;
+
     private SharedUserTaskCommentsClientResource commentsClientResource;
 
     CommentsDTO comments;
@@ -60,6 +65,5 @@ public class TaskCommentsModel
     public void setResource(SharedUserTaskCommentsClientResource commentsClientResource) throws IOException, ResourceException
     {
         this.commentsClientResource = commentsClientResource;
-        refresh();
     }
 }

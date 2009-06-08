@@ -16,11 +16,12 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
-import se.streamsource.streamflow.client.ConnectionException;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListModel;
@@ -53,7 +54,7 @@ public class ProjectsModel
             }
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not refresh projects model");
+            throw new OperationException(AdministrationResources.could_not_refresh_list_of_projects, e);
         }
     }
 
@@ -64,7 +65,7 @@ public class ProjectsModel
             refresh();
         } catch(ResourceException e)
         {
-            throw new ConnectionException("Could not delete project");
+            throw new OperationException(AdministrationResources.could_not_remove_project, e);
         }
     }
 
@@ -81,7 +82,7 @@ public class ProjectsModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new ConnectionException("Could not create project");
+            throw new OperationException(AdministrationResources.could_not_create_project, e);
         }
 
     }
