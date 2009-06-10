@@ -45,6 +45,23 @@
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-runtime</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.qi4j.core</groupId>
+            <artifactId>qi4j-core-testsupport</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>qi4j-lib-constraints</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.qi4j.extension</groupId>
+            <artifactId>qi4j-entitystore-jdbm</artifactId>
+            <version>${version.qi4j-ext}</version>
+        </dependency>
 
         <!-- UI -->
         <dependency>

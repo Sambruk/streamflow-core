@@ -12,33 +12,30 @@
  *
  */
 
-package se.streamsource.streamflow.client.infrastructure.domain;
+package se.streamsource.streamflow.client.infrastructure.configuration;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.entitystore.jdbm.JdbmConfiguration;
+import org.qi4j.entitystore.memory.MemoryEntityStoreService;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 /**
- * JAVADOC
+ * Assembly of configuration of services
  */
-public class EntityStoreAssembler
+public class ConfigurationAssembler
         implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        /*module.addObjects(EntityStateSerializer.class, EntityStateParser.class, EntityTypeSerializer.class, EntityTypeParser.class);
-        module.addEntities(RESTEntityStoreConfiguration.class, SPARQLEntityFinderConfiguration.class, RESTEntityTypeRegistryConfiguration.class);
+        module.addServices(FileConfiguration.class, ServiceConfiguration.class).instantiateOnStartup();
+
+        // Configurations
+        module.addEntities(JdbmConfiguration.class).visibleIn(Visibility.layer);
+
+        // Configuration store
         module.addServices(MemoryEntityStoreService.class);
-        module.addServices(RdfFactoryService.class);
-
-
-        // Domain model storage
-        module.addServices(RESTEntityStoreService.class,
-                SPARQLEntityFinderService.class,
-                EntityTypeRegistryService.class,
-                UuidIdentityGeneratorService.class).
-                visibleIn(Visibility.application);
-        module.importServices(Uniform.class);
-*/
     }
 }

@@ -26,7 +26,7 @@ import org.qi4j.spi.entity.helpers.UuidIdentityGeneratorService;
 /**
  * JAVADOC
  */
-public class EntityStoreAssembler
+public class ServerEntityStoreAssembler
         implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException

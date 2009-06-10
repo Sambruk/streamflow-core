@@ -14,31 +14,20 @@
 
 package se.streamsource.streamflow.client.infrastructure.domain;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.entity.helpers.EntityTypeRegistryService;
 
 /**
  * JAVADOC
  */
-public class EntityStoreAssembler
+public class EntityTypeRegistryAssembler
         implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        /*module.addObjects(EntityStateSerializer.class, EntityStateParser.class, EntityTypeSerializer.class, EntityTypeParser.class);
-        module.addEntities(RESTEntityStoreConfiguration.class, SPARQLEntityFinderConfiguration.class, RESTEntityTypeRegistryConfiguration.class);
-        module.addServices(MemoryEntityStoreService.class);
-        module.addServices(RdfFactoryService.class);
-
-
-        // Domain model storage
-        module.addServices(RESTEntityStoreService.class,
-                SPARQLEntityFinderService.class,
-                EntityTypeRegistryService.class,
-                UuidIdentityGeneratorService.class).
-                visibleIn(Visibility.application);
-        module.importServices(Uniform.class);
-*/
+        module.addServices(EntityTypeRegistryService.class).visibleIn(Visibility.application);
     }
 }

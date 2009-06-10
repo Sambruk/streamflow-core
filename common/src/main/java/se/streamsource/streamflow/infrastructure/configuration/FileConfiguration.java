@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.configuration;
+package se.streamsource.streamflow.infrastructure.configuration;
 
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
@@ -99,7 +99,7 @@ public interface FileConfiguration
             Logger.getLogger(getClass().getName()).info("Operating system:" + os.name());
 
             // Get bundle with application name and configured directories
-            String user = System.getProperty("users.home");
+            String user = System.getProperty("user.home");
             ResourceBundle bundle = ResourceBundle.getBundle(FileConfiguration.class.getName(), new Locale(os.name()));
 
             // Set application name. This is taken from the bundle but can be overriden by a system property

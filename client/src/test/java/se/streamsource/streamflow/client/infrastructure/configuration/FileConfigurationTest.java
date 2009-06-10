@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.configuration;
+package se.streamsource.streamflow.client.infrastructure.configuration;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -49,7 +49,7 @@ public class FileConfigurationTest
 
         String user = System.getProperty("user.home");
         Assert.assertThat("OS is correct", config.os(), CoreMatchers.equalTo(FileConfiguration.OS.mac));
-        Assert.assertThat("configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo(new File(user + "/Library/Preferences/StreamFlowServer")));
+        Assert.assertThat("configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo(new File(user + "/Library/Preferences/StreamFlowClient")));
     }
 
     @Test
@@ -59,6 +59,6 @@ public class FileConfigurationTest
         System.setProperty("os.name", "Linux");
 
         Assert.assertThat("OS is correct", config.os(), CoreMatchers.equalTo(FileConfiguration.OS.unix));
-        Assert.assertThat("configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo(new File("/etc/opt/StreamFlowServer")));
+        Assert.assertThat("configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo(new File("/etc/opt/StreamFlowClient")));
     }
 }

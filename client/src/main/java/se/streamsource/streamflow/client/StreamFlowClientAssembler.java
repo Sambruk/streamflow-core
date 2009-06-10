@@ -14,17 +14,15 @@
 
 package se.streamsource.streamflow.client;
 
-import org.qi4j.bootstrap.ApplicationAssembler;
-import org.qi4j.bootstrap.ApplicationAssembly;
-import org.qi4j.bootstrap.ApplicationAssemblyFactory;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.*;
 import se.streamsource.streamflow.client.domain.checklist.ChecklistAssembler;
 import se.streamsource.streamflow.client.domain.individual.IndividualAssembler;
 import se.streamsource.streamflow.client.domain.workspace.WorkspaceAssembler;
+import se.streamsource.streamflow.client.infrastructure.application.EntityFinderAssembler;
 import se.streamsource.streamflow.client.infrastructure.application.RestletClientAssembler;
+import se.streamsource.streamflow.client.infrastructure.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.client.infrastructure.domain.ClientEntityStoreAssembler;
+import se.streamsource.streamflow.client.infrastructure.domain.EntityTypeRegistryAssembler;
 import se.streamsource.streamflow.client.infrastructure.ui.UIInfrastructureAssembler;
 import se.streamsource.streamflow.client.resource.ClientResourceAssembler;
 import se.streamsource.streamflow.client.ui.UIAssembler;
@@ -108,9 +106,13 @@ public class StreamFlowClientAssembler
         new ClientResourceAssembler().assemble(module);
     }
 
-    protected void assembleClientDomainInfrastructureLayer(LayerAssembly infrastructureLayer) throws AssemblyException
+    protected void assembleClientDomainInfrastructureLayer(LayerAssembly domainInfrastructureLayer) throws AssemblyException
     {
-        new ClientEntityStoreAssembler().assemble(infrastructureLayer.newModuleAssembly("Client EntityStore"));
+        new ConfigurationAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Configuration"));
+        new ClientEntityStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Client EntityStore"));
+        new EntityFinderAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Finder"));
+        new EntityTypeRegistryAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Type Registry"));
+
     }
 
 }

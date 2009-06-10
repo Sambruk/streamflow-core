@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.infrastructure.application;
 
-import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -24,7 +23,6 @@ import org.qi4j.library.rdf.entity.EntityStateParser;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.rest.client.SPARQLEntityFinderConfiguration;
-import org.qi4j.rest.client.SPARQLEntityFinderService;
 import org.qi4j.spi.entity.helpers.EntityTypeRegistryService;
 
 /**
@@ -36,13 +34,13 @@ public class EntityFinderAssembler
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
         module.addObjects(EntityStateSerializer.class, EntityStateParser.class, EntityTypeSerializer.class);
-        module.addEntities(SPARQLEntityFinderConfiguration.class);
+        //module.addEntities(SPARQLEntityFinderConfiguration.class);
         module.on(SPARQLEntityFinderConfiguration.class).to().sparqlUrl().set("http://localhost/streamflow-web/qi4j/query.rdf");
         module.addServices(RdfFactoryService.class);
         module.addServices(MemoryEntityStoreService.class, EntityTypeRegistryService.class);
 
         // Domain model finder
-        module.addServices(SPARQLEntityFinderService.class)
-                .visibleIn(Visibility.application);
+        /*module.addServices(SPARQLEntityFinderService.class)
+                .visibleIn(Visibility.application); */
     }
 }

@@ -15,11 +15,12 @@
 package se.streamsource.streamflow.client.infrastructure.domain;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.spi.entity.helpers.EntityTypeRegistryService;
 import org.qi4j.spi.entity.helpers.UuidIdentityGeneratorService;
 
 /**
@@ -30,10 +31,19 @@ public class ClientEntityStoreAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        // Client domain model storage
-        module.addServices(MemoryEntityStoreService.class,
-                EntityTypeRegistryService.class,
-                UuidIdentityGeneratorService.class).
-                visibleIn(Visibility.application);
+        Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+        if (mode.equals(Application.Mode.development))
+        {
+            // In-memory store
+            module.addServices(MemoryEntityStoreService.class, UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
+        } else if (mode.equals(Application.Mode.test))
+        {
+            // In-memory store
+            module.addServices(MemoryEntityStoreService.class, UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
+        } else if (mode.equals(Application.Mode.production))
+        {
+            // JDBM storage
+            module.addServices(JdbmEntityStoreService.class, UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
+        }
     }
 }

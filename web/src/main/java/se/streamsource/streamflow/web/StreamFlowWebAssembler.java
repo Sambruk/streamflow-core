@@ -27,7 +27,7 @@ import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.domain.WebDomainAssembler;
 import se.streamsource.streamflow.web.infrastructure.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
-import se.streamsource.streamflow.web.infrastructure.domain.EntityStoreAssembler;
+import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityTypeRegistryAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
@@ -66,7 +66,7 @@ public class StreamFlowWebAssembler
     private void assembleDomainInfrastructureLayer(LayerAssembly domainInfrastructureLayer) throws AssemblyException
     {
         new ConfigurationAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Configuration"));
-        new EntityStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Store"));
+        new ServerEntityStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Store"));
         new EntityFinderAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Finder"));
         new EntityTypeRegistryAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Type Registry"));
     }

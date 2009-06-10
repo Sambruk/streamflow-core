@@ -20,10 +20,8 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.injection.scope.Structure;
 import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.*;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
 
 /**

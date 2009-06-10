@@ -20,6 +20,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 /**
  * Assembly of configuration of services
