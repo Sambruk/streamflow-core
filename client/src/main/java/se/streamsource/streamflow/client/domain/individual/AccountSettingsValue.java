@@ -29,7 +29,7 @@ public interface AccountSettingsValue
     Property<String> name();
 
     @UseDefaults
-    @Matches("[\\w:/-]*")
+    @Matches("[\\w:/\\.\\-]*")
     Property<String> server();
 
     @UseDefaults
