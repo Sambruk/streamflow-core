@@ -29,31 +29,22 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
-import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.detail_tab;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.waitingfor_tab;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,15 +57,20 @@ public class SharedWaitingForView
         extends JTabbedPane
 {
     private JXTreeTable taskTable;
+    private SharedWaitingForModel model;
+    private SharedWaitingForTaskDetailModel detailModel;
 
     public SharedWaitingForView(@Service final ActionMap am,
                            @Service final SharedWaitingForModel model,
                            @Service final SharedWaitingForTaskDetailView detailView,
-                           @Service final SharedInboxTaskDetailModel detailModel,
+                           @Service final SharedWaitingForTaskDetailModel detailModel,
                            @Structure ObjectBuilderFactory obf,
                            @Structure ValueBuilderFactory vbf)
     {
         super();
+        this.model = model;
+        this.detailModel = detailModel;
+
 
         // Popup
         JPopupMenu popup = new JPopupMenu();
@@ -229,5 +225,33 @@ public class SharedWaitingForView
             tasks.add(task);
         }
         return tasks;
+    }
+
+    @Override
+    public void setSelectedIndex(int index)
+    {
+        try
+        {
+            if (index == 1)
+            {
+                WaitingForTaskDTO dto = getSelectedTask();
+                detailModel.setResource(model.getRoot().task(dto.task().get().identity()));
+            }
+            super.setSelectedIndex(index);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void addNotify()
+    {
+        super.addNotify();
+
+        setSelectedIndex(0);
     }
 }

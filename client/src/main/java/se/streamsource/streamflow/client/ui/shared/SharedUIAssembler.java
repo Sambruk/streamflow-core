@@ -81,17 +81,36 @@ public class SharedUIAssembler
                 SharedInboxTaskDetailView.class);
 
         UIAssemblers.addMV(module,
+                SharedDelegationsTaskDetailModel.class,
+                SharedDelegationsTaskDetailView.class);
+
+        UIAssemblers.addMV(module,
+                SharedAssignmentsTaskDetailModel.class,
+                SharedAssignmentsTaskDetailView.class);
+
+        UIAssemblers.addMV(module,
+                SharedWaitingForTaskDetailModel.class,
+                SharedWaitingForTaskDetailView.class);
+
+        UIAssemblers.addMV(module,
                 InboxTaskCommentsModel.class,
                 InboxTaskCommentsView.class);
+
+        UIAssemblers.addMV(module,
+                DelegationsTaskCommentsModel.class,
+                DelegationsTaskCommentsView.class);
+
+        UIAssemblers.addMV(module,
+                AssignmentsTaskCommentsModel.class,
+                AssignmentsTaskCommentsView.class);
+
+        UIAssemblers.addMV(module,
+                WaitingForTaskCommentsModel.class,
+                WaitingForTaskCommentsView.class);
 
         UIAssemblers.addMV(module,
                 TaskGeneralModel.class,
                 SharedInboxGeneralTaskDetailView.class);
 
-        UIAssemblers.addViews(module,
-                SharedAssignmentsTaskDetailView.class,
-                SharedDelegationsTaskDetailView.class,
-                SharedWaitingForTaskDetailView.class
-        );
     }
 }

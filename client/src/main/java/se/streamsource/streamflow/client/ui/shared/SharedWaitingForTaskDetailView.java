@@ -16,9 +16,9 @@ package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
-import javax.swing.JLabel;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -27,11 +27,19 @@ public class SharedWaitingForTaskDetailView
         extends JTabbedPane
 {
     public SharedWaitingForTaskDetailView(@Service ApplicationContext appContext,
-                                     @Service SharedInboxGeneralTaskDetailView generalView)
+                                     @Service SharedInboxGeneralTaskDetailView generalView,
+                                     @Service WaitingForTaskCommentsView commentsView)
     {
         addTab("General", new JLabel("TODO"));
         addTab("Metadata", new JLabel("TODO"));
-        addTab("Comments", new JLabel("TODO"));
+        addTab(i18n.text(SharedResources.comments_tab), commentsView);
         addTab("Attachments", new JLabel("TODO"));
+    }
+
+    @Override
+    public void setVisible(boolean aFlag)
+    {
+        super.setVisible(aFlag);
+        getSelectedComponent().setVisible(aFlag);
     }
 }

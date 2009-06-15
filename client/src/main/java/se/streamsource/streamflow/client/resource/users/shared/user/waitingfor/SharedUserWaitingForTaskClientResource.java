@@ -21,6 +21,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.SharedUserTaskCommentsClientResource;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
@@ -49,5 +50,10 @@ public class SharedUserWaitingForTaskClientResource
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
         putCommand("delegate", builder.newInstance());
+    }
+
+    public SharedUserTaskCommentsClientResource comments()
+    {
+        return getSubResource("comments", SharedUserTaskCommentsClientResource.class);
     }
 }

@@ -24,30 +24,24 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.delegations_tab;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.detail_tab;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
-import javax.swing.Action;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,16 +54,19 @@ public class SharedDelegationsView
         extends JTabbedPane
 {
     private JXTreeTable taskTable;
+    private SharedDelegationsTaskDetailModel detailModel;
+    private SharedDelegationsModel model;
 
     public SharedDelegationsView(@Service final ActionMap am,
                            @Service final SharedDelegationsModel model,
                            @Service final SharedDelegationsTaskDetailView detailView,
-                           @Service final SharedInboxTaskDetailModel detailModel,
+                           @Service final SharedDelegationsTaskDetailModel detailModel,
                            @Structure ObjectBuilderFactory obf,
                            @Structure ValueBuilderFactory vbf)
     {
         super();
-
+        this.detailModel = detailModel;
+        this.model = model;
         // Popup
         JPopupMenu popup = new JPopupMenu();
         Action removeAction = am.get("removeSharedTasks");
@@ -195,5 +192,33 @@ public class SharedDelegationsView
             tasks.add(task);
         }
         return tasks;
+    }
+
+    @Override
+    public void setSelectedIndex(int index)
+    {
+        try
+        {
+            if (index == 1)
+            {
+                DelegatedTaskDTO dto = getSelectedTask();
+                detailModel.setResource(model.getRoot().task(dto.task().get().identity()));
+            }
+            super.setSelectedIndex(index);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void addNotify()
+    {
+        super.addNotify();
+
+        setSelectedIndex(0);
     }
 }

@@ -138,8 +138,24 @@ public class SharedView
         if (selected == -1)
             return null;
 
-        SharedUserInboxNode userInboxNode = (SharedUserInboxNode) sharedTree.getPathForRow(selected).getPathComponent(3);
-        return userInboxNode.getSettings().userName().get();
+        Object selectedNode = sharedTree.getPathForRow(selected).getPathComponent(3);
+        if (selectedNode instanceof SharedUserInboxNode)
+        {
+            SharedUserInboxNode userInboxNode = (SharedUserInboxNode) selectedNode;
+            return userInboxNode.getSettings().userName().get();
+        } else if (selectedNode instanceof SharedUserDelegationsNode)
+        {
+            SharedUserDelegationsNode userDelegationsNode = (SharedUserDelegationsNode) selectedNode;
+            return userDelegationsNode.getSettings().userName().get();
+        } else if (selectedNode instanceof SharedUserAssignmentsNode)
+        {
+            SharedUserAssignmentsNode assignmentsNode = (SharedUserAssignmentsNode) selectedNode;
+            return assignmentsNode.getSettings().userName().get();
+        } else
+        {
+            SharedUserWaitingForNode waitingForNode = (SharedUserWaitingForNode) selectedNode;
+            return waitingForNode.getSettings().userName().get();
+        }
     }
 
     public JSplitPane getPane()
