@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.ui.shared;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
@@ -39,24 +38,19 @@ public class SharedUserAllInboxesNode
 
     private Restlet client;
 
-    public SharedUserAllInboxesNode(@Service IndividualRepository repository, @Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
+    public SharedUserAllInboxesNode(@Service IndividualRepository repository,
+                                    @Service Restlet client,
+                                    @Structure ObjectBuilderFactory obf)
     {
         super(repository.individual());
-        this.repository = repository;
         this.client = client;
         this.obf = obf;
         refresh();
     }
 
-
-    private IndividualRepository repository;
-
     public void refresh()
     {
-
         Individual individual = (Individual) getUserObject();
-        individual = repository.individual();
-        setUserObject(individual);
         individual.visitAccounts(new AccountVisitor()
         {
             public void visitAccount(Account account)

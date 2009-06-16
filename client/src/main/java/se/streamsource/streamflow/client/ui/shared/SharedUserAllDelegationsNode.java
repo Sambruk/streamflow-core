@@ -17,13 +17,13 @@ package se.streamsource.streamflow.client.ui.shared;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.Individual;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
@@ -38,9 +38,11 @@ public class SharedUserAllDelegationsNode
 
     private Restlet client;
 
-    public SharedUserAllDelegationsNode(@Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
+    public SharedUserAllDelegationsNode(@Service IndividualRepository repostitory,
+                                        @Service Restlet client,
+                                        @Structure ObjectBuilderFactory obf)
     {
-        super(individual);
+        super(repostitory.individual());
         this.client = client;
         this.obf = obf;
         refresh();

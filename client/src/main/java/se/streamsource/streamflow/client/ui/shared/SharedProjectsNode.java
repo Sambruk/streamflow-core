@@ -15,9 +15,9 @@
 package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.domain.individual.Individual;
+import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 
 /**
  * JAVADOC
@@ -25,9 +25,9 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 public class SharedProjectsNode
         extends DefaultMutableTreeTableNode
 {
-    public SharedProjectsNode(@Uses Individual individual)
+    public SharedProjectsNode(@Service IndividualRepository repository)
     {
-        super(individual);
+        super(repository.individual());
     }
 
     @Override

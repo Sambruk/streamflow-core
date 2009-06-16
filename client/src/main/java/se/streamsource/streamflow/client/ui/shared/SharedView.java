@@ -22,18 +22,11 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -46,14 +39,12 @@ public class SharedView
     // SharedInbox listing
     private JXTreeTable sharedTree;
     private JSplitPane pane;
-    private SharedModel model;
 
     public SharedView(@Service ActionMap am,
                       @Service SharedModel model,
                       @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
-        this.model = model;
 
         sharedTree = new JXTreeTable(model);
         sharedTree.setPreferredScrollableViewportSize(new Dimension(300, 400));
@@ -87,6 +78,7 @@ public class SharedView
                 pane.getRightComponent().requestFocus();
             }
         });
+        //sharedTree
 
         JScrollPane sharedScroll = new JScrollPane(sharedTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 

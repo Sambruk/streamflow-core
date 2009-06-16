@@ -15,7 +15,10 @@
 package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
+import org.jdesktop.swingx.treetable.MutableTreeTableNode;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
 
 /**
  * JAVADOC
@@ -23,6 +26,9 @@ import org.qi4j.api.injection.scope.Uses;
 public class SharedModel
         extends DefaultTreeTableModel
 {
+    @Structure
+    ObjectBuilderFactory obf;
+
     public SharedModel(@Uses SharedNode root)
     {
         super(root);
@@ -54,6 +60,12 @@ public class SharedModel
 
     public void refresh()
     {
-        ((SharedNode) getRoot()).refresh();
+        SharedNode root = (SharedNode) getRoot();
+        while (root.getChildCount() >0)
+            removeNodeFromParent((MutableTreeTableNode) root.getChildAt(0));
+
+        setRoot(obf.newObjectBuilder(SharedNode.class).newInstance());
     }
+
+    
 }

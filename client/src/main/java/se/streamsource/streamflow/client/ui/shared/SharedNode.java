@@ -27,22 +27,12 @@ public class SharedNode
         extends DefaultMutableTreeTableNode
 {
 
-    private SharedUserNode sharedUserNode;
-    private SharedProjectsNode sharedProjectsNode;
-
-    public SharedNode(@Service IndividualRepository individualRepository, @Structure ObjectBuilderFactory obf)
+    public SharedNode(@Service IndividualRepository individualRepository,
+                      @Structure ObjectBuilderFactory obf)
     {
         super(individualRepository.individual());
 
-        sharedUserNode = obf.newObjectBuilder(SharedUserNode.class).use(individualRepository.individual()).newInstance();
-        sharedProjectsNode = obf.newObjectBuilder(SharedProjectsNode.class).use(individualRepository.individual()).newInstance();
-        add(sharedUserNode);
-        add(sharedProjectsNode);
-    }
-
-    public void refresh()
-    {
-        sharedUserNode.refresh();
-        //sharedProjectsNode.refresh();
+        add(obf.newObject(SharedUserNode.class));
+        add(obf.newObject(SharedProjectsNode.class));
     }
 }

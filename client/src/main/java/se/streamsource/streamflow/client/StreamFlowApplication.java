@@ -190,6 +190,7 @@ public class StreamFlowApplication
         dialogs.showOkCancelHelpDialog(getMainFrame(), dialog);
         accountsModel.refresh();
         sharedModel.refresh();
+        sharedView.getSharedTree().expandAll();
         administrationModel.refresh();
     }
 
