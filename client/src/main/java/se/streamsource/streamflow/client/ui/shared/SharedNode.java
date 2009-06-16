@@ -26,11 +26,23 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 public class SharedNode
         extends DefaultMutableTreeTableNode
 {
+
+    private SharedUserNode sharedUserNode;
+    private SharedProjectsNode sharedProjectsNode;
+
     public SharedNode(@Service IndividualRepository individualRepository, @Structure ObjectBuilderFactory obf)
     {
         super(individualRepository.individual());
 
-        add(obf.newObjectBuilder(SharedUserNode.class).use(individualRepository.individual()).newInstance());
-        add(obf.newObjectBuilder(SharedProjectsNode.class).use(individualRepository.individual()).newInstance());
+        sharedUserNode = obf.newObjectBuilder(SharedUserNode.class).use(individualRepository.individual()).newInstance();
+        sharedProjectsNode = obf.newObjectBuilder(SharedProjectsNode.class).use(individualRepository.individual()).newInstance();
+        add(sharedUserNode);
+        add(sharedProjectsNode);
+    }
+
+    public void refresh()
+    {
+        sharedUserNode.refresh();
+        //sharedProjectsNode.refresh();
     }
 }

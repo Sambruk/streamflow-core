@@ -27,6 +27,11 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 public class SharedUserNode
         extends DefaultMutableTreeTableNode
 {
+    private SharedUserAllInboxesNode allInboxes;
+    private SharedUserAllAssignmentsNode allAssignments;
+    private SharedUserAllDelegationsNode allDelegations;
+    private SharedUserAllWaitingForNode allWaitingFor;
+
     public SharedUserNode(@Uses Individual individual,
                           @Structure ObjectBuilderFactory obf,
                           @Uses SharedUserAllInboxesNode allInboxes,
@@ -36,6 +41,10 @@ public class SharedUserNode
     {
         super(individual);
 
+        this.allInboxes = allInboxes;
+        this.allAssignments = allAssignments;
+        this.allDelegations = allDelegations;
+        this.allWaitingFor = allWaitingFor;
         add(allInboxes);
         add(allAssignments);
         add(allDelegations);
@@ -46,5 +55,13 @@ public class SharedUserNode
     public Object getValueAt(int column)
     {
         return i18n.text(SharedResources.user_node);
+    }
+
+    public void refresh() 
+    {
+        allInboxes.refresh();
+        allAssignments.refresh();
+        allDelegations.refresh();
+        allWaitingFor.refresh();
     }
 }

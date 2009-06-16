@@ -166,6 +166,9 @@ public class StreamFlowApplication
     @Service
     AccountsModel accountsModel;
 
+    @Service
+    SharedModel sharedModel;
+
     @Action
     public void manageAccounts()
     {
@@ -186,6 +189,7 @@ public class StreamFlowApplication
         CreateAccountDialog dialog = createAccountDialog.newInstance();
         dialogs.showOkCancelHelpDialog(getMainFrame(), dialog);
         accountsModel.refresh();
+        sharedModel.refresh();
         administrationModel.refresh();
     }
 

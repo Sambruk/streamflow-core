@@ -50,4 +50,10 @@ public class SharedModel
     {
         return false;
     }
+
+
+    public void refresh()
+    {
+        ((SharedNode) getRoot()).refresh();
+    }
 }

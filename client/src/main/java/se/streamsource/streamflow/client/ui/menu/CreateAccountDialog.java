@@ -23,14 +23,16 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.Restlet;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.application.administration.query.RegistrationException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,6 +48,10 @@ public class CreateAccountDialog
 
     @Service
     IndividualRepository individualRepository;
+
+
+    @Service
+    Restlet client;
 
     @Structure
     ValueBuilderFactory vbf;
@@ -105,6 +111,13 @@ public class CreateAccountDialog
 
         Account account = individualRepository.individual().newAccount();
         account.updateSettings(settings.newInstance());
+        try
+        {
+            account.register(client);
+        } catch (RegistrationException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         try
         {
             uow.complete();

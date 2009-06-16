@@ -39,7 +39,7 @@ public class UsersClientResource
 
     public UserClientResource register(RegisterUserCommand command) throws ResourceException
     {
-        Reference reference = postCommand(command);
-        return obf.newObjectBuilder(UserClientResource.class).use(getContext(), reference).newInstance();
+        postCommand(command);
+        return getSubResource(command.username().get(), UserClientResource.class);
     }
 }

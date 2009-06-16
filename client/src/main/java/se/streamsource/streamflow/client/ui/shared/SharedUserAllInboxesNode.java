@@ -24,6 +24,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.Individual;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
@@ -38,18 +39,24 @@ public class SharedUserAllInboxesNode
 
     private Restlet client;
 
-    public SharedUserAllInboxesNode(@Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
+    public SharedUserAllInboxesNode(@Service IndividualRepository repository, @Uses Individual individual, @Service Restlet client, @Structure ObjectBuilderFactory obf)
     {
-        super(individual);
+        super(repository.individual());
+        this.repository = repository;
         this.client = client;
         this.obf = obf;
         refresh();
     }
 
 
+    private IndividualRepository repository;
+
     public void refresh()
     {
+
         Individual individual = (Individual) getUserObject();
+        individual = repository.individual();
+        setUserObject(individual);
         individual.visitAccounts(new AccountVisitor()
         {
             public void visitAccount(Account account)

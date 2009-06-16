@@ -58,7 +58,7 @@ public interface BootstrapDataService
             } catch (NoSuchEntityException e)
             {
                 // Create bootstrap data
-                EntityBuilder<OrganizationEntity> ouBuilder = uow.newEntityBuilder(OrganizationEntity.class);
+                EntityBuilder<OrganizationEntity> ouBuilder = uow.newEntityBuilder(OrganizationEntity.class, "Organization");
                 ouBuilder.prototype().description().set("Organization");
                 OrganizationEntity ou = ouBuilder.newInstance();
 
