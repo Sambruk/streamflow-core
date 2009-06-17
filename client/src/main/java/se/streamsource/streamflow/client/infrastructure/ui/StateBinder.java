@@ -22,32 +22,16 @@ import org.qi4j.api.property.Property;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
 
 /**
  * JAVADOC
@@ -319,7 +303,16 @@ public class StateBinder
                         binding.updateProperty(textField.getText());
                     }
                 });
-
+                textField.addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent keyEvent)
+                    {
+                        if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER)
+                        {
+                            binding.updateProperty(textField.getText());
+                        }
+                    }
+                });
                 return binding;
             } else if (component instanceof JPasswordField)
             {
