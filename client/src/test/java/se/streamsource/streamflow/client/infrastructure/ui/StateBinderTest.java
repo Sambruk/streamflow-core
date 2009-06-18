@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,141 +21,131 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.test.AbstractQi4jTest;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.Field;
 
 public class StateBinderTest
         extends AbstractQi4jTest
 {
 
-    private StateBinder binder;
-    private ValueBuilder<NewSharedTaskCommand> commandBuilder;
+    private String descriptionText = "Task description";
 
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addValues(NewSharedTaskCommand.class);
+        module.addValues(NewTestCommand.class);
     }
-
 
     @Test
     public void testTextFieldEnter() throws IllegalAccessException, NoSuchFieldException
     {
-        DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("200dlu",""), new JPanel());
-        builder.setDefaultDialogBorder();
-
-        binder = new StateBinder();
-        NewSharedTaskCommand template = binder.bindingTemplate(NewSharedTaskCommand.class);
-
         JTextField field = (JTextField) TEXTFIELD.newField();
-        binder.bind(field, template.description());
-
-        commandBuilder = valueBuilderFactory.newValueBuilder(NewSharedTaskCommand.class);
-
-        binder.updateWith(commandBuilder.prototype());
-
-        String descriptionText = "Task description";
+        ValueBuilder<NewTestCommand>  builder = bind(field);
         field.setText(descriptionText);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(
+                field,
+                new KeyEvent(field, KeyEvent.KEY_PRESSED, 0,0,KeyEvent.VK_ENTER, '\n'));
 
-        simulateKey(new KeyEvent(field, KeyEvent.KEY_PRESSED, System.currentTimeMillis(),0,KeyEvent.VK_ENTER, '\n'), field);
-
-        NewSharedTaskCommand task = commandBuilder.newInstance();
-
-        Assert.assertThat(task.description().get(), CoreMatchers.equalTo(descriptionText));
+        Assert.assertThat(builder.newInstance().text().get(),
+                          CoreMatchers.equalTo(descriptionText));
     }
 
     @Test
     public void testTextField() throws IllegalAccessException, NoSuchFieldException
     {
-        DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("200dlu",""), new JPanel());
-        builder.setDefaultDialogBorder();
-
-        binder = new StateBinder();
-        NewSharedTaskCommand template = binder.bindingTemplate(NewSharedTaskCommand.class);
-
         JTextField field = (JTextField) TEXTFIELD.newField();
-        binder.bind(field, template.description());
+        ValueBuilder<NewTestCommand> builder = bind(field);
 
-        commandBuilder = valueBuilderFactory.newValueBuilder(NewSharedTaskCommand.class);
-
-        binder.updateWith(commandBuilder.prototype());
-
-        String descriptionText = "Task description";
         field.setText(descriptionText);
         field.dispatchEvent(new FocusEvent(field, FocusEvent.FOCUS_FIRST));
         field.dispatchEvent(new FocusEvent(field, FocusEvent.FOCUS_LAST));
 
-        NewSharedTaskCommand task = commandBuilder.newInstance();
-
-        Assert.assertThat(task.description().get(), CoreMatchers.equalTo(descriptionText));
-    }
-
-
-    private void simulateKey(KeyEvent e, Component c) throws NoSuchFieldException, IllegalAccessException
-    {
-        Field f = AWTEvent.class.getDeclaredField("focusManagerIsDispatching");
-        f.setAccessible(true);
-        f.set(e, Boolean.TRUE);
-        c.dispatchEvent(e);
+        Assert.assertThat(builder.newInstance().text().get(),
+                          CoreMatchers.equalTo(descriptionText));
     }
 
     @Test
     public void testPassword()
     {
-        DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("200dlu",""), new JPanel());
-        builder.setDefaultDialogBorder();
-
-        binder = new StateBinder();
-        NewSharedTaskCommand template = binder.bindingTemplate(NewSharedTaskCommand.class);
-
         JTextField field = (JTextField) PASSWORD.newField();
+        ValueBuilder<NewTestCommand> builder = bind(field);
 
-        binder.bind(field, template.description());
-
-        commandBuilder = valueBuilderFactory.newValueBuilder(NewSharedTaskCommand.class);
-
-        binder.updateWith(commandBuilder.prototype());
-
-        String descriptionText = "Task description";
         field.setText(descriptionText);
         field.dispatchEvent(new FocusEvent(field, FocusEvent.FOCUS_FIRST));
         field.dispatchEvent(new FocusEvent(field, FocusEvent.FOCUS_LAST));
 
-        NewSharedTaskCommand task = commandBuilder.newInstance();
-
-        Assert.assertThat(task.description().get(), CoreMatchers.equalTo(descriptionText));
+        Assert.assertThat(builder.newInstance().text().get(),
+                          CoreMatchers.equalTo(descriptionText));
     }
+
+    @Test
+    public void testPasswordEnter() throws IllegalAccessException, NoSuchFieldException
+    {
+        JTextField field = (JTextField) PASSWORD.newField();
+        ValueBuilder<NewTestCommand> builder = bind(field);
+        field.setText(descriptionText);
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(
+                field,
+                new KeyEvent(field, KeyEvent.KEY_PRESSED, 0,0,KeyEvent.VK_ENTER, '\n'));
+
+        Assert.assertThat(builder.newInstance().text().get(),
+                          CoreMatchers.equalTo(descriptionText));
+    }
+
 
     @Test
     public void testTextArea()
     {
-        DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout("200dlu",""), new JPanel());
-        builder.setDefaultDialogBorder();
-
-        binder = new StateBinder();
-        NewSharedTaskCommand template = binder.bindingTemplate(NewSharedTaskCommand.class);
-
         JScrollPane pane = (JScrollPane) TEXTAREA.newField();
         JTextArea textArea = (JTextArea) pane.getViewport().getView();
-
-        binder.bind(pane, template.description());
-
-        commandBuilder = valueBuilderFactory.newValueBuilder(NewSharedTaskCommand.class);
-
-        binder.updateWith(commandBuilder.prototype());
-
-        String descriptionText = "Task description";
+        ValueBuilder<NewTestCommand> builder = bind(textArea);
         textArea.setText(descriptionText);
         textArea.dispatchEvent(new FocusEvent(textArea, FocusEvent.FOCUS_FIRST));
         textArea.dispatchEvent(new FocusEvent(textArea, FocusEvent.FOCUS_LAST));
 
-        NewSharedTaskCommand task = commandBuilder.newInstance();
+        Assert.assertThat(builder.newInstance().text().get(),
+                          CoreMatchers.equalTo(descriptionText));
+    }
 
-        Assert.assertThat(task.description().get(), CoreMatchers.equalTo(descriptionText));
+
+    @Test
+    public void testCheckbox()
+    {
+        /*
+        JCheckBox checkbox = (JCheckBox) CHECKBOX.newField();
+        ValueBuilder<NewTestCommand> builder = bind(checkbox);
+
+        boolean newValue = !checkbox.isSelected();
+        checkbox.setSelected(newValue);
+        checkbox.dispatchEvent(new ActionEvent(checkbox, ActionEvent.ACTION_PERFORMED, ""));
+
+
+        Assert.assertThat(builder.newInstance().isChecked().get(),
+                          CoreMatchers.equalTo(newValue));
+      */
+    }
+
+
+    private ValueBuilder<NewTestCommand> bind(Component component) {
+        StateBinder binder = new StateBinder();
+        NewTestCommand template = binder.bindingTemplate(NewTestCommand.class);
+
+        if (component instanceof JCheckBox)
+        {
+            binder.bind(component, template.isChecked());
+        } else
+        {
+            binder.bind(component, template.text());
+        }
+
+        ValueBuilder<NewTestCommand> commandBuilder = valueBuilderFactory.newValueBuilder(NewTestCommand.class);
+
+        binder.updateWith(commandBuilder.prototype());
+
+        return commandBuilder;
     }
 }
