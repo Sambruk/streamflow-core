@@ -100,6 +100,10 @@ public class SharedUserInboxServerResource
         SharedTaskEntity prototype = builder.prototype();
         prototype.description().set(command.description().get());
         prototype.note().set(command.note().get());
+        if (command.isCompleted().get())
+        {
+            prototype.status().set(TaskStates.COMPLETED);
+        }
 
         // Check if subtask
         if (command.parentTask().get() != null)

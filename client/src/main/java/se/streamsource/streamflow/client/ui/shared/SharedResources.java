@@ -60,5 +60,7 @@ enum SharedResources
     comments_tab,
     attachments_tab,
 
-    add_comment_title
+    add_comment_title,
+
+    is_completed
 }

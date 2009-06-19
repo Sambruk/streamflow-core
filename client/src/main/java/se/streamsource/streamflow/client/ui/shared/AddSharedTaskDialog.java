@@ -71,7 +71,9 @@ public class AddSharedTaskDialog
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
         bb.appendLine(description_label, TEXTFIELD, template.description())
-                .appendLine(SharedResources.note_label, TEXTAREA, template.note());
+                .appendLine(SharedResources.note_label, TEXTAREA, template.note())
+                .appendLine(SharedResources.is_completed, CHECKBOX, template.isCompleted());
+
 
         // Create command builder
         commandBuilder = vbf.newValueBuilder(NewSharedTaskCommand.class);

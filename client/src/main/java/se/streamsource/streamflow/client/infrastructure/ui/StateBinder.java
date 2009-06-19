@@ -307,6 +307,10 @@ public class StateBinder
                     @Override
                     public void keyPressed(KeyEvent keyEvent)
                     {
+                        if (keyEvent.getKeyCode() == KeyEvent.VK_ALT)
+                        {
+                            System.out.println("ALT DOWN");
+                        }
                         if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER)
                         {
                             binding.updateProperty(textField.getText());
