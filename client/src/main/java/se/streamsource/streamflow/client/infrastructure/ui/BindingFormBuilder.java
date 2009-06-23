@@ -19,16 +19,8 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.qi4j.api.property.Property;
 
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -66,7 +58,6 @@ public class BindingFormBuilder
                         return new JCheckBox();
                     }
                 };
-
         public abstract Component newField();
     }
 
