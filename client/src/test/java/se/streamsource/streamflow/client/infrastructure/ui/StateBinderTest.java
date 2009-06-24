@@ -21,11 +21,11 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.test.AbstractQi4jTest;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.PASSWORD;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 
 public class StateBinderTest
@@ -47,35 +47,7 @@ public class StateBinderTest
         field.setText(descriptionText);
         KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(
                 field,
-                new KeyEvent(field, KeyEvent.KEY_PRESSED, 0,0,KeyEvent.VK_ENTER, '\n'));
-
-        Assert.assertThat(builder.newInstance().text().get(),
-                          CoreMatchers.equalTo(descriptionText));
-    }
-
-    @Test
-    public void testTextField() throws IllegalAccessException, NoSuchFieldException
-    {
-        JTextField field = (JTextField) TEXTFIELD.newField();
-        ValueBuilder<NewTestCommand> builder = bind(field);
-
-        field.setText(descriptionText);
-        field.dispatchEvent(new FocusEvent(field, FocusEvent.FOCUS_FIRST));
-        field.dispatchEvent(new FocusEvent(field, FocusEvent.FOCUS_LAST));
-
-        Assert.assertThat(builder.newInstance().text().get(),
-                          CoreMatchers.equalTo(descriptionText));
-    }
-
-    @Test
-    public void testPassword()
-    {
-        JTextField field = (JTextField) PASSWORD.newField();
-        ValueBuilder<NewTestCommand> builder = bind(field);
-
-        field.setText(descriptionText);
-        field.dispatchEvent(new FocusEvent(field, FocusEvent.FOCUS_FIRST));
-        field.dispatchEvent(new FocusEvent(field, FocusEvent.FOCUS_LAST));
+                new KeyEvent(field, KeyEvent.KEY_RELEASED, 0,0,KeyEvent.VK_ENTER, '\n'));
 
         Assert.assertThat(builder.newInstance().text().get(),
                           CoreMatchers.equalTo(descriptionText));
@@ -90,22 +62,7 @@ public class StateBinderTest
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(
                 field,
-                new KeyEvent(field, KeyEvent.KEY_PRESSED, 0,0,KeyEvent.VK_ENTER, '\n'));
-
-        Assert.assertThat(builder.newInstance().text().get(),
-                          CoreMatchers.equalTo(descriptionText));
-    }
-
-
-    @Test
-    public void testTextArea()
-    {
-        JScrollPane pane = (JScrollPane) TEXTAREA.newField();
-        JTextArea textArea = (JTextArea) pane.getViewport().getView();
-        ValueBuilder<NewTestCommand> builder = bind(textArea);
-        textArea.setText(descriptionText);
-        textArea.dispatchEvent(new FocusEvent(textArea, FocusEvent.FOCUS_FIRST));
-        textArea.dispatchEvent(new FocusEvent(textArea, FocusEvent.FOCUS_LAST));
+                new KeyEvent(field, KeyEvent.KEY_RELEASED, 0,0,KeyEvent.VK_ENTER, '\n'));
 
         Assert.assertThat(builder.newInstance().text().get(),
                           CoreMatchers.equalTo(descriptionText));

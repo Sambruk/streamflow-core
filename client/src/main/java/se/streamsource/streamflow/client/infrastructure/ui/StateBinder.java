@@ -296,18 +296,12 @@ public class StateBinder
             if (component instanceof JTextField)
             {
                 final JTextField textField = (JTextField) component;
-                component.addFocusListener(new FocusAdapter()
-                {
-                    public void focusLost(FocusEvent e)
-                    {
-                        binding.updateProperty(textField.getText());
-                    }
-                });
                 textField.addKeyListener(new KeyAdapter() {
                     @Override
-                    public void keyPressed(KeyEvent keyEvent)
+                    public void keyReleased(KeyEvent keyEvent)
                     {
-                        if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER)
+                        // HACK HACK: block shortcut Alt-S
+                        if (!keyEvent.isAltDown() || keyEvent.getKeyCode() != KeyEvent.VK_S)
                         {
                             binding.updateProperty(textField.getText());
                         }
@@ -329,13 +323,24 @@ public class StateBinder
             } else if (component instanceof JTextArea)
             {
                 final JTextArea textArea = (JTextArea) component;
-                component.addFocusListener(new FocusAdapter()
+                textArea.addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyReleased(KeyEvent keyEvent)
+                    {
+                        // HACK HACK: block shortcut Alt-S
+                        if (!keyEvent.isAltDown() || keyEvent.getKeyCode() != KeyEvent.VK_S)
+                        {
+                            binding.updateProperty(textArea.getText());
+                        }
+                    }
+                });
+                /*component.addFocusListener(new FocusAdapter()
                 {
                     public void focusLost(FocusEvent e)
                     {
                         binding.updateProperty(new String(textArea.getText()));
                     }
-                });
+                });*/
 
                 return binding;
             } else if (component instanceof JScrollPane)
