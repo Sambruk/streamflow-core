@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.domain.individual;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.composite.CompositeBuilderFactory;
+import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -27,11 +27,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.data.*;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
 import se.streamsource.streamflow.application.administration.query.RegistrationException;
@@ -70,7 +66,7 @@ public interface AccountEntity
         ValueBuilderFactory vbf;
 
         @Structure
-        CompositeBuilderFactory cbf;
+        TransientBuilderFactory tbf;
 
         @Structure
         ObjectBuilderFactory obf;

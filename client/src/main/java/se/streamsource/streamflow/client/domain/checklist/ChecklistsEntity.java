@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.domain.checklist;
 
-import org.qi4j.api.composite.CompositeBuilderFactory;
+import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -30,7 +30,7 @@ public interface ChecklistsEntity
             implements Checklists
     {
         @Structure
-        CompositeBuilderFactory cbf;
+        TransientBuilderFactory tbf;
 
         public void applyChecklist(ChecklistValue checklist, Object contextNode) throws Exception
         {
