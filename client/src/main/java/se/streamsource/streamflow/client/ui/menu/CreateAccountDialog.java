@@ -17,13 +17,11 @@ package se.streamsource.streamflow.client.ui.menu;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
@@ -32,10 +30,13 @@ import org.restlet.Restlet;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.application.administration.query.RegistrationException;
+import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.PASSWORD;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import static se.streamsource.streamflow.client.ui.menu.MenuResources.*;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * JAVADOC
@@ -53,75 +54,58 @@ public class CreateAccountDialog
     @Service
     Restlet client;
 
-    @Structure
     ValueBuilderFactory vbf;
 
-    private JTextField accountName;
-    private JTextField serverAddress;
-    private JTextField userName;
-    private JTextField password;
+    private StateBinder accountBinder;
+    private ValueBuilder<AccountSettingsValue> accountBuilder;
 
-    private JPanel accountPanel;
-
-    public CreateAccountDialog(@Service ApplicationContext context)
+    public CreateAccountDialog(@Service ApplicationContext context,
+                               @Structure ValueBuilderFactory vbf)
     {
-        super(new BorderLayout());
+        setActionMap(context.getActionMap(this));
+        this.vbf = vbf;
 
-        ApplicationActionMap am = context.getActionMap(this);
-        setActionMap(am);
-        setName("#Enter Settings for new Account");
-        accountPanel = new JPanel();
-        this.add(accountPanel, BorderLayout.NORTH);
+        //setName(context.getResourceMap(SharedResources.class).getString(SharedResources.add_shared_task_title.toString()));
 
-        FormLayout layout = new FormLayout("200dlu", "");
+        FormLayout layout = new FormLayout(
+                "200dlu",
+                "");                                      // add rows dynamically
+        DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
+        builder.setDefaultDialogBorder();
 
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout, accountPanel);
+        accountBinder = new StateBinder();
+        accountBinder.setResourceMap(context.getResourceMap(getClass()));
+        AccountSettingsValue template = accountBinder.bindingTemplate(AccountSettingsValue.class);
 
-        builder.append(new JLabel("#Account name"));
-        accountName = new JTextField();
-        builder.append(accountName);
-        builder.nextLine();
+        BindingFormBuilder bb = new BindingFormBuilder(builder, accountBinder);
 
-        builder.append(new JLabel("#Server address"));
-        serverAddress = new JTextField();
-        builder.append(serverAddress);
-        builder.nextLine();
+        bb.appendLine(create_account_name, TEXTFIELD, template.name())
+                .appendLine(create_account_server, TEXTFIELD, template.server())
+                .appendLine(create_account_username, TEXTFIELD, template.userName())
+                .appendLine(create_account_password, PASSWORD, template.password());
 
-        builder.append(new JLabel("#user name"));
-        userName = new JTextField();
-        builder.append(userName);
-        builder.nextLine();
 
-        builder.append(new JLabel("#Password"));
-        password = new JPasswordField();
-        builder.append(password);
-        builder.nextLine();
+        accountBuilder = vbf.newValueBuilder(AccountSettingsValue.class);
+
+        // for the demo this has been pre-filled
+        accountBuilder.prototype().server().set("http://streamflow.kicks-ass.net:8040/streamflow");
+
+        accountBinder.updateWith(accountBuilder.prototype());
     }
 
     @Action
     public void execute()
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Account"));
-        ValueBuilder<AccountSettingsValue> settings = vbf.newValueBuilder(AccountSettingsValue.class);
-
-        settings.prototype().name().set(accountName.getText());
-        settings.prototype().server().set(serverAddress.getText());
-        settings.prototype().userName().set(userName.getText());
-        settings.prototype().password().set(password.getText());
 
         Account account = individualRepository.individual().newAccount();
-        account.updateSettings(settings.newInstance());
+        account.updateSettings(accountBuilder.newInstance());
+
         try
         {
             account.register(client);
-        } catch (RegistrationException e)
-        {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        try
-        {
             uow.complete();
-        } catch (UnitOfWorkCompletionException e)
+        } catch (Exception e)
         {
             uow.discard();
         }
