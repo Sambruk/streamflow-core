@@ -88,7 +88,7 @@ public class CreateAccountDialog
         accountBuilder = vbf.newValueBuilder(AccountSettingsValue.class);
 
         // for the demo this has been pre-filled
-        accountBuilder.prototype().server().set("http://streamflow.kicks-ass.net:8040/streamflow");
+        accountBuilder.prototype().server().set("http://streamflow.doesntexist.com:8040/streamflow");
 
         accountBinder.updateWith(accountBuilder.prototype());
     }
