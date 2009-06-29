@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.shared;
 
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -41,7 +42,7 @@ public class TaskCommentsView
     private TaskCommentsModel model;
 
     public TaskCommentsView(@Service ActionMap am,
-                                             @Service final TaskCommentsModel model)
+                            @Uses final TaskCommentsModel model)
     {
         super(new BorderLayout());
         this.model = model;

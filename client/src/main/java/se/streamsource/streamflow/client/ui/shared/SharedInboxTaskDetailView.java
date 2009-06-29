@@ -16,6 +16,8 @@ package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.JLabel;
@@ -29,9 +31,16 @@ public class SharedInboxTaskDetailView
 {
     public SharedInboxTaskDetailView(@Service ApplicationContext appContext,
                                      @Service SharedInboxGeneralTaskDetailView generalView,
-                                     @Service InboxTaskCommentsView commentsView,
-                                     @Service final TaskGeneralModel generalModel)
+                                     //@Service InboxTaskCommentsView commentsView,
+                                     //@Service TaskCommentsView commentsView,
+                                     //@Service final TaskGeneralModel generalModel,
+                                     @Service TaskCommentsModel commentsModel,
+                                     @Structure ObjectBuilderFactory obf)
     {
+        
+        //TaskCommentsModel commentsModel = obf.newObject(TaskCommentsModel.class);
+        TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
+
         addTab(i18n.text(SharedResources.general_tab), generalView);
         addTab(i18n.text(SharedResources.metadata_tab), new JLabel("TODO"));
         addTab(i18n.text(SharedResources.comments_tab), commentsView);

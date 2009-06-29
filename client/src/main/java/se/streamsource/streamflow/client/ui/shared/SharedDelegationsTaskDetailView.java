@@ -16,6 +16,8 @@ package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.*;
@@ -27,9 +29,15 @@ public class SharedDelegationsTaskDetailView
         extends JTabbedPane
 {
     public SharedDelegationsTaskDetailView(@Service ApplicationContext appContext,
-                                           @Service DelegationsTaskCommentsView commentsView,
-                                           @Service SharedAssignmentsTaskDetailView generalView)
+                                           //@Service DelegationsTaskCommentsView commentsView,
+                                           //@Service TaskCommentsView commentsView,
+                                           //@Service SharedAssignmentsTaskDetailView generalView,
+                                           @Service TaskCommentsModel commentsModel,
+                                           @Structure ObjectBuilderFactory obf)
     {
+        //TaskCommentsModel commentsModel = obf.newObject(TaskCommentsModel.class);
+        TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
+        
         addTab("General", new JLabel("TODO"));
         addTab("Metadata", new JLabel("TODO"));
         addTab(i18n.text(SharedResources.comments_tab), commentsView);

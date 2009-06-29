@@ -92,6 +92,7 @@ public class SharedUIAssembler
                 SharedWaitingForTaskDetailModel.class,
                 SharedWaitingForTaskDetailView.class);
 
+        /*
         UIAssemblers.addMV(module,
                 InboxTaskCommentsModel.class,
                 InboxTaskCommentsView.class);
@@ -107,6 +108,10 @@ public class SharedUIAssembler
         UIAssemblers.addMV(module,
                 WaitingForTaskCommentsModel.class,
                 WaitingForTaskCommentsView.class);
+*/
+        UIAssemblers.addMV(module,
+                TaskCommentsModel.class,
+                TaskCommentsView.class);
 
         UIAssemblers.addMV(module,
                 TaskGeneralModel.class,
