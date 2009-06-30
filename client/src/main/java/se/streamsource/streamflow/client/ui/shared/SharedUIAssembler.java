@@ -70,7 +70,7 @@ public class SharedUIAssembler
                 SharedWaitingForModel.class,
                 SharedWaitingForView.class);
 
-        UIAssemblers.addViews(module, SharedTaskView.class);
+        //UIAssemblers.addViews(module, SharedTaskView.class);
         UIAssemblers.addDialogs(module, AddSharedTaskDialog.class,
                 ForwardSharedTasksDialog.class,
                 DelegateSharedTasksDialog.class);
@@ -92,23 +92,6 @@ public class SharedUIAssembler
                 SharedWaitingForTaskDetailModel.class,
                 SharedWaitingForTaskDetailView.class);
 
-        /*
-        UIAssemblers.addMV(module,
-                InboxTaskCommentsModel.class,
-                InboxTaskCommentsView.class);
-
-        UIAssemblers.addMV(module,
-                DelegationsTaskCommentsModel.class,
-                DelegationsTaskCommentsView.class);
-
-        UIAssemblers.addMV(module,
-                AssignmentsTaskCommentsModel.class,
-                AssignmentsTaskCommentsView.class);
-
-        UIAssemblers.addMV(module,
-                WaitingForTaskCommentsModel.class,
-                WaitingForTaskCommentsView.class);
-*/
         UIAssemblers.addMV(module,
                 TaskCommentsModel.class,
                 TaskCommentsView.class);

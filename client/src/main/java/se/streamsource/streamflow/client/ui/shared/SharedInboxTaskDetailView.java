@@ -31,14 +31,9 @@ public class SharedInboxTaskDetailView
 {
     public SharedInboxTaskDetailView(@Service ApplicationContext appContext,
                                      @Service SharedInboxGeneralTaskDetailView generalView,
-                                     //@Service InboxTaskCommentsView commentsView,
-                                     //@Service TaskCommentsView commentsView,
-                                     //@Service final TaskGeneralModel generalModel,
                                      @Service TaskCommentsModel commentsModel,
                                      @Structure ObjectBuilderFactory obf)
     {
-        
-        //TaskCommentsModel commentsModel = obf.newObject(TaskCommentsModel.class);
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
 
         addTab(i18n.text(SharedResources.general_tab), generalView);

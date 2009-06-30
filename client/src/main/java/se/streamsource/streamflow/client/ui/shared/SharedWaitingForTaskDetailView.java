@@ -30,12 +30,9 @@ public class SharedWaitingForTaskDetailView
 {
     public SharedWaitingForTaskDetailView(@Service ApplicationContext appContext,
                                      @Service SharedInboxGeneralTaskDetailView generalView,
-                                     //@Service WaitingForTaskCommentsView commentsView)
-                                     //@Service TaskCommentsView commentsView)
                                      @Service TaskCommentsModel commentsModel,
                                      @Structure ObjectBuilderFactory obf)
     {
-        //TaskCommentsModel commentsModel = obf.newObject(TaskCommentsModel.class);
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
 
         addTab("General", new JLabel("TODO"));

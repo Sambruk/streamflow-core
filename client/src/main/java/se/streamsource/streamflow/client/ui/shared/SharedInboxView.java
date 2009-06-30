@@ -83,7 +83,6 @@ public class SharedInboxView
         this.model = model;
         this.detailModel = detailModel;
 
-
         TasksQuery query = vbf.newValue(TasksQuery.class);
         try
         {

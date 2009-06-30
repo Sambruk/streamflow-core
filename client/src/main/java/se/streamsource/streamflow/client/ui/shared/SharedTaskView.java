@@ -31,8 +31,8 @@ public class SharedTaskView
 {
     private StateBinder sharedTaskBinder;
 
-    @Service
-    SharedInboxTaskDetailModel model;
+//    @Service
+//    SharedInboxTaskDetailModel model;
 
     public SharedTaskView(@Service ApplicationContext appContext)
     {

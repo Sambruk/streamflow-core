@@ -30,13 +30,9 @@ public class SharedAssignmentsTaskDetailView
 {
     public SharedAssignmentsTaskDetailView(@Service ApplicationContext appContext,
                                      @Service SharedInboxGeneralTaskDetailView generalView,
-                                     //@Service AssignmentsTaskCommentsView commentsView)
-                                     //@Service TaskCommentsView commentsView,
                                      @Service TaskCommentsModel commentsModel,
                                      @Structure ObjectBuilderFactory obf)
     {
-        // instantiate commentsview by hand
-        //TaskCommentsModel commentsModel = obf.newObject(TaskCommentsModel.class);
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
 
         addTab("General", new JLabel("TODO"));

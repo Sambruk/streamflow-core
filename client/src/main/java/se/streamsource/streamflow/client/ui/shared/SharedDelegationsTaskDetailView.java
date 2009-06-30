@@ -29,13 +29,9 @@ public class SharedDelegationsTaskDetailView
         extends JTabbedPane
 {
     public SharedDelegationsTaskDetailView(@Service ApplicationContext appContext,
-                                           //@Service DelegationsTaskCommentsView commentsView,
-                                           //@Service TaskCommentsView commentsView,
-                                           //@Service SharedAssignmentsTaskDetailView generalView,
                                            @Service TaskCommentsModel commentsModel,
                                            @Structure ObjectBuilderFactory obf)
     {
-        //TaskCommentsModel commentsModel = obf.newObject(TaskCommentsModel.class);
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
         
         addTab("General", new JLabel("TODO"));
