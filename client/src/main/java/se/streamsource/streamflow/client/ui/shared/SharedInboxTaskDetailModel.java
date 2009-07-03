@@ -35,6 +35,7 @@ public class SharedInboxTaskDetailModel
     public void setResource(SharedUserInboxTaskClientResource sharedTask) throws IOException, ResourceException
     {
         comments.setResource(sharedTask.comments());
+
         general.setResource(sharedTask.general());
     }
 }

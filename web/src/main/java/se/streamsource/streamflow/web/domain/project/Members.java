@@ -39,6 +39,8 @@ import java.util.List;
 @Mixins(Members.MembersMixin.class)
 public interface Members
 {
+    boolean isMember(Participant participant);
+
     void addMember(Participant participant);
 
     void addRole(Participant participant, Role role);
@@ -67,18 +69,21 @@ public interface Members
         UnitOfWorkFactory uowf;
 
 
-        public void addMember(Participant participant)
+        public boolean isMember(Participant participant)
         {
-            // Check if already a member
             EntityReference participantRef = EntityReference.getEntityReference(participant);
             MembersValue membersValue = state.members().get();
             MemberValue memberValue = membersValue.getMemberValue(participantRef);
-            if (memberValue != null)
-                return;
+            return memberValue != null;
+        }
 
+        public void addMember(Participant participant)
+        {
+            if (isMember(participant))
+                    return;
             ValueBuilder<MemberValue> builder = vbf.newValueBuilder(MemberValue.class);
-            builder.prototype().participant().set(participantRef);
-            ValueBuilder<MembersValue> membersBuilder = membersValue.buildWith();
+            builder.prototype().participant().set(EntityReference.getEntityReference(participant));
+            ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
             List<MemberValue> members = membersBuilder.prototype().members().get();
             members.add(builder.newInstance());
             state.members().set(membersBuilder.newInstance());

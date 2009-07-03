@@ -38,6 +38,8 @@ import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.SharedClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.SharedProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.SharedProjectsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignedTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
@@ -80,7 +82,18 @@ public class ClientResourceAssembler
                 SharedUserDelegatedTaskClientResource.class,
 
                 SharedUserWaitingForClientResource.class,
-                SharedUserWaitingForTaskClientResource.class
+                SharedUserWaitingForTaskClientResource.class,
+
+                SharedProjectClientResource.class,
+                SharedProjectsClientResource.class
+                /*SharedProjectInboxClientResource.class,
+                SharedProjectInboxTaskClientResource.class,
+                SharedProjectAssignmentsClientResource.class,
+                SharedProjectAssignmentsTaskClientResource.class,
+                SharedProjectDelegationsClientResource.class,
+                SharedProjectDelegationsTaskClientResource.class,
+                SharedProjectWaitingforClientResource.class,
+                SharedProjectWaitingforTaskClientResource.class*/
 
                 ).visibleIn(Visibility.application);
 

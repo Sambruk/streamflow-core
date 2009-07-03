@@ -18,7 +18,6 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
@@ -27,7 +26,7 @@ import javax.swing.*;
 /**
  * JAVADOC
  */
-public class SharedUserAssignmentsNode
+public class SharedProjectAssignmentsNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
@@ -37,18 +36,15 @@ public class SharedUserAssignmentsNode
     @Service
     SharedAssignmentsModel model;
 
-    @Uses
-    private AccountSettingsValue settings;
-
-    public SharedUserAssignmentsNode(@Uses SharedUserAssignmentsClientResource assignmentsClientResource)
+    public SharedProjectAssignmentsNode(@Uses SharedUserAssignmentsClientResource assignments)
     {
-        super(assignmentsClientResource, false);
+        super(assignments, false);
     }
 
     @Override
     public Object getValueAt(int column)
     {
-        return settings.name().get();
+        return "#Assignments";
     }
 
     SharedUserAssignmentsClientResource assignments()
@@ -60,10 +56,5 @@ public class SharedUserAssignmentsNode
     {
         model.setAssignments(assignments());
         return view;
-    }
-
-    public AccountSettingsValue getSettings()
-    {
-        return settings;
     }
 }

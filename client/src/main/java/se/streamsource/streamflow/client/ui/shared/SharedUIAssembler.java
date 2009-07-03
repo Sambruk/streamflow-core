@@ -41,7 +41,13 @@ public class SharedUIAssembler
                 SharedUserAssignmentsNode.class,
                 SharedUserDelegationsNode.class,
                 SharedUserWaitingForNode.class,
-                SharedProjectsNode.class,
+                SharedProjectsAllAccountsNode.class,
+                SharedProjectNode.class,
+                SharedProjectsAllProjectsNode.class,
+                SharedProjectInboxNode.class,
+                SharedProjectAssignmentsNode.class,
+                SharedProjectDelegationsNode.class,
+                SharedProjectWaitingForNode.class,
                 UsersIndividualSearch.class,
                 ProjectsIndividualSearch.class);
 

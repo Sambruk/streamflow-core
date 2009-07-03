@@ -18,8 +18,7 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.*;
@@ -27,43 +26,35 @@ import javax.swing.*;
 /**
  * JAVADOC
  */
-public class SharedUserAssignmentsNode
+public class SharedProjectInboxNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
     @Service
-    SharedAssignmentsView view;
+    SharedInboxView view;
 
     @Service
-    SharedAssignmentsModel model;
+    SharedInboxModel model;
 
-    @Uses
-    private AccountSettingsValue settings;
-
-    public SharedUserAssignmentsNode(@Uses SharedUserAssignmentsClientResource assignmentsClientResource)
+    public SharedProjectInboxNode(@Uses SharedUserInboxClientResource inbox)
     {
-        super(assignmentsClientResource, false);
+        super(inbox, false);
     }
 
     @Override
     public Object getValueAt(int column)
     {
-        return settings.name().get();
+        return "#Inbox";
     }
 
-    SharedUserAssignmentsClientResource assignments()
+    SharedUserInboxClientResource inbox()
     {
-        return (SharedUserAssignmentsClientResource) getUserObject();
+        return (SharedUserInboxClientResource) getUserObject();
     }
 
     public JComponent detailView() throws ResourceException
     {
-        model.setAssignments(assignments());
+        model.setInbox(inbox());
         return view;
-    }
-
-    public AccountSettingsValue getSettings()
-    {
-        return settings;
     }
 }

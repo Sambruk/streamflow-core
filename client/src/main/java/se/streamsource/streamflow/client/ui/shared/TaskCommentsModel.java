@@ -21,7 +21,7 @@ import se.streamsource.streamflow.client.resource.users.shared.user.task.comment
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 import java.io.IOException;
 
 /**

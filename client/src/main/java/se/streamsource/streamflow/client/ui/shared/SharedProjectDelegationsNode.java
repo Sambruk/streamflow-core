@@ -16,23 +16,45 @@ package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
+import se.streamsource.streamflow.client.ui.DetailView;
+
+import javax.swing.*;
 
 /**
  * JAVADOC
  */
-public class SharedProjectsNode
+public class SharedProjectDelegationsNode
         extends DefaultMutableTreeTableNode
+        implements DetailView
 {
-    public SharedProjectsNode(@Service IndividualRepository repository)
+    @Service
+    SharedDelegationsView view;
+
+    @Service
+    SharedDelegationsModel model;
+
+    public SharedProjectDelegationsNode(@Uses SharedUserDelegationsClientResource delegations)
     {
-        super(repository.individual());
+        super(delegations, false);
     }
 
     @Override
     public Object getValueAt(int column)
     {
-        return i18n.text(SharedResources.projects_node);
+        return "#Delegations";
+    }
+
+    SharedUserDelegationsClientResource delegations()
+    {
+        return (SharedUserDelegationsClientResource) getUserObject();
+    }
+
+    public JComponent detailView() throws ResourceException
+    {
+        model.setDelegations(delegations());
+        return view;
     }
 }

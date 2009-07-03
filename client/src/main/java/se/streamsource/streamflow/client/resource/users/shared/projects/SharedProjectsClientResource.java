@@ -12,33 +12,34 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared;
+package se.streamsource.streamflow.client.resource.users.shared.projects;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.projects.SharedProjectsClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * JAVADOC
  */
-public class SharedClientResource
-        extends BaseClientResource
+public class SharedProjectsClientResource
+        extends CommandQueryClientResource
 {
-    public SharedClientResource(@Uses Context context, @Uses Reference reference)
+    public SharedProjectsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public SharedUserClientResource user()
+    public SharedUserClientResource project(String project)
     {
-        return getSubResource("user", SharedUserClientResource.class);
+        return getSubResource(project, SharedUserClientResource.class);
     }
 
-    public SharedProjectsClientResource projects()
+    public ListValue listProjects() throws ResourceException
     {
-        return getSubResource("projects", SharedProjectsClientResource.class);
+        return query("listProjects", ListValue.class);        
     }
 }

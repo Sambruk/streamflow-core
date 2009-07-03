@@ -22,7 +22,7 @@ import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 /**
  * JAVADOC

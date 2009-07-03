@@ -66,5 +66,4 @@ public class UserClientResource
         builder.prototype().description().set(projectName);
         return query("findProjects", builder.newInstance(), ListValue.class);
     }
-
 }

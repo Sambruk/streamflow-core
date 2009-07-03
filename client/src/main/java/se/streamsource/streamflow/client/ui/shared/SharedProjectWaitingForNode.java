@@ -18,8 +18,7 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.*;
@@ -27,43 +26,35 @@ import javax.swing.*;
 /**
  * JAVADOC
  */
-public class SharedUserAssignmentsNode
+public class SharedProjectWaitingForNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
     @Service
-    SharedAssignmentsView view;
+    SharedWaitingForView view;
 
     @Service
-    SharedAssignmentsModel model;
+    SharedWaitingForModel model;
 
-    @Uses
-    private AccountSettingsValue settings;
-
-    public SharedUserAssignmentsNode(@Uses SharedUserAssignmentsClientResource assignmentsClientResource)
+    public SharedProjectWaitingForNode(@Uses SharedUserWaitingForClientResource waitingFor)
     {
-        super(assignmentsClientResource, false);
+        super(waitingFor, false);
     }
 
     @Override
     public Object getValueAt(int column)
     {
-        return settings.name().get();
+        return "#WaitingFor";
     }
 
-    SharedUserAssignmentsClientResource assignments()
+    SharedUserWaitingForClientResource waitingFor()
     {
-        return (SharedUserAssignmentsClientResource) getUserObject();
+        return (SharedUserWaitingForClientResource) getUserObject();
     }
 
     public JComponent detailView() throws ResourceException
     {
-        model.setAssignments(assignments());
+        model.setWaitingFor(waitingFor());
         return view;
-    }
-
-    public AccountSettingsValue getSettings()
-    {
-        return settings;
     }
 }

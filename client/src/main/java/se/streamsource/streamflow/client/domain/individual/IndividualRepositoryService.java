@@ -21,6 +21,7 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.UsecaseBuilder;
 
 import java.util.logging.Logger;
 
@@ -40,6 +41,10 @@ public interface IndividualRepositoryService
         public Individual individual()
         {
             UnitOfWork unitOfWork = uowf.currentUnitOfWork();
+            if (unitOfWork == null || !unitOfWork.isOpen())
+            {
+                unitOfWork = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("No Current UnitOfWork"));    
+            }
             Individual individual = unitOfWork.get(Individual.class, "1");
             return individual;
         }

@@ -18,21 +18,37 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 /**
  * JAVADOC
  */
-public class SharedNode
+public class SharedProjectsAllAccountsNode
         extends DefaultMutableTreeTableNode
 {
-
-    public SharedNode(@Service IndividualRepository individualRepository,
-                      @Structure ObjectBuilderFactory obf)
+    public SharedProjectsAllAccountsNode(@Service IndividualRepository repository,
+                              @Structure final ObjectBuilderFactory obf)
     {
-        super(individualRepository.individual());
+        super(repository.individual());
+        //add(obf.newObject(SharedProjectsAllProjectsNode.class));
 
-        add(obf.newObject(SharedUserNode.class));
-        add(obf.newObject(SharedProjectsAllAccountsNode.class));
+        // add nodes for all accounts
+        repository.individual().visitAccounts(new AccountVisitor()
+        {
+
+            public void visitAccount(Account account)
+            {
+                add(obf.newObjectBuilder(SharedProjectsAllProjectsNode.class).use(account).newInstance());
+            }
+        });
+    }
+
+    @Override
+    public Object getValueAt(int column)
+    {
+        return i18n.text(SharedResources.projects_node);
     }
 }

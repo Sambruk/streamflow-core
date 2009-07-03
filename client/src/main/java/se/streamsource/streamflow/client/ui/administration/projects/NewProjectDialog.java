@@ -18,11 +18,11 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.client.ui.shared.SharedModel;
+import se.streamsource.streamflow.client.ui.shared.SharedView;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -34,6 +34,13 @@ public class NewProjectDialog
 
     @Service
     ProjectsModel projectsModel;
+
+    @Service
+    SharedModel sharedModel;
+
+    @Service
+    SharedView sharedView;
+
 
     public NewProjectDialog(@Service ApplicationContext context)
     {
@@ -53,6 +60,8 @@ public class NewProjectDialog
     {
         projectsModel.newProject(nameField.getText());
         WindowUtils.findWindow(this).dispose();
+        sharedModel.refresh();
+        sharedView.getSharedTree().expandAll();
     }
 
     @Action

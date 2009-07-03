@@ -20,12 +20,13 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
-import static se.streamsource.streamflow.client.ui.shared.SharedResources.*;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.created_column_header;
+import static se.streamsource.streamflow.client.ui.shared.SharedResources.description_column_header;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 import java.util.Date;
