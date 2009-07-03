@@ -25,6 +25,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Application;
 import org.restlet.Restlet;
 import se.streamsource.streamflow.client.domain.individual.*;
 import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
@@ -58,8 +59,14 @@ public interface DummyDataService
         @Service
         Restlet client;
 
+        @Structure
+        Application app;
+
         public void activate() throws Exception
         {
+            if (!app.mode().equals(Application.Mode.development))
+                return;
+
             try
             {
                 UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Create account"));
