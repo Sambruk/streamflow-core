@@ -18,6 +18,7 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
@@ -44,7 +45,7 @@ public class SharedProjectInboxNode
     @Override
     public Object getValueAt(int column)
     {
-        return "#Inbox";
+        return i18n.text(SharedResources.inbox_node);
     }
 
     SharedUserInboxClientResource inbox()

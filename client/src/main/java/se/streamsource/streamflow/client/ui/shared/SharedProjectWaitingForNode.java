@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.*;
 
@@ -44,7 +45,7 @@ public class SharedProjectWaitingForNode
     @Override
     public Object getValueAt(int column)
     {
-        return "#WaitingFor";
+        return i18n.text(SharedResources.waitingfor_node);
     }
 
     SharedUserWaitingForClientResource waitingFor()

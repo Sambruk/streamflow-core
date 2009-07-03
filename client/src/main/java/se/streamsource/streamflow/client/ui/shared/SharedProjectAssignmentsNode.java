@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.*;
 
@@ -44,7 +45,7 @@ public class SharedProjectAssignmentsNode
     @Override
     public Object getValueAt(int column)
     {
-        return "#Assignments";
+        return i18n.text(SharedResources.assignments_node);
     }
 
     SharedUserAssignmentsClientResource assignments()

@@ -55,7 +55,6 @@ public class SharedProjectNode
     @Override
     public Object getValueAt(int column)
     {
-        //return i18n.text(SharedResources.projects_node);
         return projectName;
     }
 }
