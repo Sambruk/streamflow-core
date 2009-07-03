@@ -41,9 +41,8 @@ public class SharedProjectDelegationsServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("project");
-        //Delegations delegations = uow.get(Delegations.class, id);
 
-        // Find all Active tasks delegated to "me"
+        // Find all Active tasks delegated to "project"
         QueryBuilder<SharedTaskEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedTaskEntity.class);
         Property<String> idProp = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
         Association<Owner> ownerProp = templateFor(Ownable.OwnableState.class).owner();

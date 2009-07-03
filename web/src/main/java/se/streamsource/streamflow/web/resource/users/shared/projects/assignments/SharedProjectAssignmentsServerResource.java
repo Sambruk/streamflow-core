@@ -46,7 +46,8 @@ public class SharedProjectAssignmentsServerResource
         String projectId = (String) getRequest().getAttributes().get("project");
         String userId    = (String) getRequest().getAttributes().get("user");
 
-        // Find all Active tasks assigned to "me"
+        // Find all Active tasks assigned to "project"
+        // Find all Active tasks owned by "project" and assigned to "user"
         QueryBuilder<SharedTaskEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedTaskEntity.class);
         Property<String> assignedToidProp = templateFor(Assignable.AssignableState.class).assignedTo().get().identity();
         Property<String> ownerIdProp = templateFor(Ownable.OwnableState.class).owner().get().identity();

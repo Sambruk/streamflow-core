@@ -25,14 +25,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
-import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Delegatable;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.IsRead;
-import se.streamsource.streamflow.web.domain.task.Ownable;
-import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
-import se.streamsource.streamflow.web.domain.task.TaskStatus;
-import se.streamsource.streamflow.web.domain.task.WaitingFor;
+import se.streamsource.streamflow.web.domain.task.*;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
@@ -48,7 +41,6 @@ public class SharedProjectWaitingForServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("project");
-        WaitingFor waitingFor = uow.get(WaitingFor.class, id);
 
         // Find all Active delegated tasks owned by "project"
         // or Completed delegated tasks that are marked as unread
