@@ -143,11 +143,17 @@ public class SharedView
         {
             SharedUserAssignmentsNode assignmentsNode = (SharedUserAssignmentsNode) selectedNode;
             return assignmentsNode.getSettings().userName().get();
-        } else
+        } else if (selectedNode instanceof SharedUserWaitingForNode)
         {
             SharedUserWaitingForNode waitingForNode = (SharedUserWaitingForNode) selectedNode;
             return waitingForNode.getSettings().userName().get();
+        } else if (selectedNode instanceof SharedProjectNode)
+        {
+            SharedProjectNode sharedProjectNode = (SharedProjectNode) selectedNode;
+            return sharedProjectNode.getSettings().userName().get();
         }
+        // warning?
+        return "";
     }
 
     public JSplitPane getPane()

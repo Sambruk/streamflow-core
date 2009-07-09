@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
 
 /**
@@ -33,6 +34,10 @@ public class SharedProjectNode
     private SharedUserClientResource projectClientResource;
 
     @Uses String projectName;
+
+    @Uses
+    private AccountSettingsValue settings;
+    
 
     public SharedProjectNode(@Service IndividualRepository repository,
                              @Uses SharedUserClientResource projectClientResource,
@@ -56,5 +61,10 @@ public class SharedProjectNode
     public Object getValueAt(int column)
     {
         return projectName;
+    }
+
+    public AccountSettingsValue getSettings()
+    {
+        return settings;
     }
 }

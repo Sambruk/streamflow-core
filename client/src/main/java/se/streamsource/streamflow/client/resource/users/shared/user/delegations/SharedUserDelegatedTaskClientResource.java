@@ -20,6 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.SharedUserTaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.task.general.SharedUserTaskGeneralClientResource;
 
 /**
  * JAVADOC
@@ -50,5 +51,10 @@ public class SharedUserDelegatedTaskClientResource
     public SharedUserTaskCommentsClientResource comments()
     {
         return getSubResource("comments", SharedUserTaskCommentsClientResource.class);
+    }
+
+    public SharedUserTaskGeneralClientResource general()
+    {
+        return getSubResource("general", SharedUserTaskGeneralClientResource.class);
     }
 }

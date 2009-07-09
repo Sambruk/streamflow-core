@@ -104,7 +104,8 @@ public class SharedUIAssembler
 
         UIAssemblers.addMV(module,
                 TaskGeneralModel.class,
-                SharedInboxGeneralTaskDetailView.class);
+                TaskGeneralView.class);
+                //SharedInboxGeneralTaskDetailView.class);
 
     }
 }

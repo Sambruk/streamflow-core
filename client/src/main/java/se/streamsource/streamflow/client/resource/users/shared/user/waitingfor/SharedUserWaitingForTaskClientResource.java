@@ -22,6 +22,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.SharedUserTaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.task.general.SharedUserTaskGeneralClientResource;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
@@ -56,4 +57,10 @@ public class SharedUserWaitingForTaskClientResource
     {
         return getSubResource("comments", SharedUserTaskCommentsClientResource.class);
     }
+
+    public SharedUserTaskGeneralClientResource general()
+    {
+        return getSubResource("general", SharedUserTaskGeneralClientResource.class);
+    }
+
 }

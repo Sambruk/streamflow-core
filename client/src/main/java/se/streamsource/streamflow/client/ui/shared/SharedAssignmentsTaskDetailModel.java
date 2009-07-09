@@ -26,6 +26,7 @@ import java.io.IOException;
 public class SharedAssignmentsTaskDetailModel
 {
     @Service TaskCommentsModel comments;
+    @Service TaskGeneralModel general;
 
     public SharedAssignmentsTaskDetailModel()
     {
@@ -34,5 +35,6 @@ public class SharedAssignmentsTaskDetailModel
     public void setResource(SharedUserAssignedTaskClientResource sharedTask) throws IOException, ResourceException
     {
         comments.setResource(sharedTask.comments());
+        general.setResource(sharedTask.general());
     }
 }

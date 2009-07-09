@@ -29,13 +29,14 @@ public class SharedWaitingForTaskDetailView
         extends JTabbedPane
 {
     public SharedWaitingForTaskDetailView(@Service ApplicationContext appContext,
-                                     @Service SharedInboxGeneralTaskDetailView generalView,
-                                     @Service TaskCommentsModel commentsModel,
-                                     @Structure ObjectBuilderFactory obf)
+                                          @Service TaskCommentsModel commentsModel,
+                                          @Service TaskGeneralModel generalModel,
+                                          @Structure ObjectBuilderFactory obf)
     {
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
+        TaskGeneralView generalView = obf.newObjectBuilder(TaskGeneralView.class).use(generalModel).newInstance();
 
-        addTab("General", new JLabel("TODO"));
+        addTab("General", generalView);
         addTab("Metadata", new JLabel("TODO"));
         addTab(i18n.text(SharedResources.comments_tab), commentsView);
         addTab("Attachments", new JLabel("TODO"));

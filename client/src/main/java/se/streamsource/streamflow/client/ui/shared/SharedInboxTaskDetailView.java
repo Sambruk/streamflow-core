@@ -30,11 +30,12 @@ public class SharedInboxTaskDetailView
         extends JTabbedPane
 {
     public SharedInboxTaskDetailView(@Service ApplicationContext appContext,
-                                     @Service SharedInboxGeneralTaskDetailView generalView,
+                                     @Service TaskGeneralModel generalModel,
                                      @Service TaskCommentsModel commentsModel,
                                      @Structure ObjectBuilderFactory obf)
     {
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
+        TaskGeneralView generalView = obf.newObjectBuilder(TaskGeneralView.class).use(generalModel).newInstance();
 
         addTab(i18n.text(SharedResources.general_tab), generalView);
         addTab(i18n.text(SharedResources.metadata_tab), new JLabel("TODO"));

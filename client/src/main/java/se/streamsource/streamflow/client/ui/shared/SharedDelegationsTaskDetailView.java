@@ -30,11 +30,13 @@ public class SharedDelegationsTaskDetailView
 {
     public SharedDelegationsTaskDetailView(@Service ApplicationContext appContext,
                                            @Service TaskCommentsModel commentsModel,
+                                           @Service TaskGeneralModel generalModel,
                                            @Structure ObjectBuilderFactory obf)
     {
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
+        TaskGeneralView generalView = obf.newObjectBuilder(TaskGeneralView.class).use(generalModel).newInstance();
         
-        addTab("General", new JLabel("TODO"));
+        addTab("General", generalView);
         addTab("Metadata", new JLabel("TODO"));
         addTab(i18n.text(SharedResources.comments_tab), commentsView);
         addTab("Attachments", new JLabel("TODO"));

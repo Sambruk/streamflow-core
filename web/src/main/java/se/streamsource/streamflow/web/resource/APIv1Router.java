@@ -101,6 +101,8 @@ public class APIv1Router
         attach("/users/{user}/shared/user/waitingfor/{task}", createServerResourceFinder(SharedUserWaitingForTaskServerResource.class));
         attach("/users/{user}/shared/user/{view}/{task}/general", createServerResourceFinder(SharedUserTaskGeneralServerResource.class));
         attach("/users/{user}/shared/user/{view}/{task}/comments", createServerResourceFinder(SharedUserTaskCommentsServerResource.class));
+        attach("/users/{user}/shared/projects/{project}/{view}/{task}/general", createServerResourceFinder(SharedUserTaskGeneralServerResource.class));
+        attach("/users/{user}/shared/projects/{project}/{view}/{task}/comments", createServerResourceFinder(SharedUserTaskCommentsServerResource.class));
         attach("/users/{user}/administration", createServerResourceFinder(UserAdministrationServerResource.class));
 
         // OrganizationalUnits

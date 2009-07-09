@@ -62,7 +62,7 @@ public class SharedProjectsAllProjectsNode
             for (ListItemValue project : projects.items().get())
             {
                 SharedUserClientResource projectResource =  user.shared().projects().project(project.entity().get().identity());
-                add(obf.newObjectBuilder(SharedProjectNode.class).use(projectResource, project.description().get()).newInstance());
+                add(obf.newObjectBuilder(SharedProjectNode.class).use(projectResource, project.description().get(), account.settings()).newInstance());
             }
         } catch (ResourceException e)
         {
