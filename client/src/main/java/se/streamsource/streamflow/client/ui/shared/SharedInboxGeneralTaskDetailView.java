@@ -65,6 +65,7 @@ public class SharedInboxGeneralTaskDetailView
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
         bb
+        .appendLine(SharedResources.id_label, TEXTFIELD, template.taskId())
         .appendLine(SharedResources.description_label, TEXTFIELD, template.description())
         .appendLine(SharedResources.note_label, TEXTAREA, template.note())
         .appendToggleButtonLine(getActionMap().get("edit"));

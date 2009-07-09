@@ -29,6 +29,7 @@ enum SharedResources
 
     add_shared_task_title,
     shared_task_separator,
+    id_label,
     description_label,
     note_label,
 

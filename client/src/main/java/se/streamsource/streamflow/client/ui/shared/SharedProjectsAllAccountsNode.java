@@ -18,10 +18,16 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
+import org.restlet.Restlet;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.users.UserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 /**
  * JAVADOC
@@ -30,10 +36,10 @@ public class SharedProjectsAllAccountsNode
         extends DefaultMutableTreeTableNode
 {
     public SharedProjectsAllAccountsNode(@Service IndividualRepository repository,
-                              @Structure final ObjectBuilderFactory obf)
+                              @Structure final ObjectBuilderFactory obf,
+                              @Service final Restlet client)
     {
         super(repository.individual());
-        //add(obf.newObject(SharedProjectsAllProjectsNode.class));
 
         // add nodes for all accounts
         repository.individual().visitAccounts(new AccountVisitor()
@@ -41,7 +47,21 @@ public class SharedProjectsAllAccountsNode
 
             public void visitAccount(Account account)
             {
-                add(obf.newObjectBuilder(SharedProjectsAllProjectsNode.class).use(account).newInstance());
+                try
+                {
+                    UserClientResource user = account.user(client);
+                    ListValue projects = user.shared().projects().listProjects();
+
+                    for (ListItemValue project : projects.items().get())
+                    {
+                        SharedUserClientResource projectResource =  user.shared().projects().project(project.entity().get().identity());
+                        add(obf.newObjectBuilder(SharedProjectNode.class).use(projectResource, project.description().get(), account.settings()).newInstance());
+                    }
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+
             }
         });
     }

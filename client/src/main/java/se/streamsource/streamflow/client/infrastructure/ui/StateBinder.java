@@ -46,6 +46,7 @@ public class StateBinder
     {
         Binder defaultBinder = new DefaultBinder(this);
         registerBinder(defaultBinder,
+                JLabel.class,
                 JTextField.class,
                 JTextArea.class,
                 JScrollPane.class,
@@ -358,6 +359,10 @@ public class StateBinder
                     }
                 });
                 return binding;
+            } else if (component instanceof JLabel)
+            {
+                // Do nothing
+                return binding;
             }
 
             throw new IllegalArgumentException("Could not bind to component of type " + component.getClass().getName());
@@ -379,6 +384,10 @@ public class StateBinder
             {
                 JCheckBox checkBox = (JCheckBox) component;
                 checkBox.setSelected(((Boolean) value));
+            } else if (component instanceof JLabel)
+            {
+                JLabel label = (JLabel) component;
+                label.setText((String) value);
             }
         }
     }

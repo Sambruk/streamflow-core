@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.resource.task;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
@@ -25,6 +26,9 @@ import java.util.Date;
 public interface TaskGeneralDTO
         extends ValueComposite
 {
+    @Optional
+    Property<String> taskId();
+
     Property<String> description();
 
     Property<String> note();

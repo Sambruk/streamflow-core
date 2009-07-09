@@ -19,7 +19,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Task;
-import se.streamsource.streamflow.web.domain.task.TaskId;
 
 /**
  * Assign id to task if sent to project inbox
@@ -34,11 +33,24 @@ public abstract class AssignTaskIdSideEffect
     @Service
     TaskIdGenerator taskIdGenerator;
 
+    public Task newTask(String description)
+    {
+        Task task = next.newTask(description);
+
+        assignId(task);
+        return null;
+    }
+
     public void receiveTask(Task task)
     {
         next.receiveTask(task);
 
-        if (((TaskId)task).getTaskId() == null)
+        assignId(task);
+    }
+
+    private void assignId(Task task)
+    {
+        if (task.getTaskId() == null)
         {
             IdGenerator idgen = po.organizationalUnit().get().getOrganization();
 

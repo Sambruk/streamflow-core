@@ -19,6 +19,7 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXStatusBar;
+import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -27,7 +28,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
@@ -35,17 +36,40 @@ import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.groups.*;
-import se.streamsource.streamflow.client.ui.administration.projects.*;
+import se.streamsource.streamflow.client.ui.administration.groups.AddParticipantsDialog;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupModel;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupView;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
+import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
+import se.streamsource.streamflow.client.ui.administration.groups.NewGroupDialog;
+import se.streamsource.streamflow.client.ui.administration.projects.AddMemberDialog;
+import se.streamsource.streamflow.client.ui.administration.projects.NewProjectDialog;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectView;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
 import se.streamsource.streamflow.client.ui.administration.roles.NewRoleDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.menu.CreateAccountDialog;
 import se.streamsource.streamflow.client.ui.navigator.NavigatorView;
-import se.streamsource.streamflow.client.ui.shared.*;
+import se.streamsource.streamflow.client.ui.shared.AddCommentDialog;
+import se.streamsource.streamflow.client.ui.shared.AddSharedTaskDialog;
+import se.streamsource.streamflow.client.ui.shared.DelegateSharedTasksDialog;
+import se.streamsource.streamflow.client.ui.shared.ForwardSharedTasksDialog;
+import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsModel;
+import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsView;
+import se.streamsource.streamflow.client.ui.shared.SharedDelegationsModel;
+import se.streamsource.streamflow.client.ui.shared.SharedDelegationsView;
+import se.streamsource.streamflow.client.ui.shared.SharedInboxModel;
+import se.streamsource.streamflow.client.ui.shared.SharedInboxView;
+import se.streamsource.streamflow.client.ui.shared.SharedModel;
+import se.streamsource.streamflow.client.ui.shared.SharedView;
+import se.streamsource.streamflow.client.ui.shared.TaskCommentsModel;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
@@ -54,8 +78,13 @@ import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -252,6 +281,24 @@ public class StreamFlowApplication
         // Show dialog
         AddSharedTaskDialog dialog = addSharedTaskDialogs.newInstance();
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), dialog);
+
+        NewSharedTaskCommand command = dialog.getCommandBuilder().newInstance();
+        try
+        {
+            sharedInboxModel.newTask(command);
+
+            JXTreeTable table = sharedInboxView.getTaskTable();
+            int index = sharedInboxModel.getChildCount(sharedInboxModel.getRoot());
+            table.getSelectionMapper().clearModelSelection();
+            table.getSelectionMapper().insertIndexInterval(10,12,false);
+/*
+            table.getSelectionModel().setSelectionInterval(index-1, index-1);
+            table.scrollRowToVisible(index-1);
+*/
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Action()

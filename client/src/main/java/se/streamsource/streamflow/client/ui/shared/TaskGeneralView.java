@@ -23,8 +23,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.FormEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
@@ -38,7 +37,7 @@ import java.util.Observer;
  * JAVADOC
  */
 public class TaskGeneralView
-        extends JPanel
+        extends JScrollPane
 {
     @Service
     UncaughtExceptionHandler exception;
@@ -58,7 +57,8 @@ public class TaskGeneralView
         FormLayout layout = new FormLayout(
                 "200dlu",
                 "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
+        JPanel form = new JPanel();
+        DefaultFormBuilder builder = new DefaultFormBuilder(layout, form);
         builder.setDefaultDialogBorder();
 
         sharedTaskBinder = new StateBinder();
@@ -67,6 +67,7 @@ public class TaskGeneralView
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
         bb
+        .appendLine(SharedResources.id_label, LABEL, template.taskId())
         .appendLine(SharedResources.description_label, TEXTFIELD, template.description())
         .appendLine(SharedResources.note_label, TEXTAREA, template.note())
         .appendToggleButtonLine(getActionMap().get("edit"));
@@ -82,6 +83,8 @@ public class TaskGeneralView
                 sharedTaskBinder.updateWith(valueBuilder.prototype());
             }
         });
+
+        setViewportView(form);
     }
 
     @Action

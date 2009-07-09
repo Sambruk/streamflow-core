@@ -26,7 +26,15 @@ import org.qi4j.library.constraints.annotation.Matches;
 @Mixins(TaskId.TaskIdMixin.class)
 public interface TaskId
 {
-    void setTaskId(@Matches("nnnnnnnn-n*") String id);
+    /**
+     * Set new id for the task. It needs to be on the format:
+     * yyyymmdd-n
+     * such as:
+     * 20090320-123
+     *
+     * @param id
+     */
+    void setTaskId(@Matches("\\d{8}-\\d*") String id);
     String getTaskId();
 
     interface TaskIdState

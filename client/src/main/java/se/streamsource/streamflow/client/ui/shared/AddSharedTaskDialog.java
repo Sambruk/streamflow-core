@@ -21,7 +21,6 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
@@ -38,19 +37,13 @@ import javax.swing.JPanel;
 public class AddSharedTaskDialog
         extends JPanel
 {
-    @Structure
-    UnitOfWorkFactory uowf;
-
     private StateBinder sharedTaskBinder;
     private ValueBuilder<NewSharedTaskCommand> commandBuilder;
-    private SharedInboxModel inboxModel;
 
     public AddSharedTaskDialog(@Service ApplicationContext appContext,
-                               @Structure ValueBuilderFactory vbf,
-                               @Service SharedInboxModel inboxModel
+                               @Structure ValueBuilderFactory vbf
     )
     {
-        this.inboxModel = inboxModel;
         setActionMap(appContext.getActionMap(this));
 
         setName(appContext.getResourceMap(SharedResources.class).getString(SharedResources.add_shared_task_title.toString()));
@@ -85,11 +78,6 @@ public class AddSharedTaskDialog
     public void execute()
             throws Exception
     {
-        // Create command instance
-        final NewSharedTaskCommand command = commandBuilder.newInstance();
-
-        inboxModel.newTask(command);
-
         WindowUtils.findWindow(this).dispose();
     }
 

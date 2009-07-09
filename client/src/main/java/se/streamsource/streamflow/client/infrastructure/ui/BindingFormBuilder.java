@@ -30,6 +30,13 @@ public class BindingFormBuilder
     // Field types
     public enum Fields
     {
+        LABEL
+                {
+                    public Component newField()
+                    {
+                        return new JLabel();
+                    }
+                },
         TEXTFIELD
                 {
                     public Component newField()

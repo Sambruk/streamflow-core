@@ -47,8 +47,7 @@ public class NavigatorView
         this.workspace = workspace;
         this.administration = administration;
         this.menu = menu;
-        addTab(text(workspace_label), workspace);
-        addTab(text(shared_label), shared);
+        addTab(text(workspace_label), shared);
         addTab(text(overview_label), new JLabel("Overview"));
         addTab(text(administration_label), administration);
 

@@ -58,6 +58,7 @@ public class SharedUserTaskGeneralServerResource
         builder.prototype().description().set(task.description().get());
         builder.prototype().note().set(task.note().get());
         builder.prototype().creationDate().set(task.createdOn().get());
+        builder.prototype().taskId().set(task.taskId().get());
         uow.discard();
 
         return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
