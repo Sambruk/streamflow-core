@@ -18,12 +18,14 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
 import se.streamsource.streamflow.web.domain.comment.CommentAssembler;
+import se.streamsource.streamflow.web.domain.group.GroupAssembler;
 import se.streamsource.streamflow.web.domain.organization.OrganizationAssembler;
+import se.streamsource.streamflow.web.domain.project.ProjectAssembler;
 import se.streamsource.streamflow.web.domain.task.SharedTaskAssembler;
 import se.streamsource.streamflow.web.domain.user.UserAssembler;
 
 /**
- * JAVADOC
+ * Assemble the domain model in the web layer.
  */
 public class WebDomainAssembler
 {
@@ -31,6 +33,8 @@ public class WebDomainAssembler
     {
         new OrganizationAssembler().assemble(domainLayer.newModuleAssembly("Organization"));
         new SharedTaskAssembler().assemble(domainLayer.newModuleAssembly("Task"));
+        new ProjectAssembler().assemble(domainLayer.newModuleAssembly("Project"));
+        new GroupAssembler().assemble(domainLayer.newModuleAssembly("Group"));
         new UserAssembler().assemble(domainLayer.newModuleAssembly("User"));
         new CommentAssembler().assemble(domainLayer.newModuleAssembly("Comments"));
         new CommonResourceAssembler().assemble(domainLayer.newModuleAssembly("Common"));

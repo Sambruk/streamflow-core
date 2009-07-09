@@ -12,29 +12,28 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.workspace;
+package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.entity.Aggregated;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.web.domain.comment.Commentable;
 
 /**
- * JAVADOC
+ * Shared tasks are aggregate roots.
  */
-public interface ProjectEntity
-        extends Project, EntityComposite
+public interface Task
+        extends
+        Assignable,
+        CreatedOn,
+        Delegatable,
+        Describable,
+        DueOn,
+        IsRead,
+        Notable,
+        Ownable,
+        TaskStatus,
+        TaskPath,
+        TaskId,
+        Commentable
 {
-    enum ProjectStatus
-    {
-        Active, OnHold, Completed, Dropped, Stalled, Pending, Archived
-    }
-
-    interface ProjectState
-    {
-        Property<ProjectStatus> status();
-
-        @Aggregated
-        ManyAssociation<Work> work();
-    }
 }

@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.resource.organizations.groups;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -26,7 +25,6 @@ import se.streamsource.streamflow.domain.organization.DuplicateDescriptionExcept
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -58,27 +56,24 @@ public class GroupsServerResource
     @Override
     protected Representation post(Representation representation, Variant variant) throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Group"));
-        EntityBuilder<GroupEntity> builder = uow.newEntityBuilder(GroupEntity.class);
-
-        String identity = getRequest().getAttributes().get("organization").toString();
-
-        Groups groups = uow.get(Groups.class, identity);
-
-        GroupEntity groupState = builder.prototype();
+        String name = null;
         try
         {
-            groupState.description().set(representation.getText());
+            name = representation.getText();
         } catch (IOException e)
         {
             e.printStackTrace();
         }
 
-        Group group = builder.newInstance();
+        String identity = getRequest().getAttributes().get("organization").toString();
+
+        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Group"));
+
+        Groups groups = uow.get(Groups.class, identity);
 
         try
         {
-            groups.addGroup(group);
+            groups.newGroup(name);
         } catch (DuplicateDescriptionException e)
         {
             //throw new ResourceException

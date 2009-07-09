@@ -23,9 +23,9 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.SharedInbox;
-import se.streamsource.streamflow.web.domain.task.SharedTask;
-import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -39,8 +39,8 @@ public class SharedUserAssignedTaskServerResource
     {
         String id = (String) getRequest().getAttributes().get("user");
         String taskId = (String) getRequest().getAttributes().get("task");
-        SharedTask task = uowf.currentUnitOfWork().get(SharedTask.class, taskId);
-        SharedInbox inbox = uowf.currentUnitOfWork().get(SharedInbox.class, id);
+        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
+        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
         inbox.completeTask(task);
     }
 
@@ -60,12 +60,12 @@ public class SharedUserAssignedTaskServerResource
             String userId = (String) getRequest().getAttributes().get("user");
             String taskId = (String) getRequest().getAttributes().get("task");
             Owner owner = uow.get(Owner.class, userId);
-            SharedTaskEntity sharedTask = uow.get(SharedTaskEntity.class, taskId);
+            TaskEntity task = uow.get(TaskEntity.class, taskId);
 
-            if (sharedTask.owner().get().equals(owner))
+            if (task.owner().get().equals(owner))
             {
                 // Only delete task if user owns it
-                uow.remove(sharedTask);
+                uow.remove(task);
             }
             
             uow.complete();

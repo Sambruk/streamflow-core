@@ -30,7 +30,7 @@ import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -50,7 +50,7 @@ public class SharedUserDelegationsServerResource
         Delegations delegations = uow.get(Delegations.class, id);
 
         // Find all Active tasks delegated to "me"
-        QueryBuilder<SharedTaskEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedTaskEntity.class);
+        QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Property<String> idProp = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
         Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
         queryBuilder.where(and(
@@ -58,21 +58,21 @@ public class SharedUserDelegationsServerResource
                 isNull(assignee),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
-        Query<SharedTaskEntity> delegationsQuery = queryBuilder.newQuery();
+        Query<TaskEntity> delegationsQuery = queryBuilder.newQuery(uow);
         delegationsQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
         ValueBuilder<DelegatedTaskDTO> builder = vbf.newValueBuilder(DelegatedTaskDTO.class);
         DelegatedTaskDTO prototype = builder.prototype();
         ValueBuilder<DelegationsTaskListDTO> listBuilder = vbf.newValueBuilder(DelegationsTaskListDTO.class);
         List<DelegatedTaskDTO> list = listBuilder.prototype().tasks().get();
-        for (SharedTaskEntity sharedTask : delegationsQuery)
+        for (TaskEntity task : delegationsQuery)
         {
-            Owner owner = uow.get(Owner.class, sharedTask.owner().get().identity().get());
+            Owner owner = uow.get(Owner.class, task.owner().get().identity().get());
             prototype.delegatedFrom().set(owner.getDescription());
-            prototype.task().set(EntityReference.getEntityReference(sharedTask));
-            prototype.delegatedOn().set(sharedTask.delegatedOn().get());
-            prototype.description().set(sharedTask.description().get());
-            prototype.status().set(sharedTask.status().get());
+            prototype.task().set(EntityReference.getEntityReference(task));
+            prototype.delegatedOn().set(task.delegatedOn().get());
+            prototype.description().set(task.description().get());
+            prototype.status().set(task.status().get());
             list.add(builder.newInstance());
         }
 

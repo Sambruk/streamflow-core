@@ -12,9 +12,9 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.workspace;
+package se.streamsource.streamflow.web.domain.project;
 
-import org.qi4j.api.common.Visibility;
+import static org.qi4j.api.common.Visibility.*;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -22,16 +22,18 @@ import org.qi4j.bootstrap.ModuleAssembly;
 /**
  * JAVADOC
  */
-public class WorkspaceAssembler
+public class ProjectAssembler
         implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
+    public void assemble(ModuleAssembly module)
+            throws AssemblyException
     {
-        module.addEntities(ActionEntity.class,
-                InboxEntity.class,
-                ContextEntity.class,
-                ProjectEntity.class,
-                TaskEntity.class,
-                WorkspaceEntity.class).visibleIn(Visibility.application);
+        module.addEntities(
+                RoleEntity.class,
+                ProjectEntity.class).visibleIn(application);
+
+        module.addValues(PermissionValue.class, MembersValue.class, MemberValue.class).visibleIn(application);
+
+        module.addServices(TaskIdGeneratorService.class);
     }
 }

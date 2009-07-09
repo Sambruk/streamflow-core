@@ -12,21 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.workspace;
+package se.streamsource.streamflow.web.domain.project;
 
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.domain.contact.HasContactsWithRole;
+import org.qi4j.api.service.ServiceComposite;
 
 /**
- * JAVADOC
+ * Id generator service for tasks
  */
-public interface TaskEntity
-        extends Task, EntityComposite
+public interface TaskIdGeneratorService
+    extends TaskIdGenerator, ServiceComposite
 {
-    interface TaskState
-            extends HasContactsWithRole
-    {
-        Property<TaskStatus> status();
-    }
 }

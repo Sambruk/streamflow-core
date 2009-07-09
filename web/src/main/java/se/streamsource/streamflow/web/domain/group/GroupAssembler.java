@@ -12,19 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.workspace;
+package se.streamsource.streamflow.web.domain.group;
 
-import se.streamsource.streamflow.domain.contact.HasContactsWithRole;
-import se.streamsource.streamflow.domain.roles.Describable;
+import static org.qi4j.api.common.Visibility.*;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * JAVADOC
  */
-public interface Task
-        extends Describable, Work, HasContactsWithRole
+public class GroupAssembler
+    implements Assembler
 {
-    enum TaskStatus
+    public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        Active, OnHold, Completed, Dropped
+        module.addEntities(GroupEntity.class).visibleIn(application);
     }
 }

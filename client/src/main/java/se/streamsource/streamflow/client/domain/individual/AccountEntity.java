@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.domain.individual;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -64,9 +63,6 @@ public interface AccountEntity
     {
         @Structure
         ValueBuilderFactory vbf;
-
-        @Structure
-        TransientBuilderFactory tbf;
 
         @Structure
         ObjectBuilderFactory obf;

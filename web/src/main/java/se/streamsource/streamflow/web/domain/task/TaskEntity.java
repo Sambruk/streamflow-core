@@ -12,32 +12,33 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.entity.EntityComposite;
 import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.SharedInbox;
+import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.domain.roles.Taggable;
+import se.streamsource.streamflow.web.domain.comment.Commentable;
 
 /**
  * JAVADOC
  */
-public interface SharedProjectEntity
-        extends EntityComposite, 
-        // Roles
-        SharedProject,
-        Describable,
-        Delegatee,
-        Members,
-        ProjectStatus,
-        SharedInbox,
-        Owner,
-
+public interface TaskEntity
+        extends Task,
         // State
-        Members.MembersState,
+        Assignable.AssignableState,
+        Commentable.CommentableState,
+        CreatedOn.CreatedOnState,
+        Delegatable.DelegatableState,
         Describable.DescribableState,
-        ProjectStatus.ProjectStatusState
-
+        DueOn.DueOnState,
+        IsRead.IsReadState,
+        Notable.NotableState,
+        Ownable.OwnableState,
+        Taggable.TaggableState,
+        TaskStatus.TaskStatusState,
+        TaskPath.TaskPathState,
+        TaskId.TaskIdState,
+        EntityComposite
 {
 }

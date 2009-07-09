@@ -48,7 +48,7 @@ public class SharedProjectAssignmentsServerResource
 
         // Find all Active tasks assigned to "project"
         // Find all Active tasks owned by "project" and assigned to "user"
-        QueryBuilder<SharedTaskEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedTaskEntity.class);
+        QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Property<String> assignedToidProp = templateFor(Assignable.AssignableState.class).assignedTo().get().identity();
         Property<String> ownerIdProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
         queryBuilder.where(and(
@@ -56,7 +56,7 @@ public class SharedProjectAssignmentsServerResource
                 eq(assignedToidProp, userId),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
-        Query<SharedTaskEntity> assignmentsQuery = queryBuilder.newQuery();
+        Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);
         assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
         ValueBuilder<AssignedTaskDTO> builder = vbf.newValueBuilder(AssignedTaskDTO.class);
@@ -64,13 +64,13 @@ public class SharedProjectAssignmentsServerResource
         ValueBuilder<AssignmentsTaskListDTO> listBuilder = vbf.newValueBuilder(AssignmentsTaskListDTO.class);
         List<AssignedTaskDTO> list = listBuilder.prototype().tasks().get();
         EntityReference ref = EntityReference.parseEntityReference(projectId);
-        for (SharedTaskEntity sharedTask : assignmentsQuery)
+        for (TaskEntity task : assignmentsQuery)
         {
             prototype.owner().set(ref);
-            prototype.task().set(EntityReference.getEntityReference(sharedTask));
-            prototype.creationDate().set(sharedTask.createdOn().get());
-            prototype.description().set(sharedTask.description().get());
-            prototype.status().set(sharedTask.status().get());
+            prototype.task().set(EntityReference.getEntityReference(task));
+            prototype.creationDate().set(task.createdOn().get());
+            prototype.description().set(task.description().get());
+            prototype.status().set(task.status().get());
             list.add(builder.newInstance());
         }
 
@@ -83,8 +83,8 @@ public class SharedProjectAssignmentsServerResource
         String id = (String) getRequest().getAttributes().get("project");
         UserEntity user = uow.get(UserEntity.class, id);
 
-        EntityBuilder<SharedTaskEntity> builder = uow.newEntityBuilder(SharedTaskEntity.class);
-        SharedTaskEntity prototype = builder.prototype();
+        EntityBuilder<TaskEntity> builder = uow.newEntityBuilder(TaskEntity.class);
+        TaskEntity prototype = builder.prototype();
         prototype.description().set(command.description().get());
         prototype.note().set(command.note().get());
 
@@ -94,14 +94,14 @@ public class SharedProjectAssignmentsServerResource
             TaskPath path = uow.get(TaskPath.class, command.parentTask().get().identity());
 
             // Add parents path first, then parent itself
-            for (SharedTask sharedTask : path.getPath())
+            for (Task task : path.getPath())
             {
-                prototype.path().add(prototype.path().count(), sharedTask);
+                prototype.path().add(prototype.path().count(), task);
             }
-            prototype.path().add(prototype.path().count(), (SharedTask) path);
+            prototype.path().add(prototype.path().count(), (Task) path);
         }
 
-        SharedTaskEntity task = builder.newInstance();
+        TaskEntity task = builder.newInstance();
         user.receiveTask(task);
     }
 }

@@ -23,9 +23,9 @@ import org.qi4j.api.mixin.Mixins;
 @Mixins(Delegations.DelegationsMixin.class)
 public interface Delegations
 {
-    void assignToMe(SharedTask task);
-    void reject(SharedTask task);
-    void completeTask(SharedTask task);
+    void assignToMe(Task task);
+    void reject(Task task);
+    void completeTask(Task task);
 
     class DelegationsMixin
         implements Delegations
@@ -33,18 +33,18 @@ public interface Delegations
         @This
         Assignee assignee;
 
-        public void assignToMe(SharedTask task)
+        public void assignToMe(Task task)
         {
             task.assignTo(assignee);
         }
 
-        public void reject(SharedTask task)
+        public void reject(Task task)
         {
             task.markAsUnread();
             task.rejectDelegation();
         }
 
-        public void completeTask(SharedTask task)
+        public void completeTask(Task task)
         {
             task.assignTo(assignee);
             task.complete();

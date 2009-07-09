@@ -14,10 +14,12 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
+import se.streamsource.streamflow.web.domain.project.IdGenerator;
+
 /**
  * JAVADOC
  */
 public interface Organization
-        extends OrganizationalUnit
+        extends OrganizationalUnit, IdGenerator
 {
 }

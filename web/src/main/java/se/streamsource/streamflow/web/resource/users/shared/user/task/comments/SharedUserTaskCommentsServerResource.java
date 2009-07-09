@@ -32,7 +32,7 @@ import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 import se.streamsource.streamflow.web.domain.comment.CommentValue;
 import se.streamsource.streamflow.web.domain.comment.Commentable;
 import se.streamsource.streamflow.web.domain.comment.Commenter;
-import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
 
 import java.util.List;
@@ -63,7 +63,7 @@ public class SharedUserTaskCommentsServerResource
         ValueBuilder<CommentsDTO> builder = vbf.newValueBuilder(CommentsDTO.class);
         ValueBuilder<CommentDTO> commentBuilder = vbf.newValueBuilder(CommentDTO.class);
         List<CommentDTO> list = builder.prototype().comments().get();
-        SharedTaskEntity task = uow.get(SharedTaskEntity.class, getRequest().getAttributes().get("task").toString());
+        TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
         for (CommentValue commentValue : task.comments().get())
         {
             commentBuilder.prototype().creationDate().set(commentValue.creationDate().get());

@@ -12,34 +12,37 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.organization;
+package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Immutable;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 
 /**
- * An organizational unit represents a part of an organization.
+ * JAVADOC
  */
-@Mixins(OrganizationalUnit.OrganizationalUnitMixin.class)
-public interface OrganizationalUnit
+@Mixins(ProjectOrganization.ProjectOrganizationMixin.class)
+public interface ProjectOrganization
 {
-    Organization getOrganization();
+    OrganizationalUnit getOrganizationalUnit();
 
-    interface OrganizationalUnitState
+    interface ProjectOrganizationState
     {
-        Association<Organization> organization();
+        @Immutable
+        Association<OrganizationalUnit> organizationalUnit();
     }
 
-    class OrganizationalUnitMixin
-            implements OrganizationalUnit
+    class ProjectOrganizationMixin
+        implements ProjectOrganization
     {
         @This
-        OrganizationalUnitState state;
+        ProjectOrganizationState state;
 
-        public Organization getOrganization()
+        public OrganizationalUnit getOrganizationalUnit()
         {
-            return state.organization().get();
+            return state.organizationalUnit().get();
         }
     }
 }

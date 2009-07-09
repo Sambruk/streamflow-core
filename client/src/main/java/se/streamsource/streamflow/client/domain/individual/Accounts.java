@@ -15,6 +15,8 @@
 package se.streamsource.streamflow.client.domain.individual;
 
 import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -33,11 +35,17 @@ public interface Accounts
 
     void visitAccounts(AccountVisitor visitor);
 
+    interface AccountsState
+    {
+        @Aggregated
+        ManyAssociation<Account> accounts();
+    }
+
     class AccountsMixin
             implements Accounts
     {
         @This
-        IndividualEntity.IndividualState state;
+        AccountsState state;
 
         @Structure
         UnitOfWorkFactory uowf;

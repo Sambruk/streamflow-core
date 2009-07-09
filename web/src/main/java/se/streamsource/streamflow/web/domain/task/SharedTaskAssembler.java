@@ -27,6 +27,6 @@ public class SharedTaskAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addEntities(SharedTaskEntity.class).visibleIn(Visibility.application);
+        module.addEntities(TaskEntity.class).visibleIn(Visibility.application);
     }
 }

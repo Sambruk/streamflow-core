@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.domain.organization;
 
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -27,7 +28,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 @Mixins(OrganizationalUnits.OrganizationsMixin.class)
 public interface OrganizationalUnits
 {
-    void addOrganizationalUnit(OrganizationalUnit ou);
+    OrganizationalUnit newOrganizationalUnit(String name);
 
     interface OrganizationalUnitsState
     {
@@ -39,15 +40,22 @@ public interface OrganizationalUnits
             implements OrganizationalUnits
     {
         @This
+        OrganizationalUnit.OrganizationalUnitState ouState;
+
+        @This
         OrganizationalUnitsState state;
 
         @Structure
         UnitOfWorkFactory uowf;
 
-        public void addOrganizationalUnit(OrganizationalUnit ou)
+        public OrganizationalUnit newOrganizationalUnit(String name)
         {
-            // Add as sub-unit
+            EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class);
+            ouBuilder.prototype().description().set(name);
+            ouBuilder.prototype().organization().set(ouState.organization().get());
+            OrganizationalUnitEntity ou = ouBuilder.newInstance();
             state.organizationalUnits().add(state.organizationalUnits().count(), ou);
+            return ou;
         }
     }
 }

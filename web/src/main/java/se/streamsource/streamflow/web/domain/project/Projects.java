@@ -15,11 +15,16 @@
 package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.Entity;
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.domain.project.ProjectStates;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 
 /**
  * JAVADOC
@@ -27,22 +32,22 @@ import se.streamsource.streamflow.domain.project.ProjectStates;
 @Mixins(Projects.ProjectsMixin.class)
 public interface Projects
 {
-    void addProject(SharedProject project) throws DuplicateDescriptionException;
+    Project newProject(String name) throws DuplicateDescriptionException;
 
-    void removeProject(SharedProject project);
+    void removeProject(Project project);
 
-    void completeProject(SharedProject project);
+    void completeProject(Project project);
 
     interface ProjectsState
     {
         @Aggregated
-        ManyAssociation<SharedProject> projects();
+        ManyAssociation<Project> projects();
 
-        ManyAssociation<SharedProject> active();
+        ManyAssociation<Project> active();
 
-        ManyAssociation<SharedProject> completed();
+        ManyAssociation<Project> completed();
 
-        ManyAssociation<SharedProject> dropped();
+        ManyAssociation<Project> dropped();
     }
 
     class ProjectsMixin
@@ -51,38 +56,53 @@ public interface Projects
         @This
         ProjectsState state;
 
-        public void addProject(SharedProject project) throws DuplicateDescriptionException
+        @This
+        OrganizationalUnit ou;
+
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        public Project newProject(String name) throws DuplicateDescriptionException
         {
-            String groupName = project.getDescription();
-            for (SharedProject aProject : state.projects())
+            for (Project aProject : state.projects())
             {
-                if (aProject.hasDescription(groupName))
+                if (aProject.hasDescription(name))
                 {
                     throw new DuplicateDescriptionException();
                 }
             }
 
+            EntityBuilder<ProjectEntity> projectBuilder = uowf.currentUnitOfWork().newEntityBuilder(ProjectEntity.class);
+            projectBuilder.prototype().describe(name);
+            projectBuilder.prototype().organizationalUnit().set(ou);
+            ProjectEntity project = projectBuilder.newInstance();
+
             state.projects().add(state.projects().count(), project);
             state.active().add(state.active().count(), project);
+
+            return project;
         }
 
-        public void removeProject(SharedProject project)
+        public void removeProject(Project project)
         {
-            state.projects().remove(project);
+            if (state.projects().remove(project))
+            {
+                if (project.getStatus().equals(ProjectStates.ACTIVE))
+                {
+                    state.active().remove(project);
+                } else if (project.getStatus().equals(ProjectStates.COMPLETED))
+                {
+                    state.completed().remove(project);
+                } else if (project.getStatus().equals(ProjectStates.DROPPED))
+                {
+                    state.dropped().remove(project);
+                }
 
-            if (project.getStatus().equals(ProjectStates.ACTIVE))
-            {
-                state.active().remove(project);
-            } else if (project.getStatus().equals(ProjectStates.COMPLETED))
-            {
-                state.completed().remove(project);
-            } else if (project.getStatus().equals(ProjectStates.DROPPED))
-            {
-                state.dropped().remove(project);
+                ((Entity)project).unitOfWork().remove(project);
             }
         }
 
-        public void completeProject(SharedProject project)
+        public void completeProject(Project project)
         {
             if (project.complete())
             {

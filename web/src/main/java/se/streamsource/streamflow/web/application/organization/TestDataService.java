@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
@@ -24,9 +23,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
+import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
+import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
@@ -62,44 +62,30 @@ public interface TestDataService
             ou.describe("WayGroup");
 
             // Create suborganizations
-            EntityBuilder<OrganizationalUnitEntity> ouBuilder = uow.newEntityBuilder(OrganizationalUnitEntity.class, "jayway");
-            ouBuilder.prototype().description().set("Jayway");
-            OrganizationalUnitEntity jayway = ouBuilder.newInstance();
-            ou.addOrganizationalUnit(jayway);
-
-            ouBuilder = uow.newEntityBuilder(OrganizationalUnitEntity.class, "dotway");
-            ouBuilder.prototype().description().set("Dotway");
-            ou.addOrganizationalUnit(ouBuilder.newInstance());
-
-            ouBuilder = uow.newEntityBuilder(OrganizationalUnitEntity.class, "realway");
-            ouBuilder.prototype().description().set("Realway");
-            ou.addOrganizationalUnit(ouBuilder.newInstance());
+            OrganizationalUnit jayway = ou.newOrganizationalUnit("Jayway");
+            ou.newOrganizationalUnit("Dotway");
+            ou.newOrganizationalUnit("Realway");
 
             // Create groups
-            EntityBuilder<GroupEntity> groupBuilder = uow.newEntityBuilder(GroupEntity.class, "developers");
-            groupBuilder.prototype().describe("Developers");
-            jayway.addGroup(groupBuilder.newInstance());
-            groupBuilder = uow.newEntityBuilder(GroupEntity.class, "projectleaders");
-            groupBuilder.prototype().describe("Project leaders");
-            jayway.addGroup(groupBuilder.newInstance());
-            groupBuilder = uow.newEntityBuilder(GroupEntity.class, "testers");
-            groupBuilder.prototype().describe("Testers");
-            jayway.addGroup(groupBuilder.newInstance());
+            Groups jaywayGroups = (Groups) jayway;
+            jaywayGroups.newGroup("Developers");
+            jaywayGroups.newGroup("Project leaders");
+            jaywayGroups.newGroup("Testers");
 
             // Create tasks
             for (int i = 0; i < 100; i++)
-                newTask(uow, user, "Some task " + i);
+                user.newTask("Arbetsuppgift " + i);
+
+            // Create project
+            Project project = ou.newProject("StreamFlow");
+
+            project.addMember(user);
+
+            // Create tasks
+            for (int i = 0; i < 100; i++)
+                project.newTask("Arbetsuppgift " + i);
 
             uow.complete();
-        }
-
-        private void newTask(UnitOfWork uow, UserEntity user, String description)
-        {
-            EntityBuilder<SharedTaskEntity> taskBuilder = uow.newEntityBuilder(SharedTaskEntity.class);
-            SharedTaskEntity state = taskBuilder.prototype();
-            state.owner().set(user);
-            state.description().set(description);
-            taskBuilder.newInstance();
         }
 
         public void passivate() throws Exception

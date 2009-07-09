@@ -12,32 +12,36 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
+package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.domain.roles.Notable;
-import se.streamsource.streamflow.domain.roles.Taggable;
-import se.streamsource.streamflow.web.domain.comment.Commentable;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.Inbox;
 
 /**
  * JAVADOC
  */
-public interface SharedTaskEntity
-        extends SharedTask,
+@SideEffects(AssignTaskIdSideEffect.class)
+public interface ProjectEntity
+        extends EntityComposite, 
+        // Roles
+        Project,
+        Describable,
+        Delegatee,
+        Members,
+        ProjectStatus,
+        Inbox,
+        Owner,
+        ProjectOrganization,
+
         // State
-        Assignable.AssignableState,
-        Commentable.CommentableState,
-        CreatedOn.CreatedOnState,
-        Delegatable.DelegatableState,
+        Members.MembersState,
         Describable.DescribableState,
-        DueOn.DueOnState,
-        IsRead.IsReadState,
-        Notable.NotableState,
-        Ownable.OwnableState,
-        Taggable.TaggableState,
-        TaskStatus.TaskStatusState,
-        TaskPath.TaskPathState,
-        EntityComposite
+        ProjectStatus.ProjectStatusState,
+        ProjectOrganization.ProjectOrganizationState
+
 {
 }

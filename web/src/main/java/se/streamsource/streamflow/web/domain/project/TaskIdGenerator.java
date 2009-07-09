@@ -14,15 +14,31 @@
 
 package se.streamsource.streamflow.web.domain.project;
 
-import se.streamsource.streamflow.domain.roles.Describable;
+import org.qi4j.api.mixin.Mixins;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- * JAVADOC
+ * Id generator for tasks sent to project inboxes
  */
-public interface SharedProject
-        extends
-        Describable,
-        Members,
-        ProjectStatus
+@Mixins(TaskIdGenerator.TaskIdGeneratorMixin.class)
+public interface TaskIdGenerator
 {
+    String nextId(IdGenerator idGenerator);
+
+    class TaskIdGeneratorMixin
+        implements TaskIdGenerator
+    {
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+
+        public String nextId(IdGenerator idGenerator)
+        {
+            long id = idGenerator.nextId();
+
+            String date = format.format(new Date());
+
+            return date+"-"+id;
+        }
+    }
 }

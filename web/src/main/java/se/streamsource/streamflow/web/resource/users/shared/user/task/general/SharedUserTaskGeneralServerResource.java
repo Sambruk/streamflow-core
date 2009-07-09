@@ -27,7 +27,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
-import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
 
 /**
@@ -54,7 +54,7 @@ public class SharedUserTaskGeneralServerResource
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Get general task information"));
         ValueBuilder<TaskGeneralDTO> builder = vbf.newValueBuilder(TaskGeneralDTO.class);
-        SharedTaskEntity task = uow.get(SharedTaskEntity.class, getRequest().getAttributes().get("task").toString());
+        TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
         builder.prototype().description().set(task.description().get());
         builder.prototype().note().set(task.note().get());
         builder.prototype().creationDate().set(task.createdOn().get());
@@ -70,7 +70,7 @@ public class SharedUserTaskGeneralServerResource
         try
         {
             TaskGeneralDTO updated = vbf.newValueFromJSON(TaskGeneralDTO.class, representation.getText());
-            SharedTaskEntity task = uow.get(SharedTaskEntity.class, getRequest().getAttributes().get("task").toString());
+            TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
             task.describe(updated.description().get());
             task.changeNote(updated.note().get());
             uow.complete();

@@ -29,8 +29,8 @@ import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.project.SharedProject;
-import se.streamsource.streamflow.web.domain.project.SharedProjectEntity;
+import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -59,10 +59,10 @@ public class UserServerResource
 
         if (query.description().get().length() > 0)
         {
-            QueryBuilder<UserEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(UserEntity.class);
+            QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
             queryBuilder.where(QueryExpressions.matches(
                     QueryExpressions.templateFor(UserEntity.class).userName(), "^" + query.description().get()));
-            Query<UserEntity> users = queryBuilder.newQuery();
+            Query<UserEntity> users = queryBuilder.newQuery(uow);
 
             try
             {
@@ -89,11 +89,11 @@ public class UserServerResource
 
         if (query.description().get().length() > 0)
         {
-            QueryBuilder<GroupEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
+            QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
             queryBuilder.where(
                 QueryExpressions.matches(
                     QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.description().get()));
-            Query<GroupEntity> groups = queryBuilder.newQuery();
+            Query<GroupEntity> groups = queryBuilder.newQuery(uow);
 
             try
             {
@@ -120,14 +120,14 @@ public class UserServerResource
 
         if (query.description().get().length() > 0)
         {
-            QueryBuilder<SharedProjectEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedProjectEntity.class);
+            QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
             queryBuilder.where(QueryExpressions.matches(
-                    QueryExpressions.templateFor(SharedProjectEntity.class).description(), "^" + query.description().get()));
-            Query<SharedProjectEntity> projects = queryBuilder.newQuery();
+                    QueryExpressions.templateFor(ProjectEntity.class).description(), "^" + query.description().get()));
+            Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
 
             try
             {
-                for (SharedProject project : projects)
+                for (Project project : projects)
                 {
                     builder.prototype().entity().set(EntityReference.getEntityReference(project));
                     listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());

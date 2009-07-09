@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.resource.organizations.projects;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -25,9 +24,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.Projects;
-import se.streamsource.streamflow.web.domain.project.SharedProject;
-import se.streamsource.streamflow.web.domain.project.SharedProjectEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.io.IOException;
@@ -45,7 +43,7 @@ public class ProjectsServerResource
         Projects.ProjectsState projectsState = uowf.currentUnitOfWork().get(Projects.ProjectsState.class, identity);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (SharedProject project : projectsState.projects())
+        for (Project project : projectsState.projects())
         {
             builder.addListItem(project.getDescription(), EntityReference.getEntityReference(project));
         }
@@ -55,27 +53,24 @@ public class ProjectsServerResource
     @Override
     protected Representation post(Representation entity, Variant variant) throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Project"));
-        EntityBuilder<SharedProjectEntity> builder = uow.newEntityBuilder(SharedProjectEntity.class);
-
+        String description = null;
+        try
+        {
+            description = entity.getText();
+        } catch (IOException e)
+        {
+            throw new ResourceException(e);
+        }
+        
         String identity = getRequest().getAttributes().get("organization").toString();
+
+        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Project"));
 
         Projects projects = uow.get(Projects.class, identity);
 
-        SharedProjectEntity projectState = builder.prototype();
         try
         {
-            projectState.description().set(entity.getText());
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        SharedProject project = builder.newInstance();
-
-        try
-        {
-            projects.addProject(project);
+            projects.newProject(description);
         } catch (DuplicateDescriptionException e)
         {
             e.printStackTrace();

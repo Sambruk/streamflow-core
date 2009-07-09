@@ -44,7 +44,7 @@ public class ProjectInboxServerResource
         String id = (String) getRequest().getAttributes().get("project");
 
         // Find all Active tasks with specific owner which have not yet been assigned
-        QueryBuilder<SharedTaskEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedTaskEntity.class);
+        QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
         Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
@@ -54,7 +54,7 @@ public class ProjectInboxServerResource
                 isNull(delegatee),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
-        Query<SharedTaskEntity> inboxQuery = queryBuilder.newQuery();
+        Query<TaskEntity> inboxQuery = queryBuilder.newQuery(uow);
         inboxQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
         ValueBuilder<InboxTaskDTO> builder = vbf.newValueBuilder(InboxTaskDTO.class);
@@ -62,14 +62,14 @@ public class ProjectInboxServerResource
         ValueBuilder<InboxTaskListDTO> listBuilder = vbf.newValueBuilder(InboxTaskListDTO.class);
         List<InboxTaskDTO> list = listBuilder.prototype().tasks().get();
         EntityReference ref = EntityReference.parseEntityReference(id);
-        for (SharedTaskEntity sharedTask : inboxQuery)
+        for (TaskEntity task : inboxQuery)
         {
             prototype.owner().set(ref);
-            prototype.task().set(EntityReference.getEntityReference(sharedTask));
-            prototype.creationDate().set(sharedTask.createdOn().get());
-            prototype.description().set(sharedTask.description().get());
-            prototype.status().set(sharedTask.status().get());
-            prototype.isRead().set(sharedTask.isRead().get());
+            prototype.task().set(EntityReference.getEntityReference(task));
+            prototype.creationDate().set(task.createdOn().get());
+            prototype.description().set(task.description().get());
+            prototype.status().set(task.status().get());
+            prototype.isRead().set(task.isRead().get());
             list.add(builder.newInstance());
         }
 

@@ -19,6 +19,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.domain.project.Roles;
+import se.streamsource.streamflow.web.domain.project.IdGenerator;
 
 /**
  * JAVADOC
@@ -35,9 +36,11 @@ public interface OrganizationalUnitEntity
 
         // State
         Describable.DescribableState,
+        OrganizationalUnit.OrganizationalUnitState,
         OrganizationalUnits.OrganizationalUnitsState,
         Groups.GroupsState,
         Projects.ProjectsState,
-        Roles.RolesState
+        Roles.RolesState,
+        IdGenerator.IdGeneratorState
 {
 }

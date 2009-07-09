@@ -27,8 +27,8 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.project.SharedProject;
-import se.streamsource.streamflow.web.domain.project.SharedProjectEntity;
+import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -59,14 +59,14 @@ public class SharedProjectsServerResource
         Participant participant = uow.get(Participant.class, id);
 
         // Hack: for now find all shared projects
-        QueryBuilder<SharedProjectEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedProjectEntity.class);
+        QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
         queryBuilder.where(QueryExpressions.matches(
-                QueryExpressions.templateFor(SharedProjectEntity.class).description(), ".*"));
-        Query<SharedProjectEntity> projects = queryBuilder.newQuery();
+                QueryExpressions.templateFor(ProjectEntity.class).description(), ".*"));
+        Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
 
         try
         {
-            for (SharedProject project : projects)
+            for (Project project : projects)
             {
                 builder.prototype().entity().set(EntityReference.getEntityReference(project));
                 listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());

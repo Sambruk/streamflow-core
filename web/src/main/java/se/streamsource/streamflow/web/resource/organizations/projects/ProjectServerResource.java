@@ -75,7 +75,7 @@ public class ProjectServerResource
         Projects projects = uow.get(Projects.class, org);
 
         String identity = getRequest().getAttributes().get("project").toString();
-        SharedProjectEntity projectEntity = uow.get(SharedProjectEntity.class, identity);
+        ProjectEntity projectEntity = uow.get(ProjectEntity.class, identity);
 
         projects.removeProject(projectEntity);
 

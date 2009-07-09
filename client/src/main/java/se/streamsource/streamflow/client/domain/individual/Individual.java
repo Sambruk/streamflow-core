@@ -14,12 +14,10 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import se.streamsource.streamflow.client.domain.workspace.WorkVisitable;
-
 /**
  * JAVADOC
  */
 public interface Individual
-        extends Accounts, WorkVisitable
+        extends Accounts
 {
 }

@@ -24,9 +24,9 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.SharedInbox;
-import se.streamsource.streamflow.web.domain.task.SharedTask;
-import se.streamsource.streamflow.web.domain.task.SharedTaskEntity;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -40,8 +40,8 @@ public class SharedProjectsInboxTaskServerResource
     {
         String id = (String) getRequest().getAttributes().get("project");
         String taskId = (String) getRequest().getAttributes().get("task");
-        SharedTask task = uowf.currentUnitOfWork().get(SharedTask.class, taskId);
-        SharedInbox inbox = uowf.currentUnitOfWork().get(SharedInbox.class, id);
+        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
+        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
         inbox.completeTask(task);
     }
 
@@ -56,9 +56,9 @@ public class SharedProjectsInboxTaskServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
+        Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        Inbox inbox = uow.get(Inbox.class, userId);
         inbox.assignToMe(task);
     }
 
@@ -66,9 +66,9 @@ public class SharedProjectsInboxTaskServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
+        Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        Inbox inbox = uow.get(Inbox.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
         inbox.delegate(task, delegatee);
     }
@@ -77,8 +77,8 @@ public class SharedProjectsInboxTaskServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTaskEntity task = uow.get(SharedTaskEntity.class, taskId);
-        SharedInbox receiverInbox = uow.get(SharedInbox.class, reference.entity().get().identity());
+        TaskEntity task = uow.get(TaskEntity.class, taskId);
+        Inbox receiverInbox = uow.get(Inbox.class, reference.entity().get().identity());
         receiverInbox.receiveTask(task);
         receiverInbox.markAsUnread(task);
     }
@@ -87,9 +87,9 @@ public class SharedProjectsInboxTaskServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
+        Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        Inbox inbox = uow.get(Inbox.class, userId);
         inbox.markAsRead(task);
     }
 
@@ -97,9 +97,9 @@ public class SharedProjectsInboxTaskServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
+        Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        Inbox inbox = uow.get(Inbox.class, userId);
         inbox.markAsUnread(task);
     }
 
@@ -110,8 +110,8 @@ public class SharedProjectsInboxTaskServerResource
         {
             String taskId = (String) getRequest().getAttributes().get("task");
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
-            SharedTask sharedTask = uow.get(SharedTask.class, taskId);
-            uow.remove(sharedTask);
+            Task task = uow.get(Task.class, taskId);
+            uow.remove(task);
             uow.complete();
         } catch (UnitOfWorkCompletionException e)
         {

@@ -12,14 +12,19 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.workspace;
+package se.streamsource.streamflow.web.domain.project;
 
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.web.domain.task.Inbox;
 
 /**
  * JAVADOC
  */
-public interface Context
-        extends Describable
+public interface Project
+        extends
+        Describable,
+        Members,
+        ProjectStatus,
+        Inbox
 {
 }

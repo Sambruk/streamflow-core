@@ -14,69 +14,14 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.Lifecycle;
-import org.qi4j.api.entity.LifecycleException;
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.domain.workspace.WorkVisitable;
-import se.streamsource.streamflow.client.domain.workspace.Workspace;
 
 /**
  * JAVADOC
  */
-@Concerns(IndividualEntity.LifecycleConcern.class)
-@Mixins({
-        IndividualEntity.WorkVisitableMixin.class})
 public interface IndividualEntity
-        extends Individual, EntityComposite
+        extends Individual,
+        Accounts.AccountsState,
+        EntityComposite
 {
-    interface IndividualState
-    {
-        @Aggregated
-        ManyAssociation<Account> accounts();
-
-        @Aggregated
-        Association<Workspace> workspace();
-    }
-
-    class WorkVisitableMixin
-            implements WorkVisitable
-    {
-        @This
-        IndividualState state;
-
-        public void visitWork(WorkVisitor visitor)
-        {
-            state.workspace().get().visitWork(visitor);
-        }
-    }
-
-    class LifecycleConcern
-            extends ConcernOf<Lifecycle>
-            implements Lifecycle
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
-        @This
-        IndividualState state;
-
-        public void create() throws LifecycleException
-        {
-            // Create new Workspace
-            Workspace workspace = uowf.currentUnitOfWork().newEntity(Workspace.class);
-            state.workspace().set(workspace);
-        }
-
-        public void remove() throws LifecycleException
-        {
-        }
-    }
 }

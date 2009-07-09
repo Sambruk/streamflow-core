@@ -14,12 +14,37 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.Lifecycle;
+import org.qi4j.api.entity.LifecycleException;
+import org.qi4j.api.injection.scope.This;
+
 /**
  * A root organization.
  */
+@Concerns(OrganizationEntity.LifecycleConcern.class)
 public interface OrganizationEntity
         extends OrganizationalUnitEntity,
         // Roles
         Organization
 {
+    class LifecycleConcern
+        extends ConcernOf<Lifecycle>
+        implements Lifecycle
+    {
+        @This Organization org;
+
+        @This
+        OrganizationalUnitState state;
+
+        public void create() throws LifecycleException
+        {
+            state.organization().set(org);
+        }
+
+        public void remove() throws LifecycleException
+        {
+        }
+    }
 }

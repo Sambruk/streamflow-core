@@ -42,7 +42,7 @@ public class SharedInboxSteps
     {
         navigator.individual().visitShared(new InboxVisitor()
         {
-            public boolean visitInbox(SharedInbox sharedInbox)
+            public boolean visitInbox(Inbox sharedInbox)
             {
                 inbox = sharedInbox;
                 return false;
@@ -83,10 +83,10 @@ public class SharedInboxSteps
     @Then("task is added")
     public void taskAdded()
     {
-        final SharedTask[] tasks = new SharedTask[1];
+        final Task[] tasks = new Task[1];
         inbox.visitTasks(new SharedTaskVisitable.SharedTaskVisitor()
         {
-            public boolean visit(SharedTask task)
+            public boolean visit(Task task)
             {
                 tasks[0] = task;
                 return false;

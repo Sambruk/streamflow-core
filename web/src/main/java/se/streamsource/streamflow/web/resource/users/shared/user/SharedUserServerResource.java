@@ -80,7 +80,7 @@ public class SharedUserServerResource
                 if (role2 == null)
                 {
                     String template = TemplateUtil.getTemplate("resources/links.html", getClass());
-                    String links = TemplateUtil.methodList(SharedInbox.class);
+                    String links = TemplateUtil.methodList(Inbox.class);
                     template = TemplateUtil.eval(template, "$content", links, "$title", role1);
                     return new StringRepresentation(template, MediaType.TEXT_HTML);
                 } else

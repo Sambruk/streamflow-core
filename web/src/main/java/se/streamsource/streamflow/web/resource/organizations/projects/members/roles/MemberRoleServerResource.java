@@ -23,7 +23,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Role;
-import se.streamsource.streamflow.web.domain.project.SharedProject;
+import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
 
 /**
@@ -47,7 +47,7 @@ public class MemberRoleServerResource
         Role role = uow.get(Role.class, roleId);
 
         String id = getRequest().getAttributes().get("project").toString();
-        SharedProject project = uow.get(SharedProject.class, id);
+        Project project = uow.get(Project.class, id);
 
         project.addRole(participant, role);
 
@@ -71,7 +71,7 @@ public class MemberRoleServerResource
         Participant participant = uow.get(Participant.class, member);
 
         String id = getRequest().getAttributes().get("project").toString();
-        SharedProject project = uow.get(SharedProject.class, id);
+        Project project = uow.get(Project.class, id);
 
         String roleName = getRequest().getAttributes().get("role").toString();
         Role role = uow.get(Role.class, roleName);

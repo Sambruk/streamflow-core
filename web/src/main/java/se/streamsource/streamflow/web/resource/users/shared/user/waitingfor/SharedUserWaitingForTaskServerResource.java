@@ -21,8 +21,8 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.task.Delegations;
-import se.streamsource.streamflow.web.domain.task.SharedTask;
-import se.streamsource.streamflow.web.domain.task.SharedInbox;
+import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -38,7 +38,7 @@ public class SharedUserWaitingForTaskServerResource
         String id = (String) getRequest().getAttributes().get("user");
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
+        Task task = uow.get(Task.class, taskId);
         Delegations delegations = uow.get(Delegations.class, id);
         delegations.completeTask(task);
     }
@@ -47,9 +47,9 @@ public class SharedUserWaitingForTaskServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
-        SharedTask task = uow.get(SharedTask.class, taskId);
+        Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
-        SharedInbox inbox = uow.get(SharedInbox.class, userId);
+        Inbox inbox = uow.get(Inbox.class, userId);
         inbox.markAsRead(task);
     }
 
@@ -60,8 +60,8 @@ public class SharedUserWaitingForTaskServerResource
         {
             String taskId = (String) getRequest().getAttributes().get("task");
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
-            SharedTask sharedTask = uow.get(SharedTask.class, taskId);
-            uow.remove(sharedTask);
+            Task task = uow.get(Task.class, taskId);
+            uow.remove(task);
             uow.complete();
         } catch (UnitOfWorkCompletionException e)
         {

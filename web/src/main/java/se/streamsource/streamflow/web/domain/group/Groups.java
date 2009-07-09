@@ -15,9 +15,12 @@
 package se.streamsource.streamflow.web.domain.group;
 
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 
 /**
@@ -26,7 +29,7 @@ import se.streamsource.streamflow.domain.organization.DuplicateDescriptionExcept
 @Mixins(Groups.GroupsMixin.class)
 public interface Groups
 {
-    void addGroup(Group group) throws DuplicateDescriptionException;
+    Group newGroup(String name) throws DuplicateDescriptionException;
 
     void removeGroup(Group group);
 
@@ -42,24 +45,35 @@ public interface Groups
         @This
         GroupsState state;
 
-        public void addGroup(Group group) throws DuplicateDescriptionException
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        public Group newGroup(String name) throws DuplicateDescriptionException
         {
-            String groupName = group.getDescription();
             for (Group agroup : state.groups())
             {
-                if (agroup.hasDescription(groupName))
+                if (agroup.hasDescription(name))
                 {
                     throw new DuplicateDescriptionException();
                 }
             }
 
+            // Create group
+            EntityBuilder<GroupEntity> groupBuilder = uowf.currentUnitOfWork().newEntityBuilder(GroupEntity.class);
+            groupBuilder.prototype().describe(name);
+            Group group = groupBuilder.newInstance();
+
             state.groups().add(state.groups().count(), group);
+
+            return group;
         }
 
-        // TODO throw NoSuchGroupException
         public void removeGroup(Group group)
         {
-            state.groups().remove(group);
+            if (state.groups().remove(group))
+            {
+                uowf.currentUnitOfWork().remove(group);
+            }
         }
     }
 

@@ -28,8 +28,18 @@ import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.*;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.task.Assignable;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.CreatedOn;
+import se.streamsource.streamflow.web.domain.task.Delegatable;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Ownable;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.task.TaskPath;
+import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
@@ -48,7 +58,7 @@ public class SharedProjectsInboxServerResource
         String id = (String) getRequest().getAttributes().get("project");
 
         // Find all Active tasks with specific owner which have not yet been assigned
-        QueryBuilder<SharedTaskEntity> queryBuilder = uow.queryBuilderFactory().newQueryBuilder(SharedTaskEntity.class);
+        QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
         Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
@@ -58,7 +68,7 @@ public class SharedProjectsInboxServerResource
                 isNull(delegatee),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
-        Query<SharedTaskEntity> inboxQuery = queryBuilder.newQuery();
+        Query<TaskEntity> inboxQuery = queryBuilder.newQuery(uow);
         inboxQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
         ValueBuilder<InboxTaskDTO> builder = vbf.newValueBuilder(InboxTaskDTO.class);
@@ -66,14 +76,14 @@ public class SharedProjectsInboxServerResource
         ValueBuilder<InboxTaskListDTO> listBuilder = vbf.newValueBuilder(InboxTaskListDTO.class);
         List<InboxTaskDTO> list = listBuilder.prototype().tasks().get();
         EntityReference ref = EntityReference.parseEntityReference(id);
-        for (SharedTaskEntity sharedTask : inboxQuery)
+        for (TaskEntity task : inboxQuery)
         {
             prototype.owner().set(ref);
-            prototype.task().set(EntityReference.getEntityReference(sharedTask));
-            prototype.creationDate().set(sharedTask.createdOn().get());
-            prototype.description().set(sharedTask.description().get());
-            prototype.status().set(sharedTask.status().get());
-            prototype.isRead().set(sharedTask.isRead().get());
+            prototype.task().set(EntityReference.getEntityReference(task));
+            prototype.creationDate().set(task.createdOn().get());
+            prototype.description().set(task.description().get());
+            prototype.status().set(task.status().get());
+            prototype.isRead().set(task.isRead().get());
             list.add(builder.newInstance());
         }
 
@@ -84,10 +94,10 @@ public class SharedProjectsInboxServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("project");
-        UserEntity user = uow.get(UserEntity.class, id);
+        Inbox inbox = uow.get(ProjectEntity.class, id);
 
-        EntityBuilder<SharedTaskEntity> builder = uow.newEntityBuilder(SharedTaskEntity.class);
-        SharedTaskEntity prototype = builder.prototype();
+        EntityBuilder<TaskEntity> builder = uow.newEntityBuilder(TaskEntity.class);
+        TaskEntity prototype = builder.prototype();
         prototype.description().set(command.description().get());
         prototype.note().set(command.note().get());
         if (command.isCompleted().get())
@@ -101,14 +111,14 @@ public class SharedProjectsInboxServerResource
             TaskPath path = uow.get(TaskPath.class, command.parentTask().get().identity());
 
             // Add parents path first, then parent itself
-            for (SharedTask sharedTask : path.getPath())
+            for (Task task : path.getPath())
             {
-                prototype.path().add(prototype.path().count(), sharedTask);
+                prototype.path().add(prototype.path().count(), task);
             }
-            prototype.path().add(prototype.path().count(), (SharedTask) path);
+            prototype.path().add(prototype.path().count(), (Task) path);
         }
 
-        SharedTaskEntity task = builder.newInstance();
-        user.receiveTask(task);
+        TaskEntity task = builder.newInstance();
+        inbox.receiveTask(task);
     }
 }

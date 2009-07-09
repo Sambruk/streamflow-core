@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -46,9 +45,6 @@ public interface DummyDataService
     {
         @Structure
         UnitOfWorkFactory uowf;
-
-        @Structure
-        TransientBuilderFactory tbf;
 
         @Structure
         ValueBuilderFactory vbf;

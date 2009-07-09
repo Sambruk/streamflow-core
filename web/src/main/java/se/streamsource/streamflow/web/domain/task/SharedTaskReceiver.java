@@ -23,7 +23,7 @@ import org.qi4j.api.mixin.Mixins;
 @Mixins(SharedTaskReceiver.TaskReceiverMixin.class)
 public interface SharedTaskReceiver
 {
-    void receiveTask(SharedTask task);
+    void receiveTask(Task task);
 
     class TaskReceiverMixin
             implements SharedTaskReceiver
@@ -31,7 +31,7 @@ public interface SharedTaskReceiver
         @This
         Owner owner;
 
-        public void receiveTask(SharedTask task)
+        public void receiveTask(Task task)
         {
             task.ownedBy(owner);
         }

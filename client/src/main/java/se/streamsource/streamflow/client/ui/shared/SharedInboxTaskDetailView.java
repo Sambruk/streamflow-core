@@ -18,10 +18,14 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
+import javax.swing.plaf.TabbedPaneUI;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 /**
  * JAVADOC
@@ -34,13 +38,27 @@ public class SharedInboxTaskDetailView
                                      @Service TaskCommentsModel commentsModel,
                                      @Structure ObjectBuilderFactory obf)
     {
+        super(JTabbedPane.LEFT);
+
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
         TaskGeneralView generalView = obf.newObjectBuilder(TaskGeneralView.class).use(generalModel).newInstance();
 
-        addTab(i18n.text(SharedResources.general_tab), generalView);
-        addTab(i18n.text(SharedResources.metadata_tab), new JLabel("TODO"));
-        addTab(i18n.text(SharedResources.comments_tab), commentsView);
-        addTab(i18n.text(SharedResources.attachments_tab), new JLabel("TODO"));
+        Icon icon = i18n.icon(Icons.general);
+        final TabbedPaneUI ui = getUI();
+
+        setUI(new BasicTabbedPaneUI());
+
+/*
+        addTab(i18n.text(SharedResources.general_tab), icon, generalView);
+        addTab(i18n.text(SharedResources.metadata_tab), i18n.icon(Icons.metadata), new JLabel("TODO"));
+        addTab(i18n.text(SharedResources.comments_tab), i18n.icon(Icons.comments), commentsView);
+        addTab(i18n.text(SharedResources.attachments_tab), i18n.icon(Icons.attachments), new JLabel("TODO"));
+*/
+
+        addTab(null, i18n.icon(Icons.general), generalView);
+        addTab(null, i18n.icon(Icons.metadata), new JLabel("TODO"));
+        addTab(null, i18n.icon(Icons.comments), commentsView);
+        addTab(null, i18n.icon(Icons.attachments), new JLabel("TODO"));
     }
 
     @Override

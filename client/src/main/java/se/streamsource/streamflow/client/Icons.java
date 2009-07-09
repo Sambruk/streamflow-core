@@ -12,19 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.workspace;
-
-import se.streamsource.streamflow.client.domain.action.Completable;
-import se.streamsource.streamflow.domain.roles.Describable;
+package se.streamsource.streamflow.client;
 
 /**
- * JAVADOC
+ * Icon enumeration to be used with i18n.icon()
  */
-public interface Action
-        extends Completable, Work, Describable
+public enum Icons
 {
-    enum ActionStatus
-    {
-        Active, OnHold, Completed, Dropped
-    }
+    general,
+    metadata,
+    comments,
+    attachments
 }

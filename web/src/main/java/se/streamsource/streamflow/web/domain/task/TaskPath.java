@@ -25,11 +25,11 @@ import org.qi4j.api.mixin.Mixins;
 @Mixins(TaskPath.TaskPathMixin.class)
 public interface TaskPath
 {
-    Iterable<SharedTask> getPath();
+    Iterable<Task> getPath();
 
     interface TaskPathState
     {
-        ManyAssociation<SharedTask> path();
+        ManyAssociation<Task> path();
     }
 
     class TaskPathMixin
@@ -37,7 +37,7 @@ public interface TaskPath
     {
         @This TaskPathState state;
 
-        public Iterable<SharedTask> getPath()
+        public Iterable<Task> getPath()
         {
             return state.path();
         }

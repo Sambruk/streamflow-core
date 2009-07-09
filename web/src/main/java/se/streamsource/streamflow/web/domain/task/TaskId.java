@@ -12,34 +12,42 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.organization;
+package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.library.constraints.annotation.Matches;
 
 /**
- * An organizational unit represents a part of an organization.
+ * Human readable task id
  */
-@Mixins(OrganizationalUnit.OrganizationalUnitMixin.class)
-public interface OrganizationalUnit
+@Mixins(TaskId.TaskIdMixin.class)
+public interface TaskId
 {
-    Organization getOrganization();
+    void setTaskId(@Matches("nnnnnnnn-n*") String id);
+    String getTaskId();
 
-    interface OrganizationalUnitState
+    interface TaskIdState
     {
-        Association<Organization> organization();
+        @Optional
+        Property<String> taskId();
     }
 
-    class OrganizationalUnitMixin
-            implements OrganizationalUnit
+    class TaskIdMixin
+        implements TaskId
     {
-        @This
-        OrganizationalUnitState state;
+        @This TaskIdState state;
 
-        public Organization getOrganization()
+        public void setTaskId(String id)
         {
-            return state.organization().get();
+            state.taskId().set(id);
+        }
+
+        public String getTaskId()
+        {
+            return state.taskId().get();
         }
     }
 }

@@ -22,7 +22,7 @@ import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.project.SharedProject;
+import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
 
 /**
@@ -44,7 +44,7 @@ public class MemberServerResource
         Participant participant = uow.get(Participant.class, member);
 
         String id = getRequest().getAttributes().get("project").toString();
-        SharedProject project = uow.get(SharedProject.class, id);
+        Project project = uow.get(Project.class, id);
 
         project.addMember(participant);
 
@@ -69,7 +69,7 @@ public class MemberServerResource
         Participant participant = uow.get(Participant.class, member);
 
         String id = getRequest().getAttributes().get("project").toString();
-        SharedProject project = uow.get(SharedProject.class, id);
+        Project project = uow.get(Project.class, id);
 
         project.removeMember(participant);
 
