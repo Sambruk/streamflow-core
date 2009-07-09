@@ -79,6 +79,9 @@ public interface TestDataService
             // Create project
             Project project = ou.newProject("StreamFlow");
 
+            // Create project 'Expert Handläggare'
+            ou.newProject("Experts");
+
             project.addMember(user);
 
             // Create tasks
