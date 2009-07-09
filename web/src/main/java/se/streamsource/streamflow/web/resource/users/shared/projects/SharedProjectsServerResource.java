@@ -15,9 +15,6 @@
 package se.streamsource.streamflow.web.resource.users.shared.projects;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.representation.Representation;
@@ -28,7 +25,6 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -58,24 +54,11 @@ public class SharedProjectsServerResource
         String id = (String) getRequest().getAttributes().get("user");
         Participant participant = uow.get(Participant.class, id);
 
-        // Hack: for now find all shared projects
-        QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-        queryBuilder.where(QueryExpressions.matches(
-                QueryExpressions.templateFor(ProjectEntity.class).description(), ".*"));
-        Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
-
-        try
+        for (Project project : participant.projects())
         {
-            for (Project project : projects)
-            {
-                builder.prototype().entity().set(EntityReference.getEntityReference(project));
-                listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
-            }
-        } catch (Exception e)
-        {
-            //e.printStackTrace();
+            builder.prototype().entity().set(EntityReference.getEntityReference(project));
+            listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
         }
-
         return listBuilder.newList();
     }
 

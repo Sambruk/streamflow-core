@@ -21,10 +21,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.GroupsOrganizationSearch;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.UsersOrganizationSearch;
+import se.streamsource.streamflow.client.ui.shared.SharedView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -44,6 +45,10 @@ public class AddMemberDialog
 
     @Service
     ProjectModel projectModel;
+
+    @Service
+    SharedView sharedView;
+
 
     Dimension dialogSize = new Dimension(600,300);
     private TableSelectionView addUsersView;
@@ -97,6 +102,7 @@ public class AddMemberDialog
 
         projectModel.addMembers(selected);
         WindowUtils.findWindow(this).dispose();
+        sharedView.refreshTree();
     }
 
     @Action

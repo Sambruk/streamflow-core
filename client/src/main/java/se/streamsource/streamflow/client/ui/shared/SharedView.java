@@ -39,6 +39,7 @@ public class SharedView
     // SharedInbox listing
     private JXTreeTable sharedTree;
     private JSplitPane pane;
+    private SharedModel model;
 
     public SharedView(@Service ActionMap am,
                       @Service SharedModel model,
@@ -46,6 +47,7 @@ public class SharedView
     {
         super(new BorderLayout());
 
+        this.model = model;
         sharedTree = new JXTreeTable(model);
         sharedTree.setPreferredScrollableViewportSize(new Dimension(300, 400));
         sharedTree.setRootVisible(false);
@@ -101,7 +103,7 @@ public class SharedView
         {
             public void valueChanged(TreeSelectionEvent e)
             {
-                TreePath path = e.getPath();
+                TreePath path = e.getNewLeadSelectionPath();
                 if (path != null && path.getLastPathComponent() instanceof DetailView)
                 {
                     DetailView view = (DetailView) path.getLastPathComponent();
@@ -112,6 +114,8 @@ public class SharedView
                     {
                         e1.printStackTrace();
                     }
+                } else {
+                    pane.setRightComponent(new JPanel());
                 }
             }
         });
@@ -166,6 +170,13 @@ public class SharedView
     {
         super.addNotify();
 
+        sharedTree.expandAll();
+    }
+
+    public void refreshTree()
+    {
+        sharedTree.clearSelection();
+        model.refresh();
         sharedTree.expandAll();
     }
 

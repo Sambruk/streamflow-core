@@ -189,8 +189,7 @@ public class StreamFlowApplication
         CreateAccountDialog dialog = createAccountDialog.newInstance();
         dialogs.showOkCancelHelpDialog(getMainFrame(), dialog);
         accountsModel.refresh();
-        sharedModel.refresh();
-        sharedView.getSharedTree().expandAll();
+        sharedView.refreshTree();
         administrationModel.refresh();
     }
 
@@ -449,6 +448,7 @@ public class StreamFlowApplication
             TreeNodeValue selected = (TreeNodeValue) projectView.getMembers().getSelectionPath().getPathComponent(1);
             projectModel.removeMember(selected.entity().get());
         }
+        sharedView.refreshTree();
     }
 
     // Role administration actions ----------------------------------
