@@ -19,6 +19,18 @@ package se.streamsource.streamflow.client;
  */
 public enum Icons
 {
+    // General
+    add,
+    remove,
+    refresh,
+
+    assign,
+    delegate,
+
+    details,
+    inbox,
+
+    // Tabs
     general,
     metadata,
     comments,

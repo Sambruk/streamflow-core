@@ -17,9 +17,12 @@ package se.streamsource.streamflow.web.domain.project;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.WaitingFor;
 
 /**
  * JAVADOC
@@ -34,6 +37,9 @@ public interface ProjectEntity
         Members,
         ProjectStatus,
         Inbox,
+        Assignments,
+        Delegations,
+        WaitingFor,
         Owner,
         ProjectOrganization,
 

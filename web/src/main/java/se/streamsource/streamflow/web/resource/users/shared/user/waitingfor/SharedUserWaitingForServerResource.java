@@ -29,7 +29,6 @@ import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.IsRead;
-import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
@@ -50,14 +49,14 @@ public class SharedUserWaitingForServerResource
         String id = (String) getRequest().getAttributes().get("user");
         WaitingFor waitingFor = uow.get(WaitingFor.class, id);
 
-        // Find all Active delegated tasks owned by "me"
+        // Find all Active delegated tasks delegated by "me"
         // or Completed delegated tasks that are marked as unread
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> idProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
+        Property<String> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy().get().identity();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         queryBuilder.where(and(
-                                eq(idProp, id),
-                                isNotNull(delegatee),
+                                eq(delegatedBy, id),
+//                                isNotNull(delegatee),
                                 or(
                                     eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
                                     and(notEq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),

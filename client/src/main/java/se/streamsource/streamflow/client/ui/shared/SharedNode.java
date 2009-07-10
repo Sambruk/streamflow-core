@@ -33,6 +33,6 @@ public class SharedNode
         super(individualRepository.individual());
 
         add(obf.newObject(SharedUserNode.class));
-        add(obf.newObject(SharedProjectsAllAccountsNode.class));
+        add(obf.newObject(ProjectsNode.class));
     }
 }

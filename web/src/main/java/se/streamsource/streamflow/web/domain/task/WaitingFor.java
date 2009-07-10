@@ -14,9 +14,35 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+
 /**
  * JAVADOC
  */
+@Mixins(WaitingFor.WaitingForMixin.class)
 public interface WaitingFor
 {
+    void completeWaitingForTask(Task task, Assignee assignee);
+
+    void markWaitingForAsRead(Task task);
+
+    class WaitingForMixin
+        implements WaitingFor
+    {
+        @This
+        Owner owner;
+
+        public void completeWaitingForTask(Task task, Assignee assignee)
+        {
+            task.assignTo(assignee);
+            task.ownedBy(owner);
+            task.complete();
+        }
+
+        public void markWaitingForAsRead(Task task)
+        {
+            task.markAsRead();
+        }
+    }
 }

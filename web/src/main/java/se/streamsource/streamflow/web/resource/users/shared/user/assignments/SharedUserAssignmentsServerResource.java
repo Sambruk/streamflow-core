@@ -30,6 +30,7 @@ import se.streamsource.streamflow.resource.inbox.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
+import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskPath;
@@ -52,11 +53,13 @@ public class SharedUserAssignmentsServerResource
         String id = (String) getRequest().getAttributes().get("user");
         Assignments assignments = uow.get(Assignments.class, id);
 
-        // Find all Active tasks assigned to "me"
+        // Find all my Active tasks assigned to "me"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> idProp = templateFor(Assignable.AssignableState.class).assignedTo().get().identity();
+        Property<String> assignedId = templateFor(Assignable.AssignableState.class).assignedTo().get().identity();
+        Property<String> ownedId = templateFor(Ownable.OwnableState.class).owner().get().identity();
         queryBuilder.where(and(
-                eq(idProp, id),
+                eq(assignedId, id),
+                eq(ownedId, id),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
         Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);

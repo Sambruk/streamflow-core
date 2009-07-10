@@ -20,9 +20,9 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.domain.task.Delegations;
+import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Task;
-import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -39,8 +39,9 @@ public class SharedUserWaitingForTaskServerResource
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
         Task task = uow.get(Task.class, taskId);
-        Delegations delegations = uow.get(Delegations.class, id);
-        delegations.completeTask(task);
+        WaitingFor waitingFor = uow.get(WaitingFor.class, id);
+        Assignee assignee = uow.get(Assignee.class, id);
+        waitingFor.completeWaitingForTask(task, assignee);
     }
 
     public void markAsRead()
@@ -49,8 +50,8 @@ public class SharedUserWaitingForTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        inbox.markAsRead(task);
+        WaitingFor waitingFor = uow.get(WaitingFor.class, userId);
+        waitingFor.markWaitingForAsRead(task);
     }
 
     @Override

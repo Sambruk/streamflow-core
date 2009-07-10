@@ -21,10 +21,8 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
-import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
-import javax.swing.plaf.TabbedPaneUI;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 /**
@@ -43,9 +41,6 @@ public class SharedInboxTaskDetailView
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
         TaskGeneralView generalView = obf.newObjectBuilder(TaskGeneralView.class).use(generalModel).newInstance();
 
-        Icon icon = i18n.icon(Icons.general);
-        final TabbedPaneUI ui = getUI();
-
         setUI(new BasicTabbedPaneUI());
 
 /*
@@ -55,10 +50,10 @@ public class SharedInboxTaskDetailView
         addTab(i18n.text(SharedResources.attachments_tab), i18n.icon(Icons.attachments), new JLabel("TODO"));
 */
 
-        addTab(null, i18n.icon(Icons.general), generalView);
-        addTab(null, i18n.icon(Icons.metadata), new JLabel("TODO"));
-        addTab(null, i18n.icon(Icons.comments), commentsView);
-        addTab(null, i18n.icon(Icons.attachments), new JLabel("TODO"));
+        addTab(null, i18n.icon(Icons.general), generalView, i18n.text(SharedResources.general_tab));
+        addTab(null, i18n.icon(Icons.metadata), new JLabel("Metadata"), i18n.text(SharedResources.metadata_tab));
+        addTab(null, i18n.icon(Icons.comments), commentsView, i18n.text(SharedResources.comments_tab));
+        addTab(null, i18n.icon(Icons.attachments), new JLabel("Attachments"), i18n.text(SharedResources.attachments_tab));
     }
 
     @Override

@@ -117,8 +117,14 @@ public class CommandQueryClientResource
         {
             try
             {
-                String text = getResponseEntity().getText();
-                throw new ResourceException(getResponse().getStatus(), text);
+                if (getResponseEntity() != null)
+                {
+                    String text = getResponseEntity().getText();
+                    throw new ResourceException(getResponse().getStatus(), text);
+                } else
+                {
+                    throw new ResourceException(getResponse().getStatus());
+                }
             } catch (IOException e)
             {
                 throw new ResourceException(e);

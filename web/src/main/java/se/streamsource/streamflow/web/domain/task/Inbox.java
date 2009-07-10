@@ -32,7 +32,7 @@ public interface Inbox
 
     void completeTask(Task task);
 
-    void assignToMe(Task task);
+    void assignTo(Task task, Assignee assignee);
 
     void delegate(Task task, Delegatee delegatee);
 
@@ -77,7 +77,7 @@ public interface Inbox
             task.complete();
         }
 
-        public void assignToMe(Task task)
+        public void assignTo(Task task, Assignee assignee)
         {
             task.assignTo(assignee);
         }

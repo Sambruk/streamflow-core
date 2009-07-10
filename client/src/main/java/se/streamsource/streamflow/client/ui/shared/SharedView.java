@@ -22,11 +22,18 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -49,7 +56,7 @@ public class SharedView
 
         this.model = model;
         sharedTree = new JXTreeTable(model);
-        sharedTree.setPreferredScrollableViewportSize(new Dimension(300, 400));
+        sharedTree.setPreferredScrollableViewportSize(new Dimension(200, 400));
         sharedTree.setRootVisible(false);
         sharedTree.setShowsRootHandles(false);
         sharedTree.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -80,6 +87,17 @@ public class SharedView
                 pane.getRightComponent().requestFocus();
             }
         });
+/*
+        sharedTree.setTreeCellRenderer(new DefaultTreeRenderer(
+                new IconValue()
+                {
+                    public Icon getIcon(Object o)
+                    {
+                        return NULL_ICON;
+                    }
+                }
+        ));
+*/
         //sharedTree
 
         JScrollPane sharedScroll = new JScrollPane(sharedTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -93,7 +111,7 @@ public class SharedView
         JPanel sharedOutline = new JPanel(new BorderLayout());
         sharedOutline.add(sharedScroll, BorderLayout.CENTER);
 //        sharedOutline.add(toolbarView, BorderLayout.SOUTH);
-        sharedOutline.setMinimumSize(new Dimension(150, 400));
+        sharedOutline.setMinimumSize(new Dimension(150, 300));
 
         pane.setLeftComponent(sharedOutline);
 
@@ -114,7 +132,8 @@ public class SharedView
                     {
                         e1.printStackTrace();
                     }
-                } else {
+                } else
+                {
                     pane.setRightComponent(new JPanel());
                 }
             }

@@ -23,6 +23,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Task;
@@ -58,8 +59,10 @@ public class SharedProjectsInboxTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        inbox.assignToMe(task);
+        Assignee assignee = uow.get(Assignee.class, userId);
+        String projectId = (String) getRequest().getAttributes().get("project");
+        Inbox inbox = uow.get(Inbox.class, projectId);
+        inbox.assignTo(task, assignee);
     }
 
     public void delegate(EntityReferenceDTO reference)

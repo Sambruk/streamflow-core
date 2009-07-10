@@ -42,13 +42,13 @@ public class SharedProjectWaitingForServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("project");
 
-        // Find all Active delegated tasks owned by "project"
+        // Find all Active delegated tasks delegated by "project"
         // or Completed delegated tasks that are marked as unread
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> idProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
+        Property<String> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy().get().identity();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         queryBuilder.where(and(
-                eq(idProp, id),
+                eq(delegatedBy, id),
                 isNotNull(delegatee),
                 or(
                         eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),

@@ -18,36 +18,39 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 
 /**
- * JAVADOC
+ * Delegations of tasks
  */
 @Mixins(Delegations.DelegationsMixin.class)
 public interface Delegations
 {
-    void assignToMe(Task task);
+    void accept(Task task, Assignee assignee);
     void reject(Task task);
-    void completeTask(Task task);
+    void completeDelegatedTask(Task task, Assignee assignee);
 
     class DelegationsMixin
         implements Delegations
     {
         @This
-        Assignee assignee;
+        Owner owner;
 
-        public void assignToMe(Task task)
+        public void accept(Task task, Assignee assignee)
         {
             task.assignTo(assignee);
+            task.ownedBy(owner);
         }
 
         public void reject(Task task)
         {
-            task.markAsUnread();
             task.rejectDelegation();
+            task.markAsUnread();
         }
 
-        public void completeTask(Task task)
+        public void completeDelegatedTask(Task task, Assignee assignee)
         {
             task.assignTo(assignee);
+            task.ownedBy(owner);
             task.complete();
+            task.markAsUnread();
         }
     }
 }

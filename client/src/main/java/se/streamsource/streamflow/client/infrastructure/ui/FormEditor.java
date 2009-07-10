@@ -22,6 +22,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.Component;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
 /**
  * JAVADOC
@@ -45,6 +47,16 @@ public class FormEditor
             if (component instanceof JPanel)
             {
                 init(((JPanel)component).getComponents());
+            } else if (component instanceof JLabel)
+            {
+                final JLabel label = (JLabel) component;
+                label.addPropertyChangeListener("text", new PropertyChangeListener()
+                {
+                    public void propertyChange(PropertyChangeEvent evt)
+                    {
+                        setVisible(label, !(evt.getNewValue() == null || evt.getNewValue().equals("")));
+                    }
+                });
             } else if (component instanceof JPasswordField)
             {
                 setVisible(component, false);

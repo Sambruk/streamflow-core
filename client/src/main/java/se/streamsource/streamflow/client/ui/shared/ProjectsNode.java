@@ -32,10 +32,10 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 /**
  * JAVADOC
  */
-public class SharedProjectsAllAccountsNode
+public class ProjectsNode
         extends DefaultMutableTreeTableNode
 {
-    public SharedProjectsAllAccountsNode(@Service IndividualRepository repository,
+    public ProjectsNode(@Service IndividualRepository repository,
                               @Structure final ObjectBuilderFactory obf,
                               @Service final Restlet client)
     {

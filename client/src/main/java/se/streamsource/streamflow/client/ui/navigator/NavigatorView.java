@@ -21,7 +21,6 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.menu.MenuView;
 import static se.streamsource.streamflow.client.ui.navigator.NavigatorResources.*;
 import se.streamsource.streamflow.client.ui.shared.SharedView;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
@@ -33,18 +32,15 @@ public class NavigatorView
         extends JTabbedPane
 {
     private SharedView shared;
-    private WorkspaceView workspace;
     private AdministrationView administration;
     private MenuView menu;
 
     public NavigatorView(@Service SharedView shared,
-                         @Service WorkspaceView workspace,
                          @Service AdministrationView administration,
                          @Service MenuView menu,
                          @Service ApplicationContext context)
     {
         this.shared = shared;
-        this.workspace = workspace;
         this.administration = administration;
         this.menu = menu;
         addTab(text(workspace_label), shared);
@@ -53,7 +49,6 @@ public class NavigatorView
 
         setMnemonicAt(1, mnemonic(workspace_label_mnemonic));
         setMnemonicAt(0, mnemonic(shared_label_mnemonic));
-//        setMnemonicAt(2, mnemonic(search_label_mnemonic));
 
         setSelectedComponent(shared);
     }
@@ -61,11 +56,6 @@ public class NavigatorView
     public SharedView getShared()
     {
         return shared;
-    }
-
-    public WorkspaceView getWorkspace()
-    {
-        return workspace;
     }
 
     public AdministrationView getAdministration()

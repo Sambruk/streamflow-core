@@ -21,6 +21,13 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.bootstrap.Energy4Java;
+import org.qi4j.rest.ExtensionMediaTypeFilter;
+import org.qi4j.rest.entity.EntitiesResource;
+import org.qi4j.rest.entity.EntityResource;
+import org.qi4j.rest.query.IndexResource;
+import org.qi4j.rest.query.SPARQLResource;
+import org.qi4j.rest.type.EntityTypeResource;
+import org.qi4j.rest.type.EntityTypesResource;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -60,6 +67,9 @@ public class StreamFlowRestApplication
     @Service
     Verifier verifier;
 
+    @Structure
+    org.qi4j.api.structure.Application app;
+
     public StreamFlowRestApplication(@Uses Context parentContext) throws Exception
     {
         super(parentContext);
@@ -85,31 +95,6 @@ public class StreamFlowRestApplication
     {
         Router api = new APIv1Router(getContext(), factory);
 
-/*
-        Router qi4jRouter = new Router(getContext());
-        qi4jRouter.attach("/entity", createFinder(EntitiesResource.class));
-        qi4jRouter.attach("/entity/{identity}", createFinder(EntityResource.class));
-        qi4jRouter.attach("/type", createFinder(EntityTypesResource.class));
-        qi4jRouter.attach("/type/{version}", createFinder(EntityTypeResource.class));
-        qi4jRouter.attach("/query", createFinder(SPARQLResource.class));
-        qi4jRouter.attach("/query/index", createFinder(IndexResource.class));
-
-//      api.attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
-        api.attach("/qi4j", qi4jRouter);
-*/
-
-
-/*
-       api.attach( "/entitytype", createFinder( EntityTypesResource.class ) );
-       api.attach( "/entitytype/{type}", createFinder( EntityTypeResource.class ) );
-
-       api.attach( "/entity", createFinder( AllEntitiesResource.class ) );
-       api.attach( "/entity/{type}", createFinder( EntitiesResource.class ) );
-
-       api.attach( "/query", createFinder( SPARQLResource.class ) );
-       api.attach( "/query/index", createFinder( IndexResource.class ) );
-*/
-
         Router versions = new Router(getContext());
         versions.attach("/v1", api);
 
@@ -117,7 +102,20 @@ public class StreamFlowRestApplication
         directory.setListingAllowed(true);
         versions.attach("version.html", directory);
 
+        if (app.mode() == org.qi4j.api.structure.Application.Mode.development)
+        {
+            Router qi4jRouter = new Router(getContext());
+            qi4jRouter.attach("/entity", createServerResourceFinder(EntitiesResource.class));
+            qi4jRouter.attach("/entity/{identity}", createServerResourceFinder(EntityResource.class));
+            qi4jRouter.attach("/type", createServerResourceFinder(EntityTypesResource.class));
+            qi4jRouter.attach("/type/{version}", createServerResourceFinder(EntityTypeResource.class));
+            qi4jRouter.attach("/query", createServerResourceFinder(SPARQLResource.class));
+            qi4jRouter.attach("/query/index", createServerResourceFinder(IndexResource.class));
 
+            api.attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
+            api.attach("/qi4j", qi4jRouter);
+        }
+        
         // Guard
         authenticator.setVerifier(verifier);
         authenticator.setNext(versions);

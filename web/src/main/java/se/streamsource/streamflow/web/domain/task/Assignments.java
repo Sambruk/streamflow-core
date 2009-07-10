@@ -14,9 +14,22 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.mixin.Mixins;
+
 /**
  * JAVADOC
  */
+@Mixins(Assignments.AssignmentsMixin.class)
 public interface Assignments
 {
+    void completeAssignedTask(Task task);
+
+    class AssignmentsMixin
+        implements Assignments
+    {
+        public void completeAssignedTask(Task task)
+        {
+            task.complete();
+        }
+    }
 }

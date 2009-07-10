@@ -42,13 +42,13 @@ public class SharedProjectDelegationsServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("project");
 
-        // Find all Active tasks delegated to "project"
+        // Find all Active tasks delegated to "project" that have not yet been assigned
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> idProp = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
-        Association<Owner> ownerProp = templateFor(Ownable.OwnableState.class).owner();
+        Property<String> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
+        Association<Assignee> assigneeAssociation = templateFor(Assignable.AssignableState.class).assignedTo();
         queryBuilder.where(and(
-                eq(idProp, id),
-                isNotNull(ownerProp),
+                eq(delegatedTo, id),
+                isNull(assigneeAssociation),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
         Query<TaskEntity> delegationsQuery = queryBuilder.newQuery(uow);
@@ -60,7 +60,7 @@ public class SharedProjectDelegationsServerResource
         List<DelegatedTaskDTO> list = listBuilder.prototype().tasks().get();
         for (TaskEntity task : delegationsQuery)
         {
-            Owner owner = uow.get(Owner.class, task.owner().get().identity().get());
+            Owner owner = uow.get(Owner.class, task.delegatedBy().get().identity().get());
             prototype.delegatedFrom().set(owner.getDescription());
             prototype.task().set(EntityReference.getEntityReference(task));
             prototype.delegatedOn().set(task.delegatedOn().get());

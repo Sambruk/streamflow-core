@@ -14,10 +14,12 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
@@ -42,6 +44,9 @@ public interface Delegatable
         Association<Delegatee> delegatedTo();
 
         @Optional
+        Association<Owner> delegatedBy();
+
+        @Optional
         Property<Date> delegatedOn();
     }
 
@@ -51,15 +56,23 @@ public interface Delegatable
         @This
         DelegatableState state;
 
+        @This
+        Ownable.OwnableState ownable;
+
+        @Structure
+        Qi4j api;
+
         public void delegateTo(Delegatee delegatee)
         {
             state.delegatedTo().set(delegatee);
+            state.delegatedBy().set(ownable.owner().get());
             state.delegatedOn().set(new Date());
         }
 
         public void rejectDelegation()
         {
             state.delegatedTo().set(null);
+            state.delegatedBy().set(null);
             state.delegatedOn().set(null);
         }
     }
