@@ -110,6 +110,7 @@ public class SharedAssignmentsView
 
         addTab(text(assignments_tab), panel);
         addTab(text(detail_tab), detailView);
+        setEnabledAt(1, false);
 
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "details");
         getActionMap().put("details", new AbstractAction()

@@ -20,5 +20,8 @@ package se.streamsource.streamflow.client;
 public interface LoggerCategories
 {
     public static final String STATUS = "status";
+
     public static final String PROGRESS = "progress";
+    public static final String DONE = "done";
+
 }

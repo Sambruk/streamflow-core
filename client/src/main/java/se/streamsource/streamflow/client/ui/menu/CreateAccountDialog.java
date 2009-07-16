@@ -22,21 +22,22 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Restlet;
+import se.streamsource.streamflow.application.administration.query.RegistrationException;
+import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.PASSWORD;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import static se.streamsource.streamflow.client.ui.menu.MenuResources.*;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
 /**
  * JAVADOC
@@ -50,6 +51,8 @@ public class CreateAccountDialog
     @Service
     IndividualRepository individualRepository;
 
+    @Service
+    StreamFlowApplication controller;
 
     @Service
     Restlet client;
@@ -88,27 +91,21 @@ public class CreateAccountDialog
         accountBuilder = vbf.newValueBuilder(AccountSettingsValue.class);
 
         // for the demo this has been pre-filled
-        accountBuilder.prototype().server().set("http://streamflow.doesntexist.com:8040/streamflow");
+        accountBuilder.prototype().server().set("http://streamflow.doesntexist.com/streamflow");
 
         accountBinder.updateWith(accountBuilder.prototype());
     }
 
     @Action
-    public void execute()
+    public void execute() throws RegistrationException, UnitOfWorkCompletionException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Account"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         Account account = individualRepository.individual().newAccount();
         account.updateSettings(accountBuilder.newInstance());
 
-        try
-        {
-            account.register(client);
-            uow.complete();
-        } catch (Exception e)
-        {
-            uow.discard();
-        }
+        account.register(client);
+        uow.apply();
         WindowUtils.findWindow(this).dispose();
     }
 

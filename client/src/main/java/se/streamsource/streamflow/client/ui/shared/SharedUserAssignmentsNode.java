@@ -21,6 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.*;
 
@@ -48,7 +49,7 @@ public class SharedUserAssignmentsNode
     @Override
     public Object getValueAt(int column)
     {
-        return settings.name().get();
+        return i18n.text(SharedResources.assignments_node);
     }
 
     SharedUserAssignmentsClientResource assignments()
@@ -56,9 +57,21 @@ public class SharedUserAssignmentsNode
         return (SharedUserAssignmentsClientResource) getUserObject();
     }
 
-    public JComponent detailView() throws ResourceException
+    public JComponent detailView()
     {
-        model.setAssignments(assignments());
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                try
+                {
+                    model.setAssignments(assignments());
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
         return view;
     }
 

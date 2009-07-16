@@ -15,25 +15,37 @@
 package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
+import org.jdesktop.swingx.renderer.IconValue;
+import org.jdesktop.swingx.renderer.StringValue;
+import org.jdesktop.swingx.renderer.WrappingIconPanel;
+import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.jdesktop.swingx.treetable.TreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -87,18 +99,55 @@ public class SharedView
                 pane.getRightComponent().requestFocus();
             }
         });
-/*
-        sharedTree.setTreeCellRenderer(new DefaultTreeRenderer(
+
+        sharedTree.setTreeCellRenderer(new DefaultTreeRenderer(new WrappingProvider(
                 new IconValue()
                 {
                     public Icon getIcon(Object o)
                     {
-                        return NULL_ICON;
+                        if (o instanceof SharedUserNode)
+                            return i18n.icon(Icons.user, i18n.ICON_24);
+                        else if (o instanceof ProjectsNode)
+                            return i18n.icon(Icons.projects, i18n.ICON_24);
+                        if (o instanceof SharedUserInboxNode || o instanceof SharedProjectInboxNode)
+                            return i18n.icon(Icons.inbox, i18n.ICON_16);
+                        else if (o instanceof SharedUserAssignmentsNode || o instanceof SharedProjectAssignmentsNode)
+                            return i18n.icon(Icons.assign, i18n.ICON_16);
+                        else if (o instanceof SharedUserDelegationsNode || o instanceof SharedProjectDelegationsNode)
+                            return i18n.icon(Icons.delegate, i18n.ICON_16);
+                        else if (o instanceof SharedUserWaitingForNode || o instanceof SharedProjectWaitingForNode)
+                            return i18n.icon(Icons.waitingfor, i18n.ICON_16);
+                        else
+                            return NULL_ICON;
                     }
+                },
+                new StringValue()
+                {
+                    public String getString(Object o)
+                    {
+                        return ((TreeTableNode) o).getValueAt(0).toString();
+                    }
+                },
+                false
+        ))
+        {
+            @Override
+            public Component getTreeCellRendererComponent(JTree jTree, Object o, boolean b, boolean b1, boolean b2, int i, boolean b3)
+            {
+                WrappingIconPanel component = (WrappingIconPanel) super.getTreeCellRendererComponent(jTree, o, b, b1, b2, i, b3);
+
+                if (o instanceof SharedUserNode || o instanceof ProjectsNode)
+                {
+                    component.setFont(getFont().deriveFont(Font.BOLD));
+                } else
+                {
+                    component.setFont(getFont().deriveFont(Font.PLAIN));
                 }
-        ));
-*/
-        //sharedTree
+
+
+                return component;
+            }
+        });
 
         JScrollPane sharedScroll = new JScrollPane(sharedTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -121,7 +170,7 @@ public class SharedView
         {
             public void valueChanged(TreeSelectionEvent e)
             {
-                TreePath path = e.getNewLeadSelectionPath();
+                final TreePath path = e.getNewLeadSelectionPath();
                 if (path != null && path.getLastPathComponent() instanceof DetailView)
                 {
                     DetailView view = (DetailView) path.getLastPathComponent();

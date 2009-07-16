@@ -34,7 +34,7 @@ import java.util.Date;
 @Mixins(Delegatable.DelegatableMixin.class)
 public interface Delegatable
 {
-    void delegateTo(Delegatee delegatee);
+    void delegateTo(Delegatee delegatee, Delegator delegator);
 
     void rejectDelegation();
 
@@ -44,7 +44,7 @@ public interface Delegatable
         Association<Delegatee> delegatedTo();
 
         @Optional
-        Association<Owner> delegatedBy();
+        Association<Delegator> delegatedBy();
 
         @Optional
         Property<Date> delegatedOn();
@@ -62,10 +62,10 @@ public interface Delegatable
         @Structure
         Qi4j api;
 
-        public void delegateTo(Delegatee delegatee)
+        public void delegateTo(Delegatee delegatee, Delegator delegator)
         {
             state.delegatedTo().set(delegatee);
-            state.delegatedBy().set(ownable.owner().get());
+            state.delegatedBy().set(delegator);
             state.delegatedOn().set(new Date());
         }
 
@@ -85,21 +85,21 @@ public interface Delegatable
         @This TaskStatusState status;
         @This IsRead isRead;
 
-        public void complete()
+        public void completedBy(Assignee assignee)
         {
-            next.complete();
+            next.completedBy(assignee);
 
-            if (state.delegatedTo().get() != null && !status.status().get().equals(TaskStates.ACTIVE))
+            if (assignee.equals(state.delegatedTo().get()) && !status.status().get().equals(TaskStates.ACTIVE))
             {
                 isRead.markAsUnread();
             }
         }
 
-        public void drop()
+        public void droppedBy(Assignee assignee)
         {
-            next.drop();
+            next.droppedBy(assignee);
 
-            if (state.delegatedTo().get() != null && !status.status().get().equals(TaskStates.ACTIVE))
+            if (assignee.equals(state.delegatedTo().get()) && !status.status().get().equals(TaskStates.ACTIVE))
             {
                 isRead.markAsUnread();
             }

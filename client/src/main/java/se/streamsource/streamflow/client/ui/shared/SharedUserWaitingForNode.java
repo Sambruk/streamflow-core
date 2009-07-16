@@ -19,10 +19,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 /**
  * JAVADOC
@@ -48,7 +50,7 @@ public class SharedUserWaitingForNode
     @Override
     public Object getValueAt(int column)
     {
-        return settings.name().get();
+        return i18n.text(SharedResources.waitingfor_node);
     }
 
     SharedUserWaitingForClientResource waitingFor()
@@ -56,9 +58,21 @@ public class SharedUserWaitingForNode
         return (SharedUserWaitingForClientResource) getUserObject();
     }
 
-    public JComponent detailView() throws ResourceException
+    public JComponent detailView()
     {
-        model.setWaitingFor(waitingFor());
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                try
+                {
+                    model.setWaitingFor(waitingFor());
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
         return view;
     }
 

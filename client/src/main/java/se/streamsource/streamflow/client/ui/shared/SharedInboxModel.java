@@ -181,8 +181,13 @@ public class SharedInboxModel
 
     public void refresh() throws ResourceException
     {
-        tasks = getRoot().tasks(query).<InboxTaskListDTO>buildWith().prototype();
-        modelSupport.fireNewRoot();
+        InboxTaskListDTO newRoot = getRoot().tasks(query).<InboxTaskListDTO>buildWith().prototype();
+        boolean same = newRoot.equals(tasks);
+        if (!same)
+        {
+            tasks = getRoot().tasks(query).<InboxTaskListDTO>buildWith().prototype();
+            modelSupport.fireNewRoot();
+        }
     }
 
     public void newTask(NewSharedTaskCommand command) throws ResourceException

@@ -15,10 +15,8 @@
 package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.domain.individual.Account;
 
 /**
  * JAVADOC
@@ -27,12 +25,13 @@ public class SharedNode
         extends DefaultMutableTreeTableNode
 {
 
-    public SharedNode(@Service IndividualRepository individualRepository,
-                      @Structure ObjectBuilderFactory obf)
+    public SharedNode(@Uses SharedUserNode userNode,
+                      @Uses ProjectsNode projectsNode,
+                      @Uses Account account)
     {
-        super(individualRepository.individual());
+        super(account);
 
-        add(obf.newObject(SharedUserNode.class));
-        add(obf.newObject(ProjectsNode.class));
+        add(userNode);
+        add(projectsNode);
     }
 }

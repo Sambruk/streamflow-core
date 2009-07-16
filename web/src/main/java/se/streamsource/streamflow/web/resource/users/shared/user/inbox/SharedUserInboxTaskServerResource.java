@@ -25,6 +25,7 @@ import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Delegator;
 import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
@@ -43,7 +44,8 @@ public class SharedUserInboxTaskServerResource
         String taskId = (String) getRequest().getAttributes().get("task");
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
         Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
-        inbox.completeTask(task);
+        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
+        inbox.completeTask(task, assignee);
     }
 
     public void describe(DescriptionDTO descriptionValue)
@@ -71,8 +73,9 @@ public class SharedUserInboxTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
         Inbox inbox = uow.get(Inbox.class, userId);
+        Delegator delegator = uow.get(Delegator.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
-        inbox.delegate(task, delegatee);
+        inbox.delegateTo(task, delegatee, delegator);
     }
 
     public void forward(EntityReferenceDTO reference)
@@ -82,7 +85,6 @@ public class SharedUserInboxTaskServerResource
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Inbox receiverInbox = uow.get(Inbox.class, reference.entity().get().identity());
         receiverInbox.receiveTask(task);
-        receiverInbox.markAsUnread(task);
     }
 
     public void markAsRead()

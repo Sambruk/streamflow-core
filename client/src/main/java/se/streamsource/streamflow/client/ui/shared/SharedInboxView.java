@@ -128,6 +128,7 @@ public class SharedInboxView
         det.add(detailView);
         addTab(text(inbox_tab), panel);
         addTab(text(detail_tab), detailView);
+        setEnabledAt(1, false);
 
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "details");
         getActionMap().put("details", new AbstractAction()
@@ -165,7 +166,7 @@ public class SharedInboxView
         {
             public boolean isHighlighted(Component component, ComponentAdapter componentAdapter)
             {
-                return !(Boolean) componentAdapter.getValue(3);
+                return componentAdapter != null && !(Boolean) componentAdapter.getValue(3);
             }
         }, taskTable.getFont().deriveFont(Font.BOLD), taskTable.getFont()));
         taskTable.setEditable(true);

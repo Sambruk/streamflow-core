@@ -22,8 +22,9 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
-import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -37,11 +38,13 @@ public class SharedProjectAssignedTaskServerResource
 {
     public void complete()
     {
-        String id = (String) getRequest().getAttributes().get("user");
+        String userId = (String) getRequest().getAttributes().get("user");
+        String projectId = (String) getRequest().getAttributes().get("project");
         String taskId = (String) getRequest().getAttributes().get("task");
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
-        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
-        inbox.completeTask(task);
+        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, projectId);
+        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
+        inbox.completeTask(task, assignee);
     }
 
     public void describe(DescriptionDTO descriptionValue)

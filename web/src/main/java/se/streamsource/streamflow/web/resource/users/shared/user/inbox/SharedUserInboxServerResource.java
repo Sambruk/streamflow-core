@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.resource.users.shared.user.inbox;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
@@ -25,21 +24,20 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Ownable;
+import se.streamsource.streamflow.web.domain.task.Subtasks;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.task.TaskPath;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
@@ -94,31 +92,24 @@ public class SharedUserInboxServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
-        UserEntity user = uow.get(UserEntity.class, id);
+        Inbox inbox = uow.get(Inbox.class, id);
 
-        EntityBuilder<TaskEntity> builder = uow.newEntityBuilder(TaskEntity.class);
-        TaskEntity prototype = builder.prototype();
-        prototype.description().set(command.description().get());
-        prototype.note().set(command.note().get());
+        Task task = inbox.newTask();
+        task.describe(command.description().get());
+        task.changeNote(command.note().get());
+
         if (command.isCompleted().get())
         {
-            prototype.status().set(TaskStates.COMPLETED);
+            Assignee assignee = uow.get(Assignee.class, id);
+            inbox.completeTask(task, assignee);
         }
 
         // Check if subtask
         if (command.parentTask().get() != null)
         {
-            TaskPath path = uow.get(TaskPath.class, command.parentTask().get().identity());
+            Subtasks parent = uow.get(Subtasks.class, command.parentTask().get().identity());
 
-            // Add parents path first, then parent itself
-            for (Task task : path.getPath())
-            {
-                prototype.path().add(prototype.path().count(), task);
-            }
-            prototype.path().add(prototype.path().count(), (Task) path);
+            parent.addSubtask(task);
         }
-
-        TaskEntity task = builder.newInstance();
-        user.receiveTask(task);
     }
 }

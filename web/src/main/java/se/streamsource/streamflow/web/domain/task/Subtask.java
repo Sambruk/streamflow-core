@@ -14,34 +14,34 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 
 /**
  * JAVADOC
  */
-@Mixins(WaitingFor.WaitingForMixin.class)
-public interface WaitingFor
+@Mixins(Subtask.SubtaskMixin.class)
+public interface Subtask
 {
-    void completeWaitingForTask(Task task, Assignee assignee);
+    void changeParentTask(Subtasks subtasks);
 
-    void markWaitingForAsRead(Task task);
+    interface SubtaskState
+    {
+        @Optional
+        Association<Subtasks> parentTask();
+    }
 
-    class WaitingForMixin
-        implements WaitingFor
+    class SubtaskMixin
+        implements Subtask
     {
         @This
-        Owner owner;
+        SubtaskState state;
 
-        public void completeWaitingForTask(Task task, Assignee assignee)
+        public void changeParentTask(Subtasks subtasks)
         {
-            task.ownedBy(owner);
-            task.completedBy(assignee);
-        }
-
-        public void markWaitingForAsRead(Task task)
-        {
-            task.markAsRead();
+            state.parentTask().set(subtasks);
         }
     }
 }

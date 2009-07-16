@@ -24,11 +24,14 @@ import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
 import org.qi4j.api.common.MetaInfo;
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.entity.Entity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.AbstractPropertyInstance;
 import org.qi4j.api.property.GenericPropertyInfo;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.application.administration.query.RegistrationException;
@@ -58,6 +61,9 @@ public class AccountView
 
     @Structure
     private ValueBuilderFactory vbf;
+
+    @Structure
+    private UnitOfWorkFactory uowf;
 
     @Service
     private AccountModel model;
@@ -190,7 +196,7 @@ public class AccountView
     }
 
     @Action
-    public void edit()
+    public void edit() throws UnitOfWorkCompletionException
     {
         if (!editor.isEditing())
             editor.edit();
@@ -200,6 +206,7 @@ public class AccountView
 
             // Update settings
             model.account().updateSettings(builder.newInstance());
+            ((Entity)model.account()).unitOfWork().apply();
         }
     }
 

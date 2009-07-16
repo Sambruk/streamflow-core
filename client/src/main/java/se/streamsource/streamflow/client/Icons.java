@@ -24,8 +24,12 @@ public enum Icons
     remove,
     refresh,
 
+    user,
+    projects,
+
     assign,
     delegate,
+    waitingfor,
 
     details,
     inbox,

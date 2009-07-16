@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXStatusBar;
@@ -34,8 +35,12 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Client;
+import org.restlet.Restlet;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
+import org.restlet.routing.Filter;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -69,8 +74,11 @@ import se.streamsource.streamflow.client.ui.shared.SharedInboxModel;
 import se.streamsource.streamflow.client.ui.shared.SharedInboxView;
 import se.streamsource.streamflow.client.ui.shared.SharedModel;
 import se.streamsource.streamflow.client.ui.shared.SharedView;
+import se.streamsource.streamflow.client.ui.shared.SharedWaitingForModel;
+import se.streamsource.streamflow.client.ui.shared.SharedWaitingForView;
 import se.streamsource.streamflow.client.ui.shared.TaskCommentsModel;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
+import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
@@ -83,6 +91,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
@@ -169,7 +178,34 @@ public class StreamFlowApplication
 
             Client client = new Client(Protocol.HTTP);
             client.start();
-            app.metaInfo().set(client);
+            // Make it slower to get it more realistic
+            Restlet restlet = new Filter(client.getContext(), client)
+            {
+                @Override
+                protected int beforeHandle(Request request, Response response)
+                {
+                    Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.loading.name());
+                    Logger.getLogger(LoggerCategories.PROGRESS).info("loading");
+                    try
+                    {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    return super.beforeHandle(request, response);
+                }
+
+                @Override
+                protected void afterHandle(Request request, Response response)
+                {
+                    Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.ready.name());
+                    Logger.getLogger(LoggerCategories.PROGRESS).info(LoggerCategories.DONE);
+
+                    super.afterHandle(request, response);
+                }
+            };
+            app.metaInfo().set(restlet);
 
             Logger.getLogger(getClass().getName()).info("Starting in " + app.mode() + " mode");
 
@@ -289,12 +325,11 @@ public class StreamFlowApplication
 
             JXTreeTable table = sharedInboxView.getTaskTable();
             int index = sharedInboxModel.getChildCount(sharedInboxModel.getRoot());
-            table.getSelectionMapper().clearModelSelection();
-            table.getSelectionMapper().insertIndexInterval(10,12,false);
-/*
-            table.getSelectionModel().setSelectionInterval(index-1, index-1);
-            table.scrollRowToVisible(index-1);
-*/
+            Object child = sharedInboxModel.getChild(sharedInboxModel, index - 1);
+            TreePath path = new TreePath(child);
+            table.getSelectionModel().clearSelection();
+            table.getSelectionModel().addSelectionInterval(index-1, index-1);
+            table.scrollPathToVisible(path);
         } catch (ResourceException e)
         {
             e.printStackTrace();
@@ -331,9 +366,16 @@ public class StreamFlowApplication
     }
 
     @Action
-    public void refreshSharedInbox() throws ResourceException
+    public Task refreshSharedInbox() throws ResourceException
     {
-        sharedInboxModel.refresh();
+        return new Task(this)
+        {
+            protected Object doInBackground() throws Exception
+            {
+                sharedInboxModel.refresh();
+                return null;
+            }
+        };
     }
 
     @Action
@@ -409,10 +451,20 @@ public class StreamFlowApplication
     }
 
     // Shared user waiting for actions ------------------------------
+    @Service
+    SharedWaitingForView sharedWaitingForView;
+    @Service
+    SharedWaitingForModel sharedWaitingForModel;
+
     @Action
     public void delegateWaitingForTask()
     {
+    }
 
+    @Action
+    public void refreshSharedWaitingFor() throws ResourceException
+    {
+        sharedWaitingForModel.refresh();
     }
 
     // Group administration actions ---------------------------------

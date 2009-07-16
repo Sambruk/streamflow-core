@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.shared;
 
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
@@ -22,7 +24,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 /**
  * JAVADOC
@@ -36,6 +38,9 @@ public class SharedProjectInboxNode
 
     @Service
     SharedInboxModel model;
+
+    @Service
+    ApplicationContext context;
 
     public SharedProjectInboxNode(@Uses SharedUserInboxClientResource inbox)
     {
@@ -53,9 +58,23 @@ public class SharedProjectInboxNode
         return (SharedUserInboxClientResource) getUserObject();
     }
 
-    public JComponent detailView() throws ResourceException
+    public JComponent detailView()
     {
-        model.setInbox(inbox());
+        context.getTaskService().execute(new Task(context.getApplication())
+        {
+            protected Object doInBackground() throws Exception
+            {
+                try
+                {
+                    model.setInbox(inbox());
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        });
         return view;
     }
 }

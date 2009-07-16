@@ -24,16 +24,17 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.web.domain.comment.Commenter;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
-import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.Delegator;
 import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
-import se.streamsource.streamflow.web.domain.comment.Commenter;
 
 /**
  * JAVADOC
@@ -49,6 +50,7 @@ public interface UserEntity
         Commenter,
         Contactable,
         Delegatee,
+        Delegator,
         Delegations,
         Describable,
         OrganizationParticipations,

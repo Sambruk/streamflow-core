@@ -14,7 +14,11 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 /**
  * JAVADOC
@@ -22,14 +26,32 @@ import org.qi4j.api.mixin.Mixins;
 @Mixins(Assignments.AssignmentsMixin.class)
 public interface Assignments
 {
-    void completeAssignedTask(Task task);
+    Task newAssignedTask(Assignee assignee);
+
+    void completeAssignedTask(Task task, Assignee assignee);
 
     class AssignmentsMixin
         implements Assignments
     {
-        public void completeAssignedTask(Task task)
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        @This
+        Owner owner;
+
+        public Task newAssignedTask(Assignee assignee)
         {
-            task.complete();
+            EntityBuilder<TaskEntity> taskBuilder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class);
+            TaskEntity state = taskBuilder.prototype();
+            state.ownedBy(owner);
+            Task task = taskBuilder.newInstance();
+            task.assignTo(assignee);
+            return task;
+        }
+
+        public void completeAssignedTask(Task task, Assignee assignee)
+        {
+            task.completedBy(assignee);
         }
     }
 }

@@ -58,13 +58,8 @@ public interface Accounts
             EntityBuilder<Account> builder = uowf.currentUnitOfWork().newEntityBuilder(Account.class);
             builder.prototypeFor(AccountEntity.AccountState.class).settings().set(settings);
             Account account = builder.newInstance();
-            addAccount(account);
+            state.accounts().add(state.accounts().count(), account);
             return account;
-        }
-
-        public void addAccount(Account newAccount)
-        {
-            state.accounts().add(state.accounts().count(), newAccount);
         }
 
         public void removeAccount(Account removedAccount)

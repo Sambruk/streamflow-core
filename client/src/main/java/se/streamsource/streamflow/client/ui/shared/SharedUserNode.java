@@ -15,11 +15,19 @@
 package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import org.restlet.Restlet;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.users.UserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 
 /**
  * JAVADOC
@@ -27,14 +35,24 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 public class SharedUserNode
         extends DefaultMutableTreeTableNode
 {
-    public SharedUserNode(@Service IndividualRepository repository,
-                          @Structure ObjectBuilderFactory obf)
+    public SharedUserNode(@Uses Account account,
+                          @Service Restlet client,
+                          @Structure ObjectBuilderFactory obf) throws ResourceException
     {
-        super(repository.individual());
-        add(obf.newObject(SharedUserAllInboxesNode.class));
-        add(obf.newObject(SharedUserAllAssignmentsNode.class));
-        add(obf.newObject(SharedUserAllDelegationsNode.class));
-        add(obf.newObject(SharedUserAllWaitingForNode.class));
+        super(account);
+
+        UserClientResource user = account.user(client);
+        SharedUserInboxClientResource userInboxResource = user.shared().user().inbox();
+        add(obf.newObjectBuilder(SharedUserInboxNode.class).use(account.settings(), userInboxResource).newInstance());
+
+        SharedUserAssignmentsClientResource userAssignmentsResource = user.shared().user().assignments();
+        add(obf.newObjectBuilder(SharedUserAssignmentsNode.class).use(account.settings(), userAssignmentsResource).newInstance());
+
+        SharedUserDelegationsClientResource userDelegationsResource = user.shared().user().delegations();
+        add(obf.newObjectBuilder(SharedUserDelegationsNode.class).use(account.settings(), userDelegationsResource).newInstance());
+
+        SharedUserWaitingForClientResource userWaitingForResource = user.shared().user().waitingFor();
+        add(obf.newObjectBuilder(SharedUserWaitingForNode.class).use(account.settings(), userWaitingForResource).newInstance());
     }
 
     @Override

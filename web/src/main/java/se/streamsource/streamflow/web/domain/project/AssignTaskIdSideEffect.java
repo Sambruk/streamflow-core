@@ -33,9 +33,9 @@ public abstract class AssignTaskIdSideEffect
     @Service
     TaskIdGenerator taskIdGenerator;
 
-    public Task newTask(String description)
+    public Task newTask()
     {
-        Task task = next.newTask(description);
+        Task task = next.newTask();
 
         assignId(task);
         return null;

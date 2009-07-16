@@ -29,9 +29,9 @@ import se.streamsource.streamflow.domain.task.TaskStates;
 @Mixins(TaskStatus.TaskStatusMixin.class)
 public interface TaskStatus
 {
-    void complete();
+    void completedBy(Assignee assignee);
 
-    void drop();
+    void droppedBy(Assignee assignee);
 
     void archive();
 
@@ -47,7 +47,7 @@ public interface TaskStatus
         @This
         TaskStatusState status;
 
-        public void complete()
+        public void completedBy(Assignee assignee)
         {
             if (status.status().get().equals(TaskStates.ACTIVE))
             {
@@ -55,7 +55,7 @@ public interface TaskStatus
             }
         }
 
-        public void drop()
+        public void droppedBy(Assignee assignee)
         {
             if (status.status().get().equals(TaskStates.ACTIVE))
             {

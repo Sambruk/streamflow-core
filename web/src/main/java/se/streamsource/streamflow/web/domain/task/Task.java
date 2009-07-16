@@ -32,7 +32,8 @@ public interface Task
         Notable,
         Ownable,
         TaskStatus,
-        TaskPath,
+        Subtasks,
+        Subtask,
         TaskId,
         Commentable
 {

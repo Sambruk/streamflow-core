@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
@@ -27,6 +26,9 @@ import java.awt.event.KeyEvent;
  */
 public class i18n
 {
+    public static final int ICON_16 = 16;
+    public static final int ICON_24 = 24;
+
     public static String text(Enum resource)
     {
         String string = getResourceMap(resource).getString(resource.name());
@@ -44,13 +46,21 @@ public class i18n
         return keycode;
     }
 
-    public static Icon icon(Enum resource)
+    public static ImageIcon icon(Enum resource)
+    {
+        return icon(resource, ICON_24);
+    }
+
+    public static ImageIcon icon(Enum resource, int size)
     {
         ResourceMap resourceMap = getResourceMap(resource);
         ImageIcon icon = resourceMap.getImageIcon(resource.name());
         Image image = icon.getImage();
-        image = image.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
-        icon.setImage(image);
+        if (icon.getIconWidth() != size)
+        {
+            image = image.getScaledInstance(size, size, Image.SCALE_SMOOTH);
+            icon.setImage(image);
+        }
         return icon;
     }
 

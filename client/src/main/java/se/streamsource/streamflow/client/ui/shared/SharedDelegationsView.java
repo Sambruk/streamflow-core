@@ -92,6 +92,7 @@ public class SharedDelegationsView
 
         addTab(text(delegations_tab), panel);
         addTab(text(detail_tab), detailView);
+        setEnabledAt(1, false);
 
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "details");
         getActionMap().put("details", new AbstractAction()
@@ -101,8 +102,8 @@ public class SharedDelegationsView
                 setSelectedIndex(1);
             }
         });
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "assignments");
-        getActionMap().put("assignments", new AbstractAction()
+        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "delegations");
+        getActionMap().put("delegations", new AbstractAction()
         {
             public void actionPerformed(ActionEvent e)
             {

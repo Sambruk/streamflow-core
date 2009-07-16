@@ -47,10 +47,8 @@ public interface Delegations
 
         public void completeDelegatedTask(Task task, Assignee assignee)
         {
-            task.assignTo(assignee);
             task.ownedBy(owner);
-            task.complete();
-            task.markAsUnread();
+            task.completedBy(assignee);
         }
     }
 }

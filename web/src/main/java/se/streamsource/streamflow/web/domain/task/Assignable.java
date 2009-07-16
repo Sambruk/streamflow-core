@@ -15,6 +15,8 @@
 package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -25,6 +27,7 @@ import java.util.Date;
 /**
  * JAVADOC
  */
+@Concerns(Assignable.AssignOnStatusChangeConcern.class)
 @Mixins(Assignable.AssignableMixin.class)
 public interface Assignable
 {
@@ -54,4 +57,36 @@ public interface Assignable
             }
         }
     }
+
+    abstract class AssignOnStatusChangeConcern
+        extends ConcernOf<TaskStatus>
+        implements TaskStatus
+    {
+        @This
+        AssignableState state;
+
+        @This
+        Assignable assignable;
+
+        public void completedBy(Assignee assignee)
+        {
+            ensureAssigned(assignee);
+
+            next.completedBy(assignee);
+        }
+
+        public void droppedBy(Assignee assignee)
+        {
+            ensureAssigned(assignee);
+
+            next.droppedBy(assignee);
+        }
+
+        private void ensureAssigned(Assignee assignee)
+        {
+            if (state.assignedTo().get() == null)
+                assignable.assignTo(assignee);
+        }
+    }
+
 }

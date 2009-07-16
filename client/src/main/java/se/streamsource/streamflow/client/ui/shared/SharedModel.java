@@ -15,10 +15,12 @@
 package se.streamsource.streamflow.client.ui.shared;
 
 import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
-import org.jdesktop.swingx.treetable.MutableTreeTableNode;
-import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 
 /**
  * JAVADOC
@@ -29,9 +31,22 @@ public class SharedModel
     @Structure
     ObjectBuilderFactory obf;
 
-    public SharedModel(@Uses SharedNode root)
+    Account account;
+
+    public SharedModel(@Service IndividualRepository individualRepository,
+                       final @Structure ObjectBuilderFactory obf)
     {
-        super(root);
+        super();
+
+        individualRepository.individual().visitAccounts(new AccountVisitor()
+        {
+            public void visitAccount(Account acc)
+            {
+                account = acc;
+            }
+        });
+
+        setRoot(obf.newObjectBuilder(SharedNode.class).use(account).newInstance());
     }
 
     @Override
@@ -60,11 +75,7 @@ public class SharedModel
 
     public void refresh()
     {
-        SharedNode root = (SharedNode) getRoot();
-        while (root.getChildCount() >0)
-            removeNodeFromParent((MutableTreeTableNode) root.getChildAt(0));
-
-        setRoot(obf.newObjectBuilder(SharedNode.class).newInstance());
+        setRoot(obf.newObjectBuilder(SharedNode.class).use(account).newInstance());
     }
 
     

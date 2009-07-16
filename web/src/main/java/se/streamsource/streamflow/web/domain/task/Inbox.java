@@ -26,15 +26,15 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 @Mixins(Inbox.InboxMixin.class)
 public interface Inbox
 {
-    Task newTask(String description);
+    Task newTask();
 
     void receiveTask(Task task);
 
-    void completeTask(Task task);
+    void completeTask(Task task, Assignee assignee);
 
     void assignTo(Task task, Assignee assignee);
 
-    void delegate(Task task, Delegatee delegatee);
+    void delegateTo(Task task, Delegatee delegatee, Delegator delegator);
 
     void markAsRead(Task task);
 
@@ -47,17 +47,13 @@ public interface Inbox
         @This
         Owner owner;
 
-        @This
-        Assignee assignee;
-
         @Structure
         UnitOfWorkFactory uowf;
 
-        public Task newTask(String description)
+        public Task newTask()
         {
             EntityBuilder<TaskEntity> taskBuilder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class);
             TaskEntity state = taskBuilder.prototype();
-            state.description().set(description);
             state.ownedBy(owner);
 
             return taskBuilder.newInstance();
@@ -66,15 +62,13 @@ public interface Inbox
         public void receiveTask(Task task)
         {
             task.ownedBy(owner);
+            task.markAsUnread();
         }
 
-        public void completeTask(Task task)
+        public void completeTask(Task task, Assignee assignee)
         {
-            // Ensure that task is assigned to user first
-            task.assignTo(assignee);
-
             // Complete task
-            task.complete();
+            task.completedBy(assignee);
         }
 
         public void assignTo(Task task, Assignee assignee)
@@ -82,9 +76,9 @@ public interface Inbox
             task.assignTo(assignee);
         }
 
-        public void delegate(Task task, Delegatee delegatee)
+        public void delegateTo(Task task, Delegatee delegatee, Delegator delegator)
         {
-            task.delegateTo(delegatee);
+            task.delegateTo(delegatee, delegator);
         }
 
         public void markAsRead(Task task)

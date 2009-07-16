@@ -14,26 +14,13 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.entity.Identity;
+import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * JAVADOC
  */
-@Mixins(SharedTaskReceiver.TaskReceiverMixin.class)
-public interface SharedTaskReceiver
+public interface Delegator
+    extends Identity, Describable
 {
-    void receiveTask(Task task);
-
-    class TaskReceiverMixin
-            implements SharedTaskReceiver
-    {
-        @This
-        Owner owner;
-
-        public void receiveTask(Task task)
-        {
-            task.ownedBy(owner);
-        }
-    }
 }

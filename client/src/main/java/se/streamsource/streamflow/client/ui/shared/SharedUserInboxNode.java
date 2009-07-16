@@ -14,11 +14,14 @@
 
 package se.streamsource.streamflow.client.ui.shared;
 
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
@@ -40,6 +43,9 @@ public class SharedUserInboxNode
     @Uses
     private AccountSettingsValue settings;
 
+    @Service
+    ApplicationContext context;
+
     public SharedUserInboxNode(@Uses SharedUserInboxClientResource inbox)
     {
         super(inbox, false);
@@ -48,7 +54,7 @@ public class SharedUserInboxNode
     @Override
     public Object getValueAt(int column)
     {
-        return settings.name().get();
+        return i18n.text(SharedResources.inboxes_node);
     }
 
     SharedUserInboxClientResource inbox()
@@ -56,9 +62,23 @@ public class SharedUserInboxNode
         return (SharedUserInboxClientResource) getUserObject();
     }
 
-    public JComponent detailView() throws ResourceException
+    public JComponent detailView()
     {
-        model.setInbox(inbox());
+        context.getTaskService().execute(new Task(context.getApplication())
+        {
+            protected Object doInBackground() throws Exception
+            {
+                try
+                {
+                    model.setInbox(inbox());
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        });
         return view;
     }
 

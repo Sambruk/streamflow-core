@@ -21,6 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.*;
 
@@ -48,7 +49,7 @@ public class SharedUserDelegationsNode
     @Override
     public Object getValueAt(int column)
     {
-        return settings.name().get();
+        return i18n.text(SharedResources.delegations_node);
     }
 
     SharedUserDelegationsClientResource delegations()
@@ -56,9 +57,21 @@ public class SharedUserDelegationsNode
         return (SharedUserDelegationsClientResource) getUserObject();
     }
 
-    public JComponent detailView() throws ResourceException
+    public JComponent detailView()
     {
-        model.setDelegations(delegations());
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                try
+                {
+                    model.setDelegations(delegations());
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
         return view;
     }
 
