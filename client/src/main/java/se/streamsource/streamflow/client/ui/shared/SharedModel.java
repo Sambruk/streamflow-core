@@ -46,7 +46,8 @@ public class SharedModel
             }
         });
 
-        setRoot(obf.newObjectBuilder(SharedNode.class).use(account).newInstance());
+        if (account != null)
+            setRoot(obf.newObjectBuilder(SharedNode.class).use(account).newInstance());
     }
 
     @Override
