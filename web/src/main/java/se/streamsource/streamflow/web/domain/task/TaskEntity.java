@@ -19,6 +19,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.domain.roles.Taggable;
 import se.streamsource.streamflow.web.domain.comment.Commentable;
+import se.streamsource.streamflow.web.domain.label.Labelable;
 
 /**
  * JAVADOC
@@ -33,6 +34,7 @@ public interface TaskEntity
         Describable.DescribableState,
         DueOn.DueOnState,
         IsRead.IsReadState,
+        Labelable.LabelableState,
         Notable.NotableState,
         Ownable.OwnableState,
         Taggable.TaggableState,

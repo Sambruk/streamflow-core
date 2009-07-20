@@ -14,9 +14,12 @@
 
 package se.streamsource.streamflow.client.ui.status;
 
+import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.swingx.JXFindBar;
+import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.search.Searchable;
 import org.qi4j.api.injection.scope.Service;
@@ -159,13 +162,21 @@ public class StatusBarView
 
         public void publish(LogRecord record)
         {
+            JXFrame frame = (JXFrame) ((SingleFrameApplication)Application.getInstance()).getMainFrame();
+
             String[] message = record.getMessage().split("/");
             if (message.length == 1)
             {
                 if (message[0].equals(LoggerCategories.DONE))
+                {
                     pbar.setIndeterminate(false);
+                    frame.setWaiting(false);
+                }
                 else
+                {
                     pbar.setIndeterminate(true);
+                    frame.setWaiting(true);
+                }
             }
             else
             {

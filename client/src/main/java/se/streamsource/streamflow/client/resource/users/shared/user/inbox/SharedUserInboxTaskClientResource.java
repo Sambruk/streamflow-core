@@ -80,4 +80,18 @@ public class SharedUserInboxTaskClientResource
         builder.prototype().entity().set(EntityReference.parseEntityReference(receiverId));
         putCommand("forward", builder.newInstance());
     }
+
+    public void addLabel(String labelId) throws ResourceException
+    {
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+        builder.prototype().entity().set(EntityReference.parseEntityReference(labelId));
+        postCommand("addLabel", builder.newInstance());
+    }
+
+    public void removeLabel(String labelId) throws ResourceException
+    {
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+        builder.prototype().entity().set(EntityReference.parseEntityReference(labelId));
+        putCommand("removeLabel", builder.newInstance());
+    }
 }

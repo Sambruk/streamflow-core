@@ -23,7 +23,7 @@ import org.qi4j.library.rdf.entity.EntityStateParser;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.rest.client.SPARQLEntityFinderConfiguration;
-import org.qi4j.spi.entity.helpers.EntityTypeRegistryService;
+import org.qi4j.spi.entity.typeregistry.EntityTypeRegistryService;
 
 /**
  * JAVADOC

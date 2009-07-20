@@ -18,7 +18,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.spi.entity.helpers.EntityTypeRegistryService;
+import org.qi4j.spi.entity.typeregistry.EntityTypeRegistryService;
 
 /**
  * JAVADOC

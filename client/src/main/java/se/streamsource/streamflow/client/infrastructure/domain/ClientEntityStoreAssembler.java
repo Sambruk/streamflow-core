@@ -21,7 +21,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.spi.entity.helpers.UuidIdentityGeneratorService;
+import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
  * JAVADOC

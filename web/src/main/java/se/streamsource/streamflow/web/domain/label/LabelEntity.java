@@ -12,31 +12,19 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
+package se.streamsource.streamflow.web.domain.label;
 
+import org.qi4j.api.entity.EntityComposite;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
-import se.streamsource.streamflow.web.domain.comment.Commentable;
-import se.streamsource.streamflow.web.domain.label.Labelable;
 
 /**
- * Shared tasks are aggregate roots.
+ * Label definition
  */
-public interface Task
-        extends
-        Assignable,
-        CreatedOn,
-        Delegatable,
-        Describable,
-        DueOn,
-        IsRead,
-        Labelable,
-        Notable,
-        Ownable,
-        TaskStatus,
-        Subtasks,
-        Subtask,
-        TaskId,
-        Commentable
+public interface LabelEntity
+    extends EntityComposite,
+        Label,
+        Describable.DescribableState,
+        Notable.NotableState
 {
 }

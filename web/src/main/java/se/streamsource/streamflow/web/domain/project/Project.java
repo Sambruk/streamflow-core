@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.domain.project;
 
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.label.Labels;
 
 /**
  * JAVADOC
@@ -25,6 +26,7 @@ public interface Project
         Describable,
         Members,
         ProjectStatus,
-        Inbox
+        Inbox,
+        Labels
 {
 }

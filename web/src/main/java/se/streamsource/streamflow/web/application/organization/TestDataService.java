@@ -88,6 +88,11 @@ public interface TestDataService
             for (int i = 0; i < 100; i++)
                 project.newTask().describe("Arbetsuppgift " + i);
 
+            // Create labels
+            project.newLabel().describe("Information");
+            project.newLabel().describe("Ärendestatus");
+            project.newLabel().describe("Socialen");
+
             uow.complete();
         }
 
