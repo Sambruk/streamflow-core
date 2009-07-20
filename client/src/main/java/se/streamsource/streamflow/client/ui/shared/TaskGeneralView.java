@@ -67,9 +67,9 @@ public class TaskGeneralView
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
         bb
-        .appendLine(SharedResources.id_label, LABEL, template.taskId())
-        .appendLine(SharedResources.description_label, TEXTFIELD, template.description())
-        .appendLine(SharedResources.note_label, TEXTAREA, template.note())
+        .appendLine(WorkspaceResources.id_label, LABEL, template.taskId())
+        .appendLine(WorkspaceResources.description_label, TEXTFIELD, template.description())
+        .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note())
         .appendToggleButtonLine(getActionMap().get("edit"));
 
         editor = new FormEditor(sharedTaskBinder.boundComponents());

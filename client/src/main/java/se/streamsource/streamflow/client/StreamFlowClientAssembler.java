@@ -33,7 +33,7 @@ import se.streamsource.streamflow.client.ui.UIAssembler;
 import se.streamsource.streamflow.client.ui.administration.AdministrationAssembler;
 import se.streamsource.streamflow.client.ui.menu.MenuAssembler;
 import se.streamsource.streamflow.client.ui.navigator.NavigatorUIAssembler;
-import se.streamsource.streamflow.client.ui.shared.SharedUIAssembler;
+import se.streamsource.streamflow.client.ui.shared.WorkspaceUIAssembler;
 import se.streamsource.streamflow.domain.contact.ContactAssembler;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
 
@@ -70,7 +70,7 @@ public class StreamFlowClientAssembler
         new AdministrationAssembler().assemble(uiLayer.newModuleAssembly("AdministrationQueries"));
         new MenuAssembler().assemble(uiLayer.newModuleAssembly("Menu view"));
         new NavigatorUIAssembler().assemble(uiLayer.newModuleAssembly("Navigator view"));
-        new SharedUIAssembler().assemble(uiLayer.newModuleAssembly("Shared view"));
+        new WorkspaceUIAssembler().assemble(uiLayer.newModuleAssembly("Shared view"));
         new UIAssembler().assemble(uiLayer.newModuleAssembly("UI View"));
         new UIInfrastructureAssembler().assemble(uiLayer.newModuleAssembly("View infrastructure"));
         new RestletClientAssembler().assemble(uiLayer.newModuleAssembly("REST Client"));

@@ -63,19 +63,19 @@ import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.menu.CreateAccountDialog;
 import se.streamsource.streamflow.client.ui.navigator.NavigatorView;
 import se.streamsource.streamflow.client.ui.shared.AddCommentDialog;
-import se.streamsource.streamflow.client.ui.shared.AddSharedTaskDialog;
-import se.streamsource.streamflow.client.ui.shared.DelegateSharedTasksDialog;
-import se.streamsource.streamflow.client.ui.shared.ForwardSharedTasksDialog;
-import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsModel;
-import se.streamsource.streamflow.client.ui.shared.SharedAssignmentsView;
-import se.streamsource.streamflow.client.ui.shared.SharedDelegationsModel;
-import se.streamsource.streamflow.client.ui.shared.SharedDelegationsView;
-import se.streamsource.streamflow.client.ui.shared.SharedInboxModel;
-import se.streamsource.streamflow.client.ui.shared.SharedInboxView;
-import se.streamsource.streamflow.client.ui.shared.SharedModel;
-import se.streamsource.streamflow.client.ui.shared.SharedView;
-import se.streamsource.streamflow.client.ui.shared.SharedWaitingForModel;
-import se.streamsource.streamflow.client.ui.shared.SharedWaitingForView;
+import se.streamsource.streamflow.client.ui.shared.AddTaskDialog;
+import se.streamsource.streamflow.client.ui.shared.DelegateTasksDialog;
+import se.streamsource.streamflow.client.ui.shared.ForwardTasksDialog;
+import se.streamsource.streamflow.client.ui.shared.UserAssignmentsModel;
+import se.streamsource.streamflow.client.ui.shared.UserAssignmentsView;
+import se.streamsource.streamflow.client.ui.shared.UserDelegationsModel;
+import se.streamsource.streamflow.client.ui.shared.UserDelegationsView;
+import se.streamsource.streamflow.client.ui.shared.UserInboxModel;
+import se.streamsource.streamflow.client.ui.shared.UserInboxView;
+import se.streamsource.streamflow.client.ui.shared.WorkspaceModel;
+import se.streamsource.streamflow.client.ui.shared.WorkspaceView;
+import se.streamsource.streamflow.client.ui.shared.UserWaitingForModel;
+import se.streamsource.streamflow.client.ui.shared.UserWaitingForView;
 import se.streamsource.streamflow.client.ui.shared.TaskCommentsModel;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
@@ -232,7 +232,7 @@ public class StreamFlowApplication
     AccountsModel accountsModel;
 
     @Service
-    SharedModel sharedModel;
+    WorkspaceModel workspaceModel;
 
     @Action
     public void manageAccounts()
@@ -254,13 +254,13 @@ public class StreamFlowApplication
         CreateAccountDialog dialog = createAccountDialog.newInstance();
         dialogs.showOkCancelHelpDialog(getMainFrame(), dialog);
         accountsModel.refresh();
-        sharedView.refreshTree();
+        workspaceView.refreshTree();
         administrationModel.refresh();
     }
 
     // Controller actions -------------------------------------------
     @Service
-    SharedView sharedView;
+    WorkspaceView workspaceView;
 
     // Menu actions
     // Account menu
@@ -298,15 +298,15 @@ public class StreamFlowApplication
 
     // Shared users inbox actions ------------------------------------
     @Uses
-    private ObjectBuilder<AddSharedTaskDialog> addSharedTaskDialogs;
+    private ObjectBuilder<AddTaskDialog> addSharedTaskDialogs;
     @Uses
-    private ObjectBuilder<ForwardSharedTasksDialog> forwardSharedTasksDialog;
+    private ObjectBuilder<ForwardTasksDialog> forwardSharedTasksDialog;
 
     @Service
-    SharedInboxView sharedInboxView;
+    UserInboxView userInboxView;
 
     @Service
-    SharedInboxModel sharedInboxModel;
+    UserInboxModel userInboxModel;
 
     @Service
     TaskCommentsModel taskCommentsModel;
@@ -315,17 +315,17 @@ public class StreamFlowApplication
     public void newSharedTask()
     {
         // Show dialog
-        AddSharedTaskDialog dialog = addSharedTaskDialogs.newInstance();
+        AddTaskDialog dialog = addSharedTaskDialogs.newInstance();
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), dialog);
 
         NewSharedTaskCommand command = dialog.getCommandBuilder().newInstance();
         try
         {
-            sharedInboxModel.newTask(command);
+            userInboxModel.newTask(command);
 
-            JXTreeTable table = sharedInboxView.getTaskTable();
-            int index = sharedInboxModel.getChildCount(sharedInboxModel.getRoot());
-            Object child = sharedInboxModel.getChild(sharedInboxModel, index - 1);
+            JXTreeTable table = userInboxView.getTaskTable();
+            int index = userInboxModel.getChildCount(userInboxModel.getRoot());
+            Object child = userInboxModel.getChild(userInboxModel, index - 1);
             TreePath path = new TreePath(child);
             table.getSelectionModel().clearSelection();
             table.getSelectionModel().addSelectionInterval(index-1, index-1);
@@ -340,8 +340,8 @@ public class StreamFlowApplication
     public void addSharedSubTask()
     {
         // Show dialog
-        AddSharedTaskDialog dialog = addSharedTaskDialogs.newInstance();
-        InboxTaskDTO selected = sharedInboxView.getSelectedTask();
+        AddTaskDialog dialog = addSharedTaskDialogs.newInstance();
+        InboxTaskDTO selected = userInboxView.getSelectedTask();
         dialog.getCommandBuilder().prototype().parentTask().set(selected.task().get());
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), dialog);
     }
@@ -349,20 +349,20 @@ public class StreamFlowApplication
     @Action
     public void assignTasksToMe() throws ResourceException
     {
-        int selection = sharedInboxView.getTaskTable().getSelectedRow();
-        Iterable<InboxTaskDTO> selectedTasks = sharedInboxView.getSelectedTasks();
+        int selection = userInboxView.getTaskTable().getSelectedRow();
+        Iterable<InboxTaskDTO> selectedTasks = userInboxView.getSelectedTasks();
         for (InboxTaskDTO selectedTask : selectedTasks)
         {
-            sharedInboxModel.assignToMe(selectedTask.task().get().identity());
+            userInboxModel.assignToMe(selectedTask.task().get().identity());
         }
-        sharedInboxView.getTaskTable().getSelectionModel().setSelectionInterval(selection, selection);
-        sharedInboxView.repaint();
+        userInboxView.getTaskTable().getSelectionModel().setSelectionInterval(selection, selection);
+        userInboxView.repaint();
     }
 
     @Action
     public void delegateTasksFromInbox() throws ResourceException
     {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(DelegateSharedTasksDialog.class).newInstance());
+        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(DelegateTasksDialog.class).newInstance());
     }
 
     @Action
@@ -372,7 +372,7 @@ public class StreamFlowApplication
         {
             protected Object doInBackground() throws Exception
             {
-                sharedInboxModel.refresh();
+                userInboxModel.refresh();
                 return null;
             }
         };
@@ -381,17 +381,17 @@ public class StreamFlowApplication
     @Action
     public void removeSharedTasks() throws ResourceException
     {
-        Iterable<InboxTaskDTO> selected = sharedInboxView.getSelectedTasks();
+        Iterable<InboxTaskDTO> selected = userInboxView.getSelectedTasks();
         for (InboxTaskDTO taskValue : selected)
         {
-            sharedInboxModel.removeTask(taskValue.task().get().identity());
+            userInboxModel.removeTask(taskValue.task().get().identity());
         }
     }
 
     @Action
     public void forwardSharedTasksTo()
     {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(ForwardSharedTasksDialog.class).newInstance());
+        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(ForwardTasksDialog.class).newInstance());
     }
 
     @Action
@@ -401,60 +401,64 @@ public class StreamFlowApplication
     }
 
     // Shared user assignments actions ------------------------------
-    @Service SharedAssignmentsView sharedAssignmentsView;
-    @Service SharedAssignmentsModel sharedAssignmentsModel;
+    @Service
+    UserAssignmentsView userAssignmentsView;
+    @Service
+    UserAssignmentsModel userAssignmentsModel;
 
     @Action
     public void refreshSharedAssignments() throws ResourceException
     {
-        sharedAssignmentsModel.refresh();
+        userAssignmentsModel.refresh();
     }
 
     @Action
     public void removeSharedAssignedTasks() throws ResourceException
     {
-        Iterable<AssignedTaskDTO> selected = sharedAssignmentsView.getSelectedTasks();
+        Iterable<AssignedTaskDTO> selected = userAssignmentsView.getSelectedTasks();
         for (AssignedTaskDTO taskDTO : selected)
         {
-            sharedAssignmentsModel.removeTask(taskDTO.task().get().identity());
+            userAssignmentsModel.removeTask(taskDTO.task().get().identity());
         }
     }
 
     // Shared user delegations actions ------------------------------
-    @Service SharedDelegationsView sharedDelegationsView;
-    @Service SharedDelegationsModel sharedDelegationsModel;
+    @Service
+    UserDelegationsView userDelegationsView;
+    @Service
+    UserDelegationsModel userDelegationsModel;
 
     @Action
     public void refreshSharedDelegations() throws ResourceException
     {
-        sharedDelegationsModel.refresh();
+        userDelegationsModel.refresh();
     }
 
     @Action
     public void assignDelegatedTasksToMe() throws ResourceException
     {
-        Iterable<DelegatedTaskDTO> task = sharedDelegationsView.getSelectedTasks();
+        Iterable<DelegatedTaskDTO> task = userDelegationsView.getSelectedTasks();
         for (DelegatedTaskDTO delegatedTaskValue : task)
         {
-            sharedDelegationsModel.assignToMe(delegatedTaskValue.task().get().identity());
+            userDelegationsModel.assignToMe(delegatedTaskValue.task().get().identity());
         }
     }
 
     @Action
     public void rejectUserDelegations() throws ResourceException
     {
-        Iterable<DelegatedTaskDTO> task = sharedDelegationsView.getSelectedTasks();
+        Iterable<DelegatedTaskDTO> task = userDelegationsView.getSelectedTasks();
         for (DelegatedTaskDTO delegatedTaskValue : task)
         {
-            sharedDelegationsModel.reject(delegatedTaskValue.task().get().identity());
+            userDelegationsModel.reject(delegatedTaskValue.task().get().identity());
         }
     }
 
     // Shared user waiting for actions ------------------------------
     @Service
-    SharedWaitingForView sharedWaitingForView;
+    UserWaitingForView userWaitingForView;
     @Service
-    SharedWaitingForModel sharedWaitingForModel;
+    UserWaitingForModel userWaitingForModel;
 
     @Action
     public void delegateWaitingForTask()
@@ -464,7 +468,7 @@ public class StreamFlowApplication
     @Action
     public void refreshSharedWaitingFor() throws ResourceException
     {
-        sharedWaitingForModel.refresh();
+        userWaitingForModel.refresh();
     }
 
     // Group administration actions ---------------------------------
@@ -547,7 +551,7 @@ public class StreamFlowApplication
             TreeNodeValue selected = (TreeNodeValue) projectView.getMembers().getSelectionPath().getPathComponent(1);
             projectModel.removeMember(selected.entity().get());
         }
-        sharedView.refreshTree();
+        workspaceView.refreshTree();
     }
 
     // Role administration actions ----------------------------------

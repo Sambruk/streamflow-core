@@ -25,7 +25,7 @@ import se.streamsource.streamflow.client.ui.administration.projects.members.Grou
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.UsersOrganizationSearch;
-import se.streamsource.streamflow.client.ui.shared.SharedView;
+import se.streamsource.streamflow.client.ui.shared.WorkspaceView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -47,7 +47,7 @@ public class AddMemberDialog
     ProjectModel projectModel;
 
     @Service
-    SharedView sharedView;
+    WorkspaceView workspaceView;
 
 
     Dimension dialogSize = new Dimension(600,300);
@@ -102,7 +102,7 @@ public class AddMemberDialog
 
         projectModel.addMembers(selected);
         WindowUtils.findWindow(this).dispose();
-        sharedView.refreshTree();
+        workspaceView.refreshTree();
     }
 
     @Action

@@ -19,65 +19,57 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
-import se.streamsource.streamflow.resource.comment.NewCommentCommand;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import static se.streamsource.streamflow.client.ui.shared.WorkspaceResources.*;
 
 import javax.swing.JPanel;
-import java.util.Date;
 
 /**
  * JAVADOC
  */
-public class AddCommentDialog
+public class AddTaskDialog
         extends JPanel
 {
-    @Structure
-    UnitOfWorkFactory uowf;
-
-    @Service
-    WorkspaceView workspaceView;
-
     private StateBinder sharedTaskBinder;
-    private ValueBuilder<NewCommentCommand> commandBuilder;
-    private TaskCommentsModel commentsModel;
+    private ValueBuilder<NewSharedTaskCommand> commandBuilder;
 
-    public AddCommentDialog(@Service ApplicationContext appContext,
-                               @Structure ValueBuilderFactory vbf,
-                               @Service TaskCommentsModel commentsModel
+    public AddTaskDialog(@Service ApplicationContext appContext,
+                               @Structure ValueBuilderFactory vbf
     )
     {
-        this.commentsModel = commentsModel;
         setActionMap(appContext.getActionMap(this));
 
-        setName(i18n.text(WorkspaceResources.add_comment_title));
+        setName(appContext.getResourceMap(WorkspaceResources.class).getString(WorkspaceResources.add_task_title.toString()));
 
         FormLayout layout = new FormLayout(
                 "200dlu",
+/*
+                "right:max(40dlu;p), 4dlu, 200dlu, 7dlu, " // 1st major column
+                        + "right:max(40dlu;p), 4dlu, 80dlu",        // 2nd major column
+*/
                 "");                                      // add rows dynamically
         DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
         builder.setDefaultDialogBorder();
 
         sharedTaskBinder = new StateBinder();
         sharedTaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        NewCommentCommand template = sharedTaskBinder.bindingTemplate(NewCommentCommand.class);
-
-        
+        NewSharedTaskCommand template = sharedTaskBinder.bindingTemplate(NewSharedTaskCommand.class);
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
-        bb.appendLine(WorkspaceResources.comment_public_label, CHECKBOX, template.isPublic());
-        bb.appendLine(WorkspaceResources.comment_text_label, TEXTAREA, template.text());
+        bb.appendLine(description_label, TEXTFIELD, template.description())
+                .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note())
+                .appendLine(WorkspaceResources.is_completed, CHECKBOX, template.isCompleted());
+
 
         // Create command builder
-        commandBuilder = vbf.newValueBuilder(NewCommentCommand.class);
+        commandBuilder = vbf.newValueBuilder(NewSharedTaskCommand.class);
 
         sharedTaskBinder.updateWith(commandBuilder.prototype());
     }
@@ -86,13 +78,6 @@ public class AddCommentDialog
     public void execute()
             throws Exception
     {
-        // Create command instance
-        commandBuilder.prototype().commenter().set(new EntityReference(workspaceView.getSelectedUser()));
-        commandBuilder.prototype().creationDate().set(new Date());
-        final NewCommentCommand command = commandBuilder.newInstance();
-
-        commentsModel.addComment(command);
-
         WindowUtils.findWindow(this).dispose();
     }
 
@@ -100,5 +85,10 @@ public class AddCommentDialog
     public void close()
     {
         WindowUtils.findWindow(this).dispose();
+    }
+
+    public ValueBuilder<NewSharedTaskCommand> getCommandBuilder()
+    {
+        return commandBuilder;
     }
 }
