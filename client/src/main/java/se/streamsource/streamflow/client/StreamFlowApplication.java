@@ -62,23 +62,23 @@ import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.menu.CreateAccountDialog;
 import se.streamsource.streamflow.client.ui.navigator.NavigatorView;
+import se.streamsource.streamflow.client.ui.status.StatusBarView;
+import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.shared.AddCommentDialog;
 import se.streamsource.streamflow.client.ui.shared.AddTaskDialog;
 import se.streamsource.streamflow.client.ui.shared.DelegateTasksDialog;
 import se.streamsource.streamflow.client.ui.shared.ForwardTasksDialog;
+import se.streamsource.streamflow.client.ui.shared.TaskCommentsModel;
 import se.streamsource.streamflow.client.ui.shared.UserAssignmentsModel;
 import se.streamsource.streamflow.client.ui.shared.UserAssignmentsView;
 import se.streamsource.streamflow.client.ui.shared.UserDelegationsModel;
 import se.streamsource.streamflow.client.ui.shared.UserDelegationsView;
 import se.streamsource.streamflow.client.ui.shared.UserInboxModel;
 import se.streamsource.streamflow.client.ui.shared.UserInboxView;
-import se.streamsource.streamflow.client.ui.shared.WorkspaceModel;
-import se.streamsource.streamflow.client.ui.shared.WorkspaceView;
 import se.streamsource.streamflow.client.ui.shared.UserWaitingForModel;
 import se.streamsource.streamflow.client.ui.shared.UserWaitingForView;
-import se.streamsource.streamflow.client.ui.shared.TaskCommentsModel;
-import se.streamsource.streamflow.client.ui.status.StatusBarView;
-import se.streamsource.streamflow.client.ui.status.StatusResources;
+import se.streamsource.streamflow.client.ui.shared.WorkspaceModel;
+import se.streamsource.streamflow.client.ui.shared.WorkspaceView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
@@ -97,6 +97,7 @@ import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -114,6 +115,9 @@ public class StreamFlowApplication
     public StreamFlowApplication()
     {
         super();
+
+        getContext().getResourceManager().setApplicationBundleNames(Arrays.asList("se.streamsource.streamflow.client.resources.StreamFlowApplication"));
+
         JXFrame frame = new JXFrame();
 
         frame.setLocationByPlatform(true);
@@ -163,6 +167,7 @@ public class StreamFlowApplication
                 super.keyTyped(e);
             }
         });
+
     }
 
     @Override
@@ -186,6 +191,7 @@ public class StreamFlowApplication
                 {
                     Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.loading.name());
                     Logger.getLogger(LoggerCategories.PROGRESS).info("loading");
+/*
                     try
                     {
                         Thread.sleep(2000);
@@ -193,6 +199,7 @@ public class StreamFlowApplication
                     {
                         e.printStackTrace();
                     }
+*/
                     return super.beforeHandle(request, response);
                 }
 
@@ -296,7 +303,7 @@ public class StreamFlowApplication
         JOptionPane.showMessageDialog(this.getMainFrame(), "#showhelp");
     }
 
-    // Shared users inbox actions ------------------------------------
+    // User inbox actions ------------------------------------
     @Uses
     private ObjectBuilder<AddTaskDialog> addSharedTaskDialogs;
     @Uses
@@ -312,7 +319,7 @@ public class StreamFlowApplication
     TaskCommentsModel taskCommentsModel;
 
     @Action()
-    public void newSharedTask()
+    public void newUserInboxTask()
     {
         // Show dialog
         AddTaskDialog dialog = addSharedTaskDialogs.newInstance();
@@ -337,7 +344,7 @@ public class StreamFlowApplication
     }
 
     @Action()
-    public void addSharedSubTask()
+    public void addUserInboxSubTask()
     {
         // Show dialog
         AddTaskDialog dialog = addSharedTaskDialogs.newInstance();
@@ -366,7 +373,7 @@ public class StreamFlowApplication
     }
 
     @Action
-    public Task refreshSharedInbox() throws ResourceException
+    public Task refreshUserInbox() throws ResourceException
     {
         return new Task(this)
         {
@@ -379,7 +386,7 @@ public class StreamFlowApplication
     }
 
     @Action
-    public void removeSharedTasks() throws ResourceException
+    public void removeUserInboxTasks() throws ResourceException
     {
         Iterable<InboxTaskDTO> selected = userInboxView.getSelectedTasks();
         for (InboxTaskDTO taskValue : selected)
@@ -389,7 +396,7 @@ public class StreamFlowApplication
     }
 
     @Action
-    public void forwardSharedTasksTo()
+    public void forwardTasksTo()
     {
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(ForwardTasksDialog.class).newInstance());
     }

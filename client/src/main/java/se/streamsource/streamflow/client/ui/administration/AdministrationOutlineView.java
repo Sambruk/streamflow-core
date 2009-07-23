@@ -20,20 +20,25 @@ import org.qi4j.api.injection.scope.Service;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JTree;
 import java.awt.BorderLayout;
 
 /**
  * JAVADOC
  */
 public class AdministrationOutlineView
-        extends JXTree
+        extends JPanel
 {
+    private JXTree tree;
+
     public AdministrationOutlineView(@Service ActionMap am, @Service AdministrationModel model)
     {
-        super(model);
+        super(new BorderLayout());
 
-        setRootVisible(false);
-        setShowsRootHandles(true);
+        tree = new JXTree(model);
+
+        tree.setRootVisible(false);
+        tree.setShowsRootHandles(true);
 
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEtchedBorder());
@@ -46,13 +51,11 @@ public class AdministrationOutlineView
         toolbar.add(new JButton(removeAction));
         addAction.setEnabled(true);
         removeAction.setEnabled(false);
-*/
 
         add(toolbar, BorderLayout.SOUTH);
 
 
-/*
-        outline.addTreeSelectionListener(new TreeSelectionListener()
+        tree.addTreeSelectionListener(new TreeSelectionListener()
         {
             public void valueChanged(TreeSelectionEvent e)
             {
@@ -66,22 +69,14 @@ public class AdministrationOutlineView
                 }
             }
         });
+
 */
-
     }
 
-    @Override
-    public AdministrationModel getModel()
-    {
-        return (AdministrationModel) super.getModel();
-    }
 
-    @Override
-    public void addNotify()
+    public JTree getTree()
     {
-        super.addNotify();
-
-        getModel().refresh();
+        return tree;
     }
 
 /*

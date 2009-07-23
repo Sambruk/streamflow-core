@@ -38,7 +38,7 @@ public class UserClientResource
 
     public SharedClientResource shared()
     {
-        return getSubResource("shared", SharedClientResource.class);
+        return getSubResource("workspace", SharedClientResource.class);
     }
 
     public UserAdministrationClientResource administration()

@@ -54,7 +54,7 @@ public class AdministrationView
         setDividerLocation(200);
         setResizeWeight(0);
 
-        adminOutlineView.addTreeSelectionListener(new TreeSelectionListener()
+        adminOutlineView.getTree().addTreeSelectionListener(new TreeSelectionListener()
         {
             public void valueChanged(TreeSelectionEvent e)
             {
