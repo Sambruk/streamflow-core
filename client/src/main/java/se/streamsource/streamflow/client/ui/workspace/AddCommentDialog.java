@@ -43,8 +43,7 @@ public class AddCommentDialog
     @Structure
     UnitOfWorkFactory uowf;
 
-    @Service
-    WorkspaceView workspaceView;
+    @Service SharedView sharedView;
 
     private StateBinder sharedTaskBinder;
     private ValueBuilder<NewCommentCommand> commandBuilder;
@@ -58,7 +57,7 @@ public class AddCommentDialog
         this.commentsModel = commentsModel;
         setActionMap(appContext.getActionMap(this));
 
-        setName(i18n.text(WorkspaceResources.add_comment_title));
+        setName(i18n.text(SharedResources.add_comment_title));
 
         FormLayout layout = new FormLayout(
                 "200dlu",
@@ -73,8 +72,8 @@ public class AddCommentDialog
         
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
-        bb.appendLine(WorkspaceResources.comment_public_label, CHECKBOX, template.isPublic());
-        bb.appendLine(WorkspaceResources.comment_text_label, TEXTAREA, template.text());
+        bb.appendLine(SharedResources.comment_public_label, CHECKBOX, template.isPublic());
+        bb.appendLine(SharedResources.comment_text_label, TEXTAREA, template.text());
 
         // Create command builder
         commandBuilder = vbf.newValueBuilder(NewCommentCommand.class);
@@ -87,7 +86,7 @@ public class AddCommentDialog
             throws Exception
     {
         // Create command instance
-        commandBuilder.prototype().commenter().set(new EntityReference(workspaceView.getSelectedUser()));
+        commandBuilder.prototype().commenter().set(new EntityReference(sharedView.getSelectedUser()));
         commandBuilder.prototype().creationDate().set(new Date());
         final NewCommentCommand command = commandBuilder.newInstance();
 

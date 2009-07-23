@@ -70,7 +70,7 @@ public class TaskCommentsView
                 {
                     CommentDTO commentDTO = (CommentDTO) model.getElementAt(i);
                     String text = commentDTO.text().get().replace("\n", "<br/>");
-                    JLabel comment = new JLabel("<html><b>"+commentDTO.commenter().get()+", "+commentDTO.creationDate().get()+"</b>"+(commentDTO.isPublic().get() ? " ("+ i18n.text(WorkspaceResources.public_comment)+")": "")+"<p>"+ text +"</p></html>");
+                    JLabel comment = new JLabel("<html><b>"+commentDTO.commenter().get()+", "+commentDTO.creationDate().get()+"</b>"+(commentDTO.isPublic().get() ? " ("+ i18n.text(SharedResources.public_comment)+")": "")+"<p>"+ text +"</p></html>");
                     comments.add(comment);
                 }
                 TaskCommentsView.this.validate();
@@ -93,7 +93,7 @@ public class TaskCommentsView
                 model.refresh();
             } catch (Exception e)
             {
-                throw new OperationException(WorkspaceResources.could_not_refresh_comments, e);
+                throw new OperationException(SharedResources.could_not_refresh_comments, e);
             }
         }
     }

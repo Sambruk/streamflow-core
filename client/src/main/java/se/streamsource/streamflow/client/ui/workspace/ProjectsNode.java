@@ -55,7 +55,7 @@ public class ProjectsNode
                     for (ListItemValue project : projects.items().get())
                     {
                         SharedUserClientResource projectResource =  user.shared().projects().project(project.entity().get().identity());
-                        add(obf.newObjectBuilder(ProjectNode.class).use(projectResource, project.description().get(), account.settings()).newInstance());
+                        add(obf.newObjectBuilder(SharedProjectNode.class).use(projectResource, project.description().get(), account.settings()).newInstance());
                     }
                 } catch (ResourceException e)
                 {
@@ -69,6 +69,6 @@ public class ProjectsNode
     @Override
     public Object getValueAt(int column)
     {
-        return i18n.text(WorkspaceResources.projects_node);
+        return i18n.text(SharedResources.projects_node);
     }
 }
