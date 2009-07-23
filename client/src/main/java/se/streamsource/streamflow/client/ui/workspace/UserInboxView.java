@@ -143,6 +143,8 @@ public class UserInboxView
 
         javax.swing.Action addAction = am.get("newTask");
         toolbar.add(new JButton(addAction));
+        Action assignAction = am.get("assignTasksToMe");
+        toolbar.add(new JButton(assignAction));
         Action delegateTasksFromInbox = am.get("delegateTasks");
         toolbar.add(new JButton(delegateTasksFromInbox));
         javax.swing.Action refreshAction = am.get("refresh");
@@ -335,7 +337,6 @@ public class UserInboxView
         popup.add(labelMenu);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
-        popup.add(assignAction);
         popup.add(am.get("forwardTasksTo"));
         taskTable.addMouseListener(new PopupMenuTrigger(popup));
         taskTable.addTreeSelectionListener(new SelectionActionEnabler(removeTaskAction, assignAction, delegateTasksFromInbox));

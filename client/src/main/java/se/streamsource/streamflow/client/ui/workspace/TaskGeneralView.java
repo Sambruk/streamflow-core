@@ -29,7 +29,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -69,6 +70,7 @@ public class TaskGeneralView
         bb
         .appendLine(WorkspaceResources.id_label, LABEL, template.taskId())
         .appendLine(WorkspaceResources.description_label, TEXTFIELD, template.description())
+        .appendLine(WorkspaceResources.labels_label, LABEL, template.labels())
         .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note())
         .appendToggleButtonLine(getActionMap().get("edit"));
 

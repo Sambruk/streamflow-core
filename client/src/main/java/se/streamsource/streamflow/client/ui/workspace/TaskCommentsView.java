@@ -16,11 +16,9 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
@@ -38,7 +36,6 @@ import java.awt.BorderLayout;
 public class TaskCommentsView
         extends JPanel
 {
-    public ValueBuilder<TaskGeneralDTO> valueBuilder;
     private TaskCommentsModel model;
 
     public TaskCommentsView(@Service ActionMap am,

@@ -43,13 +43,6 @@ public class UserInboxTaskDetailView
 
         setUI(new BasicTabbedPaneUI());
 
-/*
-        addTab(i18n.text(WorkspaceResources.general_tab), icon, generalView);
-        addTab(i18n.text(WorkspaceResources.metadata_tab), i18n.icon(Icons.metadata), new JLabel("TODO"));
-        addTab(i18n.text(WorkspaceResources.comments_tab), i18n.icon(Icons.comments), commentsView);
-        addTab(i18n.text(WorkspaceResources.attachments_tab), i18n.icon(Icons.attachments), new JLabel("TODO"));
-*/
-
         addTab(null, i18n.icon(Icons.general), generalView, i18n.text(WorkspaceResources.general_tab));
         addTab(null, i18n.icon(Icons.metadata), new JLabel("Metadata"), i18n.text(WorkspaceResources.metadata_tab));
         addTab(null, i18n.icon(Icons.comments), commentsView, i18n.text(WorkspaceResources.comments_tab));

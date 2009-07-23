@@ -29,6 +29,8 @@ public interface TaskGeneralDTO
     @Optional
     Property<String> taskId();
 
+    Property<String> labels();
+
     Property<String> description();
 
     Property<String> note();

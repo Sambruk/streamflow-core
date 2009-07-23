@@ -30,6 +30,7 @@ enum WorkspaceResources
     task_separator,
     id_label,
     description_label,
+    labels_label,
     note_label,
 
     assignments_tab,
