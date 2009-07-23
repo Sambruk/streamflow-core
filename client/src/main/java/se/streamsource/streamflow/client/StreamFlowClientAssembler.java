@@ -33,7 +33,7 @@ import se.streamsource.streamflow.client.ui.UIAssembler;
 import se.streamsource.streamflow.client.ui.administration.AdministrationAssembler;
 import se.streamsource.streamflow.client.ui.menu.MenuAssembler;
 import se.streamsource.streamflow.client.ui.navigator.NavigatorUIAssembler;
-import se.streamsource.streamflow.client.ui.shared.WorkspaceUIAssembler;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceUIAssembler;
 import se.streamsource.streamflow.domain.contact.ContactAssembler;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
 

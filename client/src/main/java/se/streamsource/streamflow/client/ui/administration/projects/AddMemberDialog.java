@@ -25,7 +25,7 @@ import se.streamsource.streamflow.client.ui.administration.projects.members.Grou
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.UsersOrganizationSearch;
-import se.streamsource.streamflow.client.ui.shared.WorkspaceView;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;

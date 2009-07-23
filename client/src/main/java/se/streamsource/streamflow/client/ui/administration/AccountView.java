@@ -45,7 +45,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FormEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import static se.streamsource.streamflow.client.ui.administration.AccountResources.*;
-import se.streamsource.streamflow.client.ui.shared.TestConnectionTask;
+import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

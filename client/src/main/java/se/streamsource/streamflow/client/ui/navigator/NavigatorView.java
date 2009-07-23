@@ -20,7 +20,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.menu.MenuView;
 import static se.streamsource.streamflow.client.ui.navigator.NavigatorResources.*;
-import se.streamsource.streamflow.client.ui.shared.WorkspaceView;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;

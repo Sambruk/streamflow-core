@@ -21,7 +21,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.roles.RoleAdministrationAssembler;
-import se.streamsource.streamflow.client.ui.shared.TestConnectionTask;
+import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 
 /**
  * JAVADOC
