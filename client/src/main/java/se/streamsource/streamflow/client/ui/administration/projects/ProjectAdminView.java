@@ -43,14 +43,14 @@ public class ProjectAdminView
 
     public ProjectAdminView(@Service final ProjectsView projectsView,
                             @Service final ProjectView projectView,
-                            @Service final ProjectModel projectModel)
+                            @Service final ProjectMembersModel projectMembersModel)
     {
         super();
 
         setLeftComponent(projectsView);
         setRightComponent(new JPanel());
 
-        setDividerLocation(250);
+        setDividerLocation(150);
 
         final JList list = projectsView.getProjectList();
         list.addListSelectionListener(new ListSelectionListener()
@@ -64,7 +64,7 @@ public class ProjectAdminView
                     {
                         ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt(idx);
                         ProjectClientResource projectClientResource = projectsModel.getProjectResource(projectValue.entity().get().identity());
-                        projectModel.setProject(projectClientResource);
+                        projectMembersModel.setProject(projectClientResource);
                         setRightComponent(projectView);
                     } else
                     {

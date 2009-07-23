@@ -22,7 +22,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectMembersModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -43,7 +43,7 @@ public class ForwardTasksDialog
 {
 
     @Service
-    ProjectModel projectModel;
+    ProjectMembersModel projectMembersModel;
 
     @Service
     UserInboxView userInboxView;

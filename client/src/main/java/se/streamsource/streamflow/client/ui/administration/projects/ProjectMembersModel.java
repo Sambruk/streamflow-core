@@ -33,7 +33,7 @@ import java.util.Collection;
 /**
  * JAVADOC
  */
-public class ProjectModel
+public class ProjectMembersModel
         implements TreeModel
 {
     public ProjectClientResource getProject()
@@ -45,7 +45,7 @@ public class ProjectModel
     private TreeValue root;
     private TreeModelSupport modelSupport = new TreeModelSupport(this);
 
-    public ProjectModel()
+    public ProjectMembersModel()
     {
     }
 

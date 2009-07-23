@@ -37,8 +37,10 @@ public class ProjectAdministrationAssembler
         UIAssemblers.addMV(module, ProjectsModel.class,
                 ProjectsView.class);
 
-        UIAssemblers.addMV(module, ProjectModel.class,
-                ProjectView.class);
+        UIAssemblers.addViews(module, ProjectView.class);
+
+        UIAssemblers.addMV(module, ProjectMembersModel.class,
+                ProjectMembersView.class);
 
         UIAssemblers.addMV(module, MemberRolesModel.class,
                 MemberRolesView.class);

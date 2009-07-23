@@ -44,6 +44,7 @@ public class AdministrationOutlineView
         toolbar.setBorder(BorderFactory.createEtchedBorder());
         setActionMap(am);
 
+        add(BorderLayout.CENTER, tree);
 /*
         javax.swing.Action addAction = getActionMap().get("addOrganizationalUnit");
         toolbar.add(new JButton(addAction));

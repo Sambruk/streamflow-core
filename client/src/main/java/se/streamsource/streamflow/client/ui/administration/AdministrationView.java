@@ -49,7 +49,7 @@ public class AdministrationView
 
         setLeftComponent(adminOutlineView);
         adminOutlineView.setMinimumSize(new Dimension(200, 400));
-        setRightComponent(new JLabel());
+        setRightComponent(new JLabel("Bar"));
 
         setDividerLocation(200);
         setResizeWeight(0);

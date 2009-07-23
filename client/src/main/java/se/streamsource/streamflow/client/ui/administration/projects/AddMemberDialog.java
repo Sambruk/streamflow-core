@@ -44,7 +44,7 @@ public class AddMemberDialog
     UnitOfWorkFactory uowf;
 
     @Service
-    ProjectModel projectModel;
+    ProjectMembersModel projectMembersModel;
 
     @Service
     WorkspaceView workspaceView;
@@ -100,7 +100,7 @@ public class AddMemberDialog
         Set<ListItemValue> selected = ((TableMultipleSelectionModel)addUsersView.getModel()).getSelected();
         selected.addAll(((TableMultipleSelectionModel)addGroupsView.getModel()).getSelected());
 
-        projectModel.addMembers(selected);
+        projectMembersModel.addMembers(selected);
         WindowUtils.findWindow(this).dispose();
         workspaceView.refreshTree();
     }

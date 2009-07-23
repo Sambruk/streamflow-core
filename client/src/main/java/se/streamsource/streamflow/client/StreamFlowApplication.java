@@ -50,7 +50,7 @@ import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.groups.NewGroupDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.AddMemberDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.NewProjectDialog;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
+import se.streamsource.streamflow.client.ui.administration.projects.ProjectMembersModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
@@ -364,7 +364,7 @@ public class StreamFlowApplication
     @Service
     ProjectsView projectsView;
     @Service
-    ProjectModel projectModel;
+    ProjectMembersModel projectMembersModel;
     @Service
     ProjectView projectView;
 
@@ -393,7 +393,7 @@ public class StreamFlowApplication
         if (projectView.getMembers().getSelectionPath() != null)
         {
             TreeNodeValue selected = (TreeNodeValue) projectView.getMembers().getSelectionPath().getPathComponent(1);
-            projectModel.removeMember(selected.entity().get());
+            projectMembersModel.removeMember(selected.entity().get());
         }
         workspaceView.refreshTree();
     }
