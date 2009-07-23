@@ -27,7 +27,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
-import se.streamsource.streamflow.client.ui.shared.UserInboxModel;
+import se.streamsource.streamflow.client.ui.workspace.UserInboxModel;
 
 /**
  * JAVADOC

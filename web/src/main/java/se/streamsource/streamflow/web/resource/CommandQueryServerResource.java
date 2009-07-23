@@ -42,7 +42,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.domain.Context;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import java.io.IOException;
@@ -256,7 +255,7 @@ public class CommandQueryServerResource
     {
         if (method.getParameterTypes().length > 0)
         {
-            Class<? extends Value> commandType = (Class<? extends Context>) method.getParameterTypes()[0];
+            Class<? extends Value> commandType = (Class<? extends Value>) method.getParameterTypes()[0];
 
             if (getRequest().getEntity().getMediaType().equals(MediaType.APPLICATION_JSON))
             {

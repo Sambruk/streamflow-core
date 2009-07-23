@@ -12,21 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.shared;
+package se.streamsource.streamflow.web.domain.task;
 
-import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
- * Mapped to /user/{userid}/shared
+ * JAVADOC
  */
-public class SharedServerResource
-        extends BaseServerResource
+public class TaskAssembler
+        implements Assembler
 {
-    @Override
-    protected Representation get() throws ResourceException
+    public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        return getHtml("resources/workspace.html");
+        module.addEntities(TaskEntity.class).visibleIn(Visibility.application);
     }
 }

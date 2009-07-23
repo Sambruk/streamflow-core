@@ -16,10 +16,12 @@ package se.streamsource.streamflow.web.domain.label;
 
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 
 /**
  * JAVADOC
  */
+@Mixins(Labelable.LabelableMixin.class)
 public interface Labelable
 {
     void addLabel(Label label);

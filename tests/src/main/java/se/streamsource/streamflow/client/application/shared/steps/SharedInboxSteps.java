@@ -50,22 +50,22 @@ public class SharedInboxSteps
         });
     }
 
-    @Given("a shared task")
+    @Given("a workspace task")
     public void sharedTask() throws Exception
     {
         newSharedTask();
     }
 
-    @When("shared task is created")
+    @When("workspace task is created")
     public void newSharedTask() throws Exception
     {
         ValueBuilder<NewSharedTaskCommand> contextBuilder = vbf.newValueBuilder(NewSharedTaskCommand.class);
         contextBuilder.prototype().context().set(inbox);
-        contextBuilder.prototype().description().set("New shared task");
+        contextBuilder.prototype().description().set("New workspace task");
         sharedTask = sharedInteractions.newSharedTask(contextBuilder.newInstance());
     }
 
-    @When("shared task is completed")
+    @When("workspace task is completed")
     public void completeSharedTask() throws Exception
     {
         ValueBuilder<CompleteInboxTaskCommand> contextBuilder = vbf.newValueBuilder(CompleteInboxTaskCommand.class);

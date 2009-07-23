@@ -79,30 +79,30 @@ public class APIv1Router
         attach("/users", createServerResourceFinder(UsersServerResource.class));
         attach("/users/{user}", createServerResourceFinder(UserServerResource.class));
 
-        attach("/users/{user}/shared", createServerResourceFinder(SharedServerResource.class));
-        attach("/users/{user}/shared/user", createServerResourceFinder(SharedUserServerResource.class));
+        attach("/users/{user}/workspace", createServerResourceFinder(SharedServerResource.class));
+        attach("/users/{user}/workspace/user", createServerResourceFinder(SharedUserServerResource.class));
 
-        attach("/users/{user}/shared/projects", createServerResourceFinder(SharedProjectsServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/inbox", createServerResourceFinder(SharedProjectsInboxServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/inbox/{task}", createServerResourceFinder(SharedProjectsInboxTaskServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/assignments", createServerResourceFinder(SharedProjectAssignmentsServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/assignments/{task}", createServerResourceFinder(SharedProjectAssignedTaskServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/delegations", createServerResourceFinder(SharedProjectDelegationsServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/delegations/{task}", createServerResourceFinder(SharedProjectDelegatedTaskServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/waitingfor", createServerResourceFinder(SharedProjectWaitingForServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/waitingfor/{task}", createServerResourceFinder(SharedProjectWaitingForTaskServerResource.class));
-        attach("/users/{user}/shared/user/inbox", createServerResourceFinder(SharedUserInboxServerResource.class));
-        attach("/users/{user}/shared/user/inbox/{task}", createServerResourceFinder(SharedUserInboxTaskServerResource.class));
-        attach("/users/{user}/shared/user/assignments", createServerResourceFinder(SharedUserAssignmentsServerResource.class));
-        attach("/users/{user}/shared/user/assignments/{task}", createServerResourceFinder(SharedUserAssignedTaskServerResource.class));
-        attach("/users/{user}/shared/user/delegations", createServerResourceFinder(SharedUserDelegationsServerResource.class));
-        attach("/users/{user}/shared/user/delegations/{task}", createServerResourceFinder(SharedUserDelegatedTaskServerResource.class));
-        attach("/users/{user}/shared/user/waitingfor", createServerResourceFinder(SharedUserWaitingForServerResource.class));
-        attach("/users/{user}/shared/user/waitingfor/{task}", createServerResourceFinder(SharedUserWaitingForTaskServerResource.class));
-        attach("/users/{user}/shared/user/{view}/{task}/general", createServerResourceFinder(SharedUserTaskGeneralServerResource.class));
-        attach("/users/{user}/shared/user/{view}/{task}/comments", createServerResourceFinder(SharedUserTaskCommentsServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/{view}/{task}/general", createServerResourceFinder(SharedUserTaskGeneralServerResource.class));
-        attach("/users/{user}/shared/projects/{project}/{view}/{task}/comments", createServerResourceFinder(SharedUserTaskCommentsServerResource.class));
+        attach("/users/{user}/workspace/projects", createServerResourceFinder(SharedProjectsServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/inbox", createServerResourceFinder(SharedProjectsInboxServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/inbox/{task}", createServerResourceFinder(SharedProjectsInboxTaskServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/assignments", createServerResourceFinder(SharedProjectAssignmentsServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/assignments/{task}", createServerResourceFinder(SharedProjectAssignedTaskServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/delegations", createServerResourceFinder(SharedProjectDelegationsServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/delegations/{task}", createServerResourceFinder(SharedProjectDelegatedTaskServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/waitingfor", createServerResourceFinder(SharedProjectWaitingForServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/waitingfor/{task}", createServerResourceFinder(SharedProjectWaitingForTaskServerResource.class));
+        attach("/users/{user}/workspace/user/inbox", createServerResourceFinder(SharedUserInboxServerResource.class));
+        attach("/users/{user}/workspace/user/inbox/{task}", createServerResourceFinder(SharedUserInboxTaskServerResource.class));
+        attach("/users/{user}/workspace/user/assignments", createServerResourceFinder(SharedUserAssignmentsServerResource.class));
+        attach("/users/{user}/workspace/user/assignments/{task}", createServerResourceFinder(SharedUserAssignedTaskServerResource.class));
+        attach("/users/{user}/workspace/user/delegations", createServerResourceFinder(SharedUserDelegationsServerResource.class));
+        attach("/users/{user}/workspace/user/delegations/{task}", createServerResourceFinder(SharedUserDelegatedTaskServerResource.class));
+        attach("/users/{user}/workspace/user/waitingfor", createServerResourceFinder(SharedUserWaitingForServerResource.class));
+        attach("/users/{user}/workspace/user/waitingfor/{task}", createServerResourceFinder(SharedUserWaitingForTaskServerResource.class));
+        attach("/users/{user}/workspace/user/{view}/{task}/general", createServerResourceFinder(SharedUserTaskGeneralServerResource.class));
+        attach("/users/{user}/workspace/user/{view}/{task}/comments", createServerResourceFinder(SharedUserTaskCommentsServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/{view}/{task}/general", createServerResourceFinder(SharedUserTaskGeneralServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/{view}/{task}/comments", createServerResourceFinder(SharedUserTaskCommentsServerResource.class));
         attach("/users/{user}/administration", createServerResourceFinder(UserAdministrationServerResource.class));
 
         // OrganizationalUnits

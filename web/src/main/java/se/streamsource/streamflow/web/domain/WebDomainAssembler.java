@@ -19,9 +19,10 @@ import org.qi4j.bootstrap.LayerAssembly;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
 import se.streamsource.streamflow.web.domain.comment.CommentAssembler;
 import se.streamsource.streamflow.web.domain.group.GroupAssembler;
+import se.streamsource.streamflow.web.domain.label.LabelAssembler;
 import se.streamsource.streamflow.web.domain.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.domain.project.ProjectAssembler;
-import se.streamsource.streamflow.web.domain.task.SharedTaskAssembler;
+import se.streamsource.streamflow.web.domain.task.TaskAssembler;
 import se.streamsource.streamflow.web.domain.user.UserAssembler;
 
 /**
@@ -31,12 +32,13 @@ public class WebDomainAssembler
 {
     public void assemble(LayerAssembly domainLayer) throws AssemblyException
     {
-        new OrganizationAssembler().assemble(domainLayer.newModuleAssembly("Organization"));
-        new SharedTaskAssembler().assemble(domainLayer.newModuleAssembly("Task"));
-        new ProjectAssembler().assemble(domainLayer.newModuleAssembly("Project"));
-        new GroupAssembler().assemble(domainLayer.newModuleAssembly("Group"));
-        new UserAssembler().assemble(domainLayer.newModuleAssembly("User"));
         new CommentAssembler().assemble(domainLayer.newModuleAssembly("Comments"));
         new CommonResourceAssembler().assemble(domainLayer.newModuleAssembly("Common"));
+        new GroupAssembler().assemble(domainLayer.newModuleAssembly("Group"));
+        new LabelAssembler().assemble(domainLayer.newModuleAssembly("Label"));
+        new OrganizationAssembler().assemble(domainLayer.newModuleAssembly("Organization"));
+        new ProjectAssembler().assemble(domainLayer.newModuleAssembly("Project"));
+        new TaskAssembler().assemble(domainLayer.newModuleAssembly("Task"));
+        new UserAssembler().assemble(domainLayer.newModuleAssembly("User"));
     }
 }

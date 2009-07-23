@@ -12,21 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
+package se.streamsource.streamflow.web.domain.label;
 
-import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.AssemblyException;
+import static org.qi4j.api.common.Visibility.application;
 
 /**
  * JAVADOC
  */
-public class SharedTaskAssembler
-        implements Assembler
+public class LabelAssembler
+    implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addEntities(TaskEntity.class).visibleIn(Visibility.application);
+        module.addEntities(LabelEntity.class).visibleIn(application);
     }
 }

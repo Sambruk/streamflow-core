@@ -17,12 +17,14 @@ package se.streamsource.streamflow.web.domain.label;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 /**
  * JAVADOC
  */
+@Mixins(Labels.LabelsMixin.class)
 public interface Labels
 {
     Label newLabel();
