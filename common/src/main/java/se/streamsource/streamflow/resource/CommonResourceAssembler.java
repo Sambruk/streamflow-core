@@ -26,20 +26,22 @@ import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
-import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
-import se.streamsource.streamflow.resource.inbox.TasksQuery;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
+import se.streamsource.streamflow.resource.comment.NewCommentCommand;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
+import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
+import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.label.LabelDTO;
+import se.streamsource.streamflow.resource.label.LabelListDTO;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 
 /**
  * JAVADOC
@@ -71,6 +73,9 @@ public class CommonResourceAssembler
                 DelegatedTaskDTO.class,
                 WaitingForTaskListDTO.class,
                 WaitingForTaskDTO.class,
-                TreeValue.class, TreeNodeValue.class).visibleIn(Visibility.application);
+                TreeValue.class,
+                TreeNodeValue.class,
+                LabelListDTO.class,
+                LabelDTO.class).visibleIn(Visibility.application);
     }
 }

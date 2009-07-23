@@ -24,7 +24,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
@@ -42,7 +42,7 @@ public class UserNode
         super(account);
 
         UserClientResource user = account.user(client);
-        SharedUserInboxClientResource userInboxResource = user.shared().user().inbox();
+        UserInboxClientResource userInboxResource = user.shared().user().inbox();
         add(obf.newObjectBuilder(UserInboxNode.class).use(account.settings(), userInboxResource).newInstance());
 
         SharedUserAssignmentsClientResource userAssignmentsResource = user.shared().user().assignments();

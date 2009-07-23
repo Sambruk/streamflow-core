@@ -24,8 +24,7 @@ import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.UserClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -49,12 +48,12 @@ public class ProjectsNode
             {
                 try
                 {
-                    UserClientResource user = account.user(client);
+                    se.streamsource.streamflow.client.resource.users.UserClientResource user = account.user(client);
                     ListValue projects = user.shared().projects().listProjects();
 
                     for (ListItemValue project : projects.items().get())
                     {
-                        SharedUserClientResource projectResource =  user.shared().projects().project(project.entity().get().identity());
+                        UserClientResource projectResource =  user.shared().projects().project(project.entity().get().identity());
                         add(obf.newObjectBuilder(ProjectNode.class).use(projectResource, project.description().get(), account.settings()).newInstance());
                     }
                 } catch (ResourceException e)

@@ -18,7 +18,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.users.shared.user.task.general.SharedUserTaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.task.general.UserTaskGeneralClientResource;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class TaskGeneralModel
         implements Refreshable
 
 {
-    private SharedUserTaskGeneralClientResource generalClientResource;
+    private UserTaskGeneralClientResource generalClientResource;
 
     TaskGeneralDTO general;
 
@@ -51,7 +51,7 @@ public class TaskGeneralModel
         return general;
     }
 
-    public void setResource(SharedUserTaskGeneralClientResource generalClientResource) throws IOException, ResourceException
+    public void setResource(UserTaskGeneralClientResource generalClientResource) throws IOException, ResourceException
     {
         this.generalClientResource = generalClientResource;
     }

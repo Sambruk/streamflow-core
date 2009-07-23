@@ -26,6 +26,7 @@ import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.web.domain.comment.Commenter;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
@@ -58,11 +59,13 @@ public interface UserEntity
         Participant,
         Inbox,
         WaitingFor,
+        Labels,
 
         // State
         Contactable.ContactableState,
         OrganizationParticipations.OrganizationParticipationsState,
-        Describable.DescribableState
+        Describable.DescribableState,
+        Labels.LabelsState
 {
     public static final String ADMINISTRATOR_USERNAME = "administrator";
 
@@ -75,7 +78,8 @@ public interface UserEntity
     {
         @This
         Identity identity;
-        @This DescribableState state;
+        @This
+        Describable.DescribableState state;
 
         public void create() throws LifecycleException
         {

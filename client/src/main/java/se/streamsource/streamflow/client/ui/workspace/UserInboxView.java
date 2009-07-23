@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
@@ -23,13 +22,19 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.CheckBoxProvider;
+import org.jdesktop.swingx.renderer.DefaultListRenderer;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
@@ -38,17 +43,23 @@ import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.label.LabelDTO;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -71,25 +82,51 @@ import java.util.List;
 public class UserInboxView
         extends JTabbedPane
 {
-    private @Service
-    Application application;
+    @Service
+    DialogService dialogs;
+
+    @Uses
+    private ObjectBuilder<AddTaskDialog> addTaskDialogs;
+    @Uses
+    private ObjectBuilder<ForwardTasksDialog> forwardTasksDialog;
+    @Uses
+    private ObjectBuilder<DelegateTasksDialog> delegateTasksDialog;
+
+    private
+    @Service
+    StreamFlowApplication application;
+
     private JXTreeTable taskTable;
     private UserInboxModel model;
     private UserInboxTaskDetailModel detailModel;
 
-    public UserInboxView(@Service ActionMap am,
+
+    private LabelsModel labelsModel;
+    private JComboBox labelsList;
+
+    public UserInboxView(@Uses final LabelsModel labelsModel,
                          @Service ApplicationContext context,
-                           @Service final UserInboxModel model,
-                           @Service final UserInboxTaskDetailView detailView,
-                           @Service final UserInboxTaskDetailModel detailModel,
-                           @Structure ObjectBuilderFactory obf,
-                           @Structure ValueBuilderFactory vbf)
+                         @Uses final UserInboxModel model,
+                         @Service final UserInboxTaskDetailView detailView,
+                         @Service final UserInboxTaskDetailModel detailModel,
+                         @Structure ObjectBuilderFactory obf,
+                         @Structure ValueBuilderFactory vbf)
     {
         super();
+        this.labelsModel = labelsModel;
         this.model = model;
         this.detailModel = detailModel;
 
-        am = context.getActionMap(this);
+        labelsList = new JComboBox(labelsModel);
+        labelsList.setRenderer(new DefaultListRenderer(new StringValue()
+        {
+            public String getString(Object o)
+            {
+                return o == null ? "" : ((LabelDTO) o).description().get();
+            }
+        }));
+
+        ActionMap am = context.getActionMap(this);
 
         TasksQuery query = vbf.newValue(TasksQuery.class);
         try
@@ -104,14 +141,14 @@ public class UserInboxView
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEtchedBorder());
 
-        javax.swing.Action addAction = am.get("newUserInboxTask");
+        javax.swing.Action addAction = am.get("newTask");
         toolbar.add(new JButton(addAction));
-        Action assignAction = am.get("assignTasksToMe");
-        toolbar.add(new JButton(assignAction));
-        Action delegateTasksFromInbox = am.get("delegateTasksFromInbox");
+        Action delegateTasksFromInbox = am.get("delegateTasks");
         toolbar.add(new JButton(delegateTasksFromInbox));
         javax.swing.Action refreshAction = am.get("refresh");
         toolbar.add(new JButton(refreshAction));
+
+        toolbar.add(labelsList);
 
         // Table
         JPanel panel = new JPanel(new BorderLayout());
@@ -229,7 +266,74 @@ public class UserInboxView
 
         // Popup
         JPopupMenu popup = new JPopupMenu();
-        Action removeTaskAction = am.get("removeUserInboxTasks");
+        final JMenu labelMenu = new JMenu("Label");
+        labelMenu.addMenuListener(new MenuListener()
+        {
+            public void menuSelected(MenuEvent e)
+            {
+                labelMenu.removeAll();
+
+                List<LabelDTO> labels = getSelectedTask().labels().get().labels().get();
+                int size = labelsModel.getSize();
+                for (int i = 0; i < size; i++)
+                {
+                    final LabelDTO label = labelsModel.getElementAt(i);
+                    JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(new AbstractAction(label.description().get())
+                    {
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            JCheckBoxMenuItem checkBoxMenuItem = (JCheckBoxMenuItem) e.getSource();
+                            Iterable<InboxTaskDTO> taskDTOs = getSelectedTasks();
+                            for (InboxTaskDTO taskDTO : taskDTOs)
+                            {
+                                if (checkBoxMenuItem.getState())
+                                {
+                                    String taskId = taskDTO.task().get().identity();
+                                    try
+                                    {
+                                        model.addLabel(taskId, label.label().get().identity());
+                                        taskDTO.labels().get().labels().get().add(label);
+                                    } catch (ResourceException e1)
+                                    {
+                                        e1.printStackTrace();
+                                    }
+                                } else
+                                {
+                                    String taskId = taskDTO.task().get().identity();
+                                    try
+                                    {
+                                        model.removeLabel(taskId, label.label().get().identity());
+                                        taskDTO.labels().get().labels().get().remove(label);
+                                    } catch (ResourceException e1)
+                                    {
+                                        e1.printStackTrace();
+                                    }
+                                }
+
+                            }
+                        }
+                    });
+                    boolean state = false;
+                    for (LabelDTO labelDTO : labels)
+                    {
+                        if (labelDTO.label().get().equals(label.label().get()))
+                            state = true;
+                    }
+                    checkBoxMenuItem.setState(state);
+                    labelMenu.add(checkBoxMenuItem);
+                }
+            }
+
+            public void menuDeselected(MenuEvent e)
+            {
+            }
+
+            public void menuCanceled(MenuEvent e)
+            {
+            }
+        });
+        popup.add(labelMenu);
+        Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
         popup.add(assignAction);
         popup.add(am.get("forwardTasksTo"));
@@ -290,6 +394,76 @@ public class UserInboxView
         super.addNotify();
 
         setSelectedIndex(0);
+    }
+
+    @org.jdesktop.application.Action()
+    public void newTask()
+    {
+        // Show dialog
+        AddTaskDialog dialog = addTaskDialogs.newInstance();
+        dialogs.showOkCancelHelpDialog(application.getMainFrame(), dialog);
+
+        NewSharedTaskCommand command = dialog.getCommandBuilder().newInstance();
+        try
+        {
+            model.newTask(command);
+
+            JXTreeTable table = getTaskTable();
+            int index = model.getChildCount(model.getRoot());
+            Object child = model.getChild(model, index - 1);
+            TreePath path = new TreePath(child);
+            table.getSelectionModel().clearSelection();
+            table.getSelectionModel().addSelectionInterval(index - 1, index - 1);
+            table.scrollPathToVisible(path);
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    @org.jdesktop.application.Action()
+    public void addSubTask()
+    {
+        // Show dialog
+        AddTaskDialog dialog = addTaskDialogs.newInstance();
+        InboxTaskDTO selected = getSelectedTask();
+        dialog.getCommandBuilder().prototype().parentTask().set(selected.task().get());
+        dialogs.showOkCancelHelpDialog(application.getMainFrame(), dialog);
+    }
+
+    @org.jdesktop.application.Action
+    public void assignTasksToMe() throws ResourceException
+    {
+        int selection = getTaskTable().getSelectedRow();
+        Iterable<InboxTaskDTO> selectedTasks = getSelectedTasks();
+        for (InboxTaskDTO selectedTask : selectedTasks)
+        {
+            model.assignToMe(selectedTask.task().get().identity());
+        }
+        getTaskTable().getSelectionModel().setSelectionInterval(selection, selection);
+        repaint();
+    }
+
+    @org.jdesktop.application.Action
+    public void delegateTasks() throws ResourceException
+    {
+        dialogs.showOkCancelHelpDialog(application.getMainFrame(), delegateTasksDialog.newInstance());
+    }
+
+    @org.jdesktop.application.Action
+    public void removeTasks() throws ResourceException
+    {
+        Iterable<InboxTaskDTO> selected = getSelectedTasks();
+        for (InboxTaskDTO taskValue : selected)
+        {
+            model.removeTask(taskValue.task().get().identity());
+        }
+    }
+
+    @org.jdesktop.application.Action
+    public void forwardTasksTo()
+    {
+        dialogs.showOkCancelHelpDialog(application.getMainFrame(), forwardTasksDialog.newInstance());
     }
 
     @org.jdesktop.application.Action

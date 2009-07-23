@@ -40,6 +40,15 @@ public interface Labelable
 
         public void addLabel(Label label)
         {
+            for (int i = 0; i < state.labels().count(); i++)
+            {
+                if (state.labels().get(i).getDescription().compareTo(label.getDescription()) > 0)
+                {
+                    state.labels().add(i, label);
+                    return;
+                }
+            }
+
             state.labels().add(state.labels().count(), label);
         }
 

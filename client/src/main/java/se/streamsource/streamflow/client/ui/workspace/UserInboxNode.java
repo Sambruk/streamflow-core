@@ -18,11 +18,13 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;
@@ -34,11 +36,9 @@ public class UserInboxNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
-    @Service
-    UserInboxView view;
-
-    @Service
-    UserInboxModel model;
+    private UserInboxModel model;
+    private LabelsModel labelsModel;
+    private UserInboxView view;
 
     @Uses
     private AccountSettingsValue settings;
@@ -46,9 +46,13 @@ public class UserInboxNode
     @Service
     ApplicationContext context;
 
-    public UserInboxNode(@Uses SharedUserInboxClientResource inbox)
+    public UserInboxNode(@Uses UserInboxClientResource inbox, @Structure ObjectBuilderFactory obf)
     {
         super(inbox, false);
+
+        model = obf.newObjectBuilder(UserInboxModel.class).use(inbox).newInstance();
+        labelsModel = obf.newObjectBuilder(LabelsModel.class).use(inbox).newInstance();
+        view = obf.newObjectBuilder(UserInboxView.class).use(model, labelsModel).newInstance();
     }
 
     @Override
@@ -57,9 +61,9 @@ public class UserInboxNode
         return i18n.text(WorkspaceResources.inboxes_node);
     }
 
-    SharedUserInboxClientResource inbox()
+    UserInboxClientResource inbox()
     {
-        return (SharedUserInboxClientResource) getUserObject();
+        return (UserInboxClientResource) getUserObject();
     }
 
     public JComponent detailView()
@@ -70,7 +74,8 @@ public class UserInboxNode
             {
                 try
                 {
-                    model.setInbox(inbox());
+                    model.refresh();
+                    labelsModel.refresh();
                 } catch (ResourceException e)
                 {
                     e.printStackTrace();

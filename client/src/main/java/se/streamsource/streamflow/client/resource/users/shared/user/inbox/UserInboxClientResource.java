@@ -20,16 +20,19 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.label.LabelListDTO;
 
 /**
  * JAVADOC
  */
-public class SharedUserInboxClientResource
+public class UserInboxClientResource
         extends CommandQueryClientResource
+        implements LabelsClientResource
 {
-    public SharedUserInboxClientResource(@Uses Context context, @Uses Reference reference)
+    public UserInboxClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
@@ -44,8 +47,13 @@ public class SharedUserInboxClientResource
         postCommand("newtask", command);
     }
 
-    public SharedUserInboxTaskClientResource task(String id)
+    public UserInboxTaskClientResource task(String id)
     {
-        return getSubResource(id, SharedUserInboxTaskClientResource.class);
+        return getSubResource(id, UserInboxTaskClientResource.class);
+    }
+
+    public LabelListDTO labels() throws ResourceException
+    {
+        return query("labels", LabelListDTO.class);
     }
 }

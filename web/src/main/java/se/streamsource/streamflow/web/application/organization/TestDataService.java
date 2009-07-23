@@ -89,9 +89,9 @@ public interface TestDataService
                 project.newTask().describe("Arbetsuppgift " + i);
 
             // Create labels
-            project.newLabel().describe("Information");
-            project.newLabel().describe("Ärendestatus");
-            project.newLabel().describe("Socialen");
+            user.newLabel().describe("Information");
+            user.newLabel().describe("Ärendestatus");
+            user.newLabel().describe("Socialen");
 
             uow.complete();
         }

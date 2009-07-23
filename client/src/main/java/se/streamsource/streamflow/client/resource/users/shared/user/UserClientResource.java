@@ -20,23 +20,23 @@ import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 
 /**
  * JAVADOC
  */
-public class SharedUserClientResource
+public class UserClientResource
         extends BaseClientResource
 {
-    public SharedUserClientResource(@Uses Context context, @Uses Reference reference)
+    public UserClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public SharedUserInboxClientResource inbox()
+    public UserInboxClientResource inbox()
     {
-        return getSubResource("inbox", SharedUserInboxClientResource.class);
+        return getSubResource("inbox", UserInboxClientResource.class);
     }
 
     public SharedUserAssignmentsClientResource assignments()

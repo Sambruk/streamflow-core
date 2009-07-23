@@ -17,19 +17,21 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.label.LabelDTO;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -48,18 +50,19 @@ public class UserInboxModel
     Class[] columnClasses = {Boolean.class, String.class, Date.class};
     boolean[] columnEditable = {true, false, false};
 
-    public UserInboxModel()
+    public UserInboxModel(@Uses UserInboxClientResource inbox)
     {
         columnNames = new String[]{"", text(description_column_header), text(created_column_header)};
+        root = inbox;
     }
 
     @Override
-    public SharedUserInboxClientResource getRoot()
+    public UserInboxClientResource getRoot()
     {
-        return (SharedUserInboxClientResource) super.getRoot();
+        return (UserInboxClientResource) super.getRoot();
     }
 
-    public void setInbox(SharedUserInboxClientResource inbox) throws ResourceException
+    public void setInbox(UserInboxClientResource inbox) throws ResourceException
     {
         root = inbox;
         refresh();
@@ -103,7 +106,7 @@ public class UserInboxModel
 
     public int getChildCount(Object parent)
     {
-        if (parent instanceof SharedUserInboxClientResource)
+        if (parent instanceof UserInboxClientResource)
             return tasks.tasks().get().size();
         else
             return 0;
@@ -111,7 +114,7 @@ public class UserInboxModel
 
     public int getIndexOfChild(Object parent, Object child)
     {
-        if (parent instanceof SharedUserInboxClientResource)
+        if (parent instanceof UserInboxClientResource)
             return tasks.tasks().get().indexOf(child);
         else
             return -1;
@@ -138,7 +141,22 @@ public class UserInboxModel
                 case 0:
                     return !task.status().get().equals(TaskStates.ACTIVE);
                 case 1:
-                    return task.description().get();
+                {
+                    String desc = task.description().get();
+                    List<LabelDTO> labels = task.labels().get().labels().get();
+                    if (labels.size() > 0)
+                    {
+                        desc+= " (";
+                        String comma = "";
+                        for (LabelDTO label : labels)
+                        {
+                            desc+=comma+label.description().get();
+                            comma=",";
+                        }
+                        desc+=")";
+                    }
+                    return desc;
+                }
                 case 2:
                     return task.creationDate().get();
                 case 3:
@@ -223,5 +241,15 @@ public class UserInboxModel
     {
         getRoot().task(taskId).forward(receiverId);
         refresh();
+    }
+
+    public void addLabel(String taskId, String labelId) throws ResourceException
+    {
+        getRoot().task(taskId).addLabel(labelId);
+    }
+
+    public void removeLabel(String taskId, String labelId) throws ResourceException
+    {
+        getRoot().task(taskId).removeLabel(labelId);
     }
 }

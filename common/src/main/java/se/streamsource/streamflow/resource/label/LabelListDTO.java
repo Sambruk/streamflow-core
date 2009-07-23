@@ -12,38 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.resource.inbox;
+package se.streamsource.streamflow.resource.label;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.label.LabelListDTO;
 
-import java.util.Date;
 import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface InboxTaskDTO
+public interface LabelListDTO
         extends ValueComposite
 {
-    Property<EntityReference> owner();
-
-    Property<EntityReference> task();
-
-    Property<String> description();
-
-    Property<Date> creationDate();
-
-    Property<TaskStates> status();
-
-    Property<Boolean> isRead();
-
-    Property<LabelListDTO> labels();
-
     @UseDefaults
-    Property<List<InboxTaskDTO>> subTasks();
+    Property<List<LabelDTO>> labels();
 }

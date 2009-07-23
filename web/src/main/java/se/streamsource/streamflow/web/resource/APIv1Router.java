@@ -52,8 +52,8 @@ import se.streamsource.streamflow.web.resource.users.shared.user.assignments.Sha
 import se.streamsource.streamflow.web.resource.users.shared.user.assignments.SharedUserAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegatedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegationsServerResource;
-import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.inbox.UserInboxServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.inbox.UserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.task.comments.SharedUserTaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.task.general.SharedUserTaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForServerResource;
@@ -91,8 +91,8 @@ public class APIv1Router
         attach("/users/{user}/workspace/projects/{project}/delegations/{task}", createServerResourceFinder(SharedProjectDelegatedTaskServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/waitingfor", createServerResourceFinder(SharedProjectWaitingForServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/waitingfor/{task}", createServerResourceFinder(SharedProjectWaitingForTaskServerResource.class));
-        attach("/users/{user}/workspace/user/inbox", createServerResourceFinder(SharedUserInboxServerResource.class));
-        attach("/users/{user}/workspace/user/inbox/{task}", createServerResourceFinder(SharedUserInboxTaskServerResource.class));
+        attach("/users/{user}/workspace/user/inbox", createServerResourceFinder(UserInboxServerResource.class));
+        attach("/users/{user}/workspace/user/inbox/{task}", createServerResourceFinder(UserInboxTaskServerResource.class));
         attach("/users/{user}/workspace/user/assignments", createServerResourceFinder(SharedUserAssignmentsServerResource.class));
         attach("/users/{user}/workspace/user/assignments/{task}", createServerResourceFinder(SharedUserAssignedTaskServerResource.class));
         attach("/users/{user}/workspace/user/delegations", createServerResourceFinder(SharedUserDelegationsServerResource.class));

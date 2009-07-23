@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;
@@ -42,7 +42,7 @@ public class ProjectInboxNode
     @Service
     ApplicationContext context;
 
-    public ProjectInboxNode(@Uses SharedUserInboxClientResource inbox)
+    public ProjectInboxNode(@Uses UserInboxClientResource inbox)
     {
         super(inbox, false);
     }
@@ -53,9 +53,9 @@ public class ProjectInboxNode
         return i18n.text(WorkspaceResources.inbox_node);
     }
 
-    SharedUserInboxClientResource inbox()
+    UserInboxClientResource inbox()
     {
-        return (SharedUserInboxClientResource) getUserObject();
+        return (UserInboxClientResource) getUserObject();
     }
 
     public JComponent detailView()

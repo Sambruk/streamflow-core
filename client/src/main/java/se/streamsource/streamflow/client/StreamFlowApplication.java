@@ -16,11 +16,9 @@ package se.streamsource.streamflow.client;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
-import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXStatusBar;
-import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -41,7 +39,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
@@ -65,25 +62,13 @@ import se.streamsource.streamflow.client.ui.navigator.NavigatorView;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.AddCommentDialog;
-import se.streamsource.streamflow.client.ui.workspace.AddTaskDialog;
-import se.streamsource.streamflow.client.ui.workspace.DelegateTasksDialog;
-import se.streamsource.streamflow.client.ui.workspace.ForwardTasksDialog;
-import se.streamsource.streamflow.client.ui.workspace.TaskCommentsModel;
 import se.streamsource.streamflow.client.ui.workspace.UserAssignmentsModel;
 import se.streamsource.streamflow.client.ui.workspace.UserAssignmentsView;
-import se.streamsource.streamflow.client.ui.workspace.UserDelegationsModel;
-import se.streamsource.streamflow.client.ui.workspace.UserDelegationsView;
-import se.streamsource.streamflow.client.ui.workspace.UserInboxModel;
-import se.streamsource.streamflow.client.ui.workspace.UserInboxView;
-import se.streamsource.streamflow.client.ui.workspace.UserWaitingForModel;
-import se.streamsource.streamflow.client.ui.workspace.UserWaitingForView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 import javax.swing.JFrame;
@@ -91,7 +76,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
@@ -303,104 +287,6 @@ public class StreamFlowApplication
         JOptionPane.showMessageDialog(this.getMainFrame(), "#showhelp");
     }
 
-    // User inbox actions ------------------------------------
-    @Uses
-    private ObjectBuilder<AddTaskDialog> addSharedTaskDialogs;
-    @Uses
-    private ObjectBuilder<ForwardTasksDialog> forwardSharedTasksDialog;
-
-    @Service
-    UserInboxView userInboxView;
-
-    @Service
-    UserInboxModel userInboxModel;
-
-    @Service
-    TaskCommentsModel taskCommentsModel;
-
-    @Action()
-    public void newUserInboxTask()
-    {
-        // Show dialog
-        AddTaskDialog dialog = addSharedTaskDialogs.newInstance();
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), dialog);
-
-        NewSharedTaskCommand command = dialog.getCommandBuilder().newInstance();
-        try
-        {
-            userInboxModel.newTask(command);
-
-            JXTreeTable table = userInboxView.getTaskTable();
-            int index = userInboxModel.getChildCount(userInboxModel.getRoot());
-            Object child = userInboxModel.getChild(userInboxModel, index - 1);
-            TreePath path = new TreePath(child);
-            table.getSelectionModel().clearSelection();
-            table.getSelectionModel().addSelectionInterval(index-1, index-1);
-            table.scrollPathToVisible(path);
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    @Action()
-    public void addUserInboxSubTask()
-    {
-        // Show dialog
-        AddTaskDialog dialog = addSharedTaskDialogs.newInstance();
-        InboxTaskDTO selected = userInboxView.getSelectedTask();
-        dialog.getCommandBuilder().prototype().parentTask().set(selected.task().get());
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), dialog);
-    }
-
-    @Action
-    public void assignTasksToMe() throws ResourceException
-    {
-        int selection = userInboxView.getTaskTable().getSelectedRow();
-        Iterable<InboxTaskDTO> selectedTasks = userInboxView.getSelectedTasks();
-        for (InboxTaskDTO selectedTask : selectedTasks)
-        {
-            userInboxModel.assignToMe(selectedTask.task().get().identity());
-        }
-        userInboxView.getTaskTable().getSelectionModel().setSelectionInterval(selection, selection);
-        userInboxView.repaint();
-    }
-
-    @Action
-    public void delegateTasksFromInbox() throws ResourceException
-    {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(DelegateTasksDialog.class).newInstance());
-    }
-
-    @Action
-    public Task refreshUserInbox() throws ResourceException
-    {
-        return new Task(this)
-        {
-            protected Object doInBackground() throws Exception
-            {
-                userInboxModel.refresh();
-                return null;
-            }
-        };
-    }
-
-    @Action
-    public void removeUserInboxTasks() throws ResourceException
-    {
-        Iterable<InboxTaskDTO> selected = userInboxView.getSelectedTasks();
-        for (InboxTaskDTO taskValue : selected)
-        {
-            userInboxModel.removeTask(taskValue.task().get().identity());
-        }
-    }
-
-    @Action
-    public void forwardTasksTo()
-    {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(ForwardTasksDialog.class).newInstance());
-    }
-
     @Action
     public void addTaskComment() throws ResourceException, IOException
     {
@@ -427,55 +313,6 @@ public class StreamFlowApplication
         {
             userAssignmentsModel.removeTask(taskDTO.task().get().identity());
         }
-    }
-
-    // Shared user delegations actions ------------------------------
-    @Service
-    UserDelegationsView userDelegationsView;
-    @Service
-    UserDelegationsModel userDelegationsModel;
-
-    @Action
-    public void refreshSharedDelegations() throws ResourceException
-    {
-        userDelegationsModel.refresh();
-    }
-
-    @Action
-    public void assignDelegatedTasksToMe() throws ResourceException
-    {
-        Iterable<DelegatedTaskDTO> task = userDelegationsView.getSelectedTasks();
-        for (DelegatedTaskDTO delegatedTaskValue : task)
-        {
-            userDelegationsModel.assignToMe(delegatedTaskValue.task().get().identity());
-        }
-    }
-
-    @Action
-    public void rejectUserDelegations() throws ResourceException
-    {
-        Iterable<DelegatedTaskDTO> task = userDelegationsView.getSelectedTasks();
-        for (DelegatedTaskDTO delegatedTaskValue : task)
-        {
-            userDelegationsModel.reject(delegatedTaskValue.task().get().identity());
-        }
-    }
-
-    // Shared user waiting for actions ------------------------------
-    @Service
-    UserWaitingForView userWaitingForView;
-    @Service
-    UserWaitingForModel userWaitingForModel;
-
-    @Action
-    public void delegateWaitingForTask()
-    {
-    }
-
-    @Action
-    public void refreshSharedWaitingFor() throws ResourceException
-    {
-        userWaitingForModel.refresh();
     }
 
     // Group administration actions ---------------------------------

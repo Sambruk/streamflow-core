@@ -50,6 +50,8 @@ public class WorkspaceUIAssembler
                 TableSingleSelectionModel.class);
         UIAssemblers.addViews(module, TableSelectionView.class);
 
+        UIAssemblers.addModels(module, LabelsModel.class);
+
         UIAssemblers.addMV(module,
                 WorkspaceModel.class,
                 WorkspaceView.class);

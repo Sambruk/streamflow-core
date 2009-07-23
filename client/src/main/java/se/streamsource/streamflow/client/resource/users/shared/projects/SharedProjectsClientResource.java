@@ -19,7 +19,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.UserClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
@@ -33,9 +33,9 @@ public class SharedProjectsClientResource
         super(context, reference);
     }
 
-    public SharedUserClientResource project(String project)
+    public UserClientResource project(String project)
     {
-        return getSubResource(project, SharedUserClientResource.class);
+        return getSubResource(project, UserClientResource.class);
     }
 
     public ListValue listProjects() throws ResourceException

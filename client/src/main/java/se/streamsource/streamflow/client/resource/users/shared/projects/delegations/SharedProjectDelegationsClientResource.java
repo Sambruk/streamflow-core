@@ -20,7 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxTaskClientResource;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
@@ -45,8 +45,8 @@ public class SharedProjectDelegationsClientResource
         postCommand("newtask", command);
     }
 
-    public SharedUserInboxTaskClientResource task(String id)
+    public UserInboxTaskClientResource task(String id)
     {
-        return getSubResource(id, SharedUserInboxTaskClientResource.class);
+        return getSubResource(id, UserInboxTaskClientResource.class);
     }
 }

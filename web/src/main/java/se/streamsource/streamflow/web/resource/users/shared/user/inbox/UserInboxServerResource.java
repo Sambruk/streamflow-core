@@ -27,6 +27,10 @@ import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.label.LabelDTO;
+import se.streamsource.streamflow.resource.label.LabelListDTO;
+import se.streamsource.streamflow.web.domain.label.Label;
+import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
@@ -46,7 +50,7 @@ import java.util.List;
  * Mapped to:
  * /users/{user}/shared/user/inbox
  */
-public class SharedUserInboxServerResource
+public class UserInboxServerResource
         extends CommandQueryServerResource
 {
     public InboxTaskListDTO tasks(TasksQuery query)
@@ -82,9 +86,43 @@ public class SharedUserInboxServerResource
             prototype.description().set(task.description().get());
             prototype.status().set(task.status().get());
             prototype.isRead().set(task.isRead().get());
+
+            ValueBuilder<LabelDTO> labelBuilder = vbf.newValueBuilder(LabelDTO.class);
+            LabelDTO labelPrototype = labelBuilder.prototype();
+
+            ValueBuilder<LabelListDTO> labelListBuilder = vbf.newValueBuilder(LabelListDTO.class);
+            List<LabelDTO> labelList = labelListBuilder.prototype().labels().get();
+            for (Label label : task.labels())
+            {
+                labelPrototype.label().set(EntityReference.getEntityReference(label));
+                labelPrototype.description().set(label.getDescription());
+                labelList.add(labelBuilder.newInstance());
+            }
+            prototype.labels().set(labelListBuilder.newInstance());
+
             list.add(builder.newInstance());
         }
 
+        return listBuilder.newInstance();
+    }
+
+    public LabelListDTO labels()
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String id = (String) getRequest().getAttributes().get("user");
+        Labels labels = uow.get(Labels.class, id);
+
+        ValueBuilder<LabelDTO> builder = vbf.newValueBuilder(LabelDTO.class);
+        LabelDTO prototype = builder.prototype();
+
+        ValueBuilder<LabelListDTO> listBuilder = vbf.newValueBuilder(LabelListDTO.class);
+        List<LabelDTO> list = listBuilder.prototype().labels().get();
+        for (Label label : labels.getLabels())
+        {
+            prototype.label().set(EntityReference.getEntityReference(label));
+            prototype.description().set(label.getDescription());
+            list.add(builder.newInstance());
+        }
         return listBuilder.newInstance();
     }
 

@@ -12,30 +12,36 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.task.general;
+package se.streamsource.streamflow.client.resource.users.shared.user.task.comments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+import se.streamsource.streamflow.resource.comment.CommentsDTO;
+import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
 import java.io.IOException;
 
 /**
- * JAVADOC
+ * Comments on a task
  */
-public class SharedUserTaskGeneralClientResource
+public class UserTaskCommentsClientResource
         extends BaseClientResource
 {
-    public SharedUserTaskGeneralClientResource(@Uses Context context, @Uses Reference reference)
+    public UserTaskCommentsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public TaskGeneralDTO general() throws IOException, ResourceException
+    public CommentsDTO comments() throws IOException, ResourceException
     {
-        return getQuery(TaskGeneralDTO.class);
+        return getQuery(CommentsDTO.class);
+    }
+
+    public void addComment(NewCommentCommand value) throws ResourceException
+    {
+        postCommand(value);
     }
 }

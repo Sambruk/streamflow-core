@@ -51,8 +51,8 @@ import se.streamsource.streamflow.web.resource.users.shared.user.assignments.Sha
 import se.streamsource.streamflow.web.resource.users.shared.user.assignments.SharedUserAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegatedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.delegations.SharedUserDelegationsServerResource;
-import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.shared.user.inbox.SharedUserInboxTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.inbox.UserInboxServerResource;
+import se.streamsource.streamflow.web.resource.users.shared.user.inbox.UserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.task.comments.SharedUserTaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.task.general.SharedUserTaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.shared.user.waitingfor.SharedUserWaitingForServerResource;
@@ -78,8 +78,8 @@ public class ServerResourceAssembler
                 SharedServerResource.class,
                 SharedUserServerResource.class,
 
-                SharedUserInboxServerResource.class,
-                SharedUserInboxTaskServerResource.class,
+                UserInboxServerResource.class,
+                UserInboxTaskServerResource.class,
 
                 SharedUserAssignmentsServerResource.class,
                 SharedUserAssignedTaskServerResource.class,

@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.UserClientResource;
 
 /**
  * JAVADOC
@@ -31,7 +31,7 @@ public class ProjectNode
 {
     ObjectBuilderFactory obf;
 
-    private SharedUserClientResource projectClientResource;
+    private UserClientResource projectClientResource;
 
     @Uses String projectName;
 
@@ -40,7 +40,7 @@ public class ProjectNode
     
 
     public ProjectNode(@Service IndividualRepository repository,
-                             @Uses SharedUserClientResource projectClientResource,
+                             @Uses UserClientResource projectClientResource,
                              @Structure ObjectBuilderFactory obf)
     {
         super(repository.individual());
@@ -51,10 +51,12 @@ public class ProjectNode
 
     private void refresh()
     {
+/* TODO Fix this
         add(obf.newObjectBuilder(ProjectInboxNode.class).use(projectClientResource.inbox()).newInstance());
         add(obf.newObjectBuilder(ProjectAssignmentsNode.class).use(projectClientResource.assignments()).newInstance());
         add(obf.newObjectBuilder(ProjectDelegationsNode.class).use(projectClientResource.delegations()).newInstance());
         add(obf.newObjectBuilder(ProjectWaitingForNode.class).use(projectClientResource.waitingFor()).newInstance());
+*/
     }
 
     @Override

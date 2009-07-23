@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
@@ -29,17 +30,27 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.detail_tab;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.waitingfor_tab;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -60,8 +71,8 @@ public class UserWaitingForView
     private UserWaitingForModel model;
     private UserWaitingForTaskDetailModel detailModel;
 
-    public UserWaitingForView(@Service final ActionMap am,
-                           @Service final UserWaitingForModel model,
+    public UserWaitingForView(@Service ApplicationContext context,
+                              @Service final UserWaitingForModel model,
                            @Service final UserWaitingForTaskDetailView detailView,
                            @Service final UserWaitingForTaskDetailModel detailModel,
                            @Structure ObjectBuilderFactory obf,
@@ -71,10 +82,11 @@ public class UserWaitingForView
         this.model = model;
         this.detailModel = detailModel;
 
+        ActionMap am = context.getActionMap(this);
 
         // Popup
         JPopupMenu popup = new JPopupMenu();
-        Action removeAction = am.get("removeUserInboxTasks");
+        Action removeAction = am.get("removeTasks");
         popup.add(removeAction);
 
         // Table
@@ -192,9 +204,9 @@ public class UserWaitingForView
         // Toolbar
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEtchedBorder());
-        Action delegateAction = am.get("delegateWaitingForTask");
+        Action delegateAction = am.get("delegateTasks");
         toolbar.add(new JButton(delegateAction));
-        Action refreshAction = am.get("refreshSharedWaitingFor");
+        Action refreshAction = am.get("refresh");
         toolbar.add(new JButton(refreshAction));
         panel.add(toolbar, BorderLayout.NORTH);
 
@@ -255,4 +267,23 @@ public class UserWaitingForView
 
         setSelectedIndex(0);
     }
+
+    @org.jdesktop.application.Action
+    public void removeTasks()
+    {
+        // TODO
+    }
+
+    @org.jdesktop.application.Action
+    public void delegateTasks()
+    {
+        // TODO
+    }
+
+    @org.jdesktop.application.Action
+    public void refresh() throws ResourceException
+    {
+        model.refresh();
+    }
+
 }

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -27,16 +28,24 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegations_tab;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.detail_tab;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -57,7 +66,7 @@ public class UserDelegationsView
     private UserDelegationsTaskDetailModel detailModel;
     private UserDelegationsModel model;
 
-    public UserDelegationsView(@Service final ActionMap am,
+    public UserDelegationsView(@Service ApplicationContext context,
                            @Service final UserDelegationsModel model,
                            @Service final UserDelegationsTaskDetailView detailView,
                            @Service final UserDelegationsTaskDetailModel detailModel,
@@ -67,9 +76,12 @@ public class UserDelegationsView
         super();
         this.detailModel = detailModel;
         this.model = model;
+
+        ActionMap am = context.getActionMap(this);
+
         // Popup
         JPopupMenu popup = new JPopupMenu();
-        Action removeAction = am.get("removeUserInboxTasks");
+        Action removeAction = am.get("removeTasks");
         popup.add(removeAction);
 
         // Table
@@ -157,15 +169,15 @@ public class UserDelegationsView
         // Toolbar
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEtchedBorder());
-        javax.swing.Action acceptAction = am.get("assignDelegatedTasksToMe");
-        toolbar.add(new JButton(acceptAction));
+        javax.swing.Action assignAction = am.get("assignDelegatedTasksToMe");
+        toolbar.add(new JButton(assignAction));
         javax.swing.Action rejectAction = am.get("rejectUserDelegations");
         toolbar.add(new JButton(rejectAction));
-        javax.swing.Action refreshAction = am.get("refreshSharedDelegations");
+        javax.swing.Action refreshAction = am.get("refresh");
         toolbar.add(new JButton(refreshAction));
         panel.add(toolbar, BorderLayout.NORTH);
 
-        taskTable.addTreeSelectionListener(new SelectionActionEnabler(acceptAction, rejectAction, removeAction));
+        taskTable.addTreeSelectionListener(new SelectionActionEnabler(assignAction, rejectAction, removeAction));
     }
 
     public JXTreeTable getTaskTable()
@@ -221,5 +233,41 @@ public class UserDelegationsView
         super.addNotify();
 
         setSelectedIndex(0);
+    }
+
+    @org.jdesktop.application.Action
+    public void refresh() throws ResourceException
+    {
+        model.refresh();
+    }
+
+    @org.jdesktop.application.Action
+    public void assignDelegatedTasksToMe() throws ResourceException
+    {
+        Iterable<DelegatedTaskDTO> task = getSelectedTasks();
+        for (DelegatedTaskDTO delegatedTaskValue : task)
+        {
+            model.assignToMe(delegatedTaskValue.task().get().identity());
+        }
+    }
+
+    @org.jdesktop.application.Action
+    public void rejectUserDelegations() throws ResourceException
+    {
+        Iterable<DelegatedTaskDTO> task = getSelectedTasks();
+        for (DelegatedTaskDTO delegatedTaskValue : task)
+        {
+            model.reject(delegatedTaskValue.task().get().identity());
+        }
+    }
+
+    @org.jdesktop.application.Action
+    public void removeTasks() throws ResourceException
+    {
+        Iterable<DelegatedTaskDTO> selected = getSelectedTasks();
+        for (DelegatedTaskDTO taskValue : selected)
+        {
+//            model.removeTask(taskValue.task().get().identity());
+        }
     }
 }

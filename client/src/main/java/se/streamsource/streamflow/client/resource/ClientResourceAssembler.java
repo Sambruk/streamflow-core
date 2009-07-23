@@ -34,21 +34,20 @@ import se.streamsource.streamflow.client.resource.organizations.projects.members
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRolesClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RoleClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
-import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.SharedClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.WorkspaceClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.projects.SharedProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.projects.SharedProjectsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.SharedUserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignedTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegatedTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.SharedUserInboxTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.SharedUserTaskCommentsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.task.general.SharedUserTaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.UserTaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.task.general.UserTaskGeneralClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskClientResource;
 
@@ -65,15 +64,15 @@ public class ClientResourceAssembler
         // /users
         module.addObjects(StreamFlowClientResource.class,
                 UsersClientResource.class,
-                UserClientResource.class,
+                se.streamsource.streamflow.client.resource.users.UserClientResource.class,
                 UserAdministrationClientResource.class,
 
-                SharedClientResource.class,
-                SharedUserClientResource.class,
-                SharedUserInboxClientResource.class,
-                SharedUserInboxTaskClientResource.class,
-                SharedUserTaskGeneralClientResource.class,
-                SharedUserTaskCommentsClientResource.class,
+                WorkspaceClientResource.class,
+                UserClientResource.class,
+                UserInboxClientResource.class,
+                UserInboxTaskClientResource.class,
+                UserTaskGeneralClientResource.class,
+                UserTaskCommentsClientResource.class,
 
                 SharedUserAssignmentsClientResource.class,
                 SharedUserAssignedTaskClientResource.class,

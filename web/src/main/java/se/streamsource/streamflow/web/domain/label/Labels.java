@@ -29,7 +29,7 @@ public interface Labels
 {
     Label newLabel();
 
-    Iterable<Label> labels();
+    Iterable<Label> getLabels();
 
     interface LabelsState
     {
@@ -53,7 +53,7 @@ public interface Labels
             return label;
         }
 
-        public Iterable<Label> labels()
+        public Iterable<Label> getLabels()
         {
             return state.labels();
         }
