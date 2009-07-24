@@ -19,16 +19,15 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
 import javax.swing.JPanel;
@@ -87,7 +86,7 @@ public class AddCommentDialog
             throws Exception
     {
         // Create command instance
-        commandBuilder.prototype().commenter().set(new EntityReference(workspaceView.getSelectedUser()));
+// TODO        commandBuilder.prototype().commenter().set(new EntityReference(workspaceView.getSelectedUser()));
         commandBuilder.prototype().creationDate().set(new Date());
         final NewCommentCommand command = commandBuilder.newInstance();
 

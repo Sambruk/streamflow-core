@@ -32,6 +32,8 @@ public interface Inbox
 
     void completeTask(Task task, Assignee assignee);
 
+    void dropTask(Task task, Assignee assignee);
+
     void assignTo(Task task, Assignee assignee);
 
     void delegateTo(Task task, Delegatee delegatee, Delegator delegator);
@@ -67,8 +69,12 @@ public interface Inbox
 
         public void completeTask(Task task, Assignee assignee)
         {
-            // Complete task
             task.completedBy(assignee);
+        }
+
+        public void dropTask(Task task, Assignee assignee)
+        {
+            task.droppedBy(assignee);
         }
 
         public void assignTo(Task task, Assignee assignee)

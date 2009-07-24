@@ -25,7 +25,7 @@ import se.streamsource.streamflow.domain.roles.Notable;
 /**
  * New task command
  */
-public interface NewSharedTaskCommand
+public interface NewTaskCommand
         extends ValueComposite, Describable.DescribableState, Notable.NotableState
 {
     @Optional

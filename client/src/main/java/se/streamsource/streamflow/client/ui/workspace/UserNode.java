@@ -25,9 +25,9 @@ import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForClientResource;
 
 /**
  * JAVADOC
@@ -45,13 +45,13 @@ public class UserNode
         UserInboxClientResource userInboxResource = user.shared().user().inbox();
         add(obf.newObjectBuilder(UserInboxNode.class).use(account.settings(), userInboxResource).newInstance());
 
-        SharedUserAssignmentsClientResource userAssignmentsResource = user.shared().user().assignments();
+        UserAssignmentsClientResource userAssignmentsResource = user.shared().user().assignments();
         add(obf.newObjectBuilder(UserAssignmentsNode.class).use(account.settings(), userAssignmentsResource).newInstance());
 
-        SharedUserDelegationsClientResource userDelegationsResource = user.shared().user().delegations();
+        UserDelegationsClientResource userDelegationsResource = user.shared().user().delegations();
         add(obf.newObjectBuilder(UserDelegationsNode.class).use(account.settings(), userDelegationsResource).newInstance());
 
-        SharedUserWaitingForClientResource userWaitingForResource = user.shared().user().waitingFor();
+        UserWaitingForClientResource userWaitingForResource = user.shared().user().waitingFor();
         add(obf.newObjectBuilder(UserWaitingForNode.class).use(account.settings(), userWaitingForResource).newInstance());
     }
 

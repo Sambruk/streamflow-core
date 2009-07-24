@@ -18,11 +18,11 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.users.shared.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 /**
  * JAVADOC
@@ -35,9 +35,9 @@ public class ProjectWaitingForNode
     UserWaitingForView view;
 
     @Service
-    UserWaitingForModel model;
+    ProjectWaitingForModel model;
 
-    public ProjectWaitingForNode(@Uses SharedUserWaitingForClientResource waitingFor)
+    public ProjectWaitingForNode(@Uses ProjectWaitingforClientResource waitingFor)
     {
         super(waitingFor, false);
     }
@@ -48,9 +48,9 @@ public class ProjectWaitingForNode
         return i18n.text(WorkspaceResources.waitingfor_node);
     }
 
-    SharedUserWaitingForClientResource waitingFor()
+    ProjectWaitingforClientResource waitingFor()
     {
-        return (SharedUserWaitingForClientResource) getUserObject();
+        return (ProjectWaitingforClientResource) getUserObject();
     }
 
     public JComponent detailView() throws ResourceException

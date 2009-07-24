@@ -18,7 +18,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
 import se.streamsource.streamflow.domain.user.UserSpecification;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -55,7 +55,7 @@ public class CommonResourceAssembler
         module.addValues(RegisterUserCommand.class,
                 DescriptionDTO.class,
                 EntityReferenceDTO.class,
-                NewSharedTaskCommand.class, NewCommentCommand.class).visibleIn(Visibility.application);
+                NewTaskCommand.class, NewCommentCommand.class).visibleIn(Visibility.application);
 
         // Queries
         module.addValues(UserSpecification.class, TasksQuery.class).visibleIn(Visibility.application);

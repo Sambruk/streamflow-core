@@ -65,7 +65,6 @@ import se.streamsource.streamflow.client.ui.workspace.AddCommentDialog;
 import se.streamsource.streamflow.client.ui.workspace.UserAssignmentsModel;
 import se.streamsource.streamflow.client.ui.workspace.UserAssignmentsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
@@ -245,13 +244,12 @@ public class StreamFlowApplication
         CreateAccountDialog dialog = createAccountDialog.newInstance();
         dialogs.showOkCancelHelpDialog(getMainFrame(), dialog);
         accountsModel.refresh();
-        workspaceView.refreshTree();
         administrationModel.refresh();
     }
 
     // Controller actions -------------------------------------------
-    @Service
-    WorkspaceView workspaceView;
+//    @Service
+//    WorkspaceView workspaceView;
 
     // Menu actions
     // Account menu
@@ -395,7 +393,6 @@ public class StreamFlowApplication
             TreeNodeValue selected = (TreeNodeValue) projectView.getMembers().getSelectionPath().getPathComponent(1);
             projectMembersModel.removeMember(selected.entity().get());
         }
-        workspaceView.refreshTree();
     }
 
     // Role administration actions ----------------------------------

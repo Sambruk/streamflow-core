@@ -20,9 +20,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxTaskClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
@@ -161,6 +162,8 @@ public class UserInboxModel
                     return task.creationDate().get();
                 case 3:
                     return task.isRead().get();
+                case 4:
+                    return task.status().get().equals(TaskStates.DROPPED);
             }
         }
 
@@ -208,7 +211,7 @@ public class UserInboxModel
         }
     }
 
-    public void newTask(NewSharedTaskCommand command) throws ResourceException
+    public void newTask(NewTaskCommand command) throws ResourceException
     {
         getRoot().newtask(command);
         refresh();
@@ -217,6 +220,7 @@ public class UserInboxModel
     public void removeTask(String id) throws ResourceException
     {
         getRoot().task(id).delete();
+        refresh();
     }
 
     public void assignToMe(String id) throws ResourceException
@@ -229,6 +233,13 @@ public class UserInboxModel
     public void markAsRead(String id) throws ResourceException
     {
         getRoot().task(id).markAsRead();
+    }
+
+    public void markAsUnread(int idx) throws ResourceException
+    {
+        InboxTaskDTO task = tasks.tasks().get().get(idx);
+        getRoot().task(task.task().get().identity()).markAsUnread();
+        task.isRead().set(false);
     }
 
     public void delegate(String taskId, String delegateeId) throws ResourceException
@@ -251,5 +262,12 @@ public class UserInboxModel
     public void removeLabel(String taskId, String labelId) throws ResourceException
     {
         getRoot().task(taskId).removeLabel(labelId);
+    }
+
+    public void dropTask(String taskId) throws ResourceException
+    {
+        UserInboxTaskClientResource taskClientResource = getRoot().task(taskId);
+        taskClientResource.drop();
+        refresh();
     }
 }

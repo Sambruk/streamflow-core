@@ -19,7 +19,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
@@ -41,7 +41,7 @@ public class UserDelegationsNode
     @Uses
     private AccountSettingsValue settings;
 
-    public UserDelegationsNode(@Uses SharedUserDelegationsClientResource delegationsClientResource)
+    public UserDelegationsNode(@Uses UserDelegationsClientResource delegationsClientResource)
     {
         super(delegationsClientResource, false);
     }
@@ -52,9 +52,9 @@ public class UserDelegationsNode
         return i18n.text(WorkspaceResources.delegations_node);
     }
 
-    SharedUserDelegationsClientResource delegations()
+    UserDelegationsClientResource delegations()
     {
-        return (SharedUserDelegationsClientResource) getUserObject();
+        return (UserDelegationsClientResource) getUserObject();
     }
 
     public JComponent detailView()

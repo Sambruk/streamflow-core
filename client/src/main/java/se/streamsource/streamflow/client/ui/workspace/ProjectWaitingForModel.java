@@ -19,39 +19,40 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.client.resource.users.shared.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 
 import java.util.Date;
 
 /**
  * JAVADOC
  */
-public class UserDelegationsModel
+public class ProjectWaitingForModel
         extends AbstractTreeTableModel
 {
     @Structure
     ValueBuilderFactory vbf;
 
-    DelegationsTaskListDTO tasks;
+    WaitingForTaskListDTO tasks;
 
-    String[] columnNames = {"", text(description_column_header), text(delegated_from_header), text(delegated_on_header), text(created_column_header)};
-    Class[] columnClasses = {Boolean.class, String.class, String.class, Date.class};
-    boolean[] columnEditable = {true, false, false, false};
+    String[] columnNames = {"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
+    Class[] columnClasses = {Boolean.class, String.class, String.class, String.class, Date.class};
+    boolean[] columnEditable = {true, false, false, false, false};
 
     @Override
-    public UserDelegationsClientResource getRoot()
+    public ProjectWaitingforClientResource getRoot()
     {
-        return (UserDelegationsClientResource) super.getRoot();
+        return (ProjectWaitingforClientResource) super.getRoot();
     }
 
-    public void setDelegations(UserDelegationsClientResource delegationsClientResource) throws ResourceException
+    public void setWaitingFor(ProjectWaitingforClientResource waitingForClientResource) throws ResourceException
     {
-        root = delegationsClientResource;
+        root = waitingForClientResource;
         refresh();
     }
 
@@ -70,7 +71,7 @@ public class UserDelegationsModel
     @Override
     public boolean isLeaf(Object node)
     {
-        return node instanceof DelegatedTaskDTO;
+        return node instanceof WaitingForTaskDTO;
     }
 
     @Override
@@ -86,7 +87,7 @@ public class UserDelegationsModel
 
     public int getChildCount(Object parent)
     {
-        if (parent instanceof UserDelegationsClientResource)
+        if (parent instanceof UserWaitingForClientResource)
             return tasks.tasks().get().size();
         else
             return 0;
@@ -94,7 +95,7 @@ public class UserDelegationsModel
 
     public int getIndexOfChild(Object parent, Object child)
     {
-        if (parent instanceof UserDelegationsClientResource)
+        if (parent instanceof UserWaitingForClientResource)
             return tasks.tasks().get().indexOf(child);
         else
             return -1;
@@ -102,7 +103,7 @@ public class UserDelegationsModel
 
     public int getColumnCount()
     {
-        return 4;
+        return 5;
     }
 
     @Override
@@ -113,9 +114,9 @@ public class UserDelegationsModel
 
     public Object getValueAt(Object node, int column)
     {
-        if (node instanceof DelegatedTaskDTO)
+        if (node instanceof WaitingForTaskDTO)
         {
-            DelegatedTaskDTO task = (DelegatedTaskDTO) node;
+            WaitingForTaskDTO task = (WaitingForTaskDTO) node;
             switch (column)
             {
                 case 0:
@@ -123,9 +124,13 @@ public class UserDelegationsModel
                 case 1:
                     return task.description().get();
                 case 2:
-                    return task.delegatedFrom().get();
+                    return task.delegatedTo().get();
                 case 3:
+                    return task.assignedTo().get();
+                case 4:
                     return task.delegatedOn().get();
+                case 5:
+                    return task.isRead().get();
             }
         }
 
@@ -144,7 +149,7 @@ public class UserDelegationsModel
                     Boolean completed = (Boolean) value;
                     if (completed)
                     {
-                        DelegatedTaskDTO taskValue = (DelegatedTaskDTO) node;
+                        WaitingForTaskDTO taskValue = (WaitingForTaskDTO) node;
                         EntityReference task = taskValue.task().get();
                         getRoot().task(task.identity()).complete();
 
@@ -164,19 +169,17 @@ public class UserDelegationsModel
 
     public void refresh() throws ResourceException
     {
-        tasks = getRoot().tasks().<DelegationsTaskListDTO>buildWith().prototype();
+        tasks = getRoot().tasks().<WaitingForTaskListDTO>buildWith().prototype();
         modelSupport.fireNewRoot();
     }
 
-    public void assignToMe(String id) throws ResourceException
+    public void delegate(String task, String delegatee) throws ResourceException
     {
-        getRoot().task(id).assignToMe();
-        refresh();
+        getRoot().task(task).delegate(delegatee);
     }
 
-    public void reject(String id) throws ResourceException
+    public void markAsRead(String id) throws ResourceException
     {
-        getRoot().task(id).reject();
-        refresh();
+        getRoot().task(id).markAsRead();
     }
 }

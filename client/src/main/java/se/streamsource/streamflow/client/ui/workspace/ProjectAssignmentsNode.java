@@ -18,11 +18,12 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.users.shared.projects.assignments.ProjectAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
+import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 /**
  * JAVADOC
@@ -37,7 +38,7 @@ public class ProjectAssignmentsNode
     @Service
     UserAssignmentsModel model;
 
-    public ProjectAssignmentsNode(@Uses SharedUserAssignmentsClientResource assignments)
+    public ProjectAssignmentsNode(@Uses ProjectAssignmentsClientResource assignments)
     {
         super(assignments, false);
     }
@@ -48,9 +49,9 @@ public class ProjectAssignmentsNode
         return i18n.text(WorkspaceResources.assignments_node);
     }
 
-    SharedUserAssignmentsClientResource assignments()
+    UserAssignmentsClientResource assignments()
     {
-        return (SharedUserAssignmentsClientResource) getUserObject();
+        return (UserAssignmentsClientResource) getUserObject();
     }
 
     public JComponent detailView() throws ResourceException

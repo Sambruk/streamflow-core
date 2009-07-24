@@ -19,7 +19,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.projects.SharedProjectsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.ProjectsClientResource;
 
 /**
  * JAVADOC
@@ -37,8 +37,8 @@ public class WorkspaceClientResource
         return getSubResource("user", UserClientResource.class);
     }
 
-    public SharedProjectsClientResource projects()
+    public ProjectsClientResource projects()
     {
-        return getSubResource("projects", SharedProjectsClientResource.class);
+        return getSubResource("projects", ProjectsClientResource.class);
     }
 }

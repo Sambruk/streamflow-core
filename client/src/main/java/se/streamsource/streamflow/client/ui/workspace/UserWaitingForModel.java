@@ -20,7 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
@@ -44,12 +44,12 @@ public class UserWaitingForModel
     boolean[] columnEditable = {true, false, false, false, false};
 
     @Override
-    public SharedUserWaitingForClientResource getRoot()
+    public UserWaitingForClientResource getRoot()
     {
-        return (SharedUserWaitingForClientResource) super.getRoot();
+        return (UserWaitingForClientResource) super.getRoot();
     }
 
-    public void setWaitingFor(SharedUserWaitingForClientResource waitingForClientResource) throws ResourceException
+    public void setWaitingFor(UserWaitingForClientResource waitingForClientResource) throws ResourceException
     {
         root = waitingForClientResource;
         refresh();
@@ -86,7 +86,7 @@ public class UserWaitingForModel
 
     public int getChildCount(Object parent)
     {
-        if (parent instanceof SharedUserWaitingForClientResource)
+        if (parent instanceof UserWaitingForClientResource)
             return tasks.tasks().get().size();
         else
             return 0;
@@ -94,7 +94,7 @@ public class UserWaitingForModel
 
     public int getIndexOfChild(Object parent, Object child)
     {
-        if (parent instanceof SharedUserWaitingForClientResource)
+        if (parent instanceof UserWaitingForClientResource)
             return tasks.tasks().get().indexOf(child);
         else
             return -1;

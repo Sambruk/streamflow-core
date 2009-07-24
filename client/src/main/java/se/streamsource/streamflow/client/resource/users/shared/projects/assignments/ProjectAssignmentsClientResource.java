@@ -12,33 +12,41 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.delegations;
+package se.streamsource.streamflow.client.resource.users.shared.projects.assignments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignedTaskClientResource;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 /**
  * JAVADOC
  */
-public class SharedUserDelegationsClientResource
+public class ProjectAssignmentsClientResource
         extends CommandQueryClientResource
 {
-    public SharedUserDelegationsClientResource(@Uses Context context, @Uses Reference reference)
+    public ProjectAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public DelegationsTaskListDTO tasks() throws ResourceException
+    public InboxTaskListDTO tasks(TasksQuery query) throws ResourceException
     {
-        return query("tasks", DelegationsTaskListDTO.class);
+        return query("tasks", query, InboxTaskListDTO.class);
     }
 
-    public SharedUserDelegatedTaskClientResource task(String id)
+    public void newtask(NewTaskCommand command) throws ResourceException
     {
-        return getSubResource(id, SharedUserDelegatedTaskClientResource.class);
+        postCommand("newtask", command);
+    }
+
+    public SharedUserAssignedTaskClientResource task(String id)
+    {
+        return getSubResource(id, SharedUserAssignedTaskClientResource.class);
     }
 }

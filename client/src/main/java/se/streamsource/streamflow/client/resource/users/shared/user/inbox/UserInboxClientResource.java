@@ -18,7 +18,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
@@ -42,7 +42,7 @@ public class UserInboxClientResource
         return query("tasks", query, InboxTaskListDTO.class);
     }
 
-    public void newtask(NewSharedTaskCommand command) throws ResourceException
+    public void newtask(NewTaskCommand command) throws ResourceException
     {
         postCommand("newtask", command);
     }

@@ -19,7 +19,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
@@ -41,7 +41,7 @@ public class UserAssignmentsNode
     @Uses
     private AccountSettingsValue settings;
 
-    public UserAssignmentsNode(@Uses SharedUserAssignmentsClientResource assignmentsClientResource)
+    public UserAssignmentsNode(@Uses UserAssignmentsClientResource assignmentsClientResource)
     {
         super(assignmentsClientResource, false);
     }
@@ -52,9 +52,9 @@ public class UserAssignmentsNode
         return i18n.text(WorkspaceResources.assignments_node);
     }
 
-    SharedUserAssignmentsClientResource assignments()
+    UserAssignmentsClientResource assignments()
     {
-        return (SharedUserAssignmentsClientResource) getUserObject();
+        return (UserAssignmentsClientResource) getUserObject();
     }
 
     public JComponent detailView()

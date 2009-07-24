@@ -18,10 +18,10 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForClientResource;
 
 /**
  * JAVADOC
@@ -39,18 +39,18 @@ public class UserClientResource
         return getSubResource("inbox", UserInboxClientResource.class);
     }
 
-    public SharedUserAssignmentsClientResource assignments()
+    public UserAssignmentsClientResource assignments()
     {
-        return getSubResource("assignments", SharedUserAssignmentsClientResource.class);
+        return getSubResource("assignments", UserAssignmentsClientResource.class);
     }
 
-    public SharedUserDelegationsClientResource delegations()
+    public UserDelegationsClientResource delegations()
     {
-        return getSubResource("delegations", SharedUserDelegationsClientResource.class);
+        return getSubResource("delegations", UserDelegationsClientResource.class);
     }
 
-    public SharedUserWaitingForClientResource waitingFor()
+    public UserWaitingForClientResource waitingFor()
     {
-        return getSubResource("waitingfor", SharedUserWaitingForClientResource.class);
+        return getSubResource("waitingfor", UserWaitingForClientResource.class);
     }
 }

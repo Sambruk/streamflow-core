@@ -59,7 +59,7 @@ public class SharedInboxSteps
     @When("workspace task is created")
     public void newSharedTask() throws Exception
     {
-        ValueBuilder<NewSharedTaskCommand> contextBuilder = vbf.newValueBuilder(NewSharedTaskCommand.class);
+        ValueBuilder<NewTaskCommand> contextBuilder = vbf.newValueBuilder(NewTaskCommand.class);
         contextBuilder.prototype().context().set(inbox);
         contextBuilder.prototype().description().set("New workspace task");
         sharedTask = sharedInteractions.newSharedTask(contextBuilder.newInstance());

@@ -24,10 +24,10 @@ import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 /**
  * JAVADOC
  */
-public class SharedUserWaitingForClientResource
+public class UserWaitingForClientResource
         extends CommandQueryClientResource
 {
-    public SharedUserWaitingForClientResource(@Uses Context context, @Uses Reference reference)
+    public UserWaitingForClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }

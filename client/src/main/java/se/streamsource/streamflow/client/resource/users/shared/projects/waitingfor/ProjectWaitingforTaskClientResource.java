@@ -29,10 +29,10 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 /**
  * JAVADOC
  */
-public class SharedProjectWaitingforTaskClientResource
+public class ProjectWaitingforTaskClientResource
         extends CommandQueryClientResource
 {
-    public SharedProjectWaitingforTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public ProjectWaitingforTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }

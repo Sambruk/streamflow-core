@@ -49,7 +49,12 @@ public class UserInboxTaskClientResource
 
     public void complete() throws ResourceException
     {
-        postCommand("complete");
+        putCommand("complete");
+    }
+
+    public void drop() throws ResourceException
+    {
+        putCommand("drop");
     }
 
     public void describe(DescriptionDTO descriptionValue) throws ResourceException
@@ -65,6 +70,11 @@ public class UserInboxTaskClientResource
     public void markAsRead() throws ResourceException
     {
         putCommand("markAsRead");
+    }
+
+    public void markAsUnread() throws ResourceException
+    {
+        putCommand("markAsUnread");
     }
 
     public void delegate(String delegateeId) throws ResourceException

@@ -15,13 +15,11 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.user.UserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.ProjectClientResource;
 
 /**
  * JAVADOC
@@ -31,7 +29,7 @@ public class ProjectNode
 {
     ObjectBuilderFactory obf;
 
-    private UserClientResource projectClientResource;
+    private ProjectClientResource projectClientResource;
 
     @Uses String projectName;
 
@@ -39,19 +37,14 @@ public class ProjectNode
     private AccountSettingsValue settings;
     
 
-    public ProjectNode(@Service IndividualRepository repository,
-                             @Uses UserClientResource projectClientResource,
+    public ProjectNode(@Uses ProjectClientResource projectClientResource,
                              @Structure ObjectBuilderFactory obf)
     {
-        super(repository.individual());
+        super(projectClientResource);
         this.projectClientResource = projectClientResource;
         this.obf = obf;
-        refresh();
-    }
 
-    private void refresh()
-    {
-/* TODO Fix this
+/*
         add(obf.newObjectBuilder(ProjectInboxNode.class).use(projectClientResource.inbox()).newInstance());
         add(obf.newObjectBuilder(ProjectAssignmentsNode.class).use(projectClientResource.assignments()).newInstance());
         add(obf.newObjectBuilder(ProjectDelegationsNode.class).use(projectClientResource.delegations()).newInstance());

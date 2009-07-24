@@ -20,7 +20,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;
@@ -42,7 +42,7 @@ public class UserWaitingForNode
     @Uses
     private AccountSettingsValue settings;
 
-    public UserWaitingForNode(@Uses SharedUserWaitingForClientResource waitingForClientResource)
+    public UserWaitingForNode(@Uses UserWaitingForClientResource waitingForClientResource)
     {
         super(waitingForClientResource, false);
     }
@@ -53,9 +53,9 @@ public class UserWaitingForNode
         return i18n.text(WorkspaceResources.waitingfor_node);
     }
 
-    SharedUserWaitingForClientResource waitingFor()
+    UserWaitingForClientResource waitingFor()
     {
-        return (SharedUserWaitingForClientResource) getUserObject();
+        return (UserWaitingForClientResource) getUserObject();
     }
 
     public JComponent detailView()

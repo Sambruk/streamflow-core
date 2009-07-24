@@ -22,7 +22,7 @@ import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
@@ -126,7 +126,7 @@ public class UserInboxServerResource
         return listBuilder.newInstance();
     }
 
-    public void newtask(NewSharedTaskCommand command)
+    public void newtask(NewTaskCommand command)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");

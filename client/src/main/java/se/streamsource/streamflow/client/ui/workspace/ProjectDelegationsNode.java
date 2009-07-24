@@ -18,11 +18,12 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.users.shared.projects.delegations.ProjectDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
+import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 /**
  * JAVADOC
@@ -37,7 +38,7 @@ public class ProjectDelegationsNode
     @Service
     UserDelegationsModel model;
 
-    public ProjectDelegationsNode(@Uses SharedUserDelegationsClientResource delegations)
+    public ProjectDelegationsNode(@Uses ProjectDelegationsClientResource delegations)
     {
         super(delegations, false);
     }
@@ -48,9 +49,9 @@ public class ProjectDelegationsNode
         return i18n.text(WorkspaceResources.delegations_node);
     }
 
-    SharedUserDelegationsClientResource delegations()
+    UserDelegationsClientResource delegations()
     {
-        return (SharedUserDelegationsClientResource) getUserObject();
+        return (UserDelegationsClientResource) getUserObject();
     }
 
     public JComponent detailView() throws ResourceException

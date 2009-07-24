@@ -26,7 +26,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.ui.workspace.UserInboxModel;
 
 /**
@@ -53,7 +53,7 @@ public class UserInboxSteps
     @When("new task '$desc'")
     public void whenNewTask(String description) throws ResourceException
     {
-        ValueBuilder<NewSharedTaskCommand> builder = vbf.newValueBuilder(NewSharedTaskCommand.class);
+        ValueBuilder<NewTaskCommand> builder = vbf.newValueBuilder(NewTaskCommand.class);
         builder.prototype().description().set(description);
 
         model.newTask(builder.newInstance());

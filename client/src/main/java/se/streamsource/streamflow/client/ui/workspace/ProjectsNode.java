@@ -17,16 +17,15 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
 import org.restlet.Restlet;
-import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.shared.user.UserClientResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.client.resource.users.shared.projects.ProjectClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * JAVADOC
@@ -34,35 +33,26 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 public class ProjectsNode
         extends DefaultMutableTreeTableNode
 {
-    public ProjectsNode(@Service IndividualRepository repository,
+    public ProjectsNode(@Uses Account account,
                               @Structure final ObjectBuilderFactory obf,
                               @Service final Restlet client)
     {
-        super(repository.individual());
+        super(account);
 
-        // add nodes for all accounts
-        repository.individual().visitAccounts(new AccountVisitor()
+        try
         {
+            se.streamsource.streamflow.client.resource.users.UserClientResource user = account.user(client);
+            ListValue projects = user.shared().projects().listProjects();
 
-            public void visitAccount(Account account)
+            for (ListItemValue project : projects.items().get())
             {
-                try
-                {
-                    se.streamsource.streamflow.client.resource.users.UserClientResource user = account.user(client);
-                    ListValue projects = user.shared().projects().listProjects();
-
-                    for (ListItemValue project : projects.items().get())
-                    {
-                        UserClientResource projectResource =  user.shared().projects().project(project.entity().get().identity());
-                        add(obf.newObjectBuilder(ProjectNode.class).use(projectResource, project.description().get(), account.settings()).newInstance());
-                    }
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
-
+                ProjectClientResource projectResource =  user.shared().projects().project(project.entity().get().identity());
+                add(obf.newObjectBuilder(ProjectNode.class).use(projectResource, project.description().get(), account.settings()).newInstance());
             }
-        });
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override

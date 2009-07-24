@@ -50,6 +50,17 @@ public class UserInboxTaskServerResource
         inbox.completeTask(task, assignee);
     }
 
+    public void drop()
+    {
+        String id = (String) getRequest().getAttributes().get("user");
+        String taskId = (String) getRequest().getAttributes().get("task");
+        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
+        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
+        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
+
+        inbox.dropTask(task, assignee);
+    }
+
     public void describe(DescriptionDTO descriptionValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
@@ -104,7 +115,7 @@ public class UserInboxTaskServerResource
         inbox.markAsRead(task);
     }
 
-    public void markAsUnRead()
+    public void markAsUnread()
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();

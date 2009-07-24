@@ -18,6 +18,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -32,11 +33,12 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
@@ -64,8 +66,10 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -138,8 +142,9 @@ public class UserInboxView
         }
 
         // Toolbar
+        JPanel top = new JPanel(new GridLayout(2,1));
+        top.setBorder(BorderFactory.createEtchedBorder());
         JPanel toolbar = new JPanel();
-        toolbar.setBorder(BorderFactory.createEtchedBorder());
 
         javax.swing.Action addAction = am.get("newTask");
         toolbar.add(new JButton(addAction));
@@ -150,7 +155,8 @@ public class UserInboxView
         javax.swing.Action refreshAction = am.get("refresh");
         toolbar.add(new JButton(refreshAction));
 
-        toolbar.add(labelsList);
+        top.add(toolbar);
+        top.add(labelsList);
 
         // Table
         JPanel panel = new JPanel(new BorderLayout());
@@ -160,7 +166,7 @@ public class UserInboxView
 
         JScrollPane taskScrollPane = new JScrollPane(taskTable);
 
-        panel.add(toolbar, BorderLayout.NORTH);
+        panel.add(top, BorderLayout.NORTH);
         panel.add(taskScrollPane, BorderLayout.CENTER);
 
 
@@ -216,6 +222,14 @@ public class UserInboxView
                 return componentAdapter != null && !(Boolean) componentAdapter.getValue(3);
             }
         }, taskTable.getFont().deriveFont(Font.BOLD), taskTable.getFont()));
+
+        taskTable.addHighlighter(new ColorHighlighter(new HighlightPredicate()
+        {
+            public boolean isHighlighted(Component component, ComponentAdapter componentAdapter)
+            {
+                return componentAdapter != null && (Boolean) componentAdapter.getValue(4);
+            }
+        }, Color.black, Color.lightGray));
         taskTable.setEditable(true);
         taskTable.addTreeSelectionListener(new TreeSelectionListener()
         {
@@ -257,7 +271,7 @@ public class UserInboxView
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                if (e.getClickCount() == 2)
+                if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
                 {
                     getActionMap().get("details").actionPerformed(null);
                 }
@@ -268,7 +282,7 @@ public class UserInboxView
 
         // Popup
         JPopupMenu popup = new JPopupMenu();
-        final JMenu labelMenu = new JMenu("Label");
+        final JMenu labelMenu = new JMenu(i18n.text(WorkspaceResources.labels_label));
         labelMenu.addMenuListener(new MenuListener()
         {
             public void menuSelected(MenuEvent e)
@@ -335,11 +349,14 @@ public class UserInboxView
             }
         });
         popup.add(labelMenu);
+        popup.add(am.get("markTasksAsUnread"));
+        Action dropAction = am.get("dropTasks");
+        popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
         popup.add(am.get("forwardTasksTo"));
         taskTable.addMouseListener(new PopupMenuTrigger(popup));
-        taskTable.addTreeSelectionListener(new SelectionActionEnabler(removeTaskAction, assignAction, delegateTasksFromInbox));
+        taskTable.addTreeSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction, assignAction, delegateTasksFromInbox));
     }
 
     @Override
@@ -398,29 +415,45 @@ public class UserInboxView
     }
 
     @org.jdesktop.application.Action()
-    public void newTask()
+    public void newTask() throws ResourceException
     {
         // Show dialog
         AddTaskDialog dialog = addTaskDialogs.newInstance();
         dialogs.showOkCancelHelpDialog(application.getMainFrame(), dialog);
 
-        NewSharedTaskCommand command = dialog.getCommandBuilder().newInstance();
-        try
-        {
-            model.newTask(command);
+        NewTaskCommand command = dialog.getCommandBuilder().newInstance();
 
-            JXTreeTable table = getTaskTable();
-            int index = model.getChildCount(model.getRoot());
-            Object child = model.getChild(model, index - 1);
-            TreePath path = new TreePath(child);
-            table.getSelectionModel().clearSelection();
-            table.getSelectionModel().addSelectionInterval(index - 1, index - 1);
-            table.scrollPathToVisible(path);
-        } catch (ResourceException e)
+        model.newTask(command);
+
+        JXTreeTable table = getTaskTable();
+        int index = model.getChildCount(model.getRoot());
+        Object child = model.getChild(model, index - 1);
+        TreePath path = new TreePath(child);
+        table.getSelectionModel().clearSelection();
+        table.getSelectionModel().addSelectionInterval(index - 1, index - 1);
+        table.scrollPathToVisible(path);
+    }
+
+    @org.jdesktop.application.Action()
+    public void dropTasks() throws ResourceException
+    {
+        Iterable<InboxTaskDTO> selectedTasks = getSelectedTasks();
+        for (InboxTaskDTO selectedTask : selectedTasks)
         {
-            e.printStackTrace();
+            model.dropTask(selectedTask.task().get().identity());
         }
     }
+
+    @org.jdesktop.application.Action()
+    public void markTasksAsUnread() throws ResourceException
+    {
+        int[] rows = taskTable.getSelectedRows();
+        for (int row : rows)
+        {
+            model.markAsUnread(row);
+        }
+    }
+
 
     @org.jdesktop.application.Action()
     public void addSubTask()

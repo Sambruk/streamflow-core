@@ -23,7 +23,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
@@ -38,7 +38,7 @@ public class AddTaskDialog
         extends JPanel
 {
     private StateBinder sharedTaskBinder;
-    private ValueBuilder<NewSharedTaskCommand> commandBuilder;
+    private ValueBuilder<NewTaskCommand> commandBuilder;
 
     public AddTaskDialog(@Service ApplicationContext appContext,
                                @Structure ValueBuilderFactory vbf
@@ -60,7 +60,7 @@ public class AddTaskDialog
 
         sharedTaskBinder = new StateBinder();
         sharedTaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        NewSharedTaskCommand template = sharedTaskBinder.bindingTemplate(NewSharedTaskCommand.class);
+        NewTaskCommand template = sharedTaskBinder.bindingTemplate(NewTaskCommand.class);
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
         bb.appendLine(description_label, TEXTFIELD, template.description())
@@ -69,7 +69,7 @@ public class AddTaskDialog
 
 
         // Create command builder
-        commandBuilder = vbf.newValueBuilder(NewSharedTaskCommand.class);
+        commandBuilder = vbf.newValueBuilder(NewTaskCommand.class);
 
         sharedTaskBinder.updateWith(commandBuilder.prototype());
     }
@@ -87,7 +87,7 @@ public class AddTaskDialog
         WindowUtils.findWindow(this).dispose();
     }
 
-    public ValueBuilder<NewSharedTaskCommand> getCommandBuilder()
+    public ValueBuilder<NewTaskCommand> getCommandBuilder()
     {
         return commandBuilder;
     }

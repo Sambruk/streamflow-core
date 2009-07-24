@@ -20,9 +20,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.shared.inbox.NewSharedTaskCommand;
+import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
 import se.streamsource.streamflow.domain.task.TaskStates;
@@ -51,12 +51,12 @@ public class UserAssignmentsModel
     boolean[] columnEditable = {true, false, false};
 
     @Override
-    public SharedUserAssignmentsClientResource getRoot()
+    public UserAssignmentsClientResource getRoot()
     {
-        return (SharedUserAssignmentsClientResource) super.getRoot();
+        return (UserAssignmentsClientResource) super.getRoot();
     }
 
-    public void setAssignments(SharedUserAssignmentsClientResource assignmentsClientResource) throws ResourceException
+    public void setAssignments(UserAssignmentsClientResource assignmentsClientResource) throws ResourceException
     {
         root = assignmentsClientResource;
         refresh();
@@ -100,7 +100,7 @@ public class UserAssignmentsModel
 
     public int getChildCount(Object parent)
     {
-        if (parent instanceof SharedUserAssignmentsClientResource)
+        if (parent instanceof UserAssignmentsClientResource)
             return tasks.tasks().get().size();
         else
             return 0;
@@ -108,7 +108,7 @@ public class UserAssignmentsModel
 
     public int getIndexOfChild(Object parent, Object child)
     {
-        if (parent instanceof SharedUserAssignmentsClientResource)
+        if (parent instanceof UserAssignmentsClientResource)
             return tasks.tasks().get().indexOf(child);
         else
             return -1;
@@ -194,7 +194,7 @@ public class UserAssignmentsModel
         modelSupport.fireNewRoot();
     }
 
-    public void newTask(NewSharedTaskCommand command) throws ResourceException
+    public void newTask(NewTaskCommand command) throws ResourceException
     {
         getRoot().newtask(command);
         modelSupport.fireNewRoot();

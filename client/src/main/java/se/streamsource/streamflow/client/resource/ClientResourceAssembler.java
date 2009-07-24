@@ -26,8 +26,6 @@ import se.streamsource.streamflow.client.resource.organizations.groups.participa
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRoleClientResource;
@@ -37,19 +35,27 @@ import se.streamsource.streamflow.client.resource.organizations.roles.RolesClien
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.WorkspaceClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.projects.SharedProjectClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.projects.SharedProjectsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.ProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.ProjectsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.assignments.ProjectAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.assignments.ProjectAssignmentsTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.delegations.ProjectDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.delegations.ProjectDelegationsTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.inbox.ProjectInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.inbox.ProjectInboxTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.waitingfor.ProjectWaitingforTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignedTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegatedTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.UserTaskCommentsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.general.UserTaskGeneralClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForClientResource;
 
 /**
  * JAVADOC
@@ -74,25 +80,25 @@ public class ClientResourceAssembler
                 UserTaskGeneralClientResource.class,
                 UserTaskCommentsClientResource.class,
 
-                SharedUserAssignmentsClientResource.class,
+                UserAssignmentsClientResource.class,
                 SharedUserAssignedTaskClientResource.class,
 
-                SharedUserDelegationsClientResource.class,
+                UserDelegationsClientResource.class,
                 SharedUserDelegatedTaskClientResource.class,
 
-                SharedUserWaitingForClientResource.class,
+                UserWaitingForClientResource.class,
                 SharedUserWaitingForTaskClientResource.class,
 
-                SharedProjectClientResource.class,
-                SharedProjectsClientResource.class
-                /*SharedProjectInboxClientResource.class,
-                SharedProjectInboxTaskClientResource.class,
-                SharedProjectAssignmentsClientResource.class,
-                SharedProjectAssignmentsTaskClientResource.class,
-                SharedProjectDelegationsClientResource.class,
-                SharedProjectDelegationsTaskClientResource.class,
-                SharedProjectWaitingforClientResource.class,
-                SharedProjectWaitingforTaskClientResource.class*/
+                ProjectClientResource.class,
+                ProjectsClientResource.class,
+                ProjectInboxClientResource.class,
+                ProjectInboxTaskClientResource.class,
+                ProjectAssignmentsClientResource.class,
+                ProjectAssignmentsTaskClientResource.class,
+                ProjectDelegationsClientResource.class,
+                ProjectDelegationsTaskClientResource.class,
+                ProjectWaitingforClientResource.class,
+                ProjectWaitingforTaskClientResource.class
 
                 ).visibleIn(Visibility.application);
 
@@ -107,8 +113,8 @@ public class ClientResourceAssembler
                 ParticipantsClientResource.class,
                 ParticipantClientResource.class,
 
-                ProjectsClientResource.class,
-                ProjectClientResource.class,
+                se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource.class,
+                se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource.class,
                 MembersClientResource.class,
                 MemberClientResource.class,
                 MemberRolesClientResource.class,

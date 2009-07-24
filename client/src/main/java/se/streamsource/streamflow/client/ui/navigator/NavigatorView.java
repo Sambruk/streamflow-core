@@ -53,11 +53,6 @@ public class NavigatorView
         setSelectedComponent(workspace);
     }
 
-    public WorkspaceView getShared()
-    {
-        return workspace;
-    }
-
     public AdministrationView getAdministration()
     {
         return administration;

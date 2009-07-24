@@ -56,7 +56,7 @@ public class WorkspaceUIAssembler
                 WorkspaceModel.class,
                 WorkspaceView.class);
 
-
+        // User
         UIAssemblers.addMV(module,
                 UserInboxModel.class,
                 UserInboxView.class);
@@ -72,6 +72,8 @@ public class WorkspaceUIAssembler
         UIAssemblers.addMV(module,
                 UserWaitingForModel.class,
                 UserWaitingForView.class);
+
+        UIAssemblers.addModels(module, ProjectWaitingForModel.class);
 
         //UIAssemblers.addViews(module, TaskView.class);
         UIAssemblers.addDialogs(module, AddTaskDialog.class,
