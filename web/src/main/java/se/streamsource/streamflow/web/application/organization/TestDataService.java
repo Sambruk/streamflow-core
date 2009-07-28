@@ -62,9 +62,9 @@ public interface TestDataService
             ou.describe("WayGroup");
 
             // Create suborganizations
-            OrganizationalUnit jayway = ou.newOrganizationalUnit("Jayway");
-            ou.newOrganizationalUnit("Dotway");
-            ou.newOrganizationalUnit("Realway");
+            OrganizationalUnit jayway = ou.createOrganizationalUnit("Jayway");
+            ou.createOrganizationalUnit("Dotway");
+            ou.createOrganizationalUnit("Realway");
 
             // Create groups
             Groups jaywayGroups = (Groups) jayway;

@@ -12,26 +12,33 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.checklist;
+package se.streamsource.streamflow.infrastructure.event;
 
-import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.List;
+import java.util.Date;
 
 /**
- * JAVADOC
+ * Representation of a domain-event
  */
-public interface ChecklistItemValue
-        extends ValueComposite
+public interface DomainEvent
+    extends ValueComposite, Identity
 {
-    @UseDefaults
-    Property<List> children();
+    // Name of method/event
+    Property<String> name();
 
-    @UseDefaults
-    Property<Boolean> mandatory();
+    // Id of the entity that generated the event
+    Property<String> entity();
 
-    @UseDefaults
-    Property<Boolean> include();
+    // When the event occurred
+    Property<Date> on();
+
+    // Who performed the event
+    @Optional
+    Property<String> by();
+
+    Property<ValueComposite> parameter();
 }

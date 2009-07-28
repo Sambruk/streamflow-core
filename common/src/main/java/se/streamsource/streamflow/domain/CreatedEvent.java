@@ -12,21 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.checklist;
+package se.streamsource.streamflow.domain;
 
 import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * Something has been created
  */
-public interface ChecklistEntity
+public interface CreatedEvent
 {
-    interface ChecklistState
-    {
-        Property<String> name();
-
-        Property<String> description();
-
-        Property<ChecklistValue> checklist();
-    }
+    Property<String> createdId();
 }

@@ -12,16 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.action;
+package se.streamsource.streamflow.infrastructure.event;
 
-import org.qi4j.api.property.Computed;
-import org.qi4j.api.property.Property;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * JAVADOC
+ * Mark a method as an event
  */
-public interface Completable
+@Retention( RetentionPolicy.RUNTIME )
+@Target( { ElementType.METHOD } )
+@Documented
+public @interface Event
 {
-    @Computed
-    Property<Boolean> completed();
 }

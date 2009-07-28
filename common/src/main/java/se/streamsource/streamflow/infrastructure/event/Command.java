@@ -12,20 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.checklist;
+package se.streamsource.streamflow.infrastructure.event;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * JAVADOC
+ * Mark a method as a command
  */
-public interface ChecklistValue
-        extends ValueComposite
+@Retention( RetentionPolicy.RUNTIME )
+@Target( { ElementType.METHOD } )
+@Documented
+public @interface Command
 {
-    @UseDefaults
-    Property<List<ChecklistItemValue>> items();
 }

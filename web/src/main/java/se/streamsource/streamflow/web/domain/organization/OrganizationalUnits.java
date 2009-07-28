@@ -16,11 +16,19 @@ package se.streamsource.streamflow.web.domain.organization;
 
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.streamflow.domain.CreatedEvent;
+import se.streamsource.streamflow.infrastructure.event.Command;
+import se.streamsource.streamflow.infrastructure.event.Event;
+import se.streamsource.streamflow.infrastructure.event.EventBuilderFactory;
 
 /**
  * JAVADOC
@@ -28,17 +36,28 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 @Mixins(OrganizationalUnits.OrganizationsMixin.class)
 public interface OrganizationalUnits
 {
-    OrganizationalUnit newOrganizationalUnit(String name);
+    @Command
+    OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
+
+    @Event
+    OrganizationalUnit organizationalUnitCreated(CreatedEvent event);
 
     interface OrganizationalUnitsState
     {
         @Aggregated
         ManyAssociation<OrganizationalUnit> organizationalUnits();
+
     }
 
     class OrganizationsMixin
             implements OrganizationalUnits
     {
+        @Service
+        EventBuilderFactory ebf;
+
+        @Service
+        IdentityGenerator idGenerator;
+
         @This
         OrganizationalUnit.OrganizationalUnitState ouState;
 
@@ -48,10 +67,18 @@ public interface OrganizationalUnits
         @Structure
         UnitOfWorkFactory uowf;
 
-        public OrganizationalUnit newOrganizationalUnit(String name)
+        public OrganizationalUnit createOrganizationalUnit(String name)
         {
-            EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class);
-            ouBuilder.prototype().description().set(name);
+            ValueBuilder<CreatedEvent> valueBuilder = ebf.buildEvent(CreatedEvent.class);
+            valueBuilder.prototype().createdId().set(idGenerator.generate(OrganizationalUnitEntity.class));
+            OrganizationalUnitEntity ou = organizationalUnitCreated(valueBuilder.newInstance());
+            ou.describe(name);
+            return ou;
+        }
+
+        public OrganizationalUnitEntity organizationalUnitCreated(CreatedEvent event)
+        {
+            EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class, event.createdId().get());
             ouBuilder.prototype().organization().set(ouState.organization().get());
             OrganizationalUnitEntity ou = ouBuilder.newInstance();
             state.organizationalUnits().add(state.organizationalUnits().count(), ou);

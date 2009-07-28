@@ -20,7 +20,6 @@ import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.client.domain.checklist.ChecklistAssembler;
 import se.streamsource.streamflow.client.domain.individual.IndividualAssembler;
 import se.streamsource.streamflow.client.infrastructure.application.EntityFinderAssembler;
 import se.streamsource.streamflow.client.infrastructure.application.RestletClientAssembler;

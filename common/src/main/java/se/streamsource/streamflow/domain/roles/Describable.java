@@ -26,7 +26,7 @@ import org.qi4j.library.constraints.annotation.MaxLength;
 @Mixins(Describable.DescribableMixin.class)
 public interface Describable
 {
-    void describe(String newDescription);
+    void describe(@MaxLength(50) String newDescription);
 
     boolean hasDescription(String description);
 
@@ -35,7 +35,6 @@ public interface Describable
     interface DescribableState
     {
         @UseDefaults
-        @MaxLength(50)
         Property<String> description();
     }
 
