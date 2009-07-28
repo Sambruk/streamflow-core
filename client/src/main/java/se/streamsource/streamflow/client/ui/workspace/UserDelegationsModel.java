@@ -20,7 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;

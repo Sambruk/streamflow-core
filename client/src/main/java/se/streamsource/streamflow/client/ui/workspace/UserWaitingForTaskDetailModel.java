@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForTaskClientResource;
 
 import java.io.IOException;
 

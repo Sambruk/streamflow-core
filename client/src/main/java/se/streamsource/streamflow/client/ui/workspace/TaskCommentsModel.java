@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
-import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.UserTaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.comments.UserTaskCommentsClientResource;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 

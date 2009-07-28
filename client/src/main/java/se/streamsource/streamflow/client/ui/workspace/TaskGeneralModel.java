@@ -18,7 +18,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.users.shared.user.task.general.UserTaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.general.UserTaskGeneralClientResource;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.io.IOException;

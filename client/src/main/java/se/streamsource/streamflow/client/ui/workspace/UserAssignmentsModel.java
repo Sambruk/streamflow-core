@@ -22,7 +22,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
 import se.streamsource.streamflow.domain.task.TaskStates;

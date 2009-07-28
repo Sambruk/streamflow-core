@@ -24,10 +24,10 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
 
 /**
  * JAVADOC

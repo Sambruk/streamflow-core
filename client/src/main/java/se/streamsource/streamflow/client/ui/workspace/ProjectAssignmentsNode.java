@@ -19,8 +19,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.shared.projects.assignments.ProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;

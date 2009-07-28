@@ -19,7 +19,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.shared.projects.ProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.ProjectClientResource;
 
 /**
  * JAVADOC

@@ -23,7 +23,7 @@ import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.shared.projects.ProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.ProjectClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 

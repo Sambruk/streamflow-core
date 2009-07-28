@@ -19,7 +19,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.projects.ProjectsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.ProjectsClientResource;
 
 /**
  * JAVADOC
