@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.domain.individual;
 
 import org.restlet.Restlet;
-import se.streamsource.streamflow.client.domain.individual.RegistrationException;
 
 /**
  * JAVADOC

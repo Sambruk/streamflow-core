@@ -46,7 +46,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingf
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.SharedProjectDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.SharedProjectDelegatedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.SharedProjectAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.SharedProjectAssignedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.SharedUserServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.SharedUserAssignedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.SharedUserAssignmentsServerResource;
@@ -86,7 +86,7 @@ public class APIv1Router
         attach("/users/{user}/workspace/projects/{project}/inbox", createServerResourceFinder(SharedProjectsInboxServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/inbox/{task}", createServerResourceFinder(SharedProjectsInboxTaskServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/assignments", createServerResourceFinder(SharedProjectAssignmentsServerResource.class));
-        attach("/users/{user}/workspace/projects/{project}/assignments/{task}", createServerResourceFinder(SharedProjectAssignedTaskServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/assignments/{task}", createServerResourceFinder(ProjectAssignedTaskServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/delegations", createServerResourceFinder(SharedProjectDelegationsServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/delegations/{task}", createServerResourceFinder(SharedProjectDelegatedTaskServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/waitingfor", createServerResourceFinder(SharedProjectWaitingForServerResource.class));

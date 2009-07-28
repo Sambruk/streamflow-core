@@ -42,7 +42,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingf
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.SharedProjectWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.SharedProjectDelegatedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.SharedProjectDelegationsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.SharedProjectAssignedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.SharedProjectAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.SharedProjectsInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.SharedProjectsInboxTaskServerResource;
@@ -97,7 +97,7 @@ public class ServerResourceAssembler
                 SharedProjectsInboxServerResource.class,
                 SharedProjectsInboxTaskServerResource.class,
                 SharedProjectAssignmentsServerResource.class,
-                SharedProjectAssignedTaskServerResource.class,
+                ProjectAssignedTaskServerResource.class,
                 SharedProjectDelegationsServerResource.class,
                 SharedProjectDelegatedTaskServerResource.class,
                 SharedProjectWaitingForServerResource.class,
