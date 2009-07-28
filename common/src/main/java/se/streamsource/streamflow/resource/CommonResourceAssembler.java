@@ -18,7 +18,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
+import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import se.streamsource.streamflow.domain.user.UserSpecification;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;

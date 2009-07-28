@@ -20,7 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.shared.inbox.NewTaskCommand;
+import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;

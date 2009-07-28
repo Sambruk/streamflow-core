@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.application.shared.inbox;
+package se.streamsource.streamflow.resource.inbox;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;

@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.application.administration.query;
+package se.streamsource.streamflow.client.domain.individual;
 
 /**
  * JAVADOC

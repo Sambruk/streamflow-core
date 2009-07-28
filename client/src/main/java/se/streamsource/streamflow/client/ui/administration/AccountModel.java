@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.Restlet;
-import se.streamsource.streamflow.application.administration.query.RegistrationException;
+import se.streamsource.streamflow.client.domain.individual.RegistrationException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 
 /**
