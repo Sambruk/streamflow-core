@@ -12,8 +12,9 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.workspace.projects.assignments;
+package se.streamsource.streamflow.web.resource.users.workspace.user.assignments;
 
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
@@ -27,38 +28,38 @@ import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
-import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
 import se.streamsource.streamflow.web.domain.task.Ownable;
-import se.streamsource.streamflow.web.domain.task.Subtasks;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.task.TaskPath;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
 
 /**
  * Mapped to:
- * /users/{user}/shared/projects/{project}/assignments
+ * /users/{user}/workspace/user/assignments
  */
-public class SharedProjectAssignmentsServerResource
+public class UserAssignmentsServerResource
         extends CommandQueryServerResource
 {
     public AssignmentsTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String userId    = (String) getRequest().getAttributes().get("user");
+        String id = (String) getRequest().getAttributes().get("user");
+        Assignments assignments = uow.get(Assignments.class, id);
 
-        // Find all Active tasks owned by "project" and assigned to "user"
+        // Find all my Active tasks assigned to "me"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> assignedToidProp = templateFor(Assignable.AssignableState.class).assignedTo().get().identity();
-        Property<String> ownerIdProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
+        Property<String> assignedId = templateFor(Assignable.AssignableState.class).assignedTo().get().identity();
+        Property<String> ownedId = templateFor(Ownable.OwnableState.class).owner().get().identity();
         queryBuilder.where(and(
-                eq(ownerIdProp, projectId),
-                eq(assignedToidProp, userId),
+                eq(assignedId, id),
+                eq(ownedId, id),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
         Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);
@@ -68,7 +69,7 @@ public class SharedProjectAssignmentsServerResource
         AssignedTaskDTO prototype = builder.prototype();
         ValueBuilder<AssignmentsTaskListDTO> listBuilder = vbf.newValueBuilder(AssignmentsTaskListDTO.class);
         List<AssignedTaskDTO> list = listBuilder.prototype().tasks().get();
-        EntityReference ref = EntityReference.parseEntityReference(projectId);
+        EntityReference ref = EntityReference.parseEntityReference(id);
         for (TaskEntity task : assignmentsQuery)
         {
             prototype.owner().set(ref);
@@ -85,26 +86,28 @@ public class SharedProjectAssignmentsServerResource
     public void newtask(NewTaskCommand command)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String userId = (String) getRequest().getAttributes().get("user");
-        Assignments assignments = uow.get(Assignments.class, projectId);
-        Assignee assignee = uow.get(Assignee.class, userId);
+        String id = (String) getRequest().getAttributes().get("user");
+        UserEntity user = uow.get(UserEntity.class, id);
 
-        Task task = assignments.newAssignedTask(assignee);
-        task.describe(command.description().get());
-        task.changeNote(command.note().get());
+        EntityBuilder<TaskEntity> builder = uow.newEntityBuilder(TaskEntity.class);
+        TaskEntity prototype = builder.prototype();
+        prototype.description().set(command.description().get());
+        prototype.note().set(command.note().get());
 
         // Check if subtask
         if (command.parentTask().get() != null)
         {
-            Subtasks parent = uow.get(Subtasks.class, command.parentTask().get().identity());
+            TaskPath path = uow.get(TaskPath.class, command.parentTask().get().identity());
 
-            parent.addSubtask(task);
+            // Add parents path first, then parent itself
+            for (Task task : path.getPath())
+            {
+                prototype.path().add(prototype.path().count(), task);
+            }
+            prototype.path().add(prototype.path().count(), (Task) path);
         }
 
-        if (command.isCompleted().get())
-        {
-            assignments.completeAssignedTask(task, assignee);
-        }
+        TaskEntity task = builder.newInstance();
+        user.receiveTask(task);
     }
 }

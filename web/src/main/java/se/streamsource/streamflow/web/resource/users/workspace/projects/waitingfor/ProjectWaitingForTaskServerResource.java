@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.workspace.projects.delegations;
+package se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -21,50 +21,38 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Delegations;
+import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/shared/projects/{project}/delegations/{task}
+ * /users/{user}/workspace/projects/{project}/waitingfor/{task}
  */
-public class SharedProjectDelegatedTaskServerResource
+public class ProjectWaitingForTaskServerResource
         extends CommandQueryServerResource
 {
 
     public void complete()
     {
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String userId = (String) getRequest().getAttributes().get("user");
+        String id = (String) getRequest().getAttributes().get("user");
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
         Task task = uow.get(Task.class, taskId);
-        Delegations delegations = uow.get(Delegations.class, projectId);
-        Assignee assignee = uow.get(Assignee.class, userId);
-        delegations.completeDelegatedTask(task, assignee);
+        WaitingFor waitingFor = uow.get(WaitingFor.class, id);
+        Assignee assignee = uow.get(Assignee.class, id);
+        waitingFor.completeWaitingForTask(task, assignee);
     }
 
-    public void assignToMe()
+    public void markAsRead()
     {
-        String projectId = (String) getRequest().getAttributes().get("project");
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Delegations delegations = uow.get(Delegations.class, projectId);
-        Assignee assignee = uow.get(Assignee.class, userId);
-        Task task = uow.get(Task.class, taskId);
-        delegations.accept(task, assignee);
-    }
-
-    public void reject()
-    {
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        Delegations user = uow.get(Delegations.class, projectId);
-        user.reject(task);
+        Inbox inbox = uow.get(Inbox.class, userId);
+        inbox.markAsRead(task);
     }
 
     @Override

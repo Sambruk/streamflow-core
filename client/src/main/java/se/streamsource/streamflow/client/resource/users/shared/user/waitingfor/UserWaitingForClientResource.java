@@ -37,8 +37,8 @@ public class UserWaitingForClientResource
         return query("tasks", WaitingForTaskListDTO.class);
     }
 
-    public SharedUserWaitingForTaskClientResource task(String id)
+    public UserWaitingForTaskClientResource task(String id)
     {
-        return getSubResource(id, SharedUserWaitingForTaskClientResource.class);
+        return getSubResource(id, UserWaitingForTaskClientResource.class);
     }
 }

@@ -33,9 +33,9 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/shared/projects/{project}/inbox/{task}
+ * /users/{user}/workspace/projects/{project}/inbox/{task}
  */
-public class SharedProjectsInboxTaskServerResource
+public class ProjectsInboxTaskServerResource
         extends CommandQueryServerResource
 {
     public void complete()

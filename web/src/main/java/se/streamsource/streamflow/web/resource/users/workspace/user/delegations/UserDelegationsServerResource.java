@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.workspace.projects.delegations;
+package se.streamsource.streamflow.web.resource.users.workspace.user.delegations;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.Association;
@@ -25,30 +25,37 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
-import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.task.Assignable;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Delegatable;
+import se.streamsource.streamflow.web.domain.task.Delegations;
+import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
 
 /**
  * Mapped to:
- * /users/{user}/shared/projects/{project}/delegations
+ * /users/{user}/workspace/user/delegations
  */
-public class SharedProjectDelegationsServerResource
+public class UserDelegationsServerResource
         extends CommandQueryServerResource
 {
     public DelegationsTaskListDTO tasks()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("project");
+        String id = (String) getRequest().getAttributes().get("user");
+        Delegations delegations = uow.get(Delegations.class, id);
 
-        // Find all Active tasks delegated to "project" that have not yet been assigned
+        // Find all Active tasks delegated to "me"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
-        Association<Assignee> assigneeAssociation = templateFor(Assignable.AssignableState.class).assignedTo();
+        Property<String> idProp = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
+        Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
         queryBuilder.where(and(
-                eq(delegatedTo, id),
-                isNull(assigneeAssociation),
+                eq(idProp, id),
+                isNull(assignee),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
         Query<TaskEntity> delegationsQuery = queryBuilder.newQuery(uow);
@@ -60,7 +67,7 @@ public class SharedProjectDelegationsServerResource
         List<DelegatedTaskDTO> list = listBuilder.prototype().tasks().get();
         for (TaskEntity task : delegationsQuery)
         {
-            Owner owner = uow.get(Owner.class, task.delegatedBy().get().identity().get());
+            Owner owner = uow.get(Owner.class, task.owner().get().identity().get());
             prototype.delegatedFrom().set(owner.getDescription());
             prototype.task().set(EntityReference.getEntityReference(task));
             prototype.delegatedOn().set(task.delegatedOn().get());

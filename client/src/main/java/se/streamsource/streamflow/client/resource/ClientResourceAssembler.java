@@ -46,15 +46,15 @@ import se.streamsource.streamflow.client.resource.users.shared.projects.inbox.Pr
 import se.streamsource.streamflow.client.resource.users.shared.projects.waitingfor.ProjectWaitingforClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.projects.waitingfor.ProjectWaitingforTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.SharedUserAssignedTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignedTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.SharedUserDelegatedTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegatedTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.UserTaskCommentsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.general.UserTaskGeneralClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForClientResource;
 
 /**
@@ -81,13 +81,13 @@ public class ClientResourceAssembler
                 UserTaskCommentsClientResource.class,
 
                 UserAssignmentsClientResource.class,
-                SharedUserAssignedTaskClientResource.class,
+                UserAssignedTaskClientResource.class,
 
                 UserDelegationsClientResource.class,
-                SharedUserDelegatedTaskClientResource.class,
+                UserDelegatedTaskClientResource.class,
 
                 UserWaitingForClientResource.class,
-                SharedUserWaitingForTaskClientResource.class,
+                UserWaitingForTaskClientResource.class,
 
                 ProjectClientResource.class,
                 ProjectsClientResource.class,

@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.SharedUserWaitingForTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForTaskClientResource;
 
 import java.io.IOException;
 
@@ -32,9 +32,9 @@ public class UserWaitingForTaskDetailModel
     {
     }
 
-    public void setResource(SharedUserWaitingForTaskClientResource sharedTask) throws IOException, ResourceException
+    public void setResource(UserWaitingForTaskClientResource task) throws IOException, ResourceException
     {
-        comments.setResource(sharedTask.comments());
-        general.setResource(sharedTask.general());
+        comments.setResource(task.comments());
+        general.setResource(task.general());
     }
 }

@@ -69,28 +69,11 @@ public class StreamFlowClientAssembler
         new AdministrationAssembler().assemble(uiLayer.newModuleAssembly("AdministrationQueries"));
         new MenuAssembler().assemble(uiLayer.newModuleAssembly("Menu view"));
         new NavigatorUIAssembler().assemble(uiLayer.newModuleAssembly("Navigator view"));
-        new WorkspaceUIAssembler().assemble(uiLayer.newModuleAssembly("Shared view"));
+        new WorkspaceUIAssembler().assemble(uiLayer.newModuleAssembly("Workspace view"));
         new UIAssembler().assemble(uiLayer.newModuleAssembly("UI View"));
         new UIInfrastructureAssembler().assemble(uiLayer.newModuleAssembly("View infrastructure"));
         new RestletClientAssembler().assemble(uiLayer.newModuleAssembly("REST Client"));
     }
-
-/*
-    protected void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
-    {
-        new NavigatorApplicationAssembler().assemble(appLayer.newModuleAssembly("Navigator"));
-        new SharedApplicationAssembler().assemble(appLayer.newModuleAssembly("Shared"));
-
-        new ContactAssembler().assemble(appLayer.newModuleAssembly("Contact"));
-    }
-*/
-
-/*
-    protected void assembleApplicationInfrastructureLayer(LayerAssembly appInfrastructureLayer) throws AssemblyException
-    {
-        new EntityFinderAssembler().assemble(appInfrastructureLayer.newModuleAssembly("Entity Finder"));
-    }
-*/
 
     protected void assembleClientDomainLayer(LayerAssembly domainLayer) throws AssemblyException
     {

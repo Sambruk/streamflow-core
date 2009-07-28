@@ -19,9 +19,9 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
 
 /**
- * Mapped to /user/{userid}/shared
+ * Mapped to /user/{userid}/workspace
  */
-public class SharedServerResource
+public class WorkspaceServerResource
         extends BaseServerResource
 {
     @Override

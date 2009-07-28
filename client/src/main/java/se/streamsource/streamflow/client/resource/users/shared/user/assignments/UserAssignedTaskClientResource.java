@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.delegations;
+package se.streamsource.streamflow.client.resource.users.shared.user.assignments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -21,31 +21,27 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.UserTaskCommentsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.general.UserTaskGeneralClientResource;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 /**
  * JAVADOC
  */
-public class SharedUserDelegatedTaskClientResource
+public class UserAssignedTaskClientResource
         extends CommandQueryClientResource
 {
-    public SharedUserDelegatedTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public UserAssignedTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
     public void complete() throws ResourceException
     {
-        putCommand("complete");
+        postCommand("complete");
     }
 
-    public void assignToMe() throws ResourceException
+    public void describe(DescriptionDTO descriptionValue) throws ResourceException
     {
-        putCommand("assignToMe");
-    }
-
-    public void reject() throws ResourceException
-    {
-        putCommand("reject");
+        putCommand("describe", descriptionValue);
     }
 
     public UserTaskCommentsClientResource comments()
@@ -57,4 +53,5 @@ public class SharedUserDelegatedTaskClientResource
     {
         return getSubResource("general", UserTaskGeneralClientResource.class);
     }
+    
 }

@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/shared/projects/{project}/assignments/{task}
+ * /users/{user}/workspace/projects/{project}/assignments/{task}
  */
 public class ProjectAssignedTaskServerResource
         extends CommandQueryServerResource

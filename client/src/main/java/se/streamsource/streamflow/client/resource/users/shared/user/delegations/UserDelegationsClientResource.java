@@ -37,8 +37,8 @@ public class UserDelegationsClientResource
         return query("tasks", DelegationsTaskListDTO.class);
     }
 
-    public SharedUserDelegatedTaskClientResource task(String id)
+    public UserDelegatedTaskClientResource task(String id)
     {
-        return getSubResource(id, SharedUserDelegatedTaskClientResource.class);
+        return getSubResource(id, UserDelegatedTaskClientResource.class);
     }
 }

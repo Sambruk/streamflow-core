@@ -25,9 +25,9 @@ import se.streamsource.streamflow.web.resource.BaseServerResource;
 
 /**
  * Mapped to:
- * /users/{id}/shared/user/*
+ * /users/{id}/workspace/user/*
  */
-public class SharedUserServerResource
+public class WorkspaceUserServerResource
         extends BaseServerResource
 {
     @Structure
@@ -45,6 +45,6 @@ public class SharedUserServerResource
     @Override
     protected Representation get() throws ResourceException
     {
-        return getHtml("resources/shareduser.html");
+        return getHtml("resources/workspaceuser.html");
     }
 }

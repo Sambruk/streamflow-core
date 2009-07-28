@@ -44,9 +44,9 @@ import java.util.List;
 
 /**
  * Mapped to:
- * /users/{user}/shared/projects/{project}/inbox
+ * /users/{user}/workspace/projects/{project}/inbox
  */
-public class SharedProjectsInboxServerResource
+public class ProjectsInboxServerResource
         extends CommandQueryServerResource
 {
     public InboxTaskListDTO tasks(TasksQuery query)

@@ -12,26 +12,23 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.waitingfor;
+package se.streamsource.streamflow.client.resource.users.shared.user.delegations;
 
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.entity.EntityReference;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.UserTaskCommentsClientResource;
 import se.streamsource.streamflow.client.resource.users.shared.user.task.general.UserTaskGeneralClientResource;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
  */
-public class SharedUserWaitingForTaskClientResource
+public class UserDelegatedTaskClientResource
         extends CommandQueryClientResource
 {
-    public SharedUserWaitingForTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public UserDelegatedTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
@@ -41,16 +38,14 @@ public class SharedUserWaitingForTaskClientResource
         putCommand("complete");
     }
 
-    public void markAsRead() throws ResourceException
+    public void assignToMe() throws ResourceException
     {
-        putCommand("markAsRead");
+        putCommand("assignToMe");
     }
 
-    public void delegate(String delegateeId) throws ResourceException
+    public void reject() throws ResourceException
     {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
-        putCommand("delegate", builder.newInstance());
+        putCommand("reject");
     }
 
     public UserTaskCommentsClientResource comments()
@@ -62,5 +57,4 @@ public class SharedUserWaitingForTaskClientResource
     {
         return getSubResource("general", UserTaskGeneralClientResource.class);
     }
-
 }

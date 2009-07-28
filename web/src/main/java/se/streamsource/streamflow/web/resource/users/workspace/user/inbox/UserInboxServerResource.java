@@ -48,7 +48,7 @@ import java.util.List;
 
 /**
  * Mapped to:
- * /users/{user}/shared/user/inbox
+ * /users/{user}/workspace/user/inbox
  */
 public class UserInboxServerResource
         extends CommandQueryServerResource

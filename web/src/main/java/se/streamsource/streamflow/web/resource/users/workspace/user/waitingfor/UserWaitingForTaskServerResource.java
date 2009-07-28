@@ -27,9 +27,9 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/shared/user/waitingfor/{task}
+ * /users/{user}/workspace/user/waitingfor/{task}
  */
-public class SharedUserWaitingForTaskServerResource
+public class UserWaitingForTaskServerResource
         extends CommandQueryServerResource
 {
 

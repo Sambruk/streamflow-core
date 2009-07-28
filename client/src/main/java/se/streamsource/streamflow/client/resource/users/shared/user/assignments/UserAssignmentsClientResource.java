@@ -44,8 +44,8 @@ public class UserAssignmentsClientResource
         postCommand("newtask", command);
     }
 
-    public SharedUserAssignedTaskClientResource task(String id)
+    public UserAssignedTaskClientResource task(String id)
     {
-        return getSubResource(id, SharedUserAssignedTaskClientResource.class);
+        return getSubResource(id, UserAssignedTaskClientResource.class);
     }
 }

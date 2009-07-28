@@ -29,9 +29,9 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/shared/projects
+ * /users/{user}/workspace/projects
  */
-public class SharedProjectsServerResource
+public class ProjectsServerResource
         extends CommandQueryServerResource
 {
     @Override
@@ -41,7 +41,7 @@ public class SharedProjectsServerResource
         {
            return super.get(variant);
         }
-        return getHtml("resources/sharedproject.html");
+        return getHtml("resources/workspaceproject.html");
     }
 
     public ListValue listProjects()

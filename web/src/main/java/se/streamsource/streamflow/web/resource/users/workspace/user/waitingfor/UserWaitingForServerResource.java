@@ -38,9 +38,9 @@ import java.util.List;
 
 /**
  * Mapped to:
- * /users/{user}/shared/user/waitingfor
+ * /users/{user}/workspace/user/waitingfor
  */
-public class SharedUserWaitingForServerResource
+public class UserWaitingForServerResource
         extends CommandQueryServerResource
 {
     public WaitingForTaskListDTO tasks()
