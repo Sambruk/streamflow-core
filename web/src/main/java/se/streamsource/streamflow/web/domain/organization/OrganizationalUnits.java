@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -23,38 +25,39 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.infrastructure.event.Command;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.Event;
-import se.streamsource.streamflow.infrastructure.event.EventBuilderFactory;
+import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 
 /**
  * JAVADOC
  */
+@Concerns(EventCreationConcern.class)
+@SideEffects(EventSideEffect.class)
 @Mixins(OrganizationalUnits.OrganizationsMixin.class)
 public interface OrganizationalUnits
 {
     @Command
     OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
 
-    @Event
-    OrganizationalUnit organizationalUnitCreated(DomainEvent event, @Name("id") String id);
-
+    @Mixins(OrganizationalUnitsStateMixin.class)
     interface OrganizationalUnitsState
     {
         @Aggregated
         ManyAssociation<OrganizationalUnit> organizationalUnits();
 
+        @Event
+        OrganizationalUnitEntity organizationalUnitCreated(@Optional DomainEvent event, @Name("id") String id);
     }
 
     class OrganizationsMixin
             implements OrganizationalUnits
     {
-        @Service
-        EventBuilderFactory ebf;
-
         @Service
         IdentityGenerator idGenerator;
 
@@ -69,10 +72,23 @@ public interface OrganizationalUnits
 
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
-            OrganizationalUnitEntity ou = organizationalUnitCreated(null, idGenerator.generate(OrganizationalUnitEntity.class));
+            OrganizationalUnitEntity ou = state.organizationalUnitCreated(null, idGenerator.generate(OrganizationalUnitEntity.class));
             ou.describe(name);
             return ou;
         }
+    }
+
+    abstract class OrganizationalUnitsStateMixin
+            implements OrganizationalUnitsState
+    {
+        @This
+        OrganizationalUnitsState state;
+
+        @This
+        OrganizationalUnit.OrganizationalUnitState ouState;
+
+        @Structure
+        UnitOfWorkFactory uowf;
 
         public OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id)
         {

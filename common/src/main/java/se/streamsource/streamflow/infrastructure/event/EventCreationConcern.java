@@ -15,12 +15,12 @@
 package se.streamsource.streamflow.infrastructure.event;
 
 import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.concern.GenericConcern;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.sideeffect.GenericSideEffect;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.json.JSONObject;
@@ -35,7 +35,7 @@ import java.util.Date;
  */
 @AppliesTo(Event.class)
 public class EventCreationConcern
-    extends GenericSideEffect
+    extends GenericConcern
 {
     @This
     Identity identity;
@@ -46,7 +46,6 @@ public class EventCreationConcern
     @Service
     IdentityGenerator idGenerator;
 
-    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         if (args[0] == null && DomainEvent.class.equals(method.getParameterTypes()[0]))
@@ -71,12 +70,13 @@ public class EventCreationConcern
                 else
                     params.value(args[i]);
             }
+            json.endObject();
             prototype.parameters().set(json.toString());
             DomainEvent event = builder.newInstance();
 
             args[0] = event;
         }
 
-        return super.invoke(proxy, method, args);
+        return next.invoke(proxy, method, args);
     }
 }

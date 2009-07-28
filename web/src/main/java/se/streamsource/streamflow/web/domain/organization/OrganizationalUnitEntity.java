@@ -14,16 +14,22 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.project.IdGenerator;
 import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.domain.project.Roles;
-import se.streamsource.streamflow.web.domain.project.IdGenerator;
 
 /**
  * JAVADOC
  */
+@Concerns(EventCreationConcern.class)
+@SideEffects(EventSideEffect.class)
 public interface OrganizationalUnitEntity
         extends EntityComposite,
         // Roles
