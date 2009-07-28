@@ -18,15 +18,15 @@ import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
-import se.streamsource.streamflow.domain.CreatedEvent;
 import se.streamsource.streamflow.infrastructure.event.Command;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.EventBuilderFactory;
 
@@ -40,7 +40,7 @@ public interface OrganizationalUnits
     OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
 
     @Event
-    OrganizationalUnit organizationalUnitCreated(CreatedEvent event);
+    OrganizationalUnit organizationalUnitCreated(DomainEvent event, @Name("id") String id);
 
     interface OrganizationalUnitsState
     {
@@ -69,16 +69,14 @@ public interface OrganizationalUnits
 
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
-            ValueBuilder<CreatedEvent> valueBuilder = ebf.buildEvent(CreatedEvent.class);
-            valueBuilder.prototype().createdId().set(idGenerator.generate(OrganizationalUnitEntity.class));
-            OrganizationalUnitEntity ou = organizationalUnitCreated(valueBuilder.newInstance());
+            OrganizationalUnitEntity ou = organizationalUnitCreated(null, idGenerator.generate(OrganizationalUnitEntity.class));
             ou.describe(name);
             return ou;
         }
 
-        public OrganizationalUnitEntity organizationalUnitCreated(CreatedEvent event)
+        public OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id)
         {
-            EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class, event.createdId().get());
+            EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class, id);
             ouBuilder.prototype().organization().set(ouState.organization().get());
             OrganizationalUnitEntity ou = ouBuilder.newInstance();
             state.organizationalUnits().add(state.organizationalUnits().count(), ou);

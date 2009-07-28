@@ -94,7 +94,6 @@ public class StreamFlowClientAssembler
 
     protected void assembleClientDomainLayer(LayerAssembly domainLayer) throws AssemblyException
     {
-        new ChecklistAssembler().assemble(domainLayer.newModuleAssembly("Checklist"));
         new IndividualAssembler().assemble(domainLayer.newModuleAssembly("Individual"));
 
         new ContactAssembler().assemble(domainLayer.newModuleAssembly("Contact"));

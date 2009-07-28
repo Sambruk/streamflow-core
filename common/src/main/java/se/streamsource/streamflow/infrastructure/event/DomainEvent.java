@@ -22,7 +22,14 @@ import org.qi4j.api.value.ValueComposite;
 import java.util.Date;
 
 /**
- * Representation of a domain-event
+ * Representation of a domain-event. An event is triggered by calling a method
+ * that is of the form:
+ * @Event
+ * void someName(DomainEvent event, SomeParam param);
+ *
+ * The "event" argument should be invoked with null, as it will be created during
+ * the method call. If it is not null, then the method call is a replay of previously
+ * created events.
  */
 public interface DomainEvent
     extends ValueComposite, Identity
@@ -40,5 +47,6 @@ public interface DomainEvent
     @Optional
     Property<String> by();
 
-    Property<ValueComposite> parameter();
+    // Method parameters as JSON
+    Property<String> parameters();
 }
