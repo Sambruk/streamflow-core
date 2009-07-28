@@ -12,16 +12,16 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user;
+package se.streamsource.streamflow.client.resource.users.workspace.user;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.assignments.UserAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.delegations.UserDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.waitingfor.UserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
 
 /**
  * JAVADOC

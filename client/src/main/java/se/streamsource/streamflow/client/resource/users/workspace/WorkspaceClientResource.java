@@ -12,30 +12,33 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.task.general;
+package se.streamsource.streamflow.client.resource.users.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
-
-import java.io.IOException;
+import se.streamsource.streamflow.client.resource.users.workspace.user.UserClientResource;
+import se.streamsource.streamflow.client.resource.users.shared.projects.ProjectsClientResource;
 
 /**
  * JAVADOC
  */
-public class UserTaskGeneralClientResource
+public class WorkspaceClientResource
         extends BaseClientResource
 {
-    public UserTaskGeneralClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public TaskGeneralDTO general() throws IOException, ResourceException
+    public UserClientResource user()
     {
-        return getQuery(TaskGeneralDTO.class);
+        return getSubResource("user", UserClientResource.class);
+    }
+
+    public ProjectsClientResource projects()
+    {
+        return getSubResource("projects", ProjectsClientResource.class);
     }
 }

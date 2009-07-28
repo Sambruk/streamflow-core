@@ -12,36 +12,45 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.assignments;
+package se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.entity.EntityReference;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.task.comments.UserTaskCommentsClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.user.task.general.UserTaskGeneralClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.comments.UserTaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.general.UserTaskGeneralClientResource;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
  */
-public class UserAssignedTaskClientResource
+public class UserWaitingForTaskClientResource
         extends CommandQueryClientResource
 {
-    public UserAssignedTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public UserWaitingForTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
     public void complete() throws ResourceException
     {
-        postCommand("complete");
+        putCommand("complete");
     }
 
-    public void describe(DescriptionDTO descriptionValue) throws ResourceException
+    public void markAsRead() throws ResourceException
     {
-        putCommand("describe", descriptionValue);
+        putCommand("markAsRead");
+    }
+
+    public void delegate(String delegateeId) throws ResourceException
+    {
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+        builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
+        putCommand("delegate", builder.newInstance());
     }
 
     public UserTaskCommentsClientResource comments()
@@ -53,5 +62,5 @@ public class UserAssignedTaskClientResource
     {
         return getSubResource("general", UserTaskGeneralClientResource.class);
     }
-    
+
 }

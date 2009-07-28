@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.inbox;
+package se.streamsource.streamflow.client.resource.users.workspace.user.assignments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -20,26 +20,23 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.LabelsClientResource;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
-import se.streamsource.streamflow.resource.label.LabelListDTO;
 
 /**
  * JAVADOC
  */
-public class UserInboxClientResource
+public class UserAssignmentsClientResource
         extends CommandQueryClientResource
-        implements LabelsClientResource
 {
-    public UserInboxClientResource(@Uses Context context, @Uses Reference reference)
+    public UserAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public InboxTaskListDTO tasks(TasksQuery query) throws ResourceException
+    public AssignmentsTaskListDTO tasks(TasksQuery query) throws ResourceException
     {
-        return query("tasks", query, InboxTaskListDTO.class);
+        return query("tasks", query, AssignmentsTaskListDTO.class);
     }
 
     public void newtask(NewTaskCommand command) throws ResourceException
@@ -47,13 +44,8 @@ public class UserInboxClientResource
         postCommand("newtask", command);
     }
 
-    public UserInboxTaskClientResource task(String id)
+    public UserAssignedTaskClientResource task(String id)
     {
-        return getSubResource(id, UserInboxTaskClientResource.class);
-    }
-
-    public LabelListDTO labels() throws ResourceException
-    {
-        return query("labels", LabelListDTO.class);
+        return getSubResource(id, UserAssignedTaskClientResource.class);
     }
 }

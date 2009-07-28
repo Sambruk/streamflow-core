@@ -21,7 +21,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
-import se.streamsource.streamflow.client.resource.users.shared.WorkspaceClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.WorkspaceClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 

@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.assignments;
+package se.streamsource.streamflow.client.resource.users.workspace.user.inbox;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -20,23 +20,26 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
+import se.streamsource.streamflow.client.resource.LabelsClientResource;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.label.LabelListDTO;
 
 /**
  * JAVADOC
  */
-public class UserAssignmentsClientResource
+public class UserInboxClientResource
         extends CommandQueryClientResource
+        implements LabelsClientResource
 {
-    public UserAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
+    public UserInboxClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public AssignmentsTaskListDTO tasks(TasksQuery query) throws ResourceException
+    public InboxTaskListDTO tasks(TasksQuery query) throws ResourceException
     {
-        return query("tasks", query, AssignmentsTaskListDTO.class);
+        return query("tasks", query, InboxTaskListDTO.class);
     }
 
     public void newtask(NewTaskCommand command) throws ResourceException
@@ -44,8 +47,13 @@ public class UserAssignmentsClientResource
         postCommand("newtask", command);
     }
 
-    public UserAssignedTaskClientResource task(String id)
+    public UserInboxTaskClientResource task(String id)
     {
-        return getSubResource(id, UserAssignedTaskClientResource.class);
+        return getSubResource(id, UserInboxTaskClientResource.class);
+    }
+
+    public LabelListDTO labels() throws ResourceException
+    {
+        return query("labels", LabelListDTO.class);
     }
 }

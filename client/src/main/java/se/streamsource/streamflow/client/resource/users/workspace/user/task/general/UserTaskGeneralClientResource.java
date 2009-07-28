@@ -12,33 +12,30 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.waitingfor;
+package se.streamsource.streamflow.client.resource.users.workspace.user.task.general;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
+import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+
+import java.io.IOException;
 
 /**
  * JAVADOC
  */
-public class UserWaitingForClientResource
-        extends CommandQueryClientResource
+public class UserTaskGeneralClientResource
+        extends BaseClientResource
 {
-    public UserWaitingForClientResource(@Uses Context context, @Uses Reference reference)
+    public UserTaskGeneralClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public WaitingForTaskListDTO tasks() throws ResourceException
+    public TaskGeneralDTO general() throws IOException, ResourceException
     {
-        return query("tasks", WaitingForTaskListDTO.class);
-    }
-
-    public UserWaitingForTaskClientResource task(String id)
-    {
-        return getSubResource(id, UserWaitingForTaskClientResource.class);
+        return getQuery(TaskGeneralDTO.class);
     }
 }

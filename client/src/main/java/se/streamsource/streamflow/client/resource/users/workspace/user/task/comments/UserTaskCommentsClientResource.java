@@ -12,33 +12,36 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.user.delegations;
+package se.streamsource.streamflow.client.resource.users.workspace.user.task.comments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
+import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.resource.comment.CommentsDTO;
+import se.streamsource.streamflow.resource.comment.NewCommentCommand;
+
+import java.io.IOException;
 
 /**
- * JAVADOC
+ * Comments on a task
  */
-public class UserDelegationsClientResource
-        extends CommandQueryClientResource
+public class UserTaskCommentsClientResource
+        extends BaseClientResource
 {
-    public UserDelegationsClientResource(@Uses Context context, @Uses Reference reference)
+    public UserTaskCommentsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public DelegationsTaskListDTO tasks() throws ResourceException
+    public CommentsDTO comments() throws IOException, ResourceException
     {
-        return query("tasks", DelegationsTaskListDTO.class);
+        return getQuery(CommentsDTO.class);
     }
 
-    public UserDelegatedTaskClientResource task(String id)
+    public void addComment(NewCommentCommand value) throws ResourceException
     {
-        return getSubResource(id, UserDelegatedTaskClientResource.class);
+        postCommand(value);
     }
 }
