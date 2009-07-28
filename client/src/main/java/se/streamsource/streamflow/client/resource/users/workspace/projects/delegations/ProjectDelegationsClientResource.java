@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.projects.assignments;
+package se.streamsource.streamflow.client.resource.users.workspace.projects.delegations;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -20,17 +20,17 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignedTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxTaskClientResource;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 /**
  * JAVADOC
  */
-public class ProjectAssignmentsClientResource
+public class ProjectDelegationsClientResource
         extends CommandQueryClientResource
 {
-    public ProjectAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
+    public ProjectDelegationsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
@@ -45,8 +45,8 @@ public class ProjectAssignmentsClientResource
         postCommand("newtask", command);
     }
 
-    public UserAssignedTaskClientResource task(String id)
+    public UserInboxTaskClientResource task(String id)
     {
-        return getSubResource(id, UserAssignedTaskClientResource.class);
+        return getSubResource(id, UserInboxTaskClientResource.class);
     }
 }

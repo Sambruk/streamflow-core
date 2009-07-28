@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.projects.inbox;
+package se.streamsource.streamflow.client.resource.users.workspace.projects.inbox;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;

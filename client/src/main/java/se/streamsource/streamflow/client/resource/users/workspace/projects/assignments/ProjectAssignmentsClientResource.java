@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.projects.waitingfor;
+package se.streamsource.streamflow.client.resource.users.workspace.projects.assignments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -20,22 +20,24 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignedTaskClientResource;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 /**
  * JAVADOC
  */
-public class ProjectWaitingforClientResource
+public class ProjectAssignmentsClientResource
         extends CommandQueryClientResource
 {
-    public ProjectWaitingforClientResource(@Uses Context context, @Uses Reference reference)
+    public ProjectAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public WaitingForTaskListDTO tasks() throws ResourceException
+    public InboxTaskListDTO tasks(TasksQuery query) throws ResourceException
     {
-        return query("tasks", WaitingForTaskListDTO.class);
+        return query("tasks", query, InboxTaskListDTO.class);
     }
 
     public void newtask(NewTaskCommand command) throws ResourceException
@@ -43,8 +45,8 @@ public class ProjectWaitingforClientResource
         postCommand("newtask", command);
     }
 
-    public ProjectWaitingforTaskClientResource task(String id)
+    public UserAssignedTaskClientResource task(String id)
     {
-        return getSubResource(id, ProjectWaitingforTaskClientResource.class);
+        return getSubResource(id, UserAssignedTaskClientResource.class);
     }
 }

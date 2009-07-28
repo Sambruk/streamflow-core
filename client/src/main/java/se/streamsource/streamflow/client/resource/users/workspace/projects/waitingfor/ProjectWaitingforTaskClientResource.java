@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.projects.delegations;
+package se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
@@ -29,10 +29,10 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 /**
  * JAVADOC
  */
-public class ProjectDelegationsTaskClientResource
+public class ProjectWaitingforTaskClientResource
         extends CommandQueryClientResource
 {
-    public ProjectDelegationsTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public ProjectWaitingforTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }

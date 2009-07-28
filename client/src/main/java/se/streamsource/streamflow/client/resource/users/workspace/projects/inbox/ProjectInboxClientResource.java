@@ -12,33 +12,41 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.shared.projects;
+package se.streamsource.streamflow.client.resource.users.workspace.projects.inbox;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxTaskClientResource;
+import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.inbox.TasksQuery;
 
 /**
  * JAVADOC
  */
-public class ProjectsClientResource
+public class ProjectInboxClientResource
         extends CommandQueryClientResource
 {
-    public ProjectsClientResource(@Uses Context context, @Uses Reference reference)
+    public ProjectInboxClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public ProjectClientResource project(String project)
+    public InboxTaskListDTO tasks(TasksQuery query) throws ResourceException
     {
-        return getSubResource(project, ProjectClientResource.class);
+        return query("tasks", query, InboxTaskListDTO.class);
     }
 
-    public ListValue listProjects() throws ResourceException
+    public void newtask(NewTaskCommand command) throws ResourceException
     {
-        return query("listProjects", ListValue.class);        
+        postCommand("newtask", command);
+    }
+
+    public UserInboxTaskClientResource task(String id)
+    {
+        return getSubResource(id, UserInboxTaskClientResource.class);
     }
 }
