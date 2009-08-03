@@ -15,68 +15,42 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-
-import javax.swing.*;
 
 /**
  * JAVADOC
  */
 public class UserDelegationsNode
         extends DefaultMutableTreeTableNode
-        implements DetailView
 {
-    @Service
-    UserDelegationsView view;
-
-    @Service
+    @Uses
     UserDelegationsModel model;
 
-    @Uses
-    private AccountSettingsValue settings;
-
-    public UserDelegationsNode(@Uses UserDelegationsClientResource delegationsClientResource)
+    @Override
+    public UserNode getParent()
     {
-        super(delegationsClientResource, false);
+        return (UserNode) super.getParent();
     }
 
     @Override
     public Object getValueAt(int column)
     {
-        return i18n.text(WorkspaceResources.delegations_node);
-    }
-
-    UserDelegationsClientResource delegations()
-    {
-        return (UserDelegationsClientResource) getUserObject();
-    }
-
-    public JComponent detailView()
-    {
-        SwingUtilities.invokeLater(new Runnable()
+        String text = i18n.text(WorkspaceResources.delegations_node);
+        int unread = model.unreadCount();
+        if (unread > 0)
         {
-            public void run()
-            {
-                try
-                {
-                    model.setDelegations(delegations());
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-        return view;
+            text += " ("+unread+")";
+        } else
+        {
+            text += "                ";
+        }
+
+        return text;
     }
 
-    public AccountSettingsValue getSettings()
+    UserDelegationsModel delegationsModel()
     {
-        return settings;
+        return model;
     }
 }

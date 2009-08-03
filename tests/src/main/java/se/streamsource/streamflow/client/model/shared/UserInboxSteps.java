@@ -26,7 +26,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
+import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.client.ui.workspace.UserInboxModel;
 
 /**
@@ -47,7 +47,7 @@ public class UserInboxSteps
     @Given("inbox")
     public void givenInbox() throws ResourceException
     {
-        model.setInbox(individualSteps.user().shared().user().inbox());
+//        model.setInbox(individualSteps.user().workspace().user().inbox());
     }
 
     @When("new task '$desc'")
@@ -62,6 +62,6 @@ public class UserInboxSteps
     @Then("task count is $count")
     public void thenCount(int count)
     {
-        Ensure.ensureThat(model.getChildCount(model.getRoot()), CoreMatchers.equalTo(count));
+        Ensure.ensureThat(model.getRowCount(), CoreMatchers.equalTo(count));
     }
 }

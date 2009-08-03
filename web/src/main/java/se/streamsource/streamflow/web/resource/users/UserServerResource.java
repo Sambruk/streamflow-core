@@ -140,5 +140,4 @@ public class UserServerResource
 
         return listBuilder.newList();
     }
-
 }

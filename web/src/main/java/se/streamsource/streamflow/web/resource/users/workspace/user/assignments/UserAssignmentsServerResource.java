@@ -15,37 +15,31 @@
 package se.streamsource.streamflow.web.resource.users.workspace.user.assignments;
 
 import org.qi4j.api.entity.EntityBuilder;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
-import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.task.NewTaskCommand;
+import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
 import se.streamsource.streamflow.web.domain.task.Ownable;
-import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.task.TaskPath;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.util.List;
+import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
  * Mapped to:
  * /users/{user}/workspace/user/assignments
  */
 public class UserAssignmentsServerResource
-        extends CommandQueryServerResource
+        extends AbstractTaskListServerResource
 {
     public AssignmentsTaskListDTO tasks(TasksQuery query)
     {
@@ -65,22 +59,7 @@ public class UserAssignmentsServerResource
         Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);
         assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
-        ValueBuilder<AssignedTaskDTO> builder = vbf.newValueBuilder(AssignedTaskDTO.class);
-        AssignedTaskDTO prototype = builder.prototype();
-        ValueBuilder<AssignmentsTaskListDTO> listBuilder = vbf.newValueBuilder(AssignmentsTaskListDTO.class);
-        List<AssignedTaskDTO> list = listBuilder.prototype().tasks().get();
-        EntityReference ref = EntityReference.parseEntityReference(id);
-        for (TaskEntity task : assignmentsQuery)
-        {
-            prototype.owner().set(ref);
-            prototype.task().set(EntityReference.getEntityReference(task));
-            prototype.creationDate().set(task.createdOn().get());
-            prototype.description().set(task.description().get());
-            prototype.status().set(task.status().get());
-            list.add(builder.newInstance());
-        }
-
-        return listBuilder.newInstance();
+        return buildTaskList(id, assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
     }
 
     public void newtask(NewTaskCommand command)
@@ -93,19 +72,6 @@ public class UserAssignmentsServerResource
         TaskEntity prototype = builder.prototype();
         prototype.description().set(command.description().get());
         prototype.note().set(command.note().get());
-
-        // Check if subtask
-        if (command.parentTask().get() != null)
-        {
-            TaskPath path = uow.get(TaskPath.class, command.parentTask().get().identity());
-
-            // Add parents path first, then parent itself
-            for (Task task : path.getPath())
-            {
-                prototype.path().add(prototype.path().count(), task);
-            }
-            prototype.path().add(prototype.path().count(), (Task) path);
-        }
 
         TaskEntity task = builder.newInstance();
         user.receiveTask(task);

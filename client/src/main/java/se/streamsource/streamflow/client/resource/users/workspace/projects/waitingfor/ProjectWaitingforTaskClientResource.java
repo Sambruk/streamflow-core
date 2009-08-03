@@ -21,8 +21,8 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.comments.UserTaskCommentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.general.UserTaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
@@ -37,14 +37,14 @@ public class ProjectWaitingforTaskClientResource
         super(context, reference);
     }
 
-    public UserTaskGeneralClientResource general()
+    public TaskGeneralClientResource general()
     {
-        return getSubResource("general", UserTaskGeneralClientResource.class);
+        return getSubResource("general", TaskGeneralClientResource.class);
     }
 
-    public UserTaskCommentsClientResource comments()
+    public TaskCommentsClientResource comments()
     {
-        return getSubResource("comments", UserTaskCommentsClientResource.class);
+        return getSubResource("comments", TaskCommentsClientResource.class);
     }
 
     public void complete() throws ResourceException

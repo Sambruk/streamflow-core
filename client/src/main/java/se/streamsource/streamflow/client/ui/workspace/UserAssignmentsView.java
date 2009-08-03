@@ -14,236 +14,91 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.JXTreeTable;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
-import org.jdesktop.swingx.renderer.CheckBoxProvider;
-import org.jdesktop.swingx.renderer.DefaultTableRenderer;
-import org.jdesktop.swingx.renderer.StringValue;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.assignments_tab;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.detail_tab;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
-import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
-import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
  * JAVADOC
  */
 public class UserAssignmentsView
-        extends JTabbedPane
+        extends TaskTableView
 {
-    private JXTreeTable taskTable;
-    private UserAssignmentsTaskDetailModel detailModel;
-    private UserAssignmentsModel model;
+    @Uses LabelMenu labelMenu;
 
-
-    public UserAssignmentsView(@Service final ActionMap am,
-                           @Service final UserAssignmentsModel model,
-                           @Service final UserAssignmentsTaskDetailView detailView,
-                           @Service UserAssignmentsTaskDetailModel detailModel,
-                           @Structure ObjectBuilderFactory obf,
-                           @Structure ValueBuilderFactory vbf)
+    protected String tabName()
     {
-        super();
+        return text(assignments_tab);
+    }
 
-        this.detailModel = detailModel;
-        this.model = model;
-        TasksQuery query = vbf.newValue(TasksQuery.class);
-        try
-        {
-            model.setQuery(query);
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
+    protected void buildPopupMenu(JPopupMenu popup, ActionMap am)
+    {
+        taskTable.getSelectionModel().addListSelectionListener(labelMenu);
 
-        // Toolbar
-        JPanel toolbar = new JPanel();
-        toolbar.setBorder(BorderFactory.createEtchedBorder());
+        popup.add(labelMenu);
+        popup.add(am.get("markTasksAsUnread"));
+        Action dropAction = am.get("dropTasks");
+        popup.add(dropAction);
+        Action removeTaskAction = am.get("removeTasks");
+        popup.add(removeTaskAction);
+        popup.add(am.get("forwardTasks"));
+        taskTable.addMouseListener(new PopupMenuTrigger(popup));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
+    }
 
-        javax.swing.Action addAction = am.get("newSharedTask");
+    @Override
+    protected void buildToolbar(JPanel toolbar, ActionMap am)
+    {
+        javax.swing.Action addAction = am.get("newTask");
         toolbar.add(new JButton(addAction));
-        javax.swing.Action refreshAction = am.get("refreshSharedAssignments");
+        Action delegateTasks = am.get("delegateTasks");
+        toolbar.add(new JButton(delegateTasks));
+        javax.swing.Action refreshAction = am.get("refresh");
         toolbar.add(new JButton(refreshAction));
-
-        // Table
-        JPanel panel = new JPanel(new BorderLayout());
-        taskTable = new JXTreeTable(model);
-        taskTable.setRootVisible(false);
-        taskTable.setSortable(true);
-
-        JScrollPane taskScrollPane = new JScrollPane(taskTable);
-
-        panel.add(toolbar, BorderLayout.NORTH);
-        panel.add(taskScrollPane, BorderLayout.CENTER);
-
-
-        taskTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
-        taskTable.getColumn(0).setMaxWidth(30);
-        taskTable.getColumn(0).setResizable(false);
-        taskTable.getColumn(2).setPreferredWidth(120);
-        taskTable.getColumn(2).setMaxWidth(120);
-        taskTable.setAutoCreateColumnsFromModel(false);
-
-        addTab(text(assignments_tab), panel);
-        addTab(text(detail_tab), detailView);
-        setEnabledAt(1, false);
-
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "details");
-        getActionMap().put("details", new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                setSelectedIndex(1);
-            }
-        });
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "assignments");
-        getActionMap().put("assignments", new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                setSelectedIndex(0);
-            }
-        });
-
-        taskTable.setLeafIcon(null);
-        JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
-        taskTable.setDefaultEditor(Boolean.class, completableEditor);
-        taskTable.setDefaultRenderer(Date.class, new DefaultTableRenderer(new StringValue()
-        {
-            private SimpleDateFormat format = new SimpleDateFormat();
-
-            public String getString(Object value)
-            {
-                Date time = (Date) value;
-                return format.format(time);
-            }
-        }));
-        taskTable.setEditable(true);
-        taskTable.addTreeSelectionListener(new TreeSelectionListener()
-        {
-            public void valueChanged(TreeSelectionEvent e)
-            {
-                TreePath selectionPath = taskTable.getTreeSelectionModel().getSelectionPath();
-                if (selectionPath != null)
-                {
-                    setEnabledAt(1, true);
-                } else
-                    setEnabledAt(1, false);
-            }
-        });
-
-        taskTable.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                if (e.getClickCount() == 2)
-                {
-                    setSelectedComponent(detailView);
-                }
-            }
-        });
-
-        taskTable.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(taskTable.getSearchable()).newInstance());
-
-        taskTable.addHighlighter(HighlighterFactory.createAlternateStriping());
-
-        // Popup
-        JPopupMenu popup = new JPopupMenu();
-        Action removeAction = am.get("removeSharedAssignedTasks");
-        popup.add(removeAction);
-
-        taskTable.addTreeSelectionListener(new SelectionActionEnabler(removeAction));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(delegateTasks));
     }
 
-
-    @Override
-    public void setSelectedIndex(int index)
+    @org.jdesktop.application.Action
+    public void delegateTasks() throws ResourceException
     {
-        try
+        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        EntityReference selected = dialog.getSelected();
+        if (selected != null)
         {
-            if (index == 1)
+            int[] rows = taskTable.getSelectedRows();
+            for (int row : rows)
             {
-                AssignedTaskDTO dto = getSelectedTask();
-                detailModel.setResource(model.getRoot().task(dto.task().get().identity()));
+                model.delegate(row, selected.identity());
             }
-            super.setSelectedIndex(index);
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
         }
     }
 
-    public JXTreeTable getTaskTable()
+    @org.jdesktop.application.Action
+    public void forwardTasks() throws ResourceException
     {
-        return taskTable;
-    }
+        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
+        dialogs.showOkCancelHelpDialog(this, dialog);
 
-    public AssignedTaskDTO getSelectedTask()
-    {
-        int row = getTaskTable().getSelectedRow();
-        if (row == -1)
+        EntityReference selected = dialog.getSelected();
+        if (selected != null)
         {
-            return null;
+            int[] rows = taskTable.getSelectedRows();
+            for (int row : rows)
+            {
+                model.forward(row, selected.identity());
+            }
         }
-        return (AssignedTaskDTO) getTaskTable().getPathForRow(row).getLastPathComponent();
-    }
-
-    public Iterable<AssignedTaskDTO> getSelectedTasks()
-    {
-        int[] rows = getTaskTable().getSelectedRows();
-        List<AssignedTaskDTO> tasks = new ArrayList<AssignedTaskDTO>();
-        for (int i = 0; i < rows.length; i++)
-        {
-            int row = rows[i];
-            AssignedTaskDTO task = (AssignedTaskDTO) getTaskTable().getPathForRow(row).getLastPathComponent();
-            tasks.add(task);
-        }
-        return tasks;
-    }
-
-    class CompletedCellRenderer
-            extends JCheckBox
-            implements TableCellRenderer
-    {
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
-        {
-            return this;
-        }
-    }
-
-    @Override
-    public void addNotify()
-    {
-        super.addNotify();
-
-        setSelectedIndex(0);
     }
 }

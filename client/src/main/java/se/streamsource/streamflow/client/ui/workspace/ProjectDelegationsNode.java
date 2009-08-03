@@ -15,27 +15,18 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
-
-import javax.swing.JComponent;
 
 /**
  * JAVADOC
  */
 public class ProjectDelegationsNode
         extends DefaultMutableTreeTableNode
-        implements DetailView
 {
-    @Service
-    UserDelegationsView view;
-
-    @Service
+    @Uses
     UserDelegationsModel model;
 
     public ProjectDelegationsNode(@Uses ProjectDelegationsClientResource delegations)
@@ -52,11 +43,5 @@ public class ProjectDelegationsNode
     UserDelegationsClientResource delegations()
     {
         return (UserDelegationsClientResource) getUserObject();
-    }
-
-    public JComponent detailView() throws ResourceException
-    {
-        model.setDelegations(delegations());
-        return view;
     }
 }

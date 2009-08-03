@@ -21,8 +21,6 @@ public enum NavigatorResources
 {
     workspace_label,
     workspace_label_mnemonic,
-    shared_label,
-    shared_label_mnemonic,
     overview_label,
     overview_label_mnemonic,
     administration_label,

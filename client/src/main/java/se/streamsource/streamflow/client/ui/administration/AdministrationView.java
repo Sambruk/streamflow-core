@@ -14,14 +14,13 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.ActionMap;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JSplitPane;
@@ -41,9 +40,8 @@ public class AdministrationView
     @Structure
     UnitOfWorkFactory uowf;
 
-    public AdministrationView(@Service ActionMap am, @Service AdministrationOutlineView adminOutlineView)
+    public AdministrationView(@Uses AdministrationOutlineView adminOutlineView)
     {
-        setActionMap(am);
         setMinimumSize(new Dimension(800, 600));
         setPreferredSize(getMinimumSize());
 

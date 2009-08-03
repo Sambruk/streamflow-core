@@ -15,17 +15,21 @@
 package se.streamsource.streamflow.client.ui.menu;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 /**
  * JAVADOC
@@ -44,26 +48,28 @@ public class AccountsDialog
     @Service
     DialogService dialogs;
 
-    @Structure
-    UnitOfWorkFactory uowf;
     public JList accountList;
 
-    public AccountsDialog(@Service ActionMap am,
-                          @Service AccountsModel model)
+    @Structure
+    Iterable<CreateAccountDialog> createAccountDialog;
+
+    public AccountsDialog(@Service ApplicationContext context,
+                          @Uses AccountsModel model)
     {
         super(new BorderLayout());
         this.model = model;
 
-        setActionMap(am);
+        setActionMap(context.getActionMap(this));
 
         accountList = new JList(model);
+        accountList.setMinimumSize(new Dimension(200,300));
         accountList.setCellRenderer(new ListItemCellRenderer());
 
         add(accountList, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("createAccount")));
-        toolbar.add(new JButton(am.get("deleteAccount")));
+        toolbar.add(new JButton(getActionMap().get("add")));
+        toolbar.add(new JButton(getActionMap().get("remove")));
         add(toolbar, BorderLayout.SOUTH);
 
         /*accountList.addListSelectionListener(new ListSelectionListener()
@@ -87,7 +93,16 @@ public class AccountsDialog
     }
 
     @Action
-    public void deleteAccount()
+    public void add()
+    {
+        CreateAccountDialog dialog = createAccountDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+        model.refresh();
+    }
+
+
+    @Action
+    public void remove()
     {
         System.out.println("DeleteAccount invoked");
         //accountList.getSelectedValue(); ...

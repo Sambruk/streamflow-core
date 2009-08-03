@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.ui.menu;
 
 /**
- * i18n resources for the "Shared" view
+ * i18n resources for the menu
  */
 enum MenuResources
 {

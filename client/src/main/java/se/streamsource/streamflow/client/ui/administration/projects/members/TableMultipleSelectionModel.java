@@ -18,12 +18,12 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.event.TableModelEvent;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class TableMultipleSelectionModel
-        extends AbstractTableSelectionModel<Set<ListItemValue>>
+        extends AbstractTableSelectionModel<Set<String>>
 {
     private Map<ListItemValue, Boolean> selected;
 
@@ -33,9 +33,15 @@ public class TableMultipleSelectionModel
         fireTableChanged(new TableModelEvent(this, 0, getRowCount(), 0, TableModelEvent.DELETE));
     }
 
-    public Set<ListItemValue> getSelected()
+    public Set<String> getSelected()
     {
-        return new HashSet<ListItemValue>(selected.keySet());
+        Set<String> selectedIdentities = new LinkedHashSet<String>();
+
+        for (ListItemValue listItemValue : selected.keySet())
+        {
+            selectedIdentities.add(listItemValue.entity().get().identity());
+        }
+        return selectedIdentities;
     }
 
 

@@ -15,43 +15,59 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.DefaultListModel;
+import javax.swing.AbstractListModel;
 
 /**
  * List of projects in a OU
  */
 public class ProjectsModel
-        extends DefaultListModel
+        extends AbstractListModel
 {
     @Structure
-    ValueBuilderFactory vbf;
+    ObjectBuilderFactory obf;
 
     ProjectsClientResource projects;
+    private ListValue list;
 
-    public void setProjects(ProjectsClientResource projects) 
+    WeakModelMap<String, ProjectMembersModel> projectMembersModels = new WeakModelMap<String, ProjectMembersModel>()
+    {
+        @Override
+        protected ProjectMembersModel newModel(String key)
+        {
+            return obf.newObjectBuilder(ProjectMembersModel.class).use(projects.project(key)).newInstance();
+        }
+    };
+
+    public ProjectsModel(@Uses ProjectsClientResource projects)
     {
         this.projects = projects;
-        refresh();
+    }
+
+    public int getSize()
+    {
+        return list == null ? 0 : list.items().get().size();
+    }
+
+    public Object getElementAt(int index)
+    {
+        return list.items().get().get(index);
     }
 
     private void refresh()
     {
-        clear();
         try
         {
-            for (ListItemValue value : projects.projects().items().get())
-            {
-                addElement(value);
-            }
+            list = projects.projects();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_refresh_list_of_projects, e);
@@ -60,18 +76,19 @@ public class ProjectsModel
 
     public void removeProject(String id)
     {
-        try {
+        try
+        {
             projects.project(id).delete();
             refresh();
-        } catch(ResourceException e)
+        } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_remove_project, e);
         }
     }
 
-    public ProjectClientResource getProjectResource(String id)
+    public ProjectMembersModel getProjectMembersModel(String id)
     {
-        return projects.project(id);
+        return projectMembersModels.get(id);
     }
 
     public void newProject(String projectName)

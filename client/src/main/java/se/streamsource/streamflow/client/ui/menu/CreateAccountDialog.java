@@ -68,8 +68,6 @@ public class CreateAccountDialog
         setActionMap(context.getActionMap(this));
         this.vbf = vbf;
 
-        //setName(context.getResourceMap(SharedResources.class).getString(SharedResources.add_task_title.toString()));
-
         FormLayout layout = new FormLayout(
                 "200dlu",
                 "");                                      // add rows dynamically

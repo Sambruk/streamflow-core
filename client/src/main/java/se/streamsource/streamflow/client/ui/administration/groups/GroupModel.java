@@ -14,47 +14,68 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.DefaultListModel;
-import java.util.Collection;
+import javax.swing.AbstractListModel;
 
 /**
  * JAVADOC
  */
 public class GroupModel
-        extends DefaultListModel
+        extends AbstractListModel
 {
-    @Structure
-    ValueBuilderFactory vbf;
+    public ListValue list;
 
-    public GroupClientResource getGroup()
+    public GroupModel(@Uses GroupClientResource group)
     {
-        return group;
+        this.group = group;
     }
 
-    private GroupClientResource group;
+    @Uses private GroupClientResource group;
 
     public void setGroup(GroupClientResource resource)
     {
         this.group = resource;
-        refresh();
     }
 
-    public void removeParticipant(EntityReference participant)
+    public int getSize()
     {
+        return list == null ? 0 : list.items().get().size();
+    }
 
+    public Object getElementAt(int index)
+    {
+        return list.items().get().get(index);
+    }
+
+
+    public void addParticipants(Iterable<String> participants)
+    {
         try
         {
-            group.participants().participant(participant.identity()).delete();
+            for (String value: participants)
+            {
+                ParticipantClientResource participant = group.participants().participant(value);
+                participant.put(null);
+            }
+            refresh();
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_add_participants, e);
+        }
+    }
+
+    public void removeParticipant(String participant)
+    {
+        try
+        {
+            group.participants().participant(participant).delete();
             refresh();
         } catch (ResourceException e)
         {
@@ -63,35 +84,8 @@ public class GroupModel
 
     }
 
-    private void refresh()
+    private void refresh() throws ResourceException
     {
-        clear();
-        try
-        {
-            for (ListItemValue value : group.participants().participants().items().get())
-            {
-                addElement(value);
-            }
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_participants, e);
-        }
-    }
-
-
-    public void addParticipants(Collection<ListItemValue> participants)
-    {
-        try
-        {
-            for (ListItemValue value: participants)
-            {
-                ParticipantClientResource participant = group.participants().participant(value.entity().get().identity());
-                participant.put(null);
-            }
-            refresh();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_add_participants, e);
-        }
+        list = group.participants().participants();
     }
 }

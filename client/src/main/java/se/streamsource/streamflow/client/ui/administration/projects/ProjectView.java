@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.jdesktop.swingx.JXTree;
-import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
@@ -28,7 +28,7 @@ public class ProjectView
 {
     public JXTree memberRoleTree;
 
-    public ProjectView(@Service ProjectMembersView membersView)
+    public ProjectView(@Uses ProjectMembersView membersView)
     {
         super();
 

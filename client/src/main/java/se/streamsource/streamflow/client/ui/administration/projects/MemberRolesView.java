@@ -14,27 +14,22 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.jdesktop.swingx.JXTable;
+import org.qi4j.api.injection.scope.Uses;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JScrollPane;
 
 /**
  * JAVADOC
  */
 public class MemberRolesView
-        extends JPanel
+        extends JScrollPane
 {
-    public MemberRolesView(@Service MemberRolesModel rolesModel)
+    public MemberRolesView(@Uses MemberRolesModel rolesModel)
     {
-        super(new BorderLayout());
         JXTable rolesTable = new JXTable(rolesModel);
+        setViewportView(rolesTable);
         rolesTable.getColumn(0).setMaxWidth(40);
         rolesTable.getColumn(0).setResizable(false);
-        JScrollPane rolesScrollPane = new JScrollPane(rolesTable);
-        add(rolesScrollPane);
     }
 }

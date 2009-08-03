@@ -23,7 +23,7 @@ import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.ProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.UserProjectClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -42,12 +42,12 @@ public class ProjectsNode
         try
         {
             se.streamsource.streamflow.client.resource.users.UserClientResource user = account.user(client);
-            ListValue projects = user.shared().projects().listProjects();
+            ListValue projects = user.workspace().projects().listProjects();
 
             for (ListItemValue project : projects.items().get())
             {
-                ProjectClientResource projectResource =  user.shared().projects().project(project.entity().get().identity());
-                add(obf.newObjectBuilder(ProjectNode.class).use(projectResource, project.description().get(), account.settings()).newInstance());
+                UserProjectClientResource userProjectResource =  user.workspace().projects().project(project.entity().get().identity());
+                add(obf.newObjectBuilder(ProjectNode.class).use(userProjectResource, project.description().get()).newInstance());
             }
         } catch (ResourceException e)
         {

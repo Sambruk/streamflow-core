@@ -15,35 +15,21 @@
 package se.streamsource.streamflow.resource.waitingfor;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * JAVADOC
  */
 public interface WaitingForTaskDTO
-        extends ValueComposite
+        extends TaskDTO
 {
-    Property<EntityReference> task();
-
-    Property<String> description();
-
     Property<String> delegatedTo();
 
     @UseDefaults
     Property<String> assignedTo();
 
     Property<Date> delegatedOn();
-
-    Property<TaskStates> status();
-
-    Property<Boolean> isRead();
-
-    @UseDefaults
-    Property<List<WaitingForTaskDTO>> subTasks();
 }

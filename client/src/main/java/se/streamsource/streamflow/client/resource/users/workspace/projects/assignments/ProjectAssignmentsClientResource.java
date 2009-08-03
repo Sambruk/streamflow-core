@@ -18,11 +18,11 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
+import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignedTaskClientResource;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
-import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.task.TasksQuery;
 
 /**
  * JAVADOC

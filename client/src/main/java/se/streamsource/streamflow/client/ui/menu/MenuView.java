@@ -17,10 +17,6 @@ package se.streamsource.streamflow.client.ui.menu;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.ResourceMap;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
 import javax.swing.ActionMap;
 import javax.swing.JMenu;
@@ -34,15 +30,6 @@ import javax.swing.JSeparator;
 public class MenuView
         extends JMenuBar
 {
-    @Service
-    DialogService dialogs;
-
-    @Structure
-    UnitOfWorkFactory uowf;
-
-    @Service
-    AdministrationView administrationView;
-
     private ApplicationContext context;
 
     public MenuView(@Service ActionMap am, @Service ApplicationContext context)
@@ -55,6 +42,9 @@ public class MenuView
 
         menu("settingsMenu",
                 "manageAccounts");
+        menu("window",
+                "showWorkspaceWindow",
+                "showAdministrationWindow");
 
     }
 

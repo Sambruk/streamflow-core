@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
@@ -29,8 +30,8 @@ public class UserWaitingForTaskDetailView
         extends JTabbedPane
 {
     public UserWaitingForTaskDetailView(@Service ApplicationContext appContext,
-                                          @Service TaskCommentsModel commentsModel,
-                                          @Service TaskGeneralModel generalModel,
+                                          @Uses TaskCommentsModel commentsModel,
+                                          @Uses TaskGeneralModel generalModel,
                                           @Structure ObjectBuilderFactory obf)
     {
         TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();

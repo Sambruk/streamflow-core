@@ -43,7 +43,7 @@ public class TaskGeneralView
     @Service
     UncaughtExceptionHandler exception;
 
-    private StateBinder sharedTaskBinder;
+    private StateBinder taskBinder;
 
     TaskGeneralModel model;
 
@@ -62,11 +62,11 @@ public class TaskGeneralView
         DefaultFormBuilder builder = new DefaultFormBuilder(layout, form);
         builder.setDefaultDialogBorder();
 
-        sharedTaskBinder = new StateBinder();
-        sharedTaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        TaskGeneralDTO template = sharedTaskBinder.bindingTemplate(TaskGeneralDTO.class);
+        taskBinder = new StateBinder();
+        taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
+        TaskGeneralDTO template = taskBinder.bindingTemplate(TaskGeneralDTO.class);
 
-        BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
+        BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
         bb
         .appendLine(WorkspaceResources.id_label, LABEL, template.taskId())
         .appendLine(WorkspaceResources.description_label, TEXTFIELD, template.description())
@@ -74,7 +74,7 @@ public class TaskGeneralView
         .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note())
         .appendToggleButtonLine(getActionMap().get("edit"));
 
-        editor = new FormEditor(sharedTaskBinder.boundComponents());
+        editor = new FormEditor(taskBinder.boundComponents());
 
         model.addObserver(new Observer()
         {
@@ -82,7 +82,7 @@ public class TaskGeneralView
             {
                 TaskGeneralDTO general = model.getGeneral();
                 valueBuilder = general.buildWith();
-                sharedTaskBinder.updateWith(valueBuilder.prototype());
+                taskBinder.updateWith(valueBuilder.prototype());
             }
         });
 

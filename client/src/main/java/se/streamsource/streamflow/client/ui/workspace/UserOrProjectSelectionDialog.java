@@ -17,70 +17,66 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectMembersModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 /**
  * JAVADOC
  */
-public class ForwardTasksDialog
+public class UserOrProjectSelectionDialog
         extends JPanel
 {
-
-    @Service
-    ProjectMembersModel projectMembersModel;
-
-    @Service
-    UserInboxView userInboxView;
-
-    @Service
-    UserInboxModel userInboxModel;
-
     Dimension dialogSize = new Dimension(600,300);
-    private TableSelectionView addUsersview;
+    private TableSelectionView addUsersView;
     private TableSelectionView addProjectsView;
+    public ListItemValue selected;
 
-    public ForwardTasksDialog(@Service ApplicationContext context,
-                                    @Structure ObjectBuilderFactory obf,
-                                    @Structure UnitOfWorkFactory uowf)
+    public UserOrProjectSelectionDialog(final @Uses UserNode user,
+                               @Service ApplicationContext context,
+                               @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
-        uowf.newUnitOfWork();
-        
-        this.setName("#Search user or project to send to");
+        setName("#Search user or project");
         setActionMap(context.getActionMap(this));
 
         TableSingleSelectionModel usersModel = obf.newObject(TableSingleSelectionModel.class);
-        this.addUsersview = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, "#Search users").newInstance();
+        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, "#Search users").newInstance();
 
         TableSingleSelectionModel projectsModel = obf.newObject(TableSingleSelectionModel.class);
         this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, "#Search projects").newInstance();
 
         JSplitPane dialog = new JSplitPane();
 
-
-        final UsersIndividualSearch usersSearch = obf.newObjectBuilder(UsersIndividualSearch.class).use(addUsersview).newInstance();
-        addUsersview.getSearchInputField().addKeyListener(new KeyAdapter(){
+        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter(){
             @Override
             public void keyReleased(KeyEvent keyEvent)
             {
-                usersSearch.search();
+                try
+                {
+                    ListValue value = user.findUsers(addUsersView.searchText());
+                    addUsersView.getModel().setModel(value);
+                } catch (ResourceException e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -92,59 +88,50 @@ public class ForwardTasksDialog
                 projectsSearch.search();
             }
         });
-
         addProjectsView.getModel().addTableModelListener(new TableModelListener(){
 
             public void tableChanged(TableModelEvent tableModelEvent)
             {
                 if (TableModelEvent.UPDATE == tableModelEvent.getType())
                 {
-                    addUsersview.getModel().clearSelection();
+                    addUsersView.getModel().clearSelection();
                 }
             }
         });
-        
-        addUsersview.getModel().addTableModelListener(new TableModelListener(){
+
+        addUsersView.getModel().addTableModelListener(new TableModelListener(){
 
             public void tableChanged(TableModelEvent tableModelEvent)
             {
-                if (TableModelEvent.UPDATE == tableModelEvent.getType()) 
+                if (TableModelEvent.UPDATE == tableModelEvent.getType())
                 {
                     addProjectsView.getModel().clearSelection();
                 }
             }
         });
 
-        dialog.setLeftComponent(addUsersview);
+        
+        dialog.setLeftComponent(addUsersView);
         dialog.setRightComponent(addProjectsView);
         dialog.setPreferredSize(dialogSize);
         setPreferredSize(dialogSize);
         add(dialog, BorderLayout.NORTH);
     }
 
+    public EntityReference getSelected()
+    {
+        return selected.entity().get();
+    }
+
     @Action
     public void execute()
     {
-        ListItemValue selected = ((TableSingleSelectionModel) addUsersview.getModel()).getSelected();
+        selected = ((TableSingleSelectionModel) addUsersView.getModel()).getSelected();
         if (selected == null)
         {
             selected = ((TableSingleSelectionModel) addProjectsView.getModel()).getSelected();
         }
 
-        if (selected != null)
-        {
-            try
-            {
-                Iterable<InboxTaskDTO> selectedTasks = userInboxView.getSelectedTasks();
-                for (InboxTaskDTO selectedTask : selectedTasks)
-                {
-                    userInboxModel.forward(selectedTask.task().get().identity(), selected.entity().get().identity());
-                }
-            } catch(ResourceException e)
-            {
-                e.printStackTrace();
-            }
-        }
         WindowUtils.findWindow(this).dispose();
     }
 

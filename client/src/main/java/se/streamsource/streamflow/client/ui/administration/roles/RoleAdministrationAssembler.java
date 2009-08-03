@@ -31,8 +31,5 @@ public class RoleAdministrationAssembler
 
         UIAssemblers.addMV(module, RolesModel.class,
                 RolesView.class);
-
-        UIAssemblers.addDialogs(module,
-                NewRoleDialog.class);
     }
 }

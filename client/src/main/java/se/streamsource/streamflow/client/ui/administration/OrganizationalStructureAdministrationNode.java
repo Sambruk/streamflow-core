@@ -14,19 +14,19 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /**
  * JAVADOC
@@ -38,23 +38,30 @@ public class OrganizationalStructureAdministrationNode
     @Structure
     ObjectBuilderFactory obf;
 
-    @Service
+    WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode>()
+    {
+        @Override
+        protected OrganizationalStructureAdministrationNode newModel(TreeNodeValue key)
+        {
+            return obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(OrganizationalStructureAdministrationNode.this, key, orgResource).newInstance();
+        }
+    };
+
     OrganizationalUnitAdministrationModel model;
 
-    @Service
-    OrganizationalUnitAdministrationView view;
+    OrganizationsClientResource orgResource;
 
-    OrganizationClientResource resource;
-
-    public OrganizationalStructureAdministrationNode(@Uses TreeNodeValue ou, @Uses OrganizationsClientResource orgResource, @Structure ObjectBuilderFactory obf) throws ResourceException
+    public OrganizationalStructureAdministrationNode(@Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses OrganizationsClientResource orgResource, @Structure ObjectBuilderFactory obf) throws ResourceException
     {
         super(ou);
+        this.orgResource = orgResource;
 
-        resource = orgResource.organization(ou.entity().get().identity());
+        OrganizationClientResource resource = orgResource.organization(ou.entity().get().identity());
+        model = obf.newObjectBuilder(OrganizationalUnitAdministrationModel.class).use(resource).newInstance();
 
         for (TreeNodeValue treeNodeValue : ou.children().get())
         {
-            add(obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(treeNodeValue, orgResource).newInstance());
+            add(obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(this, treeNodeValue, orgResource).newInstance());
         }
     }
 
@@ -71,12 +78,6 @@ public class OrganizationalStructureAdministrationNode
 
     public JComponent detailView()
     {
-        try {
-            model.setOrganization(resource);
-            return view;
-        } catch (ResourceException e)
-        {
-            return new JLabel(e.getMessage());
-        }
+        return obf.newObjectBuilder(OrganizationalUnitAdministrationView.class).use(model).newInstance();
     }
 }

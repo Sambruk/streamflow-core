@@ -18,8 +18,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.ProjectsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.WorkspaceUserClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.UserProjectsClientResource;
 
 /**
  * JAVADOC
@@ -32,13 +32,13 @@ public class WorkspaceClientResource
         super(context, reference);
     }
 
-    public UserClientResource user()
+    public WorkspaceUserClientResource user()
     {
-        return getSubResource("user", UserClientResource.class);
+        return getSubResource("user", WorkspaceUserClientResource.class);
     }
 
-    public ProjectsClientResource projects()
+    public UserProjectsClientResource projects()
     {
-        return getSubResource("projects", ProjectsClientResource.class);
+        return getSubResource("projects", UserProjectsClientResource.class);
     }
 }

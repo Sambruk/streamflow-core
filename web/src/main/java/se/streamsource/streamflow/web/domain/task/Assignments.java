@@ -30,6 +30,16 @@ public interface Assignments
 
     void completeAssignedTask(Task task, Assignee assignee);
 
+    void dropAssignedTask(Task task, Assignee assignee);
+
+    void delegateAssignedTaskTo(Task task, Delegatee delegatee, Delegator delegator);
+
+    void forwardAssignedTask(Task task, Inbox receiverInbox);
+
+    void markAssignedTaskAsRead(Task task);
+
+    void markAssignedTaskAsUnread(Task task);
+
     class AssignmentsMixin
         implements Assignments
     {
@@ -52,6 +62,33 @@ public interface Assignments
         public void completeAssignedTask(Task task, Assignee assignee)
         {
             task.completedBy(assignee);
+        }
+
+        public void dropAssignedTask(Task task, Assignee assignee)
+        {
+            task.droppedBy(assignee);
+        }
+
+        public void delegateAssignedTaskTo(Task task, Delegatee delegatee, Delegator delegator)
+        {
+            task.assignTo(null);
+            task.delegateTo(delegatee,  delegator);
+        }
+
+        public void forwardAssignedTask(Task task, Inbox receiverInbox)
+        {
+            task.assignTo(null);
+            receiverInbox.receiveTask(task);
+        }
+
+        public void markAssignedTaskAsRead(Task task)
+        {
+            task.markAsRead();
+        }
+
+        public void markAssignedTaskAsUnread(Task task)
+        {
+            task.markAsUnread();
         }
     }
 }

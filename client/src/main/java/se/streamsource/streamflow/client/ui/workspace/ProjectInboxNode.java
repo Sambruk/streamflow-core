@@ -14,34 +14,20 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
-
-import javax.swing.JComponent;
 
 /**
  * JAVADOC
  */
 public class ProjectInboxNode
         extends DefaultMutableTreeTableNode
-        implements DetailView
 {
-    @Service
-    UserInboxView view;
-
-    @Service
+    @Uses
     UserInboxModel model;
-
-    @Service
-    ApplicationContext context;
 
     public ProjectInboxNode(@Uses ProjectInboxClientResource inbox)
     {
@@ -59,23 +45,4 @@ public class ProjectInboxNode
         return (UserInboxClientResource) getUserObject();
     }
 
-    public JComponent detailView()
-    {
-        context.getTaskService().execute(new Task(context.getApplication())
-        {
-            protected Object doInBackground() throws Exception
-            {
-                try
-                {
-                    model.setInbox(inbox());
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
-
-                return null;
-            }
-        });
-        return view;
-    }
 }

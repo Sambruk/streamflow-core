@@ -21,17 +21,16 @@ import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
-import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.task.NewTaskCommand;
+import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
 import se.streamsource.streamflow.web.domain.task.Ownable;
-import se.streamsource.streamflow.web.domain.task.Subtasks;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
@@ -93,14 +92,6 @@ public class ProjectAssignmentsServerResource
         Task task = assignments.newAssignedTask(assignee);
         task.describe(command.description().get());
         task.changeNote(command.note().get());
-
-        // Check if subtask
-        if (command.parentTask().get() != null)
-        {
-            Subtasks parent = uow.get(Subtasks.class, command.parentTask().get().identity());
-
-            parent.addSubtask(task);
-        }
 
         if (command.isCompleted().get())
         {

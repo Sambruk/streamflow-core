@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Restlet;
 import se.streamsource.streamflow.client.LoggerCategories;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class TestConnectionTask extends Task<String, Void>
 {
-    @Service
+    @Uses
     AccountModel model;
 
     @Service

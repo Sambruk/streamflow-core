@@ -15,19 +15,20 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * JAVADOC
@@ -35,24 +36,40 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfo
 public class UserNode
         extends DefaultMutableTreeTableNode
 {
+    private LabelsModel labelsModel;
+    public UserClientResource user;
+
     public UserNode(@Uses Account account,
                           @Service Restlet client,
                           @Structure ObjectBuilderFactory obf) throws ResourceException
     {
         super(account);
 
-        UserClientResource user = account.user(client);
-        UserInboxClientResource userInboxResource = user.shared().user().inbox();
-        add(obf.newObjectBuilder(UserInboxNode.class).use(account.settings(), userInboxResource).newInstance());
+        user = account.user(client);
 
-        UserAssignmentsClientResource userAssignmentsResource = user.shared().user().assignments();
-        add(obf.newObjectBuilder(UserAssignmentsNode.class).use(account.settings(), userAssignmentsResource).newInstance());
+        UserInboxClientResource userInboxResource = user.workspace().user().inbox();
+        add(obf.newObjectBuilder(UserInboxNode.class).use(userInboxResource).newInstance());
 
-        UserDelegationsClientResource userDelegationsResource = user.shared().user().delegations();
-        add(obf.newObjectBuilder(UserDelegationsNode.class).use(account.settings(), userDelegationsResource).newInstance());
+        UserAssignmentsClientResource userAssignmentsResource = user.workspace().user().assignments();
+        add(obf.newObjectBuilder(UserAssignmentsNode.class).use(userAssignmentsResource).newInstance());
 
-        UserWaitingForClientResource userWaitingForResource = user.shared().user().waitingFor();
-        add(obf.newObjectBuilder(UserWaitingForNode.class).use(account.settings(), userWaitingForResource).newInstance());
+        UserDelegationsClientResource userDelegationsResource = user.workspace().user().delegations();
+        add(obf.newObjectBuilder(UserDelegationsNode.class).use(userDelegationsResource).newInstance());
+
+        UserWaitingForClientResource userWaitingForResource = user.workspace().user().waitingFor();
+        add(obf.newObjectBuilder(UserWaitingForNode.class).use(userWaitingForResource).newInstance());
+
+        labelsModel = obf.newObjectBuilder(LabelsModel.class).use(user.workspace().user().labels()).newInstance();
+    }
+
+    public LabelsModel labelsModel()
+    {
+        return labelsModel;
+    }
+
+    public ListValue findUsers(String name) throws ResourceException
+    {
+        return user.findUsers(name);
     }
 
     @Override

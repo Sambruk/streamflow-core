@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -32,10 +31,7 @@ public class ProjectAssignmentsNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
-    @Service
-    UserAssignmentsView view;
-
-    @Service
+    @Uses
     UserAssignmentsModel model;
 
     public ProjectAssignmentsNode(@Uses ProjectAssignmentsClientResource assignments)
@@ -56,7 +52,10 @@ public class ProjectAssignmentsNode
 
     public JComponent detailView() throws ResourceException
     {
+/*
         model.setAssignments(assignments());
         return view;
+*/
+        return null;
     }
 }

@@ -17,14 +17,14 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.Account;
-import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /**
  * JAVADOC
@@ -32,33 +32,30 @@ import javax.swing.tree.MutableTreeNode;
 public class AdministrationModel
         extends DefaultTreeModel
 {
-    @Service
-    IndividualRepository individualRepository;
-
     @Structure
     ObjectBuilderFactory obf;
 
-    public AdministrationModel(@Uses AdministrationNode root)
+    WeakModelMap<Account, AccountAdministrationNode> nodes = new WeakModelMap<Account, AccountAdministrationNode>()
     {
-        super(root);
+        @Override
+        protected AccountAdministrationNode newModel(Account key)
+        {
+            return obf.newObjectBuilder(AccountAdministrationNode.class).use(getRoot(), key).newInstance();
+        }
+    };
+
+    public AdministrationModel(@Uses ObjectBuilder<AdministrationNode> root, @Service IndividualRepository individualRepository)
+    {
+        super(root.use(individualRepository.individual()).newInstance());
     }
 
     public void refresh()
     {
-        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) getRoot();
-
-        // Clear old view
-        while (root.getChildCount() > 0)
-            removeNodeFromParent((MutableTreeNode) root.getChildAt(0));
-
-        individualRepository.individual().visitAccounts(new AccountVisitor()
-        {
-            public void visitAccount(Account account)
-            {
-                MutableTreeNode accountNode = obf.newObjectBuilder(AccountAdministrationNode.class).use(account).newInstance();
-                insertNodeInto(accountNode, root, root.getChildCount());
-            }
-        });
+        reload((TreeNode) getRoot());
     }
 
+    public AccountAdministrationNode accountAdministration(Account account)
+    {
+        return nodes.get(account);
+    }
 }

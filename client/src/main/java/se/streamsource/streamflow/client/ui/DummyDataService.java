@@ -29,7 +29,7 @@ import org.restlet.Restlet;
 import se.streamsource.streamflow.client.domain.individual.*;
 import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.resource.inbox.TasksQuery;
+import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import java.util.logging.Logger;
 
@@ -85,7 +85,7 @@ public interface DummyDataService
                 System.out.println(response);
                 UserClientResource user = account.server(client).users().user("administrator");
                 TasksQuery query = vbf.newValue(TasksQuery.class);
-                System.out.println(user.shared().user().inbox().tasks(query).tasks().get().size());
+                System.out.println(user.workspace().user().inbox().tasks(query).size());
 
                 uow.complete();
 

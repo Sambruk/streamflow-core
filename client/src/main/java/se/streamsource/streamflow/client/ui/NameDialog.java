@@ -12,14 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.groups;
+package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,36 +27,38 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 
 /**
- * JAVADOC
+ * Select a name for something.
  */
-public class NewGroupDialog
+public class NameDialog
         extends JPanel
 {
-    @Service
-    GroupsModel groupsModel;
-
-    @Structure
-    UnitOfWorkFactory uowf;
-
     public JTextField nameField;
 
-    public NewGroupDialog(@Service ApplicationContext context)
+    String name;
+
+    public NameDialog(@Service ApplicationContext context)
     {
         super(new BorderLayout());
 
         setActionMap(context.getActionMap(this));
 
         JPanel dialog = new JPanel(new BorderLayout());
-        dialog.add(new JLabel("#name"), BorderLayout.WEST);
+        dialog.add(new JLabel(i18n.text(AdministrationResources.name_label)), BorderLayout.WEST);
         nameField = new JTextField();
         dialog.add(nameField, BorderLayout.CENTER);
         add(dialog, BorderLayout.NORTH);
     }
 
+    public String name()
+    {
+        return name;
+    }
+
     @Action
     public void execute()
     {
-        groupsModel.newGroup(nameField.getText());
+        name = nameField.getText();
+
         WindowUtils.findWindow(this).dispose();
     }
 

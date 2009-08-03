@@ -14,11 +14,12 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.MediaType;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.general.UserTaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.io.IOException;
@@ -32,28 +33,21 @@ public class TaskGeneralModel
         implements Refreshable
 
 {
-    private UserTaskGeneralClientResource generalClientResource;
+    @Uses
+    private TaskGeneralClientResource generalClientResource;
 
     TaskGeneralDTO general;
 
     public void refresh() throws IOException, ResourceException
     {
-        if (generalClientResource != null)
-        {
-            general = generalClientResource.general();
-            setChanged();
-            super.notifyObservers();
-        }
+        general = generalClientResource.general();
+        setChanged();
+        super.notifyObservers();
     }
 
     public TaskGeneralDTO getGeneral()
     {
         return general;
-    }
-
-    public void setResource(UserTaskGeneralClientResource generalClientResource) throws IOException, ResourceException
-    {
-        this.generalClientResource = generalClientResource;
     }
 
     public void updateGeneral(TaskGeneralDTO taskGeneralDTO) throws ResourceException

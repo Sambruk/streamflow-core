@@ -37,5 +37,6 @@ public enum AdministrationResources
     projects_tab,
     groups_tab,
     roles_tab,
-    metadata_tab
+    metadata_tab,
+    name_label
 }

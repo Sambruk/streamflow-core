@@ -17,19 +17,20 @@ package se.streamsource.streamflow.client.resource.users.workspace.user;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.labels.UserLabelsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
 
 /**
  * JAVADOC
  */
-public class UserClientResource
-        extends BaseClientResource
+public class WorkspaceUserClientResource
+    extends CommandQueryClientResource
 {
-    public UserClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceUserClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
@@ -52,5 +53,10 @@ public class UserClientResource
     public UserWaitingForClientResource waitingFor()
     {
         return getSubResource("waitingfor", UserWaitingForClientResource.class);
+    }
+
+    public UserLabelsClientResource labels()
+    {
+        return getSubResource("labels", UserLabelsClientResource.class);
     }
 }

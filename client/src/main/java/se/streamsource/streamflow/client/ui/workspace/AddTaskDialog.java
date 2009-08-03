@@ -23,7 +23,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.resource.inbox.NewTaskCommand;
+import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 public class AddTaskDialog
         extends JPanel
 {
-    private StateBinder sharedTaskBinder;
+    private StateBinder taskBinder;
     private ValueBuilder<NewTaskCommand> commandBuilder;
 
     public AddTaskDialog(@Service ApplicationContext appContext,
@@ -58,11 +58,11 @@ public class AddTaskDialog
         DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
         builder.setDefaultDialogBorder();
 
-        sharedTaskBinder = new StateBinder();
-        sharedTaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        NewTaskCommand template = sharedTaskBinder.bindingTemplate(NewTaskCommand.class);
+        taskBinder = new StateBinder();
+        taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
+        NewTaskCommand template = taskBinder.bindingTemplate(NewTaskCommand.class);
 
-        BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
+        BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
         bb.appendLine(description_label, TEXTFIELD, template.description())
                 .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note())
                 .appendLine(WorkspaceResources.is_completed, CHECKBOX, template.isCompleted());
@@ -71,7 +71,7 @@ public class AddTaskDialog
         // Create command builder
         commandBuilder = vbf.newValueBuilder(NewTaskCommand.class);
 
-        sharedTaskBinder.updateWith(commandBuilder.prototype());
+        taskBinder.updateWith(commandBuilder.prototype());
     }
 
     @Action

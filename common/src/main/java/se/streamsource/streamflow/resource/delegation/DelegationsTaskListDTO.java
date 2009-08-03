@@ -14,18 +14,12 @@
 
 package se.streamsource.streamflow.resource.delegation;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 
 /**
  * JAVADOC
  */
 public interface DelegationsTaskListDTO
-        extends ValueComposite
+        extends TaskListDTO<DelegatedTaskDTO>
 {
-    @UseDefaults
-    Property<List<DelegatedTaskDTO>> tasks();
 }

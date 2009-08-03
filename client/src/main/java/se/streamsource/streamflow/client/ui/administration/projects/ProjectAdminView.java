@@ -15,8 +15,10 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListModel;
@@ -33,7 +35,10 @@ import javax.swing.event.ListSelectionListener;
 public class ProjectAdminView
         extends JSplitPane
 {
-    @Service
+    @Structure
+    ObjectBuilderFactory obf;
+
+    @Uses
     ProjectsModel projectsModel;
 
     @Service
@@ -41,9 +46,8 @@ public class ProjectAdminView
     public JList groupList;
     public DefaultListModel listModel;
 
-    public ProjectAdminView(@Service final ProjectsView projectsView,
-                            @Service final ProjectView projectView,
-                            @Service final ProjectMembersModel projectMembersModel)
+    public ProjectAdminView(@Uses final ProjectsView projectsView,
+                            @Uses final ProjectMembersModel projectMembersModel)
     {
         super();
 
@@ -63,9 +67,9 @@ public class ProjectAdminView
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
                         ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        ProjectClientResource projectClientResource = projectsModel.getProjectResource(projectValue.entity().get().identity());
-                        projectMembersModel.setProject(projectClientResource);
-                        setRightComponent(projectView);
+                        ProjectMembersModel projectMembersModel = projectsModel.getProjectMembersModel(projectValue.entity().get().identity());
+                        ProjectView view = obf.newObjectBuilder(ProjectView.class).use(projectMembersModel).newInstance();
+                        setRightComponent(view);
                     } else
                     {
                         setRightComponent(new JPanel());

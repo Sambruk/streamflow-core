@@ -14,21 +14,30 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.user;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.resource.label.LabelDTO;
+import se.streamsource.streamflow.resource.label.LabelListDTO;
+import se.streamsource.streamflow.web.domain.label.Label;
+import se.streamsource.streamflow.web.domain.label.Labels;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+
+import java.util.List;
 
 /**
  * Mapped to:
  * /users/{id}/workspace/user/*
  */
 public class WorkspaceUserServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
     @Structure
     UnitOfWorkFactory uowf;
@@ -46,5 +55,27 @@ public class WorkspaceUserServerResource
     protected Representation get() throws ResourceException
     {
         return getHtml("resources/workspaceuser.html");
+    }
+
+
+    // Move to /user/labels
+    public LabelListDTO labels()
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String id = (String) getRequest().getAttributes().get("user");
+        Labels labels = uow.get(Labels.class, id);
+
+        ValueBuilder<LabelDTO> builder = vbf.newValueBuilder(LabelDTO.class);
+        LabelDTO prototype = builder.prototype();
+
+        ValueBuilder<LabelListDTO> listBuilder = vbf.newValueBuilder(LabelListDTO.class);
+        List<LabelDTO> list = listBuilder.prototype().labels().get();
+        for (Label label : labels.getLabels())
+        {
+            prototype.label().set(EntityReference.getEntityReference(label));
+            prototype.description().set(label.getDescription());
+            list.add(builder.newInstance());
+        }
+        return listBuilder.newInstance();
     }
 }

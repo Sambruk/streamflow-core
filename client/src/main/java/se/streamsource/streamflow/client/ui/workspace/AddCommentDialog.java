@@ -21,6 +21,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -42,16 +43,13 @@ public class AddCommentDialog
     @Structure
     UnitOfWorkFactory uowf;
 
-    @Service
-    WorkspaceView workspaceView;
-
-    private StateBinder sharedTaskBinder;
+    private StateBinder TaskBinder;
     private ValueBuilder<NewCommentCommand> commandBuilder;
     private TaskCommentsModel commentsModel;
 
     public AddCommentDialog(@Service ApplicationContext appContext,
                                @Structure ValueBuilderFactory vbf,
-                               @Service TaskCommentsModel commentsModel
+                               @Uses TaskCommentsModel commentsModel
     )
     {
         this.commentsModel = commentsModel;
@@ -65,20 +63,20 @@ public class AddCommentDialog
         DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
         builder.setDefaultDialogBorder();
 
-        sharedTaskBinder = new StateBinder();
-        sharedTaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        NewCommentCommand template = sharedTaskBinder.bindingTemplate(NewCommentCommand.class);
+        TaskBinder = new StateBinder();
+        TaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
+        NewCommentCommand template = TaskBinder.bindingTemplate(NewCommentCommand.class);
 
         
 
-        BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
+        BindingFormBuilder bb = new BindingFormBuilder(builder, TaskBinder);
         bb.appendLine(WorkspaceResources.comment_public_label, CHECKBOX, template.isPublic());
         bb.appendLine(WorkspaceResources.comment_text_label, TEXTAREA, template.text());
 
         // Create command builder
         commandBuilder = vbf.newValueBuilder(NewCommentCommand.class);
 
-        sharedTaskBinder.updateWith(commandBuilder.prototype());
+        TaskBinder.updateWith(commandBuilder.prototype());
     }
 
     @Action

@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdminView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdminView;
@@ -29,9 +29,9 @@ import javax.swing.JTabbedPane;
 public class OrganizationalUnitAdministrationView
         extends JTabbedPane
 {
-    public OrganizationalUnitAdministrationView(@Service ProjectAdminView projectAdmin,
-                                                @Service GroupAdminView groupAdmin,
-                                                @Service RolesView rolesAdmin)
+    public OrganizationalUnitAdministrationView(@Uses ProjectAdminView projectAdmin,
+                                                @Uses GroupAdminView groupAdmin,
+                                                @Uses RolesView rolesAdmin)
     {
         addTab(text(AdministrationResources.projects_tab), projectAdmin);
         addTab(text(AdministrationResources.groups_tab), groupAdmin);

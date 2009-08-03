@@ -18,27 +18,26 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
+import se.streamsource.streamflow.resource.task.TasksQuery;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class UserDelegationsClientResource
-        extends CommandQueryClientResource
+        extends TaskListClientResource
 {
     public UserDelegationsClientResource(@Uses Context context, @Uses Reference reference)
     {
-        super(context, reference);
+        super(context, reference, UserDelegatedTaskClientResource.class);
     }
 
-    public DelegationsTaskListDTO tasks() throws ResourceException
+    public List<DelegatedTaskDTO> tasks(TasksQuery query) throws ResourceException
     {
-        return query("tasks", DelegationsTaskListDTO.class);
-    }
-
-    public UserDelegatedTaskClientResource task(String id)
-    {
-        return getSubResource(id, UserDelegatedTaskClientResource.class);
+        return query("tasks", query, DelegationsTaskListDTO.class).<DelegationsTaskListDTO>buildWith().prototype().tasks().get();
     }
 }

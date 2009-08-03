@@ -14,18 +14,12 @@
 
 package se.streamsource.streamflow.resource.inbox;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 
 /**
  * JAVADOC
  */
 public interface InboxTaskListDTO
-        extends ValueComposite
+        extends TaskListDTO<InboxTaskDTO>
 {
-    @UseDefaults
-    Property<List<InboxTaskDTO>> tasks();
 }

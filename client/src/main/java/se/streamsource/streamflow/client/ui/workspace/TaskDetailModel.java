@@ -14,28 +14,26 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.injection.scope.Service;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxTaskClientResource;
-
-import java.io.IOException;
+import org.qi4j.api.injection.scope.Uses;
 
 /**
  * Model for task details.
  */
-public class UserInboxTaskDetailModel
+public class TaskDetailModel
 {
-    @Service TaskCommentsModel comments;
-    @Service TaskGeneralModel general;
+    @Uses
+    TaskCommentsModel comments;
 
-    public UserInboxTaskDetailModel()
+    @Uses
+    TaskGeneralModel general;
+
+    public TaskCommentsModel comments()
     {
+        return comments;
     }
 
-    public void setResource(UserInboxTaskClientResource task) throws IOException, ResourceException
+    public TaskGeneralModel general()
     {
-        comments.setResource(task.comments());
-
-        general.setResource(task.general());
+        return general;
     }
 }

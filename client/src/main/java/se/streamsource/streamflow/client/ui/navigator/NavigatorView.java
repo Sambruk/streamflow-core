@@ -47,8 +47,7 @@ public class NavigatorView
         addTab(text(overview_label), new JLabel("Overview"));
         addTab(text(administration_label), administration);
 
-        setMnemonicAt(1, mnemonic(workspace_label_mnemonic));
-        setMnemonicAt(0, mnemonic(shared_label_mnemonic));
+        setMnemonicAt(0, mnemonic(workspace_label_mnemonic));
 
         setSelectedComponent(workspace);
     }

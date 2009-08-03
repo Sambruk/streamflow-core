@@ -19,7 +19,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.Restlet;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.ui.DetailView;
@@ -27,16 +30,15 @@ import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 
 import javax.swing.JComponent;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
-import java.util.Vector;
+import java.util.Collections;
+import java.util.Enumeration;
 
 /**
  * JAVADOC
  */
 public class AccountAdministrationNode
-        extends DefaultMutableTreeNode
-        implements DetailView
+        implements DetailView, TreeNode, Refreshable
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -44,71 +46,76 @@ public class AccountAdministrationNode
     @Service
     Restlet client;
 
-    @Service
+    @Uses
     AccountModel accountModel;
-    @Service
-    AccountView accountView;
 
-    public AccountAdministrationNode(@Uses Account account)
+    WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode>()
     {
-        super(account);
+        protected OrganizationalStructureAdministrationNode newModel(TreeNodeValue key)
+        {
+            return obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(AccountAdministrationNode.this, resource, key).newInstance();
+        }
+    };
+
+    public OrganizationsClientResource resource;
+    private TreeNode parent;
+    private Account account;
+    public TreeValue organizations;
+
+    public AccountAdministrationNode(@Uses TreeNode parent, @Uses Account account,
+                                     @Service Restlet client) throws ResourceException
+    {
+        this.parent = parent;
+        this.account = account;
+
+        resource = account.server(client).organizations();
     }
 
-    @Override
-    public String toString()
+    public TreeNode getParent()
     {
-        return ((Account) super.getUserObject()).settings().name().get();
+        return parent;
     }
 
-    public Account account()
+    public int getIndex(TreeNode node)
     {
-        return (Account) super.getUserObject();
+        if (organizations == null)
+            return -1;
+
+        for (int idx = 0; idx < organizations.roots().get().size(); idx++)
+        {
+            TreeNodeValue treeNodeValue = organizations.roots().get().get(idx);
+            OrganizationalStructureAdministrationNode child = models.get(treeNodeValue);
+            if (child.equals(node))
+                return idx;
+        }
+
+        return -1;
     }
 
-    @Override
+    public Enumeration children()
+    {
+        return Collections.enumeration(Collections.emptyList());
+    }
+
     public TreeNode getChildAt(int index)
     {
-        if (children == null)
-        {
-            getChildCount();
-        }
+        if (organizations == null)
+            return null;
 
-        return super.getChildAt(index);
+        TreeNodeValue treeNode = organizations.roots().get().get(index);
+        return models.get(treeNode);
     }
 
-    @Override
     public int getChildCount()
     {
-
-        if (children == null)
-        {
-            try
-            {
-                UserClientResource user = account().user(client);
-                TreeValue organizations = user.administration().organizations();
-
-                children = new Vector();
-                for (TreeNodeValue treeNode : organizations.roots().get())
-                {
-                    OrganizationsClientResource resource = account().server(client).organizations();
-                    children.add(obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(resource, treeNode).newInstance());
-                }
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        return super.getChildCount();
+        return organizations == null ? 0 : organizations.roots().get().size();
     }
 
-    @Override
     public boolean getAllowsChildren()
     {
         return true;
     }
 
-    @Override
     public boolean isLeaf()
     {
         return false;
@@ -116,7 +123,12 @@ public class AccountAdministrationNode
 
     public JComponent detailView()
     {
-        accountModel.setAccount(account());
-        return accountView;
+        return obf.newObjectBuilder(AccountView.class).use(accountModel).newInstance();
+    }
+
+    public void refresh() throws Exception
+    {
+        UserClientResource user = account.user(client);
+        organizations = user.administration().organizations();
     }
 }

@@ -14,39 +14,81 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.Account;
-import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
-import se.streamsource.streamflow.client.domain.individual.Individual;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.domain.individual.Accounts;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import java.util.Collections;
+import java.util.Enumeration;
 
 /**
  * JAVADOC
  */
 public class AdministrationNode
-        extends DefaultMutableTreeNode
-        implements DetailView
+        implements DetailView, TreeNode
 {
-    Individual individual;
+    @Structure ObjectBuilderFactory obf;
 
-    public AdministrationNode(@Structure final ObjectBuilderFactory obf, @Service IndividualRepository repository)
+    @Uses
+    Accounts.AccountsState accounts;
+
+    WeakModelMap<Account, AccountAdministrationNode> models = new WeakModelMap<Account, AccountAdministrationNode>()
     {
-        individual = repository.individual();
-
-        individual.visitAccounts(new AccountVisitor()
+        @Override
+        protected AccountAdministrationNode newModel(Account key)
         {
-            public void visitAccount(Account account)
-            {
-                add(obf.newObjectBuilder(AccountAdministrationNode.class).use(account).newInstance());
-            }
-        });
+            return obf.newObjectBuilder(AccountAdministrationNode.class).use(AdministrationNode.this, key).newInstance();
+        }
+    };
+
+    public TreeNode getChildAt(final int childIndex)
+    {
+        return models.get(accounts.accounts().get(childIndex));
+    }
+
+    public int getChildCount()
+    {
+        return accounts.accounts().count();
+    }
+
+    public TreeNode getParent()
+    {
+        return null;
+    }
+
+    public int getIndex(TreeNode node)
+    {
+        int idx = 0;
+        for (Account account : accounts.accounts())
+        {
+            TreeNode child = models.get(account);
+            if (node.equals(child))
+                return idx;
+            idx++;
+        }
+        return -1;
+    }
+
+    public boolean getAllowsChildren()
+    {
+        return true;
+    }
+
+    public boolean isLeaf()
+    {
+        return false;
+    }
+
+    public Enumeration children()
+    {
+        return Collections.enumeration(Collections.emptyList());
     }
 
     public JComponent detailView()

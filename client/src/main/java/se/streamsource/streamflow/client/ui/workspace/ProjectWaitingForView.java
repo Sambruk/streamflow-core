@@ -25,6 +25,7 @@ import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
@@ -71,9 +72,9 @@ public class ProjectWaitingForView
     private UserWaitingForTaskDetailModel detailModel;
 
     public ProjectWaitingForView(@Service ApplicationContext context,
-                              @Service final ProjectWaitingForModel model,
-                           @Service final UserWaitingForTaskDetailView detailView,
-                           @Service final UserWaitingForTaskDetailModel detailModel,
+                              @Uses final ProjectWaitingForModel model,
+                           @Uses final UserWaitingForTaskDetailView detailView,
+                           @Uses final UserWaitingForTaskDetailModel detailModel,
                            @Structure ObjectBuilderFactory obf,
                            @Structure ValueBuilderFactory vbf)
     {

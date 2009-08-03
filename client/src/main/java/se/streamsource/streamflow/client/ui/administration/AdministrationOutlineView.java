@@ -15,9 +15,8 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.jdesktop.swingx.JXTree;
-import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 
-import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -31,7 +30,7 @@ public class AdministrationOutlineView
 {
     private JXTree tree;
 
-    public AdministrationOutlineView(@Service ActionMap am, @Service AdministrationModel model)
+    public AdministrationOutlineView(@Uses AdministrationModel model)
     {
         super(new BorderLayout());
 
@@ -42,7 +41,6 @@ public class AdministrationOutlineView
 
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEtchedBorder());
-        setActionMap(am);
 
         add(BorderLayout.CENTER, tree);
 /*

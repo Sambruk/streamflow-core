@@ -15,36 +15,22 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
-
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
 
 /**
  * JAVADOC
  */
 public class UserWaitingForNode
         extends DefaultMutableTreeTableNode
-        implements DetailView
 {
-    @Service
-    UserWaitingForView view;
-
-    @Service
+    @Uses
     UserWaitingForModel model;
 
-    @Uses
-    private AccountSettingsValue settings;
-
-    public UserWaitingForNode(@Uses UserWaitingForClientResource waitingForClientResource)
+    @Override
+    public UserNode getParent()
     {
-        super(waitingForClientResource, false);
+        return (UserNode) super.getParent();
     }
 
     @Override
@@ -53,31 +39,8 @@ public class UserWaitingForNode
         return i18n.text(WorkspaceResources.waitingfor_node);
     }
 
-    UserWaitingForClientResource waitingFor()
+    public UserWaitingForModel waitingForModel()
     {
-        return (UserWaitingForClientResource) getUserObject();
-    }
-
-    public JComponent detailView()
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
-            {
-                try
-                {
-                    model.setWaitingFor(waitingFor());
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-        return view;
-    }
-
-    public AccountSettingsValue getSettings()
-    {
-        return settings;
+        return model;
     }
 }

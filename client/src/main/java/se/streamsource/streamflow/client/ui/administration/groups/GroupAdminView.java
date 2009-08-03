@@ -14,16 +14,10 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -37,28 +31,12 @@ import javax.swing.event.ListSelectionListener;
 public class GroupAdminView
         extends JSplitPane
 {
-    @Structure
-    ValueBuilderFactory vbf;
-    @Structure
-    ObjectBuilderFactory obf;
-    @Structure
-    UnitOfWorkFactory uowf;
+    ObjectBuilder<GroupView> groupView;
 
-    ApplicationContext context;
-
-    @Service
-    GroupView groupView;
-
-    @Service
-    DialogService dialogs;
-    public JList groupList;
-    public DefaultListModel listModel;
-
-    public GroupAdminView(@Service ApplicationContext context,
-                          @Service GroupsView groupsView)
+    public GroupAdminView(@Uses GroupsView groupsView,
+                          @Uses final GroupsModel groupsModel)
     {
         super();
-        this.context = context;
 
         setLeftComponent(groupsView);
         setRightComponent(new JPanel());
@@ -74,7 +52,9 @@ public class GroupAdminView
                 if (groupValue == null)
                     setRightComponent(new JPanel());
                 else
-                    setRightComponent(groupView);
+                {
+                    setRightComponent(groupView.use(groupsModel.getGroupModel(groupValue.entity().get().identity())).newInstance());
+                }
             }
         });
     }

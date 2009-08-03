@@ -36,7 +36,7 @@ public class UserClientResource
         super(context, reference);
     }
 
-    public WorkspaceClientResource shared()
+    public WorkspaceClientResource workspace()
     {
         return getSubResource("workspace", WorkspaceClientResource.class);
     }

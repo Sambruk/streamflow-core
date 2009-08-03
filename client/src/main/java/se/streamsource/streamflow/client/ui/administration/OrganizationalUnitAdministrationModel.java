@@ -14,7 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
@@ -26,26 +28,36 @@ import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
  */
 public class OrganizationalUnitAdministrationModel
 {
-    @Service
-    GroupsModel groupsModel;
-    @Service
-    ProjectsModel projectsModel;
-    @Service
-    RolesModel rolesModel;
-
+    private GroupsModel groupsModel;
+    private ProjectsModel projectsModel;
+    private RolesModel rolesModel;
     private OrganizationClientResource organization;
 
-    public void setOrganization(OrganizationClientResource organization) throws ResourceException
+    public OrganizationalUnitAdministrationModel(@Structure ObjectBuilderFactory obf, @Uses OrganizationClientResource organization) throws ResourceException
     {
         this.organization = organization;
-        groupsModel.setGroups(organization.groups());
-        projectsModel.setProjects(organization.projects());
-        rolesModel.setRoles(organization.roles());
+        groupsModel = obf.newObjectBuilder(GroupsModel.class).use(organization.groups()).newInstance();
+        projectsModel = obf.newObjectBuilder(ProjectsModel.class).use(organization.projects()).newInstance();
+        rolesModel = obf.newObjectBuilder(RolesModel.class).use(organization.roles()).newInstance();
     }
 
     public OrganizationClientResource getOrganization()
     {
         return organization;
     }
-    
+
+    public GroupsModel groupsModel()
+    {
+        return groupsModel;
+    }
+
+    public ProjectsModel projectsModel()
+    {
+        return projectsModel;
+    }
+
+    public RolesModel rolesModel()
+    {
+        return rolesModel;
+    }
 }

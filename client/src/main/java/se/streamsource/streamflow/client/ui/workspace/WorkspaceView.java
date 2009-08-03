@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
@@ -23,16 +25,16 @@ import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.jdesktop.swingx.treetable.TreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -55,44 +57,44 @@ import java.awt.event.KeyEvent;
 public class WorkspaceView
         extends JPanel
 {
-    // SharedInbox listing
-    private JXTreeTable sharedTree;
+    private JXTreeTable workspaceTree;
     private JSplitPane pane;
     private WorkspaceModel model;
 
-    public WorkspaceView(@Service ActionMap am,
-                      @Service WorkspaceModel model,
-                      @Structure ObjectBuilderFactory obf)
+    public WorkspaceView(final @Service ApplicationContext context,
+                         @Uses WorkspaceModel model,
+                         final @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
         this.model = model;
-        sharedTree = new JXTreeTable(model);
-        sharedTree.setPreferredScrollableViewportSize(new Dimension(200, 400));
-        sharedTree.setRootVisible(false);
-        sharedTree.setShowsRootHandles(false);
-        sharedTree.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        sharedTree.setTableHeader(null);
+        workspaceTree = new JXTreeTable(model);
+        workspaceTree.expandAll();
+        workspaceTree.setPreferredScrollableViewportSize(new Dimension(200, 400));
+        workspaceTree.setRootVisible(false);
+        workspaceTree.setShowsRootHandles(false);
+        workspaceTree.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        workspaceTree.setTableHeader(null);
 
-        sharedTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "expand");
-        sharedTree.getActionMap().put("expand", new AbstractAction()
+        workspaceTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "expand");
+        workspaceTree.getActionMap().put("expand", new AbstractAction()
         {
             public void actionPerformed(ActionEvent e)
             {
-                sharedTree.expandRow(sharedTree.getSelectedRow());
+                workspaceTree.expandRow(workspaceTree.getSelectedRow());
             }
         });
-        sharedTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "collapse");
-        sharedTree.getActionMap().put("collapse", new AbstractAction()
+        workspaceTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "collapse");
+        workspaceTree.getActionMap().put("collapse", new AbstractAction()
         {
             public void actionPerformed(ActionEvent e)
             {
-                sharedTree.collapseRow(sharedTree.getSelectedRow());
+                workspaceTree.collapseRow(workspaceTree.getSelectedRow());
             }
         });
 
-        sharedTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "select");
-        sharedTree.getActionMap().put("select", new AbstractAction()
+        workspaceTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "select");
+        workspaceTree.getActionMap().put("select", new AbstractAction()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -100,7 +102,7 @@ public class WorkspaceView
             }
         });
 
-        sharedTree.setTreeCellRenderer(new DefaultTreeRenderer(new WrappingProvider(
+        workspaceTree.setTreeCellRenderer(new DefaultTreeRenderer(new WrappingProvider(
                 new IconValue()
                 {
                     public Icon getIcon(Object o)
@@ -109,7 +111,7 @@ public class WorkspaceView
                             return i18n.icon(Icons.user, i18n.ICON_24);
                         else if (o instanceof ProjectsNode)
                             return i18n.icon(Icons.projects, i18n.ICON_24);
-                        if (o instanceof UserInboxNode || o instanceof ProjectInboxNode)
+                        else if (o instanceof UserInboxNode || o instanceof ProjectInboxNode)
                             return i18n.icon(Icons.inbox, i18n.ICON_16);
                         else if (o instanceof UserAssignmentsNode || o instanceof ProjectAssignmentsNode)
                             return i18n.icon(Icons.assign, i18n.ICON_16);
@@ -135,7 +137,7 @@ public class WorkspaceView
             public Component getTreeCellRendererComponent(JTree jTree, Object o, boolean b, boolean b1, boolean b2, int i, boolean b3)
             {
                 WrappingIconPanel component = (WrappingIconPanel) super.getTreeCellRendererComponent(jTree, o, b, b1, b2, i, b3);
-
+                
                 if (o instanceof UserNode || o instanceof ProjectsNode)
                 {
                     component.setFont(getFont().deriveFont(Font.BOLD));
@@ -149,7 +151,7 @@ public class WorkspaceView
             }
         });
 
-        JScrollPane sharedScroll = new JScrollPane(sharedTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane workspaceScroll = new JScrollPane(workspaceTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         pane.setDividerLocation(200);
@@ -157,30 +159,146 @@ public class WorkspaceView
 
         pane.setRightComponent(new JPanel());
 
-        JPanel sharedOutline = new JPanel(new BorderLayout());
-        sharedOutline.add(sharedScroll, BorderLayout.CENTER);
-//        sharedOutline.add(toolbarView, BorderLayout.SOUTH);
-        sharedOutline.setMinimumSize(new Dimension(150, 300));
+        JPanel workspaceOutline = new JPanel(new BorderLayout());
+        workspaceOutline.add(workspaceScroll, BorderLayout.CENTER);
+//        workspaceOutline.add(toolbarView, BorderLayout.SOUTH);
+        workspaceOutline.setMinimumSize(new Dimension(150, 300));
 
-        pane.setLeftComponent(sharedOutline);
+        pane.setLeftComponent(workspaceOutline);
 
         add(pane, BorderLayout.CENTER);
 
-        sharedTree.addTreeSelectionListener(new TreeSelectionListener()
+        workspaceTree.addTreeSelectionListener(new TreeSelectionListener()
         {
             public void valueChanged(TreeSelectionEvent e)
             {
                 final TreePath path = e.getNewLeadSelectionPath();
-                if (path != null && path.getLastPathComponent() instanceof DetailView)
+                if (path != null)
                 {
-                    DetailView view = (DetailView) path.getLastPathComponent();
-                    try
+                    Object node = path.getLastPathComponent();
+
+                    JComponent view = new JPanel();
+
+                    if (node instanceof UserNode)
+                        view = new JPanel();
+                    else if (node instanceof ProjectsNode)
                     {
-                        pane.setRightComponent(view.detailView());
-                    } catch (ResourceException e1)
-                    {
-                        e1.printStackTrace();
+                        view = new JPanel();
                     }
+                    else if (node instanceof UserInboxNode)
+                    {
+                        UserInboxNode userInboxNode = (UserInboxNode) node;
+                        final UserInboxModel inboxModel = userInboxNode.inboxModel();
+                        final LabelsModel labelsModel = userInboxNode.getParent().labelsModel();
+                        view = obf.newObjectBuilder(UserInboxView.class).use(inboxModel, userInboxNode.getParent(), labelsModel).newInstance();
+
+                        context.getTaskService().execute(new Task(context.getApplication())
+                        {
+                            protected Object doInBackground() throws Exception
+                            {
+                                try
+                                {
+                                    inboxModel.refresh();
+                                    labelsModel.refresh();
+                                } catch (ResourceException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                return null;
+                            }
+                        });
+                    }
+                    else if (node instanceof UserAssignmentsNode)
+                    {
+                        UserAssignmentsNode userAssignmentsNode = (UserAssignmentsNode) node;
+                        final UserAssignmentsModel assignmentsModel = userAssignmentsNode.assignmentsModel();
+                        final LabelsModel labelsModel = userAssignmentsNode.getParent().labelsModel();
+                        view = obf.newObjectBuilder(UserAssignmentsView.class).use(assignmentsModel, userAssignmentsNode.getParent(),labelsModel).newInstance();
+
+                        context.getTaskService().execute(new Task(context.getApplication())
+                        {
+                            protected Object doInBackground() throws Exception
+                            {
+                                try
+                                {
+                                    assignmentsModel.refresh();
+                                    labelsModel.refresh();
+                                } catch (ResourceException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                return null;
+                            }
+                        });
+                    }
+                    else if (node instanceof UserDelegationsNode)
+                    {
+                        UserDelegationsNode userDelegationsNode = (UserDelegationsNode) node;
+                        final UserDelegationsModel delegationsModel = userDelegationsNode.delegationsModel();
+                        final LabelsModel labelsModel = userDelegationsNode.getParent().labelsModel();
+                        view = obf.newObjectBuilder(UserDelegationsView.class).use(delegationsModel, labelsModel).newInstance();
+
+                        context.getTaskService().execute(new Task(context.getApplication())
+                        {
+                            protected Object doInBackground() throws Exception
+                            {
+                                try
+                                {
+                                    delegationsModel.refresh();
+                                    labelsModel.refresh();
+                                } catch (ResourceException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                return null;
+                            }
+                        });
+                    }
+                    else if (node instanceof UserWaitingForNode)
+                    {
+                        UserWaitingForNode userWaitingForNode = (UserWaitingForNode) node;
+                        final UserWaitingForModel waitingForModel = userWaitingForNode.waitingForModel();
+                        final LabelsModel labelsModel = userWaitingForNode.getParent().labelsModel();
+                        view = obf.newObjectBuilder(UserWaitingForView.class).use(waitingForModel, labelsModel).newInstance();
+
+                        context.getTaskService().execute(new Task(context.getApplication())
+                        {
+                            protected Object doInBackground() throws Exception
+                            {
+                                try
+                                {
+                                    waitingForModel.refresh();
+                                    labelsModel.refresh();
+                                } catch (ResourceException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                return null;
+                            }
+                        });
+                    }
+                    else if (node instanceof ProjectInboxNode)
+                    {
+
+                    }
+                    else if (node instanceof ProjectAssignmentsNode)
+                    {
+
+                    }
+                    else if (node instanceof ProjectDelegationsNode)
+                    {
+
+                    }
+                    else if (node instanceof ProjectWaitingForNode)
+                    {
+
+                    }
+
+                    pane.setRightComponent(view);
                 } else
                 {
                     pane.setRightComponent(new JPanel());
@@ -188,44 +306,17 @@ public class WorkspaceView
             }
         });
 
-        sharedTree.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(sharedTree.getSearchable()).newInstance());
+        workspaceTree.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(workspaceTree.getSearchable()).newInstance());
     }
 
-    public JXTreeTable getSharedTree()
+    public JXTreeTable getWorkspaceTree()
     {
-        return sharedTree;
+        return workspaceTree;
     }
 
     public String getSelectedUser()
     {
-        int selected = sharedTree.getSelectedRow();
-        if (selected == -1)
-            return null;
-
-        Object selectedNode = sharedTree.getPathForRow(selected).getPathComponent(3);
-        if (selectedNode instanceof UserInboxNode)
-        {
-            UserInboxNode userInboxNode = (UserInboxNode) selectedNode;
-            return userInboxNode.getSettings().userName().get();
-        } else if (selectedNode instanceof UserDelegationsNode)
-        {
-            UserDelegationsNode userDelegationsNode = (UserDelegationsNode) selectedNode;
-            return userDelegationsNode.getSettings().userName().get();
-        } else if (selectedNode instanceof UserAssignmentsNode)
-        {
-            UserAssignmentsNode assignmentsNode = (UserAssignmentsNode) selectedNode;
-            return assignmentsNode.getSettings().userName().get();
-        } else if (selectedNode instanceof UserWaitingForNode)
-        {
-            UserWaitingForNode waitingForNode = (UserWaitingForNode) selectedNode;
-            return waitingForNode.getSettings().userName().get();
-        } else if (selectedNode instanceof ProjectNode)
-        {
-            ProjectNode projectNode = (ProjectNode) selectedNode;
-            return projectNode.getSettings().userName().get();
-        }
-        // warning?
-        return "";
+        return model.getRoot().getUserObject().settings().userName().get();
     }
 
     public JSplitPane getPane()
@@ -233,19 +324,11 @@ public class WorkspaceView
         return pane;
     }
 
-    @Override
-    public void addNotify()
-    {
-        super.addNotify();
-
-        sharedTree.expandAll();
-    }
-
     public void refreshTree()
     {
-        sharedTree.clearSelection();
+        workspaceTree.clearSelection();
         model.refresh();
-        sharedTree.expandAll();
+        workspaceTree.expandAll();
     }
 
 }

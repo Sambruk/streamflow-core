@@ -14,13 +14,15 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -37,23 +39,19 @@ public class ProjectsView
     ProjectsModel model;
 
     @Structure
-    ValueBuilderFactory vbf;
-
-    @Structure
-    ObjectBuilderFactory obf;
+    Iterable<NameDialog> nameDialogs;
 
     @Service
     DialogService dialogs;
 
-    @Structure
-    UnitOfWorkFactory uowf;
     public JList projectList;
 
-    public ProjectsView(@Service ActionMap am, @Service ProjectsModel model)
+    public ProjectsView(@Service ApplicationContext context, @Uses ProjectsModel model)
     {
         super(new BorderLayout());
         this.model = model;
 
+        ActionMap am = context.getActionMap(this);
         setActionMap(am);
 
         projectList = new JList(model);
@@ -62,9 +60,29 @@ public class ProjectsView
         add(projectList, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("addProject")));
-        toolbar.add(new JButton(am.get("removeProject")));
+        toolbar.add(new JButton(am.get("add")));
+        toolbar.add(new JButton(am.get("remove")));
         add(toolbar, BorderLayout.SOUTH);
+    }
+
+    @Action
+    public void add()
+    {
+        NameDialog dialog = nameDialogs.iterator().next();
+        
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        if (dialog.name() != null)
+        {
+            model.newProject(dialog.name());
+        }
+    }
+
+    @Action
+    public void remove()
+    {
+        ListItemValue selected = (ListItemValue) projectList.getSelectedValue();
+        model.removeProject(selected.entity().get().identity());
     }
 
     public JList getProjectList()

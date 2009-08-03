@@ -20,7 +20,7 @@ import se.streamsource.streamflow.web.domain.comment.Commentable;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 
 /**
- * Shared tasks are aggregate roots.
+ * Task entity.
  */
 public interface Task
         extends

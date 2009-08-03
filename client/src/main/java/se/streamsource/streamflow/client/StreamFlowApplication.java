@@ -25,10 +25,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
@@ -42,43 +39,21 @@ import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.groups.AddParticipantsDialog;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupModel;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupView;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
-import se.streamsource.streamflow.client.ui.administration.groups.NewGroupDialog;
-import se.streamsource.streamflow.client.ui.administration.projects.AddMemberDialog;
-import se.streamsource.streamflow.client.ui.administration.projects.NewProjectDialog;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectMembersModel;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectView;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
-import se.streamsource.streamflow.client.ui.administration.roles.NewRoleDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
-import se.streamsource.streamflow.client.ui.menu.AccountsModel;
-import se.streamsource.streamflow.client.ui.menu.CreateAccountDialog;
-import se.streamsource.streamflow.client.ui.navigator.NavigatorView;
+import se.streamsource.streamflow.client.ui.menu.MenuView;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.AddCommentDialog;
-import se.streamsource.streamflow.client.ui.workspace.UserAssignmentsModel;
-import se.streamsource.streamflow.client.ui.workspace.UserAssignmentsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -91,26 +66,6 @@ import java.util.logging.Logger;
 public class StreamFlowApplication
         extends SingleFrameApplication
 {
-    public
-    @Service
-    NavigatorView navigatorView;
-
-    public StreamFlowApplication()
-    {
-        super();
-
-        getContext().getResourceManager().setApplicationBundleNames(Arrays.asList("se.streamsource.streamflow.client.resources.StreamFlowApplication"));
-
-        JXFrame frame = new JXFrame();
-
-        frame.setLocationByPlatform(true);
-
-        JXStatusBar bar = new StatusBarView(getContext());
-        frame.setStatusBar(bar);
-
-        setMainFrame(frame);
-    }
-
     @Structure
     ObjectBuilderFactory obf;
 
@@ -128,29 +83,60 @@ public class StreamFlowApplication
 
     JLabel label;
 
+    JXFrame workspaceWindow;
+    JXFrame administrationWindow;
+
+    MenuView menuView;
+    WorkspaceView workspaceView;
+    WorkspaceModel workspaceModel;
+
+    AdministrationView administrationView;
+    AdministrationModel administrationModel;
+
+
+    public StreamFlowApplication()
+    {
+        super();
+
+        getContext().getResourceManager().setApplicationBundleNames(Arrays.asList("se.streamsource.streamflow.client.resources.StreamFlowApplication"));
+
+        workspaceWindow = new JXFrame();
+
+        administrationWindow = new JXFrame();
+
+        workspaceWindow.setLocationByPlatform(true);
+
+        JXStatusBar bar = new StatusBarView(getContext());
+        workspaceWindow.setStatusBar(bar);
+
+        setMainFrame(workspaceWindow);
+    }
+
+
     public void init(@Structure ObjectBuilderFactory obf) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
         JFrame frame = getMainFrame();
         frame.setTitle("StreamFlow");
 
+        workspaceModel = obf.newObjectBuilder(WorkspaceModel.class).newInstance();
+        workspaceView = obf.newObjectBuilder(WorkspaceView.class).use(workspaceModel).newInstance();
+
+        administrationModel = obf.newObjectBuilder(AdministrationModel.class).newInstance();
+        administrationView = obf.newObjectBuilder(AdministrationView.class).use(administrationModel).newInstance();
+
+        menuView = obf.newObject(MenuView.class);
+
         frame.getContentPane().setLayout(new BorderLayout());
-        frame.getContentPane().add(navigatorView, BorderLayout.CENTER);
+        frame.getContentPane().add(workspaceView, BorderLayout.CENTER);
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
         frame.setVisible(true);
 
-        frame.setJMenuBar(navigatorView.getMenu());
+        frame.setJMenuBar(menuView);
 
-        frame.addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyTyped(KeyEvent e)
-            {
-                super.keyTyped(e);
-            }
-        });
-
+        administrationWindow.getContentPane().setLayout(new BorderLayout());
+        administrationWindow.getContentPane().add(administrationView, BorderLayout.CENTER);
     }
 
     @Override
@@ -214,69 +200,27 @@ public class StreamFlowApplication
     @Uses
     private ObjectBuilder<AccountsDialog> accountsDialog;
 
-    @Uses
-    private ObjectBuilder<CreateAccountDialog> createAccountDialog;
-
-
-    @Service
-    AccountsModel accountsModel;
-
-    @Service
-    WorkspaceModel workspaceModel;
-
     @Action
     public void manageAccounts()
     {
         AccountsDialog dialog = accountsDialog.newInstance();
-        accountsModel.refresh();
         dialogs.showOkCancelHelpDialog(getMainFrame(), dialog);
-    }
-
-    @Action
-    public void deleteAccount()
-    {
-        //accountsModel.getSelected();
-    }
-
-    @Action
-    public void createAccount()
-    {
-        CreateAccountDialog dialog = createAccountDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(getMainFrame(), dialog);
-        accountsModel.refresh();
-        administrationModel.refresh();
     }
 
     // Controller actions -------------------------------------------
-//    @Service
-//    WorkspaceView workspaceView;
 
     // Menu actions
     // Account menu
     @Action
-    public void showAdministration()
+    public void showWorkspaceWindow()
     {
-        uowf.newUnitOfWork(newUsecase("Administration"));
-        dialogs.showOkDialog(getMainFrame(), navigatorView.getAdministration());
+        show(workspaceWindow);
     }
 
     @Action
-    public void ok()
+    public void showAdministrationWindow()
     {
-        try
-        {
-            uowf.currentUnitOfWork().complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            dialogs.showOkDialog(this.getMainFrame(), new JLabel("#couldnotcomplete:" + e.getMessage()));
-        }
-    }
-
-    @Action
-    public void cancel()
-    {
-        SwingUtilities.windowForComponent(getContext().getFocusOwner()).setVisible(false);
-        uowf.currentUnitOfWork().discard();
+        show(administrationWindow);
     }
 
     @Action
@@ -290,123 +234,4 @@ public class StreamFlowApplication
     {
         dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(AddCommentDialog.class).newInstance());
     }
-
-    // Shared user assignments actions ------------------------------
-    @Service
-    UserAssignmentsView userAssignmentsView;
-    @Service
-    UserAssignmentsModel userAssignmentsModel;
-
-    @Action
-    public void refreshSharedAssignments() throws ResourceException
-    {
-        userAssignmentsModel.refresh();
-    }
-
-    @Action
-    public void removeSharedAssignedTasks() throws ResourceException
-    {
-        Iterable<AssignedTaskDTO> selected = userAssignmentsView.getSelectedTasks();
-        for (AssignedTaskDTO taskDTO : selected)
-        {
-            userAssignmentsModel.removeTask(taskDTO.task().get().identity());
-        }
-    }
-
-    // Group administration actions ---------------------------------
-    @Service
-    AdministrationModel administrationModel;
-
-    @Service
-    GroupsView groupsView;
-
-    @Service
-    GroupsModel groupsModel;
-
-    @Service
-    GroupView groupView;
-    @Service
-    GroupModel groupModel;
-
-    @Action
-    public void addGroup()
-    {
-        ValueBuilder<DescriptionDTO> newGroupBuilder = vbf.newValueBuilder(DescriptionDTO.class);
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(NewGroupDialog.class).use(newGroupBuilder).newInstance());
-    }
-
-    @Action
-    public void removeGroup()
-    {
-        ListItemValue selected = (ListItemValue) groupsView.getGroupList().getSelectedValue();
-        groupsModel.removeGroup(selected.entity().get().identity());
-    }
-
-    @Action
-    public void addParticipant()
-    {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(AddParticipantsDialog.class).newInstance());
-    }
-
-    @Action
-    public void removeParticipant()
-    {
-        ListItemValue value = (ListItemValue) groupView.getParticipantList().getSelectedValue();
-        groupModel.removeParticipant(value.entity().get());
-    }
-
-    // Project administration actions -------------------------------
-
-    @Service
-    ProjectsModel projectsModel;
-    @Service
-    ProjectsView projectsView;
-    @Service
-    ProjectMembersModel projectMembersModel;
-    @Service
-    ProjectView projectView;
-
-    @Action
-    public void addProject()
-    {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(NewProjectDialog.class).newInstance());
-    }
-
-    @Action
-    public void removeProject()
-    {
-        ListItemValue selected = (ListItemValue) projectsView.getProjectList().getSelectedValue();
-        projectsModel.removeProject(selected.entity().get().identity());
-    }
-
-    @Action
-    public void addMember()
-    {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObject(AddMemberDialog.class));
-    }
-
-    @Action
-    public void removeMember()
-    {
-        if (projectView.getMembers().getSelectionPath() != null)
-        {
-            TreeNodeValue selected = (TreeNodeValue) projectView.getMembers().getSelectionPath().getPathComponent(1);
-            projectMembersModel.removeMember(selected.entity().get());
-        }
-    }
-
-    // Role administration actions ----------------------------------
-
-    @Action
-    public void addRole()
-    {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObject(NewRoleDialog.class));
-    }
-
-    @Action
-    public void removeRole()
-    {
-        // TODO
-    }
-
 }

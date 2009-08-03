@@ -22,11 +22,16 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Delegator;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -52,6 +57,84 @@ public class UserAssignedTaskServerResource
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
         describable.describe(descriptionValue.description().get());
     }
+
+    public void drop()
+    {
+        String id = (String) getRequest().getAttributes().get("user");
+        String taskId = (String) getRequest().getAttributes().get("task");
+        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
+        Assignments assignments = uowf.currentUnitOfWork().get(Assignments.class, id);
+        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
+
+        assignments.dropAssignedTask(task, assignee);
+    }
+
+    public void delegate(EntityReferenceDTO reference)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        Assignments assignments = uowf.currentUnitOfWork().get(Assignments.class, userId);
+        Delegator delegator = uow.get(Delegator.class, userId);
+        Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
+
+        assignments.delegateAssignedTaskTo(task, delegatee, delegator);
+    }
+
+    public void forward(EntityReferenceDTO reference)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        String userId = (String) getRequest().getAttributes().get("user");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        TaskEntity task = uow.get(TaskEntity.class, taskId);
+        Inbox receiverInbox = uow.get(Inbox.class, reference.entity().get().identity());
+
+        Assignments assignments = uowf.currentUnitOfWork().get(Assignments.class, userId);
+        assignments.forwardAssignedTask(task, receiverInbox);
+    }
+
+    public void markAsRead()
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        Assignments assignments = uow.get(Assignments.class, userId);
+
+        assignments.markAssignedTaskAsRead(task);
+    }
+
+    public void markAsUnread()
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        Assignments assignments = uow.get(Assignments.class, userId);
+
+        assignments.markAssignedTaskAsUnread(task);
+    }
+
+    public void addLabel(EntityReferenceDTO reference)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        TaskEntity task = uow.get(TaskEntity.class, taskId);
+        Label label = uow.get(Label.class, reference.entity().get().identity());
+
+        task.addLabel(label);
+    }
+
+    public void removeLabel(EntityReferenceDTO reference)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        TaskEntity task = uow.get(TaskEntity.class, taskId);
+        Label label = uow.get(Label.class, reference.entity().get().identity());
+
+        task.removeLabel(label);
+    }    
 
     @Override
     protected Representation delete(Variant variant) throws ResourceException

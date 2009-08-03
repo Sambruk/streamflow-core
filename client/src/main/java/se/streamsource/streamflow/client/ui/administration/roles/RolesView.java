@@ -14,13 +14,16 @@
 
 package se.streamsource.streamflow.client.ui.administration.roles;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -38,15 +41,16 @@ public class RolesView
     DialogService dialogs;
 
     @Structure
-    UnitOfWorkFactory uowf;
+    Iterable<NameDialog> nameDialogs;
+
     public JList projectList;
 
-    public RolesView(@Service ActionMap am, @Service final RolesModel model)
+    public RolesView(@Service ApplicationContext context, @Uses final RolesModel model)
     {
         super(new BorderLayout());
         this.model = model;
 
-        setActionMap(am);
+        setActionMap(context.getActionMap(this));
 
         projectList = new JList(model);
 
@@ -54,9 +58,28 @@ public class RolesView
         add(projectList, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("addRole")));
-        toolbar.add(new JButton(am.get("removeRole")));
+        toolbar.add(new JButton(getActionMap().get("add")));
+        toolbar.add(new JButton(getActionMap().get("remove")));
         add(toolbar, BorderLayout.SOUTH);
+    }
+
+    @Action
+    public void add()
+    {
+        NameDialog dialog = nameDialogs.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+        String name = dialog.name();
+        if (name != null)
+        {
+            model.newRole(name);
+        }
+    }
+
+    @Action
+    public void remove()
+    {
+        ListItemValue selected = (ListItemValue) projectList.getSelectedValue();
+        model.removeRole(selected.entity().get().identity());
     }
 
     public JList getProjectList()

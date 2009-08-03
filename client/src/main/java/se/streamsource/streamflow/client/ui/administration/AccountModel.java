@@ -15,9 +15,10 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Restlet;
-import se.streamsource.streamflow.client.domain.individual.RegistrationException;
 import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.domain.individual.RegistrationException;
 
 /**
  * JAVADOC
@@ -27,7 +28,7 @@ public class AccountModel
     @Service
     Restlet client;
 
-    private
+    @Uses
     Account account;
 
     public Account account()

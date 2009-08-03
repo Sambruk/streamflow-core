@@ -28,17 +28,18 @@ import org.qi4j.api.entity.Entity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.property.AbstractPropertyInstance;
 import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.domain.individual.RegistrationException;
 import se.streamsource.streamflow.client.domain.individual.AccountConnection;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.ConnectionException;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.domain.individual.RegistrationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -65,11 +66,11 @@ public class AccountView
     @Structure
     private UnitOfWorkFactory uowf;
 
-    @Service
+    @Uses
     private AccountModel model;
 
     @Uses
-    private Iterable<TestConnectionTask> testConnectionTasks;
+    private ObjectBuilder<TestConnectionTask> testConnectionTasks;
 
     @Service
     private DialogService dialogs;
@@ -165,7 +166,7 @@ public class AccountView
     @Action(block = Task.BlockingScope.APPLICATION)
     public Task test()
     {
-        Task<String, Void> task = testConnectionTasks.iterator().next();
+        Task<String, Void> task = testConnectionTasks.use(model).newInstance();
 
         task.addTaskListener(new TaskListener.Adapter<String, Void>()
         {

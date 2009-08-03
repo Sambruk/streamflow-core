@@ -12,11 +12,9 @@
  *
  */
 
-package se.streamsource.streamflow.resource.inbox;
+package se.streamsource.streamflow.resource.task;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import se.streamsource.streamflow.domain.roles.Describable;
@@ -28,9 +26,6 @@ import se.streamsource.streamflow.domain.roles.Notable;
 public interface NewTaskCommand
         extends ValueComposite, Describable.DescribableState, Notable.NotableState
 {
-    @Optional
-    Property<EntityReference> parentTask();
-
     @UseDefaults
     Property<Boolean> isCompleted();
 }

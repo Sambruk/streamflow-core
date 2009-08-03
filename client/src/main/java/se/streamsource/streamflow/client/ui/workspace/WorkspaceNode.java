@@ -34,4 +34,10 @@ public class WorkspaceNode
         add(userNode);
         add(projectsNode);
     }
+
+    @Override
+    public Account getUserObject()
+    {
+        return (Account) super.getUserObject();
+    }
 }

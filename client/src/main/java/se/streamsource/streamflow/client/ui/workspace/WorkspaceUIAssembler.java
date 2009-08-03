@@ -43,8 +43,8 @@ public class WorkspaceUIAssembler
                 ProjectAssignmentsNode.class,
                 ProjectDelegationsNode.class,
                 ProjectWaitingForNode.class,
-                UsersIndividualSearch.class,
-                ProjectsIndividualSearch.class);
+                ProjectsIndividualSearch.class,
+                LabelMenu.class);
 
         UIAssemblers.addModels(module, TableMultipleSelectionModel.class,
                 TableSingleSelectionModel.class);
@@ -77,13 +77,12 @@ public class WorkspaceUIAssembler
 
         //UIAssemblers.addViews(module, TaskView.class);
         UIAssemblers.addDialogs(module, AddTaskDialog.class,
-                ForwardTasksDialog.class,
-                DelegateTasksDialog.class);
+                UserOrProjectSelectionDialog.class);
         UIAssemblers.addDialogs(module, AddCommentDialog.class);
 
         UIAssemblers.addMV(module,
-                UserInboxTaskDetailModel.class,
-                UserInboxTaskDetailView.class);
+                TaskDetailModel.class,
+                TaskDetailView.class);
 
         UIAssemblers.addMV(module,
                 UserDelegationsTaskDetailModel.class,
@@ -104,7 +103,6 @@ public class WorkspaceUIAssembler
         UIAssemblers.addMV(module,
                 TaskGeneralModel.class,
                 TaskGeneralView.class);
-                //SharedInboxGeneralTaskDetailView.class);
 
     }
 }

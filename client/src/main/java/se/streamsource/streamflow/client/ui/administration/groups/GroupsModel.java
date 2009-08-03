@@ -15,10 +15,12 @@
 package se.streamsource.streamflow.client.ui.administration.groups;
 
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -32,7 +34,19 @@ public class GroupsModel
         extends DefaultListModel
 {
     @Structure
+    ObjectBuilderFactory obf;
+
+    @Structure
     ValueBuilderFactory vbf;
+
+    WeakModelMap<String, GroupModel> groupModels = new WeakModelMap<String, GroupModel>()
+    {
+        @Override
+        protected GroupModel newModel(String key)
+        {
+            return obf.newObjectBuilder(GroupModel.class).use(groups.group(key)).newInstance();
+        }
+    };
 
     private GroupsClientResource groups;
 
@@ -40,11 +54,6 @@ public class GroupsModel
     {
         this.groups = groupsResource;
         refresh();
-    }
-
-    public GroupsClientResource getGroups()
-    {
-        return groups;
     }
 
     public void newGroup(String description)
@@ -87,4 +96,8 @@ public class GroupsModel
     }
 
 
+    public GroupModel getGroupModel(String id)
+    {
+        return groupModels.get(id);
+    }
 }

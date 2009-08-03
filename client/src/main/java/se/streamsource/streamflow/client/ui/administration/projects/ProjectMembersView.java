@@ -14,11 +14,17 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTree;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 
-import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -29,6 +35,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -36,17 +43,26 @@ import java.awt.Component;
 public class ProjectMembersView
         extends JSplitPane
 {
-    public JXTree memberRoleTree;
+    @Service
+    DialogService dialogs;
 
-    public ProjectMembersView(@Service ActionMap am,
-                       @Service final ProjectMembersModel membersModel,
-                       @Service final MemberRolesModel memberRolesModel,
-                       @Service final MemberRolesView memberRolesView)
+    @Uses
+    Iterable<SelectUsersAndGroupsDialog> selectUsersAndGroups;
+
+    @Structure
+    ObjectBuilderFactory obf;
+
+    public JXTree memberRoleTree;
+    private ProjectMembersModel membersModel;
+
+    public ProjectMembersView(@Service ApplicationContext context,
+                              @Uses final ProjectMembersModel membersModel)
     {
         super();
+        this.membersModel = membersModel;
         JPanel members = new JPanel(new BorderLayout());
 
-        setActionMap(am);
+        setActionMap(context.getActionMap(this));
 
         memberRoleTree = new JXTree(membersModel);
         memberRoleTree.setRootVisible(false);
@@ -58,12 +74,13 @@ public class ProjectMembersView
                     TreePath newPath = treeSelectionEvent.getNewLeadSelectionPath();
                     if (newPath == null)
                     {
-                        memberRolesModel.clear();
+                        setRightComponent(new JPanel());
                     } else
                     {
                         TreeNodeValue value = (TreeNodeValue) newPath.getPathComponent(1);
-                        memberRolesModel.setMember(membersModel.getProject().members().member(value.entity().get().identity()));
-                        setRightComponent(memberRolesView);
+                        MemberRolesModel memberRolesModel = membersModel.memberRolesModel(value.entity().get().identity());
+                        memberRolesModel.refresh();
+                        setRightComponent(obf.newObjectBuilder(MemberRolesView.class).use(memberRolesModel).newInstance());
                     }
                 }
             }
@@ -87,16 +104,34 @@ public class ProjectMembersView
         members.add(memberRoleTree, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("addMember")));
-        toolbar.add(new JButton(am.get("removeMember")));
+        toolbar.add(new JButton(getActionMap().get("add")));
+        toolbar.add(new JButton(getActionMap().get("remove")));
         members.add(toolbar, BorderLayout.SOUTH);
 
         setLeftComponent(members);
-        setRightComponent(memberRolesView);
+        setRightComponent(new JPanel());
     }
 
-    public JXTree getMembers()
+
+    @Action
+    public void add()
     {
-        return memberRoleTree;
+        SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+        Set<String> members = dialog.getUsersAndGroups();
+        if (members != null)
+        {
+            membersModel.addMembers(members);
+        }
+    }
+
+    @Action
+    public void remove()
+    {
+        if (memberRoleTree.getSelectionPath() != null)
+        {
+            TreeNodeValue selected = (TreeNodeValue) memberRoleTree.getSelectionPath().getPathComponent(1);
+            membersModel.removeMember(selected.entity().get());
+        }
     }
 }

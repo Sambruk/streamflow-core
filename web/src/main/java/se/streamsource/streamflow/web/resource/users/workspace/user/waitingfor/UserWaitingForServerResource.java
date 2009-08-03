@@ -23,6 +23,10 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.resource.label.LabelDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
+import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
@@ -32,18 +36,16 @@ import se.streamsource.streamflow.web.domain.task.IsRead;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.util.List;
+import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
  * Mapped to:
  * /users/{user}/workspace/user/waitingfor
  */
 public class UserWaitingForServerResource
-        extends CommandQueryServerResource
+        extends AbstractTaskListServerResource
 {
-    public WaitingForTaskListDTO tasks()
+    public WaitingForTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
@@ -65,24 +67,18 @@ public class UserWaitingForServerResource
         Query<TaskEntity> waitingForQuery = queryBuilder.newQuery(uow);
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
-        ValueBuilder<WaitingForTaskDTO> builder = vbf.newValueBuilder(WaitingForTaskDTO.class);
-        WaitingForTaskDTO prototype = builder.prototype();
-        ValueBuilder<WaitingForTaskListDTO> listBuilder = vbf.newValueBuilder(WaitingForTaskListDTO.class);
-        List<WaitingForTaskDTO> list = listBuilder.prototype().tasks().get();
-        for (TaskEntity task : waitingForQuery)
-        {
-            Assignee assignee = task.assignedTo().get();
-            if (assignee != null)
-                prototype.assignedTo().set(assignee.getDescription());
-            prototype.delegatedTo().set(task.delegatedTo().get().getDescription());
-            prototype.task().set(EntityReference.getEntityReference(task));
-            prototype.delegatedOn().set(task.delegatedOn().get());
-            prototype.description().set(task.description().get());
-            prototype.status().set(task.status().get());
-            prototype.isRead().set(task.isRead().get());
-            list.add(builder.newInstance());
-        }
+        return buildTaskList(id, waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
+    }
 
-        return listBuilder.newInstance();
+    @Override
+    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, EntityReference ref, ValueBuilder<LabelDTO> labelBuilder, LabelDTO labelPrototype, TaskEntity task)
+    {
+        WaitingForTaskDTO taskDTO = (WaitingForTaskDTO) prototype;
+        Assignee assignee = task.assignedTo().get();
+        if (assignee != null)
+            taskDTO.assignedTo().set(assignee.getDescription());
+        taskDTO.delegatedTo().set(task.delegatedTo().get().getDescription());
+        taskDTO.delegatedOn().set(task.delegatedOn().get());
+        super.buildTask(prototype, ref, labelBuilder, labelPrototype, task);
     }
 }

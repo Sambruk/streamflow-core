@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.ui.navigator;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 /**
  * JAVADOC
@@ -28,6 +27,6 @@ public class NavigatorUIAssembler
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
         // Views
-        UIAssemblers.addViews(module, NavigatorView.class);
+//        UIAssemblers.addViews(module, NavigatorView.class);
     }
 }

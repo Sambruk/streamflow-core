@@ -18,7 +18,7 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.members.*;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 
 /**
  * JAVADOC
@@ -30,20 +30,12 @@ public class GroupAdministrationAssembler
     {
         UIAssemblers.addModels(module, TableMultipleSelectionModel.class);
 
-        UIAssemblers.addViews(module, GroupAdminView.class,
-                TableSelectionView.class);
+        UIAssemblers.addViews(module, GroupAdminView.class);
 
         UIAssemblers.addMV(module, GroupsModel.class,
                 GroupsView.class);
 
         UIAssemblers.addMV(module, GroupModel.class,
                 GroupView.class);
-
-        UIAssemblers.addDialogs(module,
-                NewGroupDialog.class,
-                AddParticipantsDialog.class);
-
-        module.addObjects(UsersOrganizationSearch.class,
-                GroupsOrganizationSearch.class);
     }
 }

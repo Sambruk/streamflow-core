@@ -27,7 +27,6 @@ import se.streamsource.streamflow.web.resource.organizations.groups.participants
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.inbox.ProjectInboxServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRoleServerResource;
@@ -37,15 +36,15 @@ import se.streamsource.streamflow.web.resource.users.UserServerResource;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectsInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectsInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.ProjectsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegatedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectInboxServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectsInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.ProjectWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.ProjectWaitingForTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegatedTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.WorkspaceUserServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.UserAssignedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.UserAssignmentsServerResource;
@@ -53,6 +52,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.UserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.labels.UserLabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.UserTaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.UserTaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
@@ -82,7 +82,7 @@ public class APIv1Router
         attach("/users/{user}/workspace/user", createServerResourceFinder(WorkspaceUserServerResource.class));
 
         attach("/users/{user}/workspace/projects", createServerResourceFinder(ProjectsServerResource.class));
-        attach("/users/{user}/workspace/projects/{project}/inbox", createServerResourceFinder(ProjectsInboxServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/inbox", createServerResourceFinder(ProjectInboxServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/inbox/{task}", createServerResourceFinder(ProjectsInboxTaskServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/assignments", createServerResourceFinder(ProjectAssignmentsServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/assignments/{task}", createServerResourceFinder(ProjectAssignedTaskServerResource.class));
@@ -90,6 +90,7 @@ public class APIv1Router
         attach("/users/{user}/workspace/projects/{project}/delegations/{task}", createServerResourceFinder(ProjectDelegatedTaskServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/waitingfor", createServerResourceFinder(ProjectWaitingForServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/waitingfor/{task}", createServerResourceFinder(ProjectWaitingForTaskServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/labels", createServerResourceFinder(UserLabelsServerResource.class));
         attach("/users/{user}/workspace/user/inbox", createServerResourceFinder(UserInboxServerResource.class));
         attach("/users/{user}/workspace/user/inbox/{task}", createServerResourceFinder(UserInboxTaskServerResource.class));
         attach("/users/{user}/workspace/user/assignments", createServerResourceFinder(UserAssignmentsServerResource.class));
@@ -100,6 +101,7 @@ public class APIv1Router
         attach("/users/{user}/workspace/user/waitingfor/{task}", createServerResourceFinder(UserWaitingForTaskServerResource.class));
         attach("/users/{user}/workspace/user/{view}/{task}/general", createServerResourceFinder(UserTaskGeneralServerResource.class));
         attach("/users/{user}/workspace/user/{view}/{task}/comments", createServerResourceFinder(UserTaskCommentsServerResource.class));
+        attach("/users/{user}/workspace/user/labels", createServerResourceFinder(UserLabelsServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/{view}/{task}/general", createServerResourceFinder(UserTaskGeneralServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/{view}/{task}/comments", createServerResourceFinder(UserTaskCommentsServerResource.class));
         attach("/users/{user}/administration", createServerResourceFinder(UserAdministrationServerResource.class));
@@ -113,7 +115,6 @@ public class APIv1Router
         attach("/organizations/{organization}/groups/{group}/participants/{participant}", createServerResourceFinder(ParticipantServerResource.class));
         attach("/organizations/{organization}/projects", createServerResourceFinder(se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource.class));
         attach("/organizations/{organization}/projects/{project}", createServerResourceFinder(ProjectServerResource.class));
-        attach("/organizations/{organization}/projects/{project}/inbox", createServerResourceFinder(ProjectInboxServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members", createServerResourceFinder(MembersServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members/{member}", createServerResourceFinder(MemberServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members/{member}/roles", createServerResourceFinder(MemberRolesServerResource.class));

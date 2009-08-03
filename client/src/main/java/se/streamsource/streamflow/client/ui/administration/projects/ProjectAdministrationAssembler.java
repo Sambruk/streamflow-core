@@ -30,8 +30,7 @@ public class ProjectAdministrationAssembler
     {
         UIAssemblers.addModels(module, TableMultipleSelectionModel.class);
 
-        UIAssemblers.addViews(module, ProjectAdminView.class,
-                TableSelectionView.class);
+        UIAssemblers.addViews(module, ProjectAdminView.class);
 
 
         UIAssemblers.addMV(module, ProjectsModel.class,
@@ -44,13 +43,5 @@ public class ProjectAdministrationAssembler
 
         UIAssemblers.addMV(module, MemberRolesModel.class,
                 MemberRolesView.class);
-
-        UIAssemblers.addDialogs(module,
-                NewProjectDialog.class,
-                RemoveProjectDialog.class,
-                AddMemberDialog.class);
-        
-        module.addObjects(UsersOrganizationSearch.class,
-                GroupsOrganizationSearch.class);
     }
 }

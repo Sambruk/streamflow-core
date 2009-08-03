@@ -16,19 +16,21 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.jdesktop.swingx.tree.TreeModelSupport;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -36,24 +38,18 @@ import java.util.Collection;
 public class ProjectMembersModel
         implements TreeModel
 {
+    @Uses private ProjectClientResource project;
+
+    @Structure
+    ObjectBuilderFactory obf;
+
     public ProjectClientResource getProject()
     {
         return project;
     }
 
-    private ProjectClientResource project;
     private TreeValue root;
     private TreeModelSupport modelSupport = new TreeModelSupport(this);
-
-    public ProjectMembersModel()
-    {
-    }
-
-    public void setProject(ProjectClientResource project)
-    {
-        this.project = project;
-        refresh();
-    }
 
     public Object getRoot()
     {
@@ -130,13 +126,13 @@ public class ProjectMembersModel
         }
     }
 
-    public void addMembers(Collection<ListItemValue> members)
+    public void addMembers(Set<String> members)
     {
         try
         {
-            for (ListItemValue value: members)
+            for (String value: members)
             {
-                MemberClientResource member = project.members().member(value.entity().get().identity());
+                MemberClientResource member = project.members().member(value);
                 member.put(null);
             }
             refresh();
@@ -156,5 +152,10 @@ public class ProjectMembersModel
         {
             throw new OperationException(AdministrationResources.could_not_remove_member, e);
         }
+    }
+
+    public MemberRolesModel memberRolesModel(String id)
+    {
+        return obf.newObjectBuilder(MemberRolesModel.class).use(project.members().member(id)).newInstance();
     }
 }

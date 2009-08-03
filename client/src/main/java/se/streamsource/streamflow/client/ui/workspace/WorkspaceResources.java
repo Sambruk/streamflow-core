@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 /**
- * i18n resources for the "Shared" view
+ * i18n resources for the "Workspace" view
  */
 enum WorkspaceResources
 {

@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -28,18 +29,15 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 /**
  * JAVADOC
  */
-public class UserInboxTaskDetailView
+public class TaskDetailView
         extends JTabbedPane
 {
-    public UserInboxTaskDetailView(@Service ApplicationContext appContext,
-                                     @Service TaskGeneralModel generalModel,
-                                     @Service TaskCommentsModel commentsModel,
+    public TaskDetailView(@Service ApplicationContext appContext,
+                          @Uses TaskCommentsView commentsView,
+                          @Uses TaskGeneralView generalView,
                                      @Structure ObjectBuilderFactory obf)
     {
         super(JTabbedPane.LEFT);
-
-        TaskCommentsView commentsView = obf.newObjectBuilder(TaskCommentsView.class).use(commentsModel).newInstance();
-        TaskGeneralView generalView = obf.newObjectBuilder(TaskGeneralView.class).use(generalModel).newInstance();
 
         setUI(new BasicTabbedPaneUI());
 

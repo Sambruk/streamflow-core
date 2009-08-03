@@ -141,7 +141,6 @@ public class StatusBarView
                     Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.loading.name());
                     Logger.getLogger(LoggerCategories.PROGRESS).info("loading");
                 }
-                System.out.println(evt);
             }
         });
     }

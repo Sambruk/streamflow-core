@@ -14,260 +14,77 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.JXTreeTable;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
-import org.jdesktop.swingx.renderer.CheckBoxProvider;
-import org.jdesktop.swingx.renderer.DefaultTableRenderer;
-import org.jdesktop.swingx.renderer.StringValue;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * JAVADOC
  */
 public class UserDelegationsView
-        extends JTabbedPane
+        extends TaskTableView
 {
-    private JXTreeTable taskTable;
-    private UserDelegationsTaskDetailModel detailModel;
-    private UserDelegationsModel model;
+    @Uses LabelMenu labelMenu;
 
-    public UserDelegationsView(@Service ApplicationContext context,
-                           @Service final UserDelegationsModel model,
-                           @Service final UserDelegationsTaskDetailView detailView,
-                           @Service final UserDelegationsTaskDetailModel detailModel,
-                           @Structure ObjectBuilderFactory obf,
-                           @Structure ValueBuilderFactory vbf)
+    protected String tabName()
     {
-        super();
-        this.detailModel = detailModel;
-        this.model = model;
+        return text(delegations_tab);
+    }
 
-        ActionMap am = context.getActionMap(this);
+    protected void buildPopupMenu(JPopupMenu popup, ActionMap am)
+    {
+        taskTable.getSelectionModel().addListSelectionListener(labelMenu);
 
-        // Popup
-        JPopupMenu popup = new JPopupMenu();
-        Action removeAction = am.get("removeTasks");
-        popup.add(removeAction);
+        popup.add(labelMenu);
+        Action markTasksAsUnread = am.get("markTasksAsUnread");
+        popup.add(markTasksAsUnread);
+        taskTable.addMouseListener(new PopupMenuTrigger(popup));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(markTasksAsUnread));
+    }
 
-        // Table
-        JPanel panel = new JPanel(new BorderLayout());
-        taskTable = new JXTreeTable(model);
-        taskTable.setRootVisible(false);
-        taskTable.setSortable(true);
-
-        JScrollPane taskScrollPane = new JScrollPane(taskTable);
-
-        panel.add(taskScrollPane, BorderLayout.CENTER);
-
-
-        taskTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
-        taskTable.getColumn(0).setMaxWidth(30);
-        taskTable.getColumn(0).setResizable(false);
-        taskTable.getColumn(3).setPreferredWidth(120);
-        taskTable.getColumn(3).setMaxWidth(120);
-        taskTable.setAutoCreateColumnsFromModel(false);
-
-        addTab(text(delegations_tab), panel);
-        addTab(text(detail_tab), detailView);
-        setEnabledAt(1, false);
-
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "details");
-        getActionMap().put("details", new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                setSelectedIndex(1);
-            }
-        });
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "delegations");
-        getActionMap().put("delegations", new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                setSelectedIndex(0);
-            }
-        });
-
-        taskTable.setLeafIcon(null);
-        JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
-        taskTable.setDefaultEditor(Boolean.class, completableEditor);
-        taskTable.setDefaultRenderer(Date.class, new DefaultTableRenderer(new StringValue()
-        {
-            private SimpleDateFormat format = new SimpleDateFormat();
-
-            public String getString(Object value)
-            {
-                Date time = (Date) value;
-                return format.format(time);
-            }
-        }));
-        taskTable.setEditable(true);
-        taskTable.addTreeSelectionListener(new TreeSelectionListener()
-        {
-            public void valueChanged(TreeSelectionEvent e)
-            {
-                TreePath selectionPath = taskTable.getTreeSelectionModel().getSelectionPath();
-                if (selectionPath != null)
-                {
-                    setEnabledAt(1, true);
-                } else
-                    setEnabledAt(1, false);
-            }
-        });
-
-        taskTable.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                if (e.getClickCount() == 2)
-                {
-                    setSelectedComponent(detailView);
-                }
-            }
-        });
-
-        taskTable.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(taskTable.getSearchable()).newInstance());
-
-        taskTable.addHighlighter(HighlighterFactory.createAlternateStriping());
-
-        // Toolbar
-        JPanel toolbar = new JPanel();
-        toolbar.setBorder(BorderFactory.createEtchedBorder());
-        javax.swing.Action assignAction = am.get("assignDelegatedTasksToMe");
+    @Override
+    protected void buildToolbar(JPanel toolbar, ActionMap am)
+    {
+        Action assignAction = am.get("assignTasksToMe");
         toolbar.add(new JButton(assignAction));
-        javax.swing.Action rejectAction = am.get("rejectUserDelegations");
-        toolbar.add(new JButton(rejectAction));
+        Action delegateTasksFromInbox = am.get("reject");
+        toolbar.add(new JButton(delegateTasksFromInbox));
         javax.swing.Action refreshAction = am.get("refresh");
         toolbar.add(new JButton(refreshAction));
-        panel.add(toolbar, BorderLayout.NORTH);
-
-        taskTable.addTreeSelectionListener(new SelectionActionEnabler(assignAction, rejectAction, removeAction));
-    }
-
-    public JXTreeTable getTaskTable()
-    {
-        return taskTable;
-    }
-
-    public DelegatedTaskDTO getSelectedTask()
-    {
-        int selectedRow = getTaskTable().getSelectedRow();
-        if (selectedRow == -1)
-            return null;
-        else
-            return (DelegatedTaskDTO) getTaskTable().getPathForRow(selectedRow).getLastPathComponent();
-    }
-
-    public Iterable<DelegatedTaskDTO> getSelectedTasks()
-    {
-        int[] rows = getTaskTable().getSelectedRows();
-        List<DelegatedTaskDTO> tasks = new ArrayList<DelegatedTaskDTO>();
-        for (int i = 0; i < rows.length; i++)
-        {
-            int row = rows[i];
-            DelegatedTaskDTO task = (DelegatedTaskDTO) getTaskTable().getPathForRow(row).getLastPathComponent();
-            tasks.add(task);
-        }
-        return tasks;
-    }
-
-    @Override
-    public void setSelectedIndex(int index)
-    {
-        try
-        {
-            if (index == 1)
-            {
-                DelegatedTaskDTO dto = getSelectedTask();
-                detailModel.setResource(model.getRoot().task(dto.task().get().identity()));
-            }
-            super.setSelectedIndex(index);
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void addNotify()
-    {
-        super.addNotify();
-
-        setSelectedIndex(0);
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
     }
 
     @org.jdesktop.application.Action
-    public void refresh() throws ResourceException
+    public void assignTasksToMe() throws ResourceException
     {
-        model.refresh();
+        int selection = getTaskTable().getSelectedRow();
+        int[] rows = taskTable.getSelectedRows();
+        for (int row : rows)
+        {
+            model.assignToMe(row);
+        }
+        getTaskTable().getSelectionModel().setSelectionInterval(selection, selection);
     }
 
     @org.jdesktop.application.Action
-    public void assignDelegatedTasksToMe() throws ResourceException
+    public void reject() throws ResourceException
     {
-        Iterable<DelegatedTaskDTO> task = getSelectedTasks();
-        for (DelegatedTaskDTO delegatedTaskValue : task)
+        int selection = getTaskTable().getSelectedRow();
+        int[] rows = taskTable.getSelectedRows();
+        UserDelegationsModel delegationsModel = (UserDelegationsModel) model;
+        for (int row : rows)
         {
-            model.assignToMe(delegatedTaskValue.task().get().identity());
+            delegationsModel.reject(row);
         }
-    }
-
-    @org.jdesktop.application.Action
-    public void rejectUserDelegations() throws ResourceException
-    {
-        Iterable<DelegatedTaskDTO> task = getSelectedTasks();
-        for (DelegatedTaskDTO delegatedTaskValue : task)
-        {
-            model.reject(delegatedTaskValue.task().get().identity());
-        }
-    }
-
-    @org.jdesktop.application.Action
-    public void removeTasks() throws ResourceException
-    {
-        Iterable<DelegatedTaskDTO> selected = getSelectedTasks();
-        for (DelegatedTaskDTO taskValue : selected)
-        {
-//            model.removeTask(taskValue.task().get().identity());
-        }
+        getTaskTable().getSelectionModel().setSelectionInterval(selection, selection);
     }
 }

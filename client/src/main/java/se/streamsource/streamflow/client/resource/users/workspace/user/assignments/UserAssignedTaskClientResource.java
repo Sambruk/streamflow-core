@@ -17,41 +17,16 @@ package se.streamsource.streamflow.client.resource.users.workspace.user.assignme
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.comments.UserTaskCommentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.general.UserTaskGeneralClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
 
 /**
  * JAVADOC
  */
 public class UserAssignedTaskClientResource
-        extends CommandQueryClientResource
+        extends TaskClientResource
 {
     public UserAssignedTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
-
-    public void complete() throws ResourceException
-    {
-        postCommand("complete");
-    }
-
-    public void describe(DescriptionDTO descriptionValue) throws ResourceException
-    {
-        putCommand("describe", descriptionValue);
-    }
-
-    public UserTaskCommentsClientResource comments()
-    {
-        return getSubResource("comments", UserTaskCommentsClientResource.class);
-    }
-
-    public UserTaskGeneralClientResource general()
-    {
-        return getSubResource("general", UserTaskGeneralClientResource.class);
-    }
-    
 }

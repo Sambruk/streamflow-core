@@ -15,52 +15,18 @@
 package se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor;
 
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.entity.EntityReference;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.comments.UserTaskCommentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.general.UserTaskGeneralClientResource;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
 
 /**
  * JAVADOC
  */
 public class UserWaitingForTaskClientResource
-        extends CommandQueryClientResource
+        extends TaskClientResource
 {
     public UserWaitingForTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
-
-    public void complete() throws ResourceException
-    {
-        putCommand("complete");
-    }
-
-    public void markAsRead() throws ResourceException
-    {
-        putCommand("markAsRead");
-    }
-
-    public void delegate(String delegateeId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
-        putCommand("delegate", builder.newInstance());
-    }
-
-    public UserTaskCommentsClientResource comments()
-    {
-        return getSubResource("comments", UserTaskCommentsClientResource.class);
-    }
-
-    public UserTaskGeneralClientResource general()
-    {
-        return getSubResource("general", UserTaskGeneralClientResource.class);
-    }
-
 }

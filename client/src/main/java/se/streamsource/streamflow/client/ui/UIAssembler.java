@@ -20,6 +20,8 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
+import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 import javax.swing.ActionMap;
 
@@ -40,5 +42,8 @@ public class UIAssembler
 
         module.addServices(DummyDataService.class).instantiateOnStartup();
         module.addServices(ApplicationInitializationService.class).instantiateOnStartup();
+
+        UIAssemblers.addDialogs(module, NameDialog.class, SelectUsersAndGroupsDialog.class);
+
     }
 }

@@ -29,7 +29,7 @@ import javax.swing.JPanel;
 public class TaskView
         extends JPanel
 {
-    private StateBinder sharedTaskBinder;
+    private StateBinder taskBinder;
 
 //    @Service
 //    UserInboxTaskDetailModel model;
@@ -43,11 +43,10 @@ public class TaskView
         DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
         builder.setDefaultDialogBorder();
 
-        sharedTaskBinder = new StateBinder();
-        sharedTaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
-//        SharedTask template = sharedTaskBinder.bindingTemplate(SharedTask.class);
+        taskBinder = new StateBinder();
+        taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
 
-        BindingFormBuilder bb = new BindingFormBuilder(builder, sharedTaskBinder);
+        BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
 /*
         bb.appendSeparator(task_separator)
                 .appendLine(description_label, TEXTFIELD, template.description())

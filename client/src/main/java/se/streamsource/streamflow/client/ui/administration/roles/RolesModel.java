@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.administration.roles;
 
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
@@ -23,20 +24,33 @@ import se.streamsource.streamflow.client.resource.organizations.roles.RolesClien
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.DefaultListModel;
+import javax.swing.AbstractListModel;
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class RolesModel
-        extends DefaultListModel
+        extends AbstractListModel
 {
     @Structure
     ValueBuilderFactory vbf;
 
 
+    @Uses
     private RolesClientResource roles;
 
+    private List<ListItemValue> list;
+
+    public int getSize()
+    {
+        return list == null ? 0 : list.size();
+    }
+
+    public Object getElementAt(int index)
+    {
+        return list == null ? null : list.get(index);
+    }
 
     public void setRoles(RolesClientResource roles)
     {
@@ -68,15 +82,12 @@ public class RolesModel
         }
     }
 
-    private void refresh()
+    public void refresh()
     {
-        clear();
         try
         {
-            for (ListItemValue value : roles.roles().items().get())
-            {
-                addElement(value);
-            }
+            list = roles.roles().items().get();
+            fireContentsChanged(this, 0, list.size());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_refresh_list_of_roles, e);

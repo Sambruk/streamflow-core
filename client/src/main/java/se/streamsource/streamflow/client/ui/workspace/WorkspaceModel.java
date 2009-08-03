@@ -51,6 +51,12 @@ public class WorkspaceModel
     }
 
     @Override
+    public WorkspaceNode getRoot()
+    {
+        return (WorkspaceNode) super.getRoot();
+    }
+
+    @Override
     public int getColumnCount()
     {
         return 1;

@@ -12,34 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.resource.inbox;
+package se.streamsource.streamflow.resource.task;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
+import java.util.List;
+
 /**
- * Query for Inbox.
+ * JAVADOC
  */
-public interface TasksQuery
+public interface TaskListDTO<T extends TaskDTO>
         extends ValueComposite
 {
-    public enum InboxSorting
-    {
-        CREATED_ON, DESCRIPTION
-    }
-
-    public enum InboxStatus
-    {
-        ACTIVE
-    }
-
     @UseDefaults
-    Property<InboxSorting> sort();
-
-    @UseDefaults
-    Property<InboxStatus> status();
-
-    @UseDefaults
-    Property<Integer> start();
+    Property<List<T>> tasks();
 }

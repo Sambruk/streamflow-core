@@ -14,16 +14,16 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRoleClientResource;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * JAVADOC
@@ -31,42 +31,12 @@ import java.util.ArrayList;
 public class MemberRolesModel
         extends AbstractTableModel
 {
-    @Service
-    OrganizationalUnitAdministrationModel organizationModel;
+    @Uses OrganizationalUnitAdministrationModel organizationModel;
+    @Uses MemberClientResource member;
 
-    private MemberClientResource member;
-    private boolean clear;
-
-    public void clear()
-    {
-        clear = true;
-        fireTableDataChanged();
-    }
-
-    public void setMember(MemberClientResource member)
-    {
-        this.member = member;
-        clear = false;
-        try
-        {
-            propagateAllRoles();
-            // copy to make it modifiable
-            memberRoles = new ArrayList<ListItemValue>(member.roles().roles().items().get());
-            fireTableDataChanged();
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    private void propagateAllRoles() throws ResourceException
-    {
-        // maybe do some kind of caching of this
-        allRoles = organizationModel.getOrganization().roles().roles().items().get();
-    }
-
-    List<ListItemValue> memberRoles;
+    ListValue memberRoles;
     List<ListItemValue> allRoles;
+
     String[] columnNames = {" ", "Role Name"};
     Class[] columnClasses = {Boolean.class, String.class};
     boolean[] columnEditable = {true, false};
@@ -82,11 +52,11 @@ public class MemberRolesModel
             if ((Boolean) value)
             {
                 memberRole.put(null);
-                memberRoles.add(role);
+                memberRoles.items().get().add(role);
             } else
             {
                 memberRole.delete();
-                memberRoles.remove(role);
+                memberRoles.items().get().remove(role);
             }
         } catch (ResourceException e)
         {
@@ -98,7 +68,7 @@ public class MemberRolesModel
     {
         switch (column)
         {
-            case 0: return memberRoles.contains(allRoles.get(row));
+            case 0: return memberRoles.items().get().contains(allRoles.get(row));
             case 1: return allRoles.get(row).description().get();
         }
         return null;
@@ -106,8 +76,7 @@ public class MemberRolesModel
 
     public int getRowCount()
     {
-        if (clear || allRoles==null) return 0;
-        return allRoles.size();
+        return allRoles == null ? 0 : allRoles.size();
     }
 
     public int getColumnCount()
@@ -130,4 +99,16 @@ public class MemberRolesModel
         return columnNames[column];
     }
 
+    public void refresh()
+    {
+        try
+        {
+            allRoles = organizationModel.getOrganization().roles().roles().items().get();
+            memberRoles = member.roles().roles().<ListValue>buildWith().prototype();
+            fireTableDataChanged();
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

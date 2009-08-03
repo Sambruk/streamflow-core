@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -31,10 +30,10 @@ public class ProjectWaitingForNode
         extends DefaultMutableTreeTableNode
         implements DetailView
 {
-    @Service
+    @Uses
     UserWaitingForView view;
 
-    @Service
+    @Uses
     ProjectWaitingForModel model;
 
     public ProjectWaitingForNode(@Uses ProjectWaitingforClientResource waitingFor)

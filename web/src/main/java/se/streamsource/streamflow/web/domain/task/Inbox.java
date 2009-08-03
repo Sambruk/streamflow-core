@@ -57,6 +57,7 @@ public interface Inbox
             EntityBuilder<TaskEntity> taskBuilder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class);
             TaskEntity state = taskBuilder.prototype();
             state.ownedBy(owner);
+            state.isRead().set(true);
 
             return taskBuilder.newInstance();
         }

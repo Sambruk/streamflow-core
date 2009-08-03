@@ -22,14 +22,15 @@ import se.streamsource.streamflow.client.resource.users.workspace.projects.assig
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.labels.ProjectLabelsClientResource;
 
 /**
  * JAVADOC
  */
-public class ProjectClientResource
+public class UserProjectClientResource
         extends BaseClientResource
 {
-    public ProjectClientResource(@Uses Context context, @Uses Reference reference)
+    public UserProjectClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
@@ -54,4 +55,8 @@ public class ProjectClientResource
         return getSubResource("waitingfor", ProjectWaitingforClientResource.class);
     }
 
+    public ProjectLabelsClientResource labels()
+    {
+        return getSubResource("labels", ProjectLabelsClientResource.class);
+    }
 }

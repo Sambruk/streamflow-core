@@ -14,171 +14,53 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 
 import java.util.Date;
 
 /**
  * JAVADOC
  */
+
 public class UserWaitingForModel
-        extends AbstractTreeTableModel
+        extends TaskTableModel
 {
-    @Structure
-    ValueBuilderFactory vbf;
-
-    WaitingForTaskListDTO tasks;
-
-    String[] columnNames = {"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
-    Class[] columnClasses = {Boolean.class, String.class, String.class, String.class, Date.class};
-    boolean[] columnEditable = {true, false, false, false, false};
-
-    @Override
-    public UserWaitingForClientResource getRoot()
+    public UserWaitingForModel()
     {
-        return (UserWaitingForClientResource) super.getRoot();
-    }
-
-    public void setWaitingFor(UserWaitingForClientResource waitingForClientResource) throws ResourceException
-    {
-        root = waitingForClientResource;
-        refresh();
+        columnNames = new String[]{"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
+        columnClasses = new Class[] {Boolean.class, String.class, String.class, String.class, Date.class};
+        columnEditable = new boolean[] {true, false, false, false, false};
     }
 
     @Override
-    public Class<?> getColumnClass(int column)
+    public UserWaitingForClientResource getResource()
     {
-        return columnClasses[column];
+        return (UserWaitingForClientResource) super.getResource();
     }
 
     @Override
-    public String getColumnName(int column)
-    {
-        return columnNames[column];
-    }
-
-    @Override
-    public boolean isLeaf(Object node)
-    {
-        return node instanceof WaitingForTaskDTO;
-    }
-
-    @Override
-    public int getHierarchicalColumn()
-    {
-        return 1;
-    }
-
-    public Object getChild(Object parent, int index)
-    {
-        return tasks.tasks().get().get(index);
-    }
-
-    public int getChildCount(Object parent)
-    {
-        if (parent instanceof UserWaitingForClientResource)
-            return tasks.tasks().get().size();
-        else
-            return 0;
-    }
-
-    public int getIndexOfChild(Object parent, Object child)
-    {
-        if (parent instanceof UserWaitingForClientResource)
-            return tasks.tasks().get().indexOf(child);
-        else
-            return -1;
-    }
-
     public int getColumnCount()
     {
         return 5;
     }
 
     @Override
-    public boolean isCellEditable(Object o, int i)
+    public Object getValueAt(int rowIndex, int column)
     {
-        return columnEditable[i];
-    }
-
-    public Object getValueAt(Object node, int column)
-    {
-        if (node instanceof WaitingForTaskDTO)
+        WaitingForTaskDTO task = (WaitingForTaskDTO) tasks.get(rowIndex);
+        switch (column)
         {
-            WaitingForTaskDTO task = (WaitingForTaskDTO) node;
-            switch (column)
-            {
-                case 0:
-                    return !task.status().get().equals(TaskStates.ACTIVE);
-                case 1:
-                    return task.description().get();
-                case 2:
-                    return task.delegatedTo().get();
-                case 3:
-                    return task.assignedTo().get();
-                case 4:
-                    return task.delegatedOn().get();
-                case 5:
-                    return task.isRead().get();
-            }
+            case 2:
+                return task.delegatedTo().get();
+            case 3:
+                return task.assignedTo().get();
+            case 4:
+                return task.delegatedOn().get();
         }
 
-        return null;
-    }
-
-    @Override
-    public void setValueAt(Object value, Object node, int column)
-    {
-        try
-        {
-            switch (column)
-            {
-                case 0:
-                {
-                    Boolean completed = (Boolean) value;
-                    if (completed)
-                    {
-                        WaitingForTaskDTO taskValue = (WaitingForTaskDTO) node;
-                        EntityReference task = taskValue.task().get();
-                        getRoot().task(task.identity()).complete();
-
-                        taskValue.status().set(TaskStates.COMPLETED);
-                    }
-                    break;
-                }
-            }
-        } catch (ResourceException e)
-        {
-            // TODO Better error handling
-            e.printStackTrace();
-        }
-
-        return; // Skip if don't know what is going on
-    }
-
-    public void refresh() throws ResourceException
-    {
-        tasks = getRoot().tasks().<WaitingForTaskListDTO>buildWith().prototype();
-        modelSupport.fireNewRoot();
-    }
-
-    public void delegate(String task, String delegatee) throws ResourceException
-    {
-        getRoot().task(task).delegate(delegatee);
-    }
-
-    public void markAsRead(String id) throws ResourceException
-    {
-        getRoot().task(id).markAsRead();
+        return super.getValueAt(rowIndex, column);
     }
 }

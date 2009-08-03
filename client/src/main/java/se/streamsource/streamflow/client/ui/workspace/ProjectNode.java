@@ -18,8 +18,11 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.ProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.UserProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
 
 /**
  * JAVADOC
@@ -27,39 +30,38 @@ import se.streamsource.streamflow.client.resource.users.workspace.projects.Proje
 public class ProjectNode
         extends DefaultMutableTreeTableNode
 {
-    ObjectBuilderFactory obf;
-
-    private ProjectClientResource projectClientResource;
+    private LabelsModel labelsModel;
 
     @Uses String projectName;
 
-    @Uses
-    private AccountSettingsValue settings;
-    
-
-    public ProjectNode(@Uses ProjectClientResource projectClientResource,
+    public ProjectNode(@Uses UserProjectClientResource userProjectClientResource,
                              @Structure ObjectBuilderFactory obf)
     {
-        super(projectClientResource);
-        this.projectClientResource = projectClientResource;
-        this.obf = obf;
+        super(userProjectClientResource);
 
-/*
-        add(obf.newObjectBuilder(ProjectInboxNode.class).use(projectClientResource.inbox()).newInstance());
-        add(obf.newObjectBuilder(ProjectAssignmentsNode.class).use(projectClientResource.assignments()).newInstance());
-        add(obf.newObjectBuilder(ProjectDelegationsNode.class).use(projectClientResource.delegations()).newInstance());
-        add(obf.newObjectBuilder(ProjectWaitingForNode.class).use(projectClientResource.waitingFor()).newInstance());
-*/
+        ProjectInboxClientResource projectInboxClientResource = userProjectClientResource.inbox();
+        add(obf.newObjectBuilder(ProjectInboxNode.class).use(projectInboxClientResource).newInstance());
+
+        ProjectAssignmentsClientResource projectAssignmentsClientResource = userProjectClientResource.assignments();
+        add(obf.newObjectBuilder(UserAssignmentsNode.class).use(projectAssignmentsClientResource).newInstance());
+
+        ProjectDelegationsClientResource projectDelegationsClientResource = userProjectClientResource.delegations();
+        add(obf.newObjectBuilder(UserDelegationsNode.class).use(projectDelegationsClientResource).newInstance());
+
+        ProjectWaitingforClientResource projectWaitingforClientResource = userProjectClientResource.waitingFor();
+        add(obf.newObjectBuilder(UserWaitingForNode.class).use(projectWaitingforClientResource).newInstance());
+
+        labelsModel = obf.newObjectBuilder(LabelsModel.class).use(userProjectClientResource.labels()).newInstance();
+    }
+
+    public LabelsModel labelsModel()
+    {
+        return labelsModel;
     }
 
     @Override
     public Object getValueAt(int column)
     {
         return projectName;
-    }
-
-    public AccountSettingsValue getSettings()
-    {
-        return settings;
     }
 }

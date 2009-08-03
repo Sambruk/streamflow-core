@@ -43,12 +43,13 @@ public interface ProjectEntity
         WaitingFor,
         Owner,
         ProjectOrganization,
+        Labels,
 
         // State
         Members.MembersState,
         Describable.DescribableState,
         ProjectStatus.ProjectStatusState,
-        ProjectOrganization.ProjectOrganizationState
-
+        ProjectOrganization.ProjectOrganizationState,
+        Labels.LabelsState
 {
 }

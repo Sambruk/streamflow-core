@@ -14,81 +14,43 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
-
-import javax.swing.JComponent;
 
 /**
  * JAVADOC
  */
 public class UserInboxNode
         extends DefaultMutableTreeTableNode
-        implements DetailView
 {
-    private UserInboxModel model;
-    private LabelsModel labelsModel;
-    private UserInboxView view;
-
     @Uses
-    private AccountSettingsValue settings;
-
-    @Service
-    ApplicationContext context;
-
-    public UserInboxNode(@Uses UserInboxClientResource inbox, @Structure ObjectBuilderFactory obf)
-    {
-        super(inbox, false);
-
-        model = obf.newObjectBuilder(UserInboxModel.class).use(inbox).newInstance();
-        labelsModel = obf.newObjectBuilder(LabelsModel.class).use(inbox).newInstance();
-        view = obf.newObjectBuilder(UserInboxView.class).use(model, labelsModel).newInstance();
-    }
+    private UserInboxModel model;
 
     @Override
     public Object getValueAt(int column)
     {
-        return i18n.text(WorkspaceResources.inboxes_node);
-    }
-
-    UserInboxClientResource inbox()
-    {
-        return (UserInboxClientResource) getUserObject();
-    }
-
-    public JComponent detailView()
-    {
-        context.getTaskService().execute(new Task(context.getApplication())
+        String text = i18n.text(WorkspaceResources.inboxes_node);
+        int unread = model.unreadCount();
+        if (unread > 0)
         {
-            protected Object doInBackground() throws Exception
-            {
-                try
-                {
-                    model.refresh();
-                    labelsModel.refresh();
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
+            text += " ("+unread+")";
+        } else
+        {
+            text += "                ";
+        }
 
-                return null;
-            }
-        });
-        return view;
+        return text;
     }
 
-    public AccountSettingsValue getSettings()
+    @Override
+    public UserNode getParent()
     {
-        return settings;
+        return (UserNode) super.getParent();
+    }
+
+    public UserInboxModel inboxModel()
+    {
+        return model;
     }
 }

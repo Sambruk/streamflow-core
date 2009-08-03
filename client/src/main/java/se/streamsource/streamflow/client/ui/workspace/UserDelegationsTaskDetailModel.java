@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegatedTaskClientResource;
 
@@ -25,8 +25,9 @@ import java.io.IOException;
  */
 public class UserDelegationsTaskDetailModel
 {
-    @Service TaskCommentsModel comments;
-    @Service TaskGeneralModel general;
+    @Uses
+    TaskCommentsModel comments;
+    @Uses TaskGeneralModel general;
 
     public UserDelegationsTaskDetailModel()
     {
@@ -34,7 +35,5 @@ public class UserDelegationsTaskDetailModel
 
     public void setResource(UserDelegatedTaskClientResource task) throws IOException, ResourceException
     {
-        comments.setResource(task.comments());
-        general.setResource(task.general());
     }
 }

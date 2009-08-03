@@ -14,18 +14,12 @@
 
 package se.streamsource.streamflow.resource.assignment;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 
 /**
  * JAVADOC
  */
 public interface AssignmentsTaskListDTO
-        extends ValueComposite
+        extends TaskListDTO<AssignedTaskDTO>
 {
-    @UseDefaults
-    Property<List<AssignedTaskDTO>> tasks();
 }

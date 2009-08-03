@@ -14,31 +14,18 @@
 
 package se.streamsource.streamflow.resource.delegation;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * JAVADOC
  */
 public interface DelegatedTaskDTO
-        extends ValueComposite
+        extends TaskDTO
 {
-    Property<EntityReference> task();
-
-    Property<String> description();
-
     Property<String> delegatedFrom();
 
     Property<Date> delegatedOn();
-
-    Property<TaskStates> status();
-
-    @UseDefaults
-    Property<List<DelegatedTaskDTO>> subTasks();
 }

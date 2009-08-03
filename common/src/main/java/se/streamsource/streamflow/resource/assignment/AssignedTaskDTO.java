@@ -14,31 +14,12 @@
 
 package se.streamsource.streamflow.resource.assignment;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.task.TaskStates;
-
-import java.util.Date;
-import java.util.List;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 
 /**
  * JAVADOC
  */
 public interface AssignedTaskDTO
-        extends ValueComposite
+        extends TaskDTO
 {
-    Property<EntityReference> owner();
-
-    Property<EntityReference> task();
-
-    Property<String> description();
-
-    Property<Date> creationDate();
-
-    Property<TaskStates> status();
-
-    @UseDefaults
-    Property<List<AssignedTaskDTO>> subTasks();
 }

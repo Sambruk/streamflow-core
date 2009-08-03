@@ -14,15 +14,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.comments.UserTaskCommentsClientResource;
-import se.streamsource.streamflow.resource.comment.CommentsDTO;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
+import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -30,40 +31,30 @@ import java.io.IOException;
 public class TaskCommentsModel
     extends AbstractListModel
 {
-    @Service
-    UncaughtExceptionHandler exception;
+    @Uses
+    TaskCommentsClientResource commentsClientResource;
 
-    private UserTaskCommentsClientResource commentsClientResource;
-
-    CommentsDTO comments;
+    List<CommentDTO> comments = Collections.emptyList();
 
     public void refresh() throws IOException, ResourceException
     {
-        comments = commentsClientResource.comments();
+        comments = commentsClientResource.comments().comments().get();
         fireContentsChanged(this, 0, getSize());
     }
 
     public int getSize()
     {
-        if (comments == null)
-            return 0;
-        else
-            return comments.comments().get().size();
+        return comments.size();
     }
 
     public Object getElementAt(int index)
     {
-        return comments.comments().get().get(index);
+        return comments.get(index);
     }
 
     public void addComment(NewCommentCommand command) throws ResourceException, IOException
     {
         commentsClientResource.addComment(command);
         refresh();
-    }
-
-    public void setResource(UserTaskCommentsClientResource commentsClientResource) throws IOException, ResourceException
-    {
-        this.commentsClientResource = commentsClientResource;
     }
 }
