@@ -79,6 +79,12 @@ public interface TestDataService
             // Create project
             Project project = ou.newProject("StreamFlow");
 
+            // Create labels
+            project.newLabel().describe("Label 1");
+            project.newLabel().describe("Label 2");
+            project.newLabel().describe("Label 3");
+            project.newLabel().describe("Label 4");
+
             // Create project 'Expert Handläggare'
             ou.newProject("Experts");
 
@@ -89,9 +95,9 @@ public interface TestDataService
                 project.newTask().describe("Arbetsuppgift " + i);
 
             // Create labels
-            user.newLabel().describe("Information");
-            user.newLabel().describe("Ärendestatus");
-            user.newLabel().describe("Socialen");
+            user.newLabel().describe("Label 1");
+            user.newLabel().describe("Label 2");
+            user.newLabel().describe("Label 3");
 
             uow.complete();
         }
