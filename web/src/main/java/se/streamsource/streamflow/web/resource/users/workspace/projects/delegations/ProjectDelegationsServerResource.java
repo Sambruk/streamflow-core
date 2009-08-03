@@ -25,19 +25,26 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
-import se.streamsource.streamflow.web.domain.task.*;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.util.List;
+import se.streamsource.streamflow.resource.label.LabelDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
+import se.streamsource.streamflow.resource.task.TasksQuery;
+import se.streamsource.streamflow.web.domain.task.Assignable;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Delegatable;
+import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.task.TaskStatus;
+import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
  * Mapped to:
  * /users/{user}/workspace/projects/{project}/delegations
  */
 public class ProjectDelegationsServerResource
-        extends CommandQueryServerResource
+        extends AbstractTaskListServerResource
 {
-    public DelegationsTaskListDTO tasks()
+    public DelegationsTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("project");
@@ -54,21 +61,16 @@ public class ProjectDelegationsServerResource
         Query<TaskEntity> delegationsQuery = queryBuilder.newQuery(uow);
         delegationsQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
-        ValueBuilder<DelegatedTaskDTO> builder = vbf.newValueBuilder(DelegatedTaskDTO.class);
-        DelegatedTaskDTO prototype = builder.prototype();
-        ValueBuilder<DelegationsTaskListDTO> listBuilder = vbf.newValueBuilder(DelegationsTaskListDTO.class);
-        List<DelegatedTaskDTO> list = listBuilder.prototype().tasks().get();
-        for (TaskEntity task : delegationsQuery)
-        {
-            Owner owner = uow.get(Owner.class, task.delegatedBy().get().identity().get());
-            prototype.delegatedFrom().set(owner.getDescription());
-            prototype.task().set(EntityReference.getEntityReference(task));
-            prototype.delegatedOn().set(task.delegatedOn().get());
-            prototype.description().set(task.description().get());
-            prototype.status().set(task.status().get());
-            list.add(builder.newInstance());
-        }
+        return buildTaskList(id, delegationsQuery, DelegatedTaskDTO.class, DelegationsTaskListDTO.class);
+    }
 
-        return listBuilder.newInstance();
+    @Override
+    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, EntityReference ref, ValueBuilder<LabelDTO> labelBuilder, LabelDTO labelPrototype, TaskEntity task)
+    {
+        ((DelegatedTaskDTO)prototype).delegatedOn().set(task.delegatedOn().get());
+        Owner owner = uowf.currentUnitOfWork().get(Owner.class, task.owner().get().identity().get());
+        ((DelegatedTaskDTO)prototype).delegatedFrom().set(owner.getDescription());
+
+        super.buildTask(prototype, ref, labelBuilder, labelPrototype, task);
     }
 }

@@ -285,12 +285,6 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     {
         TaskDTO task = getTask(idx);
         String labelId = label.label().get().identity();
-        for (LabelDTO labelDTO : task.labels().get().labels().get())
-        {
-            if (labelDTO.label().get().identity().equals(labelId))
-                return;
-        }
-
         getResource().task(task.task().get().identity()).removeLabel(labelId);
         task.labels().get().labels().get().remove(label);
     }

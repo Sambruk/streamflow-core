@@ -18,35 +18,26 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxTaskClientResource;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
+import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class ProjectDelegationsClientResource
-        extends CommandQueryClientResource
+        extends TaskListClientResource
 {
     public ProjectDelegationsClientResource(@Uses Context context, @Uses Reference reference)
     {
-        super(context, reference);
+        super(context, reference, ProjectDelegationsTaskClientResource.class);
     }
 
-    public InboxTaskListDTO tasks(TasksQuery query) throws ResourceException
+    public List<DelegatedTaskDTO> tasks(TasksQuery query) throws ResourceException
     {
-        return query("tasks", query, InboxTaskListDTO.class);
-    }
-
-    public void newtask(NewTaskCommand command) throws ResourceException
-    {
-        postCommand("newtask", command);
-    }
-
-    public UserInboxTaskClientResource task(String id)
-    {
-        return getSubResource(id, UserInboxTaskClientResource.class);
+        return query("tasks", query, DelegationsTaskListDTO.class).<DelegationsTaskListDTO>buildWith().prototype().tasks().get();
     }
 }

@@ -43,7 +43,6 @@ public class WorkspaceUIAssembler
                 ProjectAssignmentsNode.class,
                 ProjectDelegationsNode.class,
                 ProjectWaitingForNode.class,
-                ProjectsIndividualSearch.class,
                 LabelMenu.class);
 
         UIAssemblers.addModels(module, TableMultipleSelectionModel.class,
@@ -73,28 +72,31 @@ public class WorkspaceUIAssembler
                 UserWaitingForModel.class,
                 UserWaitingForView.class);
 
-        UIAssemblers.addModels(module, ProjectWaitingForModel.class);
+        // Project
+        UIAssemblers.addMV(module,
+                ProjectInboxModel.class,
+                ProjectInboxView.class);
 
-        //UIAssemblers.addViews(module, TaskView.class);
+        UIAssemblers.addMV(module,
+                ProjectAssignmentsModel.class,
+                ProjectAssignmentsView.class);
+
+        UIAssemblers.addMV(module,
+                ProjectDelegationsModel.class,
+                ProjectDelegationsView.class);
+
+        UIAssemblers.addMV(module,
+                ProjectWaitingForModel.class,
+                ProjectWaitingForView.class);
+
         UIAssemblers.addDialogs(module, AddTaskDialog.class,
-                UserOrProjectSelectionDialog.class);
+                UserOrProjectSelectionDialog.class, ProjectSelectionDialog.class);
+        
         UIAssemblers.addDialogs(module, AddCommentDialog.class);
 
         UIAssemblers.addMV(module,
                 TaskDetailModel.class,
                 TaskDetailView.class);
-
-        UIAssemblers.addMV(module,
-                UserDelegationsTaskDetailModel.class,
-                UserDelegationsTaskDetailView.class);
-
-        UIAssemblers.addMV(module,
-                UserAssignmentsTaskDetailModel.class,
-                UserAssignmentsTaskDetailView.class);
-
-        UIAssemblers.addMV(module,
-                UserWaitingForTaskDetailModel.class,
-                UserWaitingForTaskDetailView.class);
 
         UIAssemblers.addMV(module,
                 TaskCommentsModel.class,

@@ -24,17 +24,17 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 /**
  * JAVADOC
  */
-public class UserProjectsClientResource
+public class WorkspaceProjectsClientResource
         extends CommandQueryClientResource
 {
-    public UserProjectsClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceProjectsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public UserProjectClientResource project(String project)
+    public WorkspaceProjectClientResource project(String project)
     {
-        return getSubResource(project, UserProjectClientResource.class);
+        return getSubResource(project, WorkspaceProjectClientResource.class);
     }
 
     public ListValue listProjects() throws ResourceException

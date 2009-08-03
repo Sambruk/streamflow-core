@@ -72,6 +72,11 @@ public class UserNode
         return user.findUsers(name);
     }
 
+    public ListValue findProjects(String name) throws ResourceException
+    {
+        return user.findProjects(name);
+    }
+
     @Override
     public Object getValueAt(int column)
     {

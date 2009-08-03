@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.resource.organizations.groups.participants
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRoleServerResource;
@@ -35,13 +36,14 @@ import se.streamsource.streamflow.web.resource.users.UserServerResource;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.ProjectsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegatedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectsInboxTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.ProjectWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.ProjectWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.WorkspaceUserServerResource;
@@ -52,13 +54,13 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.UserLabelsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.UserTaskCommentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.UserTaskGeneralServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
 
 /**
- * JAVADOC
+ * Assembler for API resources
  */
 public class ServerResourceAssembler
         implements Assembler
@@ -91,12 +93,13 @@ public class ServerResourceAssembler
                 UserWaitingForServerResource.class,
                 UserWaitingForTaskServerResource.class,
 
-                UserTaskGeneralServerResource.class,
-                UserTaskCommentsServerResource.class,
+                TaskGeneralServerResource.class,
+                TaskCommentsServerResource.class,
 
-                ProjectsServerResource.class,
+                WorkspaceProjectsServerResource.class,
+                WorkspaceProjectServerResource.class,
                 ProjectInboxServerResource.class,
-                ProjectsInboxTaskServerResource.class,
+                ProjectInboxTaskServerResource.class,
                 ProjectAssignmentsServerResource.class,
                 ProjectAssignedTaskServerResource.class,
                 ProjectDelegationsServerResource.class,
@@ -115,9 +118,8 @@ public class ServerResourceAssembler
                 ParticipantsServerResource.class,
                 ParticipantServerResource.class,
 
-                se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource.class,
+                ProjectsServerResource.class,
                 ProjectServerResource.class,
-                ProjectInboxServerResource.class,
                 MembersServerResource.class,
                 MemberServerResource.class,
                 MemberRolesServerResource.class,

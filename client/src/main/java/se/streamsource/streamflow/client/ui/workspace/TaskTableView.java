@@ -81,6 +81,7 @@ public abstract class TaskTableView
 
     @Uses
     protected ObjectBuilder<AddTaskDialog> addTaskDialogs;
+
     @Uses
     protected ObjectBuilder<UserOrProjectSelectionDialog> userOrProjectSelectionDialog;
 

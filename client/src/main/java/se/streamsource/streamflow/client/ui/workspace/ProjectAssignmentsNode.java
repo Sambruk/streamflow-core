@@ -16,46 +16,41 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
-
-import javax.swing.JComponent;
 
 /**
  * JAVADOC
  */
 public class ProjectAssignmentsNode
         extends DefaultMutableTreeTableNode
-        implements DetailView
 {
     @Uses
-    UserAssignmentsModel model;
-
-    public ProjectAssignmentsNode(@Uses ProjectAssignmentsClientResource assignments)
-    {
-        super(assignments, false);
-    }
+    private ProjectAssignmentsModel model;
 
     @Override
     public Object getValueAt(int column)
     {
-        return i18n.text(WorkspaceResources.assignments_node);
+        String text = i18n.text(WorkspaceResources.assignments_node);
+        int unread = model.unreadCount();
+        if (unread > 0)
+        {
+            text += " ("+unread+")";
+        } else
+        {
+            text += "                ";
+        }
+
+        return text;
     }
 
-    UserAssignmentsClientResource assignments()
+    @Override
+    public ProjectNode getParent()
     {
-        return (UserAssignmentsClientResource) getUserObject();
+        return (ProjectNode) super.getParent();
     }
 
-    public JComponent detailView() throws ResourceException
+    public ProjectAssignmentsModel assignmentsModel()
     {
-/*
-        model.setAssignments(assignments());
-        return view;
-*/
-        return null;
+        return model;
     }
 }

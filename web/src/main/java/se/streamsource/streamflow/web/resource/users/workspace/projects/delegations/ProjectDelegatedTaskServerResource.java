@@ -32,7 +32,6 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class ProjectDelegatedTaskServerResource
         extends CommandQueryServerResource
 {
-
     public void complete()
     {
         String projectId = (String) getRequest().getAttributes().get("project");

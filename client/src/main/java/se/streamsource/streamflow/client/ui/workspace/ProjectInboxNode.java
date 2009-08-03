@@ -17,8 +17,6 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
 
 /**
  * JAVADOC
@@ -27,22 +25,32 @@ public class ProjectInboxNode
         extends DefaultMutableTreeTableNode
 {
     @Uses
-    UserInboxModel model;
-
-    public ProjectInboxNode(@Uses ProjectInboxClientResource inbox)
-    {
-        super(inbox, false);
-    }
+    ProjectInboxModel model;
 
     @Override
     public Object getValueAt(int column)
     {
-        return i18n.text(WorkspaceResources.inbox_node);
+        String text = i18n.text(WorkspaceResources.inboxes_node);
+        int unread = model.unreadCount();
+        if (unread > 0)
+        {
+            text += " ("+unread+")";
+        } else
+        {
+            text += "                ";
+        }
+
+        return text;
     }
 
-    UserInboxClientResource inbox()
+    @Override
+    public ProjectNode getParent()
     {
-        return (UserInboxClientResource) getUserObject();
+        return (ProjectNode) super.getParent();
     }
 
+    public ProjectInboxModel inboxModel()
+    {
+        return model;
+    }
 }

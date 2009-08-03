@@ -35,16 +35,17 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * Mapped to:
  * /users/{user}/workspace/projects/{project}/inbox/{task}
  */
-public class ProjectsInboxTaskServerResource
+public class ProjectInboxTaskServerResource
         extends CommandQueryServerResource
 {
     public void complete()
     {
-        String id = (String) getRequest().getAttributes().get("project");
+        String userId = (String) getRequest().getAttributes().get("user");
+        String projectId = (String) getRequest().getAttributes().get("project");
         String taskId = (String) getRequest().getAttributes().get("task");
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
-        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
-        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
+        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, projectId);
+        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
         
         inbox.completeTask(task, assignee);
     }
@@ -58,24 +59,24 @@ public class ProjectsInboxTaskServerResource
 
     public void assignToMe()
     {
+        String userId = (String) getRequest().getAttributes().get("user");
+        String projectId = (String) getRequest().getAttributes().get("project");
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
         Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
         Assignee assignee = uow.get(Assignee.class, userId);
-        String projectId = (String) getRequest().getAttributes().get("project");
         Inbox inbox = uow.get(Inbox.class, projectId);
         inbox.assignTo(task, assignee);
     }
 
     public void delegate(EntityReferenceDTO reference)
     {
+        String userId = (String) getRequest().getAttributes().get("user");
+        String projectId = (String) getRequest().getAttributes().get("project");
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
         Task task = uow.get(Task.class, taskId);
-        String projectId = (String) getRequest().getAttributes().get("project");
         Inbox inbox = uow.get(Inbox.class, projectId);
-        String userId = (String) getRequest().getAttributes().get("user");
         Delegator delegator = uow.get(Delegator.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
 
@@ -101,7 +102,7 @@ public class ProjectsInboxTaskServerResource
         inbox.markAsRead(task);
     }
 
-    public void markAsUnRead()
+    public void markAsUnread()
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();

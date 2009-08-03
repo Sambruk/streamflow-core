@@ -15,22 +15,26 @@
 package se.streamsource.streamflow.client.resource.users.workspace.projects;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
+import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.labels.ProjectLabelsClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 /**
  * JAVADOC
  */
-public class UserProjectClientResource
-        extends BaseClientResource
+public class WorkspaceProjectClientResource
+        extends CommandQueryClientResource
 {
-    public UserProjectClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceProjectClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
@@ -58,5 +62,26 @@ public class UserProjectClientResource
     public ProjectLabelsClientResource labels()
     {
         return getSubResource("labels", ProjectLabelsClientResource.class);
+    }
+
+    public ListValue findUsers(String participantName) throws ResourceException
+    {
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+        builder.prototype().description().set(participantName);
+        return query("findUsers", builder.newInstance(), ListValue.class);
+    }
+
+    public ListValue findGroups(String groupName) throws ResourceException
+    {
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+        builder.prototype().description().set(groupName);
+        return query("findGroups", builder.newInstance(), ListValue.class);
+    }
+
+    public ListValue findProjects(String projectName) throws ResourceException
+    {
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+        builder.prototype().description().set(projectName);
+        return query("findProjects", builder.newInstance(), ListValue.class);
     }
 }

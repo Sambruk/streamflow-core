@@ -35,7 +35,7 @@ import se.streamsource.streamflow.web.resource.BaseServerResource;
  * Mapped to:
  * /users/{user}/workspace/user/{view}/{task}/general
  */
-public class UserTaskGeneralServerResource
+public class TaskGeneralServerResource
     extends BaseServerResource
 {
     @Structure
@@ -44,7 +44,7 @@ public class UserTaskGeneralServerResource
     @Structure
     ValueBuilderFactory vbf;
 
-    public UserTaskGeneralServerResource()
+    public TaskGeneralServerResource()
     {
         setNegotiated(true);
         getVariants().put(Method.ALL, MediaType.APPLICATION_JSON);

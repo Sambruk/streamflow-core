@@ -35,8 +35,8 @@ import se.streamsource.streamflow.client.resource.organizations.roles.RolesClien
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.WorkspaceClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.UserProjectClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.UserProjectsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
@@ -52,6 +52,7 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.delegatio
 import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.labels.ProjectLabelsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.labels.UserLabelsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
@@ -91,8 +92,9 @@ public class ClientResourceAssembler
                 UserWaitingForClientResource.class,
                 UserWaitingForTaskClientResource.class,
 
-                UserProjectClientResource.class,
-                UserProjectsClientResource.class,
+                WorkspaceProjectClientResource.class,
+                WorkspaceProjectsClientResource.class,
+                ProjectLabelsClientResource.class,
                 ProjectInboxClientResource.class,
                 ProjectInboxTaskClientResource.class,
                 ProjectAssignmentsClientResource.class,

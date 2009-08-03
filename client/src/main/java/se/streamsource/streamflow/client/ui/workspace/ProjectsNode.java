@@ -23,7 +23,7 @@ import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.UserProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -46,13 +46,19 @@ public class ProjectsNode
 
             for (ListItemValue project : projects.items().get())
             {
-                UserProjectClientResource userProjectResource =  user.workspace().projects().project(project.entity().get().identity());
-                add(obf.newObjectBuilder(ProjectNode.class).use(userProjectResource, project.description().get()).newInstance());
+                WorkspaceProjectClientResource workspaceProjectResource =  user.workspace().projects().project(project.entity().get().identity());
+                add(obf.newObjectBuilder(ProjectNode.class).use(workspaceProjectResource, project.description().get()).newInstance());
             }
         } catch (ResourceException e)
         {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public WorkspaceNode getParent()
+    {
+        return (WorkspaceNode) super.getParent();
     }
 
     @Override

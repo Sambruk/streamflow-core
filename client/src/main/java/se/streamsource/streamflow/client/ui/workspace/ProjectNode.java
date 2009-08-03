@@ -18,11 +18,13 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.UserProjectClientResource;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * JAVADOC
@@ -34,24 +36,36 @@ public class ProjectNode
 
     @Uses String projectName;
 
-    public ProjectNode(@Uses UserProjectClientResource userProjectClientResource,
+    public ProjectNode(@Uses WorkspaceProjectClientResource workspaceProjectClientResource,
                              @Structure ObjectBuilderFactory obf)
     {
-        super(userProjectClientResource);
+        super(workspaceProjectClientResource);
 
-        ProjectInboxClientResource projectInboxClientResource = userProjectClientResource.inbox();
+        ProjectInboxClientResource projectInboxClientResource = workspaceProjectClientResource.inbox();
         add(obf.newObjectBuilder(ProjectInboxNode.class).use(projectInboxClientResource).newInstance());
 
-        ProjectAssignmentsClientResource projectAssignmentsClientResource = userProjectClientResource.assignments();
-        add(obf.newObjectBuilder(UserAssignmentsNode.class).use(projectAssignmentsClientResource).newInstance());
+        ProjectAssignmentsClientResource projectAssignmentsClientResource = workspaceProjectClientResource.assignments();
+        add(obf.newObjectBuilder(ProjectAssignmentsNode.class).use(projectAssignmentsClientResource).newInstance());
 
-        ProjectDelegationsClientResource projectDelegationsClientResource = userProjectClientResource.delegations();
-        add(obf.newObjectBuilder(UserDelegationsNode.class).use(projectDelegationsClientResource).newInstance());
+        ProjectDelegationsClientResource projectDelegationsClientResource = workspaceProjectClientResource.delegations();
+        add(obf.newObjectBuilder(ProjectDelegationsNode.class).use(projectDelegationsClientResource).newInstance());
 
-        ProjectWaitingforClientResource projectWaitingforClientResource = userProjectClientResource.waitingFor();
-        add(obf.newObjectBuilder(UserWaitingForNode.class).use(projectWaitingforClientResource).newInstance());
+        ProjectWaitingforClientResource projectWaitingforClientResource = workspaceProjectClientResource.waitingFor();
+        add(obf.newObjectBuilder(ProjectWaitingForNode.class).use(projectWaitingforClientResource).newInstance());
 
-        labelsModel = obf.newObjectBuilder(LabelsModel.class).use(userProjectClientResource.labels()).newInstance();
+        labelsModel = obf.newObjectBuilder(LabelsModel.class).use(workspaceProjectClientResource.labels()).newInstance();
+    }
+
+    @Override
+    public Object getValueAt(int column)
+    {
+        return projectName;
+    }
+
+    @Override
+    public ProjectsNode getParent()
+    {
+        return (ProjectsNode) super.getParent();
     }
 
     public LabelsModel labelsModel()
@@ -59,9 +73,13 @@ public class ProjectNode
         return labelsModel;
     }
 
-    @Override
-    public Object getValueAt(int column)
+    public ListValue findUsers(String name) throws ResourceException
     {
-        return projectName;
+        return ((WorkspaceProjectClientResource)getUserObject()).findUsers(name);
+    }
+
+    public ListValue findProjects(String name) throws ResourceException
+    {
+        return ((WorkspaceProjectClientResource)getUserObject()).findProjects(name);
     }
 }

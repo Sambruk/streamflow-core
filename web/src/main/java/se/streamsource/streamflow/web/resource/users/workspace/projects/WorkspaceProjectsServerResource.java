@@ -17,9 +17,6 @@ package se.streamsource.streamflow.web.resource.users.workspace.projects;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -31,19 +28,9 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * Mapped to:
  * /users/{user}/workspace/projects
  */
-public class ProjectsServerResource
+public class WorkspaceProjectsServerResource
         extends CommandQueryServerResource
 {
-    @Override
-    protected Representation get(Variant variant) throws ResourceException
-    {
-        if (getRequest().getResourceRef().hasQuery())
-        {
-           return super.get(variant);
-        }
-        return getHtml("resources/workspaceproject.html");
-    }
-
     public ListValue listProjects()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();

@@ -17,8 +17,6 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
 
 /**
  * JAVADOC
@@ -27,21 +25,32 @@ public class ProjectDelegationsNode
         extends DefaultMutableTreeTableNode
 {
     @Uses
-    UserDelegationsModel model;
+    ProjectDelegationsModel model;
 
-    public ProjectDelegationsNode(@Uses ProjectDelegationsClientResource delegations)
+    @Override
+    public ProjectNode getParent()
     {
-        super(delegations, false);
+        return (ProjectNode) super.getParent();
     }
 
     @Override
     public Object getValueAt(int column)
     {
-        return i18n.text(WorkspaceResources.delegations_node);
+        String text = i18n.text(WorkspaceResources.delegations_node);
+        int unread = model.unreadCount();
+        if (unread > 0)
+        {
+            text += " ("+unread+")";
+        } else
+        {
+            text += "                ";
+        }
+
+        return text;
     }
 
-    UserDelegationsClientResource delegations()
+    ProjectDelegationsModel delegationsModel()
     {
-        return (UserDelegationsClientResource) getUserObject();
+        return model;
     }
 }

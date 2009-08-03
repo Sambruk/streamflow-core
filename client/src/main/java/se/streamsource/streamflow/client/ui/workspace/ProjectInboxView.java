@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
@@ -31,14 +32,17 @@ import javax.swing.JPopupMenu;
 /**
  * JAVADOC
  */
-public class ProjectWaitingForView
+public class ProjectInboxView
         extends TaskTableView
 {
+    @Uses
+    protected ObjectBuilder<ProjectSelectionDialog> projectSelectionDialog;
+
     @Uses LabelMenu labelMenu;
 
     protected String tabName()
     {
-        return text(waitingfor_tab);
+        return text(inbox_tab);
     }
 
     protected void buildPopupMenu(JPopupMenu popup, ActionMap am)
@@ -51,6 +55,7 @@ public class ProjectWaitingForView
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
+        popup.add(am.get("forwardTasks"));
         taskTable.addMouseListener(new PopupMenuTrigger(popup));
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
     }
@@ -58,11 +63,13 @@ public class ProjectWaitingForView
     @Override
     protected void buildToolbar(JPanel toolbar, ActionMap am)
     {
+        Action addAction = am.get("newTask");
+        toolbar.add(new JButton(addAction));
         Action assignAction = am.get("assignTasksToMe");
         toolbar.add(new JButton(assignAction));
         Action delegateTasksFromInbox = am.get("delegateTasks");
         toolbar.add(new JButton(delegateTasksFromInbox));
-        javax.swing.Action refreshAction = am.get("refresh");
+        Action refreshAction = am.get("refresh");
         toolbar.add(new JButton(refreshAction));
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
     }
@@ -82,7 +89,7 @@ public class ProjectWaitingForView
     @org.jdesktop.application.Action
     public void delegateTasks() throws ResourceException
     {
-        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
+        ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         EntityReference selected = dialog.getSelected();
@@ -92,6 +99,23 @@ public class ProjectWaitingForView
             for (int row : rows)
             {
                 model.delegate(row, selected.identity());
+            }
+        }
+    }
+
+    @org.jdesktop.application.Action
+    public void forwardTasks() throws ResourceException
+    {
+        ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        EntityReference selected = dialog.getSelected();
+        if (selected != null)
+        {
+            int[] rows = taskTable.getSelectedRows();
+            for (int row : rows)
+            {
+                model.forward(row, selected.identity());
             }
         }
     }

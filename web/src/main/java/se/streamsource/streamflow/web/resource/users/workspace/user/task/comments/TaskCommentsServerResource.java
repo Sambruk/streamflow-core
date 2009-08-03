@@ -41,7 +41,7 @@ import java.util.List;
  * Mapped to:
  * /users/{user}/workspace/user/{view}/{task}/comments
  */
-public class UserTaskCommentsServerResource
+public class TaskCommentsServerResource
     extends BaseServerResource
 {
     @Structure
@@ -50,7 +50,7 @@ public class UserTaskCommentsServerResource
     @Structure
     ValueBuilderFactory vbf;
 
-    public UserTaskCommentsServerResource()
+    public TaskCommentsServerResource()
     {
         setNegotiated(true);
         getVariants().put(Method.ALL, MediaType.APPLICATION_JSON);

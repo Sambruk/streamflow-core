@@ -283,19 +283,100 @@ public class WorkspaceView
                     }
                     else if (node instanceof ProjectInboxNode)
                     {
+                        ProjectInboxNode projectInboxNode = (ProjectInboxNode) node;
+                        final ProjectInboxModel inboxModel = projectInboxNode.inboxModel();
+                        final LabelsModel labelsModel = projectInboxNode.getParent().labelsModel();
+                        view = obf.newObjectBuilder(ProjectInboxView.class).use(inboxModel, projectInboxNode.getParent(), labelsModel).newInstance();
 
+                        context.getTaskService().execute(new Task(context.getApplication())
+                        {
+                            protected Object doInBackground() throws Exception
+                            {
+                                try
+                                {
+                                    inboxModel.refresh();
+                                    labelsModel.refresh();
+                                } catch (ResourceException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                return null;
+                            }
+                        });
                     }
                     else if (node instanceof ProjectAssignmentsNode)
                     {
+                        ProjectAssignmentsNode projectAssignmentsNode = (ProjectAssignmentsNode) node;
+                        final ProjectAssignmentsModel assignmentsModel = projectAssignmentsNode.assignmentsModel();
+                        final LabelsModel labelsModel = projectAssignmentsNode.getParent().labelsModel();
+                        view = obf.newObjectBuilder(ProjectAssignmentsView.class).use(assignmentsModel, projectAssignmentsNode.getParent(),labelsModel).newInstance();
+
+                        context.getTaskService().execute(new Task(context.getApplication())
+                        {
+                            protected Object doInBackground() throws Exception
+                            {
+                                try
+                                {
+                                    assignmentsModel.refresh();
+                                    labelsModel.refresh();
+                                } catch (ResourceException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                return null;
+                            }
+                        });
 
                     }
                     else if (node instanceof ProjectDelegationsNode)
                     {
+                        ProjectDelegationsNode projectDelegationsNode = (ProjectDelegationsNode) node;
+                        final ProjectDelegationsModel delegationsModel = projectDelegationsNode.delegationsModel();
+                        final LabelsModel labelsModel = projectDelegationsNode.getParent().labelsModel();
+                        view = obf.newObjectBuilder(ProjectDelegationsView.class).use(delegationsModel, labelsModel).newInstance();
 
+                        context.getTaskService().execute(new Task(context.getApplication())
+                        {
+                            protected Object doInBackground() throws Exception
+                            {
+                                try
+                                {
+                                    delegationsModel.refresh();
+                                    labelsModel.refresh();
+                                } catch (ResourceException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                return null;
+                            }
+                        });
                     }
                     else if (node instanceof ProjectWaitingForNode)
                     {
+                        ProjectWaitingForNode projectWaitingForNode = (ProjectWaitingForNode) node;
+                        final ProjectWaitingForModel waitingForModel = projectWaitingForNode.waitingForModel();
+                        final LabelsModel labelsModel = projectWaitingForNode.getParent().labelsModel();
+                        view = obf.newObjectBuilder(ProjectWaitingForView.class).use(waitingForModel, labelsModel).newInstance();
 
+                        context.getTaskService().execute(new Task(context.getApplication())
+                        {
+                            protected Object doInBackground() throws Exception
+                            {
+                                try
+                                {
+                                    waitingForModel.refresh();
+                                    labelsModel.refresh();
+                                } catch (ResourceException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                return null;
+                            }
+                        });
                     }
 
                     pane.setRightComponent(view);

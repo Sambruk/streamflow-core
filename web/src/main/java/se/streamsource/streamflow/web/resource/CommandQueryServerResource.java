@@ -128,7 +128,7 @@ public class CommandQueryServerResource
         return getRequest().getResourceRef().getQueryAsForm().getFirstValue("operation");
     }
 
-    private Representation listOperations() throws ResourceException
+    protected Representation listOperations() throws ResourceException
     {
         // List methods
         String links = "";

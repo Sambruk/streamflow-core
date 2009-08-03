@@ -54,19 +54,20 @@ public class LabelMenu
 
     public void valueChanged(ListSelectionEvent e)
     {
+        if (e.getValueIsAdjusting())
+            return;
+        
         selectionModel = (ListSelectionModel) e.getSource();
-        if (selectionModel.getMinSelectionIndex() != -1 && taskModel.getRowCount() > 0)
-        {
-            task = taskModel.getTask(selectionModel.getMinSelectionIndex());
-        } else
-        {
-            task = null;
-        }
     }
 
     public void menuSelected(MenuEvent e)
     {
         removeAll();
+
+        if (selectionModel.isSelectionEmpty())
+            return;
+
+        TaskDTO task = taskModel.getTask(selectionModel.getMinSelectionIndex());
 
         if (task == null)
             return;
