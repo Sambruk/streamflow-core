@@ -28,6 +28,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -50,7 +51,7 @@ public class AccountsDialog
 
     public JList accountList;
 
-    @Structure
+    @Uses
     Iterable<CreateAccountDialog> createAccountDialog;
 
     public AccountsDialog(@Service ApplicationContext context,
@@ -58,6 +59,7 @@ public class AccountsDialog
     {
         super(new BorderLayout());
         this.model = model;
+        model.refresh();
 
         setActionMap(context.getActionMap(this));
 
@@ -65,7 +67,7 @@ public class AccountsDialog
         accountList.setMinimumSize(new Dimension(200,300));
         accountList.setCellRenderer(new ListItemCellRenderer());
 
-        add(accountList, BorderLayout.CENTER);
+        add(new JScrollPane(accountList), BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(getActionMap().get("add")));
