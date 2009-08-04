@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mads Enevoldsen. All Rights Reserved.
+ * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,27 +12,25 @@
  *
  */
 
-package se.streamsource.streamflow.client.application.shared;
+package se.streamsource.streamflow.client.scenarios;
 
-import se.streamsource.streamflow.client.application.shared.steps.GroupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.LoginSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
-import se.streamsource.streamflow.client.test.AbstractClientApplicationScenario;
+import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
  * JAVADOC
  */
-public class DuplicateGroup
-        extends AbstractClientApplicationScenario
+public class OrganizationalUnitScenario
+        extends AbstractWebDomainApplicationScenario
 {
-    public DuplicateGroup()
+    public OrganizationalUnitScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public DuplicateGroup(ClassLoader classLoader)
+    public OrganizationalUnitScenario(ClassLoader classLoader)
     {
-        super(classLoader, new UserSteps(), new LoginSteps(), new GroupSteps(), new OrganizationalUnitSteps());
+        super(classLoader, new OrganizationalUnitSteps(), new UserSteps());
     }
 }

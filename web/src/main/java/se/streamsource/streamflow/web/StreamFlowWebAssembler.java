@@ -37,6 +37,7 @@ import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 public class StreamFlowWebAssembler
         implements ApplicationAssembler
 {
+
     public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory) throws AssemblyException
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
@@ -74,7 +75,7 @@ public class StreamFlowWebAssembler
     {
         ModuleAssembly restModule = webLayer.newModuleAssembly("REST");
         new StreamFlowRestAssembler().assemble(restModule);
-       // new RestAssembler().assemble(restModule);
+        //new RestAssembler().assemble(restModule);
         new ServerResourceAssembler().assemble(restModule);
     }
 
@@ -84,7 +85,7 @@ public class StreamFlowWebAssembler
         new OrganizationAssembler().assemble(appLayer.newModuleAssembly("Organization"));
     }
 
-    private void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException
+    protected void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException
     {
         new CommonDomainAssembler().assemble(domainLayer);
         new WebDomainAssembler().assemble(domainLayer);

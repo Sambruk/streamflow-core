@@ -1,4 +1,0 @@
-Scenario: New task
-Given inbox
-When new task 'Do stuff'
-Then task count is 1

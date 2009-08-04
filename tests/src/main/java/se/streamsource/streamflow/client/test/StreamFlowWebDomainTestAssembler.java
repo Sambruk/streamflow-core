@@ -12,24 +12,29 @@
  *
  */
 
-package se.streamsource.streamflow.client.scenarios;
+package se.streamsource.streamflow.client.test;
 
-import se.streamsource.streamflow.client.model.shared.IndividualSteps;
-import se.streamsource.streamflow.client.test.AbstractClientApplicationScenario;
+import org.qi4j.bootstrap.*;
+import se.streamsource.streamflow.web.StreamFlowWebAssembler;
 
 /**
  * JAVADOC
  */
-public class AccountScenario
-        extends AbstractClientApplicationScenario
+public class StreamFlowWebDomainTestAssembler
+        extends StreamFlowWebAssembler
 {
-    public AccountScenario()
+    private Class[] testClass;
+
+    public StreamFlowWebDomainTestAssembler(Class[] testClass)
     {
-        this(Thread.currentThread().getContextClassLoader());
+        this.testClass = testClass;
     }
 
-    public AccountScenario(ClassLoader classLoader)
+    @Override
+    protected void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException
     {
-        super(classLoader, new IndividualSteps());
+        super.assembleDomainLayer(domainLayer);
+        ModuleAssembly moduleAssembly = domainLayer.newModuleAssembly("Test");
+        moduleAssembly.addObjects(testClass);
     }
 }

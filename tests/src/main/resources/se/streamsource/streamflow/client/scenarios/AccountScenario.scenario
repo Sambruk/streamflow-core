@@ -1,6 +1,0 @@
-Scenario: Add account to individual
-Given individual
-When new account
-And user is rickardoberg and password is rickardoberg
-And get version
-Then version is 0.1

@@ -14,14 +14,19 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import static org.hamcrest.CoreMatchers.*;
+import org.jbehave.scenario.annotations.Given;
+import org.jbehave.scenario.annotations.Then;
+import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
-import org.qi4j.api.injection.scope.Service;
+import static org.jbehave.util.JUnit4Ensure.ensureThat;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 
 /**
  * JAVADOC
@@ -29,58 +34,85 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 public class OrganizationalUnitSteps
         extends Steps
 {
-    @Uses
-    UserSteps user;
-
     @Structure
     UnitOfWorkFactory uowf;
 
     @Structure
     ValueBuilderFactory vbf;
 
-    @Service
-    IndividualRepository individualRepository;
-
     public OrganizationalUnit ou;
 
-/*
+    private Exception thrownException;
+
     @Given("an organizational unit")
     public void givenOrganizationalUnit()
     {
-        navigator.individual().visitShared(new OrganizationalUnitVisitor()
-        {
-            public boolean visitOrganizationalUnit(OrganizationalUnit unit)
-            {
-                ou = unit;
-                return false;
-            }
-        });
+        UnitOfWork uow = uowf.newUnitOfWork();
 
+        ou = uow.get(OrganizationEntity.class, "Organization");
     }
 
-    @When("groups named $name is created")
-    public void createGroup(String name) throws Exception
+    @When("a new organizational unit named $name is created")
+    public void createOrganizationUnit(String name) throws Exception
     {
-        ValueBuilder<NewGroupCommand> newGroupBuilder = vbf.newValueBuilder(NewGroupCommand.class);
-        newGroupBuilder.prototype().context().set(ou);
-        newGroupBuilder.prototype().description().set(name);
+        UnitOfWork uow = uowf.newUnitOfWork();
+        OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) ou;
 
-        NewGroupCommand context = newGroupBuilder.newInstance();
-        interactions.newGroup(context);
-    }
-
-    @Then("groups named $name is added")
-    public void thenGroupIsCreated(final String name)
-    {
-        ou.visitShared(new GroupVisitor()
+        try
         {
-            public boolean visitGroup(Group groups)
-            {
-                ensureThat(groups.description().get(), equalTo(name));
+            ouEntity.createOrganizationalUnit(name);
+        } catch(Exception e)
+        {
+            thrownException = e;
+        }
 
-                return true;
-            }
-        });
+        uow.complete();
     }
-*/
+
+
+    @Then("organizational unit named $name is added")
+    public void thenOrganizationUnitIsCreated(String name)
+    {
+        OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) ou;
+
+        boolean added = false;
+
+        for (OrganizationalUnit unit : ouEntity.organizationalUnits())
+        {
+            OrganizationalUnitEntity entity = (OrganizationalUnitEntity) unit;
+            if (entity.description().get().equals(name))
+            {
+                added = true;
+            }
+        }
+
+        ensureThat(added);
+    }
+
+    @Then("organizational unit named $name is not added")
+    public void thenOrganizationUnitIsNotCreated(String name)
+    {
+        OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) ou;
+
+        boolean added = false;
+
+        for (OrganizationalUnit unit : ouEntity.organizationalUnits())
+        {
+            OrganizationalUnitEntity entity = (OrganizationalUnitEntity) unit;
+            if (entity.description().get().equals(name))
+            {
+                added = true;
+            }
+        }
+
+        ensureThat(!added);
+    }
+
+
+
+    @Then("$exceptionName is thrown")
+    public void exceptionIsThrown(String exceptionName)
+    {
+        ensureThat(thrownException.getClass().getSimpleName(), equalTo(exceptionName));
+    }
 }

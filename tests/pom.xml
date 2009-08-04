@@ -15,7 +15,8 @@
     <description>StreamFlow integration tests</description>
 
     <build>
-        <!-- Skip for now       <plugins>
+        <!-- Skip for now -->      
+          <plugins>
             <plugin>
                 <groupId>org.jbehave</groupId>
                 <artifactId>jbehave-maven-plugin</artifactId>
@@ -39,7 +40,7 @@
                 </executions>
             </plugin>
         </plugins>
-        -->
+        <!-- -->
     </build>
     <dependencies>
         <!-- StreamFlow -->

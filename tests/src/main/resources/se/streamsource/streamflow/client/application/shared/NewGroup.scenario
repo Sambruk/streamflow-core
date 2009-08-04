@@ -1,9 +1,0 @@
-Scenario: create new group
-
-Given an account
-When username is rickardoberg and password is rickardoberg
-And user registers
-
-Given an organizational unit
-When group named Developers is created
-Then group named Developers is added

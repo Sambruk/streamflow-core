@@ -14,9 +14,10 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
@@ -26,13 +27,18 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
 public class UserSteps
         extends Steps
 {
-    @Uses
-    LoginSteps login;
-
     @Structure
     UnitOfWorkFactory uowf;
 
     public UserEntity user;
+
+    @Given("a user named $name")
+    public void givenUserNamed(String name) throws Exception
+    {
+        UnitOfWork uow = uowf.newUnitOfWork();
+
+        user = uow.get(UserEntity.class, name);
+    }
 
 /*
     @Given("a users named $name")

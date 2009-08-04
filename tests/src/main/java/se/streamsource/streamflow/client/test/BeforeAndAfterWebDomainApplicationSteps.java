@@ -37,16 +37,16 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public class BeforeAndAfterClientApplicationSteps
+public class BeforeAndAfterWebDomainApplicationSteps
         extends Steps
 {
     CandidateSteps[] steps;
 
-    public BeforeAndAfterClientApplicationSteps()
+    public BeforeAndAfterWebDomainApplicationSteps()
     {
     }
 
-    public BeforeAndAfterClientApplicationSteps(CandidateSteps... steps)
+    public BeforeAndAfterWebDomainApplicationSteps(CandidateSteps... steps)
     {
         this.steps = steps;
     }
@@ -75,12 +75,12 @@ public class BeforeAndAfterClientApplicationSteps
                 stepClasses[i + 1] = step.getClass();
             }
 
-            app = is.newApplication(new StreamFlowClientTestAssembler(stepClasses));
+            app = is.newApplication(new StreamFlowWebDomainTestAssembler(stepClasses));
             Client restlet = new Client(Protocol.HTTP);
             app.metaInfo().set(restlet);
             app.activate();
 
-            Module module = app.findModule("UI", "Test");
+            Module module = app.findModule("Domain", "Test");
 
             for (CandidateSteps step : steps)
             {
@@ -90,7 +90,7 @@ public class BeforeAndAfterClientApplicationSteps
                 builder.injectTo(step);
             }
 
-            module.objectBuilderFactory().newObjectBuilder(BeforeAndAfterClientApplicationSteps.class).injectTo(this);
+            module.objectBuilderFactory().newObjectBuilder(BeforeAndAfterWebDomainApplicationSteps.class).injectTo(this);
 
             uow = uowf.newUnitOfWork();
         } catch (Exception e)

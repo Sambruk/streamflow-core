@@ -22,18 +22,17 @@ import org.jbehave.scenario.parser.PatternScenarioParser;
 import org.jbehave.scenario.steps.CandidateSteps;
 
 /**
- * Base class for client application scenarios.
+ * Base class for web domain scenarios.
  * <p/>
  * Before scenario starts it starts the StreamFlow web server,
- * then instantiates and activates the StreamFlow client,
- * with all steps being registered as objects in the UI layer. Then
+ * with all steps being registered as objects in the Domain layer. Then
  * all steps are executed. After the scenario the application is passivated,
  * and the web server is stopped.
  */
-public class AbstractClientApplicationScenario
+public class AbstractWebDomainApplicationScenario
         extends JUnitScenario
 {
-    public AbstractClientApplicationScenario(final ClassLoader classLoader, CandidateSteps... steps)
+    public AbstractWebDomainApplicationScenario(final ClassLoader classLoader, CandidateSteps... steps)
     {
         super(new PropertyBasedConfiguration()
         {
@@ -45,7 +44,7 @@ public class AbstractClientApplicationScenario
                         new PatternScenarioParser(this),
                         classLoader);
             }
-//      }, new BeforeAndAfterClientApplicationSteps(steps));
-        }, new BeforeAndAfterClientApplicationSteps(steps), new BeforeAndAfterWebServer());
+        }, new BeforeAndAfterWebDomainApplicationSteps(steps)
+                , new BeforeAndAfterWebServer());
     }
 }
