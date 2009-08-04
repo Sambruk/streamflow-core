@@ -21,7 +21,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.resource.ResourceException;
 
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.event.TreeSelectionEvent;
@@ -48,7 +47,7 @@ public class AdministrationView
 
         setLeftComponent(adminOutlineView);
         adminOutlineView.setMinimumSize(new Dimension(200, 400));
-        setRightComponent(new JLabel("Bar"));
+        setRightComponent(new JPanel());
 
         setDividerLocation(200);
         setResizeWeight(0);

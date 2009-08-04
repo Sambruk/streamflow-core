@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.ui.administration;
  */
 public enum AdministrationResources
 {
+    window_name,
     could_not_remove_role,
     could_not_refresh_list_of_roles,
     could_not_remove_project,
@@ -38,5 +39,5 @@ public enum AdministrationResources
     groups_tab,
     roles_tab,
     metadata_tab,
-    could_not_get_user, could_not_refresh_list_of_organizations, name_label
+    could_not_get_user, could_not_refresh_list_of_organizations, name_label, could_not_create_label, could_not_refresh_list_of_labels;
 }

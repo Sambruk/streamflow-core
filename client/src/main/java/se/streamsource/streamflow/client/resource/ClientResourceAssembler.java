@@ -52,8 +52,6 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.delegatio
 import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.labels.ProjectLabelsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.labels.UserLabelsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
@@ -77,7 +75,6 @@ public class ClientResourceAssembler
 
                 WorkspaceClientResource.class,
                 WorkspaceUserClientResource.class,
-                UserLabelsClientResource.class,
                 UserInboxClientResource.class,
                 UserInboxTaskClientResource.class,
                 TaskGeneralClientResource.class,
@@ -94,7 +91,6 @@ public class ClientResourceAssembler
 
                 WorkspaceProjectClientResource.class,
                 WorkspaceProjectsClientResource.class,
-                ProjectLabelsClientResource.class,
                 ProjectInboxClientResource.class,
                 ProjectInboxTaskClientResource.class,
                 ProjectAssignmentsClientResource.class,
@@ -102,7 +98,10 @@ public class ClientResourceAssembler
                 ProjectDelegationsClientResource.class,
                 ProjectDelegationsTaskClientResource.class,
                 ProjectWaitingforClientResource.class,
-                ProjectWaitingforTaskClientResource.class
+                ProjectWaitingforTaskClientResource.class,
+
+                LabelsClientResource.class,
+                LabelClientResource.class
 
                 ).visibleIn(Visibility.application);
 

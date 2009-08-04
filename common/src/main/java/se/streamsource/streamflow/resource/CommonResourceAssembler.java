@@ -32,8 +32,6 @@ import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
-import se.streamsource.streamflow.resource.label.LabelDTO;
-import se.streamsource.streamflow.resource.label.LabelListDTO;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.task.NewTaskCommand;
@@ -74,8 +72,6 @@ public class CommonResourceAssembler
                 WaitingForTaskListDTO.class,
                 WaitingForTaskDTO.class,
                 TreeValue.class,
-                TreeNodeValue.class,
-                LabelListDTO.class,
-                LabelDTO.class).visibleIn(Visibility.application);
+                TreeNodeValue.class).visibleIn(Visibility.application);
     }
 }

@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListModel;
@@ -71,8 +72,13 @@ public class ProjectAdminView
                     {
                         ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt(idx);
                         ProjectMembersModel projectMembersModel = projectsModel.getProjectMembersModel(projectValue.entity().get().identity());
+                        LabelsModel projectLabelsModel = projectsModel.getLabelsModel(projectValue.entity().get().identity());
                         projectMembersModel.refresh();
-                        ProjectView view = obf.newObjectBuilder(ProjectView.class).use(projectMembersModel, organizationModel).newInstance();
+                        projectLabelsModel.refresh();
+                        ProjectView view = obf.newObjectBuilder(ProjectView.class).use(
+                                projectMembersModel,
+                                projectLabelsModel,
+                                organizationModel).newInstance();
                         setRightComponent(view);
                     } else
                     {

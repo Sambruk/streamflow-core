@@ -24,7 +24,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.label.LabelDTO;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
@@ -127,12 +127,12 @@ public abstract class TaskTableModel<T extends TaskListDTO>
             case 1:
             {
                 String desc = task.description().get();
-                List<LabelDTO> labels = task.labels().get().labels().get();
+                List<ListItemValue> labels = task.labels().get().items().get();
                 if (labels.size() > 0)
                 {
                     desc+= " (";
                     String comma = "";
-                    for (LabelDTO label : labels)
+                    for (ListItemValue label : labels)
                     {
                         desc+=comma+label.description().get();
                         comma=",";
@@ -267,26 +267,26 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         refresh();
     }
 
-    public void addLabel(int idx, LabelDTO label) throws ResourceException
+    public void addLabel(int idx, ListItemValue label) throws ResourceException
     {
         TaskDTO task = getTask(idx);
-        String labelId = label.label().get().identity();
-        for (LabelDTO labelDTO : task.labels().get().labels().get())
+        String labelId = label.entity().get().identity();
+        for (ListItemValue labelDTO : task.labels().get().items().get())
         {
-            if (labelDTO.label().get().identity().equals(labelId))
+            if (labelDTO.entity().get().identity().equals(labelId))
                 return;
         }
 
         getResource().task(task.task().get().identity()).addLabel(labelId);
-        task.labels().get().labels().get().add(label);
+        task.labels().get().items().get().add(label);
     }
 
-    public void removeLabel(int idx, LabelDTO label) throws ResourceException
+    public void removeLabel(int idx, ListItemValue label) throws ResourceException
     {
         TaskDTO task = getTask(idx);
-        String labelId = label.label().get().identity();
+        String labelId = label.entity().get().identity();
         getResource().task(task.task().get().identity()).removeLabel(labelId);
-        task.labels().get().labels().get().remove(label);
+        task.labels().get().items().get().remove(label);
     }
 
     public void dropTask(int idx) throws ResourceException

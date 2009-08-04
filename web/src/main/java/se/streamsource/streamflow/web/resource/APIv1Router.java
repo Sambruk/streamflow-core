@@ -27,6 +27,7 @@ import se.streamsource.streamflow.web.resource.organizations.groups.participants
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRoleServerResource;
@@ -53,7 +54,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.UserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.labels.UserLabelsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
@@ -92,7 +93,7 @@ public class APIv1Router
         attach("/users/{user}/workspace/projects/{project}/delegations/{task}", createServerResourceFinder(ProjectDelegatedTaskServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/waitingfor", createServerResourceFinder(ProjectWaitingForServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/waitingfor/{task}", createServerResourceFinder(ProjectWaitingForTaskServerResource.class));
-        attach("/users/{user}/workspace/projects/{project}/labels", createServerResourceFinder(UserLabelsServerResource.class));
+        attach("/users/{user}/workspace/projects/{labels}/labels", createServerResourceFinder(LabelsServerResource.class));
         attach("/users/{user}/workspace/user/inbox", createServerResourceFinder(UserInboxServerResource.class));
         attach("/users/{user}/workspace/user/inbox/{task}", createServerResourceFinder(UserInboxTaskServerResource.class));
         attach("/users/{user}/workspace/user/assignments", createServerResourceFinder(UserAssignmentsServerResource.class));
@@ -103,7 +104,7 @@ public class APIv1Router
         attach("/users/{user}/workspace/user/waitingfor/{task}", createServerResourceFinder(UserWaitingForTaskServerResource.class));
         attach("/users/{user}/workspace/user/{view}/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
         attach("/users/{user}/workspace/user/{view}/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
-        attach("/users/{user}/workspace/user/labels", createServerResourceFinder(UserLabelsServerResource.class));
+        attach("/users/{labels}/workspace/user/labels", createServerResourceFinder(LabelsServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/{view}/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/{view}/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
         attach("/users/{user}/administration", createServerResourceFinder(UserAdministrationServerResource.class));
@@ -121,6 +122,8 @@ public class APIv1Router
         attach("/organizations/{organization}/projects/{project}/members/{member}", createServerResourceFinder(MemberServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members/{member}/roles", createServerResourceFinder(MemberRolesServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members/{member}/roles/{role}", createServerResourceFinder(MemberRoleServerResource.class));
+        attach("/organizations/{organization}/projects/{labels}/labels", createServerResourceFinder(LabelsServerResource.class));
+        attach("/organizations/{organization}/projects/{labels}/labels/{label}", createServerResourceFinder(LabelServerResource.class));
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));

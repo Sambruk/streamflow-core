@@ -67,7 +67,7 @@ public class GroupsServerResource
 
         String identity = getRequest().getAttributes().get("organization").toString();
 
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Group"));
+        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("New Group"));
 
         Groups groups = uow.get(Groups.class, identity);
 

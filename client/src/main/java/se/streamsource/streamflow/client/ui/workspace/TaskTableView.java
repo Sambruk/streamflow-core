@@ -38,7 +38,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import se.streamsource.streamflow.resource.label.LabelDTO;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
@@ -111,7 +111,7 @@ public abstract class TaskTableView
         {
             public String getString(Object o)
             {
-                return o == null ? "" : ((LabelDTO) o).description().get();
+                return o == null ? "" : ((ListItemValue) o).description().get();
             }
         }));
 

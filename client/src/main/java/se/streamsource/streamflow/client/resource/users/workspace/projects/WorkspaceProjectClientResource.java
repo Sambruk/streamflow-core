@@ -17,14 +17,14 @@ package se.streamsource.streamflow.client.resource.users.workspace.projects;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.labels.ProjectLabelsClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
@@ -59,9 +59,9 @@ public class WorkspaceProjectClientResource
         return getSubResource("waitingfor", ProjectWaitingforClientResource.class);
     }
 
-    public ProjectLabelsClientResource labels()
+    public LabelsClientResource labels()
     {
-        return getSubResource("labels", ProjectLabelsClientResource.class);
+        return getSubResource("labels", LabelsClientResource.class);
     }
 
     public ListValue findUsers(String participantName) throws ResourceException

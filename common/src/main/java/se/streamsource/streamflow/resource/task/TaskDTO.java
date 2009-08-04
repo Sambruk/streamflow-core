@@ -18,7 +18,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.label.LabelListDTO;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import java.util.Date;
 
@@ -38,7 +38,7 @@ public interface TaskDTO
 
     Property<TaskStates> status();
 
-    Property<LabelListDTO> labels();
+    Property<ListValue> labels();
 
     Property<Boolean> isRead();
 }

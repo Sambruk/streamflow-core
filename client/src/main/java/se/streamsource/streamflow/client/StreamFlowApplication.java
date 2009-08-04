@@ -38,7 +38,9 @@ import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.MenuView;
@@ -46,6 +48,7 @@ import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.AddCommentDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 
 import javax.swing.JFrame;
@@ -100,9 +103,9 @@ public class StreamFlowApplication
 
         getContext().getResourceManager().setApplicationBundleNames(Arrays.asList("se.streamsource.streamflow.client.resources.StreamFlowApplication"));
 
-        workspaceWindow = new JXFrame();
+        workspaceWindow = new JXFrame(i18n.text(WorkspaceResources.window_name));
 
-        administrationWindow = new JXFrame();
+        administrationWindow = new JXFrame(i18n.text(AdministrationResources.window_name));
 
         workspaceWindow.setLocationByPlatform(true);
 

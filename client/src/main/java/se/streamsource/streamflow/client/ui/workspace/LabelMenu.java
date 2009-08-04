@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.resource.label.LabelDTO;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 
 import javax.swing.AbstractAction;
@@ -72,11 +72,11 @@ public class LabelMenu
         if (task == null)
             return;
 
-        List<LabelDTO> labels = task.labels().get().labels().get();
+        List<ListItemValue> labels = task.labels().get().items().get();
         int size = labelsModel.getSize();
         for (int i = 0; i < size; i++)
         {
-            final LabelDTO label = labelsModel.getElementAt(i);
+            final ListItemValue label = labelsModel.getElementAt(i);
             JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem(new AbstractAction(label.description().get())
             {
                 public void actionPerformed(ActionEvent e)
@@ -110,9 +110,9 @@ public class LabelMenu
                 }
             });
             boolean state = false;
-            for (LabelDTO labelDTO : labels)
+            for (ListItemValue labelDTO : labels)
             {
-                if (labelDTO.label().get().equals(label.label().get()))
+                if (labelDTO.entity().get().equals(label.entity().get()))
                     state = true;
             }
             checkBoxMenuItem.setState(state);

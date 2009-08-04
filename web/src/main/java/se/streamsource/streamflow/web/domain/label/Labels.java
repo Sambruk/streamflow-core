@@ -29,6 +29,8 @@ public interface Labels
 {
     Label newLabel();
 
+    void removeLabel(Label label);
+
     Iterable<Label> getLabels();
 
     interface LabelsState
@@ -51,6 +53,14 @@ public interface Labels
             Label label = uow.newEntity(Label.class);
             state.labels().add(state.labels().count(), label);
             return label;
+        }
+
+        public void removeLabel(Label label)
+        {
+            if (state.labels().remove(label))
+            {
+                uowf.currentUnitOfWork().remove(label);
+            }
         }
 
         public Iterable<Label> getLabels()

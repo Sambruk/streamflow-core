@@ -12,20 +12,27 @@
  *
  */
 
-package se.streamsource.streamflow.resource.label;
+package se.streamsource.streamflow.client.resource;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.Context;
+import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 /**
  * JAVADOC
  */
-public interface LabelListDTO
-        extends ValueComposite
+public class LabelClientResource
+    extends CommandQueryClientResource
 {
-    @UseDefaults
-    Property<List<LabelDTO>> labels();
+    public LabelClientResource(@Uses Context context, @Uses Reference reference)
+    {
+        super(context, reference);
+    }
+
+    public void describe(DescriptionDTO descriptionValue) throws ResourceException
+    {
+        putCommand("describe", descriptionValue);
+    }
 }

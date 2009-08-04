@@ -87,8 +87,6 @@ public class ProjectServerResource
 
         projects.removeProject(projectEntity);
 
-        uow.remove(projectEntity);
-
         try
         {
             uow.complete();

@@ -17,8 +17,8 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
@@ -26,6 +26,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
@@ -56,6 +57,15 @@ public class ProjectsModel
         protected ProjectMembersModel newModel(String key)
         {
             return obf.newObjectBuilder(ProjectMembersModel.class).use(projects.project(key).members(), organizationModel).newInstance();
+        }
+    };
+
+    WeakModelMap<String, LabelsModel> projectLabelsModels = new WeakModelMap<String, LabelsModel>()
+    {
+        @Override
+        protected LabelsModel newModel(String key)
+        {
+            return obf.newObjectBuilder(LabelsModel.class).use(projects.project(key).labels()).newInstance();
         }
     };
 
@@ -97,6 +107,11 @@ public class ProjectsModel
     public ProjectMembersModel getProjectMembersModel(String id)
     {
         return projectMembersModels.get(id);
+    }
+
+    public LabelsModel getLabelsModel(String id)
+    {
+        return projectLabelsModels.get(id);
     }
 
     public void newProject(String projectName)

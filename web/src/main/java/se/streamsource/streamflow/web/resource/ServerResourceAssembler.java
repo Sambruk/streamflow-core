@@ -26,6 +26,7 @@ import se.streamsource.streamflow.web.resource.organizations.groups.participants
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRoleServerResource;
@@ -53,7 +54,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.UserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.labels.UserLabelsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
@@ -78,8 +79,6 @@ public class ServerResourceAssembler
 
                 WorkspaceServerResource.class,
                 WorkspaceUserServerResource.class,
-
-                UserLabelsServerResource.class,
 
                 UserInboxServerResource.class,
                 UserInboxTaskServerResource.class,
@@ -106,6 +105,8 @@ public class ServerResourceAssembler
                 ProjectDelegatedTaskServerResource.class,
                 ProjectWaitingForServerResource.class,
                 ProjectWaitingForTaskServerResource.class,
+                LabelsServerResource.class,
+                LabelServerResource.class,
 
 
                 // /organizations

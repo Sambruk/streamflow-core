@@ -14,14 +14,29 @@
 
 package se.streamsource.streamflow.client.resource;
 
-import se.streamsource.streamflow.resource.label.LabelListDTO;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.Context;
+import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * JAVADOC
  */
-public interface LabelsClientResource
+public class LabelsClientResource
+        extends CommandQueryClientResource
 {
-    public LabelListDTO labels() throws ResourceException;
+    public LabelsClientResource(@Uses Context context, @Uses Reference reference)
+    {
+        super(context, reference);
+    }
+    public ListValue labels() throws ResourceException
+    {
+        return query("labels", ListValue.class);
+    }
 
+    public LabelClientResource label(String id)
+    {
+        return getSubResource(id, LabelClientResource.class);
+    }
 }

@@ -14,22 +14,22 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace;
 
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.task.Inbox;
-import se.streamsource.streamflow.web.domain.task.Task;
-import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.label.Label;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
-import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
-import se.streamsource.streamflow.resource.label.LabelDTO;
-import se.streamsource.streamflow.resource.label.LabelListDTO;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.task.NewTaskCommand;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
+import se.streamsource.streamflow.web.domain.label.Label;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
 
@@ -52,8 +52,8 @@ public class AbstractTaskListServerResource
         Property<List<V>> property = t.tasks();
         List<V> list = property.get();
         EntityReference ref = EntityReference.parseEntityReference(id);
-        ValueBuilder<LabelDTO> labelBuilder = vbf.newValueBuilder(LabelDTO.class);
-        LabelDTO labelPrototype = labelBuilder.prototype();
+        ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder(ListItemValue.class);
+        ListItemValue labelPrototype = labelBuilder.prototype();
         for (TaskEntity task : inboxQuery)
         {
             buildTask(prototype, ref, labelBuilder, labelPrototype, task);
@@ -63,7 +63,7 @@ public class AbstractTaskListServerResource
         return listBuilder.newInstance();
     }
 
-    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, EntityReference ref, ValueBuilder<LabelDTO> labelBuilder, LabelDTO labelPrototype, TaskEntity task)
+    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, EntityReference ref, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
     {
         prototype.owner().set(ref);
         prototype.task().set(EntityReference.getEntityReference(task));
@@ -72,11 +72,11 @@ public class AbstractTaskListServerResource
         prototype.status().set(task.status().get());
         prototype.isRead().set(task.isRead().get());
 
-        ValueBuilder<LabelListDTO> labelListBuilder = vbf.newValueBuilder(LabelListDTO.class);
-        List<LabelDTO> labelList = labelListBuilder.prototype().labels().get();
+        ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder(ListValue.class);
+        List<ListItemValue> labelList = labelListBuilder.prototype().items().get();
         for (Label label : task.labels())
         {
-            labelPrototype.label().set(EntityReference.getEntityReference(label));
+            labelPrototype.entity().set(EntityReference.getEntityReference(label));
             labelPrototype.description().set(label.getDescription());
             labelList.add(labelBuilder.newInstance());
         }

@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 /**
  * i18n resources for the "Workspace" view
  */
-enum WorkspaceResources
+public enum WorkspaceResources
 {
     inbox_node,
 
@@ -63,5 +63,5 @@ enum WorkspaceResources
 
     add_comment_title,
 
-    is_completed
+    window_name, is_completed
 }
