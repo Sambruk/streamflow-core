@@ -49,10 +49,6 @@ public class AdministrationAssembler
                 AccountView.class);
         UIAssemblers.addTasks(module, TestConnectionTask.class);
 
-        UIAssemblers.addDialogs(module,
-                SelectUsersAndGroupsDialog.class);
-
-
         // Other administration modules
         new GroupAdministrationAssembler().assemble(module.layerAssembly().newModuleAssembly("Groups"));
         new ProjectAdministrationAssembler().assemble(module.layerAssembly().newModuleAssembly("Projects"));

@@ -17,15 +17,20 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 import javax.swing.AbstractListModel;
+import java.util.List;
 
 /**
  * List of projects in a OU
@@ -36,15 +41,21 @@ public class ProjectsModel
     @Structure
     ObjectBuilderFactory obf;
 
+    @Structure
+    ValueBuilderFactory vbf;
+
+    @Uses
+    OrganizationalUnitAdministrationModel organizationModel;
+
     ProjectsClientResource projects;
-    private ListValue list;
+    private List<ListItemValue> list;
 
     WeakModelMap<String, ProjectMembersModel> projectMembersModels = new WeakModelMap<String, ProjectMembersModel>()
     {
         @Override
         protected ProjectMembersModel newModel(String key)
         {
-            return obf.newObjectBuilder(ProjectMembersModel.class).use(projects.project(key)).newInstance();
+            return obf.newObjectBuilder(ProjectMembersModel.class).use(projects.project(key).members(), organizationModel).newInstance();
         }
     };
 
@@ -55,23 +66,20 @@ public class ProjectsModel
 
     public int getSize()
     {
-        return list == null ? 0 : list.items().get().size();
+        return list == null ? 0 : list.size();
     }
 
     public Object getElementAt(int index)
     {
-        return list.items().get().get(index);
+        return list.get(index);
     }
 
-    private void refresh()
+    public void refresh() throws ResourceException
     {
-        try
-        {
-            list = projects.projects();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_projects, e);
-        }
+        // Get Project list
+        list = projects.projects().items().get();
+
+        fireContentsChanged(this, 0, list.size());
     }
 
     public void removeProject(String id)
@@ -102,5 +110,15 @@ public class ProjectsModel
             throw new OperationException(AdministrationResources.could_not_create_project, e);
         }
 
+    }
+
+    public void describe(int selectedIndex, String newName) throws ResourceException
+    {
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+        builder.prototype().description().set(newName);
+
+        projects.project(list.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
+        
+        refresh();
     }
 }

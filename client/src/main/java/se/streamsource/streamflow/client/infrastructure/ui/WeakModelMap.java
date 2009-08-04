@@ -16,13 +16,17 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * Map that helps maintain models. The model instances are weakly referenced
  * so that they may be GC'ed if noone is using them outside of the map.
  */
 public abstract class WeakModelMap<K, V>
+    implements Iterable<V>
 {
     Map<K, WeakReference<V>> models = new HashMap<K, WeakReference<V>>();
 
@@ -52,4 +56,20 @@ public abstract class WeakModelMap<K, V>
      * @return new model
      */
     abstract protected V newModel(K key);
+
+    public void clear()
+    {
+        models.clear();
+    }
+
+    public Iterator<V> iterator()
+    {
+        List<V> list = new ArrayList<V>();
+        for (WeakReference<V> vWeakReference : models.values())
+        {
+            if (vWeakReference.get() != null)
+                list.add(vWeakReference.get());
+        }
+        return list.iterator();
+    }
 }

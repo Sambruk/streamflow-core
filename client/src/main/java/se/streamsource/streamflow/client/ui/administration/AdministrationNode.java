@@ -19,20 +19,18 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.Accounts;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.ui.DetailView;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.tree.TreeNode;
-import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  * JAVADOC
  */
 public class AdministrationNode
-        implements DetailView, TreeNode
+        implements TreeNode, Refreshable
 {
     @Structure ObjectBuilderFactory obf;
 
@@ -88,11 +86,26 @@ public class AdministrationNode
 
     public Enumeration children()
     {
-        return Collections.enumeration(Collections.emptyList());
+        final Iterator<AccountAdministrationNode> administrationNodeIterator = models.iterator();
+        return new Enumeration()
+        {
+            public boolean hasMoreElements()
+            {
+                return administrationNodeIterator.hasNext();
+            }
+
+            public Object nextElement()
+            {
+                return administrationNodeIterator.next();
+            }
+        };
     }
 
-    public JComponent detailView()
+    public void refresh() throws Exception
     {
-        return new JLabel("Administration");
+        for (AccountAdministrationNode model : models)
+        {
+            model.refresh();
+        }
     }
 }

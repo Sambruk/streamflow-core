@@ -23,6 +23,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * Mapped to:
@@ -31,6 +33,14 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class GroupServerResource
         extends CommandQueryServerResource
 {
+    public void describe(DescriptionDTO descriptionValue)
+    {
+        String taskId = (String) getRequest().getAttributes().get("group");
+        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
+
+        describable.describe(descriptionValue.description().get());
+    }
+
     // TODO before deleting look through all projects and groups containing the group
     @Override
     protected Representation delete(Variant variant) throws ResourceException

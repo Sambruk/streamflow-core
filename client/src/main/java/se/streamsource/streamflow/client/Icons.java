@@ -26,6 +26,7 @@ public enum Icons
 
     user,
     projects,
+    project,
 
     assign,
     delegate,
@@ -38,5 +39,9 @@ public enum Icons
     general,
     metadata,
     comments,
-    attachments
+    attachments,
+
+    // Admin
+    account,
+    organization
 }

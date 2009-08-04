@@ -103,7 +103,7 @@ public class SelectUsersAndGroupsDialog
     public void execute()
     {
         usersAndGroups = ((TableMultipleSelectionModel)addUsersView.getModel()).getSelected();
-        usersAndGroups.addAll(((TableMultipleSelectionModel)addUsersView.getModel()).getSelected());
+        usersAndGroups.addAll(((TableMultipleSelectionModel)addGroupsView.getModel()).getSelected());
 
         WindowUtils.findWindow(this).dispose();
     }

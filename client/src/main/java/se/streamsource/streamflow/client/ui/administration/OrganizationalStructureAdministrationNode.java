@@ -21,10 +21,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 
-import javax.swing.JComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
@@ -33,7 +31,6 @@ import javax.swing.tree.TreeNode;
  */
 public class OrganizationalStructureAdministrationNode
         extends DefaultMutableTreeNode
-        implements DetailView
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -76,8 +73,8 @@ public class OrganizationalStructureAdministrationNode
         return (TreeNodeValue) getUserObject();
     }
 
-    public JComponent detailView()
+    public OrganizationalUnitAdministrationModel model()
     {
-        return obf.newObjectBuilder(OrganizationalUnitAdministrationView.class).use(model).newInstance();
+        return model;
     }
 }

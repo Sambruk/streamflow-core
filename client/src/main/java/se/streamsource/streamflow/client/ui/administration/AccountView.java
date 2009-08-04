@@ -22,23 +22,16 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
-import org.qi4j.api.common.MetaInfo;
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.entity.Entity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.property.AbstractPropertyInstance;
-import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.domain.individual.AccountConnection;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.ConnectionException;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.domain.individual.RegistrationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
@@ -75,8 +68,6 @@ public class AccountView
     @Service
     private DialogService dialogs;
 
-    @Service
-    IndividualRepository individualRepository;
     private ValueBuilder<AccountSettingsValue> builder;
     private StateBinder settingsBinder;
     private StateBinder connectedBinder;
@@ -135,6 +126,7 @@ public class AccountView
 
                 .appendSeparator(connected_separator);
 
+/*
         bb = new BindingFormBuilder(builder, connectedBinder);
         bb.appendLine(connected_separator, CHECKBOX, new AbstractPropertyInstance<Boolean>(new GenericPropertyInfo(new MetaInfo(), false, false, QualifiedName.fromClass(AccountConnection.class, "connected"), Boolean.class))
         {
@@ -145,7 +137,6 @@ public class AccountView
 
             public void set(Boolean newValue) throws IllegalArgumentException, IllegalStateException
             {
-/*
                 if (newValue)
                     try
                     {
@@ -156,9 +147,9 @@ public class AccountView
                     }
                 else
                     model.account().disconnect();
-*/
             }
         });
+*/
 
         setViewportView(panel);
     }
@@ -206,8 +197,7 @@ public class AccountView
             editor.view();
 
             // Update settings
-            model.account().updateSettings(builder.newInstance());
-            ((Entity)model.account()).unitOfWork().apply();
+            model.updateSettings(builder.newInstance());
         }
     }
 
@@ -232,10 +222,10 @@ public class AccountView
     {
         super.addNotify();
 
-        builder = model.account().settings().buildWith();
+        builder = model.settings().buildWith();
         settingsBinder.updateWith(builder.prototype());
         connectedBinder.update();
 
-        getActionMap().get("register").setEnabled(!model.account().isRegistered());
+        getActionMap().get("register").setEnabled(!model.isRegistered());
     }
 }

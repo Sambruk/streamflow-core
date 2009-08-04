@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.ui.administration.roles;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
@@ -40,7 +39,7 @@ public class RolesView
     @Service
     DialogService dialogs;
 
-    @Structure
+    @Uses
     Iterable<NameDialog> nameDialogs;
 
     public JList projectList;

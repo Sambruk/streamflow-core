@@ -38,7 +38,7 @@ public class StreamFlowClientResource
         return "0.1"; //
     }
 
-    public UsersClientResource users() throws ResourceException
+    public UsersClientResource users()
     {
         return getSubResource("users", UsersClientResource.class);
     }

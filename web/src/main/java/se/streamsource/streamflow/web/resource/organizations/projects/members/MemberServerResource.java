@@ -46,7 +46,7 @@ public class MemberServerResource
         String id = getRequest().getAttributes().get("project").toString();
         Project project = uow.get(Project.class, id);
 
-        project.addMember(participant);
+        project.newMember(participant);
 
         try
         {

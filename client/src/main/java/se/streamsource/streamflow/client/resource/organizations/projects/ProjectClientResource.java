@@ -16,9 +16,11 @@ package se.streamsource.streamflow.client.resource.organizations.projects;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
+import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 /**
  * JAVADOC
@@ -36,4 +38,8 @@ public class ProjectClientResource
         return getSubResource("members", MembersClientResource.class);
     }
 
+    public void describe(DescriptionDTO descriptionValue) throws ResourceException
+    {
+        putCommand("describe", descriptionValue);
+    }
 }

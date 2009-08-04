@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListModel;
@@ -41,13 +42,15 @@ public class ProjectAdminView
     @Uses
     ProjectsModel projectsModel;
 
+    @Uses
+    OrganizationalUnitAdministrationModel organizationModel;
+
     @Service
     DialogService dialogs;
     public JList groupList;
     public DefaultListModel listModel;
 
-    public ProjectAdminView(@Uses final ProjectsView projectsView,
-                            @Uses final ProjectMembersModel projectMembersModel)
+    public ProjectAdminView(@Uses final ProjectsView projectsView)
     {
         super();
 
@@ -68,14 +71,14 @@ public class ProjectAdminView
                     {
                         ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt(idx);
                         ProjectMembersModel projectMembersModel = projectsModel.getProjectMembersModel(projectValue.entity().get().identity());
-                        ProjectView view = obf.newObjectBuilder(ProjectView.class).use(projectMembersModel).newInstance();
+                        projectMembersModel.refresh();
+                        ProjectView view = obf.newObjectBuilder(ProjectView.class).use(projectMembersModel, organizationModel).newInstance();
                         setRightComponent(view);
                     } else
                     {
                         setRightComponent(new JPanel());
                     }
                 }
-                getRightComponent().addNotify();
             }
         });
     }

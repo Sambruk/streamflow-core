@@ -109,6 +109,8 @@ public class WorkspaceView
                     {
                         if (o instanceof UserNode)
                             return i18n.icon(Icons.user, i18n.ICON_24);
+                        else if (o instanceof ProjectNode)
+                            return i18n.icon(Icons.project, i18n.ICON_24);
                         else if (o instanceof ProjectsNode)
                             return i18n.icon(Icons.projects, i18n.ICON_24);
                         else if (o instanceof UserInboxNode || o instanceof ProjectInboxNode)

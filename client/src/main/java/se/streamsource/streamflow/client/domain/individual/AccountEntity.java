@@ -91,6 +91,7 @@ public interface AccountEntity
         public void updateSettings(AccountSettingsValue newAccountSettings)
         {
             state.settings().set(newAccountSettings);
+            description.describe(newAccountSettings.name().get());
         }
 
         // AccountRegistration
@@ -135,7 +136,7 @@ public interface AccountEntity
             return obf.newObjectBuilder(StreamFlowClientResource.class).use(childContext, serverRef).newInstance();
         }
 
-        public UserClientResource user(Restlet client) throws ResourceException
+        public UserClientResource user(Restlet client)
         {
             return server(client).users().user(settings().userName().get());
         }

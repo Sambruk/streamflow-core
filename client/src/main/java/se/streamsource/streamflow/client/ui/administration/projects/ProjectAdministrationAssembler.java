@@ -18,7 +18,6 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.members.*;
 
 /**
  * JAVADOC
@@ -28,8 +27,6 @@ public class ProjectAdministrationAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        UIAssemblers.addModels(module, TableMultipleSelectionModel.class);
-
         UIAssemblers.addViews(module, ProjectAdminView.class);
 
 

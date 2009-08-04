@@ -15,9 +15,12 @@
 package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 import java.util.List;
 
@@ -27,7 +30,7 @@ import java.util.List;
 @Mixins(Roles.RolesMixin.class)
 public interface Roles
 {
-    void addRole(Role role);
+    Role newRole(String name);
 
     void removeRole(Role role);
 
@@ -47,9 +50,19 @@ public interface Roles
         @This
         RolesState state;
 
-        public void addRole(Role role)
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        public Role newRole(String name)
         {
+            // Create role
+            EntityBuilder<RoleEntity> roleBuilder = uowf.currentUnitOfWork().newEntityBuilder(RoleEntity.class);
+            roleBuilder.prototype().describe(name);
+            Role role = roleBuilder.newInstance();
+
             state.roles().add(state.roles().count(), role);
+
+            return role;
         }
 
         public void removeRole(Role role)

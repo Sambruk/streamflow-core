@@ -18,6 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
@@ -27,6 +28,7 @@ import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
  * JAVADOC
  */
 public class OrganizationalUnitAdministrationModel
+    implements Refreshable
 {
     private GroupsModel groupsModel;
     private ProjectsModel projectsModel;
@@ -37,7 +39,7 @@ public class OrganizationalUnitAdministrationModel
     {
         this.organization = organization;
         groupsModel = obf.newObjectBuilder(GroupsModel.class).use(organization.groups()).newInstance();
-        projectsModel = obf.newObjectBuilder(ProjectsModel.class).use(organization.projects()).newInstance();
+        projectsModel = obf.newObjectBuilder(ProjectsModel.class).use(organization.projects(), this).newInstance();
         rolesModel = obf.newObjectBuilder(RolesModel.class).use(organization.roles()).newInstance();
     }
 
@@ -59,5 +61,12 @@ public class OrganizationalUnitAdministrationModel
     public RolesModel rolesModel()
     {
         return rolesModel;
+    }
+
+    public void refresh() throws ResourceException
+    {
+        groupsModel.refresh();
+        projectsModel.refresh();
+        rolesModel.refresh();
     }
 }

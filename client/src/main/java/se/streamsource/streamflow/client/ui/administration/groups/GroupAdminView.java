@@ -16,6 +16,9 @@ package se.streamsource.streamflow.client.ui.administration.groups;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JList;
@@ -31,6 +34,7 @@ import javax.swing.event.ListSelectionListener;
 public class GroupAdminView
         extends JSplitPane
 {
+    @Uses 
     ObjectBuilder<GroupView> groupView;
 
     public GroupAdminView(@Uses GroupsView groupsView,
@@ -54,6 +58,13 @@ public class GroupAdminView
                 else
                 {
                     setRightComponent(groupView.use(groupsModel.getGroupModel(groupValue.entity().get().identity())).newInstance());
+                    try
+                    {
+                        groupsModel.refresh();
+                    } catch (ResourceException e1)
+                    {
+                        throw new OperationException(AdministrationResources.could_not_refresh_list_of_groups, e1);
+                    }
                 }
             }
         });

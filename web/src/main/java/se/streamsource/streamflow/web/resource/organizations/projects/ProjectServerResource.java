@@ -30,6 +30,7 @@ import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.project.*;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * Mapped to:
@@ -64,6 +65,13 @@ public class ProjectServerResource
         return builder.newInstance();
     }
 
+    public void describe(DescriptionDTO descriptionValue)
+    {
+        String taskId = (String) getRequest().getAttributes().get("project");
+        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
+
+        describable.describe(descriptionValue.description().get());
+    }
 
     @Override
     protected Representation delete(Variant variant) throws ResourceException

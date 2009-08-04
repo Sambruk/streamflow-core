@@ -47,7 +47,7 @@ public class TestConnectionTask extends Task<String, Void>
         Logger.getLogger(LoggerCategories.PROGRESS).info("50/100");
         try
         {
-            return model.account().server(client).version();
+            return model.test();
         } finally
         {
             Logger.getLogger(LoggerCategories.PROGRESS).info("100/100");

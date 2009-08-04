@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.domain.individual;
 
 import org.restlet.Restlet;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 
@@ -26,7 +25,7 @@ public interface AccountConnection
 {
     StreamFlowClientResource server(Restlet client);
 
-    UserClientResource user(Restlet client) throws ResourceException;
+    UserClientResource user(Restlet client);
 
     boolean isEnabled();
 

@@ -24,7 +24,6 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 
 /**
  * JAVADOC
@@ -49,9 +48,16 @@ public class AdministrationModel
         super(root.use(individualRepository.individual()).newInstance());
     }
 
-    public void refresh()
+    @Override
+    public AdministrationNode getRoot()
     {
-        reload((TreeNode) getRoot());
+        return (AdministrationNode) super.getRoot();
+    }
+
+    public void refresh() throws Exception
+    {
+        getRoot().refresh();
+        reload(getRoot());
     }
 
     public AccountAdministrationNode accountAdministration(Account account)

@@ -14,16 +14,26 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import org.qi4j.api.entity.Entity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.restlet.Restlet;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.RegistrationException;
+import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
+import se.streamsource.streamflow.client.resource.users.UserClientResource;
+import se.streamsource.streamflow.infrastructure.application.TreeValue;
+
+import java.util.Observable;
 
 /**
  * JAVADOC
  */
 public class AccountModel
+    extends Observable
 {
     @Service
     Restlet client;
@@ -31,9 +41,17 @@ public class AccountModel
     @Uses
     Account account;
 
-    public Account account()
+    public AccountSettingsValue settings()
     {
-        return account;
+        return account.settings();
+    }
+
+    public void updateSettings(AccountSettingsValue value) throws UnitOfWorkCompletionException
+    {
+        account.updateSettings(value);
+        ((Entity)account).unitOfWork().apply();
+        setChanged();
+        notifyObservers();
     }
 
     public void register() throws RegistrationException
@@ -41,8 +59,28 @@ public class AccountModel
         account.register(client);
     }
 
-    public void setAccount(Account account)
+    public String test()
     {
-        this.account = account;
+        return account.server(client).version();
+    }
+
+    public boolean isRegistered()
+    {
+        return account.isRegistered();
+    }
+
+    public UserClientResource userResource()
+    {
+        return account.user(client);
+    }
+
+    public StreamFlowClientResource serverResource()
+    {
+        return account.server(client);
+    }
+
+    public TreeValue organizations() throws ResourceException
+    {
+        return account.user(client).administration().organizations();
     }
 }

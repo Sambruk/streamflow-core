@@ -21,6 +21,8 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
+import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 import javax.swing.ActionMap;
@@ -45,5 +47,7 @@ public class UIAssembler
 
         UIAssemblers.addDialogs(module, NameDialog.class, SelectUsersAndGroupsDialog.class);
 
+        UIAssemblers.addModels(module, TableMultipleSelectionModel.class,
+                TableSingleSelectionModel.class);
     }
 }

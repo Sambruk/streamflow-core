@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.administration.groups;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -45,11 +46,12 @@ public class GroupView
 
     private GroupModel model;
 
-    public GroupView(@Service ActionMap am, @Uses GroupModel model)
+    public GroupView(@Service ApplicationContext context, @Uses GroupModel model)
     {
         super(new BorderLayout());
         this.model = model;
 
+        ActionMap am = context.getActionMap(this);
         setActionMap(am);
 
         participantList = new JList(model);

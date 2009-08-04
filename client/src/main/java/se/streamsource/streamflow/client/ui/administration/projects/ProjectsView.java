@@ -17,9 +17,10 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -28,6 +29,7 @@ import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
 
 /**
@@ -38,13 +40,13 @@ public class ProjectsView
 {
     ProjectsModel model;
 
-    @Structure
+    @Uses
     Iterable<NameDialog> nameDialogs;
 
     @Service
     DialogService dialogs;
 
-    public JList projectList;
+    public JListPopup projectList;
 
     public ProjectsView(@Service ApplicationContext context, @Uses ProjectsModel model)
     {
@@ -54,8 +56,10 @@ public class ProjectsView
         ActionMap am = context.getActionMap(this);
         setActionMap(am);
 
-        projectList = new JList(model);
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(am.get("rename"));
 
+        projectList = new JListPopup(model, popup);
         projectList.setCellRenderer(new ListItemCellRenderer());
         add(projectList, BorderLayout.CENTER);
 
@@ -83,6 +87,18 @@ public class ProjectsView
     {
         ListItemValue selected = (ListItemValue) projectList.getSelectedValue();
         model.removeProject(selected.entity().get().identity());
+    }
+
+    @Action
+    public void rename() throws ResourceException
+    {
+        NameDialog dialog = nameDialogs.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        if (dialog.name() != null)
+        {
+            model.describe(projectList.getSelectedIndex(), dialog.name());
+        }
     }
 
     public JList getProjectList()

@@ -103,7 +103,7 @@ public class MemberRolesModel
     {
         try
         {
-            allRoles = organizationModel.getOrganization().roles().roles().items().get();
+            allRoles = organizationModel.getOrganization().roles().roles().<ListValue>buildWith().prototype().items().get();
             memberRoles = member.roles().roles().<ListValue>buildWith().prototype();
             fireTableDataChanged();
         } catch (ResourceException e)

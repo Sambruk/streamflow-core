@@ -23,10 +23,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.web.domain.project.Role;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
@@ -67,10 +67,11 @@ public interface TestDataService
             ou.createOrganizationalUnit("Realway");
 
             // Create groups
-            Groups jaywayGroups = (Groups) jayway;
-            jaywayGroups.newGroup("Developers");
-            jaywayGroups.newGroup("Project leaders");
-            jaywayGroups.newGroup("Testers");
+            ou.newGroup("Developers");
+            ou.newGroup("Project leaders");
+            ou.newGroup("Testers");
+
+            Role developer = ou.newRole("Developer");
 
             // Create tasks
             for (int i = 0; i < 100; i++)
@@ -88,7 +89,8 @@ public interface TestDataService
             // Create project 'Expert Handläggare'
             ou.newProject("Experts");
 
-            project.addMember(user);
+            project.newMember(user);
+            project.addRole(user, developer);
 
             // Create tasks
             for (int i = 0; i < 100; i++)

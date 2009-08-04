@@ -19,13 +19,14 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.DetailView;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
 import java.awt.Dimension;
 
 /**
@@ -51,23 +52,39 @@ public class AdministrationView
 
         setDividerLocation(200);
         setResizeWeight(0);
-
         adminOutlineView.getTree().addTreeSelectionListener(new TreeSelectionListener()
         {
             public void valueChanged(TreeSelectionEvent e)
             {
-                if (e.getPath() != null)
+                final TreePath path = e.getNewLeadSelectionPath();
+                if (path != null)
                 {
-                    final DetailView admin = (DetailView) e.getPath().getLastPathComponent();
+                    Object node = path.getLastPathComponent();
 
-                    try
+                    JComponent view = new JPanel();
+
+                    if (node instanceof AccountAdministrationNode)
                     {
-                        JComponent detail = admin.detailView();
-                        setRightComponent(detail);
-                    } catch (ResourceException e1)
+                        AccountAdministrationNode accountAdmin = (AccountAdministrationNode) node;
+                        view = obf.newObjectBuilder(AccountView.class).use(accountAdmin.accountModel()).newInstance();
+                    } else if (node instanceof OrganizationalStructureAdministrationNode)
                     {
-                        e1.printStackTrace();
+                        OrganizationalStructureAdministrationNode ouNode = (OrganizationalStructureAdministrationNode) node;
+                        OrganizationalUnitAdministrationModel ouAdminModel = ouNode.model();
+                        try
+                        {
+                            ouAdminModel.refresh();
+                        } catch (ResourceException e1)
+                        {
+                            e1.printStackTrace();
+                        }
+                        view = obf.newObjectBuilder(OrganizationalUnitAdministrationView.class).use(ouAdminModel,
+                                                                                                    ouAdminModel.groupsModel(),
+                                                                                                    ouAdminModel.projectsModel(),
+                                                                                                    ouAdminModel.rolesModel()).newInstance();
                     }
+
+                    setRightComponent(view);
                 }
             }
         });

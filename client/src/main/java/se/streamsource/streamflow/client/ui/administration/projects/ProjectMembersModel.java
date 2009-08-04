@@ -21,9 +21,11 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 
@@ -36,17 +38,13 @@ import java.util.Set;
  * JAVADOC
  */
 public class ProjectMembersModel
-        implements TreeModel
+        implements TreeModel, Refreshable
 {
-    @Uses private ProjectClientResource project;
+    @Uses private MembersClientResource members;
+    @Uses OrganizationalUnitAdministrationModel ouAdminModel;
 
     @Structure
     ObjectBuilderFactory obf;
-
-    public ProjectClientResource getProject()
-    {
-        return project;
-    }
 
     private TreeValue root;
     private TreeModelSupport modelSupport = new TreeModelSupport(this);
@@ -114,11 +112,11 @@ public class ProjectMembersModel
         modelSupport.removeTreeModelListener(l);
     }
 
-    private void refresh()
+    public void refresh()
     {
         try
         {
-            root = project.members().memberRoles();
+            root = members.memberRoles();
             modelSupport.fireNewRoot();
         } catch (ResourceException e)
         {
@@ -126,13 +124,13 @@ public class ProjectMembersModel
         }
     }
 
-    public void addMembers(Set<String> members)
+    public void addMembers(Set<String> newMembers)
     {
         try
         {
-            for (String value: members)
+            for (String value: newMembers)
             {
-                MemberClientResource member = project.members().member(value);
+                MemberClientResource member = this.members.member(value);
                 member.put(null);
             }
             refresh();
@@ -146,7 +144,7 @@ public class ProjectMembersModel
     {
         try
         {
-            project.members().member(entityReference.identity()).delete();
+            members.member(entityReference.identity()).delete();
             refresh();
         } catch (ResourceException e)
         {
@@ -156,6 +154,7 @@ public class ProjectMembersModel
 
     public MemberRolesModel memberRolesModel(String id)
     {
-        return obf.newObjectBuilder(MemberRolesModel.class).use(project.members().member(id)).newInstance();
+        return obf.newObjectBuilder(MemberRolesModel.class).use(members.member(id),
+                ouAdminModel).newInstance();
     }
 }

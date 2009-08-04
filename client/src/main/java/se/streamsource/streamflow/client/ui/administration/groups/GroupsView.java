@@ -20,7 +20,9 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.NameDialog;
@@ -30,6 +32,7 @@ import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
 
 /**
@@ -38,6 +41,9 @@ import java.awt.BorderLayout;
 public class GroupsView
         extends JPanel
 {
+    @Uses
+    Iterable<NameDialog> nameDialogs;
+
     GroupsModel model;
 
     @Structure
@@ -46,7 +52,7 @@ public class GroupsView
     @Service
     DialogService dialogs;
 
-    public JList groupList;
+    public JListPopup groupList;
 
     public GroupsView(@Service ApplicationContext context, @Uses final GroupsModel model)
     {
@@ -56,7 +62,10 @@ public class GroupsView
         ActionMap am = context.getActionMap(this);
         setActionMap(am);
 
-        groupList = new JList(model);
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(am.get("rename"));
+
+        groupList = new JListPopup(model, popup);
 
         groupList.setCellRenderer(new ListItemCellRenderer());
 
@@ -87,6 +96,18 @@ public class GroupsView
     {
         ListItemValue selected = (ListItemValue) groupList.getSelectedValue();
         model.removeGroup(selected.entity().get().identity());
+    }
+
+    @Action
+    public void rename() throws ResourceException
+    {
+        NameDialog dialog = nameDialogs.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        if (dialog.name() != null)
+        {
+            model.describe(groupList.getSelectedIndex(), dialog.name());
+        }
     }
 
     public JList getGroupList()

@@ -28,8 +28,6 @@ public class GroupAdministrationAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        UIAssemblers.addModels(module, TableMultipleSelectionModel.class);
-
         UIAssemblers.addViews(module, GroupAdminView.class);
 
         UIAssemblers.addMV(module, GroupsModel.class,

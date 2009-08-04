@@ -14,61 +14,55 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
-import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.client.ui.DetailView;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 
-import javax.swing.JComponent;
 import javax.swing.tree.TreeNode;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
  */
 public class AccountAdministrationNode
-        implements DetailView, TreeNode, Refreshable
+        implements TreeNode, Refreshable, Observer
 {
     @Structure
-    ObjectBuilderFactory obf;
+    private ObjectBuilderFactory obf;
 
-    @Service
-    Restlet client;
-
-    @Uses
-    AccountModel accountModel;
+    private AccountModel accountModel;
 
     WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode>()
     {
         protected OrganizationalStructureAdministrationNode newModel(TreeNodeValue key)
         {
-            return obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(AccountAdministrationNode.this, resource, key).newInstance();
+            try
+            {
+                return obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(AccountAdministrationNode.this, accountModel.userResource(), accountModel.serverResource().organizations(), key).newInstance();
+            } catch (ResourceException e)
+            {
+                throw new OperationException(AdministrationResources.could_not_refresh_list_of_organizations, e);
+            }
         }
     };
 
-    public OrganizationsClientResource resource;
     private TreeNode parent;
-    private Account account;
-    public TreeValue organizations;
+    private TreeValue organizations;
 
-    public AccountAdministrationNode(@Uses TreeNode parent, @Uses Account account,
-                                     @Service Restlet client) throws ResourceException
+    public AccountAdministrationNode(@Uses TreeNode parent, @Uses AccountModel accountModel) throws ResourceException
     {
         this.parent = parent;
-        this.account = account;
-
-        resource = account.server(client).organizations();
+        this.accountModel = accountModel;
+        accountModel.addObserver(this);
     }
 
     public TreeNode getParent()
@@ -90,6 +84,11 @@ public class AccountAdministrationNode
         }
 
         return -1;
+    }
+    
+    public AccountModel accountModel()
+    {
+        return accountModel;
     }
 
     public Enumeration children()
@@ -121,14 +120,20 @@ public class AccountAdministrationNode
         return false;
     }
 
-    public JComponent detailView()
-    {
-        return obf.newObjectBuilder(AccountView.class).use(accountModel).newInstance();
-    }
-
     public void refresh() throws Exception
     {
-        UserClientResource user = account.user(client);
-        organizations = user.administration().organizations();
+        organizations = accountModel.organizations();
+        models.clear();
+    }
+
+    public void update(Observable o, Object arg)
+    {
+        try
+        {
+            refresh();
+        } catch (Exception e)
+        {
+            new OperationException(AdministrationResources.could_not_refresh_list_of_organizations, e);
+        }
     }
 }

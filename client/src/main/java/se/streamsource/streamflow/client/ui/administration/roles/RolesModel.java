@@ -36,7 +36,6 @@ public class RolesModel
     @Structure
     ValueBuilderFactory vbf;
 
-
     @Uses
     private RolesClientResource roles;
 
@@ -50,11 +49,6 @@ public class RolesModel
     public Object getElementAt(int index)
     {
         return list == null ? null : list.get(index);
-    }
-
-    public void setRoles(RolesClientResource roles)
-    {
-        this.roles = roles;
     }
 
     public void newRole(String description)

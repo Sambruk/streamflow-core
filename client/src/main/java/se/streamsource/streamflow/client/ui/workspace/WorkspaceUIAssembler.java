@@ -45,8 +45,6 @@ public class WorkspaceUIAssembler
                 ProjectWaitingForNode.class,
                 LabelMenu.class);
 
-        UIAssemblers.addModels(module, TableMultipleSelectionModel.class,
-                TableSingleSelectionModel.class);
         UIAssemblers.addViews(module, TableSelectionView.class);
 
         UIAssemblers.addModels(module, LabelsModel.class);

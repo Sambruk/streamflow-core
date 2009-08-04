@@ -15,23 +15,29 @@
 package se.streamsource.streamflow.client.ui.administration.groups;
 
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
-import javax.swing.DefaultListModel;
+import javax.swing.AbstractListModel;
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class GroupsModel
-        extends DefaultListModel
+        extends AbstractListModel
+        implements Refreshable
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -44,23 +50,20 @@ public class GroupsModel
         @Override
         protected GroupModel newModel(String key)
         {
-            return obf.newObjectBuilder(GroupModel.class).use(groups.group(key)).newInstance();
+            return obf.newObjectBuilder(GroupModel.class).use(groupsResource.group(key)).newInstance();
         }
     };
 
-    private GroupsClientResource groups;
+    @Uses
+    private GroupsClientResource groupsResource;
 
-    public void setGroups(GroupsClientResource groupsResource)
-    {
-        this.groups = groupsResource;
-        refresh();
-    }
+    private List<ListItemValue> groups;
 
     public void newGroup(String description)
     {
         try
         {
-            groups.post(new StringRepresentation(description));
+            groupsResource.post(new StringRepresentation(description));
             refresh();
         } catch (ResourceException e)
         {
@@ -72,7 +75,7 @@ public class GroupsModel
     {
         try
         {
-            groups.group(id).delete();
+            groupsResource.group(id).delete();
             refresh();
         } catch (ResourceException e)
         {
@@ -80,24 +83,37 @@ public class GroupsModel
         }
     }
 
-    private void refresh()
+    public int getSize()
     {
-        clear();
-        try
-        {
-            for (ListItemValue value : groups.groups().items().get())
-            {
-                addElement(value);
-            }
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_groups, e);
-        }
+        return groups == null ? 0 : groups.size();
+    }
+
+    public Object getElementAt(int index)
+    {
+        return groups == null ? null : groups.get(index);
+    }
+
+    public void refresh() throws ResourceException
+    {
+        // Get label list
+        groups = groupsResource.groups().items().get();
+
+        fireContentsChanged(this, 0, groups.size());
     }
 
 
     public GroupModel getGroupModel(String id)
     {
         return groupModels.get(id);
+    }
+
+    public void describe(int selectedIndex, String newName) throws ResourceException
+    {
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+        builder.prototype().description().set(newName);
+
+        groupsResource.group(groups.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
+
+        refresh();
     }
 }

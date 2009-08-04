@@ -32,7 +32,7 @@ public class UsersClientResource
         super(context, reference);
     }
 
-    public UserClientResource user(String username) throws ResourceException
+    public UserClientResource user(String username)
     {
         return getSubResource(username, UserClientResource.class);
     }

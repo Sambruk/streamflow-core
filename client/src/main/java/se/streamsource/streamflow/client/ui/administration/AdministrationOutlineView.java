@@ -15,9 +15,16 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.jdesktop.swingx.JXTree;
+import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
+import org.jdesktop.swingx.renderer.IconValue;
+import org.jdesktop.swingx.renderer.StringValue;
+import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import java.awt.BorderLayout;
@@ -30,7 +37,7 @@ public class AdministrationOutlineView
 {
     private JXTree tree;
 
-    public AdministrationOutlineView(@Uses AdministrationModel model)
+    public AdministrationOutlineView(@Uses AdministrationModel model) throws Exception
     {
         super(new BorderLayout());
 
@@ -38,6 +45,36 @@ public class AdministrationOutlineView
 
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
+
+        tree.setCellRenderer(new DefaultTreeRenderer(new WrappingProvider(
+                new IconValue()
+                {
+                    public Icon getIcon(Object o)
+                    {
+                        if (o instanceof AccountAdministrationNode)
+                            return i18n.icon(Icons.account, i18n.ICON_24);
+                        else if (o instanceof OrganizationalStructureAdministrationNode)
+                            return i18n.icon(Icons.organization, i18n.ICON_24);
+                        else
+                            return NULL_ICON;
+                    }
+                },
+                new StringValue()
+                {
+                    public String getString(Object o)
+                    {
+                        if (o instanceof AdministrationNode)
+                            return "                            ";
+                        else if (o instanceof AccountAdministrationNode)
+                            return ((AccountAdministrationNode)o).accountModel().settings().name().get();
+                        else if (o instanceof OrganizationalStructureAdministrationNode)
+                            return ((OrganizationalStructureAdministrationNode)o).toString();
+                        else
+                            return "Unknown";
+                    }
+                },
+                false
+        )));
 
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEtchedBorder());
@@ -70,6 +107,8 @@ public class AdministrationOutlineView
         });
 
 */
+
+        model.refresh();
     }
 
 
