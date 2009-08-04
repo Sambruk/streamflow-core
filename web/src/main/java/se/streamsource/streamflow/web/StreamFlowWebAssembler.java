@@ -20,15 +20,14 @@ import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.rest.assembly.RestAssembler;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.web.application.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.domain.WebDomainAssembler;
 import se.streamsource.streamflow.web.infrastructure.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
-import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityTypeRegistryAssembler;
+import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 
@@ -75,7 +74,7 @@ public class StreamFlowWebAssembler
     {
         ModuleAssembly restModule = webLayer.newModuleAssembly("REST");
         new StreamFlowRestAssembler().assemble(restModule);
-        new RestAssembler().assemble(restModule);
+       // new RestAssembler().assemble(restModule);
         new ServerResourceAssembler().assemble(restModule);
     }
 
