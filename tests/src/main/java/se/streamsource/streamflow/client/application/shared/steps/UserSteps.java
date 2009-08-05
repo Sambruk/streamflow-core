@@ -15,8 +15,12 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.jbehave.scenario.annotations.Given;
+import org.jbehave.scenario.annotations.Then;
+import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
+import static org.jbehave.util.JUnit4Ensure.ensureThat;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
@@ -30,32 +34,40 @@ public class UserSteps
     @Structure
     UnitOfWorkFactory uowf;
 
+    @Uses
+    OrganizationalUnitSteps organizationalUnitSteps;
+
     public UserEntity user;
 
     @Given("a user named $name")
     public void givenUserNamed(String name) throws Exception
     {
         UnitOfWork uow = uowf.newUnitOfWork();
-
         user = uow.get(UserEntity.class, name);
     }
 
-/*
-    @Given("a users named $name")
-    public void givenUserNamed(String name) throws Exception
+    @When("user is removed from the organization")
+    public void leaveFromOrganization()
     {
-        login.givenAnAccount();
-        login.whenLoginWith(name, name);
-        login.whenUserRegisters();
-
-        login.account.visitShared(new UserVisitor()
-        {
-            public boolean visitUser(User users)
-            {
-                UserSteps.this.users = users;
-                return false;
-            }
-        });
+        user.leave(organizationalUnitSteps.ou.getOrganization());
     }
-*/
+
+
+    @When("user joins the organization")
+    public void joinOrganization()
+    {
+        user.join(organizationalUnitSteps.ou.getOrganization());
+    }
+
+    @Then("the user is not part of the organization")
+    public void notPartOfOrganization()
+    {
+        ensureThat(!user.organizations().contains(organizationalUnitSteps.ou.getOrganization()));
+    }
+
+    @Then("the user is part of the organization")
+    public void partOfOrganization()
+    {
+        ensureThat(user.organizations().contains(organizationalUnitSteps.ou.getOrganization()));
+    }
 }

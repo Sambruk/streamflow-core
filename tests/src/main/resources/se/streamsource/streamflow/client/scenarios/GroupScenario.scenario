@@ -1,0 +1,46 @@
+Scenario: Create a new group
+Given an organizational unit
+When group named newgroup is created
+Then no DuplicateDescriptionException is thrown
+And group named newgroup can be found
+
+Scenario: Creating group with existing name
+Given an organizational unit
+When group named newgroup is created
+Then no DuplicateDescriptionException is thrown
+And group named newgroup can be found
+When group named newgroup is created
+Then groupexception DuplicateDescriptionException is thrown
+
+Scenario: Delete existing group
+Given an organizational unit
+When group named newgroup is created
+Then no DuplicateDescriptionException is thrown
+And group named newgroup can be found
+When group named newgroup is deleted
+Then group named newgroup cannot be found
+
+Scenario: Add participant to group
+Given a user named administrator
+Given an organizational unit
+When group named newgroup is created
+When user is added as participant in group named newgroup
+Then user can be found in group named newgroup
+
+Scenario: Remove participant from group
+Given a user named administrator
+Given an organizational unit
+When group named newgroup is created
+When user is added as participant in group named newgroup
+Then user can be found in group named newgroup
+When user is removed as participant from group named newgroup
+Then user cannot be found in group named newgroup
+
+
+
+
+
+
+
+
+

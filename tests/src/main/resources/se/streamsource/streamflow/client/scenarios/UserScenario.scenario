@@ -1,0 +1,21 @@
+Scenario: Remove user from organization
+Given a user named administrator
+Given an organizational unit
+When user is removed from the organization
+Then the user is not part of the organization
+
+Scenario: Add user to organization
+Given a user named administrator
+Given an organizational unit
+When user joins the organization
+Then the user is part of the organization
+
+
+
+
+
+
+
+
+
+
