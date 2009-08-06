@@ -1,0 +1,73 @@
+Scenario: Create a task on a users inbox
+Given an inbox
+When a task is created
+Then the task is created
+And the task is marked as read
+
+
+Scenario: Receive task on project inbox
+Given an inbox
+Given a project inbox
+When a task is created
+Then the task is created
+And the task is marked as read
+When a task is received by project inbox
+Then the task is marked as unread
+And the task is owned by project
+
+
+Scenario: Complete a task
+Given an inbox
+When a task is created
+Then the task is created
+And the task is marked as read
+When user completes the task
+Then the task state is COMPLETED
+
+
+Scenario: Drop a task
+Given an inbox
+When a task is created
+Then the task is created
+And the task is marked as read
+When user drops the task
+Then the task state is DROPPED
+
+
+Scenario: assign a task to user
+Given an inbox
+When a task is created
+Then the task is created
+And the task is marked as read
+When user assigns the task to himself
+Then the task state is ACTIVE
+And the task is assigned to user
+
+
+Scenario: delegate task to project
+Given an inbox
+Given a project inbox
+When a task is created
+Then the task is created
+And the task is marked as read
+When task is delegated from user to project
+Then delegatedTo is project
+And delegatedBy is user
+
+
+Scenario: mark task as unread and read
+Given an inbox
+When a task is created
+Then the task is created
+And the task is marked as read
+When the task is set to unread
+Then the task is marked as unread
+When the task is set to read
+Then the task is marked as read
+
+
+
+
+
+
+

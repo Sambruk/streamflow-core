@@ -1,0 +1,33 @@
+Scenario: Add comment to task
+Given a task
+When setting comment with text myComment
+Then task has comment with text myComment
+
+Scenario: Describe a task
+Given a task
+When setting description to taskdescription
+Then taskexception is not thrown
+And task description is taskdescription
+
+Scenario: Task cannot have a description with more the 50 characters
+Given a task
+When setting description to abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+
+Scenario: Add task dueOn
+Given a task
+When setting the task dueOn
+Then the task dueOn is not null
+
+Scenario: Add task dueOn in the past
+Given a task
+When setting the task dueOn for a date in the past
+Then exception is thrown
+
+Scenario: Add label to task
+
+Scenario: Remove lavel from task
+
+Scenario: Add note to task
+
+
+

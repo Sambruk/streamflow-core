@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import org.hamcrest.CoreMatchers;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
@@ -65,7 +66,7 @@ public class GroupSteps
 
         Group group = findGroup(name);
 
-        ensureThat(group != null);
+        ensureThat(group, CoreMatchers.notNullValue());
 
         ouEntity.removeGroup(group);
     }
@@ -75,7 +76,7 @@ public class GroupSteps
     {
         Group group = findGroup(name);
 
-        ensureThat(group != null);
+        ensureThat(group, CoreMatchers.notNullValue());
 
         group.addParticipant(userSteps.user);
     }
@@ -85,7 +86,7 @@ public class GroupSteps
     {
         Group group = findGroup(name);
 
-        ensureThat(group != null);
+        ensureThat(group, CoreMatchers.notNullValue());
 
         group.removeParticipant(userSteps.user);
     }
@@ -96,7 +97,7 @@ public class GroupSteps
     {
         Group group = findGroup(groupName);
 
-        ensureThat(group != null);
+        ensureThat(group, CoreMatchers.notNullValue());
 
         GroupEntity groupEntity = (GroupEntity) group;
 
@@ -115,7 +116,7 @@ public class GroupSteps
     @Then("no DuplicateDescriptionException is thrown")
     public void noDDException()
     {
-        ensureThat(duplicateDescriptionException == null);
+        ensureThat(duplicateDescriptionException, CoreMatchers.nullValue());
     }
 
 

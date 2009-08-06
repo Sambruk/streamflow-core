@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import org.hamcrest.CoreMatchers;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
@@ -43,6 +44,8 @@ public class ProjectSteps
     @Uses
     UserSteps userSteps;
 
+    public Project project;
+
     private DuplicateDescriptionException duplicateDescriptionException;
 
     @When("project named $name is created")
@@ -51,7 +54,7 @@ public class ProjectSteps
         OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) organizationalUnitSteps.ou;
         try
         {
-            ouEntity.newProject(name);
+            project = ouEntity.newProject(name);
         } catch (DuplicateDescriptionException e)
         {
             duplicateDescriptionException = e;
@@ -66,7 +69,7 @@ public class ProjectSteps
 
         Project project = findProject(name);
 
-        ensureThat(project != null);
+        ensureThat(project, CoreMatchers.notNullValue());
 
         ouEntity.removeProject(project);
     }
@@ -76,7 +79,7 @@ public class ProjectSteps
     {
         Project project = findProject(name);
 
-        ensureThat(project != null);
+        ensureThat(project, CoreMatchers.notNullValue());
 
         project.newMember(userSteps.user);
     }
@@ -86,7 +89,7 @@ public class ProjectSteps
     {
         Project project = findProject(name);
 
-        ensureThat(project != null);
+        ensureThat(project, CoreMatchers.notNullValue());
 
         project.removeMember(userSteps.user);
     }
@@ -97,7 +100,7 @@ public class ProjectSteps
     {
         Project project = findProject(name);
 
-        ensureThat(project != null);
+        ensureThat(project, CoreMatchers.notNullValue());
 
         ProjectEntity projectEntity = (ProjectEntity) project;
 
@@ -116,7 +119,7 @@ public class ProjectSteps
     @Then("no DuplicateDescriptionException is thrown")
     public void noDDException()
     {
-        ensureThat(duplicateDescriptionException == null);
+        ensureThat(duplicateDescriptionException, CoreMatchers.nullValue());
     }
 
 
