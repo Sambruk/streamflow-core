@@ -14,8 +14,8 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
-import static org.hamcrest.core.IsEqual.equalTo;
 import org.hamcrest.CoreMatchers;
+import static org.hamcrest.core.IsEqual.equalTo;
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
@@ -24,9 +24,11 @@ import static org.jbehave.util.JUnit4Ensure.ensureThat;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.web.domain.comment.CommentValue;
+import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
@@ -40,6 +42,9 @@ public class TaskSteps
 {
     @Structure
     ValueBuilderFactory vbf;
+
+    @Structure
+    ObjectBuilderFactory obf;
 
     @Uses
     UserSteps userSteps;
@@ -103,10 +108,9 @@ public class TaskSteps
         ensureThat(description, equalTo(task.getDescription()));
     }
 
-    @Then("taskexception $name is thrown")
+    @Then("taskexception $name has been thrown")
     public void taskExceptionThrown(String name)
     {
-        System.out.println("########################"+taskException.getClass().getSimpleName());
         ensureThat(taskException.getClass().getSimpleName(), CoreMatchers.equalTo(name));
 
         taskException = null;
@@ -117,5 +121,110 @@ public class TaskSteps
     public void noTaskException()
     {
         ensureThat(taskException, CoreMatchers.nullValue());
+    }
+
+    @When("setting the task dueOn")
+    public void setDueOn()
+    {
+        Date future = new Date();
+        future.setTime(future.getTime() + 10000);
+        task.dueOn(future);
+    }
+
+    @Then("the task dueOn $can be found")
+    public void dueIsSet(String can)
+    {
+        TaskEntity taskEntity = (TaskEntity) task;
+        if (can.equals("can"))
+        {
+            ensureThat(taskEntity.dueOn().get(), CoreMatchers.notNullValue());
+        } else if (can.equals("cannot"))
+        {
+            ensureThat(taskEntity.dueOn().get(), CoreMatchers.nullValue());
+        } else
+        {
+            ensureThat(false);
+        }
+
+    }
+
+    @When("setting the task dueOn for a date in the past")
+    public void setDueOnInPast()
+    {
+        Date past = new Date();
+        past.setTime(past.getTime() - 10000);
+        try
+        {
+            task.dueOn(past);
+        } catch(Exception e)
+        {
+            taskException = e;
+        }
+    }
+
+    @When("adding a label named $name to the task")
+    public void addLabel(String name)
+    {
+        Label label = userSteps.user.newLabel();
+        label.describe(name);
+
+        task.addLabel(label);
+    }
+
+
+    @Then("the task label named $name $can be found")
+    public void hasLabel(String name, String can)
+    {
+        Label label = findTaskLabel(name);
+
+        if (can.equals("can"))
+        {
+            ensureThat(label, CoreMatchers.notNullValue());
+        } else if (can.equals("cannot"))
+        {
+            ensureThat(label, CoreMatchers.nullValue());
+        } else 
+        {
+            ensureThat(false);
+        }
+    }
+
+    @When("removing task label named $name from task")
+    public void removeTaskLabel(String name)
+    {
+        Label label = findTaskLabel(name);
+
+        TaskEntity taskEntity = (TaskEntity) task;
+
+        taskEntity.removeLabel(label);
+    }
+
+    @When("adding note $tasknote")
+    public void addTaskNote(String tasknote)
+    {
+        task.changeNote(tasknote);
+    }
+
+
+    @Then("task has note $tasknote")
+    public void hasNote(String tasknote)
+    {
+        TaskEntity taskEntity = (TaskEntity) task;
+        ensureThat(tasknote, CoreMatchers.equalTo(taskEntity.note().get()));
+    }
+
+    private Label findTaskLabel(String name)
+    {
+        TaskEntity taskEntity = (TaskEntity) task;
+
+        for (Label label : taskEntity.labels())
+        {
+            if (label.getDescription().equals(name))
+            {
+                return label;
+            }
+        }
+
+        return null;
     }
 }

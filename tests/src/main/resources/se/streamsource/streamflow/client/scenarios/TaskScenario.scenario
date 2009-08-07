@@ -3,31 +3,55 @@ Given a task
 When setting comment with text myComment
 Then task has comment with text myComment
 
+
 Scenario: Describe a task
 Given a task
 When setting description to taskdescription
 Then taskexception is not thrown
 And task description is taskdescription
 
+
 Scenario: Task cannot have a description with more the 50 characters
 Given a task
 When setting description to abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+Then taskexception ParameterConstraintViolationException has been thrown
+
 
 Scenario: Add task dueOn
 Given a task
+Then the task dueOn cannot be found
 When setting the task dueOn
-Then the task dueOn is not null
+Then the task dueOn can be found
+
 
 Scenario: Add task dueOn in the past
 Given a task
 When setting the task dueOn for a date in the past
-Then exception is thrown
+Then the task dueOn cannot be found
+And taskexception ParameterConstraintViolationException has been thrown
+
 
 Scenario: Add label to task
+Given a task
+When adding a label named mylabel to the task
+Then the task label named mylabel can be found
+
 
 Scenario: Remove lavel from task
+Given a task
+When adding a label named mylabel to the task
+Then the task label named mylabel can be found
+When removing task label named mylabel from task
+Then the task label named mylabel cannot be found
+
 
 Scenario: Add note to task
+Given a task
+When adding note tasknote
+Then task has note tasknote
 
+
+Scenario: 
+//given assigned delegated task, when completed, then mark as unread
 
 
