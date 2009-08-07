@@ -15,10 +15,16 @@
 package se.streamsource.streamflow.infrastructure.domain;
 
 import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.ConstraintDeclaration;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Verify that value is in the future
  */
+@ConstraintDeclaration
+@Retention( RetentionPolicy.RUNTIME )
 @Constraints(FutureConstraint.class)
 public @interface Future
 {
