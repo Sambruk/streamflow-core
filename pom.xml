@@ -87,7 +87,7 @@
 
     <developers>
         <developer>
-            <id>rickard</id>
+            <id>rickardoberg</id>
             <name>Rickard Öberg</name>
             <email>rickard.oberg@jayway.se</email>
             <url>http://www.jayway.se</url>
@@ -100,12 +100,36 @@
             <timezone>UTC+8</timezone>
         </developer>
         <developer>
-            <id>mads</id>
+            <id>madsenevoldsen</id>
             <name>Mads Enevoldsen</name>
             <email>mads.enevoldsen@jayway.dk</email>
             <url>http://www.jayway.dk</url>
             <organization>Jayway</organization>
             <organizationUrl>http://www.jayway.dk</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>UTC+1</timezone>
+        </developer>
+        <developer>
+            <id>henrikbernstrom</id>
+            <name>Henrik Bernström</name>
+            <email>henrik.bernstrom@jayway.se</email>
+            <url>http://www.jayway.se</url>
+            <organization>Jayway</organization>
+            <organizationUrl>http://www.jayway.se</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>UTC+1</timezone>
+        </developer>
+        <developer>
+            <id>arvidhuss</id>
+            <name>Arvid Huss</name>
+            <email>arvid.huss@jayway.se</email>
+            <url>http://www.jayway.se</url>
+            <organization>Jayway</organization>
+            <organizationUrl>http://www.jayway.se</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -119,6 +143,7 @@
             <organization>Jayway</organization>
             <organizationUrl>http://www.jayway.se</organizationUrl>
             <roles>
+                <role>ScrumMaster</role>
                 <role>Project Admin</role>
             </roles>
             <timezone>UTC+1</timezone>
@@ -193,6 +218,21 @@
                         <include>**/*Test.java</include>
                         <include>**/*TestCase.java</include>
                     </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build>${buildNumber}</Implementation-Build>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>
