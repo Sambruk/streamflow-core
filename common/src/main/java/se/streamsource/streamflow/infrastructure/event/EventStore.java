@@ -14,29 +14,10 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
-import org.qi4j.api.common.AppliesTo;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.sideeffect.GenericSideEffect;
-
-import java.lang.reflect.Method;
-
 /**
- * Generate event
+ * JAVADOC
  */
-@AppliesTo(Event.class)
-public class EventSideEffect
-    extends GenericSideEffect
+public interface EventStore
 {
-    @Service
-    EventStore eventStore;
-
-    @Override
-    protected void invoke(Method method, Object[] args) throws Throwable
-    {
-        if (args[0] != null && DomainEvent.class.equals(method.getParameterTypes()[0]))
-        {
-            DomainEvent event = (DomainEvent) args[0];
-            eventStore.storeEvent(event);
-        }
-    }
+    void storeEvent(DomainEvent event);
 }

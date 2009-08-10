@@ -12,20 +12,23 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.web.infrastructure.event;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.sideeffect.SideEffects;
+import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 
 /**
- * Mark a method as a command
- */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( { ElementType.METHOD } )
-@Documented
-public @interface Command
+ * JAVADOC
+*/
+@Concerns(EventCreationConcern.class)
+@SideEffects(EventSideEffect.class)
+@Mixins(Tester.TestMixin.class)
+interface TestEntity
+    extends EntityComposite, Tester, Tester.TestState
 {
 }
+

@@ -107,8 +107,6 @@ public class AdministrationOutlineView
         });
 
 */
-
-        model.refresh();
     }
 
 

@@ -41,12 +41,7 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 
     public void uncaughtException(Thread t, Throwable e)
     {
-        while (e instanceof InvocationTargetException)
-        {
-            e = ((InvocationTargetException) e).getTargetException();
-        }
-
-        final Throwable ex = e;
+        final Throwable ex = unwrap(e);
 
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -58,5 +53,19 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                 JXErrorPane.showDialog(main.getMainFrame(), pane);
             }
         });
+    }
+
+    private Throwable unwrap(Throwable e)
+    {
+        if (e instanceof Error)
+        {
+            return unwrap(e.getCause());
+        } else if (e instanceof InvocationTargetException)
+        {
+            return unwrap(e.getCause());
+        } else
+        {
+            return e;
+        }
     }
 }

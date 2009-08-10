@@ -16,7 +16,7 @@ package se.streamsource.streamflow.infrastructure.event;
 
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.concern.GenericConcern;
-import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -38,7 +38,7 @@ public class EventCreationConcern
     extends GenericConcern
 {
     @This
-    Identity identity;
+    EntityComposite entity;
 
     @Structure
     ValueBuilderFactory vbf;
@@ -55,8 +55,9 @@ public class EventCreationConcern
 
             DomainEvent prototype = builder.prototype();
             prototype.name().set(method.getName());
+            prototype.entityType().set(entity.type().getName());
             prototype.on().set(new Date());
-            prototype.entity().set(identity.identity().get());
+            prototype.entity().set(entity.identity().get());
             prototype.by().set("anonymous"); // TODO
             prototype.identity().set(idGenerator.generate(DomainEvent.class));
 

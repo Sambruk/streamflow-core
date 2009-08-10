@@ -28,7 +28,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.library.constraints.annotation.MaxLength;
-import se.streamsource.streamflow.infrastructure.event.Command;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
@@ -42,7 +41,6 @@ import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 @Mixins(OrganizationalUnits.OrganizationsMixin.class)
 public interface OrganizationalUnits
 {
-    @Command
     OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
 
     @Mixins(OrganizationalUnitsStateMixin.class)

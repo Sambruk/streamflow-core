@@ -42,13 +42,25 @@ public class ProjectsNode
         this.account = account;
         this.obf = obf;
 
-        refresh();
+//        refresh();
     }
 
     @Override
     public WorkspaceNode getParent()
     {
         return (WorkspaceNode) super.getParent();
+    }
+
+    @Override
+    public boolean isLeaf()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean getAllowsChildren()
+    {
+        return true;
     }
 
     public void refresh()

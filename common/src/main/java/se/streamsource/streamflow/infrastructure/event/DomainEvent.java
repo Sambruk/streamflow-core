@@ -49,4 +49,7 @@ public interface DomainEvent
 
     // Method parameters as JSON
     Property<String> parameters();
+
+    // Type of the entity being invoked
+    Property<String> entityType();
 }
