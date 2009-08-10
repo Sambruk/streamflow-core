@@ -14,40 +14,19 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.treetable.DefaultTreeTableModel;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.domain.individual.Account;
-import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import org.qi4j.api.injection.scope.Uses;
+
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  * JAVADOC
  */
 public class WorkspaceModel
-        extends DefaultTreeTableModel
+        extends DefaultTreeModel
 {
-    @Structure
-    ObjectBuilderFactory obf;
-
-    Account account;
-
-    public WorkspaceModel(@Service IndividualRepository individualRepository,
-                       final @Structure ObjectBuilderFactory obf)
+    public WorkspaceModel(@Uses WorkspaceNode node)
     {
-        super();
-
-        individualRepository.individual().visitAccounts(new AccountVisitor()
-        {
-            public void visitAccount(Account acc)
-            {
-                account = acc;
-            }
-        });
-
-        if (account != null)
-            setRoot(obf.newObjectBuilder(WorkspaceNode.class).use(account).newInstance());
+        super(node);
     }
 
     @Override
@@ -55,35 +34,4 @@ public class WorkspaceModel
     {
         return (WorkspaceNode) super.getRoot();
     }
-
-    @Override
-    public int getColumnCount()
-    {
-        return 1;
-    }
-
-    @Override
-    public Class<?> getColumnClass(int column)
-    {
-        switch (column)
-        {
-            case 0:
-                return String.class;
-        }
-        return super.getColumnClass(column);
-    }
-
-    @Override
-    public boolean isCellEditable(Object o, int i)
-    {
-        return false;
-    }
-
-
-    public void refresh()
-    {
-        setRoot(obf.newObjectBuilder(WorkspaceNode.class).use(account).newInstance());
-    }
-
-    
 }

@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -26,11 +25,13 @@ import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 /**
  * JAVADOC
  */
 public class ProjectNode
-        extends DefaultMutableTreeTableNode
+        extends DefaultMutableTreeNode
 {
     private LabelsModel labelsModel;
 
@@ -56,8 +57,7 @@ public class ProjectNode
         labelsModel = obf.newObjectBuilder(LabelsModel.class).use(workspaceProjectClientResource.labels()).newInstance();
     }
 
-    @Override
-    public Object getValueAt(int column)
+    public String projectName()
     {
         return projectName;
     }

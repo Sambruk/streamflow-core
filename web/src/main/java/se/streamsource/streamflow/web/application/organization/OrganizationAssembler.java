@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -26,6 +27,12 @@ public class OrganizationAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addServices(BootstrapDataService.class, TestDataService.class).instantiateOnStartup();
+        module.addServices(BootstrapDataService.class).instantiateOnStartup();
+
+        if (module.layerAssembly().applicationAssembly().mode()== Application.Mode.development)
+            module.addServices(TestDataService.class).instantiateOnStartup();
+
+//        if (module.layerAssembly().applicationAssembly().mode()== Application.Mode.production)
+//            module.addServices(DataExporterService.class).instantiateOnStartup();
     }
 }

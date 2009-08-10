@@ -30,6 +30,8 @@ public class ConfigurationAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
+        System.setProperty("application", "StreamFlowClient");
+
         module.addServices(FileConfiguration.class, ServiceConfiguration.class).instantiateOnStartup();
 
         // Configurations

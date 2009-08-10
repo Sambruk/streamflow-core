@@ -21,15 +21,11 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Restlet;
-import se.streamsource.streamflow.client.domain.individual.RegistrationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
-import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
@@ -45,6 +41,8 @@ import javax.swing.JPanel;
 public class CreateAccountDialog
         extends JPanel
 {
+    private AccountSettingsValue settings;
+
     @Structure
     UnitOfWorkFactory uowf;
 
@@ -95,15 +93,9 @@ public class CreateAccountDialog
     }
 
     @Action
-    public void execute() throws RegistrationException, UnitOfWorkCompletionException
+    public void execute()
     {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-
-        Account account = individualRepository.individual().newAccount();
-        account.updateSettings(accountBuilder.newInstance());
-
-        account.register(client);
-        uow.apply();
+        settings = accountBuilder.newInstance();
         WindowUtils.findWindow(this).dispose();
     }
 
@@ -113,4 +105,8 @@ public class CreateAccountDialog
         WindowUtils.findWindow(this).dispose();
     }
 
+    public AccountSettingsValue settings()
+    {
+        return settings;
+    }
 }

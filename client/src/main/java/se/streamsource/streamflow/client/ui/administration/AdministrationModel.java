@@ -14,15 +14,15 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.Account;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListDataEvent;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
@@ -43,9 +43,27 @@ public class AdministrationModel
         }
     };
 
-    public AdministrationModel(@Uses ObjectBuilder<AdministrationNode> root, @Service IndividualRepository individualRepository)
+    public AdministrationModel(@Uses AdministrationNode root, @Uses AccountsModel accountsModel)
     {
-        super(root.use(individualRepository.individual()).newInstance());
+        super(root);
+
+        accountsModel.addListDataListener(new ListDataListener()
+        {
+            public void intervalAdded(ListDataEvent e)
+            {
+                contentsChanged(e);
+            }
+
+            public void intervalRemoved(ListDataEvent e)
+            {
+                contentsChanged(e);
+            }
+
+            public void contentsChanged(ListDataEvent e)
+            {
+                reload();
+            }
+        });
     }
 
     @Override

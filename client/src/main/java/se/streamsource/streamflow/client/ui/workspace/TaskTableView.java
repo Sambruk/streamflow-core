@@ -322,21 +322,22 @@ public abstract class TaskTableView
         AddTaskDialog dialog = addTaskDialogs.newInstance();
         dialogs.showOkCancelHelpDialog(application.getMainFrame(), dialog);
 
-        NewTaskCommand command = dialog.getCommandBuilder().newInstance();
+        NewTaskCommand command = dialog.getCommand();
+        if (command != null)
+        {
+            model.newTask(command);
 
-        model.newTask(command);
-
-        JXTable table = getTaskTable();
-        int index = model.getRowCount()-1;
-        table.getSelectionModel().setSelectionInterval(index, index);
-        table.scrollRowToVisible(index);
+            JXTable table = getTaskTable();
+            int index = model.getRowCount()-1;
+            table.getSelectionModel().setSelectionInterval(index, index);
+            table.scrollRowToVisible(index);
+        }
     }
 
     @org.jdesktop.application.Action()
     public void dropTasks() throws ResourceException
     {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
+        for (Integer row : getReverseSelectedTasks())
         {
             model.dropTask(row);
         }
@@ -345,8 +346,7 @@ public abstract class TaskTableView
     @org.jdesktop.application.Action()
     public void markTasksAsUnread() throws ResourceException
     {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
+        for (int row : getReverseSelectedTasks())
         {
             model.markAsUnread(row);
         }
@@ -355,8 +355,7 @@ public abstract class TaskTableView
     @org.jdesktop.application.Action()
     public void markTasksAsRead() throws ResourceException
     {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
+        for (int row : getReverseSelectedTasks())
         {
             model.markAsRead(row);
         }
@@ -365,8 +364,7 @@ public abstract class TaskTableView
     @org.jdesktop.application.Action
     public void removeTasks() throws ResourceException
     {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
+        for (int row : getReverseSelectedTasks())
         {
             model.removeTask(row);
         }
@@ -383,5 +381,17 @@ public abstract class TaskTableView
                 return null;
             }
         };
+    }
+
+    protected List<Integer> getReverseSelectedTasks()
+    {
+        int[] rows = taskTable.getSelectedRows();
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < rows.length; i++)
+        {
+            int row = rows[i];
+            list.add(0, row);
+        }
+        return list;
     }
 }

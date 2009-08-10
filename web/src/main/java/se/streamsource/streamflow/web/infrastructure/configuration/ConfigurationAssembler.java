@@ -30,7 +30,9 @@ public class ConfigurationAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addServices(FileConfiguration.class, ServiceConfiguration.class).instantiateOnStartup();
+        System.setProperty("application", "StreamFlowServer");
+
+        module.addServices(FileConfiguration.class, ServiceConfiguration.class).visibleIn(Visibility.application).instantiateOnStartup();
 
         // Configurations
         module.addEntities(JdbmConfiguration.class).visibleIn(Visibility.layer);

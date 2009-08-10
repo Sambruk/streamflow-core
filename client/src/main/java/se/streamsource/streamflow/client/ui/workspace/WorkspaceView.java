@@ -16,13 +16,12 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingIconPanel;
 import org.jdesktop.swingx.renderer.WrappingProvider;
-import org.jdesktop.swingx.treetable.TreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -41,9 +40,13 @@ import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeNode;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -57,41 +60,22 @@ import java.awt.event.KeyEvent;
 public class WorkspaceView
         extends JPanel
 {
-    private JXTreeTable workspaceTree;
+    private JXTree workspaceTree;
     private JSplitPane pane;
     private WorkspaceModel model;
 
     public WorkspaceView(final @Service ApplicationContext context,
-                         @Uses WorkspaceModel model,
+                         @Uses final WorkspaceModel model,
                          final @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
         this.model = model;
-        workspaceTree = new JXTreeTable(model);
+        workspaceTree = new JXTree(model);
         workspaceTree.expandAll();
-        workspaceTree.setPreferredScrollableViewportSize(new Dimension(200, 400));
         workspaceTree.setRootVisible(false);
         workspaceTree.setShowsRootHandles(false);
-        workspaceTree.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        workspaceTree.setTableHeader(null);
-
-        workspaceTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "expand");
-        workspaceTree.getActionMap().put("expand", new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                workspaceTree.expandRow(workspaceTree.getSelectedRow());
-            }
-        });
-        workspaceTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "collapse");
-        workspaceTree.getActionMap().put("collapse", new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                workspaceTree.collapseRow(workspaceTree.getSelectedRow());
-            }
-        });
+        workspaceTree.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         workspaceTree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "select");
         workspaceTree.getActionMap().put("select", new AbstractAction()
@@ -102,7 +86,7 @@ public class WorkspaceView
             }
         });
 
-        workspaceTree.setTreeCellRenderer(new DefaultTreeRenderer(new WrappingProvider(
+        workspaceTree.setCellRenderer(new DefaultTreeRenderer(new WrappingProvider(
                 new IconValue()
                 {
                     public Icon getIcon(Object o)
@@ -129,7 +113,22 @@ public class WorkspaceView
                 {
                     public String getString(Object o)
                     {
-                        return ((TreeTableNode) o).getValueAt(0).toString();
+                        if (o instanceof UserNode)
+                            return i18n.text(WorkspaceResources.user_node);
+                        else if (o instanceof ProjectNode)
+                            return ((ProjectNode)o).projectName();
+                        else if (o instanceof ProjectsNode)
+                            return i18n.text(WorkspaceResources.projects_node);
+                        else if (o instanceof UserInboxNode || o instanceof ProjectInboxNode)
+                            return o.toString();
+                        else if (o instanceof UserAssignmentsNode || o instanceof ProjectAssignmentsNode)
+                            return o.toString();
+                        else if (o instanceof UserDelegationsNode || o instanceof ProjectDelegationsNode)
+                            return o.toString();
+                        else if (o instanceof UserWaitingForNode || o instanceof ProjectWaitingForNode)
+                            return o.toString();
+                        else
+                            return "";
                     }
                 },
                 false
@@ -390,11 +389,30 @@ public class WorkspaceView
         });
 
         workspaceTree.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(workspaceTree.getSearchable()).newInstance());
-    }
 
-    public JXTreeTable getWorkspaceTree()
-    {
-        return workspaceTree;
+        workspaceTree.addTreeWillExpandListener(new TreeWillExpandListener()
+        {
+            public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException
+            {
+                Object node = event.getPath().getLastPathComponent();
+                if (node instanceof ProjectsNode)
+                {
+                    try
+                    {
+                        ((ProjectsNode)node).refresh();
+                        model.reload((TreeNode) node);
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException
+            {
+            }
+        });
+
     }
 
     public String getSelectedUser()
@@ -410,7 +428,6 @@ public class WorkspaceView
     public void refreshTree()
     {
         workspaceTree.clearSelection();
-        model.refresh();
         workspaceTree.expandAll();
     }
 

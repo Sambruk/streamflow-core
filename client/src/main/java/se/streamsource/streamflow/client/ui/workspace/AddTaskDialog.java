@@ -37,6 +37,8 @@ import javax.swing.JPanel;
 public class AddTaskDialog
         extends JPanel
 {
+    NewTaskCommand command;
+
     private StateBinder taskBinder;
     private ValueBuilder<NewTaskCommand> commandBuilder;
 
@@ -78,6 +80,7 @@ public class AddTaskDialog
     public void execute()
             throws Exception
     {
+        command = commandBuilder.newInstance();
         WindowUtils.findWindow(this).dispose();
     }
 
@@ -87,8 +90,8 @@ public class AddTaskDialog
         WindowUtils.findWindow(this).dispose();
     }
 
-    public ValueBuilder<NewTaskCommand> getCommandBuilder()
+    public NewTaskCommand getCommand()
     {
-        return commandBuilder;
+        return command;
     }
 }

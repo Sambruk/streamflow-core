@@ -26,8 +26,6 @@ import org.qi4j.rest.entity.EntitiesResource;
 import org.qi4j.rest.entity.EntityResource;
 import org.qi4j.rest.query.IndexResource;
 import org.qi4j.rest.query.SPARQLResource;
-import org.qi4j.rest.type.EntityTypeResource;
-import org.qi4j.rest.type.EntityTypesResource;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -107,8 +105,6 @@ public class StreamFlowRestApplication
             Router qi4jRouter = new Router(getContext());
             qi4jRouter.attach("/entity", createServerResourceFinder(EntitiesResource.class));
             qi4jRouter.attach("/entity/{identity}", createServerResourceFinder(EntityResource.class));
-            qi4jRouter.attach("/type", createServerResourceFinder(EntityTypesResource.class));
-            qi4jRouter.attach("/type/{version}", createServerResourceFinder(EntityTypeResource.class));
             qi4jRouter.attach("/query", createServerResourceFinder(SPARQLResource.class));
             qi4jRouter.attach("/query/index", createServerResourceFinder(IndexResource.class));
 

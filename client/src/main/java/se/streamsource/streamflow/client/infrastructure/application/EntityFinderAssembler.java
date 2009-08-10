@@ -23,7 +23,6 @@ import org.qi4j.library.rdf.entity.EntityStateParser;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.rest.client.SPARQLEntityFinderConfiguration;
-import org.qi4j.spi.entity.typeregistry.EntityTypeRegistryService;
 
 /**
  * JAVADOC
@@ -37,7 +36,7 @@ public class EntityFinderAssembler
         //module.addEntities(SPARQLEntityFinderConfiguration.class);
         module.on(SPARQLEntityFinderConfiguration.class).to().sparqlUrl().set("http://localhost/streamflow-web/qi4j/query.rdf");
         module.addServices(RdfFactoryService.class);
-        module.addServices(MemoryEntityStoreService.class, EntityTypeRegistryService.class);
+        module.addServices(MemoryEntityStoreService.class);
 
         // Domain model finder
         /*module.addServices(SPARQLEntityFinderService.class)

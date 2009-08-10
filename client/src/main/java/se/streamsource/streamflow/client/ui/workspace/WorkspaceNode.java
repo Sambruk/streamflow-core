@@ -14,30 +14,31 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * JAVADOC
  */
 public class WorkspaceNode
-        extends DefaultMutableTreeTableNode
+        extends DefaultMutableTreeNode
 {
 
     public WorkspaceNode(@Uses UserNode userNode,
                       @Uses ProjectsNode projectsNode,
-                      @Uses Account account)
+                      @Uses AccountModel accountModel)
     {
-        super(account);
+        super(accountModel);
 
         add(userNode);
         add(projectsNode);
     }
 
     @Override
-    public Account getUserObject()
+    public AccountModel getUserObject()
     {
-        return (Account) super.getUserObject();
+        return (AccountModel) super.getUserObject();
     }
 }

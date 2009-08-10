@@ -17,24 +17,37 @@ package se.streamsource.streamflow.client.ui.menu;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.Restlet;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class AccountsModel
-        extends DefaultListModel
+        extends AbstractListModel
 {
     @Structure
     ValueBuilderFactory vbf;
+
+    @Structure
+    ObjectBuilderFactory obf;
 
     @Service
     IndividualRepository repository;
@@ -42,16 +55,68 @@ public class AccountsModel
     @Structure
     UnitOfWorkFactory uowf;
 
-    public void removeAccount(Account account)
+    @Service
+    Restlet client;
+
+    List<ListItemValue> accounts = new ArrayList<ListItemValue>();
+
+    WeakModelMap<String, AccountModel> models = new WeakModelMap<String, AccountModel>()
     {
-        repository.individual().removeAccount(account);
+        protected AccountModel newModel(String key)
+        {
+            UnitOfWork uow = uowf.newUnitOfWork();
+            Account acc = uow.get(Account.class, key);
+            uow.discard();
+            return obf.newObjectBuilder(AccountModel.class).use(acc).newInstance();
+        }
+    };
+
+    public void init(@Service IndividualRepository repository)
+    {
         refresh();
     }
 
-    public void refresh()
+    public int getSize()
     {
-        clear();
-        uowf.newUnitOfWork();
+        return accounts.size();
+    }
+
+    public ListItemValue getElementAt(int index)
+    {
+        return accounts.get(index);
+    }
+
+    public AccountModel accountModel(int index)
+    {
+        String id = accounts.get(index).entity().get().identity();
+        return models.get(id);
+    }
+
+    public void newAccount(AccountSettingsValue accountSettingsValue) throws UnitOfWorkCompletionException, ResourceException
+    {
+        UnitOfWork uow = uowf.newUnitOfWork();
+
+        Account account = repository.individual().newAccount();
+        account.updateSettings(accountSettingsValue);
+
+        account.register(client);
+        uow.complete();
+
+        refresh();
+
+        fireIntervalAdded(this, accounts.size(), accounts.size());
+    }
+
+    public void removeAccount(int index) throws UnitOfWorkCompletionException
+    {
+        accountModel(index).remove();
+        accounts.remove(index);
+        fireContentsChanged(this, 0, accounts.size());
+    }
+
+    private void refresh()
+    {
+        UnitOfWork uow = uowf.newUnitOfWork();
         final ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder(ListItemValue.class);
         repository.individual().visitAccounts(new AccountVisitor(){
 
@@ -59,8 +124,9 @@ public class AccountsModel
             {
                 itemBuilder.prototype().description().set(account.settings().name().get());
                 itemBuilder.prototype().entity().set(EntityReference.getEntityReference((account)));
-                addElement(itemBuilder.newInstance());
+                accounts.add(itemBuilder.newInstance());
             }
         });
+        uow.discard();
     }
 }

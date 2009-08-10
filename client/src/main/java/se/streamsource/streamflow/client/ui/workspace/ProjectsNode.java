@@ -14,45 +14,35 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.Restlet;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.domain.individual.Account;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * JAVADOC
  */
 public class ProjectsNode
-        extends DefaultMutableTreeTableNode
+        extends DefaultMutableTreeNode
+    implements Refreshable
 {
-    public ProjectsNode(@Uses Account account,
-                              @Structure final ObjectBuilderFactory obf,
-                              @Service final Restlet client)
+    private AccountModel account;
+    private ObjectBuilderFactory obf;
+
+    public ProjectsNode(@Uses AccountModel account,
+                              @Structure final ObjectBuilderFactory obf) throws Exception
     {
         super(account);
+        this.account = account;
+        this.obf = obf;
 
-        try
-        {
-            se.streamsource.streamflow.client.resource.users.UserClientResource user = account.user(client);
-            ListValue projects = user.workspace().projects().listProjects();
-
-            for (ListItemValue project : projects.items().get())
-            {
-                WorkspaceProjectClientResource workspaceProjectResource =  user.workspace().projects().project(project.entity().get().identity());
-                add(obf.newObjectBuilder(ProjectNode.class).use(workspaceProjectResource, project.description().get()).newInstance());
-            }
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
+        refresh();
     }
 
     @Override
@@ -61,9 +51,18 @@ public class ProjectsNode
         return (WorkspaceNode) super.getParent();
     }
 
-    @Override
-    public Object getValueAt(int column)
+    public void refresh()
+            throws Exception
     {
-        return i18n.text(WorkspaceResources.projects_node);
+        se.streamsource.streamflow.client.resource.users.UserClientResource user = account.userResource();
+        ListValue projects = user.workspace().projects().listProjects();
+
+        super.removeAllChildren();
+
+        for (ListItemValue project : projects.items().get())
+        {
+            WorkspaceProjectClientResource workspaceProjectResource =  user.workspace().projects().project(project.entity().get().identity());
+            add(obf.newObjectBuilder(ProjectNode.class).use(workspaceProjectResource, project.description().get()).newInstance());
+        }
     }
 }

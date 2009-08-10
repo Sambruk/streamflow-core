@@ -21,9 +21,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.ContainerUnitOfWorkService;
 
 /**
  * JAVADOC
@@ -44,29 +42,13 @@ public interface ApplicationInitializationService
         @Service
         private SingleFrameApplication main;
 
-        @Service
-        private ContainerUnitOfWorkService cuow;
-        private UnitOfWork uow;
-
         public void activate() throws Exception
         {
-            uow = uowf.newUnitOfWork();
-
-            cuow.register(main.getMainFrame(), uow);
             obf.newObjectBuilder(SingleFrameApplication.class).injectTo(main);
-            uow.pause();
         }
 
         public void passivate() throws Exception
         {
-            cuow.discard(main.getMainFrame());
-
-            if (uow.isOpen())
-            {
-                if (uow.isPaused())
-                    uow.resume();
-                uow.discard();
-            }
         }
 
     }

@@ -32,12 +32,12 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.ConnectionException;
-import se.streamsource.streamflow.client.domain.individual.RegistrationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FormEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import static se.streamsource.streamflow.client.ui.administration.AccountResources.*;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 
@@ -118,13 +118,9 @@ public class AccountView
         bb
                 .appendToggleButtonLine(am.get("edit"))
                 .appendSeparator(account_separator)
-                .appendSeparator(testconnection_separator)
                 .appendButtonLine(am.get("test"))
 
-                .appendSeparator(registration_separator)
-                .appendButtonLine(am.get("register"))
-
-                .appendSeparator(connected_separator);
+                .appendButtonLine(am.get("register"));
 
 /*
         bb = new BindingFormBuilder(builder, connectedBinder);
@@ -164,7 +160,7 @@ public class AccountView
             @Override
             public void succeeded(TaskEvent<String> stringTaskEvent)
             {
-                dialogs.showOkDialog(AccountView.this, new JLabel("<html>#Connection is ok:<br/>" + stringTaskEvent.getValue() + "</html>"));
+                dialogs.showOkDialog(AccountView.this, new JLabel("<html>"+ i18n.text(AdministrationResources.connection_is_ok)+":<br/>" + stringTaskEvent.getValue() + "</html>"));
             }
 
             @Override
@@ -204,17 +200,8 @@ public class AccountView
     @Action
     public void register()
     {
-        try
-        {
-            model.register();
-            getActionMap().get("register").setEnabled(false);
-
-            // TODO Show dialog
-
-        } catch (RegistrationException e)
-        {
-            dialogs.showOkDialog(this, new JLabel("#User could not be registered:" + e.getMessage()));
-        }
+        model.register();
+        getActionMap().get("register").setEnabled(false);
     }
 
     @Override

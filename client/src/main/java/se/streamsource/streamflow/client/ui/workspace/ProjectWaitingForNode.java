@@ -14,15 +14,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * JAVADOC
  */
 public class ProjectWaitingForNode
-        extends DefaultMutableTreeTableNode
+        extends DefaultMutableTreeNode
 {
     @Uses
     ProjectWaitingForModel model;
@@ -34,7 +35,7 @@ public class ProjectWaitingForNode
     }
 
     @Override
-    public Object getValueAt(int column)
+    public String toString()
     {
         return i18n.text(WorkspaceResources.waitingfor_node);
     }

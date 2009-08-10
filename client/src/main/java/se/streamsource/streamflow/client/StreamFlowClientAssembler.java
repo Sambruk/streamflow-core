@@ -25,7 +25,6 @@ import se.streamsource.streamflow.client.infrastructure.application.EntityFinder
 import se.streamsource.streamflow.client.infrastructure.application.RestletClientAssembler;
 import se.streamsource.streamflow.client.infrastructure.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.client.infrastructure.domain.ClientEntityStoreAssembler;
-import se.streamsource.streamflow.client.infrastructure.domain.EntityTypeRegistryAssembler;
 import se.streamsource.streamflow.client.infrastructure.ui.UIInfrastructureAssembler;
 import se.streamsource.streamflow.client.resource.ClientResourceAssembler;
 import se.streamsource.streamflow.client.ui.UIAssembler;
@@ -89,8 +88,6 @@ public class StreamFlowClientAssembler
         new ConfigurationAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Configuration"));
         new ClientEntityStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Client EntityStore"));
         new EntityFinderAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Finder"));
-        new EntityTypeRegistryAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Type Registry"));
-
     }
 
 }

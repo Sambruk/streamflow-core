@@ -20,6 +20,7 @@ import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.error.ErrorInfo;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -39,10 +40,12 @@ import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
+import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.menu.MenuView;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
@@ -55,8 +58,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,6 +91,8 @@ public class StreamFlowApplication
 
     @Service
     IndividualRepository individualRepo;
+
+    AccountsModel accountsModel;
 
     JLabel label;
 
@@ -116,21 +126,53 @@ public class StreamFlowApplication
     }
 
 
-    public void init(@Structure ObjectBuilderFactory obf) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
+    public void init(@Uses final AccountsModel accountsModel, @Structure final ObjectBuilderFactory obf) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
+        this.accountsModel = accountsModel;
         JFrame frame = getMainFrame();
         frame.setTitle("StreamFlow");
 
-        workspaceModel = obf.newObjectBuilder(WorkspaceModel.class).newInstance();
-        workspaceView = obf.newObjectBuilder(WorkspaceView.class).use(workspaceModel).newInstance();
+        ListDataListener workspaceListener = new ListDataListener()
+        {
+            public void intervalAdded(ListDataEvent e)
+            {
+                contentsChanged(e);
+            }
 
-        administrationModel = obf.newObjectBuilder(AdministrationModel.class).newInstance();
+            public void intervalRemoved(ListDataEvent e)
+            {
+                contentsChanged(e);
+            }
+
+            public void contentsChanged(ListDataEvent e)
+            {
+                if (accountsModel.getSize() > 0 && workspaceView == null)
+                {
+                    AccountModel accountModel = accountsModel.accountModel(0);
+                    workspaceModel = obf.newObjectBuilder(WorkspaceModel.class).use(accountModel).newInstance();
+                    workspaceView = obf.newObjectBuilder(WorkspaceView.class).use(workspaceModel).newInstance();
+                    getMainFrame().getContentPane().add(workspaceView);
+                } else
+                {
+                    if (workspaceView != null)
+                    {
+                        Container container = getMainFrame().getContentPane();
+                        container.remove(workspaceView);
+                        container.validate();
+                        getMainFrame().pack();
+                    }
+                    workspaceModel = null;
+                    workspaceView = null;
+                }
+            }
+        };
+        accountsModel.addListDataListener(workspaceListener);
+        workspaceListener.contentsChanged(null);
+
+        administrationModel = obf.newObjectBuilder(AdministrationModel.class).use(accountsModel).newInstance();
         administrationView = obf.newObjectBuilder(AdministrationView.class).use(administrationModel).newInstance();
 
         menuView = obf.newObject(MenuView.class);
-
-        frame.getContentPane().setLayout(new BorderLayout());
-        frame.getContentPane().add(workspaceView, BorderLayout.CENTER);
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
@@ -206,8 +248,13 @@ public class StreamFlowApplication
     @Action
     public void manageAccounts()
     {
-        AccountsDialog dialog = accountsDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(getMainFrame(), dialog);
+        AccountsDialog dialog = accountsDialog.use(accountsModel).newInstance();
+        dialogs.showOkDialog(getMainFrame(), dialog);
+    }
+
+    public AccountsModel accountsModel()
+    {
+        return accountsModel;
     }
 
     // Controller actions -------------------------------------------
@@ -221,9 +268,17 @@ public class StreamFlowApplication
     }
 
     @Action
-    public void showAdministrationWindow()
+    public void showAdministrationWindow() throws Exception
     {
+        administrationModel.refresh();
         show(administrationWindow);
+    }
+
+
+    @Action
+    public void execute(ActionEvent e)
+    {
+        WindowUtils.findWindow((Component) e.getSource()).dispose();
     }
 
     @Action

@@ -50,10 +50,6 @@ public interface TestDataService
 
         public void activate() throws Exception
         {
-            // Only do this in devmode
-            if (!app.mode().equals(Application.Mode.development))
-                return;
-
             UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Test data"));
 
             UserEntity user = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);

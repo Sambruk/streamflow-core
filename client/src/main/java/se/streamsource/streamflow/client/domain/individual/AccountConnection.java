@@ -26,10 +26,4 @@ public interface AccountConnection
     StreamFlowClientResource server(Restlet client);
 
     UserClientResource user(Restlet client);
-
-    boolean isEnabled();
-
-    void enable() throws ConnectionException;
-
-    void disable();
 }

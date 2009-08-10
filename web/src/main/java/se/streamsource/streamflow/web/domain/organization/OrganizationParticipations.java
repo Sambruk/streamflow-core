@@ -41,7 +41,7 @@ public interface OrganizationParticipations
 
         public void join(Organization ou)
         {
-            state.organizations().add(state.organizations().count(), ou);
+            state.organizations().add(ou);
         }
 
         public void leave(Organization ou)

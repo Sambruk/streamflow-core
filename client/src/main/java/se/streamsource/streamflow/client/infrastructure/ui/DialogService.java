@@ -19,7 +19,6 @@ import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 
@@ -36,8 +35,6 @@ import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 /**
  * JAVADOC
@@ -50,9 +47,6 @@ public class DialogService
     @Service
     StreamFlowApplication application;
 
-    @Service
-    ContainerUnitOfWorkService cuow;
-
     public void showOkCancelHelpDialog(Component component, JComponent main)
     {
         Window window = WindowUtils.findWindow(component);
@@ -64,17 +58,6 @@ public class DialogService
         final JXDialog finalDialog = dialog;
 
         dialog.setModal(true);
-        dialog.addWindowListener(new WindowAdapter()
-        {
-            public void windowClosed(WindowEvent e)
-            {
-                cuow.discard(finalDialog);
-            }
-        });
-
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        if (uow != null)
-            cuow.register(dialog, uow);
 
 /*
       Action ok = main.getActionMap().get("ok");
@@ -104,21 +87,6 @@ public class DialogService
         else
             dialog = new JXDialog((Dialog) window, main);
         final JXDialog finalDialog = dialog;
-
-        UnitOfWork uow = uowf.currentUnitOfWork();
-
-        if (uow != null)
-        {
-            dialog.addWindowListener(new WindowAdapter()
-            {
-                public void windowClosed(WindowEvent e)
-                {
-                    cuow.discard(finalDialog);
-                }
-            });
-
-            cuow.register(dialog, uow);
-        }
 
         Action ok = main.getActionMap().get(JXDialog.EXECUTE_ACTION_COMMAND);
         if (ok == null)

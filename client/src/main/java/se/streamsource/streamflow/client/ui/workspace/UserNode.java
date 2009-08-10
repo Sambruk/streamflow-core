@@ -14,38 +14,38 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.domain.individual.Account;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * JAVADOC
  */
 public class UserNode
-        extends DefaultMutableTreeTableNode
+        extends DefaultMutableTreeNode
 {
     private LabelsModel labelsModel;
     public UserClientResource user;
 
-    public UserNode(@Uses Account account,
+    public UserNode(@Uses AccountModel account,
                           @Service Restlet client,
                           @Structure ObjectBuilderFactory obf) throws ResourceException
     {
         super(account);
 
-        user = account.user(client);
+        user = account.userResource();
 
         UserInboxClientResource userInboxResource = user.workspace().user().inbox();
         add(obf.newObjectBuilder(UserInboxNode.class).use(userInboxResource).newInstance());
@@ -75,11 +75,5 @@ public class UserNode
     public ListValue findProjects(String name) throws ResourceException
     {
         return user.findProjects(name);
-    }
-
-    @Override
-    public Object getValueAt(int column)
-    {
-        return i18n.text(WorkspaceResources.user_node);
     }
 }

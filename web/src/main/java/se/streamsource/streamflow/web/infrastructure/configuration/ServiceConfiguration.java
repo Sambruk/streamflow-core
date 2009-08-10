@@ -46,7 +46,7 @@ public interface ServiceConfiguration
         public void activate() throws Exception
         {
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Service configuration"));
-            String jdbmPath = new File(config.dataDirectory(), "jdbm.data").getAbsolutePath();
+            String jdbmPath = new File(config.dataDirectory(), "JdbmEntityStoreService/jdbm.data").getAbsolutePath();
             uow.newEntity(JdbmConfiguration.class, "JdbmEntityStoreService").file().set(jdbmPath);
             uow.complete();
         }

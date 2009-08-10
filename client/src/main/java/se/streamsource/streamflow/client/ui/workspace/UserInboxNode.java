@@ -14,21 +14,21 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * JAVADOC
  */
 public class UserInboxNode
-        extends DefaultMutableTreeTableNode
+        extends DefaultMutableTreeNode
 {
     @Uses
     private UserInboxModel model;
 
-    @Override
-    public Object getValueAt(int column)
+    public String toString()
     {
         String text = i18n.text(WorkspaceResources.inboxes_node);
         int unread = model.unreadCount();
@@ -53,4 +53,6 @@ public class UserInboxNode
     {
         return model;
     }
+
+
 }

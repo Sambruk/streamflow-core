@@ -17,10 +17,9 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.domain.individual.Account;
-import se.streamsource.streamflow.client.domain.individual.Accounts;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 
 import javax.swing.tree.TreeNode;
 import java.util.Enumeration;
@@ -34,13 +33,12 @@ public class AdministrationNode
 {
     @Structure ObjectBuilderFactory obf;
 
-    @Uses
-    Accounts.AccountsState accounts;
+    @Uses AccountsModel accountsModel;
 
-    WeakModelMap<Account, AccountAdministrationNode> models = new WeakModelMap<Account, AccountAdministrationNode>()
+    WeakModelMap<AccountModel, AccountAdministrationNode> models = new WeakModelMap<AccountModel, AccountAdministrationNode>()
     {
         @Override
-        protected AccountAdministrationNode newModel(Account key)
+        protected AccountAdministrationNode newModel(AccountModel key)
         {
             return obf.newObjectBuilder(AccountAdministrationNode.class).use(AdministrationNode.this, key).newInstance();
         }
@@ -48,12 +46,12 @@ public class AdministrationNode
 
     public TreeNode getChildAt(final int childIndex)
     {
-        return models.get(accounts.accounts().get(childIndex));
+        return models.get(accountsModel.accountModel(childIndex));
     }
 
     public int getChildCount()
     {
-        return accounts.accounts().count();
+        return accountsModel.getSize();
     }
 
     public TreeNode getParent()
@@ -63,13 +61,12 @@ public class AdministrationNode
 
     public int getIndex(TreeNode node)
     {
-        int idx = 0;
-        for (Account account : accounts.accounts())
+        AccountAdministrationNode accNode = (AccountAdministrationNode) node;
+        for (int i = 0; i < accountsModel.getSize(); i++)
         {
-            TreeNode child = models.get(account);
-            if (node.equals(child))
-                return idx;
-            idx++;
+            AccountModel accountModel = accountsModel.accountModel(i);
+            if (accountModel == accNode.accountModel())
+                return i;
         }
         return -1;
     }

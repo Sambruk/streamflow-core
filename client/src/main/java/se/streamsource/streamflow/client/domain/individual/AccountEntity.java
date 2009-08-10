@@ -55,14 +55,10 @@ public interface AccountEntity
         // Registration
         @UseDefaults
         Property<Boolean> registered();
-
-        // Connection
-        @UseDefaults
-        Property<Boolean> enabled();
     }
 
     class AccountMixin
-            implements AccountSettings, AccountRegistration, AccountConnection, CallAuthentication
+            implements AccountSettings, AccountRegistration, AccountConnection
     {
         @Structure
         ValueBuilderFactory vbf;
@@ -95,7 +91,7 @@ public interface AccountEntity
         }
 
         // AccountRegistration
-        public void register(Restlet client) throws RegistrationException
+        public void register(Restlet client) throws ResourceException
         {
             ValueBuilder<RegisterUserCommand> commandBuilder = vbf.newValueBuilder(RegisterUserCommand.class);
             commandBuilder.prototype().username().set(state.settings().get().userName().get());
@@ -107,13 +103,8 @@ public interface AccountEntity
             RegisterUserCommand command = commandBuilder.newInstance();
 
             StreamFlowClientResource server = server(client);
-            try
-            {
-                server.users().register(command);
-            } catch (ResourceException e)
-            {
-                throw new RegistrationException(e.getMessage(), e);
-            }
+            server.users().register(command);
+            state.registered().set(true);
         }
 
         public boolean isRegistered()
@@ -140,37 +131,6 @@ public interface AccountEntity
         {
             return server(client).users().user(settings().userName().get());
         }
-
-        public boolean isEnabled()
-        {
-            return state.enabled().get();
-        }
-
-        public void enable() throws ConnectionException
-        {
-            if (!isRegistered())
-            {
-                throw new ConnectionException("#not registered");
-            }
-
-            state.enabled().set(true);
-        }
-
-        public void disable()
-        {
-            state.enabled().set(false);
-        }
-
-        // CallAuthentication
-        public void authenticateRequest(Request request)
-        {
-            request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, settings().userName().get(), settings().password().get()));
-            Reference accountRef = new Reference(settings().server().get());
-            request.getResourceRef().setProtocol(accountRef.getSchemeProtocol());
-            request.getResourceRef().setHostDomain(accountRef.getHostDomain());
-            request.getResourceRef().setHostPort(accountRef.getHostPort());
-        }
-
     }
 
     class AuthenticationFilter extends Filter

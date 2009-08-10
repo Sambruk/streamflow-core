@@ -21,7 +21,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 
@@ -41,10 +45,16 @@ public class AccountsDialog
     AccountsModel model;
 
     @Structure
+    UnitOfWorkFactory uowf;
+
+    @Structure
     ValueBuilderFactory vbf;
 
     @Structure
     ObjectBuilderFactory obf;
+
+    @Service
+    IndividualRepository individualRepository;
 
     @Service
     DialogService dialogs;
@@ -59,7 +69,6 @@ public class AccountsDialog
     {
         super(new BorderLayout());
         this.model = model;
-        model.refresh();
 
         setActionMap(context.getActionMap(this));
 
@@ -86,29 +95,26 @@ public class AccountsDialog
     @Action
     public void execute()
     {
-    }
-
-    @Action
-    public void close()
-    {
         WindowUtils.findWindow(this).dispose();
     }
 
     @Action
-    public void add()
+    public void add() throws ResourceException, UnitOfWorkCompletionException
     {
         CreateAccountDialog dialog = createAccountDialog.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog);
-        model.refresh();
+
+        if (dialog.settings() != null)
+        {
+            model.newAccount(dialog.settings());
+        }
     }
 
-
     @Action
-    public void remove()
+    public void remove() throws UnitOfWorkCompletionException
     {
         System.out.println("DeleteAccount invoked");
-        //accountList.getSelectedValue(); ...
-        //model.removeAccount();
+        model.removeAccount(accountList.getSelectedIndex());
     }
 
 }

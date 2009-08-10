@@ -37,7 +37,6 @@ public class UIInfrastructureAssembler
         module.importServices(UncaughtExceptionHandler.class).importedBy(NewObjectImporter.class).visibleIn(Visibility.application);
         module.addServices(
                 ExceptionHandlerService.class).instantiateOnStartup();
-        module.addServices(ContainerUnitOfWorkService.class).visibleIn(Visibility.layer);
         module.importServices(DialogService.class).importedBy(NewObjectImporter.class).visibleIn(Visibility.application);
     }
 }

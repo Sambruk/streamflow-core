@@ -21,7 +21,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
  */
 public interface Account
         extends AccountRegistration, AccountSettings, AccountConnection,
-        CallAuthentication, Describable
+        Describable
 {
 }
 

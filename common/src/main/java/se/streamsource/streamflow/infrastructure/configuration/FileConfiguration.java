@@ -18,11 +18,13 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
+import org.qi4j.spi.service.ServiceDescriptor;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -82,6 +84,9 @@ public interface FileConfiguration
     {
         @This
         FileState state;
+
+        @Uses
+        ServiceDescriptor descriptor;
 
         public void activate() throws Exception
         {

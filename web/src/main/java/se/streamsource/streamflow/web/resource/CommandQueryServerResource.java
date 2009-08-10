@@ -30,6 +30,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.runtime.util.Annotations;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.entity.helpers.json.JSONException;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.data.Form;
@@ -310,8 +311,14 @@ public class CommandQueryServerResource
                                 String value = param.getValue();
                                 if (value == null)
                                     value = "";
-                                Object valueObject = propertyType.type().fromQueryParameter(value, module);
-                                visitor.visitProperty(propertyType.qualifiedName(), valueObject);
+                                try
+                                {
+                                    Object valueObject = propertyType.type().fromQueryParameter(value, module);
+                                    visitor.visitProperty(propertyType.qualifiedName(), valueObject);
+                                } catch (JSONException e)
+                                {
+                                    throw new IllegalArgumentException("Query parameter has invalid JSON format", e);
+                                }
                             }
                         }
                     }

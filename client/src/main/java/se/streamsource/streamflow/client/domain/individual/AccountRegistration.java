@@ -15,13 +15,14 @@
 package se.streamsource.streamflow.client.domain.individual;
 
 import org.restlet.Restlet;
+import org.restlet.resource.ResourceException;
 
 /**
  * JAVADOC
  */
 public interface AccountRegistration
 {
-    void register(Restlet client) throws RegistrationException;
+    void register(Restlet client) throws ResourceException;
 
     boolean isRegistered();
 }
