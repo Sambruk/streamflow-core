@@ -30,6 +30,12 @@ public interface ContactValue
     Property<String> name();
 
     @UseDefaults
+    Property<String> company();
+
+    @UseDefaults
+    Property<Boolean> isCompany();
+
+    @UseDefaults
     Property<List<ContactPhoneValue>> phoneNumbers();
 
     @UseDefaults
@@ -37,4 +43,10 @@ public interface ContactValue
 
     @UseDefaults
     Property<List<ContactAddressValue>> addresses();
+
+    @UseDefaults
+    Property<String> picture();
+
+    @UseDefaults
+    Property<String> note();
 }

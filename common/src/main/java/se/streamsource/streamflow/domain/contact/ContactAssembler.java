@@ -27,13 +27,9 @@ public class ContactAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addValues(AddressValue.class,
-                ContactAddressValue.class,
+        module.addValues(ContactAddressValue.class,
                 ContactEmailValue.class,
                 ContactPhoneValue.class,
-                ContactValue.class,
-                EmailValue.class,
-                PhoneValue.class,
-                ContactRoleValue.class).visibleIn(Visibility.application);
+                ContactValue.class).visibleIn(Visibility.application);
     }
 }

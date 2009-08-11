@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.entity.EntityComposite;
+import se.streamsource.streamflow.domain.contact.Contacts;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.domain.roles.Taggable;
@@ -29,6 +30,7 @@ public interface TaskEntity
         // State
         Assignable.AssignableState,
         Commentable.CommentableState,
+        Contacts.ContactsState,
         CreatedOn.CreatedOnState,
         Delegatable.DelegatableState,
         Describable.DescribableState,

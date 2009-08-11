@@ -15,17 +15,52 @@
 package se.streamsource.streamflow.domain.contact;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
 
 import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface PhoneValue
-        extends ValueComposite
+@Mixins(Contacts.ContactsMixin.class)
+public interface Contacts
 {
-    @UseDefaults
-    Property<List<ContactPhoneValue>> phoneNumbers();
+    public void addContact(ContactValue contact);
+
+    public void removeContact(int index);
+
+    public void updateContact(int index, ContactValue newContact);
+
+    interface ContactsState
+    {
+        @UseDefaults
+        Property<List<ContactValue>> contacts();
+    }
+
+    class ContactsMixin
+    implements Contacts
+    {
+        @This ContactsState state;
+
+        public void addContact(ContactValue contact)
+        {
+
+        }
+            
+
+        public void removeContact(int index)
+        {
+
+        }
+
+        public void updateContact(int index, ContactValue newContact)
+        {
+
+        }
+
+
+    }
+    
 }
