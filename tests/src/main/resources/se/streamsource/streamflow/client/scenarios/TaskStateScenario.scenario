@@ -1,0 +1,43 @@
+Scenario: Completing an active task makes it completed
+Given a task with state ACTIVE
+When task is completed
+Then task state is COMPLETED
+
+
+Scenario: Completing an active not assigned task makes it completed and assigned
+Given a task with state ACTIVE
+When making task not assigned
+Then task assignedTo has null value
+When task is completed
+Then task state is COMPLETED
+And task assignedTo has nonnull value
+
+
+Scenario: Completing an active task where assignee = delegatedTo marks it unread
+Give a task with state ACTIVE
+When setting task to read
+Then task is read
+When setting delegatedTo
+When task is completed
+Then task state is COMPLETED
+And task is unread
+
+
+Scenario: Completing a dropped task has no effect
+Given a task with state DROPPED
+When making task not assigned
+Then task assignedTo has null value
+When task is completed
+Then task state is DROPPED
+And ###task assignedTo has null value
+
+
+Scenario: Given a task with state COMPLETED
+
+
+Scenario: Given a task with state DROPPED
+
+
+Scenario: Given a task with state ARCHIVED
+
+

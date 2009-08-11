@@ -14,16 +14,18 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import org.hamcrest.CoreMatchers;
+import static org.hamcrest.CoreMatchers.equalTo;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import static org.jbehave.util.JUnit4Ensure.ensureThat;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.entity.EntityReference;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
@@ -63,8 +65,9 @@ public class ProjectSteps
 
 
     @When("project named $name is deleted")
-    public void deleteGroup(String name)
+    public void deleteGroup(String name) throws UnitOfWorkCompletionException
     {
+        UnitOfWork uow = uowf.newUnitOfWork();
         OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) organizationalUnitSteps.ou;
 
         Project project = findProject(name);
@@ -72,6 +75,8 @@ public class ProjectSteps
         ensureThat(project, CoreMatchers.notNullValue());
 
         ouEntity.removeProject(project);
+
+        uow.complete();
     }
 
     @When("user is added as member in project named $name")
@@ -106,10 +111,10 @@ public class ProjectSteps
 
         if (can.equals("can"))
         {
-            ensureThat(null != projectEntity.members().get().getMemberValue(EntityReference.getEntityReference(userSteps.user)));
+            ensureThat(projectEntity.members().get().getMemberValue(EntityReference.getEntityReference(userSteps.user)), CoreMatchers.notNullValue());
         } else if (can.equals("cannot"))
         {
-            ensureThat(null == projectEntity.members().get().getMemberValue(EntityReference.getEntityReference(userSteps.user)));
+            ensureThat(projectEntity.members().get().getMemberValue(EntityReference.getEntityReference(userSteps.user)), CoreMatchers.nullValue());
         } else // fail
         {
             ensureThat(false);

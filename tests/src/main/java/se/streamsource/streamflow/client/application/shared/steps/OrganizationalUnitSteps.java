@@ -55,7 +55,7 @@ public class OrganizationalUnitSteps
     @When("a new organizational unit named $name is created")
     public void createOrganizationUnit(String name) throws Exception
     {
-        UnitOfWork uow = uowf.newUnitOfWork();
+        //UnitOfWork uow = uowf.newUnitOfWork();
         OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) ou;
 
         try
@@ -66,7 +66,7 @@ public class OrganizationalUnitSteps
             thrownException = e;
         }
 
-        uow.complete();
+        //uow.complete();
     }
 
 
