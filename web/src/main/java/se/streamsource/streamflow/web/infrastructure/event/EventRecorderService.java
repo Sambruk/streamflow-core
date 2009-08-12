@@ -68,6 +68,7 @@ public interface EventRecorderService
             {
                 logger = Logger.getLogger(getClass().getName());
                 eventDir = new File(config.dataDirectory(), "events");
+                eventDir.mkdirs();
             }
 
             public void passivate() throws Exception

@@ -14,7 +14,10 @@
 
 package se.streamsource.streamflow.client.test;
 
-import org.qi4j.bootstrap.*;
+import org.qi4j.api.structure.Application;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.web.StreamFlowWebAssembler;
 
 /**
@@ -33,6 +36,8 @@ public class StreamFlowWebDomainTestAssembler
     @Override
     protected void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException
     {
+        domainLayer.applicationAssembly().setMode(Application.Mode.test);
+
         super.assembleDomainLayer(domainLayer);
         ModuleAssembly moduleAssembly = domainLayer.newModuleAssembly("Test");
         moduleAssembly.addObjects(testClass);

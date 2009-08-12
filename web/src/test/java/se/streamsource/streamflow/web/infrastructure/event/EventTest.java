@@ -23,6 +23,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -39,7 +40,7 @@ public class EventTest
         module.addObjects(EventTest.class);
         module.addEntities(TestEntity.class);
         module.addValues(DomainEvent.class);
-        module.addServices(MemoryEntityStoreService.class, EventRecorderService.class, UuidIdentityGeneratorService.class);
+        module.addServices(MemoryEntityStoreService.class, EventRecorderService.class, UuidIdentityGeneratorService.class, FileConfiguration.class);
     }
 
     @Test
