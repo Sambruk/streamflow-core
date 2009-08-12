@@ -28,6 +28,7 @@ import se.streamsource.streamflow.web.infrastructure.configuration.Configuration
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EventStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
+import se.streamsource.streamflow.web.infrastructure.event.EventAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 
@@ -76,6 +77,7 @@ public class StreamFlowWebAssembler
         new EventStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Event Store"));
         new ServerEntityStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Store"));
         new EntityFinderAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Finder"));
+        new EventAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Events"));
     }
 
     private void assembleWebLayer(LayerAssembly webLayer) throws AssemblyException

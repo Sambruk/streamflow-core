@@ -59,6 +59,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.task.comment
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
+import se.streamsource.streamflow.web.resource.events.EventsResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
 /**
@@ -127,6 +128,9 @@ public class APIv1Router
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));
+
+        // Events
+        attach("/events", createServerResourceFinder(EventsResource.class));
     }
 
     private Finder createServerResourceFinder(Class<? extends ServerResource> resource)

@@ -26,7 +26,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventStore;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -47,10 +47,10 @@ import java.util.logging.Logger;
  */
 @Mixins({EventRecorderService.EventRecorderMixin.class, EventRecorderService.EventReplayMixin.class})
 public interface EventRecorderService
-        extends EventStore, EventReplay, ServiceComposite, Activatable
+        extends EventListener, EventReplay, ServiceComposite, Activatable
     {
         class EventRecorderMixin
-            implements EventStore, Activatable
+            implements EventListener, Activatable
         {
             Map<UnitOfWork, List<DomainEvent>> uows = new HashMap<UnitOfWork, List<DomainEvent>>();
 
@@ -79,7 +79,7 @@ public interface EventRecorderService
                 }
             }
 
-            public synchronized void storeEvent(DomainEvent event)
+            public synchronized void notifyEvent(DomainEvent event)
             {
                 final UnitOfWork unitOfWork = uowf.currentUnitOfWork();
                 List<DomainEvent> events = uows.get(unitOfWork);

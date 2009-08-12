@@ -12,47 +12,45 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.web.infrastructure.event;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * JAVADOC
  */
-@Mixins(EventStoreService.EventStoreMixin.class)
-public interface EventStoreService
-    extends EventListener, ServiceComposite, Activatable
+@Mixins(EventListenerPublisher.EventListenerPublisherMixin.class)
+public interface EventListenerPublisher
+    extends EventListener, EventPublisher, ServiceComposite
 {
-    class EventStoreMixin
-        implements EventListener, Activatable
+    class EventListenerPublisherMixin
+        implements EventListener, EventPublisher
     {
         Map<UnitOfWork, List<DomainEvent>> uows = new HashMap<UnitOfWork, List<DomainEvent>>();
+
+        Set<Writer> subscribers = new HashSet<Writer>();
 
         @Structure
         UnitOfWorkFactory uowf;
 
-        public void activate() throws Exception
-        {
-
-        }
-
-        public void passivate() throws Exception
-        {
-        }
-
-        public synchronized void notifyEvent(DomainEvent event)
+        public void notifyEvent(DomainEvent event)
         {
             final UnitOfWork unitOfWork = uowf.currentUnitOfWork();
             List<DomainEvent> events = uows.get(unitOfWork);
@@ -69,21 +67,45 @@ public interface EventStoreService
                     {
                         if (status.equals(UnitOfWorkStatus.COMPLETED))
                         {
-                            System.out.println("EVENTS:");
                             for (DomainEvent domainEvent : eventList)
                             {
-                                System.out.print(domainEvent.toJSON());
-                                System.out.print("\n");
+                                String json = domainEvent.toJSON();
+
+                                Set<Writer> disconnected = new HashSet<Writer>();
+                                for (Writer subscriber : subscribers)
+                                {
+                                    try
+                                    {
+                                        subscriber.write(json);
+                                        subscriber.write('\n');
+                                        subscriber.flush();
+                                    } catch (IOException e)
+                                    {
+                                        disconnected.add(subscriber);
+                                        synchronized (subscriber)
+                                        {
+                                            subscriber.notify();
+                                        }
+                                    }
+                                }
+                                subscribers.removeAll(disconnected);
                             }
                         }
 
                         uows.remove(unitOfWork);
                     }
+
                 });
                 events = eventList;
                 uows.put(unitOfWork, events);
             }
             events.add(event);
+
+        }
+
+        public void subscribe(Writer writer)
+        {
+            subscribers.add(writer);
         }
     }
 }

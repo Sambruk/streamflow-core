@@ -28,7 +28,7 @@ public class EventSideEffect
     extends GenericSideEffect
 {
     @Service
-    EventStore eventStore;
+    Iterable<EventListener> listeners;
 
     @Override
     protected void invoke(Method method, Object[] args) throws Throwable
@@ -36,7 +36,10 @@ public class EventSideEffect
         if (args[0] != null && DomainEvent.class.equals(method.getParameterTypes()[0]))
         {
             DomainEvent event = (DomainEvent) args[0];
-            eventStore.storeEvent(event);
+            for (EventListener listener : listeners)
+            {
+                listener.notifyEvent(event);
+            }
         }
     }
 }

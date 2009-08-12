@@ -14,15 +14,24 @@
 
 package se.streamsource.streamflow.domain.roles;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
+import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 
 /**
  * JAVADOC
  */
+@Concerns(EventCreationConcern.class)
+@SideEffects(EventSideEffect.class)
 @Mixins(Describable.DescribableMixin.class)
 public interface Describable
 {
@@ -32,10 +41,25 @@ public interface Describable
 
     String getDescription();
 
+    @Mixins(DescribableState.DescribableStateMixin.class)
     interface DescribableState
     {
         @UseDefaults
         Property<String> description();
+
+        @Event
+        void described(@Optional DomainEvent event, String description);
+
+        abstract class DescribableStateMixin
+            implements DescribableState
+        {
+            @This DescribableState state;
+
+            public void described(@Optional DomainEvent event, String description)
+            {
+                state.description().set(description);
+            }
+        }
     }
 
     class DescribableMixin
@@ -46,7 +70,7 @@ public interface Describable
 
         public void describe(String newDescription)
         {
-            state.description().set(newDescription);
+            state.described(null, newDescription);
         }
 
         public boolean hasDescription(String description)

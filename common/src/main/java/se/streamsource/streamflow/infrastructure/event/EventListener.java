@@ -17,7 +17,7 @@ package se.streamsource.streamflow.infrastructure.event;
 /**
  * JAVADOC
  */
-public interface EventStore
+public interface EventListener
 {
-    void storeEvent(DomainEvent event);
+    void notifyEvent(DomainEvent event);
 }

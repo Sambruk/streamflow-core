@@ -124,7 +124,7 @@ public class StreamFlowRestApplication
 
         api.attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
         api.attach("/qi4j", qi4jRouter);
-        
+
         // Guard
         authenticator.setVerifier(verifier);
         authenticator.setNext(versions);

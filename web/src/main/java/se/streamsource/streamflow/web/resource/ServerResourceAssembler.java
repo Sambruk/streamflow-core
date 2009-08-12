@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.resource;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.web.resource.events.EventsResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
@@ -127,7 +128,10 @@ public class ServerResourceAssembler
                 MemberRoleServerResource.class,
 
                 RolesServerResource.class,
-                RoleServerResource.class
+                RoleServerResource.class,
+
+                // Events
+                EventsResource.class
         );
     }
 }
