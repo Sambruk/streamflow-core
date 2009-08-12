@@ -50,6 +50,7 @@ public class LabelMenu
         super(i18n.text(WorkspaceResources.labels_label));
         addMenuListener(this);
         setMnemonic(KeyEvent.VK_L);
+        setEnabled(false);
     }
 
     public void valueChanged(ListSelectionEvent e)
@@ -58,6 +59,14 @@ public class LabelMenu
             return;
         
         selectionModel = (ListSelectionModel) e.getSource();
+
+        if (selectionModel.isSelectionEmpty())
+        {
+            setEnabled(false);
+        } else
+        {
+            setEnabled(true);
+        }
     }
 
     public void menuSelected(MenuEvent e)

@@ -52,7 +52,6 @@ public class UserAssignmentsView
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
         popup.add(am.get("forwardTasks"));
-        taskTable.addMouseListener(new PopupMenuTrigger(popup));
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
     }
 

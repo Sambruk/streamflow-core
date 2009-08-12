@@ -18,7 +18,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 import javax.swing.Action;
@@ -47,7 +46,6 @@ public class ProjectDelegationsView
         popup.add(labelMenu);
         Action markTasksAsUnread = am.get("markTasksAsUnread");
         popup.add(markTasksAsUnread);
-        taskTable.addMouseListener(new PopupMenuTrigger(popup));
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(markTasksAsUnread));
     }
 

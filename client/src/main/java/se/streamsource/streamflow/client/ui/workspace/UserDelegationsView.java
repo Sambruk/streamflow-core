@@ -47,7 +47,6 @@ public class UserDelegationsView
         popup.add(labelMenu);
         Action markTasksAsUnread = am.get("markTasksAsUnread");
         popup.add(markTasksAsUnread);
-        taskTable.addMouseListener(new PopupMenuTrigger(popup));
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(markTasksAsUnread));
     }
 

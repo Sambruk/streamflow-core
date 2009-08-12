@@ -51,7 +51,6 @@ public class ProjectWaitingForView
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
-        taskTable.addMouseListener(new PopupMenuTrigger(popup));
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
     }
 

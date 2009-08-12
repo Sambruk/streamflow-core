@@ -37,6 +37,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
+import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.NewTaskCommand;
@@ -232,6 +233,7 @@ public abstract class TaskTableView
         // Popup
         JPopupMenu popup = new JPopupMenu();
         buildPopupMenu(popup, am);
+        taskTable.addMouseListener(new PopupMenuTrigger(popup, taskTable.getSelectionModel()));
         buildToolbar(toolbar, am);
 
         addChangeListener(new ChangeListener()

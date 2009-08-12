@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui;
 
 import javax.swing.JPopupMenu;
+import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -24,10 +25,17 @@ import java.awt.event.MouseEvent;
 public class PopupMenuTrigger extends MouseAdapter
 {
     private final JPopupMenu popup;
+    private ListSelectionModel selectionModel;
 
     public PopupMenuTrigger(JPopupMenu popup)
     {
         this.popup = popup;
+    }
+
+    public PopupMenuTrigger(JPopupMenu popup, ListSelectionModel selectionModel)
+    {
+        this(popup);
+        this.selectionModel = selectionModel;
     }
 
     public void mousePressed(MouseEvent e)
@@ -39,6 +47,9 @@ public class PopupMenuTrigger extends MouseAdapter
     {
         if (e.isPopupTrigger())
         {
+            if (selectionModel != null && selectionModel.isSelectionEmpty())
+                return;    
+
             popup.show(e.getComponent(),
                     e.getX(), e.getY());
         }

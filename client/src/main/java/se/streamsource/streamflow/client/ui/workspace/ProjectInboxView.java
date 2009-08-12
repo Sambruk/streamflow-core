@@ -20,7 +20,6 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 import javax.swing.Action;
@@ -56,7 +55,6 @@ public class ProjectInboxView
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
         popup.add(am.get("forwardTasks"));
-        taskTable.addMouseListener(new PopupMenuTrigger(popup));
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
     }
 

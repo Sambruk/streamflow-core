@@ -30,8 +30,15 @@ public class BeforeAndAfterWebServer
     @BeforeScenario
     public void startWebServer() throws Exception
     {
-        web = new MainWeb();
-        web.start();
+        try
+        {
+            web = new MainWeb();
+            web.start();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @AfterScenario
