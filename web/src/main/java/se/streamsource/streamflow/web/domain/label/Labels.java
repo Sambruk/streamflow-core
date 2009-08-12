@@ -59,7 +59,7 @@ public interface Labels
         {
             if (state.labels().remove(label))
             {
-                uowf.currentUnitOfWork().remove(label);
+                label.remove();
             }
         }
 

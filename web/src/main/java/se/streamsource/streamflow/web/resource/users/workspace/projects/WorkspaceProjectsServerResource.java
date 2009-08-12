@@ -41,7 +41,7 @@ public class WorkspaceProjectsServerResource
         String id = (String) getRequest().getAttributes().get("user");
         Participant participant = uow.get(Participant.class, id);
 
-        for (Project project : participant.projects())
+        for (Project project : participant.allProjects())
         {
             builder.prototype().entity().set(EntityReference.getEntityReference(project));
             listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());

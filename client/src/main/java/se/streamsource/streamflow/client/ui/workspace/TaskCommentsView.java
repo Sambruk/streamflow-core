@@ -14,9 +14,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 
@@ -29,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
+import java.io.IOException;
 
 /**
  * JAVADOC
@@ -36,13 +44,23 @@ import java.awt.BorderLayout;
 public class TaskCommentsView
         extends JPanel
 {
+    @Service
+    StreamFlowApplication app;
+
+    @Service
+    DialogService dialogs;
+
+    @Uses
+    ObjectBuilder<AddCommentDialog> addCommentDialogs;
+
     private TaskCommentsModel model;
 
-    public TaskCommentsView(@Service ActionMap am,
+    public TaskCommentsView(@Service ApplicationContext context,
                             @Uses final TaskCommentsModel model)
     {
         super(new BorderLayout());
         this.model = model;
+        ActionMap am = context.getActionMap(this);
         JButton addComments = new JButton(am.get("addTaskComment"));
 
         final JPanel comments = new JPanel();
@@ -92,6 +110,19 @@ public class TaskCommentsView
             {
                 throw new OperationException(WorkspaceResources.could_not_refresh_comments, e);
             }
+        }
+    }
+
+
+    @Action
+    public void addTaskComment() throws ResourceException, IOException
+    {
+        AddCommentDialog dialog = addCommentDialogs.use(EntityReference.parseEntityReference(app.getWorkspaceView().getSelectedUser())).newInstance();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        if (dialog.command() != null)
+        {
+            model.addComment(dialog.command());
         }
     }
 }

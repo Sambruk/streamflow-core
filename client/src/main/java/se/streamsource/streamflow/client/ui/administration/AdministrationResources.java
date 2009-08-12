@@ -39,5 +39,5 @@ public enum AdministrationResources
     groups_tab,
     roles_tab,
     metadata_tab,
-    could_not_get_user, could_not_refresh_list_of_organizations, name_label, could_not_create_label, could_not_refresh_list_of_labels, connection_is_ok, could_not_register_user;
+    could_not_get_user, could_not_refresh_list_of_organizations, name_label, could_not_create_label, could_not_refresh_list_of_labels, connection_is_ok, could_not_register_user, could_not_rename_organization, could_not_create_new_organization, could_not_remove_organization;
 }

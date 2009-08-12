@@ -23,6 +23,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
+import org.qi4j.library.rdf.repository.NativeConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 import java.io.File;
@@ -48,7 +49,19 @@ public interface ServiceConfiguration
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Service configuration"));
             String jdbmPath = new File(config.dataDirectory(), "JdbmEntityStoreService/jdbm.data").getAbsolutePath();
             uow.newEntity(JdbmConfiguration.class, "JdbmEntityStoreService").file().set(jdbmPath);
-            uow.complete();
+
+            try
+            {
+                String rdfPath = new File(config.dataDirectory(), "rdf-repository").getAbsolutePath();
+                NativeConfiguration nativeConfiguration = uow.newEntity(NativeConfiguration.class, "rdf-repository");
+                nativeConfiguration.dataDirectory().set(rdfPath);
+                nativeConfiguration.tripleIndexes().set("spoc,cspo,ospc");
+
+                uow.complete();
+            } catch (Throwable e)
+            {
+                e.printStackTrace();
+            }
         }
 
         public void passivate() throws Exception

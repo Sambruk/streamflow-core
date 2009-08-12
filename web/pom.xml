@@ -94,14 +94,12 @@
 
 
         <!-- Visualization -->
-        <!-- Wait until posted in repo
-                <dependency>
-                    <groupId>org.qi4j.swing</groupId>
-                    <artifactId>qi4j-swing-envisage</artifactId>
-                    <version>${version.qi4j}</version>
-                    <scope>test</scope>
-                </dependency>
-        -->
+        <dependency>
+            <groupId>org.qi4j.swing</groupId>
+            <artifactId>qi4j-swing-envisage</artifactId>
+            <version>${version.qi4j-lib}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

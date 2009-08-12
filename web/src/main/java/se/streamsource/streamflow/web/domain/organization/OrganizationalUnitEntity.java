@@ -18,6 +18,7 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 import se.streamsource.streamflow.web.domain.group.Groups;
@@ -39,6 +40,7 @@ public interface OrganizationalUnitEntity
         OrganizationalUnits,
         Projects,
         Describable,
+        Removable,
 
         // State
         Describable.DescribableState,
@@ -46,6 +48,7 @@ public interface OrganizationalUnitEntity
         OrganizationalUnits.OrganizationalUnitsState,
         Groups.GroupsState,
         Projects.ProjectsState,
+        Removable.RemovableState,
         Roles.RolesState,
         IdGenerator.IdGeneratorState
 {

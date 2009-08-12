@@ -40,6 +40,11 @@ public class OrganizationClientResource
         super(context, reference);
     }
 
+    public void describe(DescriptionDTO descriptionValue) throws ResourceException
+    {
+        putCommand("describe", descriptionValue);
+    }
+
     public ListValue findUsers(String participantName) throws ResourceException
     {
         ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);

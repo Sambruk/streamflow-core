@@ -76,13 +76,29 @@ public class StreamFlowRestApplication
 
         // Start Qi4j
         Energy4Java is = new Energy4Java();
-        ApplicationSPI app = is.newApplication(new StreamFlowWebAssembler());
+        final ApplicationSPI app = is.newApplication(new StreamFlowWebAssembler());
         app.metaInfo().set(this);
         app.metaInfo().set(new ChallengeAuthenticator(parentContext, ChallengeScheme.HTTP_BASIC, "StreamFlow"));
 
         app.activate();
 
         app.findModule("Web", "REST").objectBuilderFactory().newObjectBuilder(StreamFlowRestApplication.class).injectTo(this);
+
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    System.out.println("Shutting down");
+                    app.passivate();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     /**
@@ -100,17 +116,14 @@ public class StreamFlowRestApplication
         directory.setListingAllowed(true);
         versions.attach("version.html", directory);
 
-        if (app.mode() == org.qi4j.api.structure.Application.Mode.development)
-        {
-            Router qi4jRouter = new Router(getContext());
-            qi4jRouter.attach("/entity", createServerResourceFinder(EntitiesResource.class));
-            qi4jRouter.attach("/entity/{identity}", createServerResourceFinder(EntityResource.class));
-            qi4jRouter.attach("/query", createServerResourceFinder(SPARQLResource.class));
-            qi4jRouter.attach("/query/index", createServerResourceFinder(IndexResource.class));
+        Router qi4jRouter = new Router(getContext());
+        qi4jRouter.attach("/entity", createServerResourceFinder(EntitiesResource.class));
+        qi4jRouter.attach("/entity/{identity}", createServerResourceFinder(EntityResource.class));
+        qi4jRouter.attach("/query", createServerResourceFinder(SPARQLResource.class));
+        qi4jRouter.attach("/query/index", createServerResourceFinder(IndexResource.class));
 
-            api.attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
-            api.attach("/qi4j", qi4jRouter);
-        }
+        api.attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
+        api.attach("/qi4j", qi4jRouter);
         
         // Guard
         authenticator.setVerifier(verifier);

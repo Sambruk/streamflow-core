@@ -50,7 +50,7 @@ public class OrganizationalStructureAdministrationNode
 
     public OrganizationalStructureAdministrationNode(@Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses OrganizationsClientResource orgResource, @Structure ObjectBuilderFactory obf) throws ResourceException
     {
-        super(ou);
+        super(ou.buildWith().prototype());
         this.orgResource = orgResource;
 
         OrganizationClientResource resource = orgResource.organization(ou.entity().get().identity());
@@ -71,6 +71,13 @@ public class OrganizationalStructureAdministrationNode
     public TreeNodeValue ou()
     {
         return (TreeNodeValue) getUserObject();
+    }
+
+    @Override
+    public void setUserObject(Object userObject)
+    {
+        model.describe(userObject.toString());
+        ou().description().set(userObject.toString());
     }
 
     public OrganizationalUnitAdministrationModel model()

@@ -68,6 +68,7 @@ public interface Members
         @Structure
         UnitOfWorkFactory uowf;
 
+        @This Project project;
 
         public boolean isMember(Participant participant)
         {
@@ -87,6 +88,7 @@ public interface Members
             List<MemberValue> members = membersBuilder.prototype().members().get();
             members.add(builder.newInstance());
             state.members().set(membersBuilder.newInstance());
+            participant.addProject(project);
         }
 
         public void addRole(Participant participant, Role role)
@@ -119,6 +121,7 @@ public interface Members
             {
                 membersBuilder.prototype().members().get().remove(memberValue);
                 state.members().set(membersBuilder.newInstance());
+                participant.removeProject(project);
             }
         }
 

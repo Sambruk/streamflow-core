@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.Aggregated;
-import org.qi4j.api.entity.Entity;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
@@ -98,7 +97,7 @@ public interface Projects
                     state.dropped().remove(project);
                 }
 
-                ((Entity)project).unitOfWork().remove(project);
+                project.remove();
             }
         }
 

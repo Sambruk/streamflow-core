@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.domain.project;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
@@ -50,6 +51,7 @@ public interface ProjectEntity
         Describable.DescribableState,
         ProjectStatus.ProjectStatusState,
         ProjectOrganization.ProjectOrganizationState,
-        Labels.LabelsState
+        Labels.LabelsState,
+        Removable.RemovableState
 {
 }

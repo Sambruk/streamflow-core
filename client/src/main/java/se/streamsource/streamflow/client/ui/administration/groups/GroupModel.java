@@ -87,5 +87,6 @@ public class GroupModel
     private void refresh() throws ResourceException
     {
         list = group.participants().participants();
+        fireContentsChanged(this, 0, getSize());
     }
 }

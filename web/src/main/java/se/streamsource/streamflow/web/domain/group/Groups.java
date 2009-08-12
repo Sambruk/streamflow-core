@@ -72,7 +72,7 @@ public interface Groups
         {
             if (state.groups().remove(group))
             {
-                uowf.currentUnitOfWork().remove(group);
+                group.remove();
             }
         }
     }

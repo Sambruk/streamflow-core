@@ -35,7 +35,6 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -49,7 +48,6 @@ import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.menu.MenuView;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
-import se.streamsource.streamflow.client.ui.workspace.AddCommentDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
@@ -65,7 +63,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -257,6 +254,11 @@ public class StreamFlowApplication
         return accountsModel;
     }
 
+    public WorkspaceView getWorkspaceView()
+    {
+        return workspaceView;
+    }
+
     // Controller actions -------------------------------------------
 
     // Menu actions
@@ -285,11 +287,5 @@ public class StreamFlowApplication
     public void help()
     {
         JOptionPane.showMessageDialog(this.getMainFrame(), "#showhelp");
-    }
-
-    @Action
-    public void addTaskComment() throws ResourceException, IOException
-    {
-        dialogs.showOkCancelHelpDialog(this.getMainFrame(), obf.newObjectBuilder(AddCommentDialog.class).newInstance());
     }
 }

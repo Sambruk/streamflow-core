@@ -44,15 +44,23 @@ public interface Participants
         @Structure
         ValueBuilderFactory vbf;
 
+        @This Group group;
+
         public void addParticipant(Participant participant)
         {
             if (!state.participants().contains(participant))
+            {
                 state.participants().add(state.participants().count(), participant);
+                participant.addGroup(group);
+            }
         }
 
         public void removeParticipant(Participant participant)
         {
-            state.participants().remove(participant);
+            if (state.participants().remove(participant))
+            {
+                participant.removeGroup(group);
+            }
         }
     }
 

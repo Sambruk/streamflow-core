@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.domain.label;
 import org.qi4j.api.entity.EntityComposite;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.domain.roles.Removable;
 
 /**
  * Label definition
@@ -25,6 +26,7 @@ public interface LabelEntity
     extends EntityComposite,
         Label,
         Describable.DescribableState,
-        Notable.NotableState
+        Notable.NotableState,
+        Removable.RemovableState
 {
 }

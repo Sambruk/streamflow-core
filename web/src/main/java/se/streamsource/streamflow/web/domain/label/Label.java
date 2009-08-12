@@ -16,11 +16,12 @@ package se.streamsource.streamflow.web.domain.label;
 
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.domain.roles.Removable;
 
 /**
  * JAVADOC
  */
 public interface Label
-    extends Describable, Notable
+    extends Describable, Notable, Removable
 {
 }

@@ -15,18 +15,14 @@
 package se.streamsource.streamflow.web.domain.group;
 
 import org.qi4j.api.entity.Identity;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +34,37 @@ import java.util.List;
 public interface Participant
         extends Identity, Describable
 {
-    List<Project> projects();
+    void addProject(Project project);
+
+    void removeProject(Project project);
+
+    /**
+     * Return all projects that this participant has access to.
+     * This includes projects that this participant is transitively
+     * a member of through groups.
+     * @return all projects that this participant is a member of
+     */
+    Iterable<Project> allProjects();
+
+    void addGroup(Group group);
+
+    void removeGroup(Group group);
+
+    /**
+     * Return all groups that this participant is a member of, transitively.
+     * @return all groups that this participant is a member of
+     */
+    Iterable<Group> allGroups();
+
+    interface ParticipantState
+    {
+        ManyAssociation<Project> projects();
+        ManyAssociation<Group> groups();
+    }
 
     abstract class ParticipantMixin
-        implements Participant {
-
+            implements Participant
+    {
         @Structure
         Module module;
 
@@ -52,23 +74,70 @@ public interface Participant
         @This
         Participant participant;
 
-        public List<Project> projects()
-        {
-            List<Project> result = new ArrayList<Project>();
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-            queryBuilder.where(QueryExpressions.matches(
-                    QueryExpressions.templateFor(ProjectEntity.class).description(), ".*"));
-            Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
+        @This
+        ParticipantState state;
 
-            for (Project project: projects) {
-                if (project.isMember(participant))
+        public void addProject(Project project)
+        {
+            state.projects().add(project);
+        }
+
+        public void removeProject(Project project)
+        {
+            state.projects().remove(project);
+        }
+
+        public Iterable<Project> allProjects()
+        {
+            List<Project> projects = new ArrayList<Project>();
+            // List my own
+            for (Project project : state.projects())
+            {
+                if (!projects.contains(project))
+                    projects.add(project);
+            }
+
+            // Get group projects
+            for (Group group : state.groups())
+            {
+                Iterable<Project> groupProjects = group.allProjects();
+                for (Project groupProject : groupProjects)
                 {
-                    result.add(project);
+                    if (!projects.contains(groupProject))
+                        projects.add(groupProject);
                 }
             }
 
-            return result;
+            return projects;
+        }
+
+        public void addGroup(Group group)
+        {
+            state.groups().add(group);
+        }
+
+        public void removeGroup(Group group)
+        {
+            state.groups().remove(group);
+        }
+
+        public Iterable<Group> allGroups()
+        {
+            List<Group> groups = new ArrayList<Group>();
+            for (Group group : state.groups())
+            {
+                if (!groups.contains(group))
+                groups.add(group);
+
+                // Add transitively
+                for (Group group1 : group.allGroups())
+                {
+                    if (!groups.contains(group1))
+                        groups.add(group);
+                }
+            }
+
+            return groups;
         }
     }
 }

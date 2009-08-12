@@ -67,12 +67,15 @@ public interface Roles
 
         public void removeRole(Role role)
         {
-            //To change body of implemented methods use File | Settings | File Templates.
+            if (state.roles().remove(role))
+            {
+                role.remove();
+            }
         }
 
         public boolean hasRole(Role role)
         {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            return state.roles().contains(role);
         }
 
         public List<Role> getRoles()

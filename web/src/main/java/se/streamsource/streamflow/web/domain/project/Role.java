@@ -14,13 +14,14 @@
 
 package se.streamsource.streamflow.web.domain.project;
 
-import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Removable;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
 
 /**
  * JAVADOC
  */
 public interface Role
-        extends Delegatee, Describable
+        extends Delegatee, Describable, Removable
 {
 }

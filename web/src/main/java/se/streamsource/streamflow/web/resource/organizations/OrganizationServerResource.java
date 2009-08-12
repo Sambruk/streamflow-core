@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * Mapped to /organizations/{organization}
@@ -48,6 +49,14 @@ public class OrganizationServerResource
 
     @Structure
     ValueBuilderFactory vbf;
+
+    public void describe(DescriptionDTO descriptionValue)
+    {
+        String taskId = (String) getRequest().getAttributes().get("organization");
+        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
+
+        describable.describe(descriptionValue.description().get());
+    }
 
     @Override
     protected Representation get(Variant variant) throws ResourceException

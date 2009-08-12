@@ -15,26 +15,34 @@
 package se.streamsource.streamflow.domain.roles;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 
-import java.util.List;
-
 /**
- * JAVADOC
+ * Generic interface for removing objects. They are not
+ * physically removed, but are instead only marked as removed.
+ * All state still exists and can be queried.
  */
-@Mixins(Taggable.TaggableMixin.class)
-public interface Taggable
+@Mixins(Removable.RemovableMixin.class)
+public interface Removable
 {
-    interface TaggableState
+    void remove();
+
+    interface RemovableState
     {
         @UseDefaults
-        Property<List<String>> tags();
+        Property<Boolean> removed();
     }
 
-    class TaggableMixin
-            implements Taggable
+    class RemovableMixin
+        implements Removable
     {
+        @This RemovableState state;
 
+        public void remove()
+        {
+            state.removed().set(true);
+        }
     }
 }

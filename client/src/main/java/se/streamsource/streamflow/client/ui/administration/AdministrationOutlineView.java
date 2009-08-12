@@ -14,18 +14,24 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import org.jdesktop.application.Action;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import java.awt.BorderLayout;
 
@@ -37,6 +43,10 @@ public class AdministrationOutlineView
 {
     private JXTree tree;
 
+    @Service
+    DialogService dialogs;
+    @Uses Iterable<NameDialog> nameDialogs;
+
     public AdministrationOutlineView(@Uses AdministrationModel model) throws Exception
     {
         super(new BorderLayout());
@@ -45,8 +55,9 @@ public class AdministrationOutlineView
 
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
+        tree.setEditable(true);
 
-        tree.setCellRenderer(new DefaultTreeRenderer(new WrappingProvider(
+        DefaultTreeRenderer renderer = new DefaultTreeRenderer(new WrappingProvider(
                 new IconValue()
                 {
                     public Icon getIcon(Object o)
@@ -66,47 +77,27 @@ public class AdministrationOutlineView
                         if (o instanceof AdministrationNode)
                             return "                            ";
                         else if (o instanceof AccountAdministrationNode)
-                            return ((AccountAdministrationNode)o).accountModel().settings().name().get();
+                            return ((AccountAdministrationNode) o).accountModel().settings().name().get();
                         else if (o instanceof OrganizationalStructureAdministrationNode)
-                            return ((OrganizationalStructureAdministrationNode)o).toString();
+                            return ((OrganizationalStructureAdministrationNode) o).toString();
                         else
                             return "Unknown";
                     }
                 },
                 false
-        )));
+        ));
+        tree.setCellRenderer(renderer);
 
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEtchedBorder());
 
         add(BorderLayout.CENTER, tree);
-/*
-        javax.swing.Action addAction = getActionMap().get("addOrganizationalUnit");
-        toolbar.add(new JButton(addAction));
-        final javax.swing.Action removeAction = getActionMap().get("removeOrganizationalUnit");
-        toolbar.add(new JButton(removeAction));
-        addAction.setEnabled(true);
-        removeAction.setEnabled(false);
 
-        add(toolbar, BorderLayout.SOUTH);
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(getActionMap().get("addOrganizationalUnit"));
+        popup.add(getActionMap().get("removeOrganizationalUnit"));
 
-
-        tree.addTreeSelectionListener(new TreeSelectionListener()
-        {
-            public void valueChanged(TreeSelectionEvent e)
-            {
-                TreePath leadSelectionPath = e.getNewLeadSelectionPath();
-                if (leadSelectionPath != null && OrganizationalStructureAdministrationNode.class.isInstance(leadSelectionPath.getLastPathComponent()))
-                {
-                    removeAction.setEnabled(true);
-                } else
-                {
-                    removeAction.setEnabled(false);
-                }
-            }
-        });
-
-*/
+        tree.addMouseListener(new PopupMenuTrigger(popup));
     }
 
 
@@ -115,45 +106,37 @@ public class AdministrationOutlineView
         return tree;
     }
 
-/*
     @Action
-    public void add()
+    public void addOrganizationalUnit()
     {
-        DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) outline.getSelectionPath().getPath()[1];
-        final Account account = (Account) mutableTreeNode.getUserObject();
-
-        OrganizationalStructureAdministrationNode node = (OrganizationalStructureAdministrationNode) outline.getSelectionPath().getLastPathComponent();
-        OrganizationalStructureValue ou = (OrganizationalStructureValue) node.getUserObject();
-        ValueBuilder<NewOrganizationalUnitContext> newOuBuilder = vbf.newValueBuilder(NewOrganizationalUnitContext.class);
-        newOuBuilder.prototype().context().set(ou.organizationalUnit().get());
-        uowf.nestedUnitOfWork();
-
-        NewOrganizationalUnitDialog dialog = obf.newObjectBuilder(NewOrganizationalUnitDialog.class).use(controller, newOuBuilder).newInstance();
-        cca.register(dialog, account);
-
-        dialogs.showOkCancelHelpDialog(this, dialog);
-    }
-
-    @Action
-    public void remove()
-    {
-        DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) outline.getSelectionPath().getPath()[1];
-        final Account account = (Account) mutableTreeNode.getUserObject();
-
-        CallAuthenticationContext.runWith(account, new Runnable()
+        Object node = tree.getSelectionPath().getLastPathComponent();
+        if (node instanceof OrganizationalStructureAdministrationNode)
         {
-            public void run()
-            {
-                TreePath selectionPath = outline.getSelectionPath();
-                OrganizationalStructureAdministrationNode node = (OrganizationalStructureAdministrationNode) selectionPath.getLastPathComponent();
-                OrganizationalStructureValue ou = (OrganizationalStructureValue) node.getUserObject();
-                EntityReference entityReference = ou.organizationalUnit().get();
-                OrganizationalStructureAdministrationNode parentNode = (OrganizationalStructureAdministrationNode)selectionPath.getPathComponent(selectionPath.getPathCount()-2);
-                OrganizationalStructureValue parentOu = (OrganizationalStructureValue) parentNode.getUserObject();
+            OrganizationalStructureAdministrationNode orgNode = (OrganizationalStructureAdministrationNode) node;
 
-                controller.removeOrganization(entityReference, parentOu.organizationalUnit().get());
+            NameDialog dialog = nameDialogs.iterator().next();
+            dialogs.showOkCancelHelpDialog(this, dialog);
+            if (dialog.name() != null)
+            {
+                orgNode.model().newOrganizationalUnit(dialog.name());
             }
-        });
+        }
     }
-*/
+
+    @Action
+    public void removeOrganizationalUnit()
+    {
+        Object node = tree.getSelectionPath().getLastPathComponent();
+        if (node instanceof OrganizationalStructureAdministrationNode)
+        {
+            OrganizationalStructureAdministrationNode orgNode = (OrganizationalStructureAdministrationNode) node;
+
+            Object parent = orgNode.getParent();
+            if (parent instanceof OrganizationalStructureAdministrationNode)
+            {
+                OrganizationalStructureAdministrationNode orgParent = (OrganizationalStructureAdministrationNode) parent;
+                orgParent.model().removeOrganizationalUnit(orgNode.ou().entity().get());
+            }
+        }
+    }
 }

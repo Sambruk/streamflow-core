@@ -28,6 +28,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
@@ -42,6 +43,8 @@ import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 public interface OrganizationalUnits
 {
     OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
+
+    void removeOrganizationalUnit(OrganizationalUnit ou);
 
     @Mixins(OrganizationalUnitsStateMixin.class)
     interface OrganizationalUnitsState
@@ -73,6 +76,14 @@ public interface OrganizationalUnits
             OrganizationalUnitEntity ou = state.organizationalUnitCreated(null, idGenerator.generate(OrganizationalUnitEntity.class));
             ou.describe(name);
             return ou;
+        }
+
+        public void removeOrganizationalUnit(OrganizationalUnit ou)
+        {
+            if (!state.organizationalUnits().remove(ou))
+                return; // OU is not a sub-OU of this OU
+
+            ((Removable)ou).remove();
         }
     }
 

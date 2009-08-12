@@ -19,10 +19,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
@@ -40,19 +40,15 @@ import java.util.Date;
 public class AddCommentDialog
         extends JPanel
 {
-    @Structure
-    UnitOfWorkFactory uowf;
-
     private StateBinder TaskBinder;
     private ValueBuilder<NewCommentCommand> commandBuilder;
-    private TaskCommentsModel commentsModel;
+    public NewCommentCommand command;
 
     public AddCommentDialog(@Service ApplicationContext appContext,
                                @Structure ValueBuilderFactory vbf,
-                               @Uses TaskCommentsModel commentsModel
+                               @Uses EntityReference user
     )
     {
-        this.commentsModel = commentsModel;
         setActionMap(appContext.getActionMap(this));
 
         setName(i18n.text(WorkspaceResources.add_comment_title));
@@ -75,6 +71,7 @@ public class AddCommentDialog
 
         // Create command builder
         commandBuilder = vbf.newValueBuilder(NewCommentCommand.class);
+        commandBuilder.prototype().commenter().set(user);
 
         TaskBinder.updateWith(commandBuilder.prototype());
     }
@@ -84,11 +81,8 @@ public class AddCommentDialog
             throws Exception
     {
         // Create command instance
-// TODO        commandBuilder.prototype().commenter().set(new EntityReference(workspaceView.getSelectedUser()));
         commandBuilder.prototype().creationDate().set(new Date());
-        final NewCommentCommand command = commandBuilder.newInstance();
-
-        commentsModel.addComment(command);
+        command = commandBuilder.newInstance();
 
         WindowUtils.findWindow(this).dispose();
     }
@@ -97,5 +91,10 @@ public class AddCommentDialog
     public void close()
     {
         WindowUtils.findWindow(this).dispose();
+    }
+
+    public NewCommentCommand command()
+    {
+        return command;
     }
 }

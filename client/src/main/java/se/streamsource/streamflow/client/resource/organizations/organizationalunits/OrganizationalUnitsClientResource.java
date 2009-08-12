@@ -21,6 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
@@ -41,6 +42,11 @@ public class OrganizationalUnitsClientResource
     public void newOrganizationalUnit(DescriptionDTO value) throws ResourceException
     {
         postCommand("newOrganizationalUnit", value);
+    }
+
+    public void removeOrganizationalUnit(EntityReferenceDTO entity) throws ResourceException
+    {
+        postCommand("removeOrganizationalUnit", entity);
     }
 
     public OrganizationalUnitClientResource organizationalUnit(String id)

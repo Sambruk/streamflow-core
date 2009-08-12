@@ -20,6 +20,7 @@ import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Removable;
 
 /**
  * JAVADOC
@@ -29,6 +30,7 @@ public interface GroupEntity
         extends Group,
         Describable.DescribableState,
         Participants.ParticipantsState,
+        Removable.RemovableState,
         EntityComposite
 {
     class GroupLifeycleConcern

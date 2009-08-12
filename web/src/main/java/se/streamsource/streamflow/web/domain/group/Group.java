@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.domain.group;
 
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Removable;
 
 /**
  * JAVADOC
@@ -22,6 +23,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 public interface Group
         extends Participant,
         Describable,
+        Removable,
         Participants
 {
 }

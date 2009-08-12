@@ -15,12 +15,15 @@
 package se.streamsource.streamflow.web.resource.organizations.organizationalunits;
 
 import org.qi4j.api.entity.EntityReference;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * Mapped to:
@@ -41,5 +44,20 @@ public class OrganizationalUnitsServerResource
             builder.addListItem(describable.getDescription(), EntityReference.getEntityReference(ou));
         }
         return builder.newList();
+    }
+
+    public void newOrganizationalUnit(DescriptionDTO value) throws ResourceException
+    {
+        String organization = getRequest().getAttributes().get("organizationa").toString();
+        OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
+        ous.createOrganizationalUnit(value.description().get());
+    }
+
+    public void removeOrganizationalUnit(EntityReferenceDTO entity) throws ResourceException
+    {
+        String organization = getRequest().getAttributes().get("organizationa").toString();
+        OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
+        OrganizationalUnit ou = uowf.currentUnitOfWork().get(OrganizationalUnit.class, entity.entity().get().identity());
+        ous.removeOrganizationalUnit(ou);
     }
 }

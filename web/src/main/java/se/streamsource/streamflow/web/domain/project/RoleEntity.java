@@ -18,6 +18,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Removable;
 
 import java.util.Set;
 
@@ -25,7 +26,10 @@ import java.util.Set;
  * JAVADOC
  */
 public interface RoleEntity
-        extends Role, Describable.DescribableState, EntityComposite
+        extends Role,
+        Describable.DescribableState,
+        Removable.RemovableState,
+        EntityComposite
 {
     @UseDefaults
     Property<Set<PermissionValue>> permissions();

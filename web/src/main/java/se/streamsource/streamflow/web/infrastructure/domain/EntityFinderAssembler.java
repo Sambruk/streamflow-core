@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.infrastructure.domain;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -23,6 +24,7 @@ import org.qi4j.index.rdf.assembly.RdfQueryService;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.library.rdf.repository.MemoryRepositoryService;
+import org.qi4j.library.rdf.repository.NativeRepositoryService;
 
 /**
  * JAVADOC
@@ -32,9 +34,19 @@ public class EntityFinderAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addServices(MemoryRepositoryService.class).instantiateOnStartup().visibleIn(Visibility.application).identifiedBy("rdf-repository");
+        Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+        if (mode.equals(Application.Mode.development) || mode.equals(Application.Mode.test))
+        {
+            // In-memory store
+            module.addServices(MemoryRepositoryService.class).instantiateOnStartup().visibleIn(Visibility.application).identifiedBy("rdf-repository");
+        } else if (mode.equals(Application.Mode.production))
+        {
+            // Native storage
+            module.addServices(NativeRepositoryService.class).visibleIn(Visibility.application).instantiateOnStartup().identifiedBy("rdf-repository");
+        }
+
+        module.addObjects(EntityStateSerializer.class, EntityTypeSerializer.class);
         module.addServices(RdfQueryService.class).instantiateOnStartup().visibleIn(Visibility.application);
         module.addServices(RdfFactoryService.class);
-        module.addObjects(EntityStateSerializer.class, EntityTypeSerializer.class);
     }
 }

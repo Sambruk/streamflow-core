@@ -49,8 +49,6 @@ public class RoleServerResource
 
         roles.removeRole(role);
 
-        uow.remove(role);
-
         try
         {
             uow.complete();

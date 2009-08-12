@@ -28,6 +28,7 @@ import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.api.common.QualifiedName;
 import org.qi4j.runtime.util.Annotations;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.helpers.json.JSONException;
@@ -296,6 +297,11 @@ public class CommandQueryServerResource
                 final ValueDescriptor descriptor = spi.getValueDescriptor((ValueComposite) builder.prototype());
                 builder.withState(new StateHolder()
                 {
+                    public <T> Property<T> getProperty(QualifiedName name)
+                    {
+                        return null;
+                    }
+
                     public <T> Property<T> getProperty(Method propertyMethod)
                     {
                         return null;

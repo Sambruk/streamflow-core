@@ -56,8 +56,6 @@ public class GroupServerResource
 
         groups.removeGroup(group);
 
-        uow.remove(group);
-
         try
         {
             uow.complete();

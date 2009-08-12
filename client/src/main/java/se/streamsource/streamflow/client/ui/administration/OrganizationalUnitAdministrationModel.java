@@ -17,12 +17,18 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
@@ -30,6 +36,9 @@ import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
 public class OrganizationalUnitAdministrationModel
     implements Refreshable
 {
+    @Structure
+    ValueBuilderFactory vbf;
+
     private GroupsModel groupsModel;
     private ProjectsModel projectsModel;
     private RolesModel rolesModel;
@@ -68,5 +77,44 @@ public class OrganizationalUnitAdministrationModel
         groupsModel.refresh();
         projectsModel.refresh();
         rolesModel.refresh();
+    }
+
+    public void describe(String newDescription)
+    {
+        try
+        {
+            ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+            builder.prototype().description().set(newDescription);
+            organization.describe(builder.newInstance());
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_rename_organization, e);
+        }
+    }
+
+    public void newOrganizationalUnit(String name)
+    {
+        try
+        {
+            ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+            builder.prototype().description().set(name);
+            organization.organizationalUnits().newOrganizationalUnit(builder.newInstance());
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_create_new_organization, e);
+        }
+    }
+
+    public void removeOrganizationalUnit(EntityReference id)
+    {
+        try
+        {
+            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+            builder.prototype().entity().set(id);
+            organization.organizationalUnits().removeOrganizationalUnit(builder.newInstance());
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_remove_organization, e);
+        }
     }
 }

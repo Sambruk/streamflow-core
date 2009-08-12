@@ -42,15 +42,16 @@ public class StreamFlowWebAssembler
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
         assembly.setName("StreamFlow web");
+        LayerAssembly configurationLayer = assembly.newLayerAssembly("Configuration");
         LayerAssembly domainInfrastructureLayer = assembly.newLayerAssembly("Domain infrastructure");
         LayerAssembly domainLayer = assembly.newLayerAssembly("Domain");
-        LayerAssembly appInfrastructureLayer = assembly.newLayerAssembly("Application infrastructure");
         LayerAssembly appLayer = assembly.newLayerAssembly("Application");
         LayerAssembly webLayer = assembly.newLayerAssembly("Web");
 
         webLayer.uses(appLayer, domainLayer, domainInfrastructureLayer);
-        appLayer.uses(domainLayer, appInfrastructureLayer, domainInfrastructureLayer);
+        appLayer.uses(domainLayer, domainInfrastructureLayer);
         domainLayer.uses(domainInfrastructureLayer);
+        domainInfrastructureLayer.uses(configurationLayer);
 
         assembleWebLayer(webLayer);
 
@@ -60,12 +61,18 @@ public class StreamFlowWebAssembler
 
         assembleDomainInfrastructureLayer(domainInfrastructureLayer);
 
+        assembleConfigurationLayer(configurationLayer);
+
         return assembly;
+    }
+
+    private void assembleConfigurationLayer(LayerAssembly configurationlayer) throws AssemblyException
+    {
+        new ConfigurationAssembler().assemble(configurationlayer.newModuleAssembly("Configuration"));
     }
 
     private void assembleDomainInfrastructureLayer(LayerAssembly domainInfrastructureLayer) throws AssemblyException
     {
-        new ConfigurationAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Configuration"));
         new EventStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Event Store"));
         new ServerEntityStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Store"));
         new EntityFinderAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Finder"));
@@ -75,7 +82,6 @@ public class StreamFlowWebAssembler
     {
         ModuleAssembly restModule = webLayer.newModuleAssembly("REST");
         new StreamFlowRestAssembler().assemble(restModule);
-        //new RestAssembler().assemble(restModule);
         new ServerResourceAssembler().assemble(restModule);
     }
 

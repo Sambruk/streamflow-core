@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 
@@ -29,7 +28,7 @@ public interface Subtasks
 
     interface SubtasksState
     {
-        ManyAssociation<Subtask> subtasks();
+//        ManyAssociation<Subtask> subtasks();
     }
 
     class SubtasksMixin
@@ -40,13 +39,13 @@ public interface Subtasks
 
         public void addSubtask(Subtask subtask)
         {
-            state.subtasks().add(state.subtasks().count(), subtask);
+//            state.subtasks().add(state.subtasks().count(), subtask);
             subtask.changeParentTask(subtasks);
         }
 
         public void removeSubtask(Subtask subtask)
         {
-            state.subtasks().remove(subtask);
+//            state.subtasks().remove(subtask);
             subtask.changeParentTask(subtasks);
         }
     }
