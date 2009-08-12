@@ -69,7 +69,7 @@ public class EventTest
 
         objectBuilderFactory.newObjectBuilder(EventTest.class).injectTo(this);
 
-        String json = "{\"identity\":\"ccad0cd6-a5bb-4ec9-9f11-0eef3e4429db-0\",\"by\":\"anonymous\",\"entity\":\"123\",\"name\":\"stuffDone\",\"on\":\"2009-08-10T17:13:46.673Z\",\"parameters\":\"{\\\"param1\\\":\\\"Foo\\\"}\"}";
+        String json = "{\"identity\":\"cf905e2e-41ea-4a42-8d52-fa9caa9ec326-0\",\"by\":\"anonymous\",\"entity\":\"123\",\"entityType\":\"se.streamsource.streamflow.web.infrastructure.event.TestEntity\",\"name\":\"stuffDone\",\"on\":\"2009-08-12T15:27:56.365Z\",\"parameters\":\"{\\\"param1\\\":\\\"Foo\\\"}\"}";
 
         DomainEvent event = valueBuilderFactory.newValueFromJSON(DomainEvent.class, json);
 
