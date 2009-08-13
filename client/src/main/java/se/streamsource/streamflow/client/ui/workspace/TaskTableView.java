@@ -208,11 +208,14 @@ public abstract class TaskTableView
         {
             public void valueChanged(ListSelectionEvent e)
             {
-                if (taskTable.getSelectedRow() != -1)
+                if (!e.getValueIsAdjusting())
                 {
-                    setEnabledAt(1, true);
-                } else
-                    setEnabledAt(1, false);
+                    if (taskTable.getSelectedRow() != -1)
+                    {
+                        setEnabledAt(1, true);
+                    } else
+                        setEnabledAt(1, false);
+                }
             }
         });
 
