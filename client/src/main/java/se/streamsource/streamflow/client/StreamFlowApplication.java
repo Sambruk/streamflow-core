@@ -233,7 +233,7 @@ public class StreamFlowApplication
         } catch (Throwable e)
         {
             JXErrorPane.showDialog(getMainFrame(), new ErrorInfo(i18n.text(StreamFlowResources.startup_error), e.getMessage(), null, "#error", e, Level.SEVERE, Collections.<String, String>emptyMap()));
-            System.out.println(e);
+            shutdown();
         }
         System.out.println("Startup done");
 

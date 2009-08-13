@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegatedTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsTaskClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
@@ -67,7 +67,7 @@ public class ProjectDelegationsModel
     public void reject(int idx) throws ResourceException
     {
         TaskDTO task = getTask(idx);
-        UserDelegatedTaskClientResource resource = (UserDelegatedTaskClientResource) getResource().task(task.task().get().identity());
+        ProjectDelegationsTaskClientResource resource = (ProjectDelegationsTaskClientResource) getResource().task(task.task().get().identity());
         resource.reject();
     }
 }
