@@ -173,12 +173,12 @@ public class StreamFlowApplication
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
-        frame.setVisible(true);
-
         frame.setJMenuBar(menuView);
 
         administrationWindow.getContentPane().setLayout(new BorderLayout());
         administrationWindow.getContentPane().add(administrationView, BorderLayout.CENTER);
+
+        show(frame);
     }
 
     @Override
@@ -266,14 +266,16 @@ public class StreamFlowApplication
     @Action
     public void showWorkspaceWindow()
     {
-        show(workspaceWindow);
+        if (!workspaceWindow.isVisible())
+            show(workspaceWindow);
     }
 
     @Action
     public void showAdministrationWindow() throws Exception
     {
         administrationModel.refresh();
-        show(administrationWindow);
+        if (!administrationWindow.isVisible())
+            show(administrationWindow);
     }
 
 
