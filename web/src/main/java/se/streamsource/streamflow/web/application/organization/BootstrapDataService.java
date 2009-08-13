@@ -14,20 +14,22 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
+import se.streamsource.streamflow.domain.contact.Contactable;
+import se.streamsource.streamflow.web.domain.organization.Organization;
+import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
@@ -52,41 +54,30 @@ public interface BootstrapDataService
 
             try
             {
-                // Check if admin users exists
-                uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
+                // Check if organizations entity exists
+                uow.get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
                 uow.discard();
             } catch (NoSuchEntityException e)
             {
                 // Create bootstrap data
-                EntityBuilder<OrganizationEntity> ouBuilder = uow.newEntityBuilder(OrganizationEntity.class, "Organization");
-                ouBuilder.prototype().description().set("Organization");
-                OrganizationEntity ou = ouBuilder.newInstance();
+                OrganizationsEntity organizations = uow.newEntity(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
+
+                Organization ou = organizations.createOrganization("Organization");
 
                 // User
-                UserEntity user = newUser(uow, ou);
+                User user = organizations.createUser(UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME);
+
+                ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
+                contactBuilder.prototype().name().set("Administrator");
+                ContactValue contact = contactBuilder.newInstance();
+                ((Contactable)user).updateContact(contact);
+
+                // Join organization
+                ((OrganizationParticipations)user).join(ou);
 
                 uow.complete();
             }
 
-        }
-
-        private UserEntity newUser(UnitOfWork uow, OrganizationEntity ou)
-                throws UnitOfWorkCompletionException
-        {
-            // Create users
-            EntityBuilder<UserEntity> userBuilder = uow.newEntityBuilder(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
-            UserEntity userState = userBuilder.prototype();
-            userState.userName().set(UserEntity.ADMINISTRATOR_USERNAME);
-
-            ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
-            contactBuilder.prototype().name().set("Administrator");
-            ContactValue contact = contactBuilder.newInstance();
-            userState.contact().set(contact);
-
-            // Join the organizations.html
-            userState.join(ou);
-
-            return userBuilder.newInstance();
         }
 
         public void passivate() throws Exception

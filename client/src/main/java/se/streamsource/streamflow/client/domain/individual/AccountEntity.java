@@ -95,6 +95,7 @@ public interface AccountEntity
         {
             ValueBuilder<RegisterUserCommand> commandBuilder = vbf.newValueBuilder(RegisterUserCommand.class);
             commandBuilder.prototype().username().set(state.settings().get().userName().get());
+            commandBuilder.prototype().password().set(state.settings().get().password().get());
 
             ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
             ContactValue contact = contactBuilder.newInstance();

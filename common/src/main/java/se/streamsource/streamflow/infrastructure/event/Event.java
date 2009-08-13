@@ -21,7 +21,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Mark a method as an event
+ * Mark a method as an event. The first parameter
+ * of the method must be a "DomainEvent", and when
+ * calling it from commands you must send in {@link DomainEvent#CREATE}
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( { ElementType.METHOD } )

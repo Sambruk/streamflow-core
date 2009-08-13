@@ -12,21 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.resource.user;
+package se.streamsource.streamflow.web.domain.organization;
 
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.web.domain.DomainEntity;
 
 /**
  * JAVADOC
  */
-public interface RegisterUserCommand
-        extends ValueComposite
+public interface OrganizationsEntity
+    extends Organizations, DomainEntity
 {
-    Property<String> username();
-
-    Property<String> password();
-
-    Property<ContactValue> contact();
+    public static final String ORGANIZATIONS_ID = "organizations";
 }

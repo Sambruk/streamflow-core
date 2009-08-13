@@ -16,11 +16,11 @@ package se.streamsource.streamflow.web.domain.group;
 
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
+import se.streamsource.streamflow.web.domain.DomainEntity;
 
 /**
  * JAVADOC
@@ -31,7 +31,7 @@ public interface GroupEntity
         Describable.DescribableState,
         Participants.ParticipantsState,
         Removable.RemovableState,
-        EntityComposite
+        DomainEntity
 {
     class GroupLifeycleConcern
             extends ConcernOf<Lifecycle>

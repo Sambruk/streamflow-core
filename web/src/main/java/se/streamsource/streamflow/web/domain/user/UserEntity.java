@@ -16,14 +16,13 @@ package se.streamsource.streamflow.web.domain.user;
 
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.comment.Commenter;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.label.Labels;
@@ -42,7 +41,7 @@ import se.streamsource.streamflow.web.domain.task.WaitingFor;
  */
 @Concerns(UserEntity.LifecycleConcern.class)
 public interface UserEntity
-        extends EntityComposite,
+        extends DomainEntity,
         Lifecycle,
 
         // Roles
@@ -60,17 +59,16 @@ public interface UserEntity
         Inbox,
         WaitingFor,
         Labels,
+        User,
 
         // State
         Contactable.ContactableState,
         OrganizationParticipations.OrganizationParticipationsState,
         Describable.DescribableState,
-        Labels.LabelsState
+        Labels.LabelsState,
+        User.UserState
 {
     public static final String ADMINISTRATOR_USERNAME = "administrator";
-
-    //        @Immutable
-    Property<String> userName();
 
     class LifecycleConcern
         extends ConcernOf<Lifecycle>

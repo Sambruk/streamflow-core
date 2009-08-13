@@ -25,13 +25,17 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.representation.*;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 import se.streamsource.streamflow.web.domain.organization.Organization;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.user.WrongPasswordException;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -81,16 +85,32 @@ public class UsersServerResource
         try
         {
             RegisterUserCommand registerUser = vbf.newValueFromJSON(RegisterUserCommand.class, representation.getText());
-            // Create users
+
+            // Check if user already exists
+            try
+            {
+                UserEntity existingUser = uow.get(UserEntity.class, registerUser.username().get());
+
+                if (!existingUser.isCorrectPassword(registerUser.password().get()))
+                    throw new WrongPasswordException();
+                return null; // Already exists
+            } catch (NoSuchEntityException e)
+            {
+                // Ok!
+            }
+
+            // Create user
             EntityBuilder<UserEntity> userBuilder = uow.newEntityBuilder(UserEntity.class, registerUser.username().get());
             UserEntity userState = userBuilder.prototype();
             userState.userName().set(registerUser.username().get());
+            userState.passwordChanged(userState.hashPassword(registerUser.password().get()));
 
             ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
             contactBuilder.prototype().name().set(registerUser.contact().get().name().get());
 
             ContactValue contact = contactBuilder.newInstance();
             userState.contact().set(contact);
+
 
             // Lookup the bootstrap organization
             Organization org = uow.get(OrganizationEntity.class, "Organization");
@@ -103,6 +123,7 @@ public class UsersServerResource
         } catch (Exception e)
         {
             uow.discard();
+            throw new ResourceException(e);
         }
         return null;
     }

@@ -27,7 +27,7 @@ public class OrganizationAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addEntities(OrganizationEntity.class,
+        module.addEntities(OrganizationsEntity.class, OrganizationEntity.class,
                 OrganizationalUnitEntity.class).visibleIn(application);
     }
 }

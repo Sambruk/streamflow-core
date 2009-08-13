@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.domain.roles;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.This;
@@ -48,14 +47,14 @@ public interface Describable
         Property<String> description();
 
         @Event
-        void described(@Optional DomainEvent event, String description);
+        void described(DomainEvent event, String description);
 
         abstract class DescribableStateMixin
             implements DescribableState
         {
             @This DescribableState state;
 
-            public void described(@Optional DomainEvent event, String description)
+            public void described(DomainEvent event, String description)
             {
                 state.description().set(description);
             }
@@ -70,7 +69,7 @@ public interface Describable
 
         public void describe(String newDescription)
         {
-            state.described(null, newDescription);
+            state.described(DomainEvent.CREATE, newDescription);
         }
 
         public boolean hasDescription(String description)

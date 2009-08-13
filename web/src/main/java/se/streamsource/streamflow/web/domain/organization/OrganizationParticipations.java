@@ -48,10 +48,5 @@ public interface OrganizationParticipations
         {
             state.organizations().remove(ou);
         }
-
-        public Iterable<Organization> getOrganizations()
-        {
-            return state.organizations();
-        }
     }
 }

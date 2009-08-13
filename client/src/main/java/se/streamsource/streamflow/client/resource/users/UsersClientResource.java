@@ -37,9 +37,8 @@ public class UsersClientResource
         return getSubResource(username, UserClientResource.class);
     }
 
-    public UserClientResource register(RegisterUserCommand command) throws ResourceException
+    public void register(RegisterUserCommand command) throws ResourceException
     {
         postCommand(command);
-        return getSubResource(command.username().get(), UserClientResource.class);
     }
 }

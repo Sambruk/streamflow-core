@@ -21,13 +21,16 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.json.JSONObject;
 import se.streamsource.streamflow.infrastructure.json.JSONStringer;
 import se.streamsource.streamflow.infrastructure.json.JSONWriter;
 
+import javax.security.auth.Subject;
 import java.lang.reflect.Method;
+import java.security.AccessController;
 import java.util.Date;
 
 /**
@@ -37,6 +40,9 @@ import java.util.Date;
 public class EventCreationConcern
     extends GenericConcern
 {
+    @Structure
+    UnitOfWorkFactory uowf;
+
     @This
     EntityComposite entity;
 
@@ -48,7 +54,7 @@ public class EventCreationConcern
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
-        if (args[0] == null && DomainEvent.class.equals(method.getParameterTypes()[0]))
+        if (args[0] == DomainEvent.CREATE)
         {
             // Create event
             ValueBuilder<DomainEvent> builder = vbf.newValueBuilder(DomainEvent.class);
@@ -58,8 +64,17 @@ public class EventCreationConcern
             prototype.entityType().set(entity.type().getName());
             prototype.on().set(new Date());
             prototype.entity().set(entity.identity().get());
-            prototype.by().set("anonymous"); // TODO
+
+            Subject subject = Subject.getSubject(AccessController.getContext());
+            if (subject == null)
+                prototype.by().set("unknown");
+            else
+            {
+                prototype.by().set(subject.getPrincipals().iterator().next().getName());
+            }
+
             prototype.identity().set(idGenerator.generate(DomainEvent.class));
+            prototype.usecase().set(uowf.currentUnitOfWork().usecase().name());
 
             JSONStringer json = new JSONStringer();
             JSONWriter params = json.object();

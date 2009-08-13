@@ -30,7 +30,7 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
 
 /**
- * Mapped to /organization/{id}. Show list of organizations user has access to.
+ * Mapped to /organizations/{id}.
  */
 public class OrganizationsServerResource
         extends BaseServerResource
@@ -44,15 +44,15 @@ public class OrganizationsServerResource
         Form form = getRequest().getResourceRef().getQueryAsForm();
         if (form.getFirst("findbyid") != null)
         {
-            // Find users
+            // Find organizations
             String id = form.getFirstValue("id");
             UnitOfWork uow = uowf.newUnitOfWork();
             try
             {
                 OrganizationalUnits org = uow.get(OrganizationalUnits.class, id);
-                Reference userRef = getRequest().getResourceRef().clone().addSegment(id).addSegment("");
-                userRef.setQuery("");
-                getResponse().redirectPermanent(userRef);
+                Reference orgRef = getRequest().getResourceRef().clone().addSegment(id).addSegment("");
+                orgRef.setQuery("");
+                getResponse().redirectPermanent(orgRef);
                 return new EmptyRepresentation();
             } catch (NoSuchEntityException e)
             {

@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -53,7 +52,7 @@ public interface OrganizationalUnits
         ManyAssociation<OrganizationalUnit> organizationalUnits();
 
         @Event
-        OrganizationalUnitEntity organizationalUnitCreated(@Optional DomainEvent event, @Name("id") String id);
+        OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id);
     }
 
     class OrganizationsMixin
@@ -73,7 +72,7 @@ public interface OrganizationalUnits
 
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
-            OrganizationalUnitEntity ou = state.organizationalUnitCreated(null, idGenerator.generate(OrganizationalUnitEntity.class));
+            OrganizationalUnitEntity ou = state.organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
             ou.describe(name);
             return ou;
         }

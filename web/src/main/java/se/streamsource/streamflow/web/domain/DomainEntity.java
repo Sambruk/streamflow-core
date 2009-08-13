@@ -12,21 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.resource.user;
+package se.streamsource.streamflow.web.domain;
 
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.contact.ContactValue;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.sideeffect.SideEffects;
+import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 
 /**
  * JAVADOC
  */
-public interface RegisterUserCommand
-        extends ValueComposite
+@Concerns(EventCreationConcern.class)
+@SideEffects(EventSideEffect.class)
+public interface DomainEntity
+    extends EntityComposite
 {
-    Property<String> username();
-
-    Property<String> password();
-
-    Property<ContactValue> contact();
 }

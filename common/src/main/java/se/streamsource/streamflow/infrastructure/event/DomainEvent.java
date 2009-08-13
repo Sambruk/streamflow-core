@@ -15,8 +15,11 @@
 package se.streamsource.streamflow.infrastructure.event;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.composite.Composite;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueComposite;
 
 import java.util.Date;
@@ -34,6 +37,12 @@ import java.util.Date;
 public interface DomainEvent
     extends ValueComposite, Identity
 {
+    // Dummy event to be used when calling event methods from commands
+    public static final DomainEvent CREATE = new DomainEventDummy();
+
+    // Usecase
+    Property<String> usecase();
+
     // Name of method/event
     Property<String> name();
 
@@ -52,4 +61,74 @@ public interface DomainEvent
 
     // Type of the entity being invoked
     Property<String> entityType();
+
+    // Dummy event class
+    class DomainEventDummy
+        implements DomainEvent
+    {
+        public Property<String> usecase()
+        {
+            return null;
+        }
+
+        public Property<String> name()
+        {
+            return null;
+        }
+
+        public Property<String> entity()
+        {
+            return null;
+        }
+
+        public Property<Date> on()
+        {
+            return null;
+        }
+
+        public Property<String> by()
+        {
+            return null;
+        }
+
+        public Property<String> parameters()
+        {
+            return null;
+        }
+
+        public Property<String> entityType()
+        {
+            return null;
+        }
+
+        public StateHolder state()
+        {
+            return null;
+        }
+
+        public <T> ValueBuilder<T> buildWith()
+        {
+            return null;
+        }
+
+        public String toJSON()
+        {
+            return null;
+        }
+
+        public <T> T metaInfo(Class<T> infoType)
+        {
+            return null;
+        }
+
+        public Class<? extends Composite> type()
+        {
+            return null;
+        }
+
+        public Property<String> identity()
+        {
+            return null;
+        }
+    }
 }

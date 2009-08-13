@@ -12,21 +12,11 @@
  *
  */
 
-package se.streamsource.streamflow.resource.user;
-
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.contact.ContactValue;
+package se.streamsource.streamflow.web.domain.user;
 
 /**
- * JAVADOC
+ * Thrown if the password was wrong
  */
-public interface RegisterUserCommand
-        extends ValueComposite
+public class WrongPasswordException extends Exception
 {
-    Property<String> username();
-
-    Property<String> password();
-
-    Property<ContactValue> contact();
 }

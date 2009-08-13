@@ -65,6 +65,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EventObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -121,8 +122,7 @@ public class StreamFlowApplication
 
         setMainFrame(workspaceWindow);
     }
-
-
+    
     public void init(@Uses final AccountsModel accountsModel, @Structure final ObjectBuilderFactory obf) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
         this.accountsModel = accountsModel;
@@ -287,5 +287,17 @@ public class StreamFlowApplication
     public void help()
     {
         JOptionPane.showMessageDialog(this.getMainFrame(), "#showhelp");
+    }
+
+    @Override
+    public void exit(EventObject eventObject)
+    {
+        super.exit(eventObject);
+    }
+
+    @Override
+    protected void shutdown()
+    {
+        super.shutdown();
     }
 }
