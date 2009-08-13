@@ -147,7 +147,7 @@ public class StreamFlowApplication
                 {
                     AccountModel accountModel = accountsModel.accountModel(0);
                     workspaceModel = obf.newObjectBuilder(WorkspaceModel.class).use(accountModel).newInstance();
-                    workspaceView = obf.newObjectBuilder(WorkspaceView.class).use(workspaceModel).newInstance();
+                    workspaceView = obf.newObjectBuilder(WorkspaceView.class).use(workspaceModel, accountModel).newInstance();
                     getMainFrame().getContentPane().add(workspaceView);
                 } else
                 {
@@ -219,6 +219,8 @@ public class StreamFlowApplication
                 {
                     Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.ready.name());
                     Logger.getLogger(LoggerCategories.PROGRESS).info(LoggerCategories.DONE);
+
+                    Logger.getLogger(LoggerCategories.HTTP).info(request.getResourceRef().toString() +"->"+response.getStatus());
 
                     super.afterHandle(request, response);
                 }

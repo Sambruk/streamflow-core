@@ -20,9 +20,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 import se.streamsource.streamflow.infrastructure.event.Event;
@@ -36,6 +39,7 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
 public interface Organizations
 {
     Organization createOrganization(String name);
+
     User createUser(String username, String password);
 
     @Mixins(OrganisationsStateMixin.class)
@@ -46,6 +50,8 @@ public interface Organizations
 
         @Event
         UserEntity userCreated(DomainEvent event, String username, String password);
+
+        Organization findByName(String name);
     }
 
     class OrganizationsMixin
@@ -78,6 +84,9 @@ public interface Organizations
         UnitOfWorkFactory uowf;
 
         @Structure
+        QueryBuilderFactory qbf;
+
+        @Structure
         ValueBuilderFactory vbf;
 
         public OrganizationEntity organizationCreated(DomainEvent event, String id)
@@ -93,6 +102,15 @@ public interface Organizations
             userEntity.hashedPassword().set(userEntity.hashPassword(password));
             userEntity.contact().set(vbf.newValue(ContactValue.class));
             return builder.newInstance();
+        }
+
+
+        public OrganizationEntity findByName(String name)
+        {
+            Describable.DescribableState template = QueryExpressions.templateFor(Describable.DescribableState.class);
+            return qbf.newQueryBuilder(OrganizationEntity.class).
+                    where(QueryExpressions.eq(template.description(), name)).
+                    newQuery(uowf.currentUnitOfWork()).find();
         }
     }
 }

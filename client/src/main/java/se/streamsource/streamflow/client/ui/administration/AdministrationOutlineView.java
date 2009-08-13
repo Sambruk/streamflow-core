@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
@@ -28,6 +29,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JPanel;
@@ -47,7 +49,7 @@ public class AdministrationOutlineView
     DialogService dialogs;
     @Uses Iterable<NameDialog> nameDialogs;
 
-    public AdministrationOutlineView(@Uses AdministrationModel model) throws Exception
+    public AdministrationOutlineView(@Service ApplicationContext context, @Uses AdministrationModel model) throws Exception
     {
         super(new BorderLayout());
 
@@ -93,9 +95,10 @@ public class AdministrationOutlineView
 
         add(BorderLayout.CENTER, tree);
 
+        ActionMap am = context.getActionMap(this);
         JPopupMenu popup = new JPopupMenu();
-        popup.add(getActionMap().get("addOrganizationalUnit"));
-        popup.add(getActionMap().get("removeOrganizationalUnit"));
+        popup.add(am.get("addOrganizationalUnit"));
+        popup.add(am.get("removeOrganizationalUnit"));
 
         tree.addMouseListener(new PopupMenuTrigger(popup));
     }

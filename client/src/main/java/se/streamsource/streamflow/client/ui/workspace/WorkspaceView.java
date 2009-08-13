@@ -30,6 +30,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -45,8 +46,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -66,6 +67,7 @@ public class WorkspaceView
 
     public WorkspaceView(final @Service ApplicationContext context,
                          @Uses final WorkspaceModel model,
+                         @Uses final AccountModel accountModel,
                          final @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
@@ -114,7 +116,7 @@ public class WorkspaceView
                     public String getString(Object o)
                     {
                         if (o instanceof UserNode)
-                            return i18n.text(WorkspaceResources.user_node);
+                            return accountModel.settings().name().get();
                         else if (o instanceof ProjectNode)
                             return ((ProjectNode)o).projectName();
                         else if (o instanceof ProjectsNode)

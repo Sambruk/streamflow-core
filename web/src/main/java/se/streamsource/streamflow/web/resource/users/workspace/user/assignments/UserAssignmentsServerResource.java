@@ -25,12 +25,13 @@ import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
+import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
 import se.streamsource.streamflow.web.domain.task.Ownable;
+import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -65,11 +66,11 @@ public class UserAssignmentsServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
-        UserEntity user = uow.get(UserEntity.class, id);
+        Assignments assignments = uow.get(Assignments.class, id);
+        Assignee assignee = uow.get(Assignee.class, id);
 
-        TaskEntity task = uow.newEntity(TaskEntity.class);
+        Task task = assignments.newAssignedTask(assignee);
         task.describe(command.description().get());
         task.changeNote(command.note().get());
-        user.receiveTask(task);
     }
 }
