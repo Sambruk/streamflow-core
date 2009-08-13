@@ -55,7 +55,7 @@ public interface Inbox
         {
             TaskEntity taskEntity = uowf.currentUnitOfWork().newEntity(TaskEntity.class);
             taskEntity.ownedBy(owner);
-            taskEntity.markAsUnread();
+            taskEntity.markAsRead();
 
             return taskEntity;
         }
