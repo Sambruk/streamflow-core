@@ -58,7 +58,8 @@ public interface Organizations
 
         public Organization createOrganization(String name)
         {
-            OrganizationEntity ou = state.organizationCreated(CREATE, idGen.generate(OrganizationEntity.class));
+//            OrganizationEntity ou = state.organizationCreated(CREATE, idGen.generate(OrganizationEntity.class));
+            OrganizationEntity ou = state.organizationCreated(CREATE, "Organizations");
             ou.describe(name);
             return ou;
         }
