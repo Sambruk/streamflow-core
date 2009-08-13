@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -54,12 +53,11 @@ public interface Inbox
 
         public Task newTask()
         {
-            EntityBuilder<TaskEntity> taskBuilder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class);
-            TaskEntity state = taskBuilder.prototype();
-            state.ownedBy(owner);
-            state.isRead().set(true);
+            TaskEntity taskEntity = uowf.currentUnitOfWork().newEntity(TaskEntity.class);
+            taskEntity.ownedBy(owner);
+            taskEntity.markAsUnread();
 
-            return taskBuilder.newInstance();
+            return taskEntity;
         }
 
         public void receiveTask(Task task)

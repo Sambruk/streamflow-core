@@ -17,7 +17,6 @@ package se.streamsource.streamflow.web.domain.project;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Immutable;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 
 /**
@@ -30,7 +29,6 @@ public interface ProjectOrganization
 
     interface ProjectOrganizationState
     {
-        @Immutable
         Association<OrganizationalUnit> organizationalUnit();
     }
 

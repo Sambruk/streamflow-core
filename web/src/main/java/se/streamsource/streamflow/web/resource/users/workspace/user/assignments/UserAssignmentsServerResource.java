@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.user.assignments;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
@@ -68,12 +67,9 @@ public class UserAssignmentsServerResource
         String id = (String) getRequest().getAttributes().get("user");
         UserEntity user = uow.get(UserEntity.class, id);
 
-        EntityBuilder<TaskEntity> builder = uow.newEntityBuilder(TaskEntity.class);
-        TaskEntity prototype = builder.prototype();
-        prototype.description().set(command.description().get());
-        prototype.note().set(command.note().get());
-
-        TaskEntity task = builder.newInstance();
+        TaskEntity task = uow.newEntity(TaskEntity.class);
+        task.describe(command.description().get());
+        task.changeNote(command.note().get());
         user.receiveTask(task);
     }
 }

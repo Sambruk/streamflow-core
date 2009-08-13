@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
@@ -55,9 +54,8 @@ public interface Accounts
         public Account newAccount()
         {
             AccountSettingsValue settings = vbf.newValue(AccountSettingsValue.class);
-            EntityBuilder<Account> builder = uowf.currentUnitOfWork().newEntityBuilder(Account.class);
-            builder.prototypeFor(AccountEntity.AccountState.class).settings().set(settings);
-            Account account = builder.newInstance();
+            Account account = uowf.currentUnitOfWork().newEntity(Account.class);
+            account.updateSettings(settings);
             state.accounts().add(state.accounts().count(), account);
             return account;
         }

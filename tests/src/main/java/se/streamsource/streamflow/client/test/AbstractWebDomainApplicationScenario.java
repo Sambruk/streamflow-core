@@ -44,7 +44,6 @@ public class AbstractWebDomainApplicationScenario
                         new PatternScenarioParser(this),
                         classLoader);
             }
-        }, new BeforeAndAfterWebDomainApplicationSteps(steps)
-                , new BeforeAndAfterWebServer());
+        }, new BeforeAndAfterWebDomainApplicationSteps(steps));
     }
 }

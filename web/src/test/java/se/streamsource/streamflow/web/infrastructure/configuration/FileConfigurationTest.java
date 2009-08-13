@@ -58,7 +58,8 @@ public class FileConfigurationTest
         objectBuilderFactory.newObjectBuilder(FileConfigurationTest.class).injectTo(this);
         System.setProperty("os.name", "Linux");
 
+        String user = System.getProperty("user.home");
         Assert.assertThat("OS is correct", config.os(), CoreMatchers.equalTo(FileConfiguration.OS.unix));
-        Assert.assertThat("configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo(new File("/etc/opt/StreamFlowServer")));
+        Assert.assertThat("configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo(new File(user+"/.StreamFlowServer/etc")));
     }
 }

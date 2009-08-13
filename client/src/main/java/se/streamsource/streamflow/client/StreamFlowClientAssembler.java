@@ -31,7 +31,7 @@ import se.streamsource.streamflow.client.ui.UIAssembler;
 import se.streamsource.streamflow.client.ui.administration.AdministrationAssembler;
 import se.streamsource.streamflow.client.ui.menu.MenuAssembler;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceUIAssembler;
-import se.streamsource.streamflow.domain.contact.ContactAssembler;
+import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
 
 /**
@@ -74,9 +74,8 @@ public class StreamFlowClientAssembler
 
     protected void assembleClientDomainLayer(LayerAssembly domainLayer) throws AssemblyException
     {
+        new CommonDomainAssembler().assemble(domainLayer);
         new IndividualAssembler().assemble(domainLayer.newModuleAssembly("Individual"));
-
-        new ContactAssembler().assemble(domainLayer.newModuleAssembly("Contact"));
 
         ModuleAssembly module = domainLayer.newModuleAssembly("REST domain model");
         new CommonResourceAssembler().assemble(module);

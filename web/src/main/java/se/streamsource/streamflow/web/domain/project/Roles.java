@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.Aggregated;
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -56,9 +55,8 @@ public interface Roles
         public Role newRole(String name)
         {
             // Create role
-            EntityBuilder<RoleEntity> roleBuilder = uowf.currentUnitOfWork().newEntityBuilder(RoleEntity.class);
-            roleBuilder.prototype().describe(name);
-            Role role = roleBuilder.newInstance();
+            Role role = uowf.currentUnitOfWork().newEntity(RoleEntity.class);
+            role.describe(name);
 
             state.roles().add(state.roles().count(), role);
 

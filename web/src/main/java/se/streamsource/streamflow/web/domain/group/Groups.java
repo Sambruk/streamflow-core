@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.domain.group;
 
 import org.qi4j.api.entity.Aggregated;
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -59,9 +58,8 @@ public interface Groups
             }
 
             // Create group
-            EntityBuilder<GroupEntity> groupBuilder = uowf.currentUnitOfWork().newEntityBuilder(GroupEntity.class);
-            groupBuilder.prototype().describe(name);
-            Group group = groupBuilder.newInstance();
+            Group group = uowf.currentUnitOfWork().newEntity(GroupEntity.class);
+            group.describe(name);
 
             state.groups().add(state.groups().count(), group);
 

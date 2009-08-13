@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -51,10 +50,8 @@ public interface Assignments
 
         public Task newAssignedTask(Assignee assignee)
         {
-            EntityBuilder<TaskEntity> taskBuilder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class);
-            TaskEntity state = taskBuilder.prototype();
-            state.ownedBy(owner);
-            Task task = taskBuilder.newInstance();
+            Task task = uowf.currentUnitOfWork().newEntity(TaskEntity.class);
+            task.ownedBy(owner);
             task.assignTo(assignee);
             return task;
         }

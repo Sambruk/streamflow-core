@@ -91,7 +91,6 @@ public class StreamFlowRestApplication
             {
                 try
                 {
-                    System.out.println("Shutting down");
                     app.passivate();
                 } catch (Exception e)
                 {
