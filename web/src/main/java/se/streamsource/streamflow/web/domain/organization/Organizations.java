@@ -97,7 +97,7 @@ public interface Organizations
         public UserEntity userCreated(DomainEvent event, String username, String password)
         {
             EntityBuilder<UserEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(UserEntity.class, username);
-            UserEntity userEntity = builder.prototype();
+            UserEntity userEntity = builder.instance();
             userEntity.userName().set(username);
             userEntity.hashedPassword().set(userEntity.hashPassword(password));
             userEntity.contact().set(vbf.newValue(ContactValue.class));

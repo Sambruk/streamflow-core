@@ -55,11 +55,19 @@ public class i18n
     {
         ResourceMap resourceMap = getResourceMap(resource);
         ImageIcon icon = resourceMap.getImageIcon(resource.name());
+        return icon(icon, size);
+    }
+
+    public static ImageIcon icon(ImageIcon icon, int size)
+    {
+        if (icon == null)
+            return null;
+
         Image image = icon.getImage();
         if (icon.getIconWidth() != size)
         {
             image = image.getScaledInstance(size, size, Image.SCALE_SMOOTH);
-            icon.setImage(image);
+            icon = new ImageIcon(image);
         }
         return icon;
     }

@@ -18,13 +18,9 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
@@ -36,15 +32,11 @@ public class ProjectWaitingForView
 {
     @Uses LabelMenu labelMenu;
 
-    protected String tabName()
-    {
-        return text(waitingfor_tab);
-    }
-
-    protected void buildPopupMenu(JPopupMenu popup, ActionMap am)
+    protected void buildPopupMenu(JPopupMenu popup)
     {
         taskTable.getSelectionModel().addListSelectionListener(labelMenu);
 
+        ActionMap am = getActionMap();
         popup.add(labelMenu);
         popup.add(am.get("markTasksAsUnread"));
         Action dropAction = am.get("dropTasks");
@@ -55,14 +47,11 @@ public class ProjectWaitingForView
     }
 
     @Override
-    protected void buildToolbar(JPanel toolbar, ActionMap am)
+    protected void buildToolbar(JPanel toolbar)
     {
-        Action assignAction = am.get("assignTasksToMe");
-        toolbar.add(new JButton(assignAction));
-        Action delegateTasksFromInbox = am.get("delegateTasks");
-        toolbar.add(new JButton(delegateTasksFromInbox));
-        javax.swing.Action refreshAction = am.get("refresh");
-        toolbar.add(new JButton(refreshAction));
+        Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
+        Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
+        addToolbarButton(toolbar, "refresh");
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
     }
 

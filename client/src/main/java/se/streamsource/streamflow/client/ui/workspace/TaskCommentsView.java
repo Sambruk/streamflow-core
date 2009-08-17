@@ -30,11 +30,11 @@ import se.streamsource.streamflow.resource.comment.CommentDTO;
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListDataEvent;
+import javax.swing.JLabel;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListDataEvent;
 import java.awt.BorderLayout;
 import java.io.IOException;
 
@@ -43,6 +43,7 @@ import java.io.IOException;
  */
 public class TaskCommentsView
         extends JPanel
+        implements ListDataListener
 {
     @Service
     StreamFlowApplication app;
@@ -54,43 +55,16 @@ public class TaskCommentsView
     ObjectBuilder<AddCommentDialog> addCommentDialogs;
 
     private TaskCommentsModel model;
+    public JPanel comments;
 
-    public TaskCommentsView(@Service ApplicationContext context,
-                            @Uses final TaskCommentsModel model)
+    public TaskCommentsView(@Service ApplicationContext context)
     {
         super(new BorderLayout());
-        this.model = model;
         ActionMap am = context.getActionMap(this);
         JButton addComments = new JButton(am.get("addTaskComment"));
 
-        final JPanel comments = new JPanel();
+        comments = new JPanel();
         comments.setLayout(new BoxLayout(comments, BoxLayout.Y_AXIS));
-        model.addListDataListener(new ListDataListener()
-        {
-            public void intervalAdded(ListDataEvent e)
-            {
-                contentsChanged(e);
-            }
-
-            public void intervalRemoved(ListDataEvent e)
-            {
-                contentsChanged(e);
-            }
-
-            public void contentsChanged(ListDataEvent e)
-            {
-                comments.removeAll();
-                int size = model.getSize();
-                for (int i = 0; i < size; i++)
-                {
-                    CommentDTO commentDTO = (CommentDTO) model.getElementAt(i);
-                    String text = commentDTO.text().get().replace("\n", "<br/>");
-                    JLabel comment = new JLabel("<html><b>"+commentDTO.commenter().get()+", "+commentDTO.creationDate().get()+"</b>"+(commentDTO.isPublic().get() ? " ("+ i18n.text(WorkspaceResources.public_comment)+")": "")+"<p>"+ text +"</p></html>");
-                    comments.add(comment);
-                }
-                TaskCommentsView.this.validate();
-            }
-        });
 
         add(addComments, BorderLayout.NORTH);
         add(new JScrollPane(comments), BorderLayout.CENTER);
@@ -124,5 +98,44 @@ public class TaskCommentsView
         {
             model.addComment(dialog.command());
         }
+    }
+
+    public void setModel(TaskCommentsModel taskCommentsModel)
+    {
+        if (model != null)
+            model.removeListDataListener(this);
+
+        model = taskCommentsModel;
+
+        if (model != null)
+        {
+            model.addListDataListener(this);
+
+            contentsChanged(null);
+        }
+    }
+
+    public void intervalAdded(ListDataEvent e)
+    {
+        contentsChanged(e);
+    }
+
+    public void intervalRemoved(ListDataEvent e)
+    {
+        contentsChanged(e);
+    }
+
+    public void contentsChanged(ListDataEvent e)
+    {
+        comments.removeAll();
+        int size = model.getSize();
+        for (int i = 0; i < size; i++)
+        {
+            CommentDTO commentDTO = (CommentDTO) model.getElementAt(i);
+            String text = commentDTO.text().get().replace("\n", "<br/>");
+            JLabel comment = new JLabel("<html><b>"+commentDTO.commenter().get()+", "+commentDTO.creationDate().get()+"</b>"+(commentDTO.isPublic().get() ? " ("+ i18n.text(WorkspaceResources.public_comment)+")": "")+"<p>"+ text +"</p></html>");
+            comments.add(comment);
+        }
+        TaskCommentsView.this.validate();
     }
 }

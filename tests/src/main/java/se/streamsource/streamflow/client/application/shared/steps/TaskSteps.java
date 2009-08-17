@@ -59,7 +59,7 @@ public class TaskSteps
     public void task() throws Exception
     {
         inboxSteps.inbox();
-        task = userSteps.user.newTask();
+        task = userSteps.user.createTask();
     }
 
     @When("setting comment with text $text")

@@ -178,7 +178,7 @@ public class StreamFlowApplication
         administrationWindow.getContentPane().setLayout(new BorderLayout());
         administrationWindow.getContentPane().add(administrationView, BorderLayout.CENTER);
 
-        show(frame);
+        showWorkspaceWindow();
     }
 
     @Override
@@ -269,7 +269,10 @@ public class StreamFlowApplication
     public void showWorkspaceWindow()
     {
         if (!workspaceWindow.isVisible())
+        {
+            workspaceView.refreshTree();
             show(workspaceWindow);
+        }
     }
 
     @Action

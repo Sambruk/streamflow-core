@@ -153,6 +153,7 @@ public class FormEditor
             {
                 final JComponent text = (JComponent) component;
                 text.setEnabled(true);
+                setVisible(component, true);
             }
         }
     }

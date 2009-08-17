@@ -14,8 +14,9 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
@@ -28,7 +29,6 @@ import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.api.common.QualifiedName;
 import org.qi4j.runtime.util.Annotations;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.helpers.json.JSONException;

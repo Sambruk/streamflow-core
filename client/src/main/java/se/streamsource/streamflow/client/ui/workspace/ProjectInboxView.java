@@ -19,12 +19,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
@@ -37,17 +34,14 @@ public class ProjectInboxView
     @Uses
     protected ObjectBuilder<ProjectSelectionDialog> projectSelectionDialog;
 
-    @Uses LabelMenu labelMenu;
+    @Uses
+    LabelMenu labelMenu;
 
-    protected String tabName()
-    {
-        return text(inbox_tab);
-    }
-
-    protected void buildPopupMenu(JPopupMenu popup, ActionMap am)
+    protected void buildPopupMenu(JPopupMenu popup)
     {
         taskTable.getSelectionModel().addListSelectionListener(labelMenu);
 
+        ActionMap am = getActionMap();
         popup.add(labelMenu);
         popup.add(am.get("markTasksAsUnread"));
         Action dropAction = am.get("dropTasks");
@@ -59,16 +53,12 @@ public class ProjectInboxView
     }
 
     @Override
-    protected void buildToolbar(JPanel toolbar, ActionMap am)
+    protected void buildToolbar(JPanel toolbar)
     {
-        Action addAction = am.get("newTask");
-        toolbar.add(new JButton(addAction));
-        Action assignAction = am.get("assignTasksToMe");
-        toolbar.add(new JButton(assignAction));
-        Action delegateTasksFromInbox = am.get("delegateTasks");
-        toolbar.add(new JButton(delegateTasksFromInbox));
-        Action refreshAction = am.get("refresh");
-        toolbar.add(new JButton(refreshAction));
+        addToolbarButton(toolbar, "createTask");
+        Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
+        Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
+        addToolbarButton(toolbar, "refresh");
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
     }
 

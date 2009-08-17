@@ -25,7 +25,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 @Mixins(Inbox.InboxMixin.class)
 public interface Inbox
 {
-    Task newTask();
+    Task createTask();
 
     void receiveTask(Task task);
 
@@ -51,7 +51,7 @@ public interface Inbox
         @Structure
         UnitOfWorkFactory uowf;
 
-        public Task newTask()
+        public Task createTask()
         {
             TaskEntity taskEntity = uowf.currentUnitOfWork().newEntity(TaskEntity.class);
             taskEntity.ownedBy(owner);

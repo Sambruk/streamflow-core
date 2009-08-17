@@ -22,7 +22,6 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
@@ -62,15 +61,13 @@ public class UserAssignmentsServerResource
         return buildTaskList(id, assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
     }
 
-    public void newtask(NewTaskCommand command)
+    public void createtask()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
         Assignments assignments = uow.get(Assignments.class, id);
         Assignee assignee = uow.get(Assignee.class, id);
 
-        Task task = assignments.newAssignedTask(assignee);
-        task.describe(command.description().get());
-        task.changeNote(command.note().get());
+        Task task = assignments.createAssignedTask(assignee);
     }
 }

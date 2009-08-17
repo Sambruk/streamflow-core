@@ -63,5 +63,5 @@ public enum WorkspaceResources
 
     add_comment_title,
 
-    window_name, is_completed
+    window_name, could_not_view_details, could_not_refresh_projects, is_completed
 }

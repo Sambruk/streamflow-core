@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -70,9 +71,10 @@ public interface Projects
                 }
             }
 
-            ProjectEntity project = uowf.currentUnitOfWork().newEntity(ProjectEntity.class);
-            project.describe(name);
-            project.organizationalUnit().set(ou);
+            EntityBuilder<ProjectEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(ProjectEntity.class);
+            builder.instance().describe(name);
+            builder.instance().organizationalUnit().set(ou);
+            ProjectEntity project = builder.newInstance();
 
             state.projects().add(state.projects().count(), project);
             state.active().add(state.active().count(), project);

@@ -32,50 +32,47 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
-import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.JSplitPane;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Base class for all views of task lists.
  */
 public abstract class TaskTableView
-        extends JTabbedPane
+        extends JPanel
 {
     @Service
     DialogService dialogs;
@@ -97,15 +94,18 @@ public abstract class TaskTableView
     protected LabelsModel labelsModel;
     protected JComboBox labelsList;
 
-    private JPanel detailsPanel;
-
     public void init(@Service ApplicationContext context,
                          @Uses LabelsModel labelsModel,
                          @Uses final TaskTableModel model,
+                         final @Uses TaskDetailView detailsView,
                          @Structure final ObjectBuilderFactory obf,
                          @Structure ValueBuilderFactory vbf)
     {
         this.model = model;
+        setLayout(new BorderLayout());
+        final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setOneTouchExpandable(true);
+        add(splitPane, BorderLayout.CENTER);
 
         labelsList = new JComboBox(labelsModel);
         labelsList.setRenderer(new DefaultListRenderer(new StringValue()
@@ -117,6 +117,7 @@ public abstract class TaskTableView
         }));
 
         ActionMap am = context.getActionMap(TaskTableView.class, this);
+        setActionMap(am);
 
         TasksQuery query = vbf.newValue(TasksQuery.class);
         try
@@ -128,22 +129,16 @@ public abstract class TaskTableView
         }
 
         // Toolbar
-        JPanel top = new JPanel(new GridLayout(2,1));
-        top.setBorder(BorderFactory.createEtchedBorder());
         JPanel toolbar = new JPanel();
 
-        top.add(toolbar);
-        top.add(labelsList);
-
         // Table
-        JPanel panel = new JPanel(new BorderLayout());
         taskTable = new JXTable(model);
-//        taskTable.setSortable(true);
 
         JScrollPane taskScrollPane = new JScrollPane(taskTable);
+        taskScrollPane.setMinimumSize(new Dimension(400, 100));
+        taskScrollPane.setPreferredSize(new Dimension(400, 400));
 
-        panel.add(top, BorderLayout.NORTH);
-        panel.add(taskScrollPane, BorderLayout.CENTER);
+        add(toolbar, BorderLayout.NORTH);
 
 
         taskTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
@@ -153,26 +148,9 @@ public abstract class TaskTableView
         taskTable.getColumn(2).setMaxWidth(150);
         taskTable.setAutoCreateColumnsFromModel(false);
 
-        addTab(tabName(), panel);
-        addTab(text(detail_tab), detailsPanel = new JPanel(new BorderLayout()));
-        setEnabledAt(1, false);
-
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "details");
-        getActionMap().put("details", new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                setSelectedIndex(1);
-            }
-        });
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "main");
-        getActionMap().put("main", new AbstractAction()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                setSelectedIndex(0);
-            }
-        });
+        splitPane.setTopComponent(taskScrollPane);
+        splitPane.setBottomComponent(detailsView);
+        splitPane.setResizeWeight(0.3);
 
         JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
         taskTable.setDefaultEditor(Boolean.class, completableEditor);
@@ -204,20 +182,6 @@ public abstract class TaskTableView
             }
         }, Color.black, Color.lightGray));
         taskTable.setEditable(true);
-        taskTable.getSelectionModel().addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    if (taskTable.getSelectedRow() != -1)
-                    {
-                        setEnabledAt(1, true);
-                    } else
-                        setEnabledAt(1, false);
-                }
-            }
-        });
 
         taskTable.addMouseListener(new MouseAdapter()
         {
@@ -235,55 +199,63 @@ public abstract class TaskTableView
 
         // Popup
         JPopupMenu popup = new JPopupMenu();
-        buildPopupMenu(popup, am);
+        buildPopupMenu(popup);
         taskTable.addMouseListener(new PopupMenuTrigger(popup, taskTable.getSelectionModel()));
-        buildToolbar(toolbar, am);
+        buildToolbar(toolbar);
 
-        addChangeListener(new ChangeListener()
+        // Update description of task when updated
+        final Observer descriptionUpdater = new Observer()
         {
-            public void stateChanged(ChangeEvent e)
+            public void update(Observable o, Object arg)
             {
-                if (getSelectedIndex() == 1)
+                TaskGeneralModel generalModel = (TaskGeneralModel) arg;
+                getSelectedTask().description().set(generalModel.getGeneral().description().get());
+            }
+        };
+
+        taskTable.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
                 {
                     try
                     {
-                        markTasksAsRead();
-                    } catch (ResourceException e1)
-                    {
-                        e1.printStackTrace();
-                    }
-
-                    TaskDTO dto = getSelectedTask();
-                    TaskDetailModel taskModel = model.taskDetailModel(dto.task().get().identity());
-
-
-                    TaskDetailView view = obf.newObjectBuilder(TaskDetailView.class).use(taskModel.general(), taskModel.comments()).newInstance();
-                    detailsPanel.removeAll();
-                    detailsPanel.add(view, BorderLayout.CENTER);
-                } else
-                {
-                    try
-                    {
-                        int[] selected = taskTable.getSelectedRows();
-                        model.refresh();
-                        for (int i : selected)
+                        if (taskTable.getSelectionModel().isSelectionEmpty())
                         {
-//                            taskTable.getSelectionModel().addSelectionInterval(i, i);
+                            if (detailsView.getTaskModel() != null)
+                                detailsView.getTaskModel().general().deleteObserver(descriptionUpdater);
+                            detailsView.setTaskModel(null);
+                        } else
+                        {
+                            TaskDTO dto = getSelectedTask();
+                            TaskDetailModel taskModel = model.taskDetailModel(dto.task().get().identity());
+                            taskModel.general().addObserver(descriptionUpdater);
+                            taskModel.refresh();
+
+                            detailsView.setTaskModel(taskModel);
                         }
-                    } catch (ResourceException ex)
+                    } catch (Exception e1)
                     {
-                        ex.printStackTrace();
+                        throw new OperationException(WorkspaceResources.could_not_view_details, e1);
                     }
                 }
             }
         });
     }
+    
+    abstract protected void buildPopupMenu(JPopupMenu popup);
 
-    abstract protected String tabName();
+    abstract protected void buildToolbar(JPanel toolbar);
 
-    abstract protected void buildPopupMenu(JPopupMenu popup, ActionMap am);
-
-    abstract protected void buildToolbar(JPanel toolbar, ActionMap am);
+    protected Action addToolbarButton(JPanel toolbar, String name)
+    {
+        ActionMap am = getActionMap();
+        Action action = am.get(name);
+        action.putValue(Action.LARGE_ICON_KEY, i18n.icon((ImageIcon) action.getValue(Action.LARGE_ICON_KEY), 16));
+        toolbar.add(new JButton(action));
+        return action;
+    }
 
     public JXTable getTaskTable()
     {
@@ -312,31 +284,15 @@ public abstract class TaskTableView
         return tasks;
     }
 
-    @Override
-    public void addNotify()
-    {
-        super.addNotify();
-
-        setSelectedIndex(0);
-    }
-
     @org.jdesktop.application.Action()
-    public void newTask() throws ResourceException
+    public void createTask() throws ResourceException
     {
-        // Show dialog
-        AddTaskDialog dialog = addTaskDialogs.newInstance();
-        dialogs.showOkCancelHelpDialog(application.getMainFrame(), dialog);
+        model.createTask();
 
-        NewTaskCommand command = dialog.getCommand();
-        if (command != null)
-        {
-            model.newTask(command);
-
-            JXTable table = getTaskTable();
-            int index = model.getRowCount()-1;
-            table.getSelectionModel().setSelectionInterval(index, index);
-            table.scrollRowToVisible(index);
-        }
+        JXTable table = getTaskTable();
+        int index = model.getRowCount()-1;
+        table.getSelectionModel().setSelectionInterval(index, index);
+        table.scrollRowToVisible(index);
     }
 
     @org.jdesktop.application.Action()

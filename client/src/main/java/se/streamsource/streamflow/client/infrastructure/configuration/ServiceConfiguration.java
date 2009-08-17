@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.infrastructure.configuration;
 
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -47,7 +48,9 @@ public interface ServiceConfiguration
         {
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Service configuration"));
             String jdbmPath = new File(config.dataDirectory(), "jdbm.data").getAbsolutePath();
-            uow.newEntity(JdbmConfiguration.class, "JdbmEntityStoreService").file().set(jdbmPath);
+            EntityBuilder<JdbmConfiguration> jdbm = uow.newEntityBuilder(JdbmConfiguration.class, "JdbmEntityStoreService");
+            jdbm.instance().file().set(jdbmPath);
+            jdbm.newInstance();
             uow.complete();
         }
 

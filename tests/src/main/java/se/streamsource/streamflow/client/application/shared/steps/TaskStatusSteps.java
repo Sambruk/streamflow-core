@@ -53,7 +53,7 @@ public class TaskStatusSteps
     public void taskWithState(String state) throws Exception
     {
         inboxSteps.inbox();
-        task = userSteps.user.newTask();
+        task = userSteps.user.createTask();
 
         TaskEntity taskEntity = (TaskEntity) task;
         taskEntity.status().set(TaskStates.valueOf(state));

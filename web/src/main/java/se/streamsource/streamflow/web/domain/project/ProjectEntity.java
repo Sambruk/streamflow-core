@@ -14,7 +14,8 @@
 
 package se.streamsource.streamflow.web.domain.project;
 
-import org.qi4j.api.sideeffect.SideEffects;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
@@ -24,12 +25,13 @@ import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.TaskId;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
 
 /**
  * JAVADOC
  */
-@SideEffects(AssignTaskIdSideEffect.class)
+@Mixins(ProjectEntity.ProjectIdGeneratorMixin.class)
 public interface ProjectEntity
         extends DomainEntity,
         // Roles
@@ -45,6 +47,7 @@ public interface ProjectEntity
         Owner,
         ProjectOrganization,
         Labels,
+        IdGenerator,
 
         // State
         Members.MembersState,
@@ -54,4 +57,14 @@ public interface ProjectEntity
         Labels.LabelsState,
         Removable.RemovableState
 {
+    class ProjectIdGeneratorMixin
+        implements IdGenerator
+    {
+        @This ProjectOrganizationState state;
+
+        public void assignId(TaskId task)
+        {
+            state.organizationalUnit().get().getOrganization().assignId(task);
+        }
+    }
 }

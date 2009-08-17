@@ -26,8 +26,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
+import se.streamsource.streamflow.client.ui.workspace.TaskGeneralModel;
 import se.streamsource.streamflow.client.ui.workspace.UserInboxModel;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 /**
  * JAVADOC
@@ -53,10 +54,12 @@ public class UserInboxSteps
     @When("new task '$desc'")
     public void whenNewTask(String description) throws ResourceException
     {
-        ValueBuilder<NewTaskCommand> builder = vbf.newValueBuilder(NewTaskCommand.class);
+        model.createTask();
+        TaskGeneralModel generalModel = model.taskDetailModel(model.getTask(0).task().get().identity()).general();
+        TaskGeneralDTO general = generalModel.getGeneral();
+        ValueBuilder<TaskGeneralDTO> builder = general.buildWith();
         builder.prototype().description().set(description);
-
-        model.newTask(builder.newInstance());
+        generalModel.updateGeneral(builder.newInstance());
     }
 
     @Then("task count is $count")

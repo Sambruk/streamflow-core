@@ -39,7 +39,7 @@ public class StreamFlowWebDomainTestAssembler
         domainLayer.applicationAssembly().setMode(Application.Mode.test);
 
         super.assembleDomainLayer(domainLayer);
-        ModuleAssembly moduleAssembly = domainLayer.newModuleAssembly("Test");
+        ModuleAssembly moduleAssembly = domainLayer.moduleAssembly("Test");
         moduleAssembly.addObjects(testClass);
     }
 }

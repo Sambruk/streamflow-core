@@ -101,7 +101,7 @@ public class UsersServerResource
 
             // Create user
             EntityBuilder<UserEntity> userBuilder = uow.newEntityBuilder(UserEntity.class, registerUser.username().get());
-            UserEntity userState = userBuilder.prototype();
+            UserEntity userState = userBuilder.instance();
             userState.userName().set(registerUser.username().get());
             userState.passwordChanged(userState.hashPassword(registerUser.password().get()));
 

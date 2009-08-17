@@ -28,6 +28,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
@@ -429,8 +430,16 @@ public class WorkspaceView
 
     public void refreshTree()
     {
-        workspaceTree.clearSelection();
-        workspaceTree.expandAll();
+        try
+        {
+            model.getRoot().getProjectsNode().refresh();
+            model.reload(model.getRoot().getProjectsNode());
+            workspaceTree.clearSelection();
+            workspaceTree.expandAll();
+        } catch (Exception e)
+        {
+            throw new OperationException(WorkspaceResources.could_not_refresh_projects, e);
+        }
     }
 
 }

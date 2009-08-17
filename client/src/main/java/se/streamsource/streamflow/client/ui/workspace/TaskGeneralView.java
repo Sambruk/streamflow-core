@@ -19,7 +19,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
@@ -31,6 +30,8 @@ import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -39,6 +40,7 @@ import java.util.Observer;
  */
 public class TaskGeneralView
         extends JScrollPane
+        implements Observer
 {
     @Service
     UncaughtExceptionHandler exception;
@@ -49,11 +51,11 @@ public class TaskGeneralView
 
     public FormEditor editor;
     public ValueBuilder<TaskGeneralDTO> valueBuilder;
+    public JTextField descriptionField;
+    private JToggleButton editButton;
 
-    public TaskGeneralView(@Service ApplicationContext appContext,
-                          @Uses final TaskGeneralModel model)
+    public TaskGeneralView(@Service ApplicationContext appContext)
     {
-        this.model = model;
         setActionMap(appContext.getActionMap(this));
         FormLayout layout = new FormLayout(
                 "200dlu",
@@ -69,22 +71,12 @@ public class TaskGeneralView
         BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
         bb
         .appendLine(WorkspaceResources.id_label, LABEL, template.taskId())
-        .appendLine(WorkspaceResources.description_label, TEXTFIELD, template.description())
+        .appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
         .appendLine(WorkspaceResources.labels_label, LABEL, template.labels())
         .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note())
-        .appendToggleButtonLine(getActionMap().get("edit"));
+        .appendLine(editButton = new JToggleButton(getActionMap().get("edit")));
 
         editor = new FormEditor(taskBinder.boundComponents());
-
-        model.addObserver(new Observer()
-        {
-            public void update(Observable o, Object arg)
-            {
-                TaskGeneralDTO general = model.getGeneral();
-                valueBuilder = general.buildWith();
-                taskBinder.updateWith(valueBuilder.prototype());
-            }
-        });
 
         setViewportView(form);
     }
@@ -103,18 +95,27 @@ public class TaskGeneralView
         }
     }
 
-    @Override
-    public void setVisible(boolean aFlag)
+    public void setModel(TaskGeneralModel taskGeneralModel)
     {
-        super.setVisible(aFlag);
+        if (model != null)
+        {
+            model.deleteObserver(this);
+        }
 
-        if (aFlag)
-            try
-            {
-                model.refresh();
-            } catch (Exception e)
-            {
-                exception.uncaughtException(e);
-            }
+        model = taskGeneralModel;
+
+        if (model != null)
+        {
+            model.addObserver(this);
+
+            update(model, null);
+        }
+    }
+
+    public void update(Observable o, Object arg)
+    {
+        TaskGeneralDTO general = model.getGeneral();
+        valueBuilder = general.buildWith();
+        taskBinder.updateWith(valueBuilder.prototype());
     }
 }

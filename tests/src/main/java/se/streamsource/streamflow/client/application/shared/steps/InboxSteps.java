@@ -67,7 +67,7 @@ public class InboxSteps
     @When("a task is created")
     public void createTask()
     {
-        task = inbox.newTask();
+        task = inbox.createTask();
     }
 
     @When("a task is received by project inbox")

@@ -21,13 +21,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
-import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Inbox;
-import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -84,18 +81,10 @@ public class AbstractTaskListServerResource
     }
 
 
-    protected void newTask(NewTaskCommand command, String inboxId, String assigneeId)
+    protected void createTask(String inboxId)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         Inbox inbox = uow.get(Inbox.class, inboxId);
-        Task task = inbox.newTask();
-        task.describe(command.description().get());
-        task.changeNote(command.note().get());
-
-        if (command.isCompleted().get())
-        {
-            Assignee assignee = uow.get(Assignee.class, assigneeId);
-            inbox.completeTask(task, assignee);
-        }
+        inbox.createTask();
     }
 }

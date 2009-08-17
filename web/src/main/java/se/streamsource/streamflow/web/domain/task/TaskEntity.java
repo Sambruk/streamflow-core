@@ -18,12 +18,15 @@ import se.streamsource.streamflow.domain.contact.Contacts;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
+import se.streamsource.streamflow.web.domain.project.AssignTaskIdSideEffect;
 import se.streamsource.streamflow.web.domain.comment.Commentable;
 import se.streamsource.streamflow.web.domain.label.Labelable;
+import org.qi4j.api.sideeffect.SideEffects;
 
 /**
  * JAVADOC
  */
+@SideEffects(AssignTaskIdSideEffect.class)
 public interface TaskEntity
         extends Task,
         // State

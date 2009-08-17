@@ -33,7 +33,5 @@ public class ProjectAssembler
                 ProjectEntity.class).visibleIn(application);
 
         module.addValues(PermissionValue.class, MembersValue.class, MemberValue.class).visibleIn(application);
-
-        module.addServices(TaskIdGeneratorService.class);
     }
 }

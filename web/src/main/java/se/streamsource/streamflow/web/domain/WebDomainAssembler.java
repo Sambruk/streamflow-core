@@ -32,13 +32,13 @@ public class WebDomainAssembler
 {
     public void assemble(LayerAssembly domainLayer) throws AssemblyException
     {
-        new CommentAssembler().assemble(domainLayer.newModuleAssembly("Comments"));
-        new CommonResourceAssembler().assemble(domainLayer.newModuleAssembly("Common"));
-        new GroupAssembler().assemble(domainLayer.newModuleAssembly("Group"));
-        new LabelAssembler().assemble(domainLayer.newModuleAssembly("Label"));
-        new OrganizationAssembler().assemble(domainLayer.newModuleAssembly("Organization"));
-        new ProjectAssembler().assemble(domainLayer.newModuleAssembly("Project"));
-        new TaskAssembler().assemble(domainLayer.newModuleAssembly("Task"));
-        new UserAssembler().assemble(domainLayer.newModuleAssembly("User"));
+        new CommentAssembler().assemble(domainLayer.moduleAssembly("Comments"));
+        new CommonResourceAssembler().assemble(domainLayer.moduleAssembly("Common"));
+        new GroupAssembler().assemble(domainLayer.moduleAssembly("Group"));
+        new LabelAssembler().assemble(domainLayer.moduleAssembly("Label"));
+        new OrganizationAssembler().assemble(domainLayer.moduleAssembly("Organization"));
+        new ProjectAssembler().assemble(domainLayer.moduleAssembly("Project"));
+        new TaskAssembler().assemble(domainLayer.moduleAssembly("Task"));
+        new UserAssembler().assemble(domainLayer.moduleAssembly("User"));
     }
 }

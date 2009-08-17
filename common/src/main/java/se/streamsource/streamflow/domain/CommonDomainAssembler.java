@@ -27,7 +27,7 @@ public class CommonDomainAssembler
 {
     public void assemble(LayerAssembly domainLayer) throws AssemblyException
     {
-        domainLayer.newModuleAssembly("Events").addValues(DomainEvent.class).visibleIn(Visibility.application);
-        new ContactAssembler().assemble(domainLayer.newModuleAssembly("Contact"));
+        domainLayer.moduleAssembly("Events").addValues(DomainEvent.class).visibleIn(Visibility.application);
+        new ContactAssembler().assemble(domainLayer.moduleAssembly("Contact"));
     }
 }

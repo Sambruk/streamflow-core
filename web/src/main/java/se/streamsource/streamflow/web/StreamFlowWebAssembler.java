@@ -43,11 +43,11 @@ public class StreamFlowWebAssembler
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
         assembly.setName("StreamFlow web");
-        LayerAssembly configurationLayer = assembly.newLayerAssembly("Configuration");
-        LayerAssembly domainInfrastructureLayer = assembly.newLayerAssembly("Domain infrastructure");
-        LayerAssembly domainLayer = assembly.newLayerAssembly("Domain");
-        LayerAssembly appLayer = assembly.newLayerAssembly("Application");
-        LayerAssembly webLayer = assembly.newLayerAssembly("Web");
+        LayerAssembly configurationLayer = assembly.layerAssembly("Configuration");
+        LayerAssembly domainInfrastructureLayer = assembly.layerAssembly("Domain infrastructure");
+        LayerAssembly domainLayer = assembly.layerAssembly("Domain");
+        LayerAssembly appLayer = assembly.layerAssembly("Application");
+        LayerAssembly webLayer = assembly.layerAssembly("Web");
 
         webLayer.uses(appLayer, domainLayer, domainInfrastructureLayer);
         appLayer.uses(domainLayer, domainInfrastructureLayer);
@@ -69,28 +69,28 @@ public class StreamFlowWebAssembler
 
     private void assembleConfigurationLayer(LayerAssembly configurationlayer) throws AssemblyException
     {
-        new ConfigurationAssembler().assemble(configurationlayer.newModuleAssembly("Configuration"));
+        new ConfigurationAssembler().assemble(configurationlayer.moduleAssembly("Configuration"));
     }
 
     private void assembleDomainInfrastructureLayer(LayerAssembly domainInfrastructureLayer) throws AssemblyException
     {
-        new EventStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Event Store"));
-        new ServerEntityStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Store"));
-        new EntityFinderAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Finder"));
-        new EventAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Events"));
+        new EventStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Event Store"));
+        new ServerEntityStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Store"));
+        new EntityFinderAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Finder"));
+        new EventAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Events"));
     }
 
     private void assembleWebLayer(LayerAssembly webLayer) throws AssemblyException
     {
-        ModuleAssembly restModule = webLayer.newModuleAssembly("REST");
+        ModuleAssembly restModule = webLayer.moduleAssembly("REST");
         new StreamFlowRestAssembler().assemble(restModule);
         new ServerResourceAssembler().assemble(restModule);
     }
 
     private void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
     {
-        new SecurityAssembler().assemble(appLayer.newModuleAssembly("Security"));
-        new OrganizationAssembler().assemble(appLayer.newModuleAssembly("Organization"));
+        new SecurityAssembler().assemble(appLayer.moduleAssembly("Security"));
+        new OrganizationAssembler().assemble(appLayer.moduleAssembly("Organization"));
     }
 
     protected void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException

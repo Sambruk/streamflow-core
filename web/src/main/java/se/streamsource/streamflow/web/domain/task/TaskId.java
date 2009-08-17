@@ -19,6 +19,9 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.Matches;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
+import se.streamsource.streamflow.web.domain.project.IdGenerator;
 
 /**
  * Human readable task id
@@ -34,28 +37,47 @@ public interface TaskId
      *
      * @param id
      */
-    void setTaskId(@Matches("\\d{8}-\\d*") String id);
-    String getTaskId();
+    void assignId(@Matches("\\d{8}-\\d*") String id);
+
+    void assignId(IdGenerator idgen);
 
     interface TaskIdState
     {
         @Optional
         Property<String> taskId();
+
+        @Event
+        void taskIdAssigned(DomainEvent event, String id);
     }
 
-    class TaskIdMixin
-        implements TaskId
+    abstract class TaskIdMixin
+        implements TaskId, TaskIdState
     {
         @This TaskIdState state;
 
-        public void setTaskId(String id)
+        @This TaskId id;
+
+        public void assignId(IdGenerator idgen)
         {
+            if (state.taskId().get() == null)
+            {
+                idgen.assignId(id);
+            }
+        }
+
+        public void assignId(String id)
+        {
+            if (state.taskId().get() == null)
+            {
+                state.taskIdAssigned(DomainEvent.CREATE, id);
+            }
             state.taskId().set(id);
         }
 
-        public String getTaskId()
+        // Event
+        public void taskIdAssigned(DomainEvent event, String id)
         {
-            return state.taskId().get();
+            state.taskId().set(id);
         }
     }
 }

@@ -25,7 +25,6 @@ import se.streamsource.streamflow.client.resource.users.workspace.TaskClientReso
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
@@ -120,6 +119,10 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     public Object getValueAt(int rowIndex, int column)
     {
         TaskDTO task = tasks.get(rowIndex);
+
+        if (task == null)
+            return null;
+
         switch (column)
         {
             case 0:
@@ -215,9 +218,9 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         }
     }
 
-    public void newTask(NewTaskCommand command) throws ResourceException
+    public void createTask() throws ResourceException
     {
-        getResource().newtask(command);
+        getResource().createTask();
         refresh();
     }
 

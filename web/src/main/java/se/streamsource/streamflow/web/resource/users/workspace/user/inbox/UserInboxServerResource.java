@@ -23,7 +23,6 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
@@ -66,10 +65,10 @@ public class UserInboxServerResource
         return buildTaskList(id, inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);
     }
 
-    public void newtask(NewTaskCommand command)
+    public void createtask()
     {
         String userId = (String) getRequest().getAttributes().get("user");
 
-        newTask(command, userId, userId);
+        createTask(userId);
     }
 }

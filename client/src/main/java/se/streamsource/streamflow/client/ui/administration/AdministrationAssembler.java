@@ -50,8 +50,8 @@ public class AdministrationAssembler
         UIAssemblers.addTasks(module, TestConnectionTask.class);
 
         // Other administration modules
-        new GroupAdministrationAssembler().assemble(module.layerAssembly().newModuleAssembly("Groups"));
-        new ProjectAdministrationAssembler().assemble(module.layerAssembly().newModuleAssembly("Projects"));
-        new RoleAdministrationAssembler().assemble(module.layerAssembly().newModuleAssembly("Roles"));
+        new GroupAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Groups"));
+        new ProjectAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Projects"));
+        new RoleAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Roles"));
     }
 }

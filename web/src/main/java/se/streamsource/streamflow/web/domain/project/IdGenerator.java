@@ -14,10 +14,17 @@
 
 package se.streamsource.streamflow.web.domain.project;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
+import se.streamsource.streamflow.web.domain.task.TaskId;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * Generator for id sequences. First number is 1.
@@ -25,40 +32,70 @@ import org.qi4j.api.property.Property;
 @Mixins(IdGenerator.IdGeneratorMixin.class)
 public interface IdGenerator
 {
-    /**
-     * Get next id and increase internal counter.
-     *
-     * @return next id in the sequence
-     */
-    long nextId();
+    void assignId(TaskId task);
 
-    /**
-     * Reset the internal counter to 1.
-     */
-    void reset();
-
+    @Mixins(IdGeneratorMixin.class)
     interface IdGeneratorState
     {
         @UseDefaults
         Property<Long> current();
+
+        @Optional
+        Property<Long> lastIdDate();
+
+        @Event
+        void counterSet(DomainEvent event, long counter);
+
+        @Event
+        void dateChanged(DomainEvent create, long timeInMillis);
     }
 
-    class IdGeneratorMixin
-        implements IdGenerator
+    abstract class IdGeneratorMixin
+        implements IdGenerator, IdGeneratorState
     {
         @This IdGeneratorState state;
 
-        public long nextId()
+        // Commands
+        public void assignId(TaskId task)
         {
+            // Check if we should reset the counter
+            Calendar now = Calendar.getInstance();
+            if (state.lastIdDate().get() != null)
+            {
+                Calendar lastDate = Calendar.getInstance();
+                lastDate.setTimeInMillis(state.lastIdDate().get());
+
+                // Day has changed - reset counter
+                if (now.get(Calendar.DAY_OF_YEAR) != lastDate.get(Calendar.DAY_OF_YEAR))
+                {
+                    state.counterSet(DomainEvent.CREATE, 0);
+                }
+            }
+            // Save current date
+            state.dateChanged(DomainEvent.CREATE, now.getTimeInMillis());
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+
             long current = state.current().get();
             current++;
-            state.current().set(current);
-            return current;
+            counterSet(DomainEvent.CREATE, current);
+
+            String date = format.format(now.getTime());
+
+            String taskId = date+"-"+current;
+
+            task.assignId(taskId);
         }
 
-        public void reset()
+        // Events
+        public void dateChanged(DomainEvent create, long timeInMillis)
         {
-            state.current().set(0L);
+            state.lastIdDate().set(timeInMillis);
+        }
+
+        public void counterSet(DomainEvent event, long counter)
+        {
+            state.current().set(counter);
         }
     }
 }

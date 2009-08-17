@@ -14,48 +14,30 @@
 
 package se.streamsource.streamflow.web.domain.project;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.sideeffect.SideEffectOf;
-import se.streamsource.streamflow.web.domain.task.Inbox;
-import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.Ownable;
+import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.TaskId;
 
 /**
  * Assign id to task if sent to project inbox
  */
-public abstract class AssignTaskIdSideEffect
-        extends SideEffectOf<Inbox>
-        implements Inbox
+public class AssignTaskIdSideEffect
+        extends SideEffectOf<Ownable>
+        implements Ownable
 {
     @This
-    ProjectOrganization.ProjectOrganizationState po;
+    TaskId id;
 
-    @Service
-    TaskIdGenerator taskIdGenerator;
-
-    public Task newTask()
+    public void ownedBy(Owner owner)
     {
-        Task task = next.newTask();
+        result.ownedBy(owner);
 
-        assignId(task);
-        return null;
-    }
-
-    public void receiveTask(Task task)
-    {
-        next.receiveTask(task);
-
-        assignId(task);
-    }
-
-    private void assignId(Task task)
-    {
-        if (task.getTaskId() == null)
+        if (owner instanceof IdGenerator)
         {
-            IdGenerator idgen = po.organizationalUnit().get().getOrganization();
-
-            String taskId = taskIdGenerator.nextId(idgen);
-            task.setTaskId(taskId);
+            IdGenerator idgen = (IdGenerator) owner;
+            id.assignId(idgen);
         }
     }
 }

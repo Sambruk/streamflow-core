@@ -119,6 +119,13 @@ public class BindingFormBuilder
         return this;
     }
 
+    public BindingFormBuilder appendLine(Component component)
+    {
+        formBuilder.append(component);
+        formBuilder.nextLine();
+        return this;
+    }
+
     public BindingFormBuilder appendSeparator(Enum resourceKey)
     {
         formBuilder.appendSeparator(getResource(resourceKey));

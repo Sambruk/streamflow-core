@@ -42,7 +42,7 @@ public class TaskGeneralModel
     {
         general = generalClientResource.general();
         setChanged();
-        super.notifyObservers();
+        super.notifyObservers(this);
     }
 
     public TaskGeneralDTO getGeneral()
@@ -52,6 +52,9 @@ public class TaskGeneralModel
 
     public void updateGeneral(TaskGeneralDTO taskGeneralDTO) throws ResourceException
     {
+        general = taskGeneralDTO;
         generalClientResource.put(new StringRepresentation(taskGeneralDTO.toJSON(), MediaType.APPLICATION_JSON));
+        setChanged();
+        super.notifyObservers(this);
     }
 }

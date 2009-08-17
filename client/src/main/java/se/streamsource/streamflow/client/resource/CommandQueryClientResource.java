@@ -155,12 +155,12 @@ public class CommandQueryClientResource
         });
     }
 
-    protected void postCommand(String operation) throws ResourceException
+    protected Representation postCommand(String operation) throws ResourceException
     {
-        postCommand(operation, null);
+        return postCommand(operation, null);
     }
 
-    protected void postCommand(String operation, ValueComposite command) throws ResourceException
+    protected Representation postCommand(String operation, ValueComposite command) throws ResourceException
     {
         Representation commandRepresentation;
         if (command != null)
@@ -173,7 +173,7 @@ public class CommandQueryClientResource
         setReference(operationRef);
         try
         {
-            post(commandRepresentation);
+            return post(commandRepresentation);
         } finally
         {
             setReference(ref);

@@ -18,13 +18,9 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
@@ -36,16 +32,12 @@ public class UserAssignmentsView
 {
     @Uses LabelMenu labelMenu;
 
-    protected String tabName()
-    {
-        return text(assignments_tab);
-    }
-
-    protected void buildPopupMenu(JPopupMenu popup, ActionMap am)
+    protected void buildPopupMenu(JPopupMenu popup)
     {
         taskTable.getSelectionModel().addListSelectionListener(labelMenu);
 
         popup.add(labelMenu);
+        ActionMap am = getActionMap();
         popup.add(am.get("markTasksAsUnread"));
         Action dropAction = am.get("dropTasks");
         popup.add(dropAction);
@@ -56,14 +48,11 @@ public class UserAssignmentsView
     }
 
     @Override
-    protected void buildToolbar(JPanel toolbar, ActionMap am)
+    protected void buildToolbar(JPanel toolbar)
     {
-        javax.swing.Action addAction = am.get("newTask");
-        toolbar.add(new JButton(addAction));
-        Action delegateTasks = am.get("delegateTasks");
-        toolbar.add(new JButton(delegateTasks));
-        javax.swing.Action refreshAction = am.get("refresh");
-        toolbar.add(new JButton(refreshAction));
+        addToolbarButton(toolbar, "createTask");
+        Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
+        addToolbarButton(toolbar, "refresh");
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(delegateTasks));
     }
 

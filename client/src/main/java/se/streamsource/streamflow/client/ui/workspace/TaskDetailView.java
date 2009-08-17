@@ -24,7 +24,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import java.awt.Dimension;
 
 /**
  * JAVADOC
@@ -32,25 +32,49 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 public class TaskDetailView
         extends JTabbedPane
 {
+    private TaskCommentsView commentsView;
+    private TaskGeneralView generalView;
+    private TaskDetailModel model;
+
     public TaskDetailView(@Service ApplicationContext appContext,
-                          @Uses TaskCommentsView commentsView,
                           @Uses TaskGeneralView generalView,
+                          @Uses TaskCommentsView commentsView,
+
                                      @Structure ObjectBuilderFactory obf)
     {
-        super(JTabbedPane.LEFT);
+        super(JTabbedPane.BOTTOM);
 
-        setUI(new BasicTabbedPaneUI());
+        this.commentsView = commentsView;
+        this.generalView = generalView;
 
-        addTab(null, i18n.icon(Icons.general), generalView, i18n.text(WorkspaceResources.general_tab));
-        addTab(null, i18n.icon(Icons.metadata), new JLabel("Metadata"), i18n.text(WorkspaceResources.metadata_tab));
-        addTab(null, i18n.icon(Icons.comments), commentsView, i18n.text(WorkspaceResources.comments_tab));
-        addTab(null, i18n.icon(Icons.attachments), new JLabel("Attachments"), i18n.text(WorkspaceResources.attachments_tab));
+        addTab(i18n.text(WorkspaceResources.general_tab), i18n.icon(Icons.general), generalView, i18n.text(WorkspaceResources.general_tab));
+        addTab(i18n.text(WorkspaceResources.metadata_tab), i18n.icon(Icons.metadata), new JLabel("Metadata"), i18n.text(WorkspaceResources.metadata_tab));
+        addTab(i18n.text(WorkspaceResources.comments_tab), i18n.icon(Icons.comments), commentsView, i18n.text(WorkspaceResources.comments_tab));
+        addTab(i18n.text(WorkspaceResources.attachments_tab), i18n.icon(Icons.attachments), new JLabel("Attachments"), i18n.text(WorkspaceResources.attachments_tab));
+        setTaskModel(null);
     }
 
-    @Override
-    public void setVisible(boolean aFlag)
+    public void setTaskModel(TaskDetailModel model)
     {
-        super.setVisible(aFlag);
-        getSelectedComponent().setVisible(aFlag);
+        this.model = model;
+        if (model == null)
+        {
+            generalView.setModel(null);
+            commentsView.setModel(null);
+            setPreferredSize(new Dimension(getWidth(), 50));
+            setMaximumSize(new Dimension(getWidth(), 50));
+            setSelectedIndex(-1);
+        } else
+        {
+            generalView.setModel(model.general());
+            commentsView.setModel(model.comments());
+
+            setPreferredSize(new Dimension(getWidth(), 100));
+        }
+    }
+
+    public TaskDetailModel getTaskModel()
+    {
+        return model;
     }
 }

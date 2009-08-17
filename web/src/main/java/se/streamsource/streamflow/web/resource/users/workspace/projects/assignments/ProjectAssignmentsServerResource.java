@@ -22,14 +22,12 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
 import se.streamsource.streamflow.web.domain.task.Ownable;
-import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
@@ -62,7 +60,7 @@ public class ProjectAssignmentsServerResource
         return buildTaskList(projectId, assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
     }
 
-    public void newtask(NewTaskCommand command)
+    public void createtask()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String projectId = (String) getRequest().getAttributes().get("project");
@@ -70,13 +68,6 @@ public class ProjectAssignmentsServerResource
         Assignments assignments = uow.get(Assignments.class, projectId);
         Assignee assignee = uow.get(Assignee.class, userId);
 
-        Task task = assignments.newAssignedTask(assignee);
-        task.describe(command.description().get());
-        task.changeNote(command.note().get());
-
-        if (command.isCompleted().get())
-        {
-            assignments.completeAssignedTask(task, assignee);
-        }
+        assignments.createAssignedTask(assignee);
     }
 }

@@ -19,7 +19,6 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.task.NewTaskCommand;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
@@ -41,9 +40,9 @@ public abstract class TaskListClientResource
 
     public abstract List<? extends TaskDTO> tasks(TasksQuery query) throws ResourceException;
 
-    public void newtask(NewTaskCommand command) throws ResourceException
+    public void createTask() throws ResourceException
     {
-        postCommand("newtask", command);
+        postCommand("createtask");
     }
 
     public TaskClientResource task(String id)

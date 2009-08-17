@@ -46,9 +46,9 @@ public class StreamFlowClientAssembler
         assembly.setName("StreamFlow client");
 
         // Create layers
-        LayerAssembly clientDomainInfrastructureLayer = assembly.newLayerAssembly("Client domain infrastructure");
-        LayerAssembly clientDomainLayer = assembly.newLayerAssembly("Client domain");
-        LayerAssembly uiLayer = assembly.newLayerAssembly("UI");
+        LayerAssembly clientDomainInfrastructureLayer = assembly.layerAssembly("Client domain infrastructure");
+        LayerAssembly clientDomainLayer = assembly.layerAssembly("Client domain");
+        LayerAssembly uiLayer = assembly.layerAssembly("UI");
 
         // Define layer usage
         uiLayer.uses(clientDomainLayer);
@@ -64,29 +64,29 @@ public class StreamFlowClientAssembler
 
     protected void assembleUILayer(LayerAssembly uiLayer) throws AssemblyException
     {
-        new AdministrationAssembler().assemble(uiLayer.newModuleAssembly("AdministrationQueries"));
-        new MenuAssembler().assemble(uiLayer.newModuleAssembly("Menu view"));
-        new WorkspaceUIAssembler().assemble(uiLayer.newModuleAssembly("Workspace view"));
-        new UIAssembler().assemble(uiLayer.newModuleAssembly("UI View"));
-        new UIInfrastructureAssembler().assemble(uiLayer.newModuleAssembly("View infrastructure"));
-        new RestletClientAssembler().assemble(uiLayer.newModuleAssembly("REST Client"));
+        new AdministrationAssembler().assemble(uiLayer.moduleAssembly("AdministrationQueries"));
+        new MenuAssembler().assemble(uiLayer.moduleAssembly("Menu detailsView"));
+        new WorkspaceUIAssembler().assemble(uiLayer.moduleAssembly("Workspace detailsView"));
+        new UIAssembler().assemble(uiLayer.moduleAssembly("UI View"));
+        new UIInfrastructureAssembler().assemble(uiLayer.moduleAssembly("View infrastructure"));
+        new RestletClientAssembler().assemble(uiLayer.moduleAssembly("REST Client"));
     }
 
     protected void assembleClientDomainLayer(LayerAssembly domainLayer) throws AssemblyException
     {
         new CommonDomainAssembler().assemble(domainLayer);
-        new IndividualAssembler().assemble(domainLayer.newModuleAssembly("Individual"));
+        new IndividualAssembler().assemble(domainLayer.moduleAssembly("Individual"));
 
-        ModuleAssembly module = domainLayer.newModuleAssembly("REST domain model");
+        ModuleAssembly module = domainLayer.moduleAssembly("REST domain model");
         new CommonResourceAssembler().assemble(module);
         new ClientResourceAssembler().assemble(module);
     }
 
     protected void assembleClientDomainInfrastructureLayer(LayerAssembly domainInfrastructureLayer) throws AssemblyException
     {
-        new ConfigurationAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Configuration"));
-        new ClientEntityStoreAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Client EntityStore"));
-        new EntityFinderAssembler().assemble(domainInfrastructureLayer.newModuleAssembly("Entity Finder"));
+        new ConfigurationAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Configuration"));
+        new ClientEntityStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Client EntityStore"));
+        new EntityFinderAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Finder"));
     }
 
 }

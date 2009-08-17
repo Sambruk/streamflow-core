@@ -71,7 +71,7 @@ public interface TestDataService
 
             // Create tasks
             for (int i = 0; i < 100; i++)
-                user.newTask().describe("Arbetsuppgift " + i);
+                user.createTask().describe("Arbetsuppgift " + i);
 
             // Create project
             Project project = ou.newProject("StreamFlow");
@@ -90,7 +90,7 @@ public interface TestDataService
 
             // Create tasks
             for (int i = 0; i < 100; i++)
-                project.newTask().describe("Arbetsuppgift " + i);
+                project.createTask().describe("Arbetsuppgift " + i);
 
             // Create labels
             user.newLabel().describe("Label 1");

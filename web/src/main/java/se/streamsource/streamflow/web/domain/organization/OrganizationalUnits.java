@@ -15,11 +15,11 @@
 package se.streamsource.streamflow.web.domain.organization;
 
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -101,7 +101,7 @@ public interface OrganizationalUnits
         public OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id)
         {
             EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class, id);
-            ouBuilder.prototype().organization().set(ouState.organization().get());
+            ouBuilder.instance().organization().set(ouState.organization().get());
             OrganizationalUnitEntity ou = ouBuilder.newInstance();
             state.organizationalUnits().add(state.organizationalUnits().count(), ou);
             return ou;

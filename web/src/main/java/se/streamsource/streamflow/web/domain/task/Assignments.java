@@ -25,7 +25,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 @Mixins(Assignments.AssignmentsMixin.class)
 public interface Assignments
 {
-    Task newAssignedTask(Assignee assignee);
+    Task createAssignedTask(Assignee assignee);
 
     void completeAssignedTask(Task task, Assignee assignee);
 
@@ -48,7 +48,7 @@ public interface Assignments
         @This
         Owner owner;
 
-        public Task newAssignedTask(Assignee assignee)
+        public Task createAssignedTask(Assignee assignee)
         {
             Task task = uowf.currentUnitOfWork().newEntity(TaskEntity.class);
             task.ownedBy(owner);
