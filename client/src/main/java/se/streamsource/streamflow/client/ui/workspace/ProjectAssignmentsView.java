@@ -91,6 +91,7 @@ public class ProjectAssignmentsView
             {
                 model.forward(row, selected.identity());
             }
+            model.refresh();
         }
     }
 }

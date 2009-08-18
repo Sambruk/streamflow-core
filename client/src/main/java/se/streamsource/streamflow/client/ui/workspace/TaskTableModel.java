@@ -221,22 +221,18 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     public void createTask() throws ResourceException
     {
         getResource().createTask();
-        refresh();
     }
 
     public void removeTask(int idx) throws ResourceException
     {
         TaskDTO task = tasks.get(idx);
         getResource().task(task.task().get().identity()).delete();
-        refresh();
     }
 
     public void assignToMe(int idx) throws ResourceException
     {
         TaskDTO task = tasks.get(idx);
         getResource().task(task.task().get().identity()).assignToMe();
-
-        refresh();
     }
 
     public void markAsRead(int idx) throws ResourceException
@@ -263,14 +259,12 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     {
         TaskDTO task = tasks.get(idx);
         getResource().task(task.task().get().identity()).delegate(delegateeId);
-        refresh();
     }
 
     public void forward(int idx, String receiverId) throws ResourceException
     {
         TaskDTO task = tasks.get(idx);
         getResource().task(task.task().get().identity()).forward(receiverId);
-        refresh();
     }
 
     public void addLabel(int idx, ListItemValue label) throws ResourceException
@@ -301,7 +295,6 @@ public abstract class TaskTableModel<T extends TaskListDTO>
 
         TaskClientResource taskClientResource = getResource().task(task.task().get().identity());
         taskClientResource.drop();
-        refresh();
     }
 
     public TaskDetailModel taskDetailModel(String id)

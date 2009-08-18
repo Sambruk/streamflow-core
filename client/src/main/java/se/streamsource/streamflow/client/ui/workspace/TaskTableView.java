@@ -288,6 +288,7 @@ public abstract class TaskTableView
     public void createTask() throws ResourceException
     {
         model.createTask();
+        model.refresh();
 
         JXTable table = getTaskTable();
         int index = model.getRowCount()-1;
@@ -302,6 +303,7 @@ public abstract class TaskTableView
         {
             model.dropTask(row);
         }
+        model.refresh();
     }
 
     @org.jdesktop.application.Action()
@@ -329,6 +331,7 @@ public abstract class TaskTableView
         {
             model.removeTask(row);
         }
+        model.refresh();
     }
 
     @org.jdesktop.application.Action

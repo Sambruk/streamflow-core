@@ -73,6 +73,7 @@ public class UserInboxView
         {
             model.assignToMe(row);
         }
+        model.refresh();
         getTaskTable().getSelectionModel().setSelectionInterval(selection, selection);
     }
 

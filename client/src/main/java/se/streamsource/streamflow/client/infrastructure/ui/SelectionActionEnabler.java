@@ -15,10 +15,11 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 import javax.swing.Action;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
 /**
  * Enable actions if a list has a selection
@@ -45,7 +46,7 @@ public class SelectionActionEnabler
             for (int i = 0; i < action.length; i++)
             {
                 Action action1 = action[i];
-                action1.setEnabled(e.getFirstIndex() != -1);
+                action1.setEnabled(!((ListSelectionModel)e.getSource()).isSelectionEmpty());
             }
         }
     }

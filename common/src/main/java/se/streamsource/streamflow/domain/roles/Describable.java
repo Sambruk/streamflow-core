@@ -25,6 +25,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
 
 /**
  * JAVADOC
@@ -69,7 +70,7 @@ public interface Describable
 
         public void describe(String newDescription)
         {
-            state.described(DomainEvent.CREATE, newDescription);
+            state.described(CREATE, newDescription);
         }
 
         public boolean hasDescription(String description)

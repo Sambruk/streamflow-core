@@ -34,7 +34,7 @@ public class EntityFinderAssembler
     {
         module.addObjects(EntityStateSerializer.class, EntityStateParser.class, EntityTypeSerializer.class);
         //module.addEntities(SPARQLEntityFinderConfiguration.class);
-        module.on(SPARQLEntityFinderConfiguration.class).to().sparqlUrl().set("http://localhost/streamflow-web/qi4j/query.rdf");
+        module.forMixin(SPARQLEntityFinderConfiguration.class).declareDefaults().sparqlUrl().set("http://localhost/streamflow-web/qi4j/query.rdf");
         module.addServices(RdfFactoryService.class);
         module.addServices(MemoryEntityStoreService.class);
 

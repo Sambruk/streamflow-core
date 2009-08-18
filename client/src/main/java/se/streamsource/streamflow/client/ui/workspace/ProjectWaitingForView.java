@@ -58,13 +58,12 @@ public class ProjectWaitingForView
     @org.jdesktop.application.Action
     public void assignTasksToMe() throws ResourceException
     {
-        int selection = getTaskTable().getSelectedRow();
         int[] rows = taskTable.getSelectedRows();
         for (int row : rows)
         {
             model.assignToMe(row);
         }
-        getTaskTable().getSelectionModel().setSelectionInterval(selection, selection);
+        model.refresh();
     }
 
     @org.jdesktop.application.Action
