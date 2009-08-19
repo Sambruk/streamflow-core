@@ -25,6 +25,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 
 /**
  * JAVADOC
@@ -53,6 +54,12 @@ public class TaskDetailView
         addTab(i18n.text(WorkspaceResources.metadata_tab), i18n.icon(Icons.metadata), new JLabel("Metadata"), i18n.text(WorkspaceResources.metadata_tab));
         addTab(i18n.text(WorkspaceResources.comments_tab), i18n.icon(Icons.comments), commentsView, i18n.text(WorkspaceResources.comments_tab));
         addTab(i18n.text(WorkspaceResources.attachments_tab), i18n.icon(Icons.attachments), new JLabel("Attachments"), i18n.text(WorkspaceResources.attachments_tab));
+
+        setMnemonicAt(0, KeyEvent.VK_1);
+        setMnemonicAt(1, KeyEvent.VK_2);
+        setMnemonicAt(2, KeyEvent.VK_3);
+        setMnemonicAt(3, KeyEvent.VK_4);
+
         setTaskModel(null);
     }
 
@@ -63,20 +70,31 @@ public class TaskDetailView
         {
             generalView.setModel(null);
             commentsView.setModel(null);
-            setPreferredSize(new Dimension(getWidth(), 50));
-            setMaximumSize(new Dimension(getWidth(), 50));
+            setPreferredSize(new Dimension(getWidth(), 20));
+            setMaximumSize(new Dimension(getWidth(), 20));
+            validateTree();
             setSelectedIndex(-1);
         } else
         {
             generalView.setModel(model.general());
             commentsView.setModel(model.comments());
 
-            setPreferredSize(new Dimension(getWidth(), 100));
+            setPreferredSize(new Dimension(getWidth(), 500));
+            validateTree();
         }
     }
 
     public TaskDetailModel getTaskModel()
     {
         return model;
+    }
+
+    @Override
+    public void setSelectedIndex(int index)
+    {
+        if (model == null && index != -1)
+            return; // Ignore since no model is set
+        
+        super.setSelectedIndex(index);
     }
 }

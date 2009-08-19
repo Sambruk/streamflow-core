@@ -86,7 +86,7 @@ public class TaskGeneralServerResource
         describable.describe(descriptionValue.description().get());
     }
 
-    public void changeNot(DescriptionDTO descriptionValue)
+    public void changeNote(DescriptionDTO descriptionValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Notable notable = uowf.currentUnitOfWork().get(Notable.class, taskId);

@@ -33,6 +33,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.JTextArea;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -69,16 +71,26 @@ public class TaskGeneralView
         taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
         TaskGeneralDTO template = taskBinder.bindingTemplate(TaskGeneralDTO.class);
 
+        JTextArea noteField = new JTextArea(10, 50);
+        noteField.setLineWrap(true);
+                
         BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
         bb.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
 
         bb.appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
-        .appendLine(WorkspaceResources.labels_label, LABEL, template.labels())
-        .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note());
+//        .appendLine(WorkspaceResources.labels_label, LABEL, template.labels())
+
+        .appendLine(WorkspaceResources.note_label, new JScrollPane(noteField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), template.note());
 
         setViewportView(form);
 
         taskBinder.addObserver(this);
+
+        descriptionField.setFocusAccelerator('B');
+
+        form.setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
+        form.setFocusCycleRoot(true);
+        form.setFocusable(true);
     }
 
     public void setModel(TaskGeneralModel taskGeneralModel)
@@ -117,6 +129,15 @@ public class TaskGeneralView
                 {
                     throw new OperationException(WorkspaceResources.could_not_change_description, e);
                 }
+            } else if (property.qualifiedName().name().equals("note"))
+            {
+                try
+                {
+                    model.changeNote((String) property.get());
+                } catch (ResourceException e)
+                {
+                    throw new OperationException(WorkspaceResources.could_not_change_note, e);
+                }
             }
         } else
         {
@@ -129,9 +150,15 @@ public class TaskGeneralView
     @Override
     public void setVisible(boolean aFlag)
     {
-        if (aFlag)
-            descriptionField.requestFocusInWindow();
-
         super.setVisible(aFlag);
+
+        if (aFlag)
+            descriptionField.grabFocus();
+    }
+
+    @Override
+    public void addNotify()
+    {
+        super.addNotify();
     }
 }

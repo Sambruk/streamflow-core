@@ -303,19 +303,7 @@ public class StateBinder
             if (component instanceof JTextField)
             {
                 final JTextField textField = (JTextField) component;
-/*
-                textField.addKeyListener(new KeyAdapter() {
-                    @Override
-                    public void keyReleased(KeyEvent keyEvent)
-                    {
-                        // HACK HACK: block shortcut Alt-S
-                        if (!keyEvent.isAltDown() || keyEvent.getKeyCode() != KeyEvent.VK_S)
-                        {
-                            binding.updateProperty(textField.getText());
-                        }
-                    }
-                });
-*/
+
                 component.addFocusListener(new FocusAdapter()
                 {
                     public void focusLost(FocusEvent e)
@@ -347,24 +335,14 @@ public class StateBinder
             } else if (component instanceof JTextArea)
             {
                 final JTextArea textArea = (JTextArea) component;
-                textArea.addKeyListener(new KeyAdapter() {
-                    @Override
-                    public void keyReleased(KeyEvent keyEvent)
-                    {
-                        // HACK HACK: block shortcut Alt-S
-                        if (!keyEvent.isAltDown() || keyEvent.getKeyCode() != KeyEvent.VK_S)
-                        {
-                            binding.updateProperty(textArea.getText());
-                        }
-                    }
-                });
-                /*component.addFocusListener(new FocusAdapter()
+
+                component.addFocusListener(new FocusAdapter()
                 {
                     public void focusLost(FocusEvent e)
                     {
-                        binding.updateProperty(new String(textArea.getText()));
+                        binding.updateProperty(textArea.getText());
                     }
-                });*/
+                });
 
                 return binding;
             } else if (component instanceof JScrollPane)

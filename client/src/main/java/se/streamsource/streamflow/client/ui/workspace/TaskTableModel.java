@@ -169,10 +169,13 @@ public abstract class TaskTableModel<T extends TaskListDTO>
                     {
 
                         TaskDTO taskValue = tasks.get(rowIndex);
-                        EntityReference task = taskValue.task().get();
-                        getResource().task(task.identity()).complete();
+                        if (taskValue.status().get() == TaskStates.ACTIVE)
+                        {
+                            EntityReference task = taskValue.task().get();
+                            getResource().task(task.identity()).complete();
 
-                        taskValue.status().set(TaskStates.COMPLETED);
+                            taskValue.status().set(TaskStates.COMPLETED);
+                        }
                     }
                     break;
                 }
@@ -297,5 +300,10 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     public TaskDetailModel taskDetailModel(String id)
     {
         return taskModels.get(id);
+    }
+
+    public void completeTask(int idx)
+    {
+        setValueAt(true, idx, 0);
     }
 }

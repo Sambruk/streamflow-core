@@ -58,6 +58,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.KeyboardFocusManager;
+import java.awt.KeyEventDispatcher;
+import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -70,6 +73,7 @@ import java.util.Observer;
  */
 public abstract class TaskTableView
         extends JPanel
+        implements KeyEventDispatcher
 {
     @Service
     DialogService dialogs;
@@ -146,7 +150,7 @@ public abstract class TaskTableView
 
         splitPane.setTopComponent(taskScrollPane);
         splitPane.setBottomComponent(detailsView);
-        splitPane.setResizeWeight(0.3);
+        splitPane.setResizeWeight(0.2);
 
         JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
         taskTable.setDefaultEditor(Boolean.class, completableEditor);
@@ -214,12 +218,22 @@ public abstract class TaskTableView
                             detailsView.setTaskModel(null);
                         } else
                         {
-                            TaskDTO dto = getSelectedTask();
+                            TaskDTO dto = null;
+                            try
+                            {
+                                dto = getSelectedTask();
+                            } catch (Exception e1)
+                            {
+                                // Ignore
+                                return;
+                            }
                             TaskDetailModel taskModel = model.taskDetailModel(dto.task().get().identity());
                             taskModel.general().addObserver(descriptionUpdater);
                             taskModel.refresh();
 
                             detailsView.setTaskModel(taskModel);
+
+                            splitPane.resetToPreferredSizes();
 
                             if (detailsView.getSelectedIndex() != -1)
                                 model.markAsRead(taskTable.getSelectedRow());
@@ -285,7 +299,7 @@ public abstract class TaskTableView
         table.scrollRowToVisible(index);
 
         detailsView.setSelectedIndex(0);
-        detailsView.getComponentAt(0).requestFocusInWindow();
+        detailsView.getComponentAt(0).requestFocus();
     }
 
     @org.jdesktop.application.Action()
@@ -342,5 +356,35 @@ public abstract class TaskTableView
             list.add(0, row);
         }
         return list;
+    }
+
+    @Override
+    public void addNotify()
+    {
+        super.addNotify();
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
+    }
+
+
+    @Override
+    public void removeNotify()
+    {
+        super.removeNotify();
+
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this);
+    }
+
+    public boolean dispatchKeyEvent(KeyEvent e)
+    {
+        if (e.getKeyCode() == KeyEvent.VK_C && e.isAltDown() && e.isControlDown())
+        {
+            if (!taskTable.getSelectionModel().isSelectionEmpty())
+            {
+                model.completeTask(taskTable.getSelectedRow());
+                return true;
+            }
+        }
+        return false;
     }
 }
