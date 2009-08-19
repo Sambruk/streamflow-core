@@ -15,22 +15,16 @@
 package se.streamsource.streamflow.domain.roles;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 import se.streamsource.streamflow.infrastructure.event.Event;
-import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
-import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 
 /**
- * JAVADOC
+ * Role for maintaining descriptions of entities.
  */
-@Concerns(EventCreationConcern.class)
-@SideEffects(EventSideEffect.class)
 @Mixins(Describable.DescribableMixin.class)
 public interface Describable
 {
