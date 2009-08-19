@@ -125,4 +125,13 @@ public class TaskGeneralView
             taskBinder.updateWith(general);
         }
     }
+
+    @Override
+    public void setVisible(boolean aFlag)
+    {
+        if (aFlag)
+            descriptionField.requestFocusInWindow();
+
+        super.setVisible(aFlag);
+    }
 }

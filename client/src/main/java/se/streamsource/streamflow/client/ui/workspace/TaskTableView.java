@@ -75,9 +75,6 @@ public abstract class TaskTableView
     DialogService dialogs;
 
     @Uses
-    protected ObjectBuilder<AddTaskDialog> addTaskDialogs;
-
-    @Uses
     protected ObjectBuilder<UserOrProjectSelectionDialog> userOrProjectSelectionDialog;
 
     protected
@@ -86,6 +83,7 @@ public abstract class TaskTableView
 
     protected JXTable taskTable;
     protected TaskTableModel model;
+    private TaskDetailView detailsView;
 
 
     protected LabelsModel labelsModel;
@@ -99,6 +97,7 @@ public abstract class TaskTableView
                          @Structure ValueBuilderFactory vbf)
     {
         this.model = model;
+        this.detailsView = detailsView;
         setLayout(new BorderLayout());
         final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setOneTouchExpandable(true);
@@ -284,6 +283,9 @@ public abstract class TaskTableView
         int index = model.getRowCount()-1;
         table.getSelectionModel().setSelectionInterval(index, index);
         table.scrollRowToVisible(index);
+
+        detailsView.setSelectedIndex(0);
+        detailsView.getComponentAt(0).requestFocusInWindow();
     }
 
     @org.jdesktop.application.Action()

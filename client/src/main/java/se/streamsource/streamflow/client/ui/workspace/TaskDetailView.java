@@ -44,6 +44,8 @@ public class TaskDetailView
     {
         super(JTabbedPane.BOTTOM);
 
+        setFocusable(true);
+
         this.commentsView = commentsView;
         this.generalView = generalView;
 
