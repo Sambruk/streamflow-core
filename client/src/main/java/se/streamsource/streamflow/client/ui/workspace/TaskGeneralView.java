@@ -16,18 +16,19 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
-import se.streamsource.streamflow.client.infrastructure.ui.FormEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -49,10 +50,10 @@ public class TaskGeneralView
 
     TaskGeneralModel model;
 
-    public FormEditor editor;
     public ValueBuilder<TaskGeneralDTO> valueBuilder;
     public JTextField descriptionField;
     private JToggleButton editButton;
+    private JLabel issueLabel;
 
     public TaskGeneralView(@Service ApplicationContext appContext)
     {
@@ -69,30 +70,15 @@ public class TaskGeneralView
         TaskGeneralDTO template = taskBinder.bindingTemplate(TaskGeneralDTO.class);
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
-        bb
-        .appendLine(WorkspaceResources.id_label, LABEL, template.taskId())
-        .appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
-        .appendLine(WorkspaceResources.labels_label, LABEL, template.labels())
-        .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note())
-        .appendLine(editButton = new JToggleButton(getActionMap().get("edit")));
+        bb.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
 
-        editor = new FormEditor(taskBinder.boundComponents());
+        bb.appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
+        .appendLine(WorkspaceResources.labels_label, LABEL, template.labels())
+        .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note());
 
         setViewportView(form);
-    }
 
-    @Action
-    public void edit() throws ResourceException
-    {
-        if (!editor.isEditing())
-            editor.edit();
-        else
-        {
-            editor.view();
-
-            // Update settings
-            model.updateGeneral(valueBuilder.newInstance());
-        }
+        taskBinder.addObserver(this);
     }
 
     public void setModel(TaskGeneralModel taskGeneralModel)
@@ -109,13 +95,34 @@ public class TaskGeneralView
             model.addObserver(this);
 
             update(model, null);
+
+            // Check if issue id should be visible
+            boolean issueVisible = model.getGeneral().taskId().get() != null;
+            issueLabel.setVisible(issueVisible);
+            ((JLabel)issueLabel.getClientProperty("labeledBy")).setVisible(issueVisible);
         }
     }
 
     public void update(Observable o, Object arg)
     {
-        TaskGeneralDTO general = model.getGeneral();
-        valueBuilder = general.buildWith();
-        taskBinder.updateWith(valueBuilder.prototype());
+        if (o == taskBinder)
+        {
+            Property property = (Property) arg;
+            if (property.qualifiedName().name().equals("description"))
+            {
+                try
+                {
+                    model.describe((String) property.get());
+                } catch (ResourceException e)
+                {
+                    throw new OperationException(WorkspaceResources.could_not_change_description, e);
+                }
+            }
+        } else
+        {
+            TaskGeneralDTO general = model.getGeneral();
+            valueBuilder = general.buildWith();
+            taskBinder.updateWith(general);
+        }
     }
 }

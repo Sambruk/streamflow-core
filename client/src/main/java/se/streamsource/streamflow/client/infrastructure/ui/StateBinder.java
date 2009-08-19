@@ -37,6 +37,7 @@ import java.util.List;
  * JAVADOC
  */
 public class StateBinder
+    extends Observable
 {
     ResourceBundle errorMessages;
     Map<Class<? extends Component>, Binder> binders = new HashMap<Class<? extends Component>, Binder>();
@@ -200,7 +201,7 @@ public class StateBinder
         void updateComponent(Component component, Object value);
     }
 
-    class Binding
+    public class Binding
     {
         private Binder binder;
         private Object source;
@@ -248,7 +249,12 @@ public class StateBinder
             {
                 // TODO Value conversion
 
+                if (objectProperty.get().equals(newValue))
+                    return; // Do nothing
+
                 objectProperty.set(newValue);
+                setChanged();
+                notifyObservers(objectProperty);
             } catch (Exception e)
             {
                 // Reset value
@@ -297,6 +303,7 @@ public class StateBinder
             if (component instanceof JTextField)
             {
                 final JTextField textField = (JTextField) component;
+/*
                 textField.addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyReleased(KeyEvent keyEvent)
@@ -308,6 +315,22 @@ public class StateBinder
                         }
                     }
                 });
+*/
+                component.addFocusListener(new FocusAdapter()
+                {
+                    public void focusLost(FocusEvent e)
+                    {
+                        binding.updateProperty(textField.getText());
+                    }
+                });
+                textField.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        binding.updateProperty(textField.getText());
+                    }
+                });
+
                 return binding;
             } else if (component instanceof JPasswordField)
             {

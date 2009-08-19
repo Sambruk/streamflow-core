@@ -15,8 +15,6 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.data.MediaType;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
@@ -40,7 +38,7 @@ public class TaskGeneralModel
 
     public void refresh() throws IOException, ResourceException
     {
-        general = generalClientResource.general();
+        general = (TaskGeneralDTO) generalClientResource.general().buildWith().prototype();
         setChanged();
         super.notifyObservers(this);
     }
@@ -50,11 +48,15 @@ public class TaskGeneralModel
         return general;
     }
 
-    public void updateGeneral(TaskGeneralDTO taskGeneralDTO) throws ResourceException
+    public void describe(String newDescription) throws ResourceException
     {
-        general = taskGeneralDTO;
-        generalClientResource.put(new StringRepresentation(taskGeneralDTO.toJSON(), MediaType.APPLICATION_JSON));
+        generalClientResource.describe(newDescription);
         setChanged();
         super.notifyObservers(this);
+    }
+
+    public void changeNote(String newNote) throws ResourceException
+    {
+        generalClientResource.changeNote(newNote);
     }
 }

@@ -26,17 +26,20 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.label.Label;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
  * /users/{user}/workspace/user/{view}/{task}/general
  */
 public class TaskGeneralServerResource
-    extends BaseServerResource
+    extends CommandQueryServerResource
 {
     @Structure
     UnitOfWorkFactory uowf;
@@ -75,23 +78,19 @@ public class TaskGeneralServerResource
         return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
     }
 
-    @Override
-    protected Representation put(Representation representation, Variant variant) throws ResourceException
+    public void describe(DescriptionDTO descriptionValue)
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Update general task information"));
-        try
-        {
-            TaskGeneralDTO updated = vbf.newValueFromJSON(TaskGeneralDTO.class, representation.getText());
-            TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
-            task.describe(updated.description().get());
-            task.changeNote(updated.note().get());
-            uow.complete();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            uow.discard();
-        }
+        String taskId = (String) getRequest().getAttributes().get("task");
+        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
 
-        return null;
+        describable.describe(descriptionValue.description().get());
+    }
+
+    public void changeNot(DescriptionDTO descriptionValue)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        Notable notable = uowf.currentUnitOfWork().get(Notable.class, taskId);
+
+        notable.changeNote(descriptionValue.description().get());
     }
 }

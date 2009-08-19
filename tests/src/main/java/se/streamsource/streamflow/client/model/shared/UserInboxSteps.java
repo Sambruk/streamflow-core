@@ -23,12 +23,10 @@ import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.workspace.TaskGeneralModel;
 import se.streamsource.streamflow.client.ui.workspace.UserInboxModel;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 /**
  * JAVADOC
@@ -56,10 +54,7 @@ public class UserInboxSteps
     {
         model.createTask();
         TaskGeneralModel generalModel = model.taskDetailModel(model.getTask(0).task().get().identity()).general();
-        TaskGeneralDTO general = generalModel.getGeneral();
-        ValueBuilder<TaskGeneralDTO> builder = general.buildWith();
-        builder.prototype().description().set(description);
-        generalModel.updateGeneral(builder.newInstance());
+        generalModel.describe(description);
     }
 
     @Then("task count is $count")

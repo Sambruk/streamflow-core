@@ -14,13 +14,16 @@
 
 package se.streamsource.streamflow.resource.roles;
 
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * JAVADOC
  */
 public interface DescriptionDTO
-        extends ValueComposite, Describable.DescribableState
+        extends ValueComposite
 {
+    @UseDefaults
+    Property<String> description();
 }

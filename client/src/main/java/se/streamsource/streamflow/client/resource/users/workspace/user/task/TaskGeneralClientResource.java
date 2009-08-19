@@ -15,11 +15,13 @@
 package se.streamsource.streamflow.client.resource.users.workspace.user.task;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 
 import java.io.IOException;
 
@@ -27,7 +29,7 @@ import java.io.IOException;
  * JAVADOC
  */
 public class TaskGeneralClientResource
-        extends BaseClientResource
+        extends CommandQueryClientResource
 {
     public TaskGeneralClientResource(@Uses Context context, @Uses Reference reference)
     {
@@ -37,5 +39,19 @@ public class TaskGeneralClientResource
     public TaskGeneralDTO general() throws IOException, ResourceException
     {
         return getQuery(TaskGeneralDTO.class);
+    }
+
+    public void describe(String newDescription) throws ResourceException
+    {
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+        builder.prototype().description().set(newDescription);
+        putCommand("describe", builder.newInstance());
+    }
+
+    public void changeNote(String newNote) throws ResourceException
+    {
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+        builder.prototype().description().set(newNote);
+        putCommand("changeNote", builder.newInstance());
     }
 }

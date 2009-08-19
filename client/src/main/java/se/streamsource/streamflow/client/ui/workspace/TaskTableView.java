@@ -194,7 +194,8 @@ public abstract class TaskTableView
             public void update(Observable o, Object arg)
             {
                 TaskGeneralModel generalModel = (TaskGeneralModel) arg;
-                getSelectedTask().description().set(generalModel.getGeneral().description().get());
+                String newValue = generalModel.getGeneral().description().get();
+                getSelectedTask().description().set(newValue);
             }
         };
 
@@ -241,7 +242,7 @@ public abstract class TaskTableView
     {
         ActionMap am = getActionMap();
         Action action = am.get(name);
-        action.putValue(Action.LARGE_ICON_KEY, i18n.icon((ImageIcon) action.getValue(Action.LARGE_ICON_KEY), 16));
+        action.putValue(Action.SMALL_ICON, i18n.icon((ImageIcon) action.getValue(Action.SMALL_ICON), 16));
         toolbar.add(new JButton(action));
         return action;
     }
