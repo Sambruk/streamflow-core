@@ -67,6 +67,7 @@ public class ProjectInboxTaskServerResource
         Task task = uow.get(Task.class, taskId);
         Assignee assignee = uow.get(Assignee.class, userId);
         Inbox inbox = uow.get(Inbox.class, projectId);
+
         inbox.assignTo(task, assignee);
     }
 
@@ -90,6 +91,7 @@ public class ProjectInboxTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Inbox receiverInbox = uow.get(Inbox.class, reference.entity().get().identity());
+
         receiverInbox.receiveTask(task);
     }
 
@@ -100,6 +102,7 @@ public class ProjectInboxTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
         Inbox inbox = uow.get(Inbox.class, userId);
+
         inbox.markAsRead(task);
     }
 
@@ -110,6 +113,7 @@ public class ProjectInboxTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
         Inbox inbox = uow.get(Inbox.class, userId);
+
         inbox.markAsUnread(task);
     }
 

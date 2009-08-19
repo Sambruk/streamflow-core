@@ -16,16 +16,15 @@ package se.streamsource.streamflow.domain.roles;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
 
 /**
  * JAVADOC
@@ -41,7 +40,7 @@ public interface Describable
 
     String getDescription();
 
-    @Mixins(DescribableState.DescribableStateMixin.class)
+    @Mixins(DescribableMixin.class)
     interface DescribableState
     {
         @UseDefaults
@@ -49,38 +48,30 @@ public interface Describable
 
         @Event
         void described(DomainEvent event, String description);
-
-        abstract class DescribableStateMixin
-            implements DescribableState
-        {
-            @This DescribableState state;
-
-            public void described(DomainEvent event, String description)
-            {
-                state.description().set(description);
-            }
-        }
     }
 
-    class DescribableMixin
-            implements Describable
+    public abstract class DescribableMixin
+            implements Describable, DescribableState
     {
-        @This
-        DescribableState state;
-
         public void describe(String newDescription)
         {
-            state.described(CREATE, newDescription);
+            described(CREATE, newDescription);
         }
 
         public boolean hasDescription(String description)
         {
-            return state.description().get().equals(description);
+            return description().get().equals(description);
         }
 
         public String getDescription()
         {
-            return state.description().get();
+            return description().get();
+        }
+
+        // State
+        public void described(DomainEvent event, String description)
+        {
+            description().set(description);
         }
     }
 }

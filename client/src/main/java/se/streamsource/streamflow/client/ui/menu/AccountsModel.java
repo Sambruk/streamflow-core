@@ -122,7 +122,7 @@ public class AccountsModel
 
             public void visitAccount(Account account)
             {
-                itemBuilder.prototype().description().set(account.settings().name().get());
+                itemBuilder.prototype().description().set(account.accountSettings().name().get());
                 itemBuilder.prototype().entity().set(EntityReference.getEntityReference((account)));
                 accounts.add(itemBuilder.newInstance());
             }

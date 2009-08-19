@@ -68,13 +68,12 @@ public interface Assignments
 
         public void delegateAssignedTaskTo(Task task, Delegatee delegatee, Delegator delegator)
         {
-            task.assignTo(null);
+            task.unassign();
             task.delegateTo(delegatee,  delegator);
         }
 
         public void forwardAssignedTask(Task task, Inbox receiverInbox)
         {
-            task.assignTo(null);
             receiverInbox.receiveTask(task);
         }
 

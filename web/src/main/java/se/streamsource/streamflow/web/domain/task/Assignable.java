@@ -21,6 +21,8 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 
 import java.util.Date;
 
@@ -32,6 +34,7 @@ import java.util.Date;
 public interface Assignable
 {
     void assignTo(Assignee assignee);
+    void unassign();
 
     interface AssignableState
     {
@@ -40,21 +43,41 @@ public interface Assignable
 
         @Optional
         Property<Date> assignedOn();
+
+        @Event
+        void assignedTo(DomainEvent event, Assignee assignee);
+
+        @Event
+        void unassigned(DomainEvent event);
     }
 
-    class AssignableMixin
-            implements Assignable
+    public abstract class AssignableMixin
+            implements Assignable, AssignableState
     {
-        @This
-        AssignableState state;
-
         public void assignTo(Assignee assignee)
         {
-            if (!assignee.equals(state.assignedTo().get()))
+            if (!assignee.equals(assignedTo().get()))
             {
-                state.assignedTo().set(assignee);
-                state.assignedOn().set(new Date());
+                assignedTo(DomainEvent.CREATE, assignee);
             }
+        }
+
+        public void unassign()
+        {
+            if (assignedTo().get() != null)
+                unassigned(DomainEvent.CREATE);
+        }
+
+        public void assignedTo(DomainEvent event, Assignee assignee)
+        {
+            assignedTo().set(assignee);
+            assignedOn().set(event.on().get());
+        }
+
+        public void unassigned(DomainEvent event)
+        {
+            assignedTo().set(null);
+            assignedOn().set(null);
         }
     }
 
@@ -70,22 +93,14 @@ public interface Assignable
 
         public void completedBy(Assignee assignee)
         {
-            ensureAssigned(assignee);
-
+            assignable.assignTo(assignee);
             next.completedBy(assignee);
         }
 
         public void droppedBy(Assignee assignee)
         {
-            ensureAssigned(assignee);
-
+            assignable.assignTo(assignee);
             next.droppedBy(assignee);
-        }
-
-        private void ensureAssigned(Assignee assignee)
-        {
-            if (state.assignedTo().get() == null)
-                assignable.assignTo(assignee);
         }
     }
 

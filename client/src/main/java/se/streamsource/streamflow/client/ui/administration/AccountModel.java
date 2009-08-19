@@ -60,7 +60,7 @@ public class AccountModel
         Account acc = uow.get(account);
         try
         {
-            return acc.settings();
+            return acc.accountSettings();
         } finally
         {
             uow.discard();

@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
@@ -43,15 +42,15 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
+import javax.swing.Action;
 import javax.swing.ActionMap;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
@@ -59,8 +58,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -183,18 +180,6 @@ public abstract class TaskTableView
         }, Color.black, Color.lightGray));
         taskTable.setEditable(true);
 
-        taskTable.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1)
-                {
-                    getActionMap().get("details").actionPerformed(null);
-                }
-            }
-        });
-
         taskTable.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(taskTable.getSearchable()).newInstance());
 
         // Popup
@@ -221,10 +206,11 @@ public abstract class TaskTableView
                 {
                     try
                     {
+                        if (detailsView.getTaskModel() != null)
+                            detailsView.getTaskModel().general().deleteObserver(descriptionUpdater);
+
                         if (taskTable.getSelectionModel().isSelectionEmpty())
                         {
-                            if (detailsView.getTaskModel() != null)
-                                detailsView.getTaskModel().general().deleteObserver(descriptionUpdater);
                             detailsView.setTaskModel(null);
                         } else
                         {
@@ -234,6 +220,9 @@ public abstract class TaskTableView
                             taskModel.refresh();
 
                             detailsView.setTaskModel(taskModel);
+
+                            if (detailsView.getSelectedIndex() != -1)
+                                model.markAsRead(taskTable.getSelectedRow());
                         }
                     } catch (Exception e1)
                     {
@@ -335,16 +324,9 @@ public abstract class TaskTableView
     }
 
     @org.jdesktop.application.Action
-    public Task refresh() throws ResourceException
+    public void refresh() throws ResourceException
     {
-        return new Task(application)
-        {
-            protected Object doInBackground() throws Exception
-            {
-                model.refresh();
-                return null;
-            }
-        };
+        model.refresh();
     }
 
     protected List<Integer> getReverseSelectedTasks()

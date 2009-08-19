@@ -19,7 +19,7 @@ package se.streamsource.streamflow.client.domain.individual;
  */
 public interface AccountSettings
 {
-    AccountSettingsValue settings();
+    AccountSettingsValue accountSettings();
 
     void updateSettings(AccountSettingsValue newAccountSettings);
 }

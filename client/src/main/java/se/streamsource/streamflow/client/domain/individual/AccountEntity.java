@@ -66,9 +66,6 @@ public interface AccountEntity
         @Structure
         ObjectBuilderFactory obf;
 
-        @This
-        AccountState state;
-
         @Structure
         UnitOfWorkFactory uowf;
 
@@ -76,10 +73,13 @@ public interface AccountEntity
         Account account;
 
         @This
+        AccountState state;
+
+        @This
         Describable description;
 
         // AccountSettings
-        public AccountSettingsValue settings()
+        public AccountSettingsValue accountSettings()
         {
             return state.settings().get();
         }
@@ -116,7 +116,7 @@ public interface AccountEntity
         // AccountConnection
         public StreamFlowClientResource server(Restlet client)
         {
-            AccountSettingsValue settings = settings();
+            AccountSettingsValue settings = accountSettings();
             Reference serverRef = new Reference(settings.server().get());
             serverRef.addSegment("streamflow").addSegment("v1").addSegment("");
 
@@ -130,7 +130,7 @@ public interface AccountEntity
 
         public UserClientResource user(Restlet client)
         {
-            return server(client).users().user(settings().userName().get());
+            return server(client).users().user(accountSettings().userName().get());
         }
     }
 

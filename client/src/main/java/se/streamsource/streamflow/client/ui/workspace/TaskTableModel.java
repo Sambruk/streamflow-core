@@ -193,10 +193,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         if (!same)
         {
             tasks = newRoot;
-            if (getRowCount() == 0)
-                fireTableDataChanged();
-            else
-                fireTableRowsUpdated(0, tasks.size()-1);
+            fireTableDataChanged();
         }
     }
 

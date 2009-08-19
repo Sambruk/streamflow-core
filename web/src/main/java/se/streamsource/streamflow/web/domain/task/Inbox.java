@@ -62,6 +62,7 @@ public interface Inbox
 
         public void receiveTask(Task task)
         {
+            task.unassign();
             task.ownedBy(owner);
             task.markAsUnread();
         }

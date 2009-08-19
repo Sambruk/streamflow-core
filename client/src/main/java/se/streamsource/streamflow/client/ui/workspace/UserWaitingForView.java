@@ -39,6 +39,7 @@ public class UserWaitingForView
         ActionMap am = getActionMap();
         popup.add(labelMenu);
         popup.add(am.get("markTasksAsUnread"));
+        popup.add(am.get("markTasksAsRead"));
         Action dropAction = am.get("dropTasks");
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");

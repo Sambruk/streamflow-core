@@ -39,6 +39,7 @@ public class ProjectDelegationsView
         popup.add(labelMenu);
         Action markTasksAsUnread = am.get("markTasksAsUnread");
         popup.add(markTasksAsUnread);
+        popup.add(am.get("markTasksAsRead"));
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(markTasksAsUnread));
     }
 

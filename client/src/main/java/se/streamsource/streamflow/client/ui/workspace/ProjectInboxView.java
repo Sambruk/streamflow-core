@@ -44,6 +44,7 @@ public class ProjectInboxView
         ActionMap am = getActionMap();
         popup.add(labelMenu);
         popup.add(am.get("markTasksAsUnread"));
+        popup.add(am.get("markTasksAsRead"));
         Action dropAction = am.get("dropTasks");
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
@@ -87,6 +88,7 @@ public class ProjectInboxView
             {
                 model.delegate(row, selected.identity());
             }
+            model.refresh();
         }
     }
 
@@ -104,6 +106,7 @@ public class ProjectInboxView
             {
                 model.forward(row, selected.identity());
             }
+            model.refresh();
         }
     }
 }

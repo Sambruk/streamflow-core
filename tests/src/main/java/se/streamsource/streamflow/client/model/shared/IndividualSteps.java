@@ -69,7 +69,7 @@ public class IndividualSteps
         UnitOfWork uow = uowf.newUnitOfWork();
         individual = uow.get(individual);
         account = individual.newAccount();
-        ValueBuilder<AccountSettingsValue> settings = account.settings().buildWith();
+        ValueBuilder<AccountSettingsValue> settings = account.accountSettings().buildWith();
         settings.prototype().name().set("Test server");
         settings.prototype().server().set("http://localhost:8040/streamflow/");
         account.updateSettings(settings.newInstance());
@@ -81,7 +81,7 @@ public class IndividualSteps
     {
         UnitOfWork uow = uowf.newUnitOfWork();
         account = uow.get(account);
-        ValueBuilder<AccountSettingsValue> settings = account.settings().buildWith();
+        ValueBuilder<AccountSettingsValue> settings = account.accountSettings().buildWith();
         settings.prototype().userName().set(name);
         settings.prototype().password().set(password);
         account.updateSettings(settings.newInstance());

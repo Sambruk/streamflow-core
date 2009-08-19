@@ -39,6 +39,7 @@ public class UserAssignmentsView
         popup.add(labelMenu);
         ActionMap am = getActionMap();
         popup.add(am.get("markTasksAsUnread"));
+        popup.add(am.get("markTasksAsRead"));
         Action dropAction = am.get("dropTasks");
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
@@ -70,6 +71,7 @@ public class UserAssignmentsView
             {
                 model.delegate(row, selected.identity());
             }
+            model.refresh();
         }
     }
 
@@ -87,6 +89,7 @@ public class UserAssignmentsView
             {
                 model.forward(row, selected.identity());
             }
+            model.refresh();
         }
     }
 }

@@ -89,7 +89,7 @@ public interface Delegatable
         {
             next.completedBy(assignee);
 
-            if (assignee.equals(state.delegatedTo().get()) && !status.status().get().equals(TaskStates.ACTIVE))
+            if (state.delegatedTo() != null && !assignee.equals(state.delegatedTo().get()) && !status.status().get().equals(TaskStates.ACTIVE))
             {
                 isRead.markAsUnread();
             }
@@ -99,7 +99,7 @@ public interface Delegatable
         {
             next.droppedBy(assignee);
 
-            if (assignee.equals(state.delegatedTo().get()) && !status.status().get().equals(TaskStates.ACTIVE))
+            if (state.delegatedTo() != null && !assignee.equals(state.delegatedTo().get()) && !status.status().get().equals(TaskStates.ACTIVE))
             {
                 isRead.markAsUnread();
             }
