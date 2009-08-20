@@ -41,7 +41,7 @@ public interface Members
 {
     boolean isMember(Participant participant);
 
-    void newMember(Participant participant);
+    void createMember(Participant participant);
 
     void addRole(Participant participant, Role role);
 
@@ -78,7 +78,7 @@ public interface Members
             return memberValue != null;
         }
 
-        public void newMember(Participant participant)
+        public void createMember(Participant participant)
         {
             if (isMember(participant))
                     return;

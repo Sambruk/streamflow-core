@@ -70,7 +70,7 @@ public class ProjectsServerResource
 
         try
         {
-            projects.newProject(description);
+            projects.createProject(description);
         } catch (DuplicateDescriptionException e)
         {
             e.printStackTrace();

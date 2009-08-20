@@ -88,6 +88,7 @@ public abstract class TaskTableView
     protected JXTable taskTable;
     protected TaskTableModel model;
     private TaskDetailView detailsView;
+    private JPanel noTaskSelected;
 
 
     protected LabelsModel labelsModel;
@@ -105,7 +106,13 @@ public abstract class TaskTableView
         setLayout(new BorderLayout());
         final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(1D);
         add(splitPane, BorderLayout.CENTER);
+
+        noTaskSelected = new JPanel();
+        noTaskSelected.setMaximumSize(new Dimension(0,0));
+        noTaskSelected.setBackground(Color.BLACK);
+        noTaskSelected.setOpaque(true);
 
         labelsList = new JComboBox(labelsModel);
         labelsList.setRenderer(new DefaultListRenderer(new StringValue()
@@ -135,8 +142,6 @@ public abstract class TaskTableView
         taskTable = new JXTable(model);
 
         JScrollPane taskScrollPane = new JScrollPane(taskTable);
-        taskScrollPane.setMinimumSize(new Dimension(400, 100));
-        taskScrollPane.setPreferredSize(new Dimension(400, 400));
 
         add(toolbar, BorderLayout.NORTH);
 
@@ -149,8 +154,8 @@ public abstract class TaskTableView
         taskTable.setAutoCreateColumnsFromModel(false);
 
         splitPane.setTopComponent(taskScrollPane);
-        splitPane.setBottomComponent(detailsView);
-        splitPane.setResizeWeight(0.2);
+        splitPane.setBottomComponent(noTaskSelected);
+        splitPane.setResizeWeight(0.3);
 
         JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
         taskTable.setDefaultEditor(Boolean.class, completableEditor);
@@ -216,6 +221,8 @@ public abstract class TaskTableView
                         if (taskTable.getSelectionModel().isSelectionEmpty())
                         {
                             detailsView.setTaskModel(null);
+                            splitPane.setBottomComponent(noTaskSelected);
+                            splitPane.setDividerLocation(1D);
                         } else
                         {
                             TaskDTO dto = null;
@@ -227,13 +234,13 @@ public abstract class TaskTableView
                                 // Ignore
                                 return;
                             }
+                            splitPane.setBottomComponent(detailsView);
+                            splitPane.resetToPreferredSizes();
                             TaskDetailModel taskModel = model.taskDetailModel(dto.task().get().identity());
                             taskModel.general().addObserver(descriptionUpdater);
                             taskModel.refresh();
 
                             detailsView.setTaskModel(taskModel);
-
-                            splitPane.resetToPreferredSizes();
 
                             if (detailsView.getSelectedIndex() != -1)
                                 model.markAsRead(taskTable.getSelectedRow());

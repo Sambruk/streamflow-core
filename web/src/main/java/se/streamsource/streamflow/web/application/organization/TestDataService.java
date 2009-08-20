@@ -23,6 +23,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
@@ -63,39 +64,45 @@ public interface TestDataService
             ou.createOrganizationalUnit("Realway");
 
             // Create groups
-            ou.newGroup("Developers");
-            ou.newGroup("Project leaders");
-            ou.newGroup("Testers");
+            Group cc = ou.createGroup("Contact center");
+            ou.createGroup("Park management");
 
-            Role developer = ou.newRole("Developer");
+            cc.addParticipant(user);
+
+            Role agent = ou.createRole("Agent");
+            Role manager = ou.createRole("Manager");
 
             // Create tasks
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 30; i++)
                 user.createTask().describe("Arbetsuppgift " + i);
 
             // Create project
-            Project project = ou.newProject("StreamFlow");
+            Project project = ou.createProject("Information query");
 
             // Create labels
-            project.newLabel().describe("Label 1");
-            project.newLabel().describe("Label 2");
-            project.newLabel().describe("Label 3");
-            project.newLabel().describe("Label 4");
+            project.createLabel().describe("Question");
+            project.createLabel().describe("Issue chase");
+            project.createLabel().describe("Suggestion");
 
-            // Create project 'Expert Handläggare'
-            ou.newProject("Experts");
+            project.createMember(user);
+            project.addRole(user, agent);
 
-            project.newMember(user);
-            project.addRole(user, developer);
+            // Create project
+            Project parks = ou.createProject("City parks");
+
+            parks.createMember(cc);
+            parks.addRole(cc, agent);
+            parks.createMember(user);
+            parks.addRole(user, manager);
 
             // Create tasks
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 30; i++)
                 project.createTask().describe("Arbetsuppgift " + i);
 
             // Create labels
-            user.newLabel().describe("Label 1");
-            user.newLabel().describe("Label 2");
-            user.newLabel().describe("Label 3");
+            user.createLabel().describe("Label 1");
+            user.createLabel().describe("Label 2");
+            user.createLabel().describe("Label 3");
 
             uow.complete();
         }

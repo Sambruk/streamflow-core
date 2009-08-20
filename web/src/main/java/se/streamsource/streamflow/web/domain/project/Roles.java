@@ -29,7 +29,7 @@ import java.util.List;
 @Mixins(Roles.RolesMixin.class)
 public interface Roles
 {
-    Role newRole(String name);
+    Role createRole(String name);
 
     void removeRole(Role role);
 
@@ -52,7 +52,7 @@ public interface Roles
         @Structure
         UnitOfWorkFactory uowf;
 
-        public Role newRole(String name)
+        public Role createRole(String name)
         {
             // Create role
             Role role = uowf.currentUnitOfWork().newEntity(RoleEntity.class);

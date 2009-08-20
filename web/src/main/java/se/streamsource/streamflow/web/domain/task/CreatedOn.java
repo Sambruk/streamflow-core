@@ -19,19 +19,35 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 
 import java.util.Date;
 
 /**
- * JAVADOC
+ * Role for recording the date of creation of the entity.
  */
 @Concerns(CreatedOn.CreatedOnLifecycleConcern.class)
+@Mixins(CreatedOn.CreatedOnMixin.class)
 public interface CreatedOn
 {
     interface CreatedOnState
     {
         Property<Date> createdOn();
+
+        @Event
+        void created(DomainEvent event);
+    }
+
+    abstract class CreatedOnMixin
+        implements CreatedOnState
+    {
+        public void created(DomainEvent event)
+        {
+            createdOn().set(event.on().get());
+        }
     }
 
     class CreatedOnLifecycleConcern
@@ -43,7 +59,7 @@ public interface CreatedOn
 
         public void create() throws LifecycleException
         {
-            state.createdOn().set(new Date(System.currentTimeMillis()));
+            state.created(DomainEvent.CREATE);
         }
 
         public void remove() throws LifecycleException

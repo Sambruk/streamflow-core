@@ -35,6 +35,7 @@ import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.IsRead;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
+import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -47,15 +48,18 @@ public class ProjectWaitingForServerResource
     public WaitingForTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("project");
+        String projectId = (String) getRequest().getAttributes().get("project");
+        String userId = (String) getRequest().getAttributes().get("user");
 
-        // Find all Active delegated tasks delegated by "project"
+        // Find all Active delegated tasks owned by "project" and delegated by "user"
         // or Completed delegated tasks that are marked as unread
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Property<String> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy().get().identity();
+        Property<String> ownedBy = templateFor(Ownable.OwnableState.class).owner().get().identity();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         queryBuilder.where(and(
-                eq(delegatedBy, id),
+                eq(ownedBy, projectId),
+                eq(delegatedBy, userId),
                 isNotNull(delegatee),
                 or(
                         eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
@@ -65,7 +69,7 @@ public class ProjectWaitingForServerResource
         Query<TaskEntity> waitingForQuery = queryBuilder.newQuery(uow);
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
-        return buildTaskList(id, waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
+        return buildTaskList(userId, waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
     }
 
     @Override

@@ -113,6 +113,6 @@ public class TaskStatusSteps
     @When("setting delegatedTo")
     public void setDelegateTo()
     {
-        task.delegateTo(userSteps.user, userSteps.user);
+        task.delegateTo(userSteps.user, userSteps.user, userSteps.user);
     }
 }

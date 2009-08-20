@@ -78,7 +78,7 @@ public class ProjectSelectionDialog
 
     public EntityReference getSelected()
     {
-        return selected.entity().get();
+        return selected == null ? null : selected.entity().get();
     }
 
     @Action

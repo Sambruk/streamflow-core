@@ -51,7 +51,7 @@ public class GroupSteps
         OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) organizationalUnitSteps.ou;
         try
         {
-            ouEntity.newGroup(name);
+            ouEntity.createGroup(name);
         } catch (DuplicateDescriptionException e)
         {
             duplicateDescriptionException = e;

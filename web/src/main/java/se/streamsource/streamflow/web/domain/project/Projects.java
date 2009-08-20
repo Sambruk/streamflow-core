@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 @Mixins(Projects.ProjectsMixin.class)
 public interface Projects
 {
-    Project newProject(String name) throws DuplicateDescriptionException;
+    Project createProject(String name) throws DuplicateDescriptionException;
 
     void removeProject(Project project);
 
@@ -61,7 +61,7 @@ public interface Projects
         @Structure
         UnitOfWorkFactory uowf;
 
-        public Project newProject(String name) throws DuplicateDescriptionException
+        public Project createProject(String name) throws DuplicateDescriptionException
         {
             for (Project aProject : state.projects())
             {

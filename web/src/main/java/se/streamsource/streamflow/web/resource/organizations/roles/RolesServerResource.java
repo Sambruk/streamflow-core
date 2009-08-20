@@ -57,7 +57,7 @@ public class RolesServerResource
 
         try
         {
-            roles.newRole(entity.getText());
+            roles.createRole(entity.getText());
             uow.complete();
         } catch (Exception e)
         {

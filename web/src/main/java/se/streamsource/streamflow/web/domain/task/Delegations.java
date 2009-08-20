@@ -42,12 +42,10 @@ public interface Delegations
         public void reject(Task task)
         {
             task.rejectDelegation();
-            task.markAsUnread();
         }
 
         public void completeDelegatedTask(Task task, Assignee assignee)
         {
-            task.ownedBy(owner);
             task.completedBy(assignee);
         }
     }

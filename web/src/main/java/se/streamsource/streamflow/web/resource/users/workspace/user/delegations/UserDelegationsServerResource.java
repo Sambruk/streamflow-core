@@ -48,22 +48,22 @@ public class UserDelegationsServerResource
     public DelegationsTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("user");
-        Delegations delegations = uow.get(Delegations.class, id);
+        String user = (String) getRequest().getAttributes().get("user");
+        Delegations delegations = uow.get(Delegations.class, user);
 
         // Find all Active tasks delegated to "me"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> idProp = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
+        Property<String> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
         Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
         queryBuilder.where(and(
-                eq(idProp, id),
+                eq(delegatedTo, user),
                 isNull(assignee),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
         Query<TaskEntity> delegationsQuery = queryBuilder.newQuery(uow);
         delegationsQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
-        return buildTaskList(id, delegationsQuery, DelegatedTaskDTO.class, DelegationsTaskListDTO.class);
+        return buildTaskList(user, delegationsQuery, DelegatedTaskDTO.class, DelegationsTaskListDTO.class);
     }
 
     @Override

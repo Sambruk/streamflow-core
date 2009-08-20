@@ -16,25 +16,27 @@ package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.sideeffect.SideEffectOf;
+import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 
 import java.util.Date;
 
 /**
  * JAVADOC
  */
-@Concerns(Delegatable.UnreadOnStatusChangeConcern.class)
+@SideEffects({Delegatable.UnreadOnStatusChangeSideEffect.class, Delegatable.UnreadOnRejectSideEffect.class})
 @Mixins(Delegatable.DelegatableMixin.class)
 public interface Delegatable
 {
-    void delegateTo(Delegatee delegatee, Delegator delegator);
+    void delegateTo(Delegatee delegatee, Delegator delegator, Delegations delegatedFrom);
 
     void rejectDelegation();
 
@@ -47,38 +49,59 @@ public interface Delegatable
         Association<Delegator> delegatedBy();
 
         @Optional
+        Association<Delegations> delegatedFrom();
+
+        @Optional
         Property<Date> delegatedOn();
+
+        @Event
+        void delegatedTo(DomainEvent create, Delegatee delegatee, Delegator delegator, Delegations delegatedFrom);
+
+        @Event
+        void delegationRejected(DomainEvent event);
     }
 
-    class DelegatableMixin
-        implements Delegatable
+    abstract class DelegatableMixin
+        implements Delegatable, DelegatableState
     {
-        @This
-        DelegatableState state;
-
         @This
         Ownable.OwnableState ownable;
 
         @Structure
         Qi4j api;
 
-        public void delegateTo(Delegatee delegatee, Delegator delegator)
+        public void delegateTo(Delegatee delegatee, Delegator delegator, Delegations delegatedFrom)
         {
-            state.delegatedTo().set(delegatee);
-            state.delegatedBy().set(delegator);
-            state.delegatedOn().set(new Date());
+            delegatedTo(DomainEvent.CREATE, delegatee, delegator, delegatedFrom);
+        }
+
+        public void delegatedTo(DomainEvent event, Delegatee delegatee, Delegator delegator, Delegations delegatedFrom)
+        {
+            delegatedTo().set(delegatee);
+            delegatedBy().set(delegator);
+            delegatedOn().set(event.on().get());
+            delegatedFrom().set(delegatedFrom);
         }
 
         public void rejectDelegation()
         {
-            state.delegatedTo().set(null);
-            state.delegatedBy().set(null);
-            state.delegatedOn().set(null);
+            if (delegatedTo().get() != null)
+            {
+                delegationRejected(DomainEvent.CREATE);
+            }
+        }
+
+        public void delegationRejected(DomainEvent event)
+        {
+            delegatedTo().set(null);
+            delegatedBy().set(null);
+            delegatedOn().set(null);
+            delegatedFrom().set(null);
         }
     }
 
-    abstract class UnreadOnStatusChangeConcern
-        extends ConcernOf<TaskStatus>
+    abstract class UnreadOnStatusChangeSideEffect
+        extends SideEffectOf<TaskStatus>
         implements TaskStatus
     {
         @This DelegatableState state;
@@ -87,7 +110,7 @@ public interface Delegatable
 
         public void completedBy(Assignee assignee)
         {
-            next.completedBy(assignee);
+            result.completedBy(assignee);
 
             if (state.delegatedTo() != null && !assignee.equals(state.delegatedTo().get()) && !status.status().get().equals(TaskStates.ACTIVE))
             {
@@ -97,12 +120,27 @@ public interface Delegatable
 
         public void droppedBy(Assignee assignee)
         {
-            next.droppedBy(assignee);
+            result.droppedBy(assignee);
 
             if (state.delegatedTo() != null && !assignee.equals(state.delegatedTo().get()) && !status.status().get().equals(TaskStates.ACTIVE))
             {
                 isRead.markAsUnread();
             }
+        }
+    }
+
+
+    abstract class UnreadOnRejectSideEffect
+        extends SideEffectOf<Delegatable>
+        implements Delegatable
+    {
+        @This IsRead read;
+
+        public void rejectDelegation()
+        {
+            result.rejectDelegation();
+
+            read.markAsUnread();
         }
     }
 }

@@ -86,7 +86,7 @@ public class LabelsServerResource
 
         Labels labels = uow.get(Labels.class, identity);
 
-        labels.newLabel().describe(name);
+        labels.createLabel().describe(name);
 
         try
         {

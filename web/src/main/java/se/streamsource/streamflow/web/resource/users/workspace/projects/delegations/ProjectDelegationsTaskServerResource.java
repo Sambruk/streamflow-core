@@ -29,7 +29,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * Mapped to:
  * /users/{user}/workspace/projects/{project}/delegations/{task}
  */
-public class ProjectDelegatedTaskServerResource
+public class ProjectDelegationsTaskServerResource
         extends CommandQueryServerResource
 {
     public void complete()
@@ -53,6 +53,7 @@ public class ProjectDelegatedTaskServerResource
         Delegations delegations = uow.get(Delegations.class, projectId);
         Assignee assignee = uow.get(Assignee.class, userId);
         Task task = uow.get(Task.class, taskId);
+
         delegations.accept(task, assignee);
     }
 

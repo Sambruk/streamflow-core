@@ -205,6 +205,10 @@ public class CommandQueryClientResource
                 try
                 {
                     put(commandRepresentation);
+                    if (!getStatus().isSuccess())
+                    {
+                        throw new ResourceException(getStatus());
+                    }
                     break;
                 } catch (ResourceException e)
                 {

@@ -165,7 +165,7 @@ public class TaskSteps
     @When("adding a label named $name to the task")
     public void addLabel(String name)
     {
-        Label label = userSteps.user.newLabel();
+        Label label = userSteps.user.createLabel();
         label.describe(name);
 
         task.addLabel(label);

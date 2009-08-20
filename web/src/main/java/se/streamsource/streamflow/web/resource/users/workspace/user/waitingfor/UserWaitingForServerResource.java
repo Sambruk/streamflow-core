@@ -32,10 +32,10 @@ import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.IsRead;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
-import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -48,16 +48,18 @@ public class UserWaitingForServerResource
     public WaitingForTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("user");
-        WaitingFor waitingFor = uow.get(WaitingFor.class, id);
+        String userId = (String) getRequest().getAttributes().get("user");
+        Delegations delegations = uow.get(Delegations.class, userId);
+
 
         // Find all Active delegated tasks delegated by "me"
         // or Completed delegated tasks that are marked as unread
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Property<String> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy().get().identity();
+        Association<Delegations> delegatedFrom = templateFor(Delegatable.DelegatableState.class).delegatedFrom();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         queryBuilder.where(and(
-                                eq(delegatedBy, id),
+                                eq(delegatedFrom, delegations),
 //                                isNotNull(delegatee),
                                 or(
                                     eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
@@ -67,7 +69,7 @@ public class UserWaitingForServerResource
         Query<TaskEntity> waitingForQuery = queryBuilder.newQuery(uow);
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
-        return buildTaskList(id, waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
+        return buildTaskList(userId, waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
     }
 
     @Override

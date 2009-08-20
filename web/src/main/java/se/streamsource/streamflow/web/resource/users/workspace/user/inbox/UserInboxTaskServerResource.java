@@ -91,7 +91,7 @@ public class UserInboxTaskServerResource
         Delegator delegator = uow.get(Delegator.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
 
-        inbox.delegateTo(task, delegatee, delegator);
+        inbox.delegateTo(task, delegatee, delegator, null); // TODO Role
     }
 
     public void forward(EntityReferenceDTO reference)

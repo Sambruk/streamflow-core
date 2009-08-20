@@ -40,9 +40,9 @@ import se.streamsource.streamflow.web.resource.users.administration.UserAdminist
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegatedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectInboxTaskServerResource;
@@ -101,9 +101,9 @@ public class ServerResourceAssembler
                 ProjectInboxServerResource.class,
                 ProjectInboxTaskServerResource.class,
                 ProjectAssignmentsServerResource.class,
-                ProjectAssignedTaskServerResource.class,
+                ProjectAssignmentsTaskServerResource.class,
                 ProjectDelegationsServerResource.class,
-                ProjectDelegatedTaskServerResource.class,
+                ProjectDelegationsTaskServerResource.class,
                 ProjectWaitingForServerResource.class,
                 ProjectWaitingForTaskServerResource.class,
                 LabelsServerResource.class,

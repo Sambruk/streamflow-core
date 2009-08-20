@@ -28,7 +28,7 @@ import se.streamsource.streamflow.domain.organization.DuplicateDescriptionExcept
 @Mixins(Groups.GroupsMixin.class)
 public interface Groups
 {
-    Group newGroup(String name) throws DuplicateDescriptionException;
+    Group createGroup(String name) throws DuplicateDescriptionException;
 
     void removeGroup(Group group);
 
@@ -47,7 +47,7 @@ public interface Groups
         @Structure
         UnitOfWorkFactory uowf;
 
-        public Group newGroup(String name) throws DuplicateDescriptionException
+        public Group createGroup(String name) throws DuplicateDescriptionException
         {
             for (Group agroup : state.groups())
             {

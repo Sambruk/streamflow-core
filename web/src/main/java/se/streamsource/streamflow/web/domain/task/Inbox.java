@@ -48,6 +48,9 @@ public interface Inbox
         @This
         Owner owner;
 
+        @This
+        Delegations delegations;
+
         @Structure
         UnitOfWorkFactory uowf;
 
@@ -84,7 +87,7 @@ public interface Inbox
 
         public void delegateTo(Task task, Delegatee delegatee, Delegator delegator)
         {
-            task.delegateTo(delegatee, delegator);
+            task.delegateTo(delegatee, delegator, delegations);
         }
 
         public void markAsRead(Task task)

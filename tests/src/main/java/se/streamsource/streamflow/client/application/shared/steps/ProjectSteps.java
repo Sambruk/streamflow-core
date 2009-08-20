@@ -56,7 +56,7 @@ public class ProjectSteps
         OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) organizationalUnitSteps.ou;
         try
         {
-            project = ouEntity.newProject(name);
+            project = ouEntity.createProject(name);
         } catch (DuplicateDescriptionException e)
         {
             duplicateDescriptionException = e;
@@ -86,7 +86,7 @@ public class ProjectSteps
 
         ensureThat(project, CoreMatchers.notNullValue());
 
-        project.newMember(userSteps.user);
+        project.createMember(userSteps.user);
     }
 
     @When("user is removed as member from project named $name")

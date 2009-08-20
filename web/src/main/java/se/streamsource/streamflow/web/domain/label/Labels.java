@@ -27,7 +27,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 @Mixins(Labels.LabelsMixin.class)
 public interface Labels
 {
-    Label newLabel();
+    Label createLabel();
 
     void removeLabel(Label label);
 
@@ -47,7 +47,7 @@ public interface Labels
         @This
         LabelsState state;
 
-        public Label newLabel()
+        public Label createLabel()
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
             Label label = uow.newEntity(Label.class);

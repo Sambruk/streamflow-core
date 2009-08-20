@@ -73,7 +73,7 @@ public class GroupsServerResource
 
         try
         {
-            groups.newGroup(name);
+            groups.createGroup(name);
         } catch (DuplicateDescriptionException e)
         {
             //throw new ResourceException

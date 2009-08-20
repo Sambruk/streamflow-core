@@ -79,7 +79,7 @@ public class UserAssignedTaskServerResource
         Delegator delegator = uow.get(Delegator.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
 
-        assignments.delegateAssignedTaskTo(task, delegatee, delegator);
+        assignments.delegateAssignedTaskTo(task, delegatee, delegator, null); // TODO Role
     }
 
     public void forward(EntityReferenceDTO reference)
