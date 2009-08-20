@@ -17,6 +17,7 @@ package se.streamsource.streamflow.resource.task;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.Matches;
 
 import java.util.Date;
 
@@ -31,6 +32,7 @@ public interface TaskGeneralDTO
 
     Property<String> labels();
 
+    @Matches("[\\w\\s\\p{Punct}]*")
     Property<String> description();
 
     Property<String> note();

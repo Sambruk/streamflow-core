@@ -33,6 +33,7 @@ public interface Tester
     @Mixins(TestEntity.TestStateMixin.class)
     interface TestState
     {
+        @Optional
         Property<String> prop();
 
         @Event

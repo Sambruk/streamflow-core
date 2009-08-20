@@ -106,7 +106,6 @@ public abstract class TaskTableView
         setLayout(new BorderLayout());
         final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(1D);
         add(splitPane, BorderLayout.CENTER);
 
         noTaskSelected = new JPanel();
@@ -155,7 +154,7 @@ public abstract class TaskTableView
 
         splitPane.setTopComponent(taskScrollPane);
         splitPane.setBottomComponent(noTaskSelected);
-        splitPane.setResizeWeight(0.3);
+        splitPane.setResizeWeight(1);
 
         JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
         taskTable.setDefaultEditor(Boolean.class, completableEditor);
@@ -234,8 +233,10 @@ public abstract class TaskTableView
                                 // Ignore
                                 return;
                             }
-                            splitPane.setBottomComponent(detailsView);
-                            splitPane.resetToPreferredSizes();
+                            if (splitPane.getBottomComponent() != detailsView)
+                            {
+                                splitPane.setBottomComponent(detailsView);
+                            }
                             TaskDetailModel taskModel = model.taskDetailModel(dto.task().get().identity());
                             taskModel.general().addObserver(descriptionUpdater);
                             taskModel.refresh();
@@ -252,6 +253,7 @@ public abstract class TaskTableView
                 }
             }
         });
+        splitPane.setDividerLocation(1D);
     }
     
     abstract protected void buildPopupMenu(JPopupMenu popup);

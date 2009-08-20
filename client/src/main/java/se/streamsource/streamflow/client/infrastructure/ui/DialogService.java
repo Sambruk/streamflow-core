@@ -15,12 +15,12 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder2;
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.StreamFlowApplication;
 
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -45,7 +45,7 @@ public class DialogService
     UnitOfWorkFactory uowf;
 
     @Service
-    StreamFlowApplication application;
+    ApplicationContext context;
 
     public void showOkCancelHelpDialog(Component component, JComponent main)
     {
@@ -55,24 +55,9 @@ public class DialogService
             dialog = new JXDialog((Frame) window, main);
         else
             dialog = new JXDialog((Dialog) window, main);
-        final JXDialog finalDialog = dialog;
 
         dialog.setModal(true);
 
-/*
-      Action ok = main.getActionMap().get("ok");
-      Action cancel = main.getActionMap().get("cancel");
-      Action help = main.getActionMap().get("help");
-*/
-
-/*
-      dialog.setTitle(title);
-      dialog.getContentPane().setLayout(new BorderLayout());
-      dialog.getContentPane().add(BorderLayout.SOUTH, createHelpOKCancelBar(new JButton(help),
-              new JButton(ok),
-              new JButton(cancel)));
-      dialog.getContentPane().add(BorderLayout.CENTER, main);
-*/
         dialog.pack();
         dialog.setLocationRelativeTo(SwingUtilities.windowForComponent(component));
         dialog.setVisible(true);
@@ -90,7 +75,7 @@ public class DialogService
 
         Action ok = main.getActionMap().get(JXDialog.EXECUTE_ACTION_COMMAND);
         if (ok == null)
-            ok = application.getContext().getActionMap().get(JXDialog.EXECUTE_ACTION_COMMAND);
+            ok = context.getActionMap().get(JXDialog.EXECUTE_ACTION_COMMAND);
 
         dialog.getContentPane().setLayout(new BorderLayout());
         JButton okButton = new JButton(ok);

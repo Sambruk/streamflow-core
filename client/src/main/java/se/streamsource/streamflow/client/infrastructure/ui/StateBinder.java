@@ -15,29 +15,53 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.JXErrorPane;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 
-import javax.swing.*;
+import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
  * JAVADOC
  */
 public class StateBinder
-    extends Observable
+        extends Observable
 {
     ResourceBundle errorMessages;
     Map<Class<? extends Component>, Binder> binders = new HashMap<Class<? extends Component>, Binder>();
@@ -240,28 +264,20 @@ public class StateBinder
         }
 
         void updateProperty(Object newValue)
+                throws IllegalArgumentException
         {
             Property<Object> objectProperty = property();
             if (objectProperty == null)
                 return;
 
-            try
-            {
-                // TODO Value conversion
+            // TODO Value conversion
 
-                if (objectProperty.get().equals(newValue))
-                    return; // Do nothing
+            if (objectProperty.get().equals(newValue))
+                return; // Do nothing
 
-                objectProperty.set(newValue);
-                setChanged();
-                notifyObservers(objectProperty);
-            } catch (Exception e)
-            {
-                // Reset value
-                binder.updateComponent(component, property().get());
-
-                stateBinder.handleException(component, e);
-            }
+            objectProperty.set(newValue);
+            setChanged();
+            notifyObservers(objectProperty);
         }
 
         private Property<Object> property()
@@ -304,18 +320,13 @@ public class StateBinder
             {
                 final JTextField textField = (JTextField) component;
 
-                component.addFocusListener(new FocusAdapter()
-                {
-                    public void focusLost(FocusEvent e)
-                    {
-                        binding.updateProperty(textField.getText());
-                    }
-                });
+                textField.setInputVerifier(new PropertyInputVerifier(binding));
+
                 textField.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent e)
                     {
-                        binding.updateProperty(textField.getText());
+                        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(textField);
                     }
                 });
 
@@ -323,11 +334,13 @@ public class StateBinder
             } else if (component instanceof JPasswordField)
             {
                 final JPasswordField passwordField = (JPasswordField) component;
-                component.addFocusListener(new FocusAdapter()
+                passwordField.setInputVerifier(new PropertyInputVerifier(binding));
+
+                passwordField.addActionListener(new ActionListener()
                 {
-                    public void focusLost(FocusEvent e)
+                    public void actionPerformed(ActionEvent e)
                     {
-                        binding.updateProperty(new String(passwordField.getPassword()));
+                        KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent(passwordField);
                     }
                 });
 
@@ -336,13 +349,7 @@ public class StateBinder
             {
                 final JTextArea textArea = (JTextArea) component;
 
-                component.addFocusListener(new FocusAdapter()
-                {
-                    public void focusLost(FocusEvent e)
-                    {
-                        binding.updateProperty(textArea.getText());
-                    }
-                });
+                textArea.setInputVerifier(new PropertyInputVerifier(binding));
 
                 return binding;
             } else if (component instanceof JScrollPane)
@@ -376,6 +383,7 @@ public class StateBinder
                 JTextComponent textField = (JTextComponent) component;
                 String text = value.toString();
                 textField.setText(text);
+                textField.setCaretPosition(0);
 
             } else if (component instanceof JPasswordField)
             {
@@ -390,6 +398,77 @@ public class StateBinder
                 JLabel label = (JLabel) component;
                 label.setText((String) value);
             }
+        }
+    }
+
+    class PropertyInputVerifier
+            extends InputVerifier
+    {
+        private Binding binding;
+
+        PropertyInputVerifier(Binding binding)
+        {
+            this.binding = binding;
+        }
+
+        IllegalArgumentException exception;
+
+        public boolean verify(JComponent input)
+        {
+            try
+            {
+                Object value = null;
+                if (input instanceof JTextComponent)
+                {
+                    value = ((JTextComponent)input).getText();
+                }
+                binding.updateProperty(value);
+                return true;
+            } catch (IllegalArgumentException e)
+            {
+                exception = e;
+                return false;
+            }
+        }
+
+        @Override
+        public boolean shouldYieldFocus(JComponent input)
+        {
+            boolean result = super.shouldYieldFocus(input);
+
+            if (!result)
+            {
+                Window window = WindowUtils.findWindow(input);
+
+                String message = "Invalid value";
+                if (exception instanceof ConstraintViolationException)
+                {
+                    ConstraintViolationException ex = (ConstraintViolationException) exception;
+                    String[] messages = ex.getLocalizedMessages(errorMessages);
+                    message = "<html>";
+                    for (String s : messages)
+                    {
+                        message += "<p>" + s + "</p>";
+                    }
+                    message += "</html>";
+                }
+
+                JLabel main = new JLabel(message);
+
+                JXDialog dialog;
+                if (window instanceof Frame)
+                    dialog = new JXDialog((Frame) window, main);
+                else
+                    dialog = new JXDialog((Dialog) window, main);
+
+                dialog.setModal(true);
+
+                dialog.pack();
+                dialog.setLocationRelativeTo(SwingUtilities.windowForComponent(input));
+                dialog.setVisible(true);
+            }
+
+            return result;
         }
     }
 }

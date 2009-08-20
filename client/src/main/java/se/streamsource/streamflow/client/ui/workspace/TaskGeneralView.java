@@ -31,10 +31,9 @@ import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.LayoutFocusTraversalPolicy;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -54,7 +53,6 @@ public class TaskGeneralView
 
     public ValueBuilder<TaskGeneralDTO> valueBuilder;
     public JTextField descriptionField;
-    private JToggleButton editButton;
     private JLabel issueLabel;
 
     public TaskGeneralView(@Service ApplicationContext appContext)
@@ -78,7 +76,6 @@ public class TaskGeneralView
         bb.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
 
         bb.appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
-//        .appendLine(WorkspaceResources.labels_label, LABEL, template.labels())
 
         .appendLine(WorkspaceResources.note_label, new JScrollPane(noteField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), template.note());
 

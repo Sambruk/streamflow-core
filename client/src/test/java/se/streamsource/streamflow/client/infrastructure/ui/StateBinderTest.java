@@ -44,10 +44,9 @@ public class StateBinderTest
     {
         JTextField field = (JTextField) TEXTFIELD.newField();
         ValueBuilder<NewTestCommand>  builder = bind(field);
+        field.grabFocus();
         field.setText(descriptionText);
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(
-                field,
-                new KeyEvent(field, KeyEvent.KEY_RELEASED, 0,0,KeyEvent.VK_ENTER, '\n'));
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
 
         Assert.assertThat(builder.newInstance().text().get(),
                           CoreMatchers.equalTo(descriptionText));
