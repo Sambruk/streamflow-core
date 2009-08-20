@@ -34,6 +34,7 @@ public enum WorkspaceResources
     note_label,
     name_label,
     company_label,
+    due_on_label,
 
     assignments_tab,
 
