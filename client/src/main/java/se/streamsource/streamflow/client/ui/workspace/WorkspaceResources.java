@@ -32,6 +32,8 @@ public enum WorkspaceResources
     description_label,
     labels_label,
     note_label,
+    name_label,
+    company_label,
 
     assignments_tab,
 
@@ -60,6 +62,7 @@ public enum WorkspaceResources
     metadata_tab,
     comments_tab,
     attachments_tab,
+    contacts_tab,
 
     add_comment_title,
 
