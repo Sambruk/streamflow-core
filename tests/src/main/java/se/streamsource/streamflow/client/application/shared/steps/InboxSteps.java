@@ -143,7 +143,7 @@ public class InboxSteps
     @When("task is delegated from user to project")
     public void delegateTask()
     {
-        inbox.delegateTo(task, (Delegatee)projectInbox, userSteps.user, null);
+        inbox.delegateTo(task, (Delegatee)projectInbox, userSteps.user);
     }
 
 

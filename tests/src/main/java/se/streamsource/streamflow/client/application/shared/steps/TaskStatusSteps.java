@@ -19,13 +19,12 @@ import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
-import static org.jbehave.util.JUnit4Ensure.ensureThat;
+import static org.jbehave.util.JUnit4Ensure.*;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
 /**
@@ -46,24 +45,22 @@ public class TaskStatusSteps
     @Uses
     InboxSteps inboxSteps;
 
-    public Task task;
+    public TaskEntity task;
     private Exception taskException;
 
     @Given("a task with state $state")
     public void taskWithState(String state) throws Exception
     {
         inboxSteps.inbox();
-        task = userSteps.user.createTask();
+        task = (TaskEntity) userSteps.user.createTask();
 
-        TaskEntity taskEntity = (TaskEntity) task;
-        taskEntity.status().set(TaskStates.valueOf(state));
+        task.status().set(TaskStates.valueOf(state));
     }
 
     @When("making task not assigned")
     public void makeNotAssigned()
     {
-        TaskEntity taskEntity = (TaskEntity) task;
-        taskEntity.assignedTo().set(null);
+        task.unassign();
     }
 
     @When("task is completed")
@@ -75,9 +72,7 @@ public class TaskStatusSteps
     @Then("task state is $state")
     public void checkTaskState(String state)
     {
-        TaskEntity taskEntity = (TaskEntity) task;
-
-        ensureThat(taskEntity.status().get(), CoreMatchers.equalTo(TaskStates.valueOf(state)));
+        ensureThat(task.status().get(), CoreMatchers.equalTo(TaskStates.valueOf(state)));
     }
 
     @Then("task assignedTo has $value value")
