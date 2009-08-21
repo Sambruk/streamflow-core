@@ -30,17 +30,17 @@ public class WorkspaceUIAssembler
     {
         module.addObjects(
                 WorkspaceNode.class,
-                UserNode.class,
-                UserInboxNode.class,
-                UserAssignmentsNode.class,
-                UserDelegationsNode.class,
-                UserWaitingForNode.class,
-                ProjectsNode.class,
-                ProjectNode.class,
-                ProjectInboxNode.class,
-                ProjectAssignmentsNode.class,
-                ProjectDelegationsNode.class,
-                ProjectWaitingForNode.class,
+                WorkspaceUserNode.class,
+                WorkspaceUserInboxNode.class,
+                WorkspaceUserAssignmentsNode.class,
+                WorkspaceUserDelegationsNode.class,
+                WorkspaceUserWaitingForNode.class,
+                WorkspaceProjectsNode.class,
+                WorkspaceProjectNode.class,
+                WorkspaceProjectInboxNode.class,
+                WorkspaceProjectAssignmentsNode.class,
+                WorkspaceProjectDelegationsNode.class,
+                WorkspaceProjectWaitingForNode.class,
                 LabelMenu.class);
 
         UIAssemblers.addViews(module, TableSelectionView.class, TaskContactsAdminView.class);
@@ -53,37 +53,37 @@ public class WorkspaceUIAssembler
 
         // User
         UIAssemblers.addMV(module,
-                UserInboxModel.class,
-                UserInboxView.class);
+                WorkspaceUserInboxModel.class,
+                WorkspaceUserInboxView.class);
 
         UIAssemblers.addMV(module,
-                UserAssignmentsModel.class,
-                UserAssignmentsView.class);
+                WorkspaceUserAssignmentsModel.class,
+                WorkspaceUserAssignmentsView.class);
 
         UIAssemblers.addMV(module,
-                UserDelegationsModel.class,
-                UserDelegationsView.class);
+                WorkspaceUserDelegationsModel.class,
+                WorkspaceUserDelegationsView.class);
 
         UIAssemblers.addMV(module,
-                UserWaitingForModel.class,
-                UserWaitingForView.class);
+                WorkspaceUserWaitingForModel.class,
+                WorkspaceUserWaitingForView.class);
 
         // Project
         UIAssemblers.addMV(module,
-                ProjectInboxModel.class,
-                ProjectInboxView.class);
+                WorkspaceProjectInboxModel.class,
+                WorkspaceProjectInboxView.class);
 
         UIAssemblers.addMV(module,
-                ProjectAssignmentsModel.class,
-                ProjectAssignmentsView.class);
+                WorkspaceProjectAssignmentsModel.class,
+                WorkspaceProjectAssignmentsView.class);
 
         UIAssemblers.addMV(module,
-                ProjectDelegationsModel.class,
-                ProjectDelegationsView.class);
+                WorkspaceProjectDelegationsModel.class,
+                WorkspaceProjectDelegationsView.class);
 
         UIAssemblers.addMV(module,
-                ProjectWaitingForModel.class,
-                ProjectWaitingForView.class);
+                WorkspaceProjectWaitingForModel.class,
+                WorkspaceProjectWaitingForView.class);
 
         UIAssemblers.addDialogs(module, UserOrProjectSelectionDialog.class, ProjectSelectionDialog.class);
         

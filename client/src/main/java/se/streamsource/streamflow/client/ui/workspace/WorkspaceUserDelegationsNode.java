@@ -22,16 +22,22 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
-public class ProjectAssignmentsNode
+public class WorkspaceUserDelegationsNode
         extends DefaultMutableTreeNode
 {
     @Uses
-    private ProjectAssignmentsModel model;
+    WorkspaceUserDelegationsModel model;
+
+    @Override
+    public WorkspaceUserNode getParent()
+    {
+        return (WorkspaceUserNode) super.getParent();
+    }
 
     @Override
     public String toString()
     {
-        String text = i18n.text(WorkspaceResources.assignments_node);
+        String text = i18n.text(WorkspaceResources.delegations_node);
         int unread = model.unreadCount();
         if (unread > 0)
         {
@@ -44,13 +50,7 @@ public class ProjectAssignmentsNode
         return text;
     }
 
-    @Override
-    public ProjectNode getParent()
-    {
-        return (ProjectNode) super.getParent();
-    }
-
-    public ProjectAssignmentsModel assignmentsModel()
+    WorkspaceUserDelegationsModel delegationsModel()
     {
         return model;
     }

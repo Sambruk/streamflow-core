@@ -27,7 +27,7 @@ import javax.swing.JPopupMenu;
 /**
  * JAVADOC
  */
-public class ProjectWaitingForView
+public class WorkspaceProjectWaitingForView
         extends TaskTableView
 {
     @Uses LabelMenu labelMenu;

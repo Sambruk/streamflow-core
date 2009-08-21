@@ -25,10 +25,10 @@ import java.util.Date;
  * JAVADOC
  */
 
-public class UserWaitingForModel
+public class WorkspaceUserWaitingForModel
         extends TaskTableModel
 {
-    public UserWaitingForModel()
+    public WorkspaceUserWaitingForModel()
     {
         columnNames = new String[]{"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
         columnClasses = new Class[] {Boolean.class, String.class, String.class, String.class, Date.class};

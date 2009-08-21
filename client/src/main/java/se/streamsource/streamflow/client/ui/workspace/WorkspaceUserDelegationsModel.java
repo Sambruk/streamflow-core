@@ -27,10 +27,10 @@ import java.util.Date;
 /**
  * JAVADOC
  */
-public class UserDelegationsModel
+public class WorkspaceUserDelegationsModel
         extends TaskTableModel
 {
-    public UserDelegationsModel()
+    public WorkspaceUserDelegationsModel()
     {
         columnNames = new String[]{"", text(description_column_header), text(delegated_from_header), text(delegated_on_header)};
         columnClasses = new Class[] {Boolean.class, String.class, String.class, Date.class, Date.class};

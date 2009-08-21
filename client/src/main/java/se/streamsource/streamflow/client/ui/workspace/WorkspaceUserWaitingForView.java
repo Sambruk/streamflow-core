@@ -27,7 +27,7 @@ import javax.swing.JPopupMenu;
 /**
  * JAVADOC
  */
-public class UserAssignmentsView
+public class WorkspaceUserWaitingForView
         extends TaskTableView
 {
     @Uses LabelMenu labelMenu;
@@ -36,25 +36,35 @@ public class UserAssignmentsView
     {
         taskTable.getSelectionModel().addListSelectionListener(labelMenu);
 
-        popup.add(labelMenu);
         ActionMap am = getActionMap();
+        popup.add(labelMenu);
         popup.add(am.get("markTasksAsUnread"));
         popup.add(am.get("markTasksAsRead"));
         Action dropAction = am.get("dropTasks");
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
-        popup.add(am.get("forwardTasks"));
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
     }
 
     @Override
     protected void buildToolbar(JPanel toolbar)
     {
-        addToolbarButton(toolbar, "createTask");
-        Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
+        Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
+        Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(delegateTasks));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
+    }
+
+    @org.jdesktop.application.Action
+    public void assignTasksToMe() throws ResourceException
+    {
+        int[] rows = taskTable.getSelectedRows();
+        for (int row : rows)
+        {
+            model.assignToMe(row);
+        }
+        model.refresh();
     }
 
     @org.jdesktop.application.Action
@@ -70,24 +80,6 @@ public class UserAssignmentsView
             for (int row : rows)
             {
                 model.delegate(row, selected.identity());
-            }
-            model.refresh();
-        }
-    }
-
-    @org.jdesktop.application.Action
-    public void forwardTasks() throws ResourceException
-    {
-        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
-
-        EntityReference selected = dialog.getSelected();
-        if (selected != null)
-        {
-            int[] rows = taskTable.getSelectedRows();
-            for (int row : rows)
-            {
-                model.forward(row, selected.identity());
             }
             model.refresh();
         }

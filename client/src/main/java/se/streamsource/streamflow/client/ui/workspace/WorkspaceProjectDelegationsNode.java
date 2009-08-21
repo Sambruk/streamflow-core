@@ -22,25 +22,35 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
-public class ProjectWaitingForNode
+public class WorkspaceProjectDelegationsNode
         extends DefaultMutableTreeNode
 {
     @Uses
-    ProjectWaitingForModel model;
+    WorkspaceProjectDelegationsModel model;
 
     @Override
-    public ProjectNode getParent()
+    public WorkspaceProjectNode getParent()
     {
-        return (ProjectNode) super.getParent();
+        return (WorkspaceProjectNode) super.getParent();
     }
 
     @Override
     public String toString()
     {
-        return i18n.text(WorkspaceResources.waitingfor_node);
+        String text = i18n.text(WorkspaceResources.delegations_node);
+        int unread = model.unreadCount();
+        if (unread > 0)
+        {
+            text += " ("+unread+")";
+        } else
+        {
+            text += "                ";
+        }
+
+        return text;
     }
 
-    public ProjectWaitingForModel waitingForModel()
+    WorkspaceProjectDelegationsModel delegationsModel()
     {
         return model;
     }

@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
@@ -27,7 +26,7 @@ import javax.swing.JPopupMenu;
 /**
  * JAVADOC
  */
-public class UserWaitingForView
+public class WorkspaceUserDelegationsView
         extends TaskTableView
 {
     @Uses LabelMenu labelMenu;
@@ -36,22 +35,19 @@ public class UserWaitingForView
     {
         taskTable.getSelectionModel().addListSelectionListener(labelMenu);
 
-        ActionMap am = getActionMap();
         popup.add(labelMenu);
-        popup.add(am.get("markTasksAsUnread"));
+        ActionMap am = getActionMap();
+        Action markTasksAsUnread = am.get("markTasksAsUnread");
+        popup.add(markTasksAsUnread);
         popup.add(am.get("markTasksAsRead"));
-        Action dropAction = am.get("dropTasks");
-        popup.add(dropAction);
-        Action removeTaskAction = am.get("removeTasks");
-        popup.add(removeTaskAction);
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(markTasksAsUnread));
     }
 
     @Override
     protected void buildToolbar(JPanel toolbar)
     {
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
-        Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
+        Action delegateTasksFromInbox = addToolbarButton(toolbar, "reject");
         addToolbarButton(toolbar, "refresh");
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
     }
@@ -68,20 +64,14 @@ public class UserWaitingForView
     }
 
     @org.jdesktop.application.Action
-    public void delegateTasks() throws ResourceException
+    public void reject() throws ResourceException
     {
-        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
-
-        EntityReference selected = dialog.getSelected();
-        if (selected != null)
+        int[] rows = taskTable.getSelectedRows();
+        WorkspaceUserDelegationsModel delegationsModel = (WorkspaceUserDelegationsModel) model;
+        for (int row : rows)
         {
-            int[] rows = taskTable.getSelectedRows();
-            for (int row : rows)
-            {
-                model.delegate(row, selected.identity());
-            }
-            model.refresh();
+            delegationsModel.reject(row);
         }
+        model.refresh();
     }
 }

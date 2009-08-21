@@ -94,19 +94,19 @@ public class WorkspaceView
                 {
                     public Icon getIcon(Object o)
                     {
-                        if (o instanceof UserNode)
+                        if (o instanceof WorkspaceUserNode)
                             return i18n.icon(Icons.user, i18n.ICON_24);
-                        else if (o instanceof ProjectNode)
+                        else if (o instanceof WorkspaceProjectNode)
                             return i18n.icon(Icons.project, i18n.ICON_24);
-                        else if (o instanceof ProjectsNode)
+                        else if (o instanceof WorkspaceProjectsNode)
                             return i18n.icon(Icons.projects, i18n.ICON_24);
-                        else if (o instanceof UserInboxNode || o instanceof ProjectInboxNode)
+                        else if (o instanceof WorkspaceUserInboxNode || o instanceof WorkspaceProjectInboxNode)
                             return i18n.icon(Icons.inbox, i18n.ICON_16);
-                        else if (o instanceof UserAssignmentsNode || o instanceof ProjectAssignmentsNode)
+                        else if (o instanceof WorkspaceUserAssignmentsNode || o instanceof WorkspaceProjectAssignmentsNode)
                             return i18n.icon(Icons.assign, i18n.ICON_16);
-                        else if (o instanceof UserDelegationsNode || o instanceof ProjectDelegationsNode)
+                        else if (o instanceof WorkspaceUserDelegationsNode || o instanceof WorkspaceProjectDelegationsNode)
                             return i18n.icon(Icons.delegate, i18n.ICON_16);
-                        else if (o instanceof UserWaitingForNode || o instanceof ProjectWaitingForNode)
+                        else if (o instanceof WorkspaceUserWaitingForNode || o instanceof WorkspaceProjectWaitingForNode)
                             return i18n.icon(Icons.waitingfor, i18n.ICON_16);
                         else
                             return NULL_ICON;
@@ -116,19 +116,19 @@ public class WorkspaceView
                 {
                     public String getString(Object o)
                     {
-                        if (o instanceof UserNode)
+                        if (o instanceof WorkspaceUserNode)
                             return accountModel.settings().name().get();
-                        else if (o instanceof ProjectNode)
-                            return ((ProjectNode)o).projectName();
-                        else if (o instanceof ProjectsNode)
+                        else if (o instanceof WorkspaceProjectNode)
+                            return ((WorkspaceProjectNode)o).projectName();
+                        else if (o instanceof WorkspaceProjectsNode)
                             return i18n.text(WorkspaceResources.projects_node);
-                        else if (o instanceof UserInboxNode || o instanceof ProjectInboxNode)
+                        else if (o instanceof WorkspaceUserInboxNode || o instanceof WorkspaceProjectInboxNode)
                             return o.toString();
-                        else if (o instanceof UserAssignmentsNode || o instanceof ProjectAssignmentsNode)
+                        else if (o instanceof WorkspaceUserAssignmentsNode || o instanceof WorkspaceProjectAssignmentsNode)
                             return o.toString();
-                        else if (o instanceof UserDelegationsNode || o instanceof ProjectDelegationsNode)
+                        else if (o instanceof WorkspaceUserDelegationsNode || o instanceof WorkspaceProjectDelegationsNode)
                             return o.toString();
-                        else if (o instanceof UserWaitingForNode || o instanceof ProjectWaitingForNode)
+                        else if (o instanceof WorkspaceUserWaitingForNode || o instanceof WorkspaceProjectWaitingForNode)
                             return o.toString();
                         else
                             return "";
@@ -142,7 +142,7 @@ public class WorkspaceView
             {
                 WrappingIconPanel component = (WrappingIconPanel) super.getTreeCellRendererComponent(jTree, o, b, b1, b2, i, b3);
                 
-                if (o instanceof UserNode || o instanceof ProjectsNode)
+                if (o instanceof WorkspaceUserNode || o instanceof WorkspaceProjectsNode)
                 {
                     component.setFont(getFont().deriveFont(Font.BOLD));
                 } else
@@ -183,18 +183,18 @@ public class WorkspaceView
 
                     JComponent view = new JPanel();
 
-                    if (node instanceof UserNode)
+                    if (node instanceof WorkspaceUserNode)
                         view = new JPanel();
-                    else if (node instanceof ProjectsNode)
+                    else if (node instanceof WorkspaceProjectsNode)
                     {
                         view = new JPanel();
                     }
-                    else if (node instanceof UserInboxNode)
+                    else if (node instanceof WorkspaceUserInboxNode)
                     {
-                        UserInboxNode userInboxNode = (UserInboxNode) node;
-                        final UserInboxModel inboxModel = userInboxNode.inboxModel();
+                        WorkspaceUserInboxNode userInboxNode = (WorkspaceUserInboxNode) node;
+                        final WorkspaceUserInboxModel inboxModel = userInboxNode.inboxModel();
                         final LabelsModel labelsModel = userInboxNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(UserInboxView.class).use(inboxModel, userInboxNode.getParent(), labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceUserInboxView.class).use(inboxModel, userInboxNode.getParent(), labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -213,12 +213,12 @@ public class WorkspaceView
                             }
                         });
                     }
-                    else if (node instanceof UserAssignmentsNode)
+                    else if (node instanceof WorkspaceUserAssignmentsNode)
                     {
-                        UserAssignmentsNode userAssignmentsNode = (UserAssignmentsNode) node;
-                        final UserAssignmentsModel assignmentsModel = userAssignmentsNode.assignmentsModel();
+                        WorkspaceUserAssignmentsNode userAssignmentsNode = (WorkspaceUserAssignmentsNode) node;
+                        final WorkspaceUserAssignmentsModel assignmentsModel = userAssignmentsNode.assignmentsModel();
                         final LabelsModel labelsModel = userAssignmentsNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(UserAssignmentsView.class).use(assignmentsModel, userAssignmentsNode.getParent(),labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceUserAssignmentsView.class).use(assignmentsModel, userAssignmentsNode.getParent(),labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -237,12 +237,12 @@ public class WorkspaceView
                             }
                         });
                     }
-                    else if (node instanceof UserDelegationsNode)
+                    else if (node instanceof WorkspaceUserDelegationsNode)
                     {
-                        UserDelegationsNode userDelegationsNode = (UserDelegationsNode) node;
-                        final UserDelegationsModel delegationsModel = userDelegationsNode.delegationsModel();
+                        WorkspaceUserDelegationsNode userDelegationsNode = (WorkspaceUserDelegationsNode) node;
+                        final WorkspaceUserDelegationsModel delegationsModel = userDelegationsNode.delegationsModel();
                         final LabelsModel labelsModel = userDelegationsNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(UserDelegationsView.class).use(delegationsModel, labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceUserDelegationsView.class).use(delegationsModel, labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -261,12 +261,12 @@ public class WorkspaceView
                             }
                         });
                     }
-                    else if (node instanceof UserWaitingForNode)
+                    else if (node instanceof WorkspaceUserWaitingForNode)
                     {
-                        UserWaitingForNode userWaitingForNode = (UserWaitingForNode) node;
-                        final UserWaitingForModel waitingForModel = userWaitingForNode.waitingForModel();
+                        WorkspaceUserWaitingForNode userWaitingForNode = (WorkspaceUserWaitingForNode) node;
+                        final WorkspaceUserWaitingForModel waitingForModel = userWaitingForNode.waitingForModel();
                         final LabelsModel labelsModel = userWaitingForNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(UserWaitingForView.class).use(waitingForModel, labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceUserWaitingForView.class).use(waitingForModel, labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -285,12 +285,12 @@ public class WorkspaceView
                             }
                         });
                     }
-                    else if (node instanceof ProjectInboxNode)
+                    else if (node instanceof WorkspaceProjectInboxNode)
                     {
-                        ProjectInboxNode projectInboxNode = (ProjectInboxNode) node;
-                        final ProjectInboxModel inboxModel = projectInboxNode.inboxModel();
+                        WorkspaceProjectInboxNode projectInboxNode = (WorkspaceProjectInboxNode) node;
+                        final WorkspaceProjectInboxModel inboxModel = projectInboxNode.inboxModel();
                         final LabelsModel labelsModel = projectInboxNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(ProjectInboxView.class).use(inboxModel, projectInboxNode.getParent(), labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceProjectInboxView.class).use(inboxModel, projectInboxNode.getParent(), labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -309,12 +309,12 @@ public class WorkspaceView
                             }
                         });
                     }
-                    else if (node instanceof ProjectAssignmentsNode)
+                    else if (node instanceof WorkspaceProjectAssignmentsNode)
                     {
-                        ProjectAssignmentsNode projectAssignmentsNode = (ProjectAssignmentsNode) node;
-                        final ProjectAssignmentsModel assignmentsModel = projectAssignmentsNode.assignmentsModel();
+                        WorkspaceProjectAssignmentsNode projectAssignmentsNode = (WorkspaceProjectAssignmentsNode) node;
+                        final WorkspaceProjectAssignmentsModel assignmentsModel = projectAssignmentsNode.assignmentsModel();
                         final LabelsModel labelsModel = projectAssignmentsNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(ProjectAssignmentsView.class).use(assignmentsModel, projectAssignmentsNode.getParent(),labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceProjectAssignmentsView.class).use(assignmentsModel, projectAssignmentsNode.getParent(),labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -334,12 +334,12 @@ public class WorkspaceView
                         });
 
                     }
-                    else if (node instanceof ProjectDelegationsNode)
+                    else if (node instanceof WorkspaceProjectDelegationsNode)
                     {
-                        ProjectDelegationsNode projectDelegationsNode = (ProjectDelegationsNode) node;
-                        final ProjectDelegationsModel delegationsModel = projectDelegationsNode.delegationsModel();
+                        WorkspaceProjectDelegationsNode projectDelegationsNode = (WorkspaceProjectDelegationsNode) node;
+                        final WorkspaceProjectDelegationsModel delegationsModel = projectDelegationsNode.delegationsModel();
                         final LabelsModel labelsModel = projectDelegationsNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(ProjectDelegationsView.class).use(delegationsModel, labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceProjectDelegationsView.class).use(delegationsModel, labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -358,12 +358,12 @@ public class WorkspaceView
                             }
                         });
                     }
-                    else if (node instanceof ProjectWaitingForNode)
+                    else if (node instanceof WorkspaceProjectWaitingForNode)
                     {
-                        ProjectWaitingForNode projectWaitingForNode = (ProjectWaitingForNode) node;
-                        final ProjectWaitingForModel waitingForModel = projectWaitingForNode.waitingForModel();
+                        WorkspaceProjectWaitingForNode projectWaitingForNode = (WorkspaceProjectWaitingForNode) node;
+                        final WorkspaceProjectWaitingForModel waitingForModel = projectWaitingForNode.waitingForModel();
                         final LabelsModel labelsModel = projectWaitingForNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(ProjectWaitingForView.class).use(waitingForModel, labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceProjectWaitingForView.class).use(waitingForModel, labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -398,11 +398,11 @@ public class WorkspaceView
             public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException
             {
                 Object node = event.getPath().getLastPathComponent();
-                if (node instanceof ProjectsNode)
+                if (node instanceof WorkspaceProjectsNode)
                 {
                     try
                     {
-                        ((ProjectsNode)node).refresh();
+                        ((WorkspaceProjectsNode)node).refresh();
                         model.reload((TreeNode) node);
                     } catch (Exception e)
                     {

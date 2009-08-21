@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 import java.util.Date;
@@ -23,10 +23,10 @@ import java.util.Date;
 /**
  * JAVADOC
  */
-public class UserAssignmentsModel
+public class WorkspaceProjectAssignmentsModel
         extends TaskTableModel
 {
-    public UserAssignmentsModel()
+    public WorkspaceProjectAssignmentsModel()
     {
         columnNames = new String[]{"", text(description_column_header), text(created_column_header)};
         columnClasses = new Class[] {Boolean.class, String.class, Date.class};
@@ -34,8 +34,8 @@ public class UserAssignmentsModel
     }
 
     @Override
-    public UserAssignmentsClientResource getResource()
+    public ProjectAssignmentsClientResource getResource()
     {
-        return (UserAssignmentsClientResource) super.getResource();
+        return (ProjectAssignmentsClientResource) super.getResource();
     }
 }

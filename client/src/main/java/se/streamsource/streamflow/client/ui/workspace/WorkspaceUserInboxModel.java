@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 import java.util.Date;
@@ -23,10 +23,10 @@ import java.util.Date;
 /**
  * JAVADOC
  */
-public class ProjectInboxModel
+public class WorkspaceUserInboxModel
         extends TaskTableModel
 {
-    public ProjectInboxModel()
+    public WorkspaceUserInboxModel()
     {
         columnNames = new String[]{"", text(description_column_header), text(created_column_header)};
         columnClasses = new Class[] {Boolean.class, String.class, Date.class};
@@ -34,8 +34,8 @@ public class ProjectInboxModel
     }
 
     @Override
-    public ProjectInboxClientResource getResource()
+    public UserInboxClientResource getResource()
     {
-        return (ProjectInboxClientResource) super.getResource();
+        return (UserInboxClientResource) super.getResource();
     }
 }

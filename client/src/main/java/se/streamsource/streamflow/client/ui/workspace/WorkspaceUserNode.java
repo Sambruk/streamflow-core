@@ -33,13 +33,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
-public class UserNode
+public class WorkspaceUserNode
         extends DefaultMutableTreeNode
 {
     private LabelsModel labelsModel;
     public UserClientResource user;
 
-    public UserNode(@Uses AccountModel account,
+    public WorkspaceUserNode(@Uses AccountModel account,
                           @Service Restlet client,
                           @Structure ObjectBuilderFactory obf) throws ResourceException
     {
@@ -48,16 +48,16 @@ public class UserNode
         user = account.userResource();
 
         UserInboxClientResource userInboxResource = user.workspace().user().inbox();
-        add(obf.newObjectBuilder(UserInboxNode.class).use(userInboxResource).newInstance());
+        add(obf.newObjectBuilder(WorkspaceUserInboxNode.class).use(userInboxResource).newInstance());
 
         UserAssignmentsClientResource userAssignmentsResource = user.workspace().user().assignments();
-        add(obf.newObjectBuilder(UserAssignmentsNode.class).use(userAssignmentsResource).newInstance());
+        add(obf.newObjectBuilder(WorkspaceUserAssignmentsNode.class).use(userAssignmentsResource).newInstance());
 
         UserDelegationsClientResource userDelegationsResource = user.workspace().user().delegations();
-        add(obf.newObjectBuilder(UserDelegationsNode.class).use(userDelegationsResource).newInstance());
+        add(obf.newObjectBuilder(WorkspaceUserDelegationsNode.class).use(userDelegationsResource).newInstance());
 
         UserWaitingForClientResource userWaitingForResource = user.workspace().user().waitingFor();
-        add(obf.newObjectBuilder(UserWaitingForNode.class).use(userWaitingForResource).newInstance());
+        add(obf.newObjectBuilder(WorkspaceUserWaitingForNode.class).use(userWaitingForResource).newInstance());
 
         labelsModel = obf.newObjectBuilder(LabelsModel.class).use(user.workspace().user().labels()).newInstance();
     }

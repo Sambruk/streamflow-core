@@ -25,11 +25,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class WorkspaceNode
         extends DefaultMutableTreeNode
 {
-    private UserNode userNode;
-    private ProjectsNode projectsNode;
+    private WorkspaceUserNode userNode;
+    private WorkspaceProjectsNode projectsNode;
 
-    public WorkspaceNode(@Uses UserNode userNode,
-                      @Uses ProjectsNode projectsNode,
+    public WorkspaceNode(@Uses WorkspaceUserNode userNode,
+                      @Uses WorkspaceProjectsNode projectsNode,
                       @Uses AccountModel accountModel)
     {
         super(accountModel);
@@ -46,12 +46,12 @@ public class WorkspaceNode
         return (AccountModel) super.getUserObject();
     }
 
-    public UserNode getUserNode()
+    public WorkspaceUserNode getUserNode()
     {
         return userNode;
     }
 
-    public ProjectsNode getProjectsNode()
+    public WorkspaceProjectsNode getProjectsNode()
     {
         return projectsNode;
     }

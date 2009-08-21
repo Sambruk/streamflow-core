@@ -44,7 +44,7 @@ public class ProjectSelectionDialog
     private TableSelectionView addProjectsView;
     public ListItemValue selected;
 
-    public ProjectSelectionDialog(final @Uses ProjectNode project,
+    public ProjectSelectionDialog(final @Uses WorkspaceProjectNode project,
                                @Service ApplicationContext context,
                                @Structure ObjectBuilderFactory obf)
     {

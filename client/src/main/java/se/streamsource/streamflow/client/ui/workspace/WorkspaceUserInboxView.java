@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
@@ -26,7 +27,7 @@ import javax.swing.JPopupMenu;
 /**
  * JAVADOC
  */
-public class UserDelegationsView
+public class WorkspaceUserInboxView
         extends TaskTableView
 {
     @Uses LabelMenu labelMenu;
@@ -37,17 +38,22 @@ public class UserDelegationsView
 
         popup.add(labelMenu);
         ActionMap am = getActionMap();
-        Action markTasksAsUnread = am.get("markTasksAsUnread");
-        popup.add(markTasksAsUnread);
+        popup.add(am.get("markTasksAsUnread"));
         popup.add(am.get("markTasksAsRead"));
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(markTasksAsUnread));
+        Action dropAction = am.get("dropTasks");
+        popup.add(dropAction);
+        Action removeTaskAction = am.get("removeTasks");
+        popup.add(removeTaskAction);
+        popup.add(am.get("forwardTasks"));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
     }
 
     @Override
     protected void buildToolbar(JPanel toolbar)
     {
+        addToolbarButton(toolbar, "createTask");
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
-        Action delegateTasksFromInbox = addToolbarButton(toolbar, "reject");
+        Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
     }
@@ -55,6 +61,7 @@ public class UserDelegationsView
     @org.jdesktop.application.Action
     public void assignTasksToMe() throws ResourceException
     {
+        int selection = getTaskTable().getSelectedRow();
         int[] rows = taskTable.getSelectedRows();
         for (int row : rows)
         {
@@ -64,14 +71,38 @@ public class UserDelegationsView
     }
 
     @org.jdesktop.application.Action
-    public void reject() throws ResourceException
+    public void delegateTasks() throws ResourceException
     {
-        int[] rows = taskTable.getSelectedRows();
-        UserDelegationsModel delegationsModel = (UserDelegationsModel) model;
-        for (int row : rows)
+        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        EntityReference selected = dialog.getSelected();
+        if (selected != null)
         {
-            delegationsModel.reject(row);
+            int[] rows = taskTable.getSelectedRows();
+            for (int row : rows)
+            {
+                model.delegate(row, selected.identity());
+            }
+            model.refresh();
         }
-        model.refresh();
+    }
+
+    @org.jdesktop.application.Action
+    public void forwardTasks() throws ResourceException
+    {
+        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        EntityReference selected = dialog.getSelected();
+        if (selected != null)
+        {
+            int[] rows = taskTable.getSelectedRows();
+            for (int row : rows)
+            {
+                model.forward(row, selected.identity());
+            }
+            model.refresh();
+        }
     }
 }

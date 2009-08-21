@@ -30,29 +30,29 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
-public class ProjectNode
+public class WorkspaceProjectNode
         extends DefaultMutableTreeNode
 {
     private LabelsModel labelsModel;
 
     @Uses String projectName;
 
-    public ProjectNode(@Uses WorkspaceProjectClientResource workspaceProjectClientResource,
+    public WorkspaceProjectNode(@Uses WorkspaceProjectClientResource workspaceProjectClientResource,
                              @Structure ObjectBuilderFactory obf)
     {
         super(workspaceProjectClientResource);
 
         ProjectInboxClientResource projectInboxClientResource = workspaceProjectClientResource.inbox();
-        add(obf.newObjectBuilder(ProjectInboxNode.class).use(projectInboxClientResource).newInstance());
+        add(obf.newObjectBuilder(WorkspaceProjectInboxNode.class).use(projectInboxClientResource).newInstance());
 
         ProjectAssignmentsClientResource projectAssignmentsClientResource = workspaceProjectClientResource.assignments();
-        add(obf.newObjectBuilder(ProjectAssignmentsNode.class).use(projectAssignmentsClientResource).newInstance());
+        add(obf.newObjectBuilder(WorkspaceProjectAssignmentsNode.class).use(projectAssignmentsClientResource).newInstance());
 
         ProjectDelegationsClientResource projectDelegationsClientResource = workspaceProjectClientResource.delegations();
-        add(obf.newObjectBuilder(ProjectDelegationsNode.class).use(projectDelegationsClientResource).newInstance());
+        add(obf.newObjectBuilder(WorkspaceProjectDelegationsNode.class).use(projectDelegationsClientResource).newInstance());
 
         ProjectWaitingforClientResource projectWaitingforClientResource = workspaceProjectClientResource.waitingFor();
-        add(obf.newObjectBuilder(ProjectWaitingForNode.class).use(projectWaitingforClientResource).newInstance());
+        add(obf.newObjectBuilder(WorkspaceProjectWaitingForNode.class).use(projectWaitingforClientResource).newInstance());
 
         labelsModel = obf.newObjectBuilder(LabelsModel.class).use(workspaceProjectClientResource.labels()).newInstance();
     }
@@ -63,9 +63,9 @@ public class ProjectNode
     }
 
     @Override
-    public ProjectsNode getParent()
+    public WorkspaceProjectsNode getParent()
     {
-        return (ProjectsNode) super.getParent();
+        return (WorkspaceProjectsNode) super.getParent();
     }
 
     public LabelsModel labelsModel()

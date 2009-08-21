@@ -22,11 +22,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
-public class ProjectInboxNode
+public class WorkspaceProjectInboxNode
         extends DefaultMutableTreeNode
 {
     @Uses
-    ProjectInboxModel model;
+    WorkspaceProjectInboxModel model;
 
     @Override
     public String toString()
@@ -45,12 +45,12 @@ public class ProjectInboxNode
     }
 
     @Override
-    public ProjectNode getParent()
+    public WorkspaceProjectNode getParent()
     {
-        return (ProjectNode) super.getParent();
+        return (WorkspaceProjectNode) super.getParent();
     }
 
-    public ProjectInboxModel inboxModel()
+    public WorkspaceProjectInboxModel inboxModel()
     {
         return model;
     }

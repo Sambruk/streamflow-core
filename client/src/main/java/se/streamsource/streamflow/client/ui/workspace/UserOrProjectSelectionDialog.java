@@ -48,7 +48,7 @@ public class UserOrProjectSelectionDialog
     private TableSelectionView addProjectsView;
     public ListItemValue selected;
 
-    public UserOrProjectSelectionDialog(final @Uses UserNode user,
+    public UserOrProjectSelectionDialog(final @Uses WorkspaceUserNode user,
                                @Service ApplicationContext context,
                                @Structure ObjectBuilderFactory obf)
     {

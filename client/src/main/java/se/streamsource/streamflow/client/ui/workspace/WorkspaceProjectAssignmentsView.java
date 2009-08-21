@@ -28,7 +28,7 @@ import javax.swing.JPopupMenu;
 /**
  * JAVADOC
  */
-public class ProjectAssignmentsView
+public class WorkspaceProjectAssignmentsView
         extends TaskTableView
 {
     @Uses

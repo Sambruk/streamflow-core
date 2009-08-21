@@ -28,21 +28,19 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
-public class ProjectsNode
+public class WorkspaceProjectsNode
         extends DefaultMutableTreeNode
     implements Refreshable
 {
     private AccountModel account;
     private ObjectBuilderFactory obf;
 
-    public ProjectsNode(@Uses AccountModel account,
+    public WorkspaceProjectsNode(@Uses AccountModel account,
                               @Structure final ObjectBuilderFactory obf) throws Exception
     {
         super(account);
         this.account = account;
         this.obf = obf;
-
-//        refresh();
     }
 
     @Override
@@ -74,7 +72,7 @@ public class ProjectsNode
         for (ListItemValue project : projects.items().get())
         {
             WorkspaceProjectClientResource workspaceProjectResource =  user.workspace().projects().project(project.entity().get().identity());
-            add(obf.newObjectBuilder(ProjectNode.class).use(workspaceProjectResource, project.description().get()).newInstance());
+            add(obf.newObjectBuilder(WorkspaceProjectNode.class).use(workspaceProjectResource, project.description().get()).newInstance());
         }
     }
 }

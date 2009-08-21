@@ -16,7 +16,6 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 
@@ -28,21 +27,17 @@ import javax.swing.JPopupMenu;
 /**
  * JAVADOC
  */
-public class ProjectInboxView
+public class WorkspaceUserAssignmentsView
         extends TaskTableView
 {
-    @Uses
-    protected ObjectBuilder<ProjectSelectionDialog> projectSelectionDialog;
-
-    @Uses
-    LabelMenu labelMenu;
+    @Uses LabelMenu labelMenu;
 
     protected void buildPopupMenu(JPopupMenu popup)
     {
         taskTable.getSelectionModel().addListSelectionListener(labelMenu);
 
-        ActionMap am = getActionMap();
         popup.add(labelMenu);
+        ActionMap am = getActionMap();
         popup.add(am.get("markTasksAsUnread"));
         popup.add(am.get("markTasksAsRead"));
         Action dropAction = am.get("dropTasks");
@@ -57,27 +52,15 @@ public class ProjectInboxView
     protected void buildToolbar(JPanel toolbar)
     {
         addToolbarButton(toolbar, "createTask");
-        Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
-        Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
+        Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
-    }
-
-    @org.jdesktop.application.Action
-    public void assignTasksToMe() throws ResourceException
-    {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
-        {
-            model.assignToMe(row);
-        }
-        model.refresh();
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(delegateTasks));
     }
 
     @org.jdesktop.application.Action
     public void delegateTasks() throws ResourceException
     {
-        ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
+        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         EntityReference selected = dialog.getSelected();
@@ -95,7 +78,7 @@ public class ProjectInboxView
     @org.jdesktop.application.Action
     public void forwardTasks() throws ResourceException
     {
-        ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
+        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         EntityReference selected = dialog.getSelected();

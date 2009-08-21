@@ -27,10 +27,10 @@ import java.util.Date;
 /**
  * JAVADOC
  */
-public class ProjectDelegationsModel
+public class WorkspaceProjectDelegationsModel
         extends TaskTableModel
 {
-    public ProjectDelegationsModel()
+    public WorkspaceProjectDelegationsModel()
     {
         columnNames = new String[]{"", text(description_column_header), text(delegated_from_header), text(delegated_on_header)};
         columnClasses = new Class[] {Boolean.class, String.class, String.class, Date.class, Date.class};

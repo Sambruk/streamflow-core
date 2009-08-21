@@ -22,37 +22,26 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
-public class UserInboxNode
+public class WorkspaceUserWaitingForNode
         extends DefaultMutableTreeNode
 {
     @Uses
-    private UserInboxModel model;
+    WorkspaceUserWaitingForModel model;
 
-    public String toString()
+    @Override
+    public WorkspaceUserNode getParent()
     {
-        String text = i18n.text(WorkspaceResources.inboxes_node);
-        int unread = model.unreadCount();
-        if (unread > 0)
-        {
-            text += " ("+unread+")";
-        } else
-        {
-            text += "                ";
-        }
-
-        return text;
+        return (WorkspaceUserNode) super.getParent();
     }
 
     @Override
-    public UserNode getParent()
+    public String toString()
     {
-        return (UserNode) super.getParent();
+        return i18n.text(WorkspaceResources.waitingfor_node);
     }
 
-    public UserInboxModel inboxModel()
+    public WorkspaceUserWaitingForModel waitingForModel()
     {
         return model;
     }
-
-
 }

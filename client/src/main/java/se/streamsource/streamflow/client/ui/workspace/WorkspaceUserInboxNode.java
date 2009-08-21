@@ -22,16 +22,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
-public class UserAssignmentsNode
+public class WorkspaceUserInboxNode
         extends DefaultMutableTreeNode
 {
     @Uses
-    private UserAssignmentsModel model;
+    private WorkspaceUserInboxModel model;
 
-    @Override
     public String toString()
     {
-        String text = i18n.text(WorkspaceResources.assignments_node);
+        String text = i18n.text(WorkspaceResources.inboxes_node);
         int unread = model.unreadCount();
         if (unread > 0)
         {
@@ -45,13 +44,15 @@ public class UserAssignmentsNode
     }
 
     @Override
-    public UserNode getParent()
+    public WorkspaceUserNode getParent()
     {
-        return (UserNode) super.getParent();
+        return (WorkspaceUserNode) super.getParent();
     }
 
-    public UserAssignmentsModel assignmentsModel()
+    public WorkspaceUserInboxModel inboxModel()
     {
         return model;
     }
+
+
 }
