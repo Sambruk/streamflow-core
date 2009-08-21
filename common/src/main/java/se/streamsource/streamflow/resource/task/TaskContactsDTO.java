@@ -12,21 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web;
+package se.streamsource.streamflow.resource.task;
 
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.spi.structure.ApplicationModelSPI;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
- * Visualize the web part of the application
+ * General information about a task
  */
-public class Visualize
+public interface TaskContactsDTO
+        extends ValueComposite
 {
-    public static void main(String[] args) throws AssemblyException
-    {
-        Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamFlowWebAssembler());
-        //new Envisage().run(app);
-    }
+    @UseDefaults
+    Property<List<TaskContactDTO>> contacts();
 }

@@ -15,7 +15,7 @@
     <description>StreamFlow integration tests</description>
 
     <build>
-        <!-- Skip for now -->      
+        <!-- Skip for now      
           <plugins>
             <plugin>
                 <groupId>org.jbehave</groupId>
@@ -40,7 +40,7 @@
                 </executions>
             </plugin>
         </plugins>
-        <!-- -->
+         -->
     </build>
     <dependencies>
         <!-- StreamFlow -->

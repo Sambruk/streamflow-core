@@ -63,7 +63,8 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         protected TaskDetailModel newModel(String key)
         {
             TaskClientResource taskClientResource = getResource().task(key);
-            TaskDetailModel model = obf.newObjectBuilder(TaskDetailModel.class).use(taskClientResource.general(), taskClientResource.comments()).newInstance();
+            TaskDetailModel model = obf.newObjectBuilder(TaskDetailModel.class)
+                    .use(taskClientResource.general(), taskClientResource.comments(), taskClientResource.contacts()).newInstance();
             return model;
         }
 

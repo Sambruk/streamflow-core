@@ -32,6 +32,9 @@ public class TaskDetailModel
     @Uses
     TaskGeneralModel general;
 
+    @Uses
+    TaskContactsModel contacts;
+
     public TaskCommentsModel comments()
     {
         return comments;
@@ -42,9 +45,15 @@ public class TaskDetailModel
         return general;
     }
 
+    public TaskContactsModel contacts()
+    {
+        return contacts;
+    }
+
     public void refresh() throws IOException, ResourceException
     {
         general.refresh();
         comments.refresh();
+        contacts.refresh();
     }
 }

@@ -23,6 +23,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
@@ -45,6 +46,11 @@ public class TaskClientResource
     public TaskCommentsClientResource comments()
     {
         return getSubResource("comments", TaskCommentsClientResource.class);
+    }
+
+    public TaskContactsClientResource contacts()
+    {
+        return getSubResource("contacts", TaskContactsClientResource.class);
     }
 
     public void complete() throws ResourceException

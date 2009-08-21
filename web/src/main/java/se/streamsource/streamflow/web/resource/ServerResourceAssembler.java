@@ -59,6 +59,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserIn
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
@@ -97,6 +98,7 @@ public class ServerResourceAssembler
 
                 TaskGeneralServerResource.class,
                 TaskCommentsServerResource.class,
+                TaskContactsServerResource.class,
 
                 WorkspaceProjectsServerResource.class,
                 WorkspaceProjectServerResource.class,

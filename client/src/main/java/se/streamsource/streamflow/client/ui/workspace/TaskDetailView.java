@@ -35,13 +35,14 @@ public class TaskDetailView
 {
     private TaskCommentsView commentsView;
     private TaskGeneralView generalView;
+    private TaskContactsAdminView contactsView;
     private TaskDetailModel model;
 
     public TaskDetailView(@Service ApplicationContext appContext,
                           @Uses TaskGeneralView generalView,
                           @Uses TaskCommentsView commentsView,
-
-                                     @Structure ObjectBuilderFactory obf)
+                          @Uses TaskContactsAdminView contactsView,
+                          @Structure ObjectBuilderFactory obf)
     {
         super(JTabbedPane.BOTTOM);
 
@@ -49,16 +50,19 @@ public class TaskDetailView
 
         this.commentsView = commentsView;
         this.generalView = generalView;
+        this.contactsView = contactsView;
 
         addTab(i18n.text(WorkspaceResources.general_tab), i18n.icon(Icons.general), generalView, i18n.text(WorkspaceResources.general_tab));
         addTab(i18n.text(WorkspaceResources.metadata_tab), i18n.icon(Icons.metadata), new JLabel("Metadata"), i18n.text(WorkspaceResources.metadata_tab));
         addTab(i18n.text(WorkspaceResources.comments_tab), i18n.icon(Icons.comments), commentsView, i18n.text(WorkspaceResources.comments_tab));
         addTab(i18n.text(WorkspaceResources.attachments_tab), i18n.icon(Icons.attachments), new JLabel("Attachments"), i18n.text(WorkspaceResources.attachments_tab));
+        addTab(i18n.text(WorkspaceResources.contacts_tab), i18n.icon(Icons.projects), contactsView, i18n.text(WorkspaceResources.contacts_tab));
 
         setMnemonicAt(0, KeyEvent.VK_1);
         setMnemonicAt(1, KeyEvent.VK_2);
         setMnemonicAt(2, KeyEvent.VK_3);
         setMnemonicAt(3, KeyEvent.VK_4);
+        setMnemonicAt(4, KeyEvent.VK_5);
 
         setTaskModel(null);
     }
@@ -70,14 +74,16 @@ public class TaskDetailView
         {
             generalView.setModel(null);
             commentsView.setModel(null);
-            setPreferredSize(new Dimension(getWidth(), 20));
-            setMaximumSize(new Dimension(getWidth(), 20));
+            contactsView.setModel(null);
+            setPreferredSize(new Dimension(getWidth(), 50));
+            setMaximumSize(new Dimension(getWidth(), 50));
             validateTree();
             setSelectedIndex(-1);
         } else
         {
             generalView.setModel(model.general());
             commentsView.setModel(model.comments());
+            contactsView.setModel(model.contacts());
 
             setPreferredSize(new Dimension(getWidth(), 500));
             validateTree();

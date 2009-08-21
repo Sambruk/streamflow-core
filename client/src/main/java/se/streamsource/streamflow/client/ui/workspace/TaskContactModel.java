@@ -12,21 +12,30 @@
  *
  */
 
-package se.streamsource.streamflow.web;
+package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.spi.structure.ApplicationModelSPI;
+import se.streamsource.streamflow.resource.task.TaskContactDTO;
+
+import java.util.Observable;
 
 /**
- * Visualize the web part of the application
+ * Model for a contact of a task
  */
-public class Visualize
+public class TaskContactModel
+    extends Observable
 {
-    public static void main(String[] args) throws AssemblyException
+    private TaskContactDTO contact;
+
+    public TaskContactDTO getContact()
     {
-        Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamFlowWebAssembler());
-        //new Envisage().run(app);
+        return contact;
+    }
+
+
+    public void setTaskContactDTO(TaskContactDTO contact)
+    {
+        this.contact = contact;
+        setChanged();
+        notifyObservers(this);
     }
 }

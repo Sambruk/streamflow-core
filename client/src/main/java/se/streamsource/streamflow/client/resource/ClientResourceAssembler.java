@@ -55,6 +55,7 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.delegatio
 import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForTaskClientResource;
@@ -81,6 +82,7 @@ public class ClientResourceAssembler
                 UserInboxTaskClientResource.class,
                 TaskGeneralClientResource.class,
                 TaskCommentsClientResource.class,
+                TaskContactsClientResource.class,
 
                 UserAssignmentsClientResource.class,
                 UserAssignedTaskClientResource.class,

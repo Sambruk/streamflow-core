@@ -15,9 +15,12 @@
 package se.streamsource.streamflow.domain.contact;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 
 import java.util.List;
 
@@ -27,40 +30,49 @@ import java.util.List;
 @Mixins(Contacts.ContactsMixin.class)
 public interface Contacts
 {
+    public void addContact();
+
+    public void removeContacts();
+
     public void addContact(ContactValue contact);
-
-    public void removeContact(int index);
-
-    public void updateContact(int index, ContactValue newContact);
 
     interface ContactsState
     {
         @UseDefaults
         Property<List<ContactValue>> contacts();
     }
-
+    
     class ContactsMixin
     implements Contacts
     {
         @This ContactsState state;
 
+        @Structure
+        ValueBuilderFactory vbf;
+
+        public void addContact()
+        {
+            ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class);
+            // how to localize default name?
+            builder.prototype().name().set("Namn");
+            List<ContactValue> contacts = state.contacts().get();
+            contacts.add(builder.newInstance());
+            state.contacts().set(contacts);
+        }
+
+        public void removeContacts()
+        {
+            List<ContactValue> contacts = state.contacts().get();
+            contacts.clear();
+            state.contacts().set(contacts);
+        }
+
         public void addContact(ContactValue contact)
         {
-
+            List<ContactValue> contacts = state.contacts().get();
+            contacts.add(contact);
+            state.contacts().set(contacts);
         }
-            
-
-        public void removeContact(int index)
-        {
-
-        }
-
-        public void updateContact(int index, ContactValue newContact)
-        {
-
-        }
-
-
     }
     
 }

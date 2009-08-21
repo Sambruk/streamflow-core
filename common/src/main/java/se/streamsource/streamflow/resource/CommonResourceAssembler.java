@@ -36,6 +36,8 @@ import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.task.TaskContactDTO;
+import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
@@ -64,6 +66,8 @@ public class CommonResourceAssembler
                 InboxTaskListDTO.class,
                 InboxTaskDTO.class,
                 TaskGeneralDTO.class,
+                TaskContactsDTO.class,
+                TaskContactDTO.class,
                 CommentsDTO.class,
                 CommentDTO.class,
                 AssignmentsTaskListDTO.class,

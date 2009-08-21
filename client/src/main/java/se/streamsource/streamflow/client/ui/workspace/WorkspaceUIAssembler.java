@@ -43,7 +43,7 @@ public class WorkspaceUIAssembler
                 ProjectWaitingForNode.class,
                 LabelMenu.class);
 
-        UIAssemblers.addViews(module, TableSelectionView.class);
+        UIAssemblers.addViews(module, TableSelectionView.class, TaskContactsAdminView.class);
 
         UIAssemblers.addModels(module, LabelsModel.class);
 
@@ -96,6 +96,14 @@ public class WorkspaceUIAssembler
         UIAssemblers.addMV(module,
                 TaskCommentsModel.class,
                 TaskCommentsView.class);
+
+        UIAssemblers.addMV(module,
+                TaskContactsModel.class,
+                TaskContactsView.class);
+
+        UIAssemblers.addMV(module,
+                TaskContactModel.class,
+                TaskContactView.class);
 
         UIAssemblers.addMV(module,
                 TaskGeneralModel.class,
