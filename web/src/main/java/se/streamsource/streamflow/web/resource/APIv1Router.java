@@ -116,6 +116,7 @@ public class APIv1Router
         attach("/users/{user}/workspace/user/{view}/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
         attach("/users/{labels}/workspace/user/labels", createServerResourceFinder(LabelsServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/{view}/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/{view}/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/{view}/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
         attach("/users/{user}/administration", createServerResourceFinder(UserAdministrationServerResource.class));
 
@@ -153,6 +154,7 @@ public class APIv1Router
         attach("/organizations/{organization}/search", createServerResourceFinder(SearchTasksServerResource.class));
         attach("/organizations/{organization}/search/{task}", createServerResourceFinder(SearchTaskServerResource.class));
         attach("/organizations/{organization}/search/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
+        attach("/organizations/{organization}/search/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
         attach("/organizations/{organization}/search/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
 
         // Events
