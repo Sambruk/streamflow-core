@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
@@ -49,22 +50,28 @@ public interface ServiceConfiguration
         {
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Service configuration"));
             String jdbmPath = new File(config.dataDirectory(), "JdbmEntityStoreService/jdbm.data").getAbsolutePath();
-            EntityBuilder<JdbmConfiguration> builder = uow.newEntityBuilder(JdbmConfiguration.class, "JdbmEntityStoreService");
-            builder.instance().file().set(jdbmPath);
-            builder.newInstance();
+            try
+            {
+                uow.get(JdbmConfiguration.class, "JdbmEntityStoreService");
+            } catch (NoSuchEntityException e)
+            {
+                EntityBuilder<JdbmConfiguration> builder = uow.newEntityBuilder(JdbmConfiguration.class, "JdbmEntityStoreService");
+                builder.instance().file().set(jdbmPath);
+                builder.newInstance();
+            }
 
             try
+            {
+                uow.get(NativeConfiguration.class, "rdf-repository");
+            } catch (NoSuchEntityException e)
             {
                 String rdfPath = new File(config.dataDirectory(), "rdf-repository").getAbsolutePath();
                 NativeConfiguration nativeConfiguration = uow.newEntity(NativeConfiguration.class, "rdf-repository");
                 nativeConfiguration.dataDirectory().set(rdfPath);
                 nativeConfiguration.tripleIndexes().set("spoc,cspo,ospc");
-
-                uow.complete();
-            } catch (Throwable e)
-            {
-                e.printStackTrace();
             }
+
+            uow.complete();
         }
 
         public void passivate() throws Exception
