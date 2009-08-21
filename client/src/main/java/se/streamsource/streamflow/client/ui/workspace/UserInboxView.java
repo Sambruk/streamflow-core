@@ -18,8 +18,6 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -33,11 +31,6 @@ public class UserInboxView
         extends TaskTableView
 {
     @Uses LabelMenu labelMenu;
-
-    protected String tabName()
-    {
-        return text(inbox_tab);
-    }
 
     protected void buildPopupMenu(JPopupMenu popup)
     {

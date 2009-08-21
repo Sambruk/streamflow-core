@@ -29,7 +29,7 @@ public interface Labelable
 
     interface LabelableState
     {
-        ManyAssociation<Label> labels();
+        ManyAssociation<LabelEntity> labels();
     }
 
     class LabelableMixin
@@ -44,17 +44,17 @@ public interface Labelable
             {
                 if (state.labels().get(i).getDescription().compareTo(label.getDescription()) > 0)
                 {
-                    state.labels().add(i, label);
+                    state.labels().add(i, (LabelEntity) label);
                     return;
                 }
             }
 
-            state.labels().add(state.labels().count(), label);
+            state.labels().add((LabelEntity) label);
         }
 
         public void removeLabel(Label label)
         {
-            state.labels().remove(label);
+            state.labels().remove((LabelEntity) label);
         }
     }
 }

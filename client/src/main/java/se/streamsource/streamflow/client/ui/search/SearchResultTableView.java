@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2008, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,20 +12,25 @@
  *
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.client.ui.search;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.client.ui.workspace.TaskTableView;
+
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
- * New task command
+ * JAVADOC
  */
-public interface NewTaskCommand
-        extends ValueComposite, Describable.DescribableState, Notable.NotableState
+public class SearchResultTableView
+        extends TaskTableView
 {
-    @UseDefaults
-    Property<Boolean> isCompleted();
+    protected void buildPopupMenu(JPopupMenu popup)
+    {
+    }
+
+    @Override
+    protected void buildToolbar(JPanel toolbar)
+    {
+    }
 }

@@ -65,4 +65,11 @@ public class OrganizationClientResource
         builder.prototype().description().set(projectName);
         return query("findProjects", builder.newInstance(), ListValue.class);
     }
+
+    public ListValue findTasks(String search) throws ResourceException
+    {
+        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
+        builder.prototype().description().set(search);
+        return query("findTasks", builder.newInstance(), ListValue.class);
+    }
 }

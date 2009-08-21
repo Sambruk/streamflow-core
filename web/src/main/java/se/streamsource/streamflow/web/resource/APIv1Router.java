@@ -19,6 +19,7 @@ import org.restlet.Context;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+import se.streamsource.streamflow.web.resource.events.EventsResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
@@ -33,16 +34,18 @@ import se.streamsource.streamflow.web.resource.organizations.projects.members.Me
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
+import se.streamsource.streamflow.web.resource.organizations.search.SearchTaskServerResource;
+import se.streamsource.streamflow.web.resource.organizations.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.UserServerResource;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.ProjectWaitingForServerResource;
@@ -59,7 +62,6 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.task.comment
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
-import se.streamsource.streamflow.web.resource.events.EventsResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
 /**
@@ -128,6 +130,10 @@ public class APIv1Router
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));
+        attach("/organizations/{organization}/search", createServerResourceFinder(SearchTasksServerResource.class));
+        attach("/organizations/{organization}/search/{task}", createServerResourceFinder(SearchTaskServerResource.class));
+        attach("/organizations/{organization}/search/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
+        attach("/organizations/{organization}/search/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
 
         // Events
         attach("/events", createServerResourceFinder(EventsResource.class));

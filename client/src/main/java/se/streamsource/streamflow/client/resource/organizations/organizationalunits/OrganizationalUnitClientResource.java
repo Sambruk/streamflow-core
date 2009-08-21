@@ -22,6 +22,7 @@ import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
+import se.streamsource.streamflow.client.resource.organizations.search.SearchClientResource;
 
 /**
  * JAVADOC
@@ -52,5 +53,10 @@ public class OrganizationalUnitClientResource
     public OrganizationalUnitsClientResource organizationalUnits() throws ResourceException
     {
         return getSubResource("organizationalunits", OrganizationalUnitsClientResource.class);
+    }
+
+    public SearchClientResource search()
+    {
+        return getSubResource("search", SearchClientResource.class);
     }
 }

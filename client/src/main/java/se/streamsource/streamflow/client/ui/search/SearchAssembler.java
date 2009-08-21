@@ -12,31 +12,24 @@
  *
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.client.ui.search;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-
-import java.util.Date;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 /**
  * JAVADOC
  */
-public interface TaskDTO
-        extends ValueComposite
+public class SearchAssembler
+        implements Assembler
 {
-    Property<EntityReference> task();
+    public void assemble(ModuleAssembly module) throws AssemblyException
+    {
+        UIAssemblers.addViews(module,
+                SearchView.class, SearchResultTableView.class);
 
-    Property<String> description();
-
-    Property<Date> creationDate();
-
-    Property<TaskStates> status();
-
-    Property<ListValue> labels();
-
-    Property<Boolean> isRead();
+        UIAssemblers.addModels(module, SearchResultTableModel.class);
+    }
 }

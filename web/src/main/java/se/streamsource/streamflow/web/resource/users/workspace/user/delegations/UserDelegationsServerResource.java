@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.user.delegations;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
@@ -63,16 +62,16 @@ public class UserDelegationsServerResource
         Query<TaskEntity> delegationsQuery = queryBuilder.newQuery(uow);
         delegationsQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
-        return buildTaskList(user, delegationsQuery, DelegatedTaskDTO.class, DelegationsTaskListDTO.class);
+        return buildTaskList(delegationsQuery, DelegatedTaskDTO.class, DelegationsTaskListDTO.class);
     }
 
     @Override
-    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, EntityReference ref, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
+    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
     {
         ((DelegatedTaskDTO)prototype).delegatedOn().set(task.delegatedOn().get());
         Owner owner = uowf.currentUnitOfWork().get(Owner.class, task.owner().get().identity().get());
         ((DelegatedTaskDTO)prototype).delegatedFrom().set(owner.getDescription());
 
-        super.buildTask(prototype, ref, labelBuilder, labelPrototype, task);
+        super.buildTask(prototype, labelBuilder, labelPrototype, task);
     }
 }

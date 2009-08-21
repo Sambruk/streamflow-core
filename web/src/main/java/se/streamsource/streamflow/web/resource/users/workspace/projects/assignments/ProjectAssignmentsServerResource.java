@@ -57,7 +57,7 @@ public class ProjectAssignmentsServerResource
         Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);
         assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
-        return buildTaskList(projectId, assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
+        return buildTaskList(assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
     }
 
     public void createtask()

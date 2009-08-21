@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
@@ -69,11 +68,11 @@ public class UserWaitingForServerResource
         Query<TaskEntity> waitingForQuery = queryBuilder.newQuery(uow);
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
-        return buildTaskList(userId, waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
+        return buildTaskList(waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
     }
 
     @Override
-    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, EntityReference ref, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
+    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
     {
         WaitingForTaskDTO taskDTO = (WaitingForTaskDTO) prototype;
         Assignee assignee = task.assignedTo().get();
@@ -81,6 +80,6 @@ public class UserWaitingForServerResource
             taskDTO.assignedTo().set(assignee.getDescription());
         taskDTO.delegatedTo().set(task.delegatedTo().get().getDescription());
         taskDTO.delegatedOn().set(task.delegatedOn().get());
-        super.buildTask(prototype, ref, labelBuilder, labelPrototype, task);
+        super.buildTask(prototype, labelBuilder, labelPrototype, task);
     }
 }

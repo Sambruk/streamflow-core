@@ -37,10 +37,10 @@ public class AbstractTaskListServerResource
     extends CommandQueryServerResource
 {
 
-    protected  <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(String id, 
-                                                         Query<TaskEntity> inboxQuery,
-                                                         Class<V> taskClass,
-                                                         Class<T> taskListClass)
+    protected  <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
+            Query<TaskEntity> inboxQuery,
+            Class<V> taskClass,
+            Class<T> taskListClass)
     {
         ValueBuilder<V> builder = vbf.newValueBuilder(taskClass);
         TaskDTO prototype = builder.prototype();
@@ -48,21 +48,19 @@ public class AbstractTaskListServerResource
         T t = listBuilder.prototype();
         Property<List<V>> property = t.tasks();
         List<V> list = property.get();
-        EntityReference ref = EntityReference.parseEntityReference(id);
         ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder(ListItemValue.class);
         ListItemValue labelPrototype = labelBuilder.prototype();
         for (TaskEntity task : inboxQuery)
         {
-            buildTask(prototype, ref, labelBuilder, labelPrototype, task);
+            buildTask(prototype, labelBuilder, labelPrototype, task);
 
             list.add(builder.newInstance());
         }
         return listBuilder.newInstance();
     }
 
-    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, EntityReference ref, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
+    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
     {
-        prototype.owner().set(ref);
         prototype.task().set(EntityReference.getEntityReference(task));
         prototype.creationDate().set(task.createdOn().get());
         prototype.description().set(task.description().get());

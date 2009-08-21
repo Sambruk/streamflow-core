@@ -44,7 +44,8 @@ public class MenuView
                 "manageAccounts");
         menu("window",
                 "showWorkspaceWindow",
-                "showAdministrationWindow");
+                "showAdministrationWindow",
+                "showSearchWindow");
 
     }
 

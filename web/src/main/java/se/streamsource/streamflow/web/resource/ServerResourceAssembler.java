@@ -34,16 +34,18 @@ import se.streamsource.streamflow.web.resource.organizations.projects.members.ro
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
+import se.streamsource.streamflow.web.resource.organizations.search.SearchTaskServerResource;
+import se.streamsource.streamflow.web.resource.organizations.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.UserServerResource;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.ProjectAssignmentsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.ProjectDelegationsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.ProjectInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.ProjectWaitingForServerResource;
@@ -129,6 +131,9 @@ public class ServerResourceAssembler
 
                 RolesServerResource.class,
                 RoleServerResource.class,
+
+                SearchTasksServerResource.class,
+                SearchTaskServerResource.class,
 
                 // Events
                 EventsResource.class

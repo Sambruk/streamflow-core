@@ -21,7 +21,6 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.CheckBoxProvider;
-import org.jdesktop.swingx.renderer.DefaultListRenderer;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
@@ -38,7 +37,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
@@ -46,7 +44,6 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -58,8 +55,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.KeyboardFocusManager;
 import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -90,12 +87,7 @@ public abstract class TaskTableView
     private TaskDetailView detailsView;
     private JPanel noTaskSelected;
 
-
-    protected LabelsModel labelsModel;
-    protected JComboBox labelsList;
-
     public void init(@Service ApplicationContext context,
-                         @Uses LabelsModel labelsModel,
                          @Uses final TaskTableModel model,
                          final @Uses TaskDetailView detailsView,
                          @Structure final ObjectBuilderFactory obf,
@@ -110,17 +102,7 @@ public abstract class TaskTableView
 
         noTaskSelected = new JPanel();
         noTaskSelected.setMaximumSize(new Dimension(0,0));
-        noTaskSelected.setBackground(Color.BLACK);
         noTaskSelected.setOpaque(true);
-
-        labelsList = new JComboBox(labelsModel);
-        labelsList.setRenderer(new DefaultListRenderer(new StringValue()
-        {
-            public String getString(Object o)
-            {
-                return o == null ? "" : ((ListItemValue) o).description().get();
-            }
-        }));
 
         ActionMap am = context.getActionMap(TaskTableView.class, this);
         setActionMap(am);

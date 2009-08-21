@@ -62,7 +62,7 @@ public class UserInboxServerResource
         Query<TaskEntity> inboxQuery = queryBuilder.newQuery(uow);
         inboxQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
-        return buildTaskList(id, inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);
+        return buildTaskList(inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);
     }
 
     public void createtask()

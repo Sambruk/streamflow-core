@@ -46,6 +46,9 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.menu.MenuView;
+import se.streamsource.streamflow.client.ui.search.SearchResources;
+import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
+import se.streamsource.streamflow.client.ui.search.SearchView;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
@@ -96,6 +99,7 @@ public class StreamFlowApplication
 
     JXFrame workspaceWindow;
     JXFrame administrationWindow;
+    JXFrame searchWindow;
 
     MenuView menuView;
     WorkspaceView workspaceView;
@@ -103,7 +107,7 @@ public class StreamFlowApplication
 
     AdministrationView administrationView;
     AdministrationModel administrationModel;
-
+    public SearchView searchView;
 
     public StreamFlowApplication()
     {
@@ -114,6 +118,7 @@ public class StreamFlowApplication
         workspaceWindow = new JXFrame(i18n.text(WorkspaceResources.window_name));
 
         administrationWindow = new JXFrame(i18n.text(AdministrationResources.window_name));
+        searchWindow = new JXFrame(i18n.text(SearchResources.window_name));
 
         workspaceWindow.setLocationByPlatform(true);
 
@@ -168,6 +173,11 @@ public class StreamFlowApplication
 
         administrationModel = obf.newObjectBuilder(AdministrationModel.class).use(accountsModel).newInstance();
         administrationView = obf.newObjectBuilder(AdministrationView.class).use(administrationModel).newInstance();
+        administrationWindow.getContentPane().setLayout(new BorderLayout());
+        administrationWindow.getContentPane().add(administrationView, BorderLayout.CENTER);
+
+        searchWindow.getContentPane().setLayout(new BorderLayout());
+        searchWindow.setMinimumSize(new Dimension(600, 600));
 
         menuView = obf.newObject(MenuView.class);
 
@@ -175,8 +185,6 @@ public class StreamFlowApplication
         frame.pack();
         frame.setJMenuBar(menuView);
 
-        administrationWindow.getContentPane().setLayout(new BorderLayout());
-        administrationWindow.getContentPane().add(administrationView, BorderLayout.CENTER);
 
         showWorkspaceWindow();
     }
@@ -281,6 +289,22 @@ public class StreamFlowApplication
         administrationModel.refresh();
         if (!administrationWindow.isVisible())
             show(administrationWindow);
+    }
+
+    @Action
+    public void showSearchWindow() throws Exception
+    {
+        if (searchView == null)
+        {
+            String organization = accountsModel.accountModel(0).userResource().administration().organizations().roots().get().get(0).entity().get().identity();
+            SearchResultTableModel model = obf.newObjectBuilder(SearchResultTableModel.class).use(accountsModel.accountModel(0).serverResource().organizations().organization(organization).search()).newInstance();
+            searchView = obf.newObjectBuilder(SearchView.class).use(model).newInstance();
+            searchWindow.getContentPane().add(searchView, BorderLayout.CENTER);
+            searchWindow.pack();
+        }
+
+        if (!searchWindow.isVisible())
+            show(searchWindow);
     }
 
 

@@ -18,7 +18,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
@@ -26,6 +26,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
@@ -36,7 +37,6 @@ import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * Mapped to /organizations/{organization}
@@ -78,8 +78,8 @@ public class OrganizationServerResource
         if (query.description().get().length() > 0)
         {
             QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
-            queryBuilder.where(QueryExpressions.matches(
-                    QueryExpressions.templateFor(UserEntity.class).userName(), "^" + query.description().get()));
+            queryBuilder.where(matches(
+                    templateFor(UserEntity.class).userName(), "^" + query.description().get()));
             Query<UserEntity> users = queryBuilder.newQuery(uow);
 
             try
@@ -108,8 +108,8 @@ public class OrganizationServerResource
         if (query.description().get().length() > 0)
         {
             QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
-            queryBuilder.where(QueryExpressions.matches(
-                    QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.description().get()));
+            queryBuilder.where(matches(
+                    templateFor(GroupEntity.class).description(), "^" + query.description().get()));
             Query<GroupEntity> groups = queryBuilder.newQuery(uow);
 
             try
@@ -137,8 +137,8 @@ public class OrganizationServerResource
         if (query.description().get().length() > 0)
         {
             QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-            queryBuilder.where(QueryExpressions.matches(
-                    QueryExpressions.templateFor(ProjectEntity.class).description(), "^" + query.description().get()));
+            queryBuilder.where(matches(
+                    templateFor(ProjectEntity.class).description(), "^" + query.description().get()));
             Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
 
             try
@@ -155,6 +155,4 @@ public class OrganizationServerResource
         }
         return listBuilder.newList();
     }
-
-
 }

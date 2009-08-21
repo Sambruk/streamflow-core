@@ -19,8 +19,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
-import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 
 /**
  * JAVADOC
@@ -87,8 +85,7 @@ public class WorkspaceUIAssembler
                 ProjectWaitingForModel.class,
                 ProjectWaitingForView.class);
 
-        UIAssemblers.addDialogs(module, AddTaskDialog.class,
-                UserOrProjectSelectionDialog.class, ProjectSelectionDialog.class);
+        UIAssemblers.addDialogs(module, UserOrProjectSelectionDialog.class, ProjectSelectionDialog.class);
         
         UIAssemblers.addDialogs(module, AddCommentDialog.class);
 

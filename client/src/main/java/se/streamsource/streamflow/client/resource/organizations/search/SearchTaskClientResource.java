@@ -12,31 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.client.resource.organizations.search;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-
-import java.util.Date;
+import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.Context;
+import org.restlet.data.Reference;
 
 /**
  * JAVADOC
  */
-public interface TaskDTO
-        extends ValueComposite
+public class SearchTaskClientResource
+        extends TaskClientResource
 {
-    Property<EntityReference> task();
-
-    Property<String> description();
-
-    Property<Date> creationDate();
-
-    Property<TaskStates> status();
-
-    Property<ListValue> labels();
-
-    Property<Boolean> isRead();
+    public SearchTaskClientResource(@Uses Context context, @Uses Reference reference)
+    {
+        super(context, reference);
+    }
 }
