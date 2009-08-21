@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor;
+package se.streamsource.streamflow.web.resource.users.overview.projects.assignments;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -20,39 +20,38 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.Task;
-import se.streamsource.streamflow.web.domain.task.WaitingFor;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/workspace/projects/{project}/waitingfor/{task}
+ * /users/{user}/overview/projects/{project}/assignments/{task}
  */
-public class ProjectWaitingForTaskServerResource
+public class OverviewProjectAssignmentsTaskServerResource
         extends CommandQueryServerResource
 {
-
     public void complete()
     {
-        String id = (String) getRequest().getAttributes().get("user");
+        String userId = (String) getRequest().getAttributes().get("user");
+        String projectId = (String) getRequest().getAttributes().get("project");
         String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        WaitingFor waitingFor = uow.get(WaitingFor.class, id);
-        Assignee assignee = uow.get(Assignee.class, id);
-        waitingFor.completeWaitingForTask(task, assignee);
+        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
+        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, projectId);
+        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
+        inbox.completeTask(task, assignee);
     }
 
-    public void markAsRead()
+    public void describe(DescriptionDTO descriptionValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        inbox.markAsRead(task);
+        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
+        describable.describe(descriptionValue.description().get());
     }
 
     @Override
@@ -60,10 +59,18 @@ public class ProjectWaitingForTaskServerResource
     {
         try
         {
-            String taskId = (String) getRequest().getAttributes().get("task");
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
-            Task task = uow.get(Task.class, taskId);
-            uow.remove(task);
+            String userId = (String) getRequest().getAttributes().get("user");
+            String taskId = (String) getRequest().getAttributes().get("task");
+            Owner owner = uow.get(Owner.class, userId);
+            TaskEntity task = uow.get(TaskEntity.class, taskId);
+
+            if (task.owner().get().equals(owner))
+            {
+                // Only delete task if user owns it
+                uow.remove(task);
+            }
+
             uow.complete();
         } catch (UnitOfWorkCompletionException e)
         {

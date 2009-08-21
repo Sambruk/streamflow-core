@@ -25,6 +25,8 @@ import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
+import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
+import se.streamsource.streamflow.resource.assignment.OverviewAssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
@@ -77,7 +79,9 @@ public class CommonResourceAssembler
                 WaitingForTaskListDTO.class,
                 WaitingForTaskDTO.class,
                 TreeValue.class,
-                TreeNodeValue.class).visibleIn(Visibility.application);
+                TreeNodeValue.class,
+                OverviewAssignmentsTaskListDTO.class,
+                OverviewAssignedTaskDTO.class).visibleIn(Visibility.application);
 
         module.addValues(SearchTaskListDTO.class,
                 SearchTaskDTO.class).visibleIn(Visibility.application);

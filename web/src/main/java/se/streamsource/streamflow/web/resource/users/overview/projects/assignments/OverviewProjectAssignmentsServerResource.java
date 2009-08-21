@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.workspace.projects.delegations;
+package se.streamsource.streamflow.web.resource.users.overview.projects.assignments;
 
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
@@ -23,53 +23,53 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
+import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
+import se.streamsource.streamflow.resource.assignment.OverviewAssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Delegatable;
-import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.CreatedOn;
+import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/workspace/projects/{project}/delegations
+ * /users/{user}/overview/projects/{project}/assignments
  */
-public class ProjectDelegationsServerResource
+public class OverviewProjectAssignmentsServerResource
         extends AbstractTaskListServerResource
 {
-    public DelegationsTaskListDTO tasks(TasksQuery query)
+    public OverviewAssignmentsTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("project");
+        String projectId = (String) getRequest().getAttributes().get("project");
 
-        // Find all Active tasks delegated to "project" that have not yet been assigned
+        // Find all Active tasks owned by "project"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
-        Association<Assignee> assigneeAssociation = templateFor(Assignable.AssignableState.class).assignedTo();
+        Association<Assignee> assignedTo = templateFor(Assignable.AssignableState.class).assignedTo();
+        Property<String> ownerIdProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
         queryBuilder.where(and(
-                eq(delegatedTo, id),
-                isNull(assigneeAssociation),
+                eq(ownerIdProp, projectId),
+                isNotNull(assignedTo),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
-        Query<TaskEntity> delegationsQuery = queryBuilder.newQuery(uow);
-        delegationsQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
+        Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);
+        assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
-        return buildTaskList(delegationsQuery, DelegatedTaskDTO.class, DelegationsTaskListDTO.class);
+        return buildTaskList(assignmentsQuery, OverviewAssignedTaskDTO.class, OverviewAssignmentsTaskListDTO.class);
     }
 
     @Override
     protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
     {
-        ((DelegatedTaskDTO)prototype).delegatedOn().set(task.delegatedOn().get());
-        Owner owner = uowf.currentUnitOfWork().get(Owner.class, task.owner().get().identity().get());
-        ((DelegatedTaskDTO)prototype).delegatedFrom().set(owner.getDescription());
-
+        OverviewAssignedTaskDTO taskDTO = (OverviewAssignedTaskDTO) prototype;
+        Assignee assignee = task.assignedTo().get();
+        if (assignee != null)
+            taskDTO.assignedTo().set(assignee.getDescription());
         super.buildTask(prototype, labelBuilder, labelPrototype, task);
     }
 }

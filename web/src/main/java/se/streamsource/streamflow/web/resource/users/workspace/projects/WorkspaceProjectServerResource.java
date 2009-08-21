@@ -87,8 +87,8 @@ public class WorkspaceProjectServerResource
         {
             QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
             queryBuilder.where(
-                QueryExpressions.matches(
-                    QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.description().get()));
+                    QueryExpressions.matches(
+                            QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.description().get()));
             Query<GroupEntity> groups = queryBuilder.newQuery(uow);
 
             try
@@ -135,4 +135,5 @@ public class WorkspaceProjectServerResource
         }
 
         return listBuilder.newList();
-    }}
+    }
+}

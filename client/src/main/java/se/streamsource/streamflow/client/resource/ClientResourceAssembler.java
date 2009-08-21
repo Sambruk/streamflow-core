@@ -36,6 +36,10 @@ import se.streamsource.streamflow.client.resource.organizations.search.SearchCli
 import se.streamsource.streamflow.client.resource.organizations.search.SearchTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
+import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
+import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
+import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.WorkspaceClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectsClientResource;
@@ -105,7 +109,12 @@ public class ClientResourceAssembler
                 ProjectWaitingforTaskClientResource.class,
 
                 LabelsClientResource.class,
-                LabelClientResource.class
+                LabelClientResource.class,
+
+                OverviewClientResource.class,
+                OverviewProjectsClientResource.class,
+                OverviewProjectClientResource.class,
+                OverviewProjectAssignmentsClientResource.class
 
                 ).visibleIn(Visibility.application);
 

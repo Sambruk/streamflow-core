@@ -26,7 +26,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.workspace.TaskGeneralModel;
-import se.streamsource.streamflow.client.ui.workspace.UserInboxModel;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserInboxModel;
 
 /**
  * JAVADOC
@@ -38,7 +38,7 @@ public class UserInboxSteps
     ValueBuilderFactory vbf;
 
     @Service
-    UserInboxModel model;
+    WorkspaceUserInboxModel model;
 
     @Uses
     IndividualSteps individualSteps;

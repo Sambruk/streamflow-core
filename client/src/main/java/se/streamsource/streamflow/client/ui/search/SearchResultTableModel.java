@@ -32,7 +32,7 @@ public class SearchResultTableModel
     {
         columnNames = new String[]{"", text(description_column_header), text(created_column_header)};
         columnClasses = new Class[] {Boolean.class, String.class, Date.class};
-        columnEditable = new boolean[] {true, false, false};
+        columnEditable = new boolean[] {false, false, false};
     }
 
     @Override

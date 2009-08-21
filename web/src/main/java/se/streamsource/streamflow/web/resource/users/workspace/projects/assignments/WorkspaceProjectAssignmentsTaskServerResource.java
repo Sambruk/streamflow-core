@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.workspace.projects.delegations;
+package se.streamsource.streamflow.web.resource.users.workspace.projects.assignments;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -20,51 +20,38 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Delegations;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/workspace/projects/{project}/delegations/{task}
+ * /users/{user}/workspace/projects/{project}/assignments/{task}
  */
-public class ProjectDelegationsTaskServerResource
+public class WorkspaceProjectAssignmentsTaskServerResource
         extends CommandQueryServerResource
 {
     public void complete()
     {
-        String projectId = (String) getRequest().getAttributes().get("project");
         String userId = (String) getRequest().getAttributes().get("user");
+        String projectId = (String) getRequest().getAttributes().get("project");
         String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        Delegations delegations = uow.get(Delegations.class, projectId);
-        Assignee assignee = uow.get(Assignee.class, userId);
-        delegations.completeDelegatedTask(task, assignee);
+        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
+        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, projectId);
+        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
+        inbox.completeTask(task, assignee);
     }
 
-    public void assignToMe()
+    public void describe(DescriptionDTO descriptionValue)
     {
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String userId = (String) getRequest().getAttributes().get("user");
         String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Delegations delegations = uow.get(Delegations.class, projectId);
-        Assignee assignee = uow.get(Assignee.class, userId);
-        Task task = uow.get(Task.class, taskId);
-
-        delegations.accept(task, assignee);
-    }
-
-    public void reject()
-    {
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        Delegations user = uow.get(Delegations.class, projectId);
-        user.reject(task);
+        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
+        describable.describe(descriptionValue.description().get());
     }
 
     @Override
@@ -72,10 +59,18 @@ public class ProjectDelegationsTaskServerResource
     {
         try
         {
-            String taskId = (String) getRequest().getAttributes().get("task");
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
-            Task task = uow.get(Task.class, taskId);
-            uow.remove(task);
+            String userId = (String) getRequest().getAttributes().get("user");
+            String taskId = (String) getRequest().getAttributes().get("task");
+            Owner owner = uow.get(Owner.class, userId);
+            TaskEntity task = uow.get(TaskEntity.class, taskId);
+
+            if (task.owner().get().equals(owner))
+            {
+                // Only delete task if user owns it
+                uow.remove(task);
+            }
+
             uow.complete();
         } catch (UnitOfWorkCompletionException e)
         {

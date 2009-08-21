@@ -46,6 +46,9 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.menu.MenuView;
+import se.streamsource.streamflow.client.ui.overview.OverviewModel;
+import se.streamsource.streamflow.client.ui.overview.OverviewResources;
+import se.streamsource.streamflow.client.ui.overview.OverviewView;
 import se.streamsource.streamflow.client.ui.search.SearchResources;
 import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.search.SearchView;
@@ -97,14 +100,19 @@ public class StreamFlowApplication
 
     JLabel label;
 
-    JXFrame workspaceWindow;
-    JXFrame administrationWindow;
     JXFrame searchWindow;
 
     MenuView menuView;
+
+    JXFrame workspaceWindow;
     WorkspaceView workspaceView;
     WorkspaceModel workspaceModel;
 
+    JXFrame overviewWindow;
+    OverviewView overviewView;
+    OverviewModel overviewModel;
+
+    JXFrame administrationWindow;
     AdministrationView administrationView;
     AdministrationModel administrationModel;
     public SearchView searchView;
@@ -116,6 +124,7 @@ public class StreamFlowApplication
         getContext().getResourceManager().setApplicationBundleNames(Arrays.asList("se.streamsource.streamflow.client.resources.StreamFlowApplication"));
 
         workspaceWindow = new JXFrame(i18n.text(WorkspaceResources.window_name));
+        overviewWindow = new JXFrame(i18n.text(OverviewResources.window_name));
 
         administrationWindow = new JXFrame(i18n.text(AdministrationResources.window_name));
         searchWindow = new JXFrame(i18n.text(SearchResources.window_name));
@@ -176,6 +185,8 @@ public class StreamFlowApplication
         administrationWindow.getContentPane().setLayout(new BorderLayout());
         administrationWindow.getContentPane().add(administrationView, BorderLayout.CENTER);
 
+        overviewWindow.getContentPane().setLayout(new BorderLayout());
+
         searchWindow.getContentPane().setLayout(new BorderLayout());
         searchWindow.setMinimumSize(new Dimension(600, 600));
 
@@ -184,7 +195,6 @@ public class StreamFlowApplication
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
         frame.setJMenuBar(menuView);
-
 
         showWorkspaceWindow();
     }
@@ -280,6 +290,24 @@ public class StreamFlowApplication
         {
             workspaceView.refreshTree();
             show(workspaceWindow);
+        }
+    }
+
+    @Action
+    public void showOverviewWindow() throws Exception
+    {
+        if (overviewView == null)
+        {
+            AccountModel accountModel = accountsModel.accountModel(0);
+            overviewModel = obf.newObjectBuilder(OverviewModel.class).use(accountModel).newInstance();
+            overviewView = obf.newObjectBuilder(OverviewView.class).use(overviewModel, accountModel).newInstance();
+            overviewWindow.getContentPane().add(overviewView);
+        }
+
+        if (!overviewWindow.isVisible())
+        {
+            overviewView.refreshTree();
+            show(overviewWindow);
         }
     }
 

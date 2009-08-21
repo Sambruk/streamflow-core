@@ -12,23 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.workspace.projects.inbox;
+package se.streamsource.streamflow.web.resource.users.workspace.projects.assignments;
 
-import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.CreatedOn;
-import se.streamsource.streamflow.web.domain.task.Delegatable;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
@@ -36,38 +34,40 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 
 /**
  * Mapped to:
- * /users/{user}/workspace/projects/{project}/inbox
+ * /users/{user}/workspace/projects/{project}/assignments
  */
-public class ProjectInboxServerResource
+public class WorkspaceProjectAssignmentsServerResource
         extends AbstractTaskListServerResource
 {
-    public InboxTaskListDTO tasks(TasksQuery query)
+    public AssignmentsTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("project");
+        String projectId = (String) getRequest().getAttributes().get("project");
+        String userId    = (String) getRequest().getAttributes().get("user");
 
-        // Find all Active tasks with specific owner which have not yet been assigned
+        // Find all Active tasks owned by "project" and assigned to "user"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
-        Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
-        Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
+        Property<String> assignedToidProp = templateFor(Assignable.AssignableState.class).assignedTo().get().identity();
+        Property<String> ownerIdProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
         queryBuilder.where(and(
-                eq(ownableId, id),
-                isNull(assignee),
-                isNull(delegatee),
+                eq(ownerIdProp, projectId),
+                eq(assignedToidProp, userId),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
-        Query<TaskEntity> inboxQuery = queryBuilder.newQuery(uow);
-        inboxQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
+        Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);
+        assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
 
-        return buildTaskList(inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);
+        return buildTaskList(assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
     }
 
     public void createtask()
     {
+        UnitOfWork uow = uowf.currentUnitOfWork();
         String projectId = (String) getRequest().getAttributes().get("project");
         String userId = (String) getRequest().getAttributes().get("user");
+        Assignments assignments = uow.get(Assignments.class, projectId);
+        Assignee assignee = uow.get(Assignee.class, userId);
 
-        createTask(projectId);
+        assignments.createAssignedTask(assignee);
     }
 }

@@ -21,6 +21,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
+import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.WorkspaceClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
@@ -39,6 +40,11 @@ public class UserClientResource
     public WorkspaceClientResource workspace()
     {
         return getSubResource("workspace", WorkspaceClientResource.class);
+    }
+
+    public OverviewClientResource overview()
+    {
+        return getSubResource("overview", OverviewClientResource.class);
     }
 
     public UserAdministrationClientResource administration()

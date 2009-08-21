@@ -12,49 +12,33 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.projects;
+package se.streamsource.streamflow.client.resource.users.overview.projects;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JAVADOC
  */
-public class WorkspaceProjectsClientResource
+public class OverviewProjectsClientResource
         extends CommandQueryClientResource
 {
-    public WorkspaceProjectsClientResource(@Uses Context context, @Uses Reference reference)
+    public OverviewProjectsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public WorkspaceProjectClientResource project(String project)
+    public OverviewProjectClientResource project(String project)
     {
-        return getSubResource(project, WorkspaceProjectClientResource.class);
+        return getSubResource(project, OverviewProjectClientResource.class);
     }
 
     public ListValue listProjects() throws ResourceException
     {
-        return query("listProjects", ListValue.class);        
-    }
-
-    public List<WorkspaceProjectClientResource> projects() throws ResourceException
-    {
-        List<WorkspaceProjectClientResource> projectResources = new ArrayList<WorkspaceProjectClientResource>();
-        ListValue projects = listProjects();
-        for (ListItemValue project : projects.items().get())
-        {
-            WorkspaceProjectClientResource workspaceProjectResource =  project(project.entity().get().identity());
-            projectResources.add(workspaceProjectResource);
-        }
-        return projectResources;
+        return query("listProjects", ListValue.class);
     }
 }
