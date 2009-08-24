@@ -63,6 +63,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserIn
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
@@ -114,9 +115,11 @@ public class APIv1Router
         attach("/users/{user}/workspace/user/{view}/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
         attach("/users/{user}/workspace/user/{view}/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
         attach("/users/{user}/workspace/user/{view}/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
+        attach("/users/{user}/workspace/user/{view}/{task}/contacts/{index}", createServerResourceFinder(TaskContactServerResource.class));
         attach("/users/{labels}/workspace/user/labels", createServerResourceFinder(LabelsServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/{view}/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/{view}/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
+        attach("/users/{user}/workspace/projects/{project}/{view}/{task}/contacts/{index}", createServerResourceFinder(TaskContactServerResource.class));
         attach("/users/{user}/workspace/projects/{project}/{view}/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
         attach("/users/{user}/administration", createServerResourceFinder(UserAdministrationServerResource.class));
 
@@ -155,6 +158,7 @@ public class APIv1Router
         attach("/organizations/{organization}/search/{task}", createServerResourceFinder(SearchTaskServerResource.class));
         attach("/organizations/{organization}/search/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
         attach("/organizations/{organization}/search/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
+        attach("/organizations/{organization}/search/{task}/contacts/{index}", createServerResourceFinder(TaskContactServerResource.class));
         attach("/organizations/{organization}/search/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
 
         // Events

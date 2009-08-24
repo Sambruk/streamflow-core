@@ -20,35 +20,22 @@ import org.restlet.data.Reference;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
-import se.streamsource.streamflow.resource.task.TaskContactsDTO;
-
-import java.io.IOException;
+import se.streamsource.streamflow.resource.task.TaskContactDTO;
 
 
 /**
  * JAVADOC
  */
-public class TaskContactsClientResource
+public class TaskContactClientResource
         extends BaseClientResource
 {
-    public TaskContactsClientResource(@Uses Context context, @Uses Reference reference)
+    public TaskContactClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public TaskContactsDTO contacts() throws ResourceException, IOException
+    public void update(TaskContactDTO contact) throws ResourceException
     {
-        return getQuery(TaskContactsDTO.class);
-    }
-
-    public void add() throws ResourceException
-    {
-        
-        post(new StringRepresentation(""));
-    }
-
-    public TaskContactClientResource taskContact(int index)
-    {
-        return getSubResource(""+index, TaskContactClientResource.class);
+        put(new StringRepresentation(contact.toJSON()));
     }
 }

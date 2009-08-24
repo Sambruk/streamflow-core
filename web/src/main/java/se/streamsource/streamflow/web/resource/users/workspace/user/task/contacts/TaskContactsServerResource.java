@@ -21,8 +21,10 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -41,13 +43,16 @@ import java.util.List;
  * /users/{user}/workspace/user/{view}/{task}/contacts
  */
 public class TaskContactsServerResource
-    extends BaseServerResource
+        extends BaseServerResource
 {
     @Structure
     UnitOfWorkFactory uowf;
 
     @Structure
     ValueBuilderFactory vbf;
+
+    @Structure
+    Qi4jSPI spi;
 
     public TaskContactsServerResource()
     {
@@ -64,25 +69,42 @@ public class TaskContactsServerResource
         ValueBuilder<TaskContactDTO> contactBuilder = vbf.newValueBuilder(TaskContactDTO.class);
         List<TaskContactDTO> list = builder.prototype().contacts().get();
 
-        TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
-
-        for (ContactValue contact : task.contacts().get())
+        String clientETag = null;
+        if (getRequest().getAttributes().get("If-None-Match") != null)
         {
-            contactBuilder.prototype().company().set(contact.company().get());
-            contactBuilder.prototype().name().set(contact.name().get());
-            contactBuilder.prototype().isCompany().set(contact.isCompany().get());
-            contactBuilder.prototype().note().set(contact.note().get());
-            contactBuilder.prototype().picture().set(contact.picture().get());
-
-            contactBuilder.prototype().addresses().set(contact.addresses().get());
-            contactBuilder.prototype().emailAddresses().set(contact.emailAddresses().get());
-            contactBuilder.prototype().phoneNumbers().set(contact.phoneNumbers().get());
-            list.add(contactBuilder.newInstance());
+            clientETag = getRequest().getAttributes().get("If-None-Match").toString();
         }
 
-        uow.discard();
+        TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
 
-        return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
+        String eTag = spi.getEntityState(task).version();
+        if (eTag.equals(clientETag))
+        {
+            uow.discard();
+
+            getResponse().setStatus(Status.REDIRECTION_NOT_MODIFIED);
+
+            return null;
+        } else
+        {
+            getResponse().getAttributes().put("ETag", eTag);
+            for (ContactValue contact : task.contacts().get())
+            {
+                contactBuilder.prototype().company().set(contact.company().get());
+                contactBuilder.prototype().name().set(contact.name().get());
+                contactBuilder.prototype().isCompany().set(contact.isCompany().get());
+                contactBuilder.prototype().note().set(contact.note().get());
+                contactBuilder.prototype().picture().set(contact.picture().get());
+
+                contactBuilder.prototype().addresses().set(contact.addresses().get());
+                contactBuilder.prototype().emailAddresses().set(contact.emailAddresses().get());
+                contactBuilder.prototype().phoneNumbers().set(contact.phoneNumbers().get());
+                list.add(contactBuilder.newInstance());
+            }
+            uow.discard();
+
+            return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
+        }
     }
 
 
@@ -101,44 +123,6 @@ public class TaskContactsServerResource
         {
             uow.discard();
         }
-        return null;
-    }
-
-    @Override
-    protected Representation put(Representation representation, Variant variant) throws ResourceException
-    {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Update task contacts"));
-        try
-        {
-            TaskContactsDTO contacts = vbf.newValueFromJSON(TaskContactsDTO.class, representation.getText());
-
-            TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
-
-            task.removeContacts();
-            for (TaskContactDTO contact : contacts.contacts().get())
-            {
-                ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
-                contactBuilder.prototype().company().set(contact.company().get());
-                contactBuilder.prototype().name().set(contact.name().get());
-                contactBuilder.prototype().isCompany().set(contact.isCompany().get());
-                contactBuilder.prototype().note().set(contact.note().get());
-                contactBuilder.prototype().picture().set(contact.picture().get());
-
-                contactBuilder.prototype().addresses().set(contact.addresses().get());
-                contactBuilder.prototype().emailAddresses().set(contact.emailAddresses().get());
-                contactBuilder.prototype().phoneNumbers().set(contact.phoneNumbers().get());
-                ContactValue contactValue = contactBuilder.newInstance();
-
-                task.addContact(contactValue);
-            }
-
-            uow.complete();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            uow.discard();
-        }
-
         return null;
     }
 }

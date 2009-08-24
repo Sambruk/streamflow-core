@@ -59,6 +59,7 @@ public class TaskContactsView
         contactModel.addObserver(contactView);
 
         contacts = new JList();
+        contacts.setMinimumSize(new Dimension(150,0));
         contacts.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)

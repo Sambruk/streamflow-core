@@ -16,15 +16,11 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.MediaType;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
-import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -56,13 +52,6 @@ public class TaskContactsModel
     public List<TaskContactDTO> getContacts()
     {
         return contacts;
-    }
-
-    public void updateContacts(List<TaskContactDTO> contacts) throws ResourceException
-    {
-        TaskContactsDTO taskContacts = vbf.newValue(TaskContactsDTO.class);
-        taskContacts.contacts().set(contacts);
-        contactsClientResource.put(new StringRepresentation(taskContacts.toJSON(), MediaType.APPLICATION_JSON));
     }
 
     public TaskContactsClientResource getTaskContactsClientResource()
@@ -97,29 +86,20 @@ public class TaskContactsModel
 
     public void updateElement(TaskContactDTO contact, int selectedIndex)
     {
-        ValueBuilder<TaskContactsDTO> builder = vbf.newValueBuilder(TaskContactsDTO.class);
-        List<TaskContactDTO> list = builder.prototype().contacts().get();
-
-        list.addAll(contacts);
-        list.remove(selectedIndex);
-        list.add(selectedIndex, contact);
-        builder.prototype().contacts().set(list);
-
-        updateList(builder.newInstance());
+        try
+        {
+            contactsClientResource.taskContact(selectedIndex).update(contact);
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     public void removeElement(int selectedIndex)
     {
-        ValueBuilder<TaskContactsDTO> builder = vbf.newValueBuilder(TaskContactsDTO.class);
-        List<TaskContactDTO> list = builder.prototype().contacts().get();
-
-        list.addAll(contacts);
-        list.remove(selectedIndex);
-        builder.prototype().contacts().set(list);
-
-        updateList(builder.newInstance());
         try
         {
+            contactsClientResource.taskContact(selectedIndex).delete();
             refresh();
         } catch (IOException e)
         {
@@ -127,18 +107,6 @@ public class TaskContactsModel
         } catch (ResourceException e)
         {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
-
-
-    private void updateList(TaskContactsDTO contacts)
-    {
-        try
-        {
-            contactsClientResource.update(contacts);
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
         }
     }
 }

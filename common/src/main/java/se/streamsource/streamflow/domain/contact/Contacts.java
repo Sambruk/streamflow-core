@@ -32,9 +32,9 @@ public interface Contacts
 {
     public void addContact();
 
-    public void removeContacts();
+    public void updateContact(int index, ContactValue contact);
 
-    public void addContact(ContactValue contact);
+    public void deleteContact(int index);
 
     interface ContactsState
     {
@@ -60,18 +60,23 @@ public interface Contacts
             state.contacts().set(contacts);
         }
 
-        public void removeContacts()
+        public void updateContact(int index, ContactValue contact)
         {
             List<ContactValue> contacts = state.contacts().get();
-            contacts.clear();
+            contacts.add(index, contact);
+            contacts.remove(index+1);
             state.contacts().set(contacts);
         }
 
-        public void addContact(ContactValue contact)
+        public void deleteContact(int index)
         {
             List<ContactValue> contacts = state.contacts().get();
-            contacts.add(contact);
+            if (index<contacts.size())
+            {
+                contacts.remove(index);
+            }
             state.contacts().set(contacts);
+
         }
     }
     
