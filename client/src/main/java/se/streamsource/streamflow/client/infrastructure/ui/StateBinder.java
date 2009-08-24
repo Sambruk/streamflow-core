@@ -14,15 +14,32 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.JXErrorPane;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.property.GenericPropertyInfo;
-import org.qi4j.api.property.Property;
-import org.qi4j.runtime.composite.ConstraintsCheck;
-import org.qi4j.runtime.property.PropertyInstance;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;
@@ -35,27 +52,17 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.KeyboardFocusManager;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.ResourceBundle;
-import java.util.Set;
+
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.JXErrorPane;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.property.GenericPropertyInfo;
+import org.qi4j.api.property.Property;
+import org.qi4j.runtime.composite.ConstraintsCheck;
+import org.qi4j.runtime.property.PropertyInstance;
 
 /**
  * JAVADOC
@@ -76,7 +83,8 @@ public class StateBinder
                 JTextArea.class,
                 JScrollPane.class,
                 JPasswordField.class,
-                JCheckBox.class);
+                JCheckBox.class,
+                JXDatePicker.class);
 
         errorMessages = ResourceBundle.getBundle(getClass().getName());
     }
@@ -272,7 +280,9 @@ public class StateBinder
 
             // TODO Value conversion
 
-            if (objectProperty.get().equals(newValue))
+            if (objectProperty.get() == null && newValue == null)
+            	return;
+            if (objectProperty.get() != null && objectProperty.get().equals(newValue))
                 return; // Do nothing
 
             objectProperty.set(newValue);
@@ -371,6 +381,20 @@ public class StateBinder
             {
                 // Do nothing
                 return binding;
+            } else if (component instanceof JXDatePicker)
+            {
+                final JXDatePicker datePicker = (JXDatePicker) component;
+                datePicker.setInputVerifier(new PropertyInputVerifier(binding));
+
+                datePicker.addPropertyChangeListener(new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent e) {
+                        if ("date".equals(e.getPropertyName())) {
+    						binding.updateProperty(e.getNewValue());
+                        }
+                    }
+                });
+
+                return binding;
             }
 
             throw new IllegalArgumentException("Could not bind to component of type " + component.getClass().getName());
@@ -397,6 +421,10 @@ public class StateBinder
             {
                 JLabel label = (JLabel) component;
                 label.setText((String) value);
+            } else if (component instanceof JXDatePicker) 
+            {
+            	JXDatePicker datePicker = (JXDatePicker) component;
+            	datePicker.setDate((Date) value);
             }
         }
     }
@@ -421,6 +449,9 @@ public class StateBinder
                 if (input instanceof JTextComponent)
                 {
                     value = ((JTextComponent)input).getText();
+                } else if (input instanceof JXDatePicker)
+                {
+                    value = ((JXDatePicker)input).getDate();
                 }
                 binding.updateProperty(value);
                 return true;

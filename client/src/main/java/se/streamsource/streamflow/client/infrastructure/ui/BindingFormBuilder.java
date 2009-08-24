@@ -14,13 +14,30 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+import java.awt.Component;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.property.Property;
 
-import javax.swing.*;
-import java.awt.*;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 
 /**
  * JAVADOC
@@ -44,6 +61,13 @@ public class BindingFormBuilder
                         return new JTextField(30);
                     }
                 },
+        FORMATTEDTEXTFIELD
+                {
+                    public Component newField()
+                    {
+                        return new JFormattedTextField(30);
+                    }
+                },
         PASSWORD
                 {
                     public Component newField()
@@ -63,6 +87,13 @@ public class BindingFormBuilder
                     public Component newField()
                     {
                         return new JCheckBox();
+                    }
+                },
+        DATEPICKER
+                {
+                    public Component newField()
+                    {
+                        return new JXDatePicker();
                     }
                 };
         public abstract Component newField();
@@ -100,6 +131,17 @@ public class BindingFormBuilder
         label.setLabelFor(component);
         formBuilder.nextLine();
 
+        if(component instanceof JXDatePicker)
+        {
+            // Limit pickable dates to future 
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            ((JXDatePicker)component).getMonthView().setLowerBound(calendar.getTime());
+            // Set date format
+            ((JXDatePicker)component).setFormats(new SimpleDateFormat(getResource(WorkspaceResources.date_format)));
+        }
+        
         return this;
     }
 

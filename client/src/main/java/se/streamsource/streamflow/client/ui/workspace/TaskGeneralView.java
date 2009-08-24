@@ -14,28 +14,40 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueBuilder;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.DATEPICKER;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.LABEL;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.LayoutFocusTraversalPolicy;
-import java.util.Observable;
-import java.util.Observer;
+
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDatePicker;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.resource.ResourceException;
+
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -53,6 +65,9 @@ public class TaskGeneralView
 
     public ValueBuilder<TaskGeneralDTO> valueBuilder;
     public JTextField descriptionField;
+    public JTextArea noteField;
+    public JXDatePicker dueOnField;
+    private JToggleButton editButton;
     private JLabel issueLabel;
 
     public TaskGeneralView(@Service ApplicationContext appContext)
@@ -69,16 +84,16 @@ public class TaskGeneralView
         taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
         TaskGeneralDTO template = taskBinder.bindingTemplate(TaskGeneralDTO.class);
 
-        JTextArea noteField = new JTextArea(10, 50);
+        noteField = new JTextArea(10, 50);
         noteField.setLineWrap(true);
                 
         BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
         bb.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
 
         bb.appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
-
-        .appendLine(WorkspaceResources.note_label, new JScrollPane(noteField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), template.note());
-
+        .appendLine(WorkspaceResources.note_label, new JScrollPane(noteField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), template.note())
+        .appendLine(WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn());
+        
         setViewportView(form);
 
         taskBinder.addObserver(this);
@@ -135,6 +150,13 @@ public class TaskGeneralView
                 {
                     throw new OperationException(WorkspaceResources.could_not_change_note, e);
                 }
+            } else if (property.qualifiedName().name().equals("dueOn")) {
+            	try 
+            	{
+					model.changeDueOn((Date) property.get());
+				} catch (ResourceException e) {
+                    throw new OperationException(WorkspaceResources.could_not_change_due_on, e);
+				}
             }
         } else
         {

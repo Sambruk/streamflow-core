@@ -29,7 +29,7 @@ public interface TaskGeneralDTO
 {
     @Optional
     Property<String> taskId();
-
+    
     Property<String> labels();
 
     @Matches("[\\w\\s\\p{Punct}]*")
@@ -38,5 +38,8 @@ public interface TaskGeneralDTO
     Property<String> note();
 
     Property<Date> creationDate();
+
+    @Optional
+    Property<Date> dueOn();
 
 }

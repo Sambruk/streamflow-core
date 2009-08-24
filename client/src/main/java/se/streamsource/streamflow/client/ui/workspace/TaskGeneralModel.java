@@ -21,6 +21,7 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.task.Task
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Observable;
 
 /**
@@ -58,5 +59,9 @@ public class TaskGeneralModel
     public void changeNote(String newNote) throws ResourceException
     {
         generalClientResource.changeNote(newNote);
+    }
+    
+    public void changeDueOn(Date newDueOn) throws ResourceException {
+    	generalClientResource.changeDueOn(newDueOn);
     }
 }

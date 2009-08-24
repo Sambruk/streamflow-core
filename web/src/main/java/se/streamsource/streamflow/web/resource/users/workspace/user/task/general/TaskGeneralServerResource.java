@@ -26,11 +26,14 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
+import se.streamsource.streamflow.web.domain.task.DueOn;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -73,6 +76,7 @@ public class TaskGeneralServerResource
         builder.prototype().note().set(task.note().get());
         builder.prototype().creationDate().set(task.createdOn().get());
         builder.prototype().taskId().set(task.taskId().get());
+        builder.prototype().dueOn().set(task.dueOn().get());
         uow.discard();
 
         return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
@@ -86,11 +90,19 @@ public class TaskGeneralServerResource
         describable.describe(descriptionValue.description().get());
     }
 
-    public void changeNote(DescriptionDTO descriptionValue)
+    public void changeNote(DescriptionDTO noteValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Notable notable = uowf.currentUnitOfWork().get(Notable.class, taskId);
 
-        notable.changeNote(descriptionValue.description().get());
+        notable.changeNote(noteValue.description().get());
+    }
+    
+    public void changeDueOn(DateDTO dueOnValue)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+    	DueOn dueOn = uowf.currentUnitOfWork().get(DueOn.class, taskId);
+    	
+    	dueOn.dueOn(dueOnValue.date().get());
     }
 }
