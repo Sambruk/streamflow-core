@@ -21,6 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
+import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -45,7 +46,8 @@ public class TaskContactsModel
 
     public void refresh() throws IOException, ResourceException
     {
-        contacts = contactsClientResource.contacts().contacts().get();
+        TaskContactsDTO contactsDTO = (TaskContactsDTO) contactsClientResource.contacts().buildWith().prototype();
+        contacts = contactsDTO.contacts().get();
         fireContentsChanged(this, 0, getSize());
     }
 
@@ -89,9 +91,12 @@ public class TaskContactsModel
         try
         {
             contactsClientResource.taskContact(selectedIndex).update(contact);
+            contacts.add(selectedIndex, contact);
+            contacts.remove(selectedIndex+1);
+            fireContentsChanged(this, selectedIndex, selectedIndex);
         } catch (ResourceException e)
         {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
@@ -100,13 +105,11 @@ public class TaskContactsModel
         try
         {
             contactsClientResource.taskContact(selectedIndex).delete();
-            refresh();
-        } catch (IOException e)
-        {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            contacts.remove(selectedIndex);
+            fireContentsChanged(this,0,getSize());
         } catch (ResourceException e)
         {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 }

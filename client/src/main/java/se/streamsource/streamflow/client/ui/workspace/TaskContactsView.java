@@ -18,14 +18,12 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -81,6 +79,7 @@ public class TaskContactsView
     public void add()
     {
         model.addContact();
+        getContactsList().setSelectedIndex(model.contacts.size()-1);
     }
 
     @org.jdesktop.application.Action
@@ -128,23 +127,11 @@ public class TaskContactsView
         {
             contacts.setModel(model);
         }
-
-
     }
 
     public void update(Observable observable, Object o)
     {
-        try
-        {
-            model.updateElement(contactModel.getContact(),getContactsList().getSelectedIndex());
-            model.refresh();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
+        model.updateElement(contactModel.getContact(),getContactsList().getSelectedIndex());
     }
 
     public TaskContactsClientResource getTaskContactsClientResource()
