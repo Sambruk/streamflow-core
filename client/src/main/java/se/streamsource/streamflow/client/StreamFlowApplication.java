@@ -288,7 +288,8 @@ public class StreamFlowApplication
     {
         if (!workspaceWindow.isVisible())
         {
-            workspaceView.refreshTree();
+            if (workspaceView != null)
+                workspaceView.refreshTree();
             show(workspaceWindow);
         }
     }
