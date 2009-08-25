@@ -19,7 +19,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 
 import java.util.List;
@@ -52,11 +51,8 @@ public interface Contacts
 
         public void addContact()
         {
-            ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class);
-            // how to localize default name?
-            builder.prototype().name().set("Namn");
             List<ContactValue> contacts = state.contacts().get();
-            contacts.add(builder.newInstance());
+            contacts.add(vbf.newValue(ContactValue.class));
             state.contacts().set(contacts);
         }
 

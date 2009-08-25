@@ -24,8 +24,10 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Tag;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
+import org.restlet.representation.RepresentationInfo;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
@@ -108,4 +110,19 @@ public class TaskContactServerResource
 
         return null;
     }
+
+    @Override
+    protected RepresentationInfo getInfo(Variant variant) throws ResourceException
+    {
+        UnitOfWork uow = uowf.newUnitOfWork();
+
+        TaskEntity task = uow.get(TaskEntity.class, getRequestAttributes().get("task").toString());
+
+        String eTag = spi.getEntityState(task).version();
+        RepresentationInfo info = new RepresentationInfo();
+        info.setTag(new Tag(eTag));
+        uow.discard();
+        return info;
+    }
+
 }

@@ -20,9 +20,7 @@ import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.NodeSet;
 import org.restlet.representation.Representation;
@@ -65,6 +63,25 @@ public class BaseClientResource
         Representation result = get(MediaType.APPLICATION_JSON);
 
         return vbf.newValueFromJSON(resultValue, result.getText());
+    }
+
+    protected <T extends Value> T getQueryConditional(Class<T> resultValue, T currentValue, String eTag) throws IOException, ResourceException
+    {
+        clearConditions();
+        getConditions().getNoneMatch().add(new Tag(eTag));
+        Representation result = get(MediaType.APPLICATION_JSON);
+
+        if (getResponse().getStatus().equals(Status.REDIRECTION_NOT_MODIFIED))
+            return currentValue;
+
+        return vbf.newValueFromJSON(resultValue, result.getText());
+    }
+
+    protected void clearConditions()
+    {
+        Conditions conditions = getConditions();
+        conditions.getMatch().clear();
+        conditions.getNoneMatch().clear();
     }
 
     protected <T extends ClientResource> T getSubResource(String pathSegment, Class<T> clientResource)

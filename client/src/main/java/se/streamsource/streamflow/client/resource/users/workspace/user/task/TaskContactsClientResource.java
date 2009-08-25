@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.resource.users.workspace.user.task;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
+import org.restlet.data.Tag;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
@@ -31,6 +32,10 @@ import java.io.IOException;
 public class TaskContactsClientResource
         extends BaseClientResource
 {
+
+    private String eTag = "";
+    private TaskContactsDTO current = null;
+
     public TaskContactsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
@@ -38,17 +43,27 @@ public class TaskContactsClientResource
 
     public TaskContactsDTO contacts() throws ResourceException, IOException
     {
-        return getQuery(TaskContactsDTO.class);
+        current = getQueryConditional(TaskContactsDTO.class, current, eTag);
+        if (getResponseEntity().getTag() != null)
+        {
+            eTag = getResponseEntity().getTag().getName();
+        }
+        return current;
     }
 
     public void add() throws ResourceException
     {
-        
+        clearConditions();
+        getConditions().getMatch().add(new Tag(eTag));
         post(new StringRepresentation(""));
     }
 
     public TaskContactClientResource taskContact(int index)
     {
-        return getSubResource(""+index, TaskContactClientResource.class);
+        TaskContactClientResource taskContact = getSubResource(""+index, TaskContactClientResource.class);
+        taskContact.setETag(eTag);
+        return taskContact;
     }
+
+    
 }

@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
 
@@ -59,10 +60,17 @@ public class TaskContactsView
         contacts = new JList();
         contacts.setMinimumSize(new Dimension(150,0));
         contacts.setCellRenderer(new DefaultListCellRenderer() {
+
             @Override
             public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)
             {
                 TaskContactDTO contact = (TaskContactDTO) o;
+                if ("".equals(contact.name().get()))
+                {
+                    Component cell = super.getListCellRendererComponent(jList, i18n.text(WorkspaceResources.name_label), i, b, b1);
+                    cell.setForeground(Color.GRAY);
+                    return cell;
+                }
                 return super.getListCellRendererComponent(jList, contact.name().get(), i, b, b1);
             }
         });
@@ -79,7 +87,7 @@ public class TaskContactsView
     public void add()
     {
         model.addContact();
-        getContactsList().setSelectedIndex(model.contacts.size()-1);
+        selectLast();
     }
 
     @org.jdesktop.application.Action
@@ -93,11 +101,20 @@ public class TaskContactsView
         } else
         {
             if (model.contacts.size() <= getContactsList().getSelectedIndex())
-                getContactsList().setSelectedIndex(model.contacts.size()-1);
-            TaskContactDTO contact = (TaskContactDTO) model.getElementAt(getContactsList().getSelectedIndex());
-            contactModel.setTaskContactDTO(contact);
+            {
+                selectLast();
+            } else
+            {
+                TaskContactDTO contact = (TaskContactDTO) model.getElementAt(getContactsList().getSelectedIndex());
+                contactModel.setTaskContactDTO(contact);
+            }
         }
 
+    }
+
+    private void selectLast()
+    {
+        getContactsList().setSelectedIndex(model.contacts.size()-1);
     }
 
     public JList getContactsList()

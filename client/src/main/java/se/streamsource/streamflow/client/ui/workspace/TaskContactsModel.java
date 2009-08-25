@@ -91,12 +91,13 @@ public class TaskContactsModel
         try
         {
             contactsClientResource.taskContact(selectedIndex).update(contact);
-            contacts.add(selectedIndex, contact);
-            contacts.remove(selectedIndex+1);
-            fireContentsChanged(this, selectedIndex, selectedIndex);
+            refresh();
         } catch (ResourceException e)
         {
             e.printStackTrace();
+        } catch (IOException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 
@@ -105,11 +106,13 @@ public class TaskContactsModel
         try
         {
             contactsClientResource.taskContact(selectedIndex).delete();
-            contacts.remove(selectedIndex);
-            fireContentsChanged(this,0,getSize());
+            refresh();
         } catch (ResourceException e)
         {
             e.printStackTrace();
+        } catch (IOException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 }
