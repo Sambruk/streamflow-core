@@ -52,13 +52,14 @@ public class TaskContactsView
 
         ActionMap am = context.getActionMap(this);
         setActionMap(am);
+        setMinimumSize(new Dimension(150,0));
+
         contactModel = new TaskContactModel();
         contactView  = obf.newObjectBuilder(TaskContactView.class).use(contactModel).newInstance();
         contactModel.addObserver(this);
         contactModel.addObserver(contactView);
 
         contacts = new JList();
-        contacts.setMinimumSize(new Dimension(150,0));
         contacts.setCellRenderer(new DefaultListCellRenderer() {
 
             @Override

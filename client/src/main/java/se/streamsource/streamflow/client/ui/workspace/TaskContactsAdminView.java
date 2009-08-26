@@ -39,6 +39,8 @@ public class TaskContactsAdminView
     {
         super();
 
+        setResizeWeight(0.5D);
+
         this.taskContactsView = taskContactsView;
         setLeftComponent(taskContactsView);
         setRightComponent(new JPanel());

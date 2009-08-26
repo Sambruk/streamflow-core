@@ -58,7 +58,7 @@ public class BaseServerResource
     @Override
     protected RepresentationInfo getInfo(Variant variant) throws ResourceException
     {
-        RepresentationInfo info = super.getInfo(variant);
+        RepresentationInfo info = new RepresentationInfo();
 
         String id = getConditionalIdentityAttribute();
         if (id != null)
