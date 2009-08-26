@@ -201,7 +201,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         }
     }
 
-    public int unreadCount()
+    public int count()
     {
         if (tasks == null)
             return 0;

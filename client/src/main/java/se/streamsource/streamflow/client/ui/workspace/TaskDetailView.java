@@ -24,7 +24,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
-import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 
 /**
@@ -75,8 +74,10 @@ public class TaskDetailView
             generalView.setModel(null);
             commentsView.setModel(null);
             contactsView.setModel(null);
+/*
             setPreferredSize(new Dimension(getWidth(), 50));
             setMaximumSize(new Dimension(getWidth(), 50));
+*/
             validateTree();
             setSelectedIndex(-1);
         } else
@@ -85,8 +86,15 @@ public class TaskDetailView
             commentsView.setModel(model.comments());
             contactsView.setModel(model.contacts());
 
+/*
             setPreferredSize(new Dimension(getWidth(), 500));
+*/
             validateTree();
+
+            if (getSelectedIndex() == -1)
+            {
+                setSelectedIndex(0);
+            }
         }
     }
 

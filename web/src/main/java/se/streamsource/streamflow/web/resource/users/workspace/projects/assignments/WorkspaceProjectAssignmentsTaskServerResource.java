@@ -23,7 +23,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.DescriptionDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
@@ -42,9 +42,9 @@ public class WorkspaceProjectAssignmentsTaskServerResource
         String projectId = (String) getRequest().getAttributes().get("project");
         String taskId = (String) getRequest().getAttributes().get("task");
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
-        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, projectId);
+        Assignments assignments = uowf.currentUnitOfWork().get(Assignments.class, projectId);
         Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
-        inbox.completeTask(task, assignee);
+        assignments.completeAssignedTask(task, assignee);
     }
 
     public void describe(DescriptionDTO descriptionValue)
@@ -53,6 +53,29 @@ public class WorkspaceProjectAssignmentsTaskServerResource
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
         describable.describe(descriptionValue.description().get());
     }
+
+    public void markAsRead()
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
+        String projectId = (String) getRequest().getAttributes().get("project");
+        Assignments assignments = uow.get(Assignments.class, projectId);
+
+        assignments.markAssignedTaskAsRead(task);
+    }
+
+    public void markAsUnread()
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
+        String projectId = (String) getRequest().getAttributes().get("project");
+        Assignments assignments = uow.get(Assignments.class, projectId);
+
+        assignments.markAssignedTaskAsUnread(task);
+    }
+
 
     @Override
     protected Representation delete(Variant variant) throws ResourceException

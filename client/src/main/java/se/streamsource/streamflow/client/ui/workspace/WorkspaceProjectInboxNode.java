@@ -32,7 +32,7 @@ public class WorkspaceProjectInboxNode
     public String toString()
     {
         String text = i18n.text(WorkspaceResources.inboxes_node);
-        int unread = model.unreadCount();
+        int unread = model.count();
         if (unread > 0)
         {
             text += " ("+unread+")";

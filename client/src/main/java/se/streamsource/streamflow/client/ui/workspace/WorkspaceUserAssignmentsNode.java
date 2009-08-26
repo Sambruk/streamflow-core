@@ -32,7 +32,7 @@ public class WorkspaceUserAssignmentsNode
     public String toString()
     {
         String text = i18n.text(WorkspaceResources.assignments_node);
-        int unread = model.unreadCount();
+        int unread = model.count();
         if (unread > 0)
         {
             text += " ("+unread+")";

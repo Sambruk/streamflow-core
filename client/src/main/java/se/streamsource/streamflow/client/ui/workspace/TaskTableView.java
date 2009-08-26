@@ -128,7 +128,7 @@ public abstract class TaskTableView
 
         splitPane.setTopComponent(taskScrollPane);
         splitPane.setBottomComponent(noTaskSelected);
-        splitPane.setResizeWeight(1);
+        splitPane.setResizeWeight(0.3D);
 
         JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
         taskTable.setDefaultEditor(Boolean.class, completableEditor);
@@ -195,7 +195,7 @@ public abstract class TaskTableView
                         {
                             detailsView.setTaskModel(null);
                             splitPane.setBottomComponent(noTaskSelected);
-                            splitPane.setDividerLocation(1D);
+//                            splitPane.setDividerLocation(1D);
                         } else
                         {
                             TaskDTO dto = null;

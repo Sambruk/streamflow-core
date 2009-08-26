@@ -100,7 +100,7 @@ public class WorkspaceProjectInboxTaskServerResource
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
         Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
+        String userId = (String) getRequest().getAttributes().get("project");
         Inbox inbox = uow.get(Inbox.class, userId);
 
         inbox.markAsRead(task);
@@ -111,7 +111,7 @@ public class WorkspaceProjectInboxTaskServerResource
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
         Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
+        String userId = (String) getRequest().getAttributes().get("project");
         Inbox inbox = uow.get(Inbox.class, userId);
 
         inbox.markAsUnread(task);

@@ -38,7 +38,7 @@ public class WorkspaceProjectDelegationsNode
     public String toString()
     {
         String text = i18n.text(WorkspaceResources.delegations_node);
-        int unread = model.unreadCount();
+        int unread = model.count();
         if (unread > 0)
         {
             text += " ("+unread+")";
