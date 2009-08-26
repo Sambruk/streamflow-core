@@ -16,17 +16,12 @@ package se.streamsource.streamflow.web.resource.users.workspace.user.task.contac
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Tag;
 import org.restlet.representation.Representation;
-import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
@@ -34,7 +29,7 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
 
@@ -43,16 +38,10 @@ import java.util.List;
  * /users/{user}/workspace/user/{view}/{task}/contacts
  */
 public class TaskContactsServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
     @Structure
-    UnitOfWorkFactory uowf;
-
-    @Structure
     ValueBuilderFactory vbf;
-
-    @Structure
-    Qi4jSPI spi;
 
     public TaskContactsServerResource()
     {
@@ -88,41 +77,23 @@ public class TaskContactsServerResource
         uow.discard();
         Representation rep = new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
 
-        rep.setTag(new Tag(getInfo(variant).getTag().getName()));
+        rep.setTag(getInfo(variant).getTag());
         return rep;
     }
 
 
-    @Override
-    protected Representation post(Representation representation, Variant variant) throws ResourceException
+    public void add(ContactValue newContact)
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Add new task contact"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         TaskEntity task = uow.get(TaskEntity.class, getRequestAttributes().get("task").toString());
 
-        task.addContact();
-        try
-        {
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            uow.discard();
-        }
-        return null;
+        task.addContact(newContact);
     }
 
     @Override
-    protected RepresentationInfo getInfo(Variant variant) throws ResourceException
+    protected String getConditionalIdentityAttribute()
     {
-        UnitOfWork uow = uowf.newUnitOfWork();
-
-        TaskEntity task = uow.get(TaskEntity.class, getRequestAttributes().get("task").toString());
-
-        String eTag = spi.getEntityState(task).version();
-        RepresentationInfo info = new RepresentationInfo();
-        info.setTag(new Tag(eTag));
-        uow.discard();
-        return info;
+        return "task";
     }
-
 }

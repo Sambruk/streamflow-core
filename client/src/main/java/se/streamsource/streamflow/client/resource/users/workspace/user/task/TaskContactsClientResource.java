@@ -17,10 +17,9 @@ package se.streamsource.streamflow.client.resource.users.workspace.user.task;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.data.Tag;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 
 import java.io.IOException;
@@ -30,12 +29,8 @@ import java.io.IOException;
  * JAVADOC
  */
 public class TaskContactsClientResource
-        extends BaseClientResource
+        extends CommandQueryClientResource
 {
-
-    private String eTag = "";
-    private TaskContactsDTO current = null;
-
     public TaskContactsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
@@ -43,26 +38,17 @@ public class TaskContactsClientResource
 
     public TaskContactsDTO contacts() throws ResourceException, IOException
     {
-        current = getQueryConditional(TaskContactsDTO.class, current, eTag);
-        if (getResponseEntity().getTag() != null)
-        {
-            eTag = getResponseEntity().getTag().getName();
-        }
-        return current;
+        return getQuery(TaskContactsDTO.class);
     }
 
     public void add() throws ResourceException
     {
-        clearConditions();
-        getConditions().getMatch().add(new Tag(eTag));
-        post(new StringRepresentation(""));
+        postCommand("add", vbf.newValue(ContactValue.class));
     }
 
     public TaskContactClientResource taskContact(int index)
     {
-        TaskContactClientResource taskContact = getSubResource(""+index, TaskContactClientResource.class);
-        taskContact.setETag(eTag);
-        return taskContact;
+        return getSubResource(""+index, TaskContactClientResource.class);
     }
 
     

@@ -29,7 +29,7 @@ import java.util.List;
 @Mixins(Contacts.ContactsMixin.class)
 public interface Contacts
 {
-    public void addContact();
+    public void addContact(ContactValue newContact);
 
     public void updateContact(int index, ContactValue contact);
 
@@ -49,10 +49,10 @@ public interface Contacts
         @Structure
         ValueBuilderFactory vbf;
 
-        public void addContact()
+        public void addContact(ContactValue newContact)
         {
             List<ContactValue> contacts = state.contacts().get();
-            contacts.add(vbf.newValue(ContactValue.class));
+            contacts.add(newContact);
             state.contacts().set(contacts);
         }
 

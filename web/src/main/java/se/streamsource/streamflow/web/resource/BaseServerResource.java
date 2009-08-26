@@ -14,10 +14,20 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.usecase.Usecase;
+import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.RepresentationInfo;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
@@ -29,6 +39,13 @@ import java.io.InputStream;
 public class BaseServerResource
         extends ServerResource
 {
+    protected @Structure
+    UnitOfWorkFactory uowf;
+
+    protected @Structure
+    Qi4jSPI spi;
+    Usecase usecase = UsecaseBuilder.newUsecase("Get identity");
+
     protected Representation getHtml(String resourceName) throws ResourceException
     {
         InputStream asStream = getClass().getResourceAsStream(resourceName);
@@ -36,5 +53,34 @@ public class BaseServerResource
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
         else
             return new InputRepresentation(asStream, MediaType.TEXT_HTML);
+    }
+
+    @Override
+    protected RepresentationInfo getInfo(Variant variant) throws ResourceException
+    {
+        RepresentationInfo info = super.getInfo(variant);
+
+        String id = getConditionalIdentityAttribute();
+        if (id != null)
+        {
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            if (uow == null)
+                uow = uowf.newUnitOfWork(usecase);
+
+            Object task = uow.get(Object.class, getRequestAttributes().get(id).toString());
+
+            String eTag = spi.getEntityState((EntityComposite) task).version();
+            info.setTag(new Tag(eTag));
+
+            if (uow.usecase().name().equals("Get identity"))
+                uow.discard();
+        }
+
+        return info;
+    }
+
+    protected String getConditionalIdentityAttribute()
+    {
+        return null;
     }
 }

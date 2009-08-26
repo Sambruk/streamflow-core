@@ -47,9 +47,52 @@ public class BaseClientResource
     @Structure
     protected ValueBuilderFactory vbf;
 
+    Tag tag;
+
     public BaseClientResource(Context context, Reference reference)
     {
         super(context, reference);
+    }
+
+    @Override
+    public Representation post(Representation entity) throws ResourceException
+    {
+        clearConditions();
+        if (tag != null)
+        {
+            getConditions().getMatch().add(tag);
+        }
+        Representation rep = super.post(entity);
+        tag = null;
+
+        return rep;
+    }
+
+    @Override
+    public Representation put(Representation representation) throws ResourceException
+    {
+        clearConditions();
+        if (tag != null)
+        {
+            getConditions().getMatch().add(tag);
+        }
+        Representation rep = super.put(representation);
+        tag = null;
+
+        return rep;
+    }
+
+    @Override
+    public Representation get(MediaType mediaType) throws ResourceException
+    {
+        clearConditions();
+        // TODO Do caching of representations
+
+        Representation rep = super.get(mediaType);
+
+        tag = rep.getTag();
+
+        return rep;
     }
 
     protected Reference postCommand(ValueComposite command) throws ResourceException
@@ -61,18 +104,6 @@ public class BaseClientResource
     protected <T extends Value> T getQuery(Class<T> resultValue) throws IOException, ResourceException
     {
         Representation result = get(MediaType.APPLICATION_JSON);
-
-        return vbf.newValueFromJSON(resultValue, result.getText());
-    }
-
-    protected <T extends Value> T getQueryConditional(Class<T> resultValue, T currentValue, String eTag) throws IOException, ResourceException
-    {
-        clearConditions();
-        getConditions().getNoneMatch().add(new Tag(eTag));
-        Representation result = get(MediaType.APPLICATION_JSON);
-
-        if (getResponse().getStatus().equals(Status.REDIRECTION_NOT_MODIFIED))
-            return currentValue;
 
         return vbf.newValueFromJSON(resultValue, result.getText());
     }

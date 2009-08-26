@@ -17,9 +17,8 @@ package se.streamsource.streamflow.client.resource.users.workspace.user.task;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.data.Tag;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
@@ -31,8 +30,6 @@ import se.streamsource.streamflow.resource.task.TaskContactDTO;
 public class TaskContactClientResource
         extends BaseClientResource
 {
-    private String eTag;
-
     public TaskContactClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
@@ -40,21 +37,12 @@ public class TaskContactClientResource
 
     public void update(TaskContactDTO contact) throws ResourceException
     {
-        clearConditions();
-        getConditions().getMatch().add(new Tag(eTag));
         put(new StringRepresentation(contact.toJSON()));
     }
 
     @Override
     public Representation delete() throws ResourceException
     {
-        clearConditions();
-        getConditions().getMatch().add(new Tag(eTag));
         return super.delete();
-    }
-
-    protected void setETag(String eTag)
-    {
-        this.eTag = eTag;
     }
 }
