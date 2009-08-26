@@ -18,8 +18,10 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
@@ -31,11 +33,12 @@ import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
- * Mapped to /users/{userid}
+ * Mapped to /users/{user}
  */
 public class UserServerResource
         extends CommandQueryServerResource
@@ -43,6 +46,16 @@ public class UserServerResource
     @Override
     protected Representation get(Variant variant) throws ResourceException
     {
+        // Check if user exists
+        UnitOfWork unitOfWork = uowf.newUnitOfWork();
+        try
+        {
+            unitOfWork.get(User.class, getRequestAttributes().get("user").toString());
+        } catch (NoSuchEntityException e)
+        {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+        }
+
         if (getRequest().getResourceRef().hasQuery())
         {
            return super.get(variant);

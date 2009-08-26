@@ -53,10 +53,10 @@ public class TaskDetailView
         this.contactsView = contactsView;
 
         addTab(i18n.text(WorkspaceResources.general_tab), i18n.icon(Icons.general), generalView, i18n.text(WorkspaceResources.general_tab));
-        addTab(i18n.text(WorkspaceResources.metadata_tab), i18n.icon(Icons.metadata), new JLabel("Metadata"), i18n.text(WorkspaceResources.metadata_tab));
-        addTab(i18n.text(WorkspaceResources.comments_tab), i18n.icon(Icons.comments), commentsView, i18n.text(WorkspaceResources.comments_tab));
-        addTab(i18n.text(WorkspaceResources.attachments_tab), i18n.icon(Icons.attachments), new JLabel("Attachments"), i18n.text(WorkspaceResources.attachments_tab));
         addTab(i18n.text(WorkspaceResources.contacts_tab), i18n.icon(Icons.projects), contactsView, i18n.text(WorkspaceResources.contacts_tab));
+        addTab(i18n.text(WorkspaceResources.comments_tab), i18n.icon(Icons.comments), commentsView, i18n.text(WorkspaceResources.comments_tab));
+        addTab(i18n.text(WorkspaceResources.metadata_tab), i18n.icon(Icons.metadata), new JLabel("Metadata"), i18n.text(WorkspaceResources.metadata_tab));
+        addTab(i18n.text(WorkspaceResources.attachments_tab), i18n.icon(Icons.attachments), new JLabel("Attachments"), i18n.text(WorkspaceResources.attachments_tab));
 
         setMnemonicAt(0, KeyEvent.VK_1);
         setMnemonicAt(1, KeyEvent.VK_2);

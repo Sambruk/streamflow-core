@@ -12,19 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.overview;
+package se.streamsource.streamflow.infrastructure.event;
 
 /**
- * JAVADOC
+ * Event handlers are recomended to implement this interface.
+ * It will be called after a UoW has been completed successfully
+ * to inform about all events created during that UoW. Discarded
+ * or failed UoW's will not cause this method to be called.
  */
-public enum OverviewResources
+public interface EventSubscriber
 {
-    projects_node,
-    assignments_node,
-    window_name,
-    could_not_refresh_projects,
-    description_column_header,
-    created_column_header,
-    assigned_to_column_header,
-    waitingfor_node
+    void notifyEvents(Iterable<DomainEvent> events);
 }

@@ -29,6 +29,8 @@ import java.security.NoSuchAlgorithmException;
 @Mixins(User.UserMixin.class)
 public interface User
 {
+    boolean verifyPassword(String password);
+
     void changePassword(String currentPassword, String newPassword) throws WrongPasswordException;
 
     @Mixins(UserStateMixin.class)
@@ -51,6 +53,11 @@ public interface User
     {
         @This
         UserState state;
+
+        public boolean verifyPassword(String password)
+        {
+            return state.isCorrectPassword(password);
+        }
 
         public void changePassword(String currentPassword, String newPassword) throws WrongPasswordException
         {

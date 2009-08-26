@@ -29,7 +29,7 @@ public class SecurityAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addObjects(MockVerifierService.class);
+        module.addObjects(PasswordVerifierService.class);
         module.importServices(Verifier.class).importedBy(NewObjectImporter.class).visibleIn(application);
     }
 }

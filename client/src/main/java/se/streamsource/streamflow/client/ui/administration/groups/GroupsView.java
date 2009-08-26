@@ -76,7 +76,7 @@ public class GroupsView
         toolbar.add(new JButton(am.get("remove")));
         add(toolbar, BorderLayout.SOUTH);
 
-        groupList.addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+        groupList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
     }
 
     @Action

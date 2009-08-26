@@ -12,19 +12,19 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.overview;
+package se.streamsource.streamflow.web.application.management;
+
+import org.qi4j.api.constraint.Name;
+
+import java.io.IOException;
 
 /**
- * JAVADOC
+ * Management methods for StreamFlow. These operations are available
+ * through JMX.
  */
-public enum OverviewResources
+public interface Manager
 {
-    projects_node,
-    assignments_node,
-    window_name,
-    could_not_refresh_projects,
-    description_column_header,
-    created_column_header,
-    assigned_to_column_header,
-    waitingfor_node
+    public void reindex();
+    public String exportDatabase() throws IOException;
+    public String importDatabase(@Name("Filename") String name) throws IOException;
 }

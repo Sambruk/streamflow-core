@@ -29,6 +29,7 @@ public enum Icons
     project,
 
     assign,
+    forward,
     delegate,
     waitingfor,
 

@@ -14,13 +14,11 @@
 
 package se.streamsource.streamflow.web.resource.users;
 
-import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -30,10 +28,11 @@ import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 import se.streamsource.streamflow.web.domain.organization.Organization;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.organization.Organizations;
+import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.domain.user.WrongPasswordException;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -99,24 +98,14 @@ public class UsersServerResource
                 // Ok!
             }
 
-            // Create user
-            EntityBuilder<UserEntity> userBuilder = uow.newEntityBuilder(UserEntity.class, registerUser.username().get());
-            UserEntity userState = userBuilder.instance();
-            userState.userName().set(registerUser.username().get());
-            userState.passwordChanged(userState.hashPassword(registerUser.password().get()));
+            Organizations orgs = uow.get(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
 
-            ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
-            contactBuilder.prototype().name().set(registerUser.contact().get().name().get());
-
-            ContactValue contact = contactBuilder.newInstance();
-            userState.contact().set(contact);
-
+            UserEntity user = (UserEntity) orgs.createUser(registerUser.username().get(), registerUser.password().get());
 
             // Lookup the bootstrap organization
             Organization org = uow.get(OrganizationEntity.class, "Organization");
             // Join the organization
-            userState.join(org);
-            UserEntity user = userBuilder.newInstance();
+            user.join(org);
 
             setLocationRef("users/"+user.identity().get());
             uow.complete();

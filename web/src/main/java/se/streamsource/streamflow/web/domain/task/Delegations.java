@@ -46,7 +46,7 @@ public interface Delegations
 
         public void completeDelegatedTask(Task task, Assignee assignee)
         {
-            task.completedBy(assignee);
+            task.complete(assignee);
         }
     }
 }

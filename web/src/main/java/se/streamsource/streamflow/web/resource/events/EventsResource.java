@@ -21,7 +21,9 @@ import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import se.streamsource.streamflow.web.infrastructure.event.EventPublisher;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventPublisher;
+import se.streamsource.streamflow.infrastructure.event.EventSubscriber;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -31,7 +33,7 @@ import java.util.Arrays;
  * JAVADOC
  */
 public class EventsResource
-    extends ServerResource
+        extends ServerResource
 {
     @Service
     EventPublisher publisher;
@@ -48,7 +50,7 @@ public class EventsResource
         {
             public void write(Writer writer) throws IOException
             {
-                publisher.subscribe(writer);
+                publisher.subscribe(new EventSubscriberWriter(writer));
 
                 try
                 {
@@ -62,5 +64,37 @@ public class EventsResource
                 }
             }
         };
+    }
+
+    class EventSubscriberWriter
+            implements EventSubscriber
+    {
+        Writer writer;
+
+        EventSubscriberWriter(Writer writer)
+        {
+            this.writer = writer;
+        }
+
+        public void notifyEvents(Iterable<DomainEvent> events)
+        {
+            try
+            {
+
+                for (DomainEvent event : events)
+                {
+                    writer.write(event.toJSON());
+                    writer.write('\n');
+                    writer.flush();
+                }
+            } catch (IOException e)
+            {
+                publisher.unsubscribe(this);
+                synchronized (writer)
+                {
+                    writer.notify();
+                }
+            }
+        }
     }
 }

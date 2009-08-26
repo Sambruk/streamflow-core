@@ -20,6 +20,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
+import org.qi4j.index.reindexer.ReindexerConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
@@ -38,6 +39,7 @@ public class ConfigurationAssembler
         // Configurations
         module.addEntities(JdbmConfiguration.class).visibleIn(Visibility.application);
         module.addEntities(NativeConfiguration.class).visibleIn(Visibility.application);
+        module.addEntities(ReindexerConfiguration.class).visibleIn(Visibility.application);
 
         // Configuration store
         module.addServices(MemoryEntityStoreService.class);

@@ -28,6 +28,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -83,13 +84,7 @@ public class AccountsDialog
         toolbar.add(new JButton(getActionMap().get("remove")));
         add(toolbar, BorderLayout.SOUTH);
 
-        /*accountList.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                ListItemValue value = (ListItemValue) accountList.getSelectedValue();
-            }
-        });*/
+        accountList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(getActionMap().get("remove")));
     }
 
     @Action

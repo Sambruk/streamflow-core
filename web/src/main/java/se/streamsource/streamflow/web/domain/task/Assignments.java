@@ -61,12 +61,12 @@ public interface Assignments
 
         public void completeAssignedTask(Task task, Assignee assignee)
         {
-            task.completedBy(assignee);
+            task.complete(assignee);
         }
 
         public void dropAssignedTask(Task task, Assignee assignee)
         {
-            task.droppedBy(assignee);
+            task.drop(assignee);
         }
 
         public void delegateAssignedTaskTo(Task task, Delegatee delegatee, Delegator delegator)

@@ -72,12 +72,12 @@ public interface Inbox
 
         public void completeTask(Task task, Assignee assignee)
         {
-            task.completedBy(assignee);
+            task.complete(assignee);
         }
 
         public void dropTask(Task task, Assignee assignee)
         {
-            task.droppedBy(assignee);
+            task.drop(assignee);
         }
 
         public void assignTo(Task task, Assignee assignee)

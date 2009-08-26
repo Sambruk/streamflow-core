@@ -62,6 +62,12 @@
             <version>${version.qi4j-ext}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.qi4j.extension</groupId>
+            <artifactId>qi4j-reindexer</artifactId>
+            <version>${version.qi4j-ext}</version>
+        </dependency>
+
         <!-- REST -->
         <dependency>
             <groupId>org.qi4j.library</groupId>
@@ -92,6 +98,12 @@
             <version>${version.restlet}</version>
         </dependency>
 
+        <!-- Database -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.6</version>
+        </dependency>
 
         <!-- Visualization -->
         <dependency>
@@ -99,6 +111,12 @@
             <artifactId>qi4j-swing-envisage</artifactId>
             <version>${version.qi4j-lib}</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
 

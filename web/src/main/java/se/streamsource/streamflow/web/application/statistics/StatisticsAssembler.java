@@ -12,14 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.event;
+package se.streamsource.streamflow.web.application.statistics;
 
-import java.io.Writer;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * JAVADOC
  */
-public interface EventPublisher
+public class StatisticsAssembler
+    implements Assembler
 {
-    void subscribe(Writer writer);
+    public void assemble(ModuleAssembly module) throws AssemblyException
+    {
+        module.addServices(EventToDatabaseService.class).instantiateOnStartup().visibleIn(Visibility.layer);
+    }
 }

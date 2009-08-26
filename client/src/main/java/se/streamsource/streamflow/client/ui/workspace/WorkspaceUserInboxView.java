@@ -44,8 +44,6 @@ public class WorkspaceUserInboxView
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
-        popup.add(am.get("forwardTasks"));
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
     }
 
     @Override
@@ -53,9 +51,10 @@ public class WorkspaceUserInboxView
     {
         addToolbarButton(toolbar, "createTask");
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
+        Action forwardTasksFromInbox = addToolbarButton(toolbar, "forwardTasks");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, forwardTasksFromInbox, delegateTasksFromInbox));
     }
 
     @org.jdesktop.application.Action

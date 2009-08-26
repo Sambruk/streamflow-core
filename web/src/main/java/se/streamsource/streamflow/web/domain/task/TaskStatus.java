@@ -15,10 +15,11 @@
 package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
  * Status for a task. Possible transitions are:
@@ -29,46 +30,49 @@ import se.streamsource.streamflow.domain.task.TaskStates;
 @Mixins(TaskStatus.TaskStatusMixin.class)
 public interface TaskStatus
 {
-    void completedBy(Assignee assignee);
+    void complete(Assignee assignee);
 
-    void droppedBy(Assignee assignee);
-
-    void archive();
+    void drop(Assignee assignee);
 
     interface TaskStatusState
     {
         @UseDefaults
         Property<TaskStates> status();
+
+        @Event
+        void completed(DomainEvent event);
+
+        @Event
+        void dropped(DomainEvent event);
     }
 
-    class TaskStatusMixin
-            implements TaskStatus
+    abstract class TaskStatusMixin
+            implements TaskStatus, TaskStatusState
     {
-        @This
-        TaskStatusState status;
-
-        public void completedBy(Assignee assignee)
+        public void complete(Assignee assignee)
         {
-            if (status.status().get().equals(TaskStates.ACTIVE))
+            if (status().get().equals(TaskStates.ACTIVE))
             {
-                status.status().set(TaskStates.COMPLETED);
+                completed(DomainEvent.CREATE);
             }
         }
 
-        public void droppedBy(Assignee assignee)
+        public void drop(Assignee assignee)
         {
-            if (status.status().get().equals(TaskStates.ACTIVE))
+            if (status().get().equals(TaskStates.ACTIVE))
             {
-                status.status().set(TaskStates.DROPPED);
+                dropped(DomainEvent.CREATE);
             }
         }
 
-        public void archive()
+        public void completed(DomainEvent event)
         {
-            if (status.status().get().equals(TaskStates.COMPLETED) || status.status().get().equals(TaskStates.DROPPED))
-            {
-                status.status().set(TaskStates.ARCHIVED);
-            }
+            status().set(TaskStates.COMPLETED);
+        }
+
+        public void dropped(DomainEvent event)
+        {
+            status().set(TaskStates.DROPPED);
         }
     }
 

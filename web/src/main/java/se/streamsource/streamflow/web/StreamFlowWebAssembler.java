@@ -21,6 +21,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
+import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.domain.WebDomainAssembler;
@@ -50,7 +51,7 @@ public class StreamFlowWebAssembler
         LayerAssembly webLayer = assembly.layerAssembly("Web");
 
         webLayer.uses(appLayer, domainLayer, domainInfrastructureLayer);
-        appLayer.uses(domainLayer, domainInfrastructureLayer);
+        appLayer.uses(domainLayer, domainInfrastructureLayer, configurationLayer);
         domainLayer.uses(domainInfrastructureLayer);
         domainInfrastructureLayer.uses(configurationLayer);
 
@@ -74,6 +75,7 @@ public class StreamFlowWebAssembler
 
     private void assembleDomainInfrastructureLayer(LayerAssembly domainInfrastructureLayer) throws AssemblyException
     {
+//        new DatabaseAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Database"));
         new EventStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Event Store"));
         new ServerEntityStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Store"));
         new EntityFinderAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Finder"));
@@ -89,8 +91,10 @@ public class StreamFlowWebAssembler
 
     private void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
     {
+        new ManagementAssembler().assemble(appLayer.moduleAssembly("Management"));
         new SecurityAssembler().assemble(appLayer.moduleAssembly("Security"));
         new OrganizationAssembler().assemble(appLayer.moduleAssembly("Organization"));
+//        new StatisticsAssembler().assemble(appLayer.moduleAssembly("Statistics"));
     }
 
     protected void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException

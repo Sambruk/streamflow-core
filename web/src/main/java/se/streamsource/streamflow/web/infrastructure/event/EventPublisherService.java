@@ -23,32 +23,47 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.EventPublisher;
+import se.streamsource.streamflow.infrastructure.event.EventSubscriber;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * JAVADOC
+ * This service collects indidivual events created during a UoW
+ * and publishes them in one go to subscribers, but only if the UoW is
+ * completed successfully.
  */
-@Mixins(EventListenerPublisher.EventListenerPublisherMixin.class)
-public interface EventListenerPublisher
+@Mixins(EventPublisherService.EventPublisherMixin.class)
+public interface EventPublisherService
     extends EventListener, EventPublisher, ServiceComposite
 {
-    class EventListenerPublisherMixin
+    class EventPublisherMixin
         implements EventListener, EventPublisher
     {
-        Map<UnitOfWork, List<DomainEvent>> uows = new HashMap<UnitOfWork, List<DomainEvent>>();
-
-        Set<Writer> subscribers = new HashSet<Writer>();
-
         @Structure
         UnitOfWorkFactory uowf;
+
+        Map<UnitOfWork, List<DomainEvent>> uows = new HashMap<UnitOfWork, List<DomainEvent>>();
+
+        Set<EventSubscriber> subscribers = Collections.synchronizedSet(new HashSet<EventSubscriber>());
+
+        public void subscribe(EventSubscriber subscriber)
+        {
+            subscribers.add(subscriber);
+        }
+
+        public void unsubscribe(EventSubscriber subscriber)
+        {
+            subscribers.remove(subscriber);
+        }
 
         public void notifyEvent(DomainEvent event)
         {
@@ -67,45 +82,29 @@ public interface EventListenerPublisher
                     {
                         if (status.equals(UnitOfWorkStatus.COMPLETED))
                         {
-                            for (DomainEvent domainEvent : eventList)
+                            synchronized (subscribers)
                             {
-                                String json = domainEvent.toJSON();
-
-                                Set<Writer> disconnected = new HashSet<Writer>();
-                                for (Writer subscriber : subscribers)
+                                for (EventSubscriber subscriber : subscribers)
                                 {
                                     try
                                     {
-                                        subscriber.write(json);
-                                        subscriber.write('\n');
-                                        subscriber.flush();
-                                    } catch (IOException e)
+                                        subscriber.notifyEvents(eventList);
+                                    } catch (Exception e)
                                     {
-                                        disconnected.add(subscriber);
-                                        synchronized (subscriber)
-                                        {
-                                            subscriber.notify();
-                                        }
+                                        // Ignore if subscriber could not handle events
+                                        Logger.getLogger(subscriber.getClass().getName()).log(Level.SEVERE, "Could not handle events", e);
                                     }
                                 }
-                                subscribers.removeAll(disconnected);
                             }
                         }
 
                         uows.remove(unitOfWork);
                     }
-
                 });
                 events = eventList;
                 uows.put(unitOfWork, events);
             }
             events.add(event);
-
-        }
-
-        public void subscribe(Writer writer)
-        {
-            subscribers.add(writer);
         }
     }
 }

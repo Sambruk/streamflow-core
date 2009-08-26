@@ -66,7 +66,7 @@ public class TaskStatusSteps
     @When("task is completed")
     public void completeTask()
     {
-        task.completedBy(userSteps.user);
+        task.complete(userSteps.user);
     }
 
     @Then("task state is $state")

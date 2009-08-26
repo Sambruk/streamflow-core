@@ -36,7 +36,7 @@ public interface WaitingFor
         public void completeWaitingForTask(Task task, Assignee assignee)
         {
             task.ownedBy(owner);
-            task.completedBy(assignee);
+            task.complete(assignee);
         }
 
         public void markWaitingForAsRead(Task task)

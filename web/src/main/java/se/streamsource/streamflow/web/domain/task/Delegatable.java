@@ -108,9 +108,9 @@ public interface Delegatable
         @This TaskStatusState status;
         @This IsRead isRead;
 
-        public void completedBy(Assignee assignee)
+        public void complete(Assignee assignee)
         {
-            result.completedBy(assignee);
+            result.complete(assignee);
 
             if (state.delegatedTo() != null && !assignee.equals(state.delegatedBy().get()) && !status.status().get().equals(TaskStates.ACTIVE))
             {
@@ -118,9 +118,9 @@ public interface Delegatable
             }
         }
 
-        public void droppedBy(Assignee assignee)
+        public void drop(Assignee assignee)
         {
-            result.droppedBy(assignee);
+            result.drop(assignee);
 
             if (state.delegatedTo() != null && !assignee.equals(state.delegatedBy().get()) && !status.status().get().equals(TaskStates.ACTIVE))
             {

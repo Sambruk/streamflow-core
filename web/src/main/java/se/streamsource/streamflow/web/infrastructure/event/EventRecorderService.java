@@ -20,13 +20,12 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCallback;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.EventPublisher;
+import se.streamsource.streamflow.infrastructure.event.EventSubscriber;
 import se.streamsource.streamflow.infrastructure.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -35,31 +34,28 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * JAVADOC
+ * Records events to disk, and allows them to be replayed
  */
 @Mixins({EventRecorderService.EventRecorderMixin.class, EventRecorderService.EventReplayMixin.class})
 public interface EventRecorderService
-        extends EventListener, EventReplay, ServiceComposite, Activatable
+        extends EventSubscriber, EventReplay, ServiceComposite, Activatable
     {
         class EventRecorderMixin
-            implements EventListener, Activatable
+            implements EventSubscriber, Activatable
         {
-            Map<UnitOfWork, List<DomainEvent>> uows = new HashMap<UnitOfWork, List<DomainEvent>>();
-
             @Structure
             UnitOfWorkFactory uowf;
 
             @Service
             FileConfiguration config;
             private File eventDir;
+
+            @Service
+            EventPublisher publisher;
 
             private BufferedWriter out;
             public Logger logger;
@@ -69,52 +65,21 @@ public interface EventRecorderService
                 logger = Logger.getLogger(getClass().getName());
                 eventDir = new File(config.dataDirectory(), "events");
                 eventDir.mkdirs();
+                
+                publisher.subscribe(this);
             }
 
             public void passivate() throws Exception
             {
+                publisher.unsubscribe(this);
+
                 if (out != null)
                 {
                     out.close();
                 }
             }
 
-            public synchronized void notifyEvent(DomainEvent event)
-            {
-                final UnitOfWork unitOfWork = uowf.currentUnitOfWork();
-                List<DomainEvent> events = uows.get(unitOfWork);
-                if (events == null)
-                {
-                    final List<DomainEvent> eventList = new ArrayList<DomainEvent>();
-                    unitOfWork.addUnitOfWorkCallback(new UnitOfWorkCallback()
-                    {
-                        public void beforeCompletion() throws UnitOfWorkCompletionException
-                        {
-                        }
-
-                        public void afterCompletion(UnitOfWorkStatus status)
-                        {
-                            if (status.equals(UnitOfWorkStatus.COMPLETED))
-                            {
-                                storeEvents(eventList);
-                                for (DomainEvent domainEvent : eventList)
-                                {
-                                    System.out.print(domainEvent.toJSON());
-                                    System.out.print("\n");
-                                }
-                            }
-
-                            uows.remove(unitOfWork);
-                        }
-
-                    });
-                    events = eventList;
-                    uows.put(unitOfWork, events);
-                }
-                events.add(event);
-            }
-
-            private synchronized void storeEvents(List<DomainEvent> eventList)
+            public void notifyEvents(Iterable<DomainEvent> events)
             {
                 try
                 {
@@ -123,7 +88,7 @@ public interface EventRecorderService
                         out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(eventDir, "events.json"), true)));
                     }
 
-                    for (DomainEvent domainEvent : eventList)
+                    for (DomainEvent domainEvent : events)
                     {
                         out.append(domainEvent.toJSON()).append('\n');
                     }

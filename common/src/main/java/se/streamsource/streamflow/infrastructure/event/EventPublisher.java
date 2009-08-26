@@ -12,19 +12,13 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.overview;
+package se.streamsource.streamflow.infrastructure.event;
 
 /**
  * JAVADOC
  */
-public enum OverviewResources
+public interface EventPublisher
 {
-    projects_node,
-    assignments_node,
-    window_name,
-    could_not_refresh_projects,
-    description_column_header,
-    created_column_header,
-    assigned_to_column_header,
-    waitingfor_node
+    void subscribe(EventSubscriber subscriber);
+    void unsubscribe(EventSubscriber subscriber);
 }

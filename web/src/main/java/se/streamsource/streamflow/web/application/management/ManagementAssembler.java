@@ -12,23 +12,29 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.domain;
+package se.streamsource.streamflow.web.application.management;
 
-import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.web.infrastructure.event.EventPublisherService;
-import se.streamsource.streamflow.web.infrastructure.event.EventRecorderService;
+import org.qi4j.index.reindexer.ReindexerService;
+import org.qi4j.rest.MBeanServerImporter;
+import se.streamsource.streamflow.web.application.management.ReindexOnStartupService;
+
+import javax.management.MBeanServer;
 
 /**
- * Handle recording, storage and playback of events
+ * JAVADOC
  */
-public class EventStoreAssembler
+public class ManagementAssembler
     implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addServices(EventPublisherService.class, EventRecorderService.class).visibleIn(Visibility.application);
+        module.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
+        module.addServices(ManagerService.class).instantiateOnStartup();
+
+        module.addServices(ReindexerService.class);
+        module.addServices(ReindexOnStartupService.class).instantiateOnStartup();
     }
 }

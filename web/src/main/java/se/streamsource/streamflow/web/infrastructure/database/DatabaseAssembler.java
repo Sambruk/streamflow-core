@@ -12,23 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.domain;
+package se.streamsource.streamflow.web.infrastructure.database;
 
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.web.infrastructure.event.EventPublisherService;
-import se.streamsource.streamflow.web.infrastructure.event.EventRecorderService;
 
 /**
- * Handle recording, storage and playback of events
+ * JAVADOC
  */
-public class EventStoreAssembler
+public class DatabaseAssembler
     implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addServices(EventPublisherService.class, EventRecorderService.class).visibleIn(Visibility.application);
+        module.addServices(MySQLDatabaseService.class).visibleIn(Visibility.application);
     }
 }
