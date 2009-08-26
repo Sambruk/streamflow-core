@@ -39,6 +39,7 @@ import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
+
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
@@ -47,22 +48,28 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Base class for all views of task lists.
  */
 public abstract class TaskTableView
         extends JPanel
-        implements KeyEventDispatcher
 {
     @Service
     DialogService dialogs;
@@ -85,6 +92,8 @@ public abstract class TaskTableView
                          @Structure final ObjectBuilderFactory obf,
                          @Structure ValueBuilderFactory vbf)
     {
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_C,  InputEvent.CTRL_DOWN_MASK+InputEvent.ALT_DOWN_MASK), "completeTasks");
+
         this.model = model;
         this.detailsView = detailsView;
         setLayout(new BorderLayout());
@@ -324,6 +333,15 @@ public abstract class TaskTableView
     }
 
     @org.jdesktop.application.Action
+    public void completeTasks()
+    {
+        for(int row : getReverseSelectedTasks())
+        {
+            model.completeTask(row);
+        }
+    }
+
+    @org.jdesktop.application.Action
     public void refresh() throws ResourceException
     {
         model.refresh();
@@ -339,35 +357,5 @@ public abstract class TaskTableView
             list.add(0, row);
         }
         return list;
-    }
-
-    @Override
-    public void addNotify()
-    {
-        super.addNotify();
-
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
-    }
-
-
-    @Override
-    public void removeNotify()
-    {
-        super.removeNotify();
-
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this);
-    }
-
-    public boolean dispatchKeyEvent(KeyEvent e)
-    {
-        if (e.getKeyCode() == KeyEvent.VK_C && e.isAltDown() && e.isControlDown())
-        {
-            if (!taskTable.getSelectionModel().isSelectionEmpty())
-            {
-                model.completeTask(taskTable.getSelectedRow());
-                return true;
-            }
-        }
-        return false;
     }
 }

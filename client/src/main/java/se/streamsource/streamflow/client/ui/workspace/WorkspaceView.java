@@ -22,6 +22,7 @@ import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingIconPanel;
 import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.jdesktop.swingx.search.SearchFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -74,7 +75,13 @@ public class WorkspaceView
         super(new BorderLayout());
 
         this.model = model;
-        workspaceTree = new JXTree(model);
+        workspaceTree = new JXTree(model)
+        {
+            protected void doFind()
+            {
+                SearchFactory.getInstance().showFindBar(this, getSearchable());
+            }
+        };
         workspaceTree.expandAll();
         workspaceTree.setRootVisible(false);
         workspaceTree.setShowsRootHandles(false);
@@ -119,7 +126,7 @@ public class WorkspaceView
                         if (o instanceof WorkspaceUserNode)
                             return accountModel.settings().name().get();
                         else if (o instanceof WorkspaceProjectNode)
-                            return ((WorkspaceProjectNode)o).projectName();
+                            return ((WorkspaceProjectNode) o).projectName();
                         else if (o instanceof WorkspaceProjectsNode)
                             return i18n.text(WorkspaceResources.projects_node);
                         else if (o instanceof WorkspaceUserInboxNode || o instanceof WorkspaceProjectInboxNode)
@@ -141,7 +148,7 @@ public class WorkspaceView
             public Component getTreeCellRendererComponent(JTree jTree, Object o, boolean b, boolean b1, boolean b2, int i, boolean b3)
             {
                 WrappingIconPanel component = (WrappingIconPanel) super.getTreeCellRendererComponent(jTree, o, b, b1, b2, i, b3);
-                
+
                 if (o instanceof WorkspaceUserNode || o instanceof WorkspaceProjectsNode)
                 {
                     component.setFont(getFont().deriveFont(Font.BOLD));
@@ -165,7 +172,6 @@ public class WorkspaceView
 
         JPanel workspaceOutline = new JPanel(new BorderLayout());
         workspaceOutline.add(workspaceScroll, BorderLayout.CENTER);
-//        workspaceOutline.add(toolbarView, BorderLayout.SOUTH);
         workspaceOutline.setMinimumSize(new Dimension(150, 300));
 
         pane.setLeftComponent(workspaceOutline);
@@ -188,8 +194,7 @@ public class WorkspaceView
                     else if (node instanceof WorkspaceProjectsNode)
                     {
                         view = new JPanel();
-                    }
-                    else if (node instanceof WorkspaceUserInboxNode)
+                    } else if (node instanceof WorkspaceUserInboxNode)
                     {
                         WorkspaceUserInboxNode userInboxNode = (WorkspaceUserInboxNode) node;
                         final WorkspaceUserInboxModel inboxModel = userInboxNode.inboxModel();
@@ -212,13 +217,12 @@ public class WorkspaceView
                                 return null;
                             }
                         });
-                    }
-                    else if (node instanceof WorkspaceUserAssignmentsNode)
+                    } else if (node instanceof WorkspaceUserAssignmentsNode)
                     {
                         WorkspaceUserAssignmentsNode userAssignmentsNode = (WorkspaceUserAssignmentsNode) node;
                         final WorkspaceUserAssignmentsModel assignmentsModel = userAssignmentsNode.assignmentsModel();
                         final LabelsModel labelsModel = userAssignmentsNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(WorkspaceUserAssignmentsView.class).use(assignmentsModel, userAssignmentsNode.getParent(),labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceUserAssignmentsView.class).use(assignmentsModel, userAssignmentsNode.getParent(), labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -236,8 +240,7 @@ public class WorkspaceView
                                 return null;
                             }
                         });
-                    }
-                    else if (node instanceof WorkspaceUserDelegationsNode)
+                    } else if (node instanceof WorkspaceUserDelegationsNode)
                     {
                         WorkspaceUserDelegationsNode userDelegationsNode = (WorkspaceUserDelegationsNode) node;
                         final WorkspaceUserDelegationsModel delegationsModel = userDelegationsNode.delegationsModel();
@@ -260,8 +263,7 @@ public class WorkspaceView
                                 return null;
                             }
                         });
-                    }
-                    else if (node instanceof WorkspaceUserWaitingForNode)
+                    } else if (node instanceof WorkspaceUserWaitingForNode)
                     {
                         WorkspaceUserWaitingForNode userWaitingForNode = (WorkspaceUserWaitingForNode) node;
                         final WorkspaceUserWaitingForModel waitingForModel = userWaitingForNode.waitingForModel();
@@ -284,8 +286,7 @@ public class WorkspaceView
                                 return null;
                             }
                         });
-                    }
-                    else if (node instanceof WorkspaceProjectInboxNode)
+                    } else if (node instanceof WorkspaceProjectInboxNode)
                     {
                         WorkspaceProjectInboxNode projectInboxNode = (WorkspaceProjectInboxNode) node;
                         final WorkspaceProjectInboxModel inboxModel = projectInboxNode.inboxModel();
@@ -308,13 +309,12 @@ public class WorkspaceView
                                 return null;
                             }
                         });
-                    }
-                    else if (node instanceof WorkspaceProjectAssignmentsNode)
+                    } else if (node instanceof WorkspaceProjectAssignmentsNode)
                     {
                         WorkspaceProjectAssignmentsNode projectAssignmentsNode = (WorkspaceProjectAssignmentsNode) node;
                         final WorkspaceProjectAssignmentsModel assignmentsModel = projectAssignmentsNode.assignmentsModel();
                         final LabelsModel labelsModel = projectAssignmentsNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(WorkspaceProjectAssignmentsView.class).use(assignmentsModel, projectAssignmentsNode.getParent(),labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceProjectAssignmentsView.class).use(assignmentsModel, projectAssignmentsNode.getParent(), labelsModel).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -333,8 +333,7 @@ public class WorkspaceView
                             }
                         });
 
-                    }
-                    else if (node instanceof WorkspaceProjectDelegationsNode)
+                    } else if (node instanceof WorkspaceProjectDelegationsNode)
                     {
                         WorkspaceProjectDelegationsNode projectDelegationsNode = (WorkspaceProjectDelegationsNode) node;
                         final WorkspaceProjectDelegationsModel delegationsModel = projectDelegationsNode.delegationsModel();
@@ -357,8 +356,7 @@ public class WorkspaceView
                                 return null;
                             }
                         });
-                    }
-                    else if (node instanceof WorkspaceProjectWaitingForNode)
+                    } else if (node instanceof WorkspaceProjectWaitingForNode)
                     {
                         WorkspaceProjectWaitingForNode projectWaitingForNode = (WorkspaceProjectWaitingForNode) node;
                         final WorkspaceProjectWaitingForModel waitingForModel = projectWaitingForNode.waitingForModel();
@@ -402,7 +400,7 @@ public class WorkspaceView
                 {
                     try
                     {
-                        ((WorkspaceProjectsNode)node).refresh();
+                        ((WorkspaceProjectsNode) node).refresh();
                         model.reload((TreeNode) node);
                     } catch (Exception e)
                     {
