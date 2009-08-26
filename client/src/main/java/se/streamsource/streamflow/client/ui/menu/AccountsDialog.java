@@ -29,11 +29,15 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.administration.AccountView;
 
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -65,19 +69,26 @@ public class AccountsDialog
     @Uses
     Iterable<CreateAccountDialog> createAccountDialog;
 
+    AccountView accountView;
+
     public AccountsDialog(@Service ApplicationContext context,
-                          @Uses AccountsModel model)
+                          @Uses final AccountsModel model)
     {
         super(new BorderLayout());
+
+        setPreferredSize(new Dimension(700, 500));
+
         this.model = model;
 
         setActionMap(context.getActionMap(this));
 
         accountList = new JList(model);
-        accountList.setMinimumSize(new Dimension(200,300));
         accountList.setCellRenderer(new ListItemCellRenderer());
 
-        add(new JScrollPane(accountList), BorderLayout.CENTER);
+        JScrollPane scroll = new JScrollPane(accountList);
+        scroll.setMinimumSize(new Dimension(200,300));
+        scroll.setPreferredSize(new Dimension(200,300));
+        add(scroll, BorderLayout.WEST);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(getActionMap().get("add")));
@@ -85,6 +96,27 @@ public class AccountsDialog
         add(toolbar, BorderLayout.SOUTH);
 
         accountList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(getActionMap().get("remove")));
+
+        accountList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    if (accountView != null)
+                        remove(accountView);
+
+                    if (accountList.getSelectedIndex() != -1)
+                    {
+                        AccountModel account = model.accountModel(accountList.getSelectedIndex());
+                        accountView = obf.newObjectBuilder(AccountView.class).use(account).newInstance();
+                        add(accountView, BorderLayout.CENTER);
+                    }
+
+                    revalidate();
+                }
+            }
+        });
     }
 
     @Action

@@ -25,6 +25,6 @@ import java.io.IOException;
 public interface Manager
 {
     public void reindex();
-    public String exportDatabase() throws IOException;
+    public String exportDatabase(@Name("Compress") boolean compress) throws IOException;
     public String importDatabase(@Name("Filename") String name) throws IOException;
 }

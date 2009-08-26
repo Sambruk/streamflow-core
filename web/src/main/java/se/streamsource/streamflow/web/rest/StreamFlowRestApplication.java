@@ -21,11 +21,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.rest.ExtensionMediaTypeFilter;
-import org.qi4j.rest.entity.EntitiesResource;
-import org.qi4j.rest.entity.EntityResource;
-import org.qi4j.rest.query.IndexResource;
-import org.qi4j.rest.query.SPARQLResource;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -33,8 +28,6 @@ import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.resource.Directory;
-import org.restlet.resource.Finder;
-import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.security.Authorizer;
 import org.restlet.security.ChallengeAuthenticator;
@@ -106,7 +99,9 @@ public class StreamFlowRestApplication
     @Override
     public synchronized Restlet createRoot()
     {
-        Router api = new APIv1Router(getContext(), factory);
+        getContext().setVerifier(verifier);
+
+        Router api = factory.newObjectBuilder(APIv1Router.class).use(getContext()).newInstance();
 
         Router versions = new Router(getContext());
         versions.attach("/v1", api);
@@ -115,26 +110,6 @@ public class StreamFlowRestApplication
         directory.setListingAllowed(true);
         versions.attach("version.html", directory);
 
-        Router qi4jRouter = new Router(getContext());
-        qi4jRouter.attach("/entity", createServerResourceFinder(EntitiesResource.class));
-        qi4jRouter.attach("/entity/{identity}", createServerResourceFinder(EntityResource.class));
-        qi4jRouter.attach("/query", createServerResourceFinder(SPARQLResource.class));
-        qi4jRouter.attach("/query/index", createServerResourceFinder(IndexResource.class));
-
-        api.attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
-        api.attach("/qi4j", qi4jRouter);
-
-        // Guard
-        authenticator.setVerifier(verifier);
-        authenticator.setNext(versions);
-
-        return authenticator;
-    }
-
-    private Finder createServerResourceFinder(Class<? extends ServerResource> resource)
-    {
-        ResourceFinder finder = factory.newObject(ResourceFinder.class);
-        finder.setTargetClass(resource);
-        return finder;
+        return versions;
     }
 }

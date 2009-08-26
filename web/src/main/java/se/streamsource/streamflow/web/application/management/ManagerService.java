@@ -37,14 +37,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * JMX Management MBean for StreamFlow
@@ -134,10 +140,17 @@ public interface ManagerService
             reindexer.reindex();
         }
 
-        public String exportDatabase() throws IOException
+        public String exportDatabase(boolean compress) throws IOException
         {
-            File exportFile = File.createTempFile("streamflow", ".json", exports);
-            FileOutputStream out = new FileOutputStream(exportFile);
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
+            File exportFile = new File(exports, "streamflow_"+format.format(new Date())+ (compress ? ".json.gz": ".json"));
+            OutputStream out = new FileOutputStream(exportFile);
+
+            if (compress)
+            {
+                out = new GZIPOutputStream(out);
+            }
+
             Writer writer = new OutputStreamWriter(out, "UTF-8");
             exportDatabase.exportTo(writer);
             writer.close();
@@ -152,7 +165,10 @@ public interface ManagerService
             if (!importFile.exists())
                 return "No such import file:"+importFile.getAbsolutePath();
 
-            Reader in = new InputStreamReader(new FileInputStream(importFile), "UTF-8");
+            InputStream in1 = new FileInputStream(importFile);
+            if (importFile.getName().endsWith("gz"));
+                in1 = new GZIPInputStream(in1);
+            Reader in = new InputStreamReader(in1, "UTF-8");
 
             try
             {

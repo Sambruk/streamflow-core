@@ -14,11 +14,21 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.rest.entity.EntitiesResource;
+import org.qi4j.rest.entity.EntityResource;
+import org.qi4j.rest.query.SPARQLResource;
+import org.qi4j.rest.query.IndexResource;
+import org.qi4j.rest.ExtensionMediaTypeFilter;
 import org.restlet.Context;
-import org.restlet.resource.Finder;
+import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+import org.restlet.security.Authenticator;
+import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.streamflow.web.resource.events.EventsResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
@@ -78,7 +88,7 @@ public class APIv1Router
 {
     private ObjectBuilderFactory factory;
 
-    public APIv1Router(Context context, ObjectBuilderFactory factory)
+    public APIv1Router(@Uses Context context, @Structure ObjectBuilderFactory factory)
     {
         super(context);
         this.factory = factory;
@@ -86,7 +96,7 @@ public class APIv1Router
         attach(createServerResourceFinder(StreamFlowServerResource.class));
 
         // Users
-        attach("/users", createServerResourceFinder(UsersServerResource.class));
+        attach("/users", createServerResourceFinder(UsersServerResource.class, false));
         attach("/users/{user}", createServerResourceFinder(UserServerResource.class));
 
         // Workspace
@@ -163,13 +173,33 @@ public class APIv1Router
 
         // Events
         attach("/events", createServerResourceFinder(EventsResource.class));
+
+        // Qi4j
+        Router qi4jRouter = new Router(getContext());
+        qi4jRouter.attach("/entity", createServerResourceFinder(EntitiesResource.class));
+        qi4jRouter.attach("/entity/{identity}", createServerResourceFinder(EntityResource.class));
+        qi4jRouter.attach("/query", createServerResourceFinder(SPARQLResource.class));
+        qi4jRouter.attach("/query/index", createServerResourceFinder(IndexResource.class));
+        attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
     }
 
-    private Finder createServerResourceFinder(Class<? extends ServerResource> resource)
+    private Restlet createServerResourceFinder(Class<? extends ServerResource> resource)
+    {
+        return createServerResourceFinder(resource, true);
+    }
+
+    private Restlet createServerResourceFinder(Class<? extends ServerResource> resource, boolean secure)
     {
         ResourceFinder finder = factory.newObject(ResourceFinder.class);
         finder.setTargetClass(resource);
-        return finder;
+
+        if (secure)
+        {
+            Authenticator auth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "StreamFlow");
+            auth.setNext(finder);
+            return auth;
+        } else
+            return finder;
     }
 
 }

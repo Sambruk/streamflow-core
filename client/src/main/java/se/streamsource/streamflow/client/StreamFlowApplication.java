@@ -289,7 +289,13 @@ public class StreamFlowApplication
         if (!workspaceWindow.isVisible())
         {
             if (workspaceView != null)
-                workspaceView.refreshTree();
+                try
+                {
+                    workspaceView.refreshTree();
+                } catch (Exception e)
+                {
+                    // Ignore
+                }
             show(workspaceWindow);
         }
     }
