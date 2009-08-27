@@ -14,12 +14,12 @@
 
 package se.streamsource.streamflow.web.application.management;
 
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.rest.MBeanServerImporter;
-import se.streamsource.streamflow.web.application.management.ReindexOnStartupService;
 
 import javax.management.MBeanServer;
 
@@ -31,10 +31,13 @@ public class ManagementAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
-        module.addServices(ManagerService.class).instantiateOnStartup();
+        if (module.layerAssembly().applicationAssembly().mode().equals(Application.Mode.production))
+        {
+            module.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
+            module.addServices(ManagerService.class).instantiateOnStartup();
 
-        module.addServices(ReindexerService.class);
-        module.addServices(ReindexOnStartupService.class).instantiateOnStartup();
+            module.addServices(ReindexerService.class);
+            module.addServices(ReindexOnStartupService.class).instantiateOnStartup();
+        }
     }
 }
