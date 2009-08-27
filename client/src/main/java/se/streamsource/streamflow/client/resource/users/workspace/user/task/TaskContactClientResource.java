@@ -18,10 +18,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 
@@ -36,11 +34,6 @@ public class TaskContactClientResource
         super(context, reference);
     }
 
-    public void update(ContactValue contact) throws ResourceException
-    {
-        put(new StringRepresentation(contact.toJSON()));
-    }
-
     @Override
     public Representation delete() throws ResourceException
     {
@@ -50,5 +43,15 @@ public class TaskContactClientResource
     public void changeName(StringDTO name) throws ResourceException
     {
         putCommand("changeName", name);
+    }
+
+    public void changeNote(StringDTO note) throws ResourceException
+    {
+        putCommand("changeNote", note);
+    }
+
+    public void changeCompany(StringDTO company) throws ResourceException
+    {
+        putCommand("changeCompany", company);
     }
 }

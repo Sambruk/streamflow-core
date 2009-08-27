@@ -109,20 +109,20 @@ public class TaskContactView
             }
         } else if (property.qualifiedName().name().equals("note"))
         {
-            /*try
+            try
             {
                 model.changeNote((String) property.get());
             } catch (ResourceException e)
             {
                 throw new OperationException(WorkspaceResources.could_not_change_note, e);
             }
-        } else if (property.qualifiedName().name().equals("dueOn")) {
+        } else if (property.qualifiedName().name().equals("company")) {
             try
             {
                 model.changeCompany((String) property.get());
             } catch (ResourceException e) {
                 throw new OperationException(WorkspaceResources.could_not_change_company, e);
-            }*/
+            }
         }
     }
 }

@@ -28,15 +28,16 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
  * /users/{user}/workspace/user/{view}/{task}/contacts/{index}
  */
 public class TaskContactServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
     @Structure
     UnitOfWorkFactory uowf;
@@ -73,6 +74,7 @@ public class TaskContactServerResource
         return null;
     }
 
+    /*
     @Override
     protected Representation put(Representation representation, Variant variant) throws ResourceException
     {
@@ -106,7 +108,54 @@ public class TaskContactServerResource
         }
 
         return null;
+    }*/
+
+    public void changeName(StringDTO name)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+
+        int idx = Integer.parseInt(taskContactIndex);
+        ContactValue contact = task.contacts().get().get(idx);
+
+        ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class).withPrototype(contact);
+        builder.prototype().name().set(name.string().get());
+
+        task.updateContact(idx, builder.newInstance());
     }
+
+    public void changeNote(StringDTO note)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+
+        int idx = Integer.parseInt(taskContactIndex);
+        ContactValue contact = task.contacts().get().get(idx);
+
+        ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class).withPrototype(contact);
+        builder.prototype().note().set(note.string().get());
+
+        task.updateContact(idx, builder.newInstance());
+    }
+
+    public void changeCompany(StringDTO company)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+
+        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+
+        int idx = Integer.parseInt(taskContactIndex);
+        ContactValue contact = task.contacts().get().get(idx);
+
+        ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class).withPrototype(contact);
+        builder.prototype().company().set(company.string().get());
+
+        task.updateContact(idx, builder.newInstance());
+    }
+
 
     @Override
     protected String getConditionalIdentityAttribute()
