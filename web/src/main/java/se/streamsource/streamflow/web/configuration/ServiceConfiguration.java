@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.configuration;
+package se.streamsource.streamflow.web.configuration;
 
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Service;

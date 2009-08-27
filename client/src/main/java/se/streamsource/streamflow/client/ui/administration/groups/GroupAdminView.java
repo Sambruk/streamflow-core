@@ -57,10 +57,11 @@ public class GroupAdminView
                     setRightComponent(new JPanel());
                 else
                 {
-                    setRightComponent(groupView.use(groupsModel.getGroupModel(groupValue.entity().get().identity())).newInstance());
+                    GroupModel groupModel = groupsModel.getGroupModel(groupValue.entity().get().identity());
+                    setRightComponent(groupView.use(groupModel).newInstance());
                     try
                     {
-                        groupsModel.refresh();
+                        groupModel.refresh();
                     } catch (ResourceException e1)
                     {
                         throw new OperationException(AdministrationResources.could_not_refresh_list_of_groups, e1);

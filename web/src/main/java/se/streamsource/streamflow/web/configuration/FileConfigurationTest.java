@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.configuration;
+package se.streamsource.streamflow.web.configuration;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;

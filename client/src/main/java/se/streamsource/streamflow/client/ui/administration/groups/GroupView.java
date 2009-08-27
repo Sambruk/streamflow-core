@@ -18,6 +18,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
@@ -67,7 +68,7 @@ public class GroupView
     }
 
     @Action
-    public void add()
+    public void add() throws ResourceException
     {
         SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog);
@@ -75,14 +76,16 @@ public class GroupView
         if (participants != null)
         {
             model.addParticipants(participants);
+            model.refresh();
         }
     }
 
     @Action
-    public void remove()
+    public void remove() throws ResourceException
     {
         ListItemValue value = (ListItemValue) participantList.getSelectedValue();
         model.removeParticipant(value.entity().get().identity());
+        model.refresh();
     }
 
     public JList getParticipantList()

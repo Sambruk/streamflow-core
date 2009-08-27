@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.configuration;
+package se.streamsource.streamflow.web.configuration;
 
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;

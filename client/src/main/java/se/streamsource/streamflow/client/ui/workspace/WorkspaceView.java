@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTree;
@@ -55,6 +56,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 /**
@@ -73,6 +75,11 @@ public class WorkspaceView
                          final @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
+
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.CTRL_DOWN_MASK+InputEvent.ALT_DOWN_MASK), "selectTree");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK+InputEvent.ALT_DOWN_MASK), "selectTable");
+        setActionMap(context.getActionMap(this));
+
 
         this.model = model;
         workspaceTree = new JXTree(model)
@@ -440,4 +447,17 @@ public class WorkspaceView
         }
     }
 
+    @Action
+    public void selectTree()
+    {
+        workspaceTree.requestFocusInWindow();
+    }
+
+    @Action
+    public void selectTable()
+    {
+        Component right = pane.getRightComponent();
+        if (right != null)
+            right.requestFocusInWindow();
+    }
 }

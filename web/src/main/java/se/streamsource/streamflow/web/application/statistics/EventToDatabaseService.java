@@ -21,10 +21,20 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventPublisher;
 import se.streamsource.streamflow.infrastructure.event.EventSubscriber;
+import se.streamsource.streamflow.web.domain.group.Group;
+import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.label.LabelEntity;
+import se.streamsource.streamflow.web.domain.label.Labelable;
+import se.streamsource.streamflow.web.domain.project.Members;
+import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.web.domain.project.ProjectOrganization;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
 import javax.sql.DataSource;
@@ -81,7 +91,7 @@ public interface EventToDatabaseService
                 DatabaseMetaData dmd = conn.getMetaData();
 
                 Set<String> createTables = new HashSet<String>();
-                createTables.addAll(asList("completed"));
+                createTables.addAll(asList("completed", "labels"));
 
                 ResultSet tables = dmd.getTables(null, null, "%", null);
                 while (tables.next())
@@ -131,18 +141,61 @@ public interface EventToDatabaseService
                                 uow = uowf.newUnitOfWork();
 
                             TaskEntity task = uow.get(TaskEntity.class, event.entity().get());
-                            if (conn == null)
-                            {
-                                conn = dataSource.getConnection();
-                            }
 
-                            PreparedStatement stmt = conn.prepareStatement(sql.getProperty("completed.insert"));
-                            stmt.setString(1, task.identity().get());
-                            stmt.setDate(2, new java.sql.Date(task.createdOn().get().getTime()));
-                            stmt.setDate(3, new java.sql.Date(event.on().get().getTime()));
-                            stmt.setLong(4, event.on().get().getTime() - task.createdOn().get().getTime());
-                            stmt.executeUpdate();
-                            stmt.close();
+                            // Only save statistics for tasks in projects
+                            if (task.owner().get() instanceof Project)
+                            {
+
+                                if (conn == null)
+                                {
+                                    conn = dataSource.getConnection();
+                                }
+
+                                PreparedStatement stmt = conn.prepareStatement(sql.getProperty("completed.insert"));
+                                int idx = 1;
+                                String id = task.taskId().get();
+                                stmt.setString(idx++, id);
+                                stmt.setString(idx++, task.description().get());
+                                stmt.setDate(idx++, new java.sql.Date(task.createdOn().get().getTime()));
+                                stmt.setDate(idx++, new java.sql.Date(event.on().get().getTime()));
+                                stmt.setLong(idx++, event.on().get().getTime() - task.createdOn().get().getTime());
+                                Assignee assignee = task.assignedTo().get();
+                                stmt.setString(idx++, assignee.getDescription());
+                                stmt.setString(idx++, task.owner().get().getDescription());
+                                Owner owner = task.owner().get();
+                                ProjectOrganization.ProjectOrganizationState po = (ProjectOrganization.ProjectOrganizationState) owner;
+                                Describable.DescribableState organizationalUnit = (Describable.DescribableState) po.organizationalUnit().get();
+
+                                // Figure out which group the user belongs to
+                                Participant.ParticipantState participant = (Participant.ParticipantState) assignee;
+                                String groupName = null;
+                                findgroup: for (Group group : participant.groups())
+                                {
+                                    Members.MembersState members = (Members.MembersState) owner;
+                                    if (members.isMember(group))
+                                    {
+                                        groupName = group.getDescription();
+                                        break findgroup;
+                                    }
+                                }
+
+                                stmt.setString(idx++, groupName);
+                                stmt.setString(idx, organizationalUnit.description().get());
+
+                                stmt.executeUpdate();
+                                stmt.close();
+
+                                // Add Label information
+                                Labelable.LabelableState labelable = task;
+                                for (LabelEntity labelEntity : labelable.labels())
+                                {
+                                    stmt = conn.prepareStatement(sql.getProperty("labels.insert"));
+                                    stmt.setString(1, id);
+                                    stmt.setString(2, labelEntity.description().get());
+                                    stmt.executeUpdate();
+                                    stmt.close();
+                                }
+                            }
                         }
                     }
                 } catch (SQLException e)
@@ -152,7 +205,10 @@ public interface EventToDatabaseService
 
                 if (uow != null)
                     uow.discard();
-            } finally
+            } catch (Exception e)
+            {
+                logger.log(Level.SEVERE, "Could not log statistics information", e);
+            }finally
             {
                 if (conn != null)
                 {

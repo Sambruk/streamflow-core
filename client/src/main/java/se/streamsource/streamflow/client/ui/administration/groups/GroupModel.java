@@ -59,7 +59,6 @@ public class GroupModel
                 ParticipantClientResource participant = group.participants().participant(value);
                 participant.put(null);
             }
-            refresh();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_add_participants, e);
@@ -71,7 +70,6 @@ public class GroupModel
         try
         {
             group.participants().participant(participant).delete();
-            refresh();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_remove_participant, e);
@@ -79,7 +77,7 @@ public class GroupModel
 
     }
 
-    private void refresh() throws ResourceException
+    public void refresh() throws ResourceException
     {
         list = group.participants().participants();
         fireContentsChanged(this, 0, getSize());

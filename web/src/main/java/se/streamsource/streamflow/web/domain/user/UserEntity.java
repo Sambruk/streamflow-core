@@ -66,6 +66,7 @@ public interface UserEntity
         OrganizationParticipations.OrganizationParticipationsState,
         Describable.DescribableState,
         Labels.LabelsState,
+        Participant.ParticipantState,
         User.UserState
 {
     public static final String ADMINISTRATOR_USERNAME = "administrator";

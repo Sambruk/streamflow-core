@@ -39,8 +39,6 @@ import java.util.List;
 @Mixins(Members.MembersMixin.class)
 public interface Members
 {
-    boolean isMember(Participant participant);
-
     void createMember(Participant participant);
 
     void addRole(Participant participant, Role role);
@@ -49,15 +47,16 @@ public interface Members
 
     void removeRole(Participant participant, Role role);
 
-    Iterable<Role> getRoles(Participant participant);
-
     interface MembersState
     {
         Property<MembersValue> members();
+
+        boolean isMember(Participant participant);
+        Iterable<Role> getRoles(Participant participant);
     }
 
-    class MembersMixin
-            implements Members
+    abstract class MembersMixin
+            implements Members, MembersState
     {
         @This
         MembersState state;
