@@ -74,8 +74,10 @@ public enum WorkspaceResources
     could_not_refresh_projects, 
     could_not_change_description, 
     could_not_change_note, 
-    could_not_change_due_on, 
+    could_not_change_due_on,
     is_completed,
-    
+
+    could_not_change_name,
+    could_not_change_company, 
     date_format
 }

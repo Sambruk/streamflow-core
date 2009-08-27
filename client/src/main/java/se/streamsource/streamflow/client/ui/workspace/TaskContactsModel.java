@@ -71,48 +71,13 @@ public class TaskContactsModel
         return contacts.get(i);
     }
 
-    public void addContact()
+    public void createContact() throws ResourceException
     {
-        try
-        {
-            contactsClientResource.add();
-            refresh();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
+        contactsClientResource.add();
     }
 
-    public void updateElement(TaskContactDTO contact, int selectedIndex)
+    public void removeElement(int selectedIndex) throws ResourceException
     {
-        try
-        {
-            contactsClientResource.taskContact(selectedIndex).update(contact);
-            refresh();
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        } catch (IOException e)
-        {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
-
-    public void removeElement(int selectedIndex)
-    {
-        try
-        {
-            contactsClientResource.taskContact(selectedIndex).delete();
-            refresh();
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        } catch (IOException e)
-        {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        contactsClientResource.taskContact(selectedIndex).delete();
     }
 }

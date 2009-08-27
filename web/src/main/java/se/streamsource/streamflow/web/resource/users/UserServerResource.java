@@ -27,7 +27,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
@@ -63,18 +63,18 @@ public class UserServerResource
         return getHtml("resources/user.html");
     }
 
-    public ListValue findUsers(DescriptionDTO query)
+    public ListValue findUsers(StringDTO query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
-        if (query.description().get().length() > 0)
+        if (query.string().get().length() > 0)
         {
             QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
             queryBuilder.where(QueryExpressions.matches(
-                    QueryExpressions.templateFor(UserEntity.class).userName(), "^" + query.description().get()));
+                    QueryExpressions.templateFor(UserEntity.class).userName(), "^" + query.string().get()));
             Query<UserEntity> users = queryBuilder.newQuery(uow);
 
             try
@@ -93,19 +93,19 @@ public class UserServerResource
     }
 
 
-    public ListValue findGroups(DescriptionDTO query)
+    public ListValue findGroups(StringDTO query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
-        if (query.description().get().length() > 0)
+        if (query.string().get().length() > 0)
         {
             QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
             queryBuilder.where(
                 QueryExpressions.matches(
-                    QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.description().get()));
+                    QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.string().get()));
             Query<GroupEntity> groups = queryBuilder.newQuery(uow);
 
             try
@@ -124,18 +124,18 @@ public class UserServerResource
         return listBuilder.newList();
     }
 
-    public ListValue findProjects(DescriptionDTO query)
+    public ListValue findProjects(StringDTO query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
-        if (query.description().get().length() > 0)
+        if (query.string().get().length() > 0)
         {
             QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
             queryBuilder.where(QueryExpressions.matches(
-                    QueryExpressions.templateFor(ProjectEntity.class).description(), "^" + query.description().get()));
+                    QueryExpressions.templateFor(ProjectEntity.class).description(), "^" + query.string().get()));
             Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
 
             try

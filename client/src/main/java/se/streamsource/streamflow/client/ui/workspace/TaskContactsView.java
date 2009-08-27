@@ -18,6 +18,8 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
@@ -25,15 +27,13 @@ import se.streamsource.streamflow.resource.task.TaskContactDTO;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import java.io.IOException;
 
 /**
  * JAVADOC
  */
 public class TaskContactsView
         extends JPanel
-    implements Observer
 {
     @Service
     UncaughtExceptionHandler exception;
@@ -41,9 +41,7 @@ public class TaskContactsView
     TaskContactsModel model;
 
     public JList contacts;
-    private TaskContactModel contactModel;
     private TaskContactView contactView;
-    private JButton removeButton;
 
     public TaskContactsView(@Service ApplicationContext context,
                             @Structure ObjectBuilderFactory obf)
@@ -54,10 +52,7 @@ public class TaskContactsView
         setActionMap(am);
         setMinimumSize(new Dimension(150,0));
 
-        contactModel = new TaskContactModel();
-        contactView  = obf.newObjectBuilder(TaskContactView.class).use(contactModel).newInstance();
-        contactModel.addObserver(this);
-        contactModel.addObserver(contactView);
+        contactView  = obf.newObject(TaskContactView.class);
 
         contacts = new JList();
         contacts.setCellRenderer(new DefaultListCellRenderer() {
@@ -79,43 +74,26 @@ public class TaskContactsView
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("add")));
-        toolbar.add(removeButton = new JButton(am.get("remove")));
+        toolbar.add(new JButton(am.get("remove")));
         add(toolbar, BorderLayout.SOUTH);
-        removeButton.setEnabled(false);
+
+        contacts.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
     }
 
     @org.jdesktop.application.Action
-    public void add()
+    public void add() throws IOException, ResourceException
     {
-        model.addContact();
-        selectLast();
+        model.createContact();
+        model.refresh();
+        contacts.setSelectedIndex(model.getSize()-1);
     }
 
     @org.jdesktop.application.Action
-    public void remove()
+    public void remove() throws IOException, ResourceException
     {
         model.removeElement(getContactsList().getSelectedIndex());
-        // set the selection in the smaller list
-        if (model.contacts.size() == 0)
-        {
-            getContactsList().clearSelection();
-        } else
-        {
-            if (model.contacts.size() <= getContactsList().getSelectedIndex())
-            {
-                selectLast();
-            } else
-            {
-                TaskContactDTO contact = (TaskContactDTO) model.getElementAt(getContactsList().getSelectedIndex());
-                contactModel.setTaskContactDTO(contact);
-            }
-        }
-
-    }
-
-    private void selectLast()
-    {
-        getContactsList().setSelectedIndex(model.contacts.size()-1);
+        model.refresh();
+        contacts.clearSelection();
     }
 
     public JList getContactsList()
@@ -141,25 +119,7 @@ public class TaskContactsView
     public void setModel(TaskContactsModel model)
     {
         this.model = model;
-        if (model != null)
-        {
-            contacts.setModel(model);
-        }
-    }
-
-    public void update(Observable observable, Object o)
-    {
-        model.updateElement(contactModel.getContact(),getContactsList().getSelectedIndex());
-    }
-
-    public TaskContactsClientResource getTaskContactsClientResource()
-    {
-        return model.getTaskContactsClientResource();
-    }
-
-    public TaskContactModel getContactModel()
-    {
-        return contactModel;
+        contacts.setModel(model);
     }
 
     public TaskContactView getContactView()
@@ -167,9 +127,8 @@ public class TaskContactsView
         return contactView;
     }
 
-    public void enableRemoveAccount(boolean enable)
+    public TaskContactsClientResource getTaskContactsResource()
     {
-
-        removeButton.setEnabled(enable);
+        return model.getTaskContactsClientResource();
     }
 }

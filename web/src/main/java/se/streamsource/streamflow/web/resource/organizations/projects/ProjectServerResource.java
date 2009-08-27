@@ -26,7 +26,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.project.*;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -45,7 +45,7 @@ public class ProjectServerResource
     @Structure
     ValueBuilderFactory vbf;
 
-    public EntityReferenceDTO findRole(DescriptionDTO query)
+    public EntityReferenceDTO findRole(StringDTO query)
     {
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
 
@@ -54,7 +54,7 @@ public class ProjectServerResource
             Roles.RolesState roles = uowf.currentUnitOfWork().get(Roles.RolesState.class, getRequest().getAttributes().get("organization").toString());
             for (Role role : roles.roles())
             {
-                if (role.getDescription().equals(query.description().get()))
+                if (role.getDescription().equals(query.string().get()))
                 {
                     builder.prototype().entity().set(EntityReference.getEntityReference(role));
                 }
@@ -65,12 +65,12 @@ public class ProjectServerResource
         return builder.newInstance();
     }
 
-    public void describe(DescriptionDTO descriptionValue)
+    public void describe(StringDTO stringValue)
     {
         String taskId = (String) getRequest().getAttributes().get("project");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
 
-        describable.describe(descriptionValue.description().get());
+        describable.describe(stringValue.string().get());
     }
 
     @Override

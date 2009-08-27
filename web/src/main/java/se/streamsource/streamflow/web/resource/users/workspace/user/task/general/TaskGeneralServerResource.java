@@ -30,7 +30,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.resource.roles.DateDTO;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.domain.task.DueOn;
@@ -82,20 +82,20 @@ public class TaskGeneralServerResource
         return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
     }
 
-    public void describe(DescriptionDTO descriptionValue)
+    public void describe(StringDTO stringValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
 
-        describable.describe(descriptionValue.description().get());
+        describable.describe(stringValue.string().get());
     }
 
-    public void changeNote(DescriptionDTO noteValue)
+    public void changeNote(StringDTO noteValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Notable notable = uowf.currentUnitOfWork().get(Notable.class, taskId);
 
-        notable.changeNote(noteValue.description().get());
+        notable.changeNote(noteValue.string().get());
     }
     
     public void changeDueOn(DateDTO dueOnValue)

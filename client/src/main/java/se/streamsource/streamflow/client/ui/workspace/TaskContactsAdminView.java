@@ -18,17 +18,19 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 
 
 /**
  * JAVADOC
  */
 public class TaskContactsAdminView
-        extends JSplitPane
+        extends JPanel
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -37,13 +39,11 @@ public class TaskContactsAdminView
 
     public TaskContactsAdminView(@Uses final TaskContactsView taskContactsView)
     {
-        super();
-
-        setResizeWeight(0.5D);
+        super(new BorderLayout());
 
         this.taskContactsView = taskContactsView;
-        setLeftComponent(taskContactsView);
-        setRightComponent(new JPanel());
+        add(taskContactsView, BorderLayout.WEST);
+        add(taskContactsView.getContactView(), BorderLayout.CENTER);
 
         final JList list = taskContactsView.getContactsList();
         list.addListSelectionListener(new ListSelectionListener()
@@ -53,17 +53,15 @@ public class TaskContactsAdminView
                 if (!e.getValueIsAdjusting())
                 {
                     int idx = list.getSelectedIndex();
-                    if (idx < list.getModel().getSize() && idx >= 0)
+                    if (idx != -1)
                     {
                         TaskContactDTO contactValue = (TaskContactDTO) list.getModel().getElementAt(idx);
-                        TaskContactModel taskContactModel = taskContactsView.getContactModel();
-                        taskContactModel.setTaskContactDTO(contactValue);
-                        taskContactsView.enableRemoveAccount(true);
-                        setRightComponent(taskContactsView.getContactView());
+                        TaskContactsClientResource taskContactsClientResource = taskContactsView.getTaskContactsResource();
+                        TaskContactModel taskContactModel = obf.newObjectBuilder(TaskContactModel.class).use(contactValue, taskContactsClientResource.taskContact(idx)).newInstance();
+                        taskContactsView.getContactView().setModel(taskContactModel);
                     } else
                     {
-                        taskContactsView.enableRemoveAccount(false);
-                        setRightComponent(new JPanel());
+                        taskContactsView.getContactView().setModel(null);
                     }
                 }
             }

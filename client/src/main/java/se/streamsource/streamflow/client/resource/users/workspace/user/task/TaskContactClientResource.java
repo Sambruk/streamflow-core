@@ -20,7 +20,8 @@ import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
 
 
@@ -28,7 +29,7 @@ import se.streamsource.streamflow.resource.task.TaskContactDTO;
  * JAVADOC
  */
 public class TaskContactClientResource
-        extends BaseClientResource
+        extends CommandQueryClientResource
 {
     public TaskContactClientResource(@Uses Context context, @Uses Reference reference)
     {
@@ -44,5 +45,10 @@ public class TaskContactClientResource
     public Representation delete() throws ResourceException
     {
         return super.delete();
+    }
+
+    public void changeName(StringDTO name) throws ResourceException
+    {
+        putCommand("changeName", name);
     }
 }

@@ -27,7 +27,7 @@ import se.streamsource.streamflow.client.resource.organizations.OrganizationClie
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
@@ -83,8 +83,8 @@ public class OrganizationalUnitAdministrationModel
     {
         try
         {
-            ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-            builder.prototype().description().set(newDescription);
+            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+            builder.prototype().string().set(newDescription);
             organization.describe(builder.newInstance());
         } catch (ResourceException e)
         {
@@ -96,8 +96,8 @@ public class OrganizationalUnitAdministrationModel
     {
         try
         {
-            ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-            builder.prototype().description().set(name);
+            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+            builder.prototype().string().set(name);
             organization.organizationalUnits().newOrganizationalUnit(builder.newInstance());
         } catch (ResourceException e)
         {

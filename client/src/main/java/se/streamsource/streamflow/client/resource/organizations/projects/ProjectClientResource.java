@@ -21,7 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -44,8 +44,8 @@ public class ProjectClientResource
         return getSubResource("labels", LabelsClientResource.class);
     }
 
-    public void describe(DescriptionDTO descriptionValue) throws ResourceException
+    public void describe(StringDTO stringValue) throws ResourceException
     {
-        putCommand("describe", descriptionValue);
+        putCommand("describe", stringValue);
     }
 }

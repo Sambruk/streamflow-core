@@ -25,7 +25,7 @@ import org.restlet.resource.ResourceException;
 
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.resource.roles.DateDTO;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 /**
@@ -46,15 +46,15 @@ public class TaskGeneralClientResource
 
     public void describe(String newDescription) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(newDescription);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(newDescription);
         putCommand("describe", builder.newInstance());
     }
 
     public void changeNote(String newNote) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(newNote);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(newNote);
         putCommand("changeNote", builder.newInstance());
     }
     

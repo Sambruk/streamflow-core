@@ -71,9 +71,9 @@ public class TaskDetailView
         this.model = model;
         if (model == null)
         {
-            generalView.setModel(null);
-            commentsView.setModel(null);
-            contactsView.setModel(null);
+            //generalView.setModel(null);
+            //commentsView.setModel(null);
+            //contactsView.setModel(null);
 /*
             setPreferredSize(new Dimension(getWidth(), 50));
             setMaximumSize(new Dimension(getWidth(), 50));

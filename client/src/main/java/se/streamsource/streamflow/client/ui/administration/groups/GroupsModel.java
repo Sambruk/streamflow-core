@@ -27,7 +27,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.AbstractListModel;
 import java.util.List;
@@ -109,8 +109,8 @@ public class GroupsModel
 
     public void describe(int selectedIndex, String newName) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(newName);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(newName);
 
         groupsResource.group(groups.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
 

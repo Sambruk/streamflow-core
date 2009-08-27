@@ -18,7 +18,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -31,8 +31,8 @@ public class LabelClientResource
         super(context, reference);
     }
 
-    public void describe(DescriptionDTO descriptionValue) throws ResourceException
+    public void describe(StringDTO stringValue) throws ResourceException
     {
-        putCommand("describe", descriptionValue);
+        putCommand("describe", stringValue);
     }
 }

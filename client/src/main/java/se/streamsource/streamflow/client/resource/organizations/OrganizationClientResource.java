@@ -23,7 +23,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -40,36 +40,36 @@ public class OrganizationClientResource
         super(context, reference);
     }
 
-    public void describe(DescriptionDTO descriptionValue) throws ResourceException
+    public void describe(StringDTO stringValue) throws ResourceException
     {
-        putCommand("describe", descriptionValue);
+        putCommand("describe", stringValue);
     }
 
     public ListValue findUsers(String participantName) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(participantName);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(participantName);
         return query("findUsers", builder.newInstance(), ListValue.class);
     }
 
     public ListValue findGroups(String groupName) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(groupName);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(groupName);
         return query("findGroups", builder.newInstance(), ListValue.class);        
     }
 
     public ListValue findProjects(String projectName) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(projectName);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(projectName);
         return query("findProjects", builder.newInstance(), ListValue.class);
     }
 
     public ListValue findTasks(String search) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(search);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(search);
         return query("findTasks", builder.newInstance(), ListValue.class);
     }
 }

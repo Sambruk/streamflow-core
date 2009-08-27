@@ -21,9 +21,9 @@ import org.qi4j.api.value.ValueComposite;
 /**
  * JAVADOC
  */
-public interface DescriptionDTO
+public interface StringDTO
         extends ValueComposite
 {
     @UseDefaults
-    Property<String> description();
+    Property<String> string();
 }

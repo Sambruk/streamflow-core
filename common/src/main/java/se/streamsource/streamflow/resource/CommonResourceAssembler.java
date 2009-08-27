@@ -38,7 +38,7 @@ import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
@@ -58,7 +58,7 @@ public class CommonResourceAssembler
     {
         // Commands
         module.addValues(RegisterUserCommand.class,
-                DescriptionDTO.class,
+                StringDTO.class,
                 DateDTO.class,
                 EntityReferenceDTO.class,
                 NewCommentCommand.class).visibleIn(Visibility.application);

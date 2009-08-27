@@ -18,43 +18,46 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
 
 import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
+import java.awt.*;
 
 /**
  * JAVADOC
  */
 public class TaskContactView
-        extends JScrollPane
+        extends JPanel
     implements Observer
 {
-    @Service
-    UncaughtExceptionHandler exception;
-
     private StateBinder contactBinder;
 
-    @Uses
     TaskContactModel model;
 
     public ValueBuilder<TaskContactDTO> valueBuilder;
+    private CardLayout layout = new CardLayout();
 
     public TaskContactView(@Service ApplicationContext appContext)
     {
+        setLayout(layout);
+
         setActionMap(appContext.getActionMap(this));
-        FormLayout layout = new FormLayout(
+        FormLayout formLayout = new FormLayout(
                 "200dlu",
                 "");
         JPanel form = new JPanel();
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout, form);
+        JScrollPane scrollPane = new JScrollPane(form);
+        DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
         builder.setDefaultDialogBorder();
 
         
@@ -69,21 +72,57 @@ public class TaskContactView
         .appendLine(WorkspaceResources.company_label, TEXTFIELD, template.company())
         .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note());
 
-        setViewportView(form);
         contactBinder.addObserver(this);
+
+        add(new JPanel(), "EMPTY");
+        add(scrollPane, "CONTACT");
     }
 
-    public void update(Observable observable, Object o)
+
+    public void setModel(TaskContactModel model)
     {
-        if (observable != contactBinder)
+        this.model = model;
+        if (model != null)
         {
-            TaskContactDTO contact = model.getContact();
-            valueBuilder = contact.buildWith();
-            contactBinder.updateWith(valueBuilder.prototype());
+            contactBinder.updateWith(model.getContact());
+            layout.show(this, "CONTACT");
         } else
         {
-            TaskContactDTO contact = valueBuilder.newInstance();
-            model.setTaskContactDTO(contact);
+            layout.show(this, "EMPTY");
+        }
+
+
+
+    }
+
+    public void update(Observable observable, Object arg)
+    {
+        Property property = (Property) arg;
+        if (property.qualifiedName().name().equals("name"))
+        {
+            try
+            {
+                model.changeName((String) property.get());
+            } catch (ResourceException e)
+            {
+                throw new OperationException(WorkspaceResources.could_not_change_name, e);
+            }
+        } else if (property.qualifiedName().name().equals("note"))
+        {
+            /*try
+            {
+                model.changeNote((String) property.get());
+            } catch (ResourceException e)
+            {
+                throw new OperationException(WorkspaceResources.could_not_change_note, e);
+            }
+        } else if (property.qualifiedName().name().equals("dueOn")) {
+            try
+            {
+                model.changeCompany((String) property.get());
+            } catch (ResourceException e) {
+                throw new OperationException(WorkspaceResources.could_not_change_company, e);
+            }*/
         }
     }
 }

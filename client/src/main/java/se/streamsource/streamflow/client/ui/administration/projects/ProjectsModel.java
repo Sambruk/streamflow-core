@@ -28,7 +28,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.AbstractListModel;
 import java.util.List;
@@ -129,8 +129,8 @@ public class ProjectsModel
 
     public void describe(int selectedIndex, String newName) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(newName);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(newName);
 
         projects.project(list.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
         

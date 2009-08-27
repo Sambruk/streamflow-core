@@ -24,7 +24,7 @@ import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
@@ -63,9 +63,9 @@ public class TaskClientResource
         putCommand("drop");
     }
 
-    public void describe(DescriptionDTO descriptionValue) throws ResourceException
+    public void describe(StringDTO stringValue) throws ResourceException
     {
-        putCommand("describe", descriptionValue);
+        putCommand("describe", stringValue);
     }
 
     public void assignToMe() throws ResourceException

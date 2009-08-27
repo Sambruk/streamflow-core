@@ -25,7 +25,7 @@ import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
@@ -101,8 +101,8 @@ public class LabelsModel
 
     public void describe(int selectedIndex, String name) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(name);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(name);
 
         labels.label(list.items().get().get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
 

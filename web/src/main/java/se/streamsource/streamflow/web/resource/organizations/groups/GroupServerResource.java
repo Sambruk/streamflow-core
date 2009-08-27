@@ -23,7 +23,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
@@ -33,12 +33,12 @@ import se.streamsource.streamflow.domain.roles.Describable;
 public class GroupServerResource
         extends CommandQueryServerResource
 {
-    public void describe(DescriptionDTO descriptionValue)
+    public void describe(StringDTO stringValue)
     {
         String taskId = (String) getRequest().getAttributes().get("group");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
 
-        describable.describe(descriptionValue.description().get());
+        describable.describe(stringValue.string().get());
     }
 
     // TODO before deleting look through all projects and groups containing the group

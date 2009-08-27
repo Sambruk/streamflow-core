@@ -21,7 +21,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
@@ -32,14 +32,14 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class SearchTasksServerResource
     extends AbstractTaskListServerResource
 {
-    public SearchTaskListDTO search(DescriptionDTO query)
+    public SearchTaskListDTO search(StringDTO query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        if (query.description().get().length() > 0)
+        if (query.string().get().length() > 0)
         {
             QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-            String[] searches = query.description().get().split(" ");
+            String[] searches = query.string().get().split(" ");
             for (int i = 0; i < searches.length; i++)
             {
                 String search = searches[i];

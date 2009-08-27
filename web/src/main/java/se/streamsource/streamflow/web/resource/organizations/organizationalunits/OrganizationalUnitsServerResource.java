@@ -22,7 +22,7 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
@@ -46,11 +46,11 @@ public class OrganizationalUnitsServerResource
         return builder.newList();
     }
 
-    public void newOrganizationalUnit(DescriptionDTO value) throws ResourceException
+    public void newOrganizationalUnit(StringDTO value) throws ResourceException
     {
         String organization = getRequest().getAttributes().get("organizationa").toString();
         OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
-        ous.createOrganizationalUnit(value.description().get());
+        ous.createOrganizationalUnit(value.string().get());
     }
 
     public void removeOrganizationalUnit(EntityReferenceDTO entity) throws ResourceException

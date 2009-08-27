@@ -21,7 +21,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -33,12 +33,12 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class LabelServerResource
         extends CommandQueryServerResource
 {
-    public void describe(DescriptionDTO descriptionValue)
+    public void describe(StringDTO stringValue)
     {
         String taskId = (String) getRequest().getAttributes().get("label");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
 
-        describable.describe(descriptionValue.description().get());
+        describable.describe(stringValue.string().get());
     }
 
     @Override

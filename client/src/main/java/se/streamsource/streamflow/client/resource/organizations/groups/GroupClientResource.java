@@ -20,7 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantsClientResource;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -38,8 +38,8 @@ public class GroupClientResource
         return getSubResource("participants", ParticipantsClientResource.class);
     }
 
-    public void describe(DescriptionDTO descriptionDTO) throws ResourceException
+    public void describe(StringDTO stringDTO) throws ResourceException
     {
-        putCommand("describe", descriptionDTO);
+        putCommand("describe", stringDTO);
     }
 }

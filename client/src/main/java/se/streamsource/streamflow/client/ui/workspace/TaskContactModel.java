@@ -14,28 +14,38 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactClientResource;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskContactDTO;
-
-import java.util.Observable;
 
 /**
  * Model for a contact of a task
  */
 public class TaskContactModel
-    extends Observable
 {
+    @Uses
     private TaskContactDTO contact;
+
+    @Uses
+    TaskContactClientResource taskContactClientResource;
+
+    @Structure
+    ValueBuilderFactory vbf;
 
     public TaskContactDTO getContact()
     {
         return contact;
     }
 
-
-    public void setTaskContactDTO(TaskContactDTO contact)
+    public void changeName(String newName) throws ResourceException
     {
-        this.contact = contact;
-        setChanged();
-        notifyObservers(this);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(newName);
+        taskContactClientResource.changeName(builder.newInstance());
     }
 }

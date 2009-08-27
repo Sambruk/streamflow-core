@@ -24,7 +24,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
-import se.streamsource.streamflow.resource.roles.DescriptionDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import java.util.List;
@@ -51,8 +51,8 @@ public class SearchClientResource
 
     public void search(String search) throws ResourceException
     {
-        ValueBuilder<DescriptionDTO> builder = vbf.newValueBuilder(DescriptionDTO.class);
-        builder.prototype().description().set(search);
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(search);
         tasks = query("search", builder.newInstance(), SearchTaskListDTO.class).<SearchTaskListDTO>buildWith().prototype().tasks().get();
     }
 }
