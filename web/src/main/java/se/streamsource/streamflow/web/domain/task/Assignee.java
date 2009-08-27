@@ -14,13 +14,12 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.entity.Identity;
 import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * JAVADOC
  */
 public interface Assignee
-        extends Identity, Describable
+        extends Describable
 {
 }

@@ -14,9 +14,10 @@
 
 package se.streamsource.streamflow.web.domain.user;
 
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
@@ -33,7 +34,6 @@ public interface User
 
     void changePassword(String currentPassword, String newPassword) throws WrongPasswordException;
 
-    @Mixins(UserStateMixin.class)
     interface UserState
     {
         //        @Immutable
@@ -41,49 +41,42 @@ public interface User
 
         Property<String> hashedPassword();
 
-        void passwordChanged(String hashedPassword);
+        @Event
+        void passwordChanged(DomainEvent event, String hashedPassword);
 
         boolean isCorrectPassword(String password);
 
         String hashPassword(String password);
     }
 
-    class UserMixin
-            implements User
+    abstract class UserMixin
+            implements User, UserState
     {
-        @This
-        UserState state;
-
         public boolean verifyPassword(String password)
         {
-            return state.isCorrectPassword(password);
+            return isCorrectPassword(password);
         }
 
         public void changePassword(String currentPassword, String newPassword) throws WrongPasswordException
         {
             // Check if current password is correct
-            if (!state.isCorrectPassword(currentPassword))
+            if (!isCorrectPassword(currentPassword))
             {
                 throw new WrongPasswordException();
             }
 
-            state.passwordChanged(state.hashPassword(newPassword));
+
+            passwordChanged(DomainEvent.CREATE, hashPassword(newPassword));
         }
-    }
 
-    abstract class UserStateMixin
-        implements UserState
-    {
-        @This UserState state;
-
-        public void passwordChanged(String hashedPassword)
+        public void passwordChanged(DomainEvent event, String hashedPassword)
         {
-            state.hashedPassword().set(hashedPassword);
+            hashedPassword().set(hashedPassword);
         }
 
         public boolean isCorrectPassword(String password)
         {
-            return state.hashedPassword().get().equals(hashPassword(password));
+            return hashedPassword().get().equals(hashPassword(password));
         }
 
         public String hashPassword(String password)

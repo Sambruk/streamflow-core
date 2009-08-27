@@ -36,7 +36,7 @@ public interface Delegations
         public void accept(Task task, Assignee assignee)
         {
             task.assignTo(assignee);
-            task.ownedBy(owner);
+            task.changeOwner(owner);
         }
 
         public void reject(Task task)

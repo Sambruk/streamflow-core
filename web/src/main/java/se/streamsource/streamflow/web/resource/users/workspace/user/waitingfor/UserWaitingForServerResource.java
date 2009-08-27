@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor;
 
 import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.*;
@@ -30,7 +29,6 @@ import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.IsRead;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
@@ -54,12 +52,9 @@ public class UserWaitingForServerResource
         // Find all Active delegated tasks delegated by "me"
         // or Completed delegated tasks that are marked as unread
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy().get().identity();
         Association<Delegations> delegatedFrom = templateFor(Delegatable.DelegatableState.class).delegatedFrom();
-        Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         queryBuilder.where(and(
                                 eq(delegatedFrom, delegations),
-//                                isNotNull(delegatee),
                                 or(
                                     eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
                                     and(notEq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),

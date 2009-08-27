@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.projects.assignments;
 
+import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
@@ -47,11 +48,11 @@ public class WorkspaceProjectAssignmentsServerResource
 
         // Find all Active tasks owned by "project" and assigned to "user"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> assignedToidProp = templateFor(Assignable.AssignableState.class).assignedTo().get().identity();
+        Association<Assignee> assignedTo = templateFor(Assignable.AssignableState.class).assignedTo();
         Property<String> ownerIdProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
         queryBuilder.where(and(
                 eq(ownerIdProp, projectId),
-                eq(assignedToidProp, userId),
+                eq(assignedTo, uow.get(Assignee.class, userId)),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
         Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);

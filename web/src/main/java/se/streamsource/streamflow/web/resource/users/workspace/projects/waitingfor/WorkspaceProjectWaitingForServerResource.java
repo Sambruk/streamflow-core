@@ -31,10 +31,11 @@ import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Delegator;
 import se.streamsource.streamflow.web.domain.task.IsRead;
+import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
-import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -53,12 +54,12 @@ public class WorkspaceProjectWaitingForServerResource
         // Find all Active delegated tasks owned by "project" and delegated by "user"
         // or Completed delegated tasks that are marked as unread
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy().get().identity();
+        Association<Delegator> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy();
         Property<String> ownedBy = templateFor(Ownable.OwnableState.class).owner().get().identity();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         queryBuilder.where(and(
                 eq(ownedBy, projectId),
-                eq(delegatedBy, userId),
+                eq(delegatedBy, uow.get(Delegator.class, userId)),
                 isNotNull(delegatee),
                 or(
                         eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),

@@ -39,11 +39,6 @@ public class GroupModel
 
     @Uses private GroupClientResource group;
 
-    public void setGroup(GroupClientResource resource)
-    {
-        this.group = resource;
-    }
-
     public int getSize()
     {
         return list == null ? 0 : list.items().get().size();

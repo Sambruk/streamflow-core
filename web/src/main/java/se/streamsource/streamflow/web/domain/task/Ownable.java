@@ -18,6 +18,8 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
  * JAVADOC
@@ -25,23 +27,31 @@ import org.qi4j.api.mixin.Mixins;
 @Mixins(Ownable.OwnableMixin.class)
 public interface Ownable
 {
-    void ownedBy(Owner owner);
+    void changeOwner(Owner owner);
 
     interface OwnableState
     {
         @Optional
         Association<Owner> owner();
+
+        @Event
+        void ownerChanged(DomainEvent event, Owner newOwner);
     }
 
-    class OwnableMixin
-            implements Ownable
+    abstract class OwnableMixin
+            implements Ownable, OwnableState
     {
         @This
         OwnableState state;
 
-        public void ownedBy(Owner owner)
+        public void changeOwner(Owner owner)
         {
-            state.owner().set(owner);
+            ownerChanged(DomainEvent.CREATE, owner);
+        }
+
+        public void ownerChanged(DomainEvent event, Owner newOwner)
+        {
+            state.owner().set(newOwner);
         }
     }
 }

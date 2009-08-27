@@ -57,7 +57,7 @@ public interface Inbox
         public Task createTask()
         {
             TaskEntity taskEntity = uowf.currentUnitOfWork().newEntity(TaskEntity.class);
-            taskEntity.ownedBy(owner);
+            taskEntity.changeOwner(owner);
             taskEntity.markAsRead();
 
             return taskEntity;
@@ -66,7 +66,7 @@ public interface Inbox
         public void receiveTask(Task task)
         {
             task.unassign();
-            task.ownedBy(owner);
+            task.changeOwner(owner);
             task.markAsUnread();
         }
 

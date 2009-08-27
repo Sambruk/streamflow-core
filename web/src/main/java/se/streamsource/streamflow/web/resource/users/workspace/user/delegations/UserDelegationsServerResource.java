@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.resource.users.workspace.user.delegations;
 
 import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.*;
@@ -31,6 +30,7 @@ import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
@@ -47,15 +47,15 @@ public class UserDelegationsServerResource
     public DelegationsTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String user = (String) getRequest().getAttributes().get("user");
-        Delegations delegations = uow.get(Delegations.class, user);
+        String userId = (String) getRequest().getAttributes().get("user");
+        Delegations delegations = uow.get(Delegations.class, userId);
 
         // Find all Active tasks delegated to "me"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
+        Association<Delegatee> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
         queryBuilder.where(and(
-                eq(delegatedTo, user),
+                eq(delegatedTo, uow.get(Delegatee.class, userId)),
                 isNull(assignee),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 

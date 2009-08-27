@@ -35,7 +35,7 @@ public interface WaitingFor
 
         public void completeWaitingForTask(Task task, Assignee assignee)
         {
-            task.ownedBy(owner);
+            task.changeOwner(owner);
             task.complete(assignee);
         }
 

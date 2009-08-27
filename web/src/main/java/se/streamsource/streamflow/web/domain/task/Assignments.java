@@ -54,7 +54,7 @@ public interface Assignments
         public Task createAssignedTask(Assignee assignee)
         {
             Task task = uowf.currentUnitOfWork().newEntity(TaskEntity.class);
-            task.ownedBy(owner);
+            task.changeOwner(owner);
             task.assignTo(assignee);
             return task;
         }

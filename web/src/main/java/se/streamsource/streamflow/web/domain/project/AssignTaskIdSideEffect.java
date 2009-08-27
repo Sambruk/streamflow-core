@@ -30,9 +30,9 @@ public class AssignTaskIdSideEffect
     @This
     TaskId id;
 
-    public void ownedBy(Owner owner)
+    public void changeOwner(Owner owner)
     {
-        result.ownedBy(owner);
+        result.changeOwner(owner);
 
         if (owner instanceof IdGenerator)
         {

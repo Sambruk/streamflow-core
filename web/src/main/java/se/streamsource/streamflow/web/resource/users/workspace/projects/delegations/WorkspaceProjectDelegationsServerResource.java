@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.resource.users.workspace.projects.delegations;
 
 import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.*;
@@ -31,6 +30,7 @@ import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatable;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
@@ -50,10 +50,10 @@ public class WorkspaceProjectDelegationsServerResource
 
         // Find all Active tasks delegated to "project" that have not yet been assigned
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo().get().identity();
+        Association<Delegatee> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         Association<Assignee> assigneeAssociation = templateFor(Assignable.AssignableState.class).assignedTo();
         queryBuilder.where(and(
-                eq(delegatedTo, id),
+                eq(delegatedTo, uow.get(Delegatee.class, id)),
                 isNull(assigneeAssociation),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
