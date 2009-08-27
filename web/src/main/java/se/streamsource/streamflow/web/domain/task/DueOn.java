@@ -15,10 +15,11 @@
 package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.domain.Future;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 
 import java.util.Date;
 
@@ -34,17 +35,22 @@ public interface DueOn
     {
         @Optional
         Property<Date> dueOn();
+
+        @Event
+        void dueOnChanged(DomainEvent event, Date dueDate);
     }
 
-    class DueOnMixin
-            implements DueOn
+    abstract class DueOnMixin
+            implements DueOn, DueOnState
     {
-        @This
-        DueOnState state;
-
         public void dueOn(Date dueDate)
         {
-            state.dueOn().set(dueDate);
+            dueOnChanged(DomainEvent.CREATE, dueDate);
+        }
+
+        public void dueOnChanged(DomainEvent event, Date dueDate)
+        {
+            dueOn().set(dueDate);
         }
     }
 }
