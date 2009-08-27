@@ -26,12 +26,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.resource.task.TaskContactDTO;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
-import java.awt.*;
 
 /**
  * JAVADOC
@@ -44,7 +44,7 @@ public class TaskContactView
 
     TaskContactModel model;
 
-    public ValueBuilder<TaskContactDTO> valueBuilder;
+    public ValueBuilder<ContactValue> valueBuilder;
     private CardLayout layout = new CardLayout();
 
     public TaskContactView(@Service ApplicationContext appContext)
@@ -64,7 +64,7 @@ public class TaskContactView
 
         contactBinder = new StateBinder();
         contactBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        TaskContactDTO template = contactBinder.bindingTemplate(TaskContactDTO.class);
+        ContactValue template = contactBinder.bindingTemplate(ContactValue.class);
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, contactBinder);
         bb

@@ -23,7 +23,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnable
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
-import se.streamsource.streamflow.resource.task.TaskContactDTO;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,7 +60,7 @@ public class TaskContactsView
             @Override
             public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)
             {
-                TaskContactDTO contact = (TaskContactDTO) o;
+                ContactValue contact = (ContactValue) o;
                 if ("".equals(contact.name().get()))
                 {
                     Component cell = super.getListCellRendererComponent(jList, i18n.text(WorkspaceResources.name_label), i, b, b1);

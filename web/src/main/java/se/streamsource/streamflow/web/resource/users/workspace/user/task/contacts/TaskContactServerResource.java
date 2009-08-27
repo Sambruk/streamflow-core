@@ -28,7 +28,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.task.TaskContactDTO;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
 
@@ -80,7 +79,7 @@ public class TaskContactServerResource
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Update task contacts"));
         try
         {
-            TaskContactDTO contact = vbf.newValueFromJSON(TaskContactDTO.class, representation.getText());
+            ContactValue contact = vbf.newValueFromJSON(ContactValue.class, representation.getText());
 
             TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
             String taskContactIndex = getRequest().getAttributes().get("index").toString();

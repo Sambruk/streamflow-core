@@ -17,8 +17,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.resource.task.TaskContactDTO;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -55,7 +55,7 @@ public class TaskContactsAdminView
                     int idx = list.getSelectedIndex();
                     if (idx != -1)
                     {
-                        TaskContactDTO contactValue = (TaskContactDTO) list.getModel().getElementAt(idx);
+                        ContactValue contactValue = (ContactValue) list.getModel().getElementAt(idx);
                         TaskContactsClientResource taskContactsClientResource = taskContactsView.getTaskContactsResource();
                         TaskContactModel taskContactModel = obf.newObjectBuilder(TaskContactModel.class).use(contactValue, taskContactsClientResource.taskContact(idx)).newInstance();
                         taskContactsView.getContactView().setModel(taskContactModel);

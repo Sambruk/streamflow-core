@@ -21,8 +21,8 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.task.TaskContactDTO;
 
 
 /**
@@ -36,7 +36,7 @@ public class TaskContactClientResource
         super(context, reference);
     }
 
-    public void update(TaskContactDTO contact) throws ResourceException
+    public void update(ContactValue contact) throws ResourceException
     {
         put(new StringRepresentation(contact.toJSON()));
     }

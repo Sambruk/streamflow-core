@@ -20,7 +20,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
-import se.streamsource.streamflow.resource.task.TaskContactDTO;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 
 import javax.swing.*;
@@ -42,7 +42,7 @@ public class TaskContactsModel
     @Uses
     private TaskContactsClientResource contactsClientResource;
 
-    List<TaskContactDTO> contacts = Collections.emptyList();
+    List<ContactValue> contacts = Collections.emptyList();
 
     public void refresh() throws IOException, ResourceException
     {
@@ -51,7 +51,7 @@ public class TaskContactsModel
         fireContentsChanged(this, 0, getSize());
     }
 
-    public List<TaskContactDTO> getContacts()
+    public List<ContactValue> getContacts()
     {
         return contacts;
     }

@@ -20,8 +20,8 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactClientResource;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.task.TaskContactDTO;
 
 /**
  * Model for a contact of a task
@@ -29,7 +29,7 @@ import se.streamsource.streamflow.resource.task.TaskContactDTO;
 public class TaskContactModel
 {
     @Uses
-    private TaskContactDTO contact;
+    private ContactValue contact;
 
     @Uses
     TaskContactClientResource taskContactClientResource;
@@ -37,7 +37,7 @@ public class TaskContactModel
     @Structure
     ValueBuilderFactory vbf;
 
-    public TaskContactDTO getContact()
+    public ContactValue getContact()
     {
         return contact;
     }

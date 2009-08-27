@@ -26,7 +26,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.task.TaskContactDTO;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -56,8 +55,8 @@ public class TaskContactsServerResource
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Get task contacts"));
 
         ValueBuilder<TaskContactsDTO> builder = vbf.newValueBuilder(TaskContactsDTO.class);
-        ValueBuilder<TaskContactDTO> contactBuilder = vbf.newValueBuilder(TaskContactDTO.class);
-        List<TaskContactDTO> list = builder.prototype().contacts().get();
+        ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
+        List<ContactValue> list = builder.prototype().contacts().get();
 
         TaskEntity task = uow.get(TaskEntity.class, getRequestAttributes().get("task").toString());
 

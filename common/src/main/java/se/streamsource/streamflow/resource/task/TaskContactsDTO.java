@@ -17,6 +17,7 @@ package se.streamsource.streamflow.resource.task;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import java.util.List;
 
@@ -27,5 +28,5 @@ public interface TaskContactsDTO
         extends ValueComposite
 {
     @UseDefaults
-    Property<List<TaskContactDTO>> contacts();
+    Property<List<ContactValue>> contacts();
 }
