@@ -243,6 +243,16 @@
                     <downloadSources>true</downloadSources>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<configuration>
+					<container>
+						<containerId>tomcat6x</containerId>
+						<type>remote</type>
+					</container>
+				</configuration>
+			</plugin>
         </plugins>
         <resources>
             <resource>
