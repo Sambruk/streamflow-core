@@ -26,7 +26,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,6 +44,9 @@ public class TaskContactView
     implements Observer
 {
     private StateBinder contactBinder;
+    private StateBinder phoneNumberBinder;
+    private StateBinder emailBinder;
+    private StateBinder addressBinder;
 
     TaskContactModel model;
 
@@ -66,13 +72,32 @@ public class TaskContactView
         contactBinder.setResourceMap(appContext.getResourceMap(getClass()));
         ContactValue template = contactBinder.bindingTemplate(ContactValue.class);
 
+        phoneNumberBinder = new StateBinder();
+        phoneNumberBinder.setResourceMap(appContext.getResourceMap(getClass()));
+        ContactPhoneValue phoneTemplate =  phoneNumberBinder.bindingTemplate(ContactPhoneValue.class);
+
+        addressBinder = new StateBinder();
+        addressBinder.setResourceMap(appContext.getResourceMap(getClass()));
+        ContactAddressValue addressTemplate = addressBinder.bindingTemplate(ContactAddressValue.class);
+
+        emailBinder = new StateBinder();
+        emailBinder.setResourceMap(appContext.getResourceMap(getClass()));
+        ContactEmailValue emailTemplate = emailBinder.bindingTemplate(ContactEmailValue.class);
+
         BindingFormBuilder bb = new BindingFormBuilder(builder, contactBinder);
         bb
         .appendLine(WorkspaceResources.name_label, TEXTFIELD, template.name())
+        .appendLine(WorkspaceResources.phone_label, BindingFormBuilder.Fields.FORMATTEDTEXTFIELD, phoneTemplate.phoneNumber(), phoneNumberBinder)
+        .appendLine(WorkspaceResources.address_label, TEXTFIELD, addressTemplate.address(), addressBinder)
+        .appendLine(WorkspaceResources.email_label, TEXTFIELD, emailTemplate.emailAddress(), emailBinder)
         .appendLine(WorkspaceResources.company_label, TEXTFIELD, template.company())
         .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note());
 
+
         contactBinder.addObserver(this);
+        phoneNumberBinder.addObserver(this);
+        addressBinder.addObserver(this);
+        emailBinder.addObserver(this);
 
         add(new JPanel(), "EMPTY");
         add(scrollPane, "CONTACT");
@@ -85,6 +110,10 @@ public class TaskContactView
         if (model != null)
         {
             contactBinder.updateWith(model.getContact());
+            phoneNumberBinder.updateWith(model.getPhoneNumber());
+            addressBinder.updateWith(model.getAddress());
+            emailBinder.updateWith(model.getEmailAddress());
+
             layout.show(this, "CONTACT");
         } else
         {
@@ -116,12 +145,41 @@ public class TaskContactView
             {
                 throw new OperationException(WorkspaceResources.could_not_change_note, e);
             }
-        } else if (property.qualifiedName().name().equals("company")) {
+        } else if (property.qualifiedName().name().equals("company"))
+        {
             try
             {
                 model.changeCompany((String) property.get());
-            } catch (ResourceException e) {
+            } catch (ResourceException e)
+            {
                 throw new OperationException(WorkspaceResources.could_not_change_company, e);
+            }
+        } else if (property.qualifiedName().name().equals("phoneNumber"))
+        {
+            try
+            {
+                model.changePhoneNumber((String) property.get());   
+            } catch (ResourceException e)
+            {
+               throw new OperationException(WorkspaceResources.could_not_change_phone_number, e);
+            }
+        } else if (property.qualifiedName().name().equals("address"))
+        {
+            try
+            {
+                model.changeAddress((String) property.get());
+            } catch (ResourceException e)
+            {
+               throw new OperationException(WorkspaceResources.could_not_change_address, e);
+            }
+        } else if (property.qualifiedName().name().equals("emailAddress"))
+        {
+            try
+            {
+                model.changeEmailAddress((String) property.get());
+            } catch (ResourceException e)
+            {
+               throw new OperationException(WorkspaceResources.could_not_change_email_address, e);
             }
         }
     }

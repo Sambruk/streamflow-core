@@ -27,7 +27,10 @@ import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -155,6 +158,79 @@ public class TaskContactServerResource
 
         task.updateContact(idx, builder.newInstance());
     }
+
+    public void changePhoneNumber(ContactPhoneValue phoneValue)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+
+        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+
+        int idx = Integer.parseInt(taskContactIndex);
+        ContactValue contact = task.contacts().get().get(idx).<ContactValue>buildWith().prototype();
+
+        // Create an empty phone value if it doesnt exist already
+        if(contact.phoneNumbers().get().isEmpty())
+        {
+            ContactPhoneValue phone = vbf.newValue(ContactPhoneValue.class).<ContactPhoneValue>buildWith().prototype();
+            phone.phoneNumber().set(phoneValue.phoneNumber().get());
+            contact.phoneNumbers().get().add(phone);
+        } else
+        {
+            contact.phoneNumbers().get().get(0).phoneNumber().set(phoneValue.phoneNumber().get());
+        }
+
+        task.updateContact(idx, contact.<ContactValue>buildWith().newInstance());
+    }
+
+    public void changeAddress(ContactAddressValue addressValue)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+
+        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+
+        int idx = Integer.parseInt(taskContactIndex);
+        ContactValue contact = task.contacts().get().get(idx).<ContactValue>buildWith().prototype();
+
+        // Create an empty phone value if it doesnt exist already
+        if(contact.addresses().get().isEmpty())
+        {
+            ContactAddressValue address =  vbf.newValue(ContactAddressValue.class).<ContactAddressValue>buildWith().prototype();
+            address.address().set(addressValue.address().get());
+            contact.addresses().get().add(address);
+        } else
+        {
+            contact.addresses().get().get(0).address().set(addressValue.address().get());
+        }
+
+        task.updateContact(idx, contact.<ContactValue>buildWith().newInstance());
+    }
+
+    public void changeEmailAddress(ContactEmailValue emailValue)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+
+        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+
+        int idx = Integer.parseInt(taskContactIndex);
+        ContactValue contact = task.contacts().get().get(idx).<ContactValue>buildWith().prototype();
+
+        // Create an empty phone value if it doesnt exist already
+        if(contact.emailAddresses().get().isEmpty())
+        {
+            ContactEmailValue email =  vbf.newValue(ContactEmailValue.class).<ContactEmailValue>buildWith().prototype();
+            email.emailAddress().set(emailValue.emailAddress().get());
+            contact.emailAddresses().get().add(email);
+        } else
+        {
+            contact.emailAddresses().get().get(0).emailAddress().set(emailValue.emailAddress().get());
+        }
+
+        task.updateContact(idx, contact.<ContactValue>buildWith().newInstance());
+    }
+
 
 
     @Override

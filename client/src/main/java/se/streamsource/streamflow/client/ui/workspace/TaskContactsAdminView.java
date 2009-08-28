@@ -17,8 +17,12 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
+import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -34,6 +38,9 @@ public class TaskContactsAdminView
 {
     @Structure
     ObjectBuilderFactory obf;
+
+    @Structure
+    ValueBuilderFactory vbf;
 
     private TaskContactsView taskContactsView;
 
@@ -56,9 +63,32 @@ public class TaskContactsAdminView
                     if (idx != -1)
                     {
                         ContactValue contactValue = (ContactValue) list.getModel().getElementAt(idx);
+                        // Set empty initial values for phoneNumber, email and address.
+                        if(contactValue.phoneNumbers().get().isEmpty())
+                        {
+                            ContactPhoneValue phone = vbf.newValue(ContactPhoneValue.class).<ContactPhoneValue>buildWith().prototype();
+                            contactValue.phoneNumbers().get().add(phone);
+
+                        }
+
+                        if (contactValue.addresses().get().isEmpty())
+                        {
+                            ContactAddressValue address = vbf.newValue(ContactAddressValue.class).<ContactAddressValue>buildWith().prototype();
+                            contactValue.addresses().get().add(address);
+
+                        }
+
+                        if (contactValue.emailAddresses().get().isEmpty())
+                        {
+                            ContactEmailValue email = vbf.newValue(ContactEmailValue.class).<ContactEmailValue>buildWith().prototype();
+                            contactValue.emailAddresses().get().add(email);
+
+                        }
+                        
                         TaskContactsClientResource taskContactsClientResource = taskContactsView.getTaskContactsResource();
                         TaskContactModel taskContactModel = obf.newObjectBuilder(TaskContactModel.class).use(contactValue, taskContactsClientResource.taskContact(idx)).newInstance();
                         taskContactsView.getContactView().setModel(taskContactModel);
+
                     } else
                     {
                         taskContactsView.getContactView().setModel(null);

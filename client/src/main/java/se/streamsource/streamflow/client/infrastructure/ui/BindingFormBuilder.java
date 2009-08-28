@@ -14,30 +14,18 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import java.awt.Component;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.property.Property;
-
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+import javax.swing.*;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -117,16 +105,26 @@ public class BindingFormBuilder
 
     public BindingFormBuilder appendLine(Enum resourceKey, Fields fieldType, Property property, Object... args)
     {
-        return appendLine(resourceKey, fieldType.newField(), property, args);
+        return appendLine(resourceKey, fieldType.newField(), property, stateBinder, args);
     }
 
     public BindingFormBuilder appendLine(Enum resourceKey, Component component, Property property, Object... args)
+    {
+        return appendLine(resourceKey, component, property, stateBinder, args);
+    }
+
+    public BindingFormBuilder appendLine(Enum resourceKey, Fields fieldType, Property property, StateBinder stateBinderIn, Object... args)
+    {
+        return appendLine(resourceKey, fieldType.newField(), property, stateBinderIn, args);
+    }
+
+    public BindingFormBuilder appendLine(Enum resourceKey, Component component, Property property, StateBinder stateBinderIn, Object... args)
     {
         String resource = getResource(resourceKey, args);
 
         JLabel label = formBuilder.append(resource);
         formBuilder.nextLine();
-        stateBinder.bind(component, property);
+        stateBinderIn.bind(component, property);
         formBuilder.append(component);
         label.setLabelFor(component);
         formBuilder.nextLine();

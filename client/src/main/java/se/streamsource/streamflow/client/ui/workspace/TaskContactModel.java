@@ -20,7 +20,10 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactClientResource;
+import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
@@ -37,9 +40,26 @@ public class TaskContactModel
     @Structure
     ValueBuilderFactory vbf;
 
+    
+
     public ContactValue getContact()
     {
         return contact;
+    }
+
+    public ContactPhoneValue getPhoneNumber()
+    {
+        return contact.phoneNumbers().get().get(0);
+    }
+
+    public ContactAddressValue getAddress()
+    {
+        return contact.addresses().get().get(0);
+    }
+
+    public ContactEmailValue getEmailAddress()
+    {
+        return contact.emailAddresses().get().get(0);
     }
 
     public void changeName(String newName) throws ResourceException
@@ -62,4 +82,26 @@ public class TaskContactModel
         builder.prototype().string().set(newCompany);
         taskContactClientResource.changeCompany(builder.newInstance());
     }
+
+    public void changePhoneNumber(String newPhoneNumber) throws ResourceException
+    {
+        ValueBuilder<ContactPhoneValue> builder = vbf.newValueBuilder(ContactPhoneValue.class);
+        builder.prototype().phoneNumber().set(newPhoneNumber);
+        taskContactClientResource.changePhoneNumber(builder.newInstance());
+    }
+
+    public void changeAddress(String newAddress) throws ResourceException
+    {
+        ValueBuilder<ContactAddressValue> builder = vbf.newValueBuilder(ContactAddressValue.class);
+        builder.prototype().address().set(newAddress);
+        taskContactClientResource.changeAddress(builder.newInstance());
+    }
+
+    public void changeEmailAddress(String newEmailAddress) throws ResourceException
+    {
+        ValueBuilder<ContactEmailValue> builder = vbf.newValueBuilder(ContactEmailValue.class);
+        builder.prototype().emailAddress().set(newEmailAddress);
+        taskContactClientResource.changeEmailAddress(builder.newInstance());
+    }
+
 }

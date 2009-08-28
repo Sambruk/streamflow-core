@@ -37,6 +37,7 @@ public enum WorkspaceResources
     due_on_label,
     phone_label,
     email_label,
+    address_label,
 
     assignments_tab,
 
@@ -78,6 +79,9 @@ public enum WorkspaceResources
     is_completed,
 
     could_not_change_name,
-    could_not_change_company, 
+    could_not_change_company,
+    could_not_change_phone_number,
+    could_not_change_address,
+    could_not_change_email_address,
     date_format
 }

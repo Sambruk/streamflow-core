@@ -20,6 +20,9 @@ import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
+import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 
@@ -54,4 +57,20 @@ public class TaskContactClientResource
     {
         putCommand("changeCompany", company);
     }
+
+    public void changePhoneNumber(ContactPhoneValue phoneNumber) throws ResourceException
+    {
+        putCommand("changePhoneNumber", phoneNumber);
+    }
+
+    public void changeAddress(ContactAddressValue address) throws ResourceException
+    {
+        putCommand("changeAddress", address);
+    }
+
+    public void changeEmailAddress(ContactEmailValue emailAddress) throws ResourceException 
+    {
+        putCommand("changeEmailAddress", emailAddress);
+    }
+
 }
