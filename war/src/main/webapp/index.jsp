@@ -1,7 +1,7 @@
 <%@page import="java.io.InputStream,java.util.Properties,info.aduna.io.IOUtil" %>
 
 <%
-InputStream is = getClass().getClassLoader().getResourceAsStream("/version.properties");
+InputStream is = getClass().getResourceAsStream("/version.properties");
 Properties p = IOUtil.readProperties(is);
 pageContext.setAttribute("application_version", p.getProperty("application.version"));
 pageContext.setAttribute("application_buildKey", p.getProperty("application.buildKey"));
