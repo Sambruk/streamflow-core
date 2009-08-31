@@ -89,6 +89,8 @@ public class TaskContactsAdminView
                         TaskContactModel taskContactModel = obf.newObjectBuilder(TaskContactModel.class).use(contactValue, taskContactsClientResource.taskContact(idx)).newInstance();
                         taskContactsView.getContactView().setModel(taskContactModel);
 
+                        taskContactsView.getContactView().requestFocus();
+
                     } else
                     {
                         taskContactsView.getContactView().setModel(null);

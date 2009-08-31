@@ -172,6 +172,22 @@ public class BindingFormBuilder
         return this;
     }
 
+    public BindingFormBuilder appendFormattedTextField(Enum resourceKey, Enum resourceKeyPattern, Property property, StateBinder stateBinderIn, Object... args)
+    {
+        String resource = getResource(resourceKey, args);
+        String pattern = getResource(resourceKeyPattern, args);
+
+        JLabel label = formBuilder.append(resource);
+        formBuilder.nextLine();
+        JFormattedTextField component = new JFormattedTextField(new RegexPatternFormatter(pattern));
+        stateBinderIn.bind(component, property);
+        formBuilder.append(component);
+        label.setLabelFor(component);
+        formBuilder.nextLine();
+
+        return this;
+
+    }
 
     private String getResource(Enum resourceKey, Object... args)
     {

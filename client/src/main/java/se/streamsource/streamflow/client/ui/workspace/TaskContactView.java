@@ -27,9 +27,9 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,6 +52,7 @@ public class TaskContactView
 
     public ValueBuilder<ContactValue> valueBuilder;
     private CardLayout layout = new CardLayout();
+    JTextField defaultFocusField;
 
     public TaskContactView(@Service ApplicationContext appContext)
     {
@@ -65,8 +66,6 @@ public class TaskContactView
         JScrollPane scrollPane = new JScrollPane(form);
         DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
         builder.setDefaultDialogBorder();
-
-        
 
         contactBinder = new StateBinder();
         contactBinder.setResourceMap(appContext.getResourceMap(getClass()));
@@ -86,8 +85,8 @@ public class TaskContactView
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, contactBinder);
         bb
-        .appendLine(WorkspaceResources.name_label, TEXTFIELD, template.name())
-        .appendLine(WorkspaceResources.phone_label, BindingFormBuilder.Fields.FORMATTEDTEXTFIELD, phoneTemplate.phoneNumber(), phoneNumberBinder)
+        .appendLine(WorkspaceResources.name_label, defaultFocusField = (JTextField)TEXTFIELD.newField(), template.name())
+        .appendFormattedTextField(WorkspaceResources.phone_label, WorkspaceResources.phone_regexp, phoneTemplate.phoneNumber(), phoneNumberBinder)
         .appendLine(WorkspaceResources.address_label, TEXTFIELD, addressTemplate.address(), addressBinder)
         .appendLine(WorkspaceResources.email_label, TEXTFIELD, emailTemplate.emailAddress(), emailBinder)
         .appendLine(WorkspaceResources.company_label, TEXTFIELD, template.company())
@@ -115,6 +114,7 @@ public class TaskContactView
             emailBinder.updateWith(model.getEmailAddress());
 
             layout.show(this, "CONTACT");
+
         } else
         {
             layout.show(this, "EMPTY");
@@ -182,5 +182,11 @@ public class TaskContactView
                throw new OperationException(WorkspaceResources.could_not_change_email_address, e);
             }
         }
+    }
+
+    @Override
+    public void requestFocus() {
+        super.requestFocus();
+        defaultFocusField.requestFocus();
     }
 }

@@ -19,5 +19,6 @@ package se.streamsource.streamflow.client;
  */
 public enum StreamFlowResources
 {
-    startup_error
+    startup_error,
+
 }

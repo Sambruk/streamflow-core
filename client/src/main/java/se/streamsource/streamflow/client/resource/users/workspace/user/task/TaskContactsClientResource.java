@@ -48,8 +48,9 @@ public class TaskContactsClientResource
 
     public TaskContactClientResource taskContact(int index)
     {
-        return getSubResource(""+index, TaskContactClientResource.class);
+        TaskContactClientResource contact = getSubResource(""+index, TaskContactClientResource.class);
+        contact.setParent(this);
+        return contact;
     }
 
-    
 }

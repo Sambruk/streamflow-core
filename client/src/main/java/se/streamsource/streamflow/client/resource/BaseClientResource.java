@@ -108,6 +108,11 @@ public class BaseClientResource
         return vbf.newValueFromJSON(resultValue, result.getText());
     }
 
+    public void clearTag()
+    {
+        tag = null;
+    }
+
     protected void clearConditions()
     {
         Conditions conditions = getConditions();

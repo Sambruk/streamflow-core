@@ -120,6 +120,9 @@ public class TaskContactsView
     {
         this.model = model;
         contacts.setModel(model);
+        if (model.getSize()>0) {
+            contacts.setSelectedIndex(0);
+        }
     }
 
     public TaskContactView getContactView()
