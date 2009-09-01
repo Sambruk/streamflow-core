@@ -25,6 +25,7 @@ import se.streamsource.streamflow.client.resource.users.overview.OverviewClientR
 import se.streamsource.streamflow.client.resource.users.workspace.WorkspaceClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
 /**
  * JAVADOC
@@ -71,5 +72,10 @@ public class UserClientResource
         ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
         builder.prototype().string().set(projectName);
         return query("findProjects", builder.newInstance(), ListValue.class);
+    }
+
+    public void changePassword(ChangePasswordCommand changePasswordCommand) throws ResourceException
+    {
+        postCommand("changePassword", changePasswordCommand);
     }
 }

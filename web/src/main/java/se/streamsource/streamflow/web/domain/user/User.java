@@ -65,7 +65,6 @@ public interface User
                 throw new WrongPasswordException();
             }
 
-
             passwordChanged(DomainEvent.CREATE, hashPassword(newPassword));
         }
 

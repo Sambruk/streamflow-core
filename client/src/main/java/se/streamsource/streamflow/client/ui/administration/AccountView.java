@@ -40,6 +40,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import static se.streamsource.streamflow.client.ui.administration.AccountResources.*;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
+import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -67,6 +68,9 @@ public class AccountView
 
     @Service
     private DialogService dialogs;
+
+    @Uses
+    Iterable<ChangePasswordDialog> changePasswords;
 
     private ValueBuilder<AccountSettingsValue> builder;
     private StateBinder settingsBinder;
@@ -120,7 +124,8 @@ public class AccountView
                 .appendSeparator(account_separator)
                 .appendButtonLine(am.get("test"))
 
-                .appendButtonLine(am.get("register"));
+                .appendButtonLine(am.get("register"))
+                .appendButtonLine(am.get("changePassword"));
 
 /*
         bb = new BindingFormBuilder(builder, connectedBinder);
@@ -202,6 +207,25 @@ public class AccountView
     {
         model.register();
         getActionMap().get("register").setEnabled(false);
+    }
+
+    @Action
+    public void changePassword() throws Exception
+    {
+        ChangePasswordDialog changePasswordDialog = changePasswords.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, changePasswordDialog);
+
+        ChangePasswordCommand command = changePasswordDialog.command();
+        if (command != null)
+        {
+            if (!command.oldPassword().get().equals(model.settings().password().get()))
+            {
+                dialogs.showOkDialog(this, new JLabel(i18n.text(AdministrationResources.old_password_incorrect)));
+            } else
+            {
+                model.changePassword(command);
+            }
+        }
     }
 
     @Override

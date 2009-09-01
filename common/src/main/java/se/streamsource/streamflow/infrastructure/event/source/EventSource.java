@@ -12,13 +12,19 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.infrastructure.event.source;
+
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import java.util.Date;
 
 /**
- * JAVADOC
+ * Source of events
  */
-public interface EventPublisher
+public interface EventSource
 {
-    void subscribe(EventSubscriber subscriber);
-    void unsubscribe(EventSubscriber subscriber);
+    Iterable<DomainEvent> events(EventSpecification specification, Date startDate, int maxEvents);
+
+    void registerListener(EventSourceListener subscriber, EventSpecification specification);
+    void unregisterListener(EventSourceListener subscriber);
 }

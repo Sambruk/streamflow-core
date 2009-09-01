@@ -12,20 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.individual;
-
-import org.restlet.Restlet;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+package se.streamsource.streamflow.infrastructure.event.source;
 
 /**
- * JAVADOC
+ * Event handlers are recomended to implement this interface.
+ * It will be called after a UoW has been completed successfully
+ * to inform about all events created during that UoW. Discarded
+ * or failed UoW's will not cause this method to be called.
  */
-public interface AccountSettings
+public interface EventSourceListener
 {
-    AccountSettingsValue accountSettings();
-
-    void updateSettings(AccountSettingsValue newAccountSettings);
-
-    void changePassword(Restlet client, ChangePasswordCommand changePassword) throws ResourceException;
+    void eventsAvailable(EventSource source, EventSpecification specification);
 }

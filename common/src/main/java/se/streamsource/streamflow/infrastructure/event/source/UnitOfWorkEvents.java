@@ -12,20 +12,16 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.individual;
+package se.streamsource.streamflow.infrastructure.event.source;
 
-import org.restlet.Restlet;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
  */
-public interface AccountSettings
+public class UnitOfWorkEvents
 {
-    AccountSettingsValue accountSettings();
-
-    void updateSettings(AccountSettingsValue newAccountSettings);
-
-    void changePassword(Restlet client, ChangePasswordCommand changePassword) throws ResourceException;
+    private String id; // UnitOfWork id
+    private String previous; // Previous UnitOfWork id
+    private Iterable<DomainEvent> events;
 }

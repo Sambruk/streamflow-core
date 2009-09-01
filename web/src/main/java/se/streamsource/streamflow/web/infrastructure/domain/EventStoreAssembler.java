@@ -18,7 +18,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.web.infrastructure.event.EventPublisherService;
+import se.streamsource.streamflow.web.infrastructure.event.EventSourceService;
 import se.streamsource.streamflow.web.infrastructure.event.EventRecorderService;
 
 /**
@@ -29,6 +29,6 @@ public class EventStoreAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addServices(EventPublisherService.class, EventRecorderService.class).visibleIn(Visibility.application);
+        module.addServices(EventSourceService.class, EventRecorderService.class).visibleIn(Visibility.application);
     }
 }

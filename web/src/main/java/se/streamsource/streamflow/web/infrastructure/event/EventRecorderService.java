@@ -24,8 +24,9 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventPublisher;
-import se.streamsource.streamflow.infrastructure.event.EventSubscriber;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -42,10 +43,10 @@ import java.util.logging.Logger;
  */
 @Mixins({EventRecorderService.EventRecorderMixin.class, EventRecorderService.EventReplayMixin.class})
 public interface EventRecorderService
-        extends EventSubscriber, EventReplay, ServiceComposite, Activatable
+        extends EventSourceListener, EventReplay, ServiceComposite, Activatable
     {
         class EventRecorderMixin
-            implements EventSubscriber, Activatable
+            implements EventSourceListener, Activatable
         {
             @Structure
             UnitOfWorkFactory uowf;
@@ -55,7 +56,7 @@ public interface EventRecorderService
             private File eventDir;
 
             @Service
-            EventPublisher publisher;
+            EventSource source;
 
             private BufferedWriter out;
             public Logger logger;
@@ -66,12 +67,12 @@ public interface EventRecorderService
                 eventDir = new File(config.dataDirectory(), "events");
                 eventDir.mkdirs();
                 
-                publisher.subscribe(this);
+//                source.registerListener(this);
             }
 
             public void passivate() throws Exception
             {
-                publisher.unsubscribe(this);
+                source.unregisterListener(this);
 
                 if (out != null)
                 {
@@ -79,8 +80,10 @@ public interface EventRecorderService
                 }
             }
 
-            public void notifyEvents(Iterable<DomainEvent> events)
+            public void eventsAvailable(EventSource source, EventSpecification specification)
             {
+                Iterable<DomainEvent> events = source.events(specification, null, 100);
+
                 try
                 {
                     if (out == null)

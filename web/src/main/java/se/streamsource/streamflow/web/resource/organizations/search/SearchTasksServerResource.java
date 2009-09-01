@@ -19,10 +19,12 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
 import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.label.Labelable;
+import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
@@ -48,6 +50,12 @@ public class SearchTasksServerResource
                 {
                     search = search.substring("label:".length());
                     queryBuilder.where(eq(QueryExpressions.oneOf(templateFor(Labelable.LabelableState.class).labels()).description(), search));
+                } else  if (search.startsWith("project:"))
+                {
+                    search = search.substring("project:".length());
+                    Owner owner = templateFor(TaskEntity.class).owner().get();
+                    Describable.DescribableState describable = templateFor(Describable.DescribableState.class, owner);
+                    queryBuilder.where(eq(describable.description(), search));
                 } else
                 {
                     queryBuilder.where(or(

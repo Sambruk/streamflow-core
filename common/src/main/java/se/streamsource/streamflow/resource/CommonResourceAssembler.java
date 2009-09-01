@@ -18,7 +18,6 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-
 import se.streamsource.streamflow.domain.user.UserSpecification;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -38,11 +37,12 @@ import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
+import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
@@ -57,6 +57,7 @@ public class CommonResourceAssembler
     {
         // Commands
         module.addValues(RegisterUserCommand.class,
+                ChangePasswordCommand.class,
                 StringDTO.class,
                 DateDTO.class,
                 EntityReferenceDTO.class,

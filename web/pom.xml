@@ -14,9 +14,9 @@
     <name>StreamFlow web</name>
     <description>StreamFlow web application</description>
     <properties>
-        <version.qi4j-core>0.8-SNAPSHOT</version.qi4j-core>
-        <version.qi4j-lib>0.8-SNAPSHOT</version.qi4j-lib>
-        <version.qi4j-ext>0.8-SNAPSHOT</version.qi4j-ext>
+        <version.qi4j-core>1.0-RC2-SNAPSHOT</version.qi4j-core>
+        <version.qi4j-lib>1.0-RC2-SNAPSHOT</version.qi4j-lib>
+        <version.qi4j-ext>1.0-RC2-SNAPSHOT</version.qi4j-ext>
     </properties>
 
     <dependencies>
@@ -76,7 +76,7 @@
         </dependency>
         <dependency>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-rest</artifactId>
+            <artifactId>qi4j-entitystore-rest</artifactId>
             <version>${version.qi4j-ext}</version>
         </dependency>
         <dependency>

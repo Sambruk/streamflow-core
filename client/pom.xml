@@ -14,9 +14,9 @@
     <name>StreamFlow client</name>
     <description>StreamFlow client</description>
     <properties>
-        <version.qi4j-core>0.8-SNAPSHOT</version.qi4j-core>
-        <version.qi4j-lib>0.8-SNAPSHOT</version.qi4j-lib>
-        <version.qi4j-ext>0.8-SNAPSHOT</version.qi4j-ext>
+        <version.qi4j-core>1.0-RC2-SNAPSHOT</version.qi4j-core>
+        <version.qi4j-lib>1.0-RC2-SNAPSHOT</version.qi4j-lib>
+        <version.qi4j-ext>1.0-RC2-SNAPSHOT</version.qi4j-ext>
     </properties>
 
     <dependencies>
@@ -81,10 +81,12 @@
         </dependency>
 
         <!-- REST -->
+<!--
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-rest</artifactId>
         </dependency>
+-->
         <dependency>
             <groupId>org.qi4j.library</groupId>
             <artifactId>qi4j-lib-rdf</artifactId>
@@ -96,11 +98,6 @@
         <dependency>
             <groupId>org.restlet</groupId>
             <artifactId>org.restlet.ext.xml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.restlet</groupId>
-            <artifactId>org.restlet.ext.xml</artifactId>
-            <version>${version.restlet}</version>
         </dependency>
 
         <!-- Testing -->

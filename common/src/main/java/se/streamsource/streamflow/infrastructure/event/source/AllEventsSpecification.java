@@ -12,20 +12,18 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.individual;
+package se.streamsource.streamflow.infrastructure.event.source;
 
-import org.restlet.Restlet;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
- * JAVADOC
+ * Accept all events
  */
-public interface AccountSettings
+public class AllEventsSpecification
+    implements EventSpecification
 {
-    AccountSettingsValue accountSettings();
-
-    void updateSettings(AccountSettingsValue newAccountSettings);
-
-    void changePassword(Restlet client, ChangePasswordCommand changePassword) throws ResourceException;
+    public boolean accept(DomainEvent event)
+    {
+        return true;
+    }
 }

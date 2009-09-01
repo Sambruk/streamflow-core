@@ -12,20 +12,34 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.individual;
+package se.streamsource.streamflow.client;
 
-import org.restlet.Restlet;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.swingx.util.WindowUtils;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 /**
  * JAVADOC
  */
-public interface AccountSettings
+public class AboutDialog
+    extends JPanel
 {
-    AccountSettingsValue accountSettings();
+    public AboutDialog()
+    {
+        super(new BorderLayout());
 
-    void updateSettings(AccountSettingsValue newAccountSettings);
+        setActionMap(Application.getInstance().getContext().getActionMap(this));
 
-    void changePassword(Restlet client, ChangePasswordCommand changePassword) throws ResourceException;
+        add(new JLabel("About StreamFlow"), BorderLayout.CENTER);
+    }
+
+    @Action
+    public void close()
+    {
+        WindowUtils.findWindow(this).dispose();
+    }
 }

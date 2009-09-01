@@ -40,7 +40,7 @@ public class EventTest
         module.addObjects(EventTest.class);
         module.addEntities(TestEntity.class);
         module.addValues(DomainEvent.class);
-        module.addServices(MemoryEntityStoreService.class, EventPublisherService.class, EventRecorderService.class, UuidIdentityGeneratorService.class, FileConfiguration.class);
+        module.addServices(MemoryEntityStoreService.class, EventSourceService.class, EventRecorderService.class, UuidIdentityGeneratorService.class, FileConfiguration.class);
     }
 
     @Test

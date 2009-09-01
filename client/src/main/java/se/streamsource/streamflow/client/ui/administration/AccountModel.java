@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
 import java.util.Observable;
 
@@ -166,5 +167,23 @@ public class AccountModel
         Account acc = uow.get(account);
         individualRepository.individual().removeAccount(acc);
         uow.complete();
+    }
+
+    public void changePassword(ChangePasswordCommand changePasswordCommand) throws Exception
+    {
+        UnitOfWork uow = uowf.newUnitOfWork();
+
+        try
+        {
+            Account account1 = uow.get(account);
+            account1.changePassword(client, changePasswordCommand);
+            setChanged();
+            notifyObservers();
+            uow.complete();
+        } catch (Exception ex)
+        {
+            uow.discard();
+            throw ex;
+        }
     }
 }

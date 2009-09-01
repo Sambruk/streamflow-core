@@ -27,6 +27,6 @@ public class EventAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addServices(EventPublisherService.class).visibleIn(Visibility.application);
+        module.addServices(EventSourceService.class).visibleIn(Visibility.application);
     }
 }

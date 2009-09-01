@@ -27,14 +27,16 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.user.WrongPasswordException;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -152,5 +154,15 @@ public class UserServerResource
         }
 
         return listBuilder.newList();
+    }
+
+    public void changePassword(ChangePasswordCommand newPassword) throws WrongPasswordException
+    {
+        String userId = (String) getRequestAttributes().get("user");
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        User user = uow.get(User.class, userId);
+
+        user.changePassword(newPassword.oldPassword().get(), newPassword.newPassword().get());
     }
 }

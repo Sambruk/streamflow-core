@@ -21,7 +21,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.domain.individual.IndividualAssembler;
-import se.streamsource.streamflow.client.infrastructure.application.EntityFinderAssembler;
 import se.streamsource.streamflow.client.infrastructure.application.RestletClientAssembler;
 import se.streamsource.streamflow.client.infrastructure.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.client.infrastructure.domain.ClientEntityStoreAssembler;
@@ -42,6 +41,13 @@ import se.streamsource.streamflow.resource.CommonResourceAssembler;
 public class StreamFlowClientAssembler
         implements ApplicationAssembler
 {
+    Object[] serviceObjects;
+
+    public StreamFlowClientAssembler(Object... serviceObjects)
+    {
+        this.serviceObjects = serviceObjects;
+    }
+
     public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory) throws AssemblyException
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
@@ -60,6 +66,11 @@ public class StreamFlowClientAssembler
 
         assembleClientDomainLayer(clientDomainLayer);
         assembleClientDomainInfrastructureLayer(clientDomainInfrastructureLayer);
+
+        for (Object serviceObject : serviceObjects)
+        {
+            assembly.setMetaInfo(serviceObject);
+        }
 
         return assembly;
     }
@@ -90,7 +101,6 @@ public class StreamFlowClientAssembler
     {
         new ConfigurationAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Configuration"));
         new ClientEntityStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Client EntityStore"));
-        new EntityFinderAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Finder"));
     }
 
 }

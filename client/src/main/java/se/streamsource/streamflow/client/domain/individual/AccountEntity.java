@@ -16,11 +16,13 @@ package se.streamsource.streamflow.client.domain.individual;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -37,6 +39,7 @@ import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 
 /**
@@ -78,6 +81,9 @@ public interface AccountEntity
         @This
         Describable description;
 
+        @Service
+        IndividualRepository repo;
+
         // AccountSettings
         public AccountSettingsValue accountSettings()
         {
@@ -88,6 +94,16 @@ public interface AccountEntity
         {
             state.settings().set(newAccountSettings);
             description.describe(newAccountSettings.name().get());
+        }
+
+        public void changePassword(Restlet client, ChangePasswordCommand changePassword) throws ResourceException
+        {
+            user(client).changePassword(changePassword);
+
+            AccountSettingsValue settings = state.settings().get().<AccountSettingsValue>buildWith().prototype();
+            settings.password().set(changePassword.newPassword().get());
+
+            updateSettings(settings);
         }
 
         // AccountRegistration
@@ -120,7 +136,7 @@ public interface AccountEntity
             Reference serverRef = new Reference(settings.server().get());
             serverRef.addSegment("streamflow").addSegment("v1").addSegment("");
 
-            AuthenticationFilter filter = new AuthenticationFilter(settings.userName().get(), settings.password().get());
+            AuthenticationFilter filter = new AuthenticationFilter(uowf, account);
             filter.setNext(client);
 
             Context childContext = new Context();
@@ -138,17 +154,32 @@ public interface AccountEntity
     {
         private String username;
         private String password;
+        private IndividualRepository repo;
+        private UnitOfWorkFactory uowf;
+        private AccountSettings account;
 
-        public AuthenticationFilter(String username, String password)
+        public AuthenticationFilter(UnitOfWorkFactory uowf, AccountSettings account)
         {
-            this.username = username;
-            this.password = password;
+            this.uowf = uowf;
+            this.account = account;
         }
 
         @Override
         protected int beforeHandle(Request request, Response response)
         {
-            request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, username, password));
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            AccountSettingsValue settings;
+            if (uow == null)
+            {
+                uow = uowf.newUnitOfWork();
+                settings = uow.get(account).accountSettings();
+                uow.discard();
+            } else
+            {
+                settings = uow.get(account).accountSettings();
+            }
+
+            request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, settings.userName().get(), settings.password().get()));
 
             return super.beforeHandle(request, response);
         }

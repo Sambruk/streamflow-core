@@ -25,7 +25,6 @@ import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
@@ -69,9 +68,7 @@ public class StreamFlowRestApplication
 
         // Start Qi4j
         Energy4Java is = new Energy4Java();
-        final ApplicationSPI app = is.newApplication(new StreamFlowWebAssembler());
-        app.metaInfo().set(this);
-        app.metaInfo().set(new ChallengeAuthenticator(parentContext, ChallengeScheme.HTTP_BASIC, "StreamFlow"));
+        final ApplicationSPI app = is.newApplication(new StreamFlowWebAssembler(this));
 
         app.activate();
 

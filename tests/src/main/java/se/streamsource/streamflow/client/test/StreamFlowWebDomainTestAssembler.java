@@ -18,6 +18,7 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.restlet.Client;
 import se.streamsource.streamflow.web.StreamFlowWebAssembler;
 
 /**
@@ -26,10 +27,12 @@ import se.streamsource.streamflow.web.StreamFlowWebAssembler;
 public class StreamFlowWebDomainTestAssembler
         extends StreamFlowWebAssembler
 {
+    private Client restlet;
     private Class[] testClass;
 
-    public StreamFlowWebDomainTestAssembler(Class[] testClass)
+    public StreamFlowWebDomainTestAssembler(Client restlet, Class[] testClass)
     {
+        this.restlet = restlet;
         this.testClass = testClass;
     }
 
@@ -41,5 +44,7 @@ public class StreamFlowWebDomainTestAssembler
         super.assembleDomainLayer(domainLayer);
         ModuleAssembly moduleAssembly = domainLayer.moduleAssembly("Test");
         moduleAssembly.addObjects(testClass);
+
+        domainLayer.applicationAssembly().setMetaInfo(restlet);
     }
 }

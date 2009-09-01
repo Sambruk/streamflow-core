@@ -22,8 +22,10 @@ import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventPublisher;
-import se.streamsource.streamflow.infrastructure.event.EventSubscriber;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -36,7 +38,7 @@ public class EventsResource
         extends ServerResource
 {
     @Service
-    EventPublisher publisher;
+    EventSource source;
 
     public EventsResource()
     {
@@ -50,7 +52,7 @@ public class EventsResource
         {
             public void write(Writer writer) throws IOException
             {
-                publisher.subscribe(new EventSubscriberWriter(writer));
+                source.registerListener(new EventSubscriberWriter(writer), new AllEventsSpecification());
 
                 try
                 {
@@ -67,7 +69,7 @@ public class EventsResource
     }
 
     class EventSubscriberWriter
-            implements EventSubscriber
+            implements EventSourceListener
     {
         Writer writer;
 
@@ -76,8 +78,10 @@ public class EventsResource
             this.writer = writer;
         }
 
-        public void notifyEvents(Iterable<DomainEvent> events)
+        public void eventsAvailable(EventSource source, EventSpecification specification)
         {
+            Iterable<DomainEvent> events = source.events(specification, null, 100);
+
             try
             {
 
@@ -89,7 +93,7 @@ public class EventsResource
                 }
             } catch (IOException e)
             {
-                publisher.unsubscribe(this);
+                source.unregisterListener(this);
                 synchronized (writer)
                 {
                     writer.notify();

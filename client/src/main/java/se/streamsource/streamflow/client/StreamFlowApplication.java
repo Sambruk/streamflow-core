@@ -20,7 +20,6 @@ import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.error.ErrorInfo;
-import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -65,10 +64,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
@@ -135,6 +132,29 @@ public class StreamFlowApplication
         workspaceWindow.setStatusBar(bar);
 
         setMainFrame(workspaceWindow);
+
+/*
+        Application application = Application.getApplication();
+        application.setEnabledAboutMenu(true);
+        application.addApplicationListener(new ApplicationAdapter()
+        {
+            @Override
+            public void handleAbout(ApplicationEvent applicationEvent)
+            {
+                applicationEvent.setHandled(true);
+                JXDialog dialog = new JXDialog(workspaceWindow, new AboutDialog());
+                dialog.pack();
+                dialog.setVisible(true);
+            }
+
+            @Override
+            public void handleQuit(ApplicationEvent applicationEvent)
+            {
+                applicationEvent.setHandled(true);
+                shutdown();
+            }
+        });
+*/
     }
     
     public void init(@Uses final AccountsModel accountsModel, @Structure final ObjectBuilderFactory obf) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
@@ -204,12 +224,6 @@ public class StreamFlowApplication
     {
         try
         {
-            Energy4Java is = new Energy4Java();
-            ApplicationSPI app = is.newApplication(new StreamFlowClientAssembler());
-            app.metaInfo().set(this);
-            app.metaInfo().set(org.jdesktop.application.Application.getInstance().getContext());
-            app.metaInfo().set(getContext().getActionMap(this));
-
             Client client = new Client(Protocol.HTTP);
             client.start();
             // Make it slower to get it more realistic
@@ -243,7 +257,11 @@ public class StreamFlowApplication
                     super.afterHandle(request, response);
                 }
             };
-            app.metaInfo().set(restlet);
+
+            Energy4Java is = new Energy4Java();
+            ApplicationSPI app = is.newApplication(new StreamFlowClientAssembler(this,
+                    org.jdesktop.application.Application.getInstance().getContext(),
+                    restlet));
 
             Logger.getLogger(getClass().getName()).info("Starting in " + app.mode() + " mode");
 
@@ -340,13 +358,6 @@ public class StreamFlowApplication
 
         if (!searchWindow.isVisible())
             show(searchWindow);
-    }
-
-
-    @Action
-    public void execute(ActionEvent e)
-    {
-        WindowUtils.findWindow((Component) e.getSource()).dispose();
     }
 
     @Action

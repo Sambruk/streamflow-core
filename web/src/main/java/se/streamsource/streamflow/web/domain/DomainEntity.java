@@ -17,14 +17,18 @@ package se.streamsource.streamflow.web.domain;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.sideeffect.SideEffects;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
+import se.streamsource.streamflow.infrastructure.event.EventPropertyChangedMixin;
+import se.streamsource.streamflow.infrastructure.event.CommandPropertyChangeMixin;
 
 /**
- * JAVADOC
+ * Base Composite for all domain entities
  */
 @Concerns(EventCreationConcern.class)
 @SideEffects(EventSideEffect.class)
+@Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class})
 public interface DomainEntity
     extends EntityComposite
 {

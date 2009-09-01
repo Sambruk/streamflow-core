@@ -39,6 +39,12 @@ import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 public class StreamFlowWebAssembler
         implements ApplicationAssembler
 {
+    private Object[] serviceObjects;
+
+    public StreamFlowWebAssembler(Object... serviceObjects)
+    {
+        this.serviceObjects = serviceObjects;
+    }
 
     public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory) throws AssemblyException
     {
@@ -64,6 +70,11 @@ public class StreamFlowWebAssembler
         assembleDomainInfrastructureLayer(domainInfrastructureLayer);
 
         assembleConfigurationLayer(configurationLayer);
+
+        for (Object serviceObject : serviceObjects)
+        {
+            assembly.setMetaInfo(serviceObject);
+        }
 
         return assembly;
     }

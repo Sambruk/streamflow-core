@@ -27,6 +27,6 @@ public class StatisticsAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addServices(EventToDatabaseService.class).instantiateOnStartup().visibleIn(Visibility.layer);
+        module.addServices(StatisticsService.class).instantiateOnStartup().visibleIn(Visibility.layer);
     }
 }

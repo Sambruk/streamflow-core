@@ -12,15 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.resource.user;
+
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
- * Event handlers are recomended to implement this interface.
- * It will be called after a UoW has been completed successfully
- * to inform about all events created during that UoW. Discarded
- * or failed UoW's will not cause this method to be called.
+ * Command for changing password
  */
-public interface EventSubscriber
+public interface ChangePasswordCommand
+        extends ValueComposite
 {
-    void notifyEvents(Iterable<DomainEvent> events);
+    @UseDefaults
+    Property<String> oldPassword();
+
+    @UseDefaults
+    Property<String> newPassword();
 }
