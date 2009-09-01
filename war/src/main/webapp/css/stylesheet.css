@@ -1,6 +1,6 @@
 a:link, a:visited { color: #0489B7; text-decoration: none; }
 
-ul { left: -10px; position: relative; margin: 1em 0; padding: 0; }
+ul { position: relative; margin: 1em 0; padding: 0; }
 ul.home-download { font-family: verdana,sans-serif; margin: 0px auto; width: 300px; }
 	ul.home-download, ul.home-downlad li { -moz-background-clip: border; -moz-background-inline-policy: continuous; -moz-background-origin: padding; background: transparent none repeat scroll 0 0; list-style-type: none; padding: 0; }
 	ul.home-download li a.download-link span { color: #09700B; line-height: 1.2; postition: static; } 
