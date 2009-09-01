@@ -14,14 +14,19 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 
 /**
  * JAVADOC
  */
+@Concerns(Inbox.CreateTaskConcern.class)
 @Mixins(Inbox.InboxMixin.class)
 public interface Inbox
 {
@@ -100,5 +105,24 @@ public interface Inbox
             task.markAsUnread();
         }
     }
+
+    abstract class CreateTaskConcern
+            extends ConcernOf<Inbox>
+            implements Inbox
+    {
+
+        @Structure
+        ValueBuilderFactory vbf;
+
+
+        public Task createTask() {
+
+            Task task = next.createTask();
+
+            task.addContact(vbf.newValue(ContactValue.class));
+            return task;
+        }
+    }
+
 
 }

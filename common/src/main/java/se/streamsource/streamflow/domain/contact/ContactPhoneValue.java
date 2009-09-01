@@ -17,6 +17,7 @@ package se.streamsource.streamflow.domain.contact;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.Matches;
 
 /**
  * JAVADOC
@@ -33,5 +34,6 @@ public interface ContactPhoneValue
     Property<ContactType> contactType();
 
     @UseDefaults
+    @Matches("\\+?[\\d -]*")
     Property<String> phoneNumber();
 }

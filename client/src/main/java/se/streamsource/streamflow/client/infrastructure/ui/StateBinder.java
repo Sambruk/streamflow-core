@@ -443,10 +443,10 @@ public class StateBinder
         {
             boolean result = super.shouldYieldFocus(input);
 
-            if (input instanceof JFormattedTextField)
+            /**if (input instanceof JFormattedTextField)
             {
                 result = ((JFormattedTextField) input).isEditValid();
-            }
+            }*/
 
             if (!result)
             {
