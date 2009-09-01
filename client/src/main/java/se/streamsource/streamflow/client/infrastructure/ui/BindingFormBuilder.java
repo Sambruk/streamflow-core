@@ -198,7 +198,7 @@ public class BindingFormBuilder
 
     }
 
-    private String getResource(Enum resourceKey, Object... args)
+    public String getResource(Enum resourceKey, Object... args)
     {
         String key = resourceKey.toString();
 
