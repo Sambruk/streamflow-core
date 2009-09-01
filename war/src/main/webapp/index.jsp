@@ -19,7 +19,13 @@ pageContext.setAttribute("application_revision", p.getProperty("application.revi
 <body>
 
 <ul class="home-download all_os ">
- <li class="all_os"> <a class="download-link download-streamflow" href="webstart/streamflow.jnlp"> <span><strong>Ladda ner StreamFlow</strong> <em>${application_version} f&ouml;r alla operativsystem</em> <em class="download-lang">Build: ${application_buildKey} ${application_buildNumber} Revision: ${application_revision}</em></span></a> </li>
+ <li class="all_os"> 
+ 	<a class="download-link download-streamflow" href="webstart/streamflow.jnlp"> 
+ 		<span><strong>Ladda ner StreamFlow</strong> 
+ 		<em>${application_version}</em> 
+ 		<em class="download-lang">f&ouml;r alla operativsystem</em></span>
+ 	</a> 
+ </li>
 </ul>
 
 <!--<a href="webstart/streamflow.jnlp">StreamFlow client</a><br />-->
