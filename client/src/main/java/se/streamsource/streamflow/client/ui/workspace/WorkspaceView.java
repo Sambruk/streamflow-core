@@ -55,8 +55,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 /**
@@ -76,8 +76,8 @@ public class WorkspaceView
     {
         super(new BorderLayout());
 
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.CTRL_DOWN_MASK+InputEvent.ALT_DOWN_MASK), "selectTree");
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK+InputEvent.ALT_DOWN_MASK), "selectTable");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTree");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTable");
         setActionMap(context.getActionMap(this));
 
 

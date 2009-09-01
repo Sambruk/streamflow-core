@@ -32,9 +32,9 @@ public class MenuView
 {
     private ApplicationContext context;
 
-    public MenuView(@Service ActionMap am, @Service ApplicationContext context)
+    public MenuView(@Service ApplicationContext context)
     {
-        setActionMap(am);
+        setActionMap(context.getActionMap());
         this.context = context;
         menu("fileMenu",
                 "---",

@@ -42,6 +42,7 @@ public class ConfigurationAssembler
         module.addEntities(ReindexerConfiguration.class).visibleIn(Visibility.application);
 
         // Configuration store
+        
         module.addServices(MemoryEntityStoreService.class);
     }
 }

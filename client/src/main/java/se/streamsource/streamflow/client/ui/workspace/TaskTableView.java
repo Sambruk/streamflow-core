@@ -56,6 +56,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
@@ -237,6 +239,14 @@ public abstract class TaskTableView
             }
         });
         splitPane.setDividerLocation(1D);
+
+        addFocusListener(new FocusAdapter()
+        {
+            public void focusGained(FocusEvent e)
+            {
+                taskTable.requestFocusInWindow();
+            }
+        });
     }
     
     abstract protected void buildPopupMenu(JPopupMenu popup);

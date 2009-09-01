@@ -29,7 +29,6 @@ import org.restlet.data.MediaType;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.security.Authorizer;
-import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.Verifier;
 import se.streamsource.streamflow.web.StreamFlowWebAssembler;
 import se.streamsource.streamflow.web.resource.APIv1Router;
@@ -46,9 +45,6 @@ public class StreamFlowRestApplication
     ObjectBuilderFactory factory;
     @Structure
     UnitOfWorkFactory unitOfWorkFactory;
-
-    @Service
-    ChallengeAuthenticator authenticator;
 
     @Optional
     @Service
