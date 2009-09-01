@@ -23,7 +23,7 @@ pageContext.setAttribute("application_revision", p.getProperty("application.revi
  	<a class="download-link download-streamflow" href="webstart/streamflow.jnlp"> 
  		<span><strong>Ladda ner StreamFlow</strong> 
  		<em>${application_version}</em> 
- 		<em class="download-lang">f&ouml;r alla operativsystem</em></span>
+ 		<em class="download-lang">F&ouml;r alla operativsystem</em></span>
  	</a> 
  </li>
 </ul>
