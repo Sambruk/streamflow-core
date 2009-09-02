@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.hamcrest.CoreMatchers;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
@@ -43,6 +44,7 @@ import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.label.Labelable;
+import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
@@ -73,13 +75,14 @@ public class SearchTasksServerResource
                     search = search.substring("label:".length());
                     queryBuilder.where(eq(QueryExpressions.oneOf(templateFor(Labelable.LabelableState.class).labels()).description(), search));
                 }
-//              else if (search.startsWith("assigned:"))
-//              {
-//                  search = search.substring("assigned:".length());
-//                  queryBuilder.where(eq(QueryExpressions.oneOf(templateFor(Labelable.LabelableState.class).labels()).description(), search));
-//              }
-				else if (search.startsWith("project:")) 
-				{
+                else if (search.startsWith("assigned:")) 
+                {
+					search = search.substring("assigned:".length());
+					Assignee assignee = templateFor(TaskEntity.class).assignedTo().get();
+					Describable.DescribableState describable = templateFor(
+							Describable.DescribableState.class, assignee);
+					queryBuilder.where(eq(describable.description(), search));
+				} else if (search.startsWith("project:"))				{
 					search = search.substring("project:".length());
 					Owner owner = templateFor(TaskEntity.class).owner().get();
 					Describable.DescribableState describable = templateFor(
@@ -117,7 +120,7 @@ public class SearchTasksServerResource
         }
     }
 
-	private List<String> extractSubQueries(String query) 
+	protected List<String> extractSubQueries(String query) 
 	{
 		List<String> subQueries = null;
 		// TODO: Extract regular expression to resource file
@@ -143,31 +146,31 @@ public class SearchTasksServerResource
 		return subQueries;
 	}
 
-    protected Date getLowerBoundDate(String search, Date referenceDate) 
+    protected Date getLowerBoundDate(String dateAsString, Date referenceDate) 
     {
         Calendar calendar = Calendar.getInstance();
     	calendar.setTime(referenceDate);
     	Date lowerBoundDate = null;
         
         // TODAY, YESTERDAY, HOUR, WEEK, 
-        if (DateSearchKeyword.TODAY.toString().equalsIgnoreCase(search)) 
+        if (DateSearchKeyword.TODAY.toString().equalsIgnoreCase(dateAsString)) 
         {
         	calendar.set(Calendar.HOUR_OF_DAY, 0);
         	calendar.set(Calendar.MINUTE, 0);
         	calendar.set(Calendar.SECOND, 0);
         	lowerBoundDate = calendar.getTime();
-        } else if (DateSearchKeyword.YESTERDAY.toString().equalsIgnoreCase(search)) 
+        } else if (DateSearchKeyword.YESTERDAY.toString().equalsIgnoreCase(dateAsString)) 
         {
         	calendar.add(Calendar.DAY_OF_MONTH, -1);
         	calendar.set(Calendar.HOUR_OF_DAY, 0);
         	calendar.set(Calendar.MINUTE, 0);
         	calendar.set(Calendar.SECOND, 0);
         	lowerBoundDate = calendar.getTime();
-        } else if (DateSearchKeyword.HOUR.toString().equalsIgnoreCase(search)) 
+        } else if (DateSearchKeyword.HOUR.toString().equalsIgnoreCase(dateAsString)) 
         {
         	calendar.add(Calendar.HOUR_OF_DAY, -1);
         	lowerBoundDate = calendar.getTime();
-        } else if (DateSearchKeyword.WEEK.toString().equalsIgnoreCase(search)) 
+        } else if (DateSearchKeyword.WEEK.toString().equalsIgnoreCase(dateAsString)) 
         {
         	calendar.add(Calendar.WEEK_OF_MONTH, -1);
         	lowerBoundDate = calendar.getTime();
@@ -175,47 +178,89 @@ public class SearchTasksServerResource
         {
         	try 
         	{
-                // Formats that passes: yyyy-MM-dd, yyyyMMdd and yyMMdd
-            	// TODO: Support the above specified date formats.
-             	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					lowerBoundDate = dateFormat.parse(search);
+				lowerBoundDate = parseToDate(dateAsString);
+				calendar.setTime(lowerBoundDate);
+	        	calendar.set(Calendar.HOUR_OF_DAY, 0);
+	        	calendar.set(Calendar.MINUTE, 0);
+	        	calendar.set(Calendar.SECOND, 0);
+	        	lowerBoundDate = calendar.getTime();
 			} catch (ParseException e) 
 			{
 				// Skip the "created:" search as the input query can not be interpreted.
 				lowerBoundDate = null;
+    		} catch (IllegalArgumentException e) 
+    		{
+    			lowerBoundDate = null;
 			}
         }
         return lowerBoundDate;
     }
 
-    protected Date getUpperBoundDate(String search, Date workingDate) 
+    protected Date getUpperBoundDate(String dateAsString, Date referenceDate) 
     {
         Calendar calendar = Calendar.getInstance();
-    	calendar.setTime(workingDate);
+    	calendar.setTime(referenceDate);
     	Date upperBoundDate = calendar.getTime();
         
         // TODAY, YESTERDAY, HOUR, WEEK, 
-        if (DateSearchKeyword.TODAY.toString().equalsIgnoreCase(search)) 
+        if (DateSearchKeyword.TODAY.toString().equalsIgnoreCase(dateAsString)) 
         {
         	calendar.set(Calendar.HOUR_OF_DAY, 23);
         	calendar.set(Calendar.MINUTE, 59);
         	calendar.set(Calendar.SECOND, 59);
         	upperBoundDate = calendar.getTime();
-        } else if (DateSearchKeyword.YESTERDAY.toString().equalsIgnoreCase(search)) 
+        } else if (DateSearchKeyword.YESTERDAY.toString().equalsIgnoreCase(dateAsString)) 
         {
         	calendar.add(Calendar.DAY_OF_MONTH, -1);
         	calendar.set(Calendar.HOUR_OF_DAY, 23);
         	calendar.set(Calendar.MINUTE, 59);
         	calendar.set(Calendar.SECOND, 59);
         	upperBoundDate = calendar.getTime();
-        } else if (DateSearchKeyword.HOUR.toString().equalsIgnoreCase(search)) 
+        } else if (DateSearchKeyword.HOUR.toString().equalsIgnoreCase(dateAsString)) 
         {
         	// Do nothing
-        } else if (DateSearchKeyword.WEEK.toString().equalsIgnoreCase(search)) 
+        } else if (DateSearchKeyword.WEEK.toString().equalsIgnoreCase(dateAsString)) 
         {
         	// Do nothing
-        } 
+        } else 
+        {
+        	try 
+        	{
+        		upperBoundDate = parseToDate(dateAsString);
+				calendar.setTime(upperBoundDate);
+	        	calendar.set(Calendar.HOUR_OF_DAY, 23);
+	        	calendar.set(Calendar.MINUTE, 59);
+	        	calendar.set(Calendar.SECOND, 59);
+	        	upperBoundDate = calendar.getTime();
+    		} catch (ParseException e) 
+    		{
+    			upperBoundDate = null;
+    		} catch (IllegalArgumentException e) 
+    		{
+    			upperBoundDate = null;
+    		}
+        }
         return upperBoundDate;
     }
+
+	private Date parseToDate(String dateAsString) throws ParseException, IllegalArgumentException {
+		// Formats that should pass: yyyy-MM-dd, yyyyMMdd. 
+		// TODO: Should we also support yyyy?
+		SimpleDateFormat dateFormat = null;
+		if(dateAsString == null) 
+		{
+			throw new ParseException("Date string can not be null!", 0);
+		}
+		dateAsString = dateAsString.replaceAll("-", "");
+		if(dateAsString.length() != 8)
+		{
+			throw new IllegalArgumentException("Date format not supported!");
+		}
+		if(dateAsString.length() == 8) 
+		{
+			dateFormat = new SimpleDateFormat("yyyyMMdd");
+		}
+     	return dateFormat.parse(dateAsString);
+	}
 
 }
