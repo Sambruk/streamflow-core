@@ -26,7 +26,6 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
-import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.security.Authorizer;
 import org.restlet.security.Verifier;
@@ -98,10 +97,6 @@ public class StreamFlowRestApplication
 
         Router versions = new Router(getContext());
         versions.attach("/v1", api);
-
-        Directory directory = new Directory(getContext(), "clap://class/static/");
-        directory.setListingAllowed(true);
-        versions.attach("version.html", directory);
 
         return versions;
     }

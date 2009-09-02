@@ -21,6 +21,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 
+import java.io.IOException;
+
 /**
  * StreamFlow server resource.
  * /
@@ -33,9 +35,10 @@ public class StreamFlowClientResource
         super(context, reference);
     }
 
-    public String version()
+    public String version() throws ResourceException, IOException
     {
-        return "0.1"; //
+        StreamFlowClientResource flowClientResource = getResource(getReference().clone().addSegment("static").addSegment("version.html"), StreamFlowClientResource.class);
+        return flowClientResource.get().getText();
     }
 
     public UsersClientResource users()

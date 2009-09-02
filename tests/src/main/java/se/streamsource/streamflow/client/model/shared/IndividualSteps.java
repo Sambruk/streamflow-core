@@ -34,6 +34,8 @@ import se.streamsource.streamflow.client.domain.individual.Individual;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 
+import java.io.IOException;
+
 /**
  * JAVADOC
  */
@@ -89,7 +91,7 @@ public class IndividualSteps
     }
 
     @When("get version")
-    public void whenGetVersion()
+    public void whenGetVersion() throws IOException, ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork();
         account = uow.get(account);

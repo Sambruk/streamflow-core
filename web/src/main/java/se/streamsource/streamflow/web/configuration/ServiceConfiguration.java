@@ -31,7 +31,7 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
 import java.io.File;
 
 /**
- * Configure all services
+ * Initial configurations for all services
  */
 @Mixins(ServiceConfiguration.ServiceConfigurationMixin.class)
 public interface ServiceConfiguration
@@ -49,13 +49,13 @@ public interface ServiceConfiguration
         public void activate() throws Exception
         {
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Service configuration"));
-            String jdbmPath = new File(config.dataDirectory(), "JdbmEntityStoreService/jdbm.data").getAbsolutePath();
+            String jdbmPath = new File(config.dataDirectory(), "data/streamflow.data").getAbsolutePath();
             try
             {
-                uow.get(JdbmConfiguration.class, "JdbmEntityStoreService");
+                uow.get(JdbmConfiguration.class, "data");
             } catch (NoSuchEntityException e)
             {
-                EntityBuilder<JdbmConfiguration> builder = uow.newEntityBuilder(JdbmConfiguration.class, "JdbmEntityStoreService");
+                EntityBuilder<JdbmConfiguration> builder = uow.newEntityBuilder(JdbmConfiguration.class, "data");
                 builder.instance().file().set(jdbmPath);
                 builder.newInstance();
             }

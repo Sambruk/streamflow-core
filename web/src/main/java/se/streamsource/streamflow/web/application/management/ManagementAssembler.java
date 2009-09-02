@@ -36,7 +36,7 @@ public class ManagementAssembler
             module.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
             module.addServices(ManagerService.class).instantiateOnStartup();
 
-            module.addServices(ReindexerService.class);
+            module.addServices(ReindexerService.class).identifiedBy("reindexer");
             module.addServices(ReindexOnStartupService.class).instantiateOnStartup();
         }
     }

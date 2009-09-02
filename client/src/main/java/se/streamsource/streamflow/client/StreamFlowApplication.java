@@ -20,6 +20,7 @@ import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.error.ErrorInfo;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -66,6 +67,8 @@ import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
@@ -358,6 +361,18 @@ public class StreamFlowApplication
 
         if (!searchWindow.isVisible())
             show(searchWindow);
+    }
+
+    @Action
+    public void close(ActionEvent e)
+    {
+        WindowUtils.findWindow((Component) e.getSource()).dispose();
+    }
+
+    @Action
+    public void cancel(ActionEvent e)
+    {
+        WindowUtils.findWindow((Component) e.getSource()).dispose();
     }
 
     @Action

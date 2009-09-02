@@ -43,7 +43,8 @@ public class ServerEntityStoreAssembler
         } else if (mode.equals(Application.Mode.production))
         {
             // JDBM storage
-            module.addServices(JdbmEntityStoreService.class, UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
+            module.addServices(JdbmEntityStoreService.class).identifiedBy("data").visibleIn(Visibility.application);
+            module.addServices(UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
         }
     }
 }

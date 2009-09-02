@@ -75,7 +75,7 @@ public class DialogService
 
         Action ok = main.getActionMap().get(JXDialog.EXECUTE_ACTION_COMMAND);
         if (ok == null)
-            ok = context.getActionMap().get(JXDialog.EXECUTE_ACTION_COMMAND);
+            ok = context.getActionMap().get("cancel");
 
         dialog.getContentPane().setLayout(new BorderLayout());
         JButton okButton = new JButton(ok);

@@ -26,6 +26,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.resource.ServerResource;
+import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
@@ -181,6 +182,11 @@ public class APIv1Router
         qi4jRouter.attach("/query", createServerResourceFinder(SPARQLResource.class));
         qi4jRouter.attach("/query/index", createServerResourceFinder(IndexResource.class));
         attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
+
+        // Version info
+        Directory directory = new Directory(getContext(), "clap://class/static/");
+        directory.setListingAllowed(true);
+        attach("/static", directory);
     }
 
     private Restlet createServerResourceFinder(Class<? extends ServerResource> resource)

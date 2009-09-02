@@ -15,17 +15,23 @@
 package se.streamsource.streamflow.web.configuration;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
+import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
+import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.index.reindexer.ReindexerConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
+
+import java.util.prefs.Preferences;
 
 /**
- * Assembly of configuration of services
+ * Assembly of configurations for services
  */
 public class ConfigurationAssembler
         implements Assembler
@@ -40,9 +46,25 @@ public class ConfigurationAssembler
         module.addEntities(JdbmConfiguration.class).visibleIn(Visibility.application);
         module.addEntities(NativeConfiguration.class).visibleIn(Visibility.application);
         module.addEntities(ReindexerConfiguration.class).visibleIn(Visibility.application);
+        module.addEntities(StatisticsConfiguration.class).visibleIn(Visibility.application);
+
+        module.forMixin(ReindexerConfiguration.class).declareDefaults().loadValue().set(50);
 
         // Configuration store
-        
-        module.addServices(MemoryEntityStoreService.class);
+        Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+        if (mode.equals(Application.Mode.development))
+        {
+            // In-memory store
+            module.addServices(MemoryEntityStoreService.class).visibleIn(Visibility.application);
+        } else if (mode.equals(Application.Mode.test))
+        {
+            // In-memory store
+            module.addServices(MemoryEntityStoreService.class).visibleIn(Visibility.application);
+        } else if (mode.equals(Application.Mode.production))
+        {
+            // Preferences storage
+            module.addServices(PreferencesEntityStoreService.class).setMetaInfo(new PreferencesEntityStoreInfo(Preferences.userRoot().node("streamsource/streamflow/web")));
+        }
+
     }
 }

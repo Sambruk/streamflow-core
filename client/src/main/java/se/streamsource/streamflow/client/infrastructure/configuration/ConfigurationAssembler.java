@@ -23,7 +23,7 @@ import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 /**
- * Assembly of configuration of services
+ * Assembly of configuration for services
  */
 public class ConfigurationAssembler
         implements Assembler

@@ -14,19 +14,16 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * Configuration for the StatisticsService.
  */
-public class StatisticsAssembler
-    implements Assembler
+public interface StatisticsConfiguration
+    extends ConfigurationComposite
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addServices(StatisticsService.class).identifiedBy("statistics").instantiateOnStartup().visibleIn(Visibility.layer);
-    }
+    @UseDefaults
+    Property<Boolean> enabled();
 }

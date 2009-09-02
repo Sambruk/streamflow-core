@@ -53,7 +53,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * JAVADOC
+ * Generate statistics data to a JDBC database. This service
+ * listens for domain events, and on "completed" it will put
+ * information about the task into the database.
+ * 
  */
 @Mixins(StatisticsService.StatisticsMixin.class)
 public interface StatisticsService
@@ -212,7 +215,7 @@ public interface StatisticsService
                         conn.rollback();
                     } catch (SQLException e1)
                     {
-                        logger.log(Level.SEVERE, "Could not lrollback", e);
+                        logger.log(Level.SEVERE, "Could not rollback", e);
                     }
                 }
             }finally

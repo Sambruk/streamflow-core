@@ -165,7 +165,8 @@ public class AccountView
             @Override
             public void succeeded(TaskEvent<String> stringTaskEvent)
             {
-                dialogs.showOkDialog(AccountView.this, new JLabel("<html>"+ i18n.text(AdministrationResources.connection_is_ok)+":<br/>" + stringTaskEvent.getValue() + "</html>"));
+                String result = stringTaskEvent.getValue();
+                dialogs.showOkDialog(AccountView.this, new JLabel(result));
             }
 
             @Override

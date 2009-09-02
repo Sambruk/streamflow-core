@@ -33,6 +33,7 @@ import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
 import java.util.Observable;
+import java.io.IOException;
 
 /**
  * JAVADOC
@@ -92,7 +93,7 @@ public class AccountModel
         notifyObservers();
     }
 
-    public String test()
+    public String test() throws IOException, ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork();
         try

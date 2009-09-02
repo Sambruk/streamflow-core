@@ -31,8 +31,5 @@ public class OrganizationAssembler
 
         if (module.layerAssembly().applicationAssembly().mode()== Application.Mode.development)
             module.addServices(TestDataService.class).instantiateOnStartup();
-
-//        if (module.layerAssembly().applicationAssembly().mode()== Application.Mode.production)
-//            module.addServices(DataExporterService.class).instantiateOnStartup();
     }
 }

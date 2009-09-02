@@ -21,7 +21,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.rdf.assembly.RdfFactoryService;
 import org.qi4j.index.rdf.assembly.RdfQueryService;
-import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.library.rdf.repository.MemoryRepositoryService;
@@ -43,7 +42,7 @@ public class EntityFinderAssembler
         } else if (mode.equals(Application.Mode.production))
         {
             // Native storage
-            module.addServices(NativeRepositoryService.class).visibleIn(Visibility.application).instantiateOnStartup().identifiedBy("rdf-repository");
+            module.addServices(NativeRepositoryService.class).identifiedBy("rdf").visibleIn(Visibility.application).instantiateOnStartup().identifiedBy("rdf-repository");
         }
 
         module.addObjects(EntityStateSerializer.class, EntityTypeSerializer.class);
