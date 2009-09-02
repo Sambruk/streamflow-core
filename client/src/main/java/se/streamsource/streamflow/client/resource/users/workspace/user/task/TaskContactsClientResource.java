@@ -49,7 +49,7 @@ public class TaskContactsClientResource
     public TaskContactClientResource taskContact(int index)
     {
         TaskContactClientResource contact = getSubResource(""+index, TaskContactClientResource.class);
-        contact.setParent(this);
+        contact.setRoot(getRoot());
         return contact;
     }
 

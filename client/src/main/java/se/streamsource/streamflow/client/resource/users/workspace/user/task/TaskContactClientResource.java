@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.resource.users.workspace.user.task;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
@@ -37,55 +36,34 @@ public class TaskContactClientResource
         super(context, reference);
     }
 
-    private TaskContactsClientResource parent;
-
-    public void setParent(TaskContactsClientResource parent)
-    {
-        this.parent = parent;
-    }
-
-    @Override
-    public Representation delete() throws ResourceException
-    {
-        Representation reprensentation = super.delete();
-        parent.clearTag();
-        return reprensentation;
-    }
-
     public void changeName(StringDTO name) throws ResourceException
     {
         putCommand("changeName", name);
-        parent.clearTag();
     }
 
     public void changeNote(StringDTO note) throws ResourceException
     {
         putCommand("changeNote", note);
-        parent.clearTag();
     }
 
     public void changeCompany(StringDTO company) throws ResourceException
     {
         putCommand("changeCompany", company);
-        parent.clearTag();
     }
 
     public void changePhoneNumber(ContactPhoneValue phoneNumber) throws ResourceException
     {
         putCommand("changePhoneNumber", phoneNumber);
-        parent.clearTag();
     }
 
     public void changeAddress(ContactAddressValue address) throws ResourceException
     {
         putCommand("changeAddress", address);
-        parent.clearTag();
     }
 
     public void changeEmailAddress(ContactEmailValue emailAddress) throws ResourceException 
     {
         putCommand("changeEmailAddress", emailAddress);
-        parent.clearTag();
     }
 
 

@@ -86,6 +86,7 @@ public class TaskContactsView
         model.createContact();
         model.refresh();
         contacts.setSelectedIndex(model.getSize()-1);
+        getContactView().requestFocus();
     }
 
     @org.jdesktop.application.Action

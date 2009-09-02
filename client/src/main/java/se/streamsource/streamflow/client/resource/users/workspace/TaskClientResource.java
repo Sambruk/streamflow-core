@@ -50,7 +50,9 @@ public class TaskClientResource
 
     public TaskContactsClientResource contacts()
     {
-        return getSubResource("contacts", TaskContactsClientResource.class);
+        TaskContactsClientResource contacts = getSubResource("contacts", TaskContactsClientResource.class);
+        contacts.setRoot(this);
+        return contacts;
     }
 
     public void complete() throws ResourceException

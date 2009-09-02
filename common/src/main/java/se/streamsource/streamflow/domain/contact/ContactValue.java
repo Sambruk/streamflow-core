@@ -17,6 +17,7 @@ package se.streamsource.streamflow.domain.contact;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.Matches;
 
 import java.util.List;
 
@@ -28,6 +29,10 @@ public interface ContactValue
 {
     @UseDefaults
     Property<String> name();
+
+    @UseDefaults
+    @Matches("([\\d]{12})?")
+    Property<String> contactId();
 
     @UseDefaults
     Property<String> company();

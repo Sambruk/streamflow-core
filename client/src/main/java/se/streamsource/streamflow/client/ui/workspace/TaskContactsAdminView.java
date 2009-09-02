@@ -20,9 +20,9 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -88,9 +88,6 @@ public class TaskContactsAdminView
                         TaskContactsClientResource taskContactsClientResource = taskContactsView.getTaskContactsResource();
                         TaskContactModel taskContactModel = obf.newObjectBuilder(TaskContactModel.class).use(contactValue, taskContactsClientResource.taskContact(idx)).newInstance();
                         taskContactsView.getContactView().setModel(taskContactModel);
-
-                        taskContactsView.getContactView().requestFocus();
-
                     } else
                     {
                         taskContactsView.getContactView().setModel(null);
@@ -112,4 +109,6 @@ public class TaskContactsAdminView
     {
         taskContactsView.setModel(taskContactsModel);
     }
+
+
 }

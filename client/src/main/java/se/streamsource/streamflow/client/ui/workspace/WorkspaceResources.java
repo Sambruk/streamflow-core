@@ -33,6 +33,7 @@ public enum WorkspaceResources
     labels_label,
     note_label,
     name_label,
+    contact_id_label,
     company_label,
     due_on_label,
     phone_label,

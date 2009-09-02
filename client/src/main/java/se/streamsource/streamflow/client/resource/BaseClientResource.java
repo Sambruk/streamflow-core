@@ -47,7 +47,39 @@ public class BaseClientResource
     @Structure
     protected ValueBuilderFactory vbf;
 
+    private BaseClientResource root;
+
+    public void setRoot(BaseClientResource root)
+    {
+        this.root = root;
+    }
+
+    public BaseClientResource getRoot()
+    {
+        return root;
+    }
+
     Tag tag;
+
+    protected Tag getTag()
+    {
+        if (root != null)
+        {
+            return root.getTag();
+        }
+        return tag;
+    }
+
+    protected void setTag(Tag tag)
+    {
+        if (root != null)
+        {
+            root.setTag(tag);
+        } else
+        {
+            this.tag = tag;
+        }
+    }
 
     public BaseClientResource(Context context, Reference reference)
     {
@@ -58,12 +90,12 @@ public class BaseClientResource
     public Representation post(Representation entity) throws ResourceException
     {
         clearConditions();
-        if (tag != null)
+        if (getTag() != null)
         {
-            getConditions().getMatch().add(tag);
+            getConditions().getMatch().add(getTag());
         }
         Representation rep = super.post(entity);
-        tag = null;
+        setTag(null);
 
         return rep;
     }
@@ -72,12 +104,12 @@ public class BaseClientResource
     public Representation put(Representation representation) throws ResourceException
     {
         clearConditions();
-        if (tag != null)
+        if (getTag() != null)
         {
-            getConditions().getMatch().add(tag);
+            getConditions().getMatch().add(getTag());
         }
         Representation rep = super.put(representation);
-        tag = null;
+        setTag(null);
 
         return rep;
     }
@@ -90,7 +122,7 @@ public class BaseClientResource
 
         Representation rep = super.get(mediaType);
 
-        tag = rep.getTag();
+        setTag(rep.getTag());
 
         return rep;
     }
@@ -110,7 +142,7 @@ public class BaseClientResource
 
     public void clearTag()
     {
-        tag = null;
+        setTag(null);
     }
 
     protected void clearConditions()
