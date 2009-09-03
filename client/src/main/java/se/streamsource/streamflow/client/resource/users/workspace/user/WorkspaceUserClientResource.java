@@ -28,7 +28,7 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfo
  * JAVADOC
  */
 public class WorkspaceUserClientResource
-    extends CommandQueryClientResource
+        extends CommandQueryClientResource
 {
     public WorkspaceUserClientResource(@Uses Context context, @Uses Reference reference)
     {

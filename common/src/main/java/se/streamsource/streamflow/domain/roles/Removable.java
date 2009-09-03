@@ -36,9 +36,10 @@ public interface Removable
     }
 
     class RemovableMixin
-        implements Removable
+            implements Removable
     {
-        @This RemovableState state;
+        @This
+        RemovableState state;
 
         public void remove()
         {

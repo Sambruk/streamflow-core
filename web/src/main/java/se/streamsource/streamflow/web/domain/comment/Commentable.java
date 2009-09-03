@@ -36,9 +36,10 @@ public interface Commentable
     }
 
     class CommentableMixin
-        implements Commentable
+            implements Commentable
     {
-        @This CommentableState state;
+        @This
+        CommentableState state;
 
         public void addComment(CommentValue comment)
         {

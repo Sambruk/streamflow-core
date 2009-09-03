@@ -19,7 +19,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
 import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**

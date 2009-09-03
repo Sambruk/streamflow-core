@@ -28,7 +28,7 @@ public class OverviewNode
     private OverviewProjectsNode projectsNode;
 
     public OverviewNode(@Uses OverviewProjectsNode projectsNode,
-                      @Uses AccountModel accountModel)
+                        @Uses AccountModel accountModel)
     {
         super(accountModel);
         this.projectsNode = projectsNode;

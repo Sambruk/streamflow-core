@@ -40,8 +40,8 @@ public class WorkspaceUserNode
     public UserClientResource user;
 
     public WorkspaceUserNode(@Uses AccountModel account,
-                          @Service Restlet client,
-                          @Structure ObjectBuilderFactory obf) throws ResourceException
+                             @Service Restlet client,
+                             @Structure ObjectBuilderFactory obf) throws ResourceException
     {
         super(account);
 

@@ -22,7 +22,7 @@ import org.qi4j.api.property.Property;
  * Configuration for the StatisticsService.
  */
 public interface StatisticsConfiguration
-    extends ConfigurationComposite
+        extends ConfigurationComposite
 {
     @UseDefaults
     Property<Boolean> enabled();

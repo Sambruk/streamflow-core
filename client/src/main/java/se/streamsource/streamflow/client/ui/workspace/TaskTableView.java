@@ -40,32 +40,17 @@ import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Base class for all views of task lists.
@@ -89,12 +74,12 @@ public abstract class TaskTableView
     private JPanel noTaskSelected;
 
     public void init(@Service ApplicationContext context,
-                         @Uses final TaskTableModel model,
-                         final @Uses TaskDetailView detailsView,
-                         @Structure final ObjectBuilderFactory obf,
-                         @Structure ValueBuilderFactory vbf)
+                     @Uses final TaskTableModel model,
+                     final @Uses TaskDetailView detailsView,
+                     @Structure final ObjectBuilderFactory obf,
+                     @Structure ValueBuilderFactory vbf)
     {
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_C,  InputEvent.CTRL_DOWN_MASK+InputEvent.ALT_DOWN_MASK), "completeTasks");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK + InputEvent.ALT_DOWN_MASK), "completeTasks");
 
         this.model = model;
         this.detailsView = detailsView;
@@ -104,7 +89,7 @@ public abstract class TaskTableView
         add(splitPane, BorderLayout.CENTER);
 
         noTaskSelected = new JPanel();
-        noTaskSelected.setMaximumSize(new Dimension(0,0));
+        noTaskSelected.setMaximumSize(new Dimension(0, 0));
         noTaskSelected.setOpaque(true);
 
         ActionMap am = context.getActionMap(TaskTableView.class, this);
@@ -248,7 +233,7 @@ public abstract class TaskTableView
             }
         });
     }
-    
+
     abstract protected void buildPopupMenu(JPopupMenu popup);
 
     abstract protected void buildToolbar(JPanel toolbar);
@@ -296,7 +281,7 @@ public abstract class TaskTableView
         model.refresh();
 
         JXTable table = getTaskTable();
-        int index = model.getRowCount()-1;
+        int index = model.getRowCount() - 1;
         table.getSelectionModel().setSelectionInterval(index, index);
         table.scrollRowToVisible(index);
 
@@ -345,7 +330,7 @@ public abstract class TaskTableView
     @org.jdesktop.application.Action
     public void completeTasks()
     {
-        for(int row : getReverseSelectedTasks())
+        for (int row : getReverseSelectedTasks())
         {
             model.completeTask(row);
         }

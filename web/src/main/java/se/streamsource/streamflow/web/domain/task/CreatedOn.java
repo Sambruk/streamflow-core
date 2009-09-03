@@ -42,7 +42,7 @@ public interface CreatedOn
     }
 
     abstract class CreatedOnMixin
-        implements CreatedOnState
+            implements CreatedOnState
     {
         public void created(DomainEvent event)
         {

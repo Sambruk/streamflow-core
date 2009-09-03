@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.restlet.resource.ResourceException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsTaskClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
@@ -33,8 +33,8 @@ public class WorkspaceProjectDelegationsModel
     public WorkspaceProjectDelegationsModel()
     {
         columnNames = new String[]{"", text(description_column_header), text(delegated_from_header), text(delegated_on_header)};
-        columnClasses = new Class[] {Boolean.class, String.class, String.class, Date.class, Date.class};
-        columnEditable = new boolean[] {true, false, false, false};
+        columnClasses = new Class[]{Boolean.class, String.class, String.class, Date.class, Date.class};
+        columnEditable = new boolean[]{true, false, false, false};
     }
 
     @Override

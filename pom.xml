@@ -36,16 +36,16 @@
             <url>http://complexitymap.com/repository/</url>
         </repository>
         <repository>
-          <id>aduna</id>
-          <url>http://repo.aduna-software.org/maven2/releases/</url>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
+            <id>aduna</id>
+            <url>http://repo.aduna-software.org/maven2/releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
-          <id>maven-restlet</id>
-          <name>Public online Restlet repository</name>
-          <url>http://maven.restlet.org</url>
+            <id>maven-restlet</id>
+            <name>Public online Restlet repository</name>
+            <url>http://maven.restlet.org</url>
         </repository>
         <repository>
             <id>webstart</id>
@@ -243,16 +243,16 @@
                     <downloadSources>true</downloadSources>
                 </configuration>
             </plugin>
-			<plugin>
-				<groupId>org.codehaus.cargo</groupId>
-				<artifactId>cargo-maven2-plugin</artifactId>
-				<configuration>
-					<container>
-						<containerId>tomcat6x</containerId>
-						<type>remote</type>
-					</container>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <configuration>
+                    <container>
+                        <containerId>tomcat6x</containerId>
+                        <type>remote</type>
+                    </container>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>

@@ -35,7 +35,7 @@ public class OverviewProjectAssignmentsNode
         int total = model.getRowCount();
         if (total > 0)
         {
-            text += " ("+total+")";
+            text += " (" + total + ")";
         } else
         {
             text += "                ";

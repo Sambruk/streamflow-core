@@ -32,14 +32,14 @@ import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
-import java.util.Observable;
 import java.io.IOException;
+import java.util.Observable;
 
 /**
  * JAVADOC
  */
 public class AccountModel
-    extends Observable
+        extends Observable
 {
     @Structure
     UnitOfWorkFactory uowf;

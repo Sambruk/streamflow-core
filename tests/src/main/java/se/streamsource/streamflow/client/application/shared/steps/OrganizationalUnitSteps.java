@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
@@ -61,7 +61,7 @@ public class OrganizationalUnitSteps
         try
         {
             ouEntity.createOrganizationalUnit(name);
-        } catch(Exception e)
+        } catch (Exception e)
         {
             thrownException = e;
         }
@@ -107,7 +107,6 @@ public class OrganizationalUnitSteps
 
         ensureThat(!added);
     }
-
 
 
     @Then("$exceptionName is thrown")

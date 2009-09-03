@@ -19,7 +19,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 /**
  * JAVADOC

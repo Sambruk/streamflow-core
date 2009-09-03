@@ -18,8 +18,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.WorkspaceUserClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.WorkspaceUserClientResource;
 
 /**
  * JAVADOC

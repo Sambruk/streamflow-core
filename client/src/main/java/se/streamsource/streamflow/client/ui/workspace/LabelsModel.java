@@ -16,8 +16,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
@@ -27,15 +27,14 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.AbstractListModel;
-import javax.swing.ComboBoxModel;
+import javax.swing.*;
 
 /**
  * JAVADOC
  */
 public class LabelsModel
-    extends AbstractListModel
-    implements ComboBoxModel
+        extends AbstractListModel
+        implements ComboBoxModel
 {
     @Structure
     ValueBuilderFactory vbf;

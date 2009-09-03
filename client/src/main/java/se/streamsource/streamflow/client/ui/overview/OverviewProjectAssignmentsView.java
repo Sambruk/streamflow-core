@@ -19,8 +19,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.client.ui.workspace.ProjectSelectionDialog;
 import se.streamsource.streamflow.client.ui.workspace.TaskTableView;
 
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 
 /**
  * JAVADOC

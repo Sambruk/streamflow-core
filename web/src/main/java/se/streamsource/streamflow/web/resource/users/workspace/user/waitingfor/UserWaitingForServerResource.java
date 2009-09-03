@@ -27,12 +27,7 @@ import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
-import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Delegatable;
-import se.streamsource.streamflow.web.domain.task.Delegations;
-import se.streamsource.streamflow.web.domain.task.IsRead;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.task.TaskStatus;
+import se.streamsource.streamflow.web.domain.task.*;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -54,11 +49,11 @@ public class UserWaitingForServerResource
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Association<Delegations> delegatedFrom = templateFor(Delegatable.DelegatableState.class).delegatedFrom();
         queryBuilder.where(and(
-                                eq(delegatedFrom, delegations),
-                                or(
-                                    eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                                    and(notEq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                                        eq(templateFor(IsRead.IsReadState.class).isRead(), false)))));
+                eq(delegatedFrom, delegations),
+                or(
+                        eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
+                        and(notEq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
+                                eq(templateFor(IsRead.IsReadState.class).isRead(), false)))));
 
         Query<TaskEntity> waitingForQuery = queryBuilder.newQuery(uow);
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));

@@ -29,7 +29,8 @@ public interface ExceptionHandlerService
     class ActivatableMixin
             implements Activatable
     {
-        @Service UncaughtExceptionHandler handler;
+        @Service
+        UncaughtExceptionHandler handler;
 
         public void activate() throws Exception
         {
@@ -42,7 +43,7 @@ public interface ExceptionHandlerService
             Thread.setDefaultUncaughtExceptionHandler(null);
         }
 
-        
+
     }
 
 }

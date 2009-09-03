@@ -14,8 +14,8 @@
 
 package se.streamsource.streamflow.resource.assignment;
 
-import se.streamsource.streamflow.resource.task.TaskDTO;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 
 /**
  * JAVADOC

@@ -23,7 +23,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * JAVADOC
  */
 public class StatisticsAssembler
-    implements Assembler
+        implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {

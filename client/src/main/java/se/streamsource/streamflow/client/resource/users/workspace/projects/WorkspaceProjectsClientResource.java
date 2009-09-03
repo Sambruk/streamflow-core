@@ -43,7 +43,7 @@ public class WorkspaceProjectsClientResource
 
     public ListValue listProjects() throws ResourceException
     {
-        return query("listProjects", ListValue.class);        
+        return query("listProjects", ListValue.class);
     }
 
     public List<WorkspaceProjectClientResource> projects() throws ResourceException
@@ -52,7 +52,7 @@ public class WorkspaceProjectsClientResource
         ListValue projects = listProjects();
         for (ListItemValue project : projects.items().get())
         {
-            WorkspaceProjectClientResource workspaceProjectResource =  project(project.entity().get().identity());
+            WorkspaceProjectClientResource workspaceProjectResource = project(project.entity().get().identity());
             projectResources.add(workspaceProjectResource);
         }
         return projectResources;

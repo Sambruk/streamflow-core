@@ -14,8 +14,8 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import org.hamcrest.CoreMatchers;
+import static org.hamcrest.CoreMatchers.equalTo;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;

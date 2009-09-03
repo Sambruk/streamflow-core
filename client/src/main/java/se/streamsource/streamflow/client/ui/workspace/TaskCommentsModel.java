@@ -20,7 +20,7 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.task.Task
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
  * JAVADOC
  */
 public class TaskCommentsModel
-    extends AbstractListModel
+        extends AbstractListModel
 {
     @Uses
     TaskCommentsClientResource commentsClientResource;

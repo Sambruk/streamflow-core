@@ -20,13 +20,11 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.resource.ResourceException;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -78,9 +76,9 @@ public class AdministrationView
                             e1.printStackTrace();
                         }
                         view = obf.newObjectBuilder(OrganizationalUnitAdministrationView.class).use(ouAdminModel,
-                                                                                                    ouAdminModel.groupsModel(),
-                                                                                                    ouAdminModel.projectsModel(),
-                                                                                                    ouAdminModel.rolesModel()).newInstance();
+                                ouAdminModel.groupsModel(),
+                                ouAdminModel.projectsModel(),
+                                ouAdminModel.rolesModel()).newInstance();
                     }
 
                     setRightComponent(view);

@@ -34,10 +34,10 @@ import java.util.List;
  * JAVADOC
  */
 public class AbstractTaskListServerResource
-    extends CommandQueryServerResource
+        extends CommandQueryServerResource
 {
 
-    protected  <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
+    protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
             Query<TaskEntity> inboxQuery,
             Class<V> taskClass,
             Class<T> taskListClass)

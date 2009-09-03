@@ -17,8 +17,6 @@ package se.streamsource.streamflow.client.resource.organizations.projects.member
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.BaseClientResource;
 
 /**

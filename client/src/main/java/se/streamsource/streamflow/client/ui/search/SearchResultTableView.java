@@ -16,8 +16,7 @@ package se.streamsource.streamflow.client.ui.search;
 
 import se.streamsource.streamflow.client.ui.workspace.TaskTableView;
 
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 
 /**
  * JAVADOC

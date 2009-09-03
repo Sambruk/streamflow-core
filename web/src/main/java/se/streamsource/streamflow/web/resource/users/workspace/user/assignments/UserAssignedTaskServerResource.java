@@ -21,17 +21,10 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Assignments;
-import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.Task;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.task.Inbox;
-import se.streamsource.streamflow.web.domain.task.Delegator;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
+import se.streamsource.streamflow.web.domain.task.*;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -134,7 +127,7 @@ public class UserAssignedTaskServerResource
         Label label = uow.get(Label.class, reference.entity().get().identity());
 
         task.removeLabel(label);
-    }    
+    }
 
     @Override
     protected Representation delete(Variant variant) throws ResourceException
@@ -152,7 +145,7 @@ public class UserAssignedTaskServerResource
                 // Only delete task if user owns it
                 uow.remove(task);
             }
-            
+
             uow.complete();
         } catch (UnitOfWorkCompletionException e)
         {

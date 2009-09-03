@@ -60,7 +60,7 @@ public class UserServerResource
 
         if (getRequest().getResourceRef().hasQuery())
         {
-           return super.get(variant);
+            return super.get(variant);
         }
         return getHtml("resources/user.html");
     }
@@ -106,8 +106,8 @@ public class UserServerResource
         {
             QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
             queryBuilder.where(
-                QueryExpressions.matches(
-                    QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.string().get()));
+                    QueryExpressions.matches(
+                            QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.string().get()));
             Query<GroupEntity> groups = queryBuilder.newQuery(uow);
 
             try

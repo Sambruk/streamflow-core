@@ -20,11 +20,11 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * Mapped to:

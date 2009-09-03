@@ -18,11 +18,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.ResourceMap;
 import org.qi4j.api.injection.scope.Service;
 
-import javax.swing.ActionMap;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
+import javax.swing.*;
 
 /**
  * JAVADOC

@@ -40,7 +40,7 @@ public interface Assignments
     void markAssignedTaskAsUnread(Task task);
 
     class AssignmentsMixin
-        implements Assignments
+            implements Assignments
     {
         @Structure
         UnitOfWorkFactory uowf;
@@ -72,7 +72,7 @@ public interface Assignments
         public void delegateAssignedTaskTo(Task task, Delegatee delegatee, Delegator delegator)
         {
             task.unassign();
-            task.delegateTo(delegatee,  delegator, delegations);
+            task.delegateTo(delegatee, delegator, delegations);
         }
 
         public void forwardAssignedTask(Task task, Inbox receiverInbox)

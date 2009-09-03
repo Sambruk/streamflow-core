@@ -28,9 +28,8 @@ import se.streamsource.streamflow.client.ui.administration.projects.members.Tabl
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -40,13 +39,13 @@ import java.awt.event.KeyEvent;
 public class ProjectSelectionDialog
         extends JPanel
 {
-    Dimension dialogSize = new Dimension(600,300);
+    Dimension dialogSize = new Dimension(600, 300);
     private TableSelectionView addProjectsView;
     public ListItemValue selected;
 
     public ProjectSelectionDialog(final @Uses WorkspaceProjectNode project,
-                               @Service ApplicationContext context,
-                               @Structure ObjectBuilderFactory obf)
+                                  @Service ApplicationContext context,
+                                  @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
@@ -56,7 +55,8 @@ public class ProjectSelectionDialog
         TableSingleSelectionModel projectsModel = obf.newObject(TableSingleSelectionModel.class);
         this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, "#Search projects").newInstance();
 
-        addProjectsView.getSearchInputField().addKeyListener(new KeyAdapter(){
+        addProjectsView.getSearchInputField().addKeyListener(new KeyAdapter()
+        {
             @Override
             public void keyReleased(KeyEvent keyEvent)
             {

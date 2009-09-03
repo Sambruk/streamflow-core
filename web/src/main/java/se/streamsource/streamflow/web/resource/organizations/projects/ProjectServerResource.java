@@ -26,11 +26,14 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.project.*;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.project.Projects;
+import se.streamsource.streamflow.web.domain.project.Role;
+import se.streamsource.streamflow.web.domain.project.Roles;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:

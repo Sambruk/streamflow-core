@@ -14,19 +14,18 @@
 
 package se.streamsource.streamflow.client.resource.users.workspace.user.task;
 
-import java.io.IOException;
-import java.util.Date;
-
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -57,11 +56,11 @@ public class TaskGeneralClientResource
         builder.prototype().string().set(newNote);
         putCommand("changeNote", builder.newInstance());
     }
-    
-    public void changeDueOn(Date newDueOn) throws ResourceException 
+
+    public void changeDueOn(Date newDueOn) throws ResourceException
     {
-    	ValueBuilder<DateDTO> builder = vbf.newValueBuilder(DateDTO.class);
-    	builder.prototype().date().set(newDueOn);
-    	putCommand("changeDueOn", builder.newInstance());
+        ValueBuilder<DateDTO> builder = vbf.newValueBuilder(DateDTO.class);
+        builder.prototype().date().set(newDueOn);
+        putCommand("changeDueOn", builder.newInstance());
     }
 }

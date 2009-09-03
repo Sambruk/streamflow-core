@@ -21,7 +21,7 @@ import org.qi4j.api.property.Property;
  * JAVADOC
  */
 public interface EventRecorderConfiguration
-    extends ConfigurationComposite
+        extends ConfigurationComposite
 {
     Property<String> file();
 }

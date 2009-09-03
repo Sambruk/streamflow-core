@@ -39,8 +39,10 @@ public class TableSingleSelectionModel
     {
         switch (column)
         {
-            case 0: return (row == selected);
-            case 1: return getModel().items().get().get(row).description().get();
+            case 0:
+                return (row == selected);
+            case 1:
+                return getModel().items().get().get(row).description().get();
         }
         return null;
     }

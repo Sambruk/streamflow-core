@@ -26,7 +26,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.resource.roles.DateDTO;
@@ -42,7 +41,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /users/{user}/workspace/user/{view}/{task}/general
  */
 public class TaskGeneralServerResource
-    extends CommandQueryServerResource
+        extends CommandQueryServerResource
 {
     @Structure
     UnitOfWorkFactory uowf;
@@ -68,8 +67,8 @@ public class TaskGeneralServerResource
         String comma = "";
         for (Label label : task.labels())
         {
-            labels += comma+label.getDescription();
-            comma=",";
+            labels += comma + label.getDescription();
+            comma = ",";
         }
 
         builder.prototype().labels().set(labels);
@@ -97,12 +96,12 @@ public class TaskGeneralServerResource
 
         notable.changeNote(noteValue.string().get());
     }
-    
+
     public void changeDueOn(DateDTO dueOnValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
-    	DueOn dueOn = uowf.currentUnitOfWork().get(DueOn.class, taskId);
-    	
-    	dueOn.dueOn(dueOnValue.date().get());
+        DueOn dueOn = uowf.currentUnitOfWork().get(DueOn.class, taskId);
+
+        dueOn.dueOn(dueOnValue.date().get());
     }
 }

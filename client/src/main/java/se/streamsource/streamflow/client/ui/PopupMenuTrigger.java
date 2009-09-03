@@ -14,8 +14,7 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import javax.swing.JPopupMenu;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -48,7 +47,7 @@ public class PopupMenuTrigger extends MouseAdapter
         if (e.isPopupTrigger())
         {
             if (selectionModel != null && selectionModel.isSelectionEmpty())
-                return;    
+                return;
 
             popup.show(e.getComponent(),
                     e.getX(), e.getY());

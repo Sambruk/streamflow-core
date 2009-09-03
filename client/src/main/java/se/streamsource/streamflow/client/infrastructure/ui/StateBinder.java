@@ -257,7 +257,7 @@ public class StateBinder
             // TODO Value conversion
 
             if (objectProperty.get() == null && newValue == null)
-            	return;
+                return;
             if (objectProperty.get() != null && objectProperty.get().equals(newValue))
                 return; // Do nothing
 
@@ -362,10 +362,13 @@ public class StateBinder
                 final JXDatePicker datePicker = (JXDatePicker) component;
                 datePicker.setInputVerifier(new PropertyInputVerifier(binding));
 
-                datePicker.addPropertyChangeListener(new PropertyChangeListener() {
-                    public void propertyChange(PropertyChangeEvent e) {
-                        if ("date".equals(e.getPropertyName())) {
-    						binding.updateProperty(e.getNewValue());
+                datePicker.addPropertyChangeListener(new PropertyChangeListener()
+                {
+                    public void propertyChange(PropertyChangeEvent e)
+                    {
+                        if ("date".equals(e.getPropertyName()))
+                        {
+                            binding.updateProperty(e.getNewValue());
                         }
                     }
                 });
@@ -397,10 +400,10 @@ public class StateBinder
             {
                 JLabel label = (JLabel) component;
                 label.setText((String) value);
-            } else if (component instanceof JXDatePicker) 
+            } else if (component instanceof JXDatePicker)
             {
-            	JXDatePicker datePicker = (JXDatePicker) component;
-            	datePicker.setDate((Date) value);
+                JXDatePicker datePicker = (JXDatePicker) component;
+                datePicker.setDate((Date) value);
             }
         }
     }
@@ -424,10 +427,10 @@ public class StateBinder
                 Object value = null;
                 if (input instanceof JTextComponent)
                 {
-                    value = ((JTextComponent)input).getText();
+                    value = ((JTextComponent) input).getText();
                 } else if (input instanceof JXDatePicker)
                 {
-                    value = ((JXDatePicker)input).getDate();
+                    value = ((JXDatePicker) input).getDate();
                 }
                 binding.updateProperty(value);
                 return true;
@@ -444,9 +447,9 @@ public class StateBinder
             boolean result = super.shouldYieldFocus(input);
 
             /**if (input instanceof JFormattedTextField)
-            {
-                result = ((JFormattedTextField) input).isEditValid();
-            }*/
+             {
+             result = ((JFormattedTextField) input).isEditValid();
+             }*/
 
             if (!result)
             {

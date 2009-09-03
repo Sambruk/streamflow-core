@@ -62,7 +62,7 @@ public interface Delegatable
     }
 
     abstract class DelegatableMixin
-        implements Delegatable, DelegatableState
+            implements Delegatable, DelegatableState
     {
         @This
         Ownable.OwnableState ownable;
@@ -101,12 +101,15 @@ public interface Delegatable
     }
 
     abstract class UnreadOnStatusChangeSideEffect
-        extends SideEffectOf<TaskStatus>
-        implements TaskStatus
+            extends SideEffectOf<TaskStatus>
+            implements TaskStatus
     {
-        @This DelegatableState state;
-        @This TaskStatusState status;
-        @This IsRead isRead;
+        @This
+        DelegatableState state;
+        @This
+        TaskStatusState status;
+        @This
+        IsRead isRead;
 
         public void complete(Assignee assignee)
         {
@@ -131,10 +134,11 @@ public interface Delegatable
 
 
     abstract class UnreadOnRejectSideEffect
-        extends SideEffectOf<Delegatable>
-        implements Delegatable
+            extends SideEffectOf<Delegatable>
+            implements Delegatable
     {
-        @This IsRead read;
+        @This
+        IsRead read;
 
         public void rejectDelegation()
         {

@@ -80,14 +80,14 @@
             <scope>test</scope>
         </dependency>
 
-<!--
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-queryparser-sparql</artifactId>
-            <version>2.2.1</version>
-        </dependency>
+        <!--
+                <dependency>
+                    <groupId>org.openrdf.sesame</groupId>
+                    <artifactId>sesame-queryparser-sparql</artifactId>
+                    <version>2.2.1</version>
+                </dependency>
 
--->
+        -->
         <!-- Testing -->
         <dependency>
             <groupId>org.jbehave</groupId>

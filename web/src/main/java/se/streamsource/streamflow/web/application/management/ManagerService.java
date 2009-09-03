@@ -28,21 +28,8 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.modelmbean.ModelMBean;
-import javax.management.modelmbean.ModelMBeanInfo;
-import javax.management.modelmbean.ModelMBeanInfoSupport;
-import javax.management.modelmbean.ModelMBeanOperationInfo;
-import javax.management.modelmbean.RequiredModelMBean;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
+import javax.management.modelmbean.*;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -57,10 +44,10 @@ import java.util.zip.GZIPOutputStream;
  */
 @Mixins(ManagerService.ManagerMixin.class)
 public interface ManagerService
-    extends Manager, ServiceComposite, Activatable
+        extends Manager, ServiceComposite, Activatable
 {
     class ManagerMixin
-        implements Manager, Activatable
+            implements Manager, Activatable
     {
         @Service
         MBeanServer server;
@@ -93,7 +80,7 @@ public interface ManagerService
                 String name = method.getName();
                 try
                 {
-                    name = bundle.getString(name+".name");
+                    name = bundle.getString(name + ".name");
                 } catch (MissingResourceException e)
                 {
                     // Ignore
@@ -105,22 +92,22 @@ public interface ManagerService
                 {
                     Class<?> parameterType = method.getParameterTypes()[j];
                     Name paramName = getAnnotationOfType(annotations[j], Name.class);
-                    String nameStr = paramName == null ? "param"+j : paramName.value();
+                    String nameStr = paramName == null ? "param" + j : paramName.value();
                     signature[j] = new MBeanParameterInfo(nameStr, parameterType.getName(), nameStr);
                 }
 
                 ModelMBeanOperationInfo operation =
-                    new ModelMBeanOperationInfo(method.getName(), name, signature, method.getReturnType().getName(), MBeanOperationInfo.ACTION);
+                        new ModelMBeanOperationInfo(method.getName(), name, signature, method.getReturnType().getName(), MBeanOperationInfo.ACTION);
                 operations[i] = operation;
             }
 
             ModelMBeanInfo mmbi =
-                new ModelMBeanInfoSupport(Manager.class.getName(),
-                                          "StreamFlow manager",
-                                          null,  // no attributes
-                                          null,  // no constructors
-                                          operations,
-                                          null); // no notifications
+                    new ModelMBeanInfoSupport(Manager.class.getName(),
+                            "StreamFlow manager",
+                            null,  // no attributes
+                            null,  // no constructors
+                            operations,
+                            null); // no notifications
 
             // Make the Model MBean and link it to the resource
             ModelMBean mmb = new RequiredModelMBean(mmbi);
@@ -143,7 +130,7 @@ public interface ManagerService
         public String exportDatabase(boolean compress) throws IOException
         {
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
-            File exportFile = new File(exports, "streamflow_"+format.format(new Date())+ (compress ? ".json.gz": ".json"));
+            File exportFile = new File(exports, "streamflow_" + format.format(new Date()) + (compress ? ".json.gz" : ".json"));
             OutputStream out = new FileOutputStream(exportFile);
 
             if (compress)
@@ -155,7 +142,7 @@ public interface ManagerService
             exportDatabase.exportTo(writer);
             writer.close();
 
-            return "Database exported to "+exportFile.getAbsolutePath();
+            return "Database exported to " + exportFile.getAbsolutePath();
         }
 
         public String importDatabase(@Name("Filename") String name) throws IOException
@@ -163,11 +150,11 @@ public interface ManagerService
             File importFile = new File(exports, name);
 
             if (!importFile.exists())
-                return "No such import file:"+importFile.getAbsolutePath();
+                return "No such import file:" + importFile.getAbsolutePath();
 
             InputStream in1 = new FileInputStream(importFile);
-            if (importFile.getName().endsWith("gz"));
-                in1 = new GZIPInputStream(in1);
+            if (importFile.getName().endsWith("gz")) ;
+            in1 = new GZIPInputStream(in1);
             Reader in = new InputStreamReader(in1, "UTF-8");
 
             try
@@ -181,13 +168,13 @@ public interface ManagerService
             return "Data imported successfully";
         }
 
-        private <T extends Annotation> T getAnnotationOfType( Annotation[] annotations, Class<T> annotationType )
+        private <T extends Annotation> T getAnnotationOfType(Annotation[] annotations, Class<T> annotationType)
         {
-            for( Annotation annotation : annotations )
+            for (Annotation annotation : annotations)
             {
-                if( annotationType.equals( annotation.annotationType() ) )
+                if (annotationType.equals(annotation.annotationType()))
                 {
-                    return annotationType.cast( annotation );
+                    return annotationType.cast(annotation);
                 }
             }
             return null;

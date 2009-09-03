@@ -18,8 +18,7 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.ui.workspace.LabelMenu;
 import se.streamsource.streamflow.client.ui.workspace.TaskTableView;
 
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -27,7 +26,8 @@ import javax.swing.JPopupMenu;
 public class OverviewProjectWaitingForView
         extends TaskTableView
 {
-    @Uses LabelMenu labelMenu;
+    @Uses
+    LabelMenu labelMenu;
 
     protected void buildPopupMenu(JPopupMenu popup)
     {

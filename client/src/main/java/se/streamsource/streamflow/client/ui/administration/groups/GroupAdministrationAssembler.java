@@ -18,7 +18,6 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 
 /**
  * JAVADOC

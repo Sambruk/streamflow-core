@@ -28,7 +28,7 @@ public interface WaitingFor
     void markWaitingForAsRead(Task task);
 
     class WaitingForMixin
-        implements WaitingFor
+            implements WaitingFor
     {
         @This
         Owner owner;

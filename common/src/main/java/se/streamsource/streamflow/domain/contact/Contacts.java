@@ -40,11 +40,12 @@ public interface Contacts
         @UseDefaults
         Property<List<ContactValue>> contacts();
     }
-    
+
     class ContactsMixin
-    implements Contacts
+            implements Contacts
     {
-        @This ContactsState state;
+        @This
+        ContactsState state;
 
         @Structure
         ValueBuilderFactory vbf;
@@ -60,14 +61,14 @@ public interface Contacts
         {
             List<ContactValue> contacts = state.contacts().get();
             contacts.add(index, contact);
-            contacts.remove(index+1);
+            contacts.remove(index + 1);
             state.contacts().set(contacts);
         }
 
         public void deleteContact(int index)
         {
             List<ContactValue> contacts = state.contacts().get();
-            if (index<contacts.size())
+            if (index < contacts.size())
             {
                 contacts.remove(index);
             }
@@ -75,5 +76,5 @@ public interface Contacts
 
         }
     }
-    
+
 }

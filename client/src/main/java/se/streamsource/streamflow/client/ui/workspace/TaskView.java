@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 /**
  * JAVADOC

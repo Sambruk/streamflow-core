@@ -50,12 +50,13 @@ public class TaskContactsView
 
         ActionMap am = context.getActionMap(this);
         setActionMap(am);
-        setMinimumSize(new Dimension(150,0));
+        setMinimumSize(new Dimension(150, 0));
 
-        contactView  = obf.newObject(TaskContactView.class);
+        contactView = obf.newObject(TaskContactView.class);
 
         contacts = new JList();
-        contacts.setCellRenderer(new DefaultListCellRenderer() {
+        contacts.setCellRenderer(new DefaultListCellRenderer()
+        {
 
             @Override
             public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)
@@ -85,7 +86,7 @@ public class TaskContactsView
     {
         model.createContact();
         model.refresh();
-        contacts.setSelectedIndex(model.getSize()-1);
+        contacts.setSelectedIndex(model.getSize() - 1);
         getContactView().requestFocus();
     }
 
@@ -121,7 +122,8 @@ public class TaskContactsView
     {
         this.model = model;
         contacts.setModel(model);
-        if (model.getSize()>0) {
+        if (model.getSize() > 0)
+        {
             contacts.setSelectedIndex(0);
         }
     }

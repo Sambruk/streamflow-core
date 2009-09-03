@@ -25,12 +25,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -73,7 +69,7 @@ public class ProjectsView
     public void add()
     {
         NameDialog dialog = nameDialogs.iterator().next();
-        
+
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         if (dialog.name() != null)

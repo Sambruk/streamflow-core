@@ -30,10 +30,11 @@ public interface OrganizationEntity
         Organization
 {
     class LifecycleConcern
-        extends ConcernOf<Lifecycle>
-        implements Lifecycle
+            extends ConcernOf<Lifecycle>
+            implements Lifecycle
     {
-        @This Organization org;
+        @This
+        Organization org;
 
         @This
         OrganizationalUnitState state;

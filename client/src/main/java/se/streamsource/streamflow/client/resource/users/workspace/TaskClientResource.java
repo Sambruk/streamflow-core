@@ -22,10 +22,10 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC

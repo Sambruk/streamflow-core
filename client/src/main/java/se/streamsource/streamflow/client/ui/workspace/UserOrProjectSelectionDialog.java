@@ -28,12 +28,10 @@ import se.streamsource.streamflow.client.ui.administration.projects.members.Tabl
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -43,14 +41,14 @@ import java.awt.event.KeyEvent;
 public class UserOrProjectSelectionDialog
         extends JPanel
 {
-    Dimension dialogSize = new Dimension(600,300);
+    Dimension dialogSize = new Dimension(600, 300);
     private TableSelectionView addUsersView;
     private TableSelectionView addProjectsView;
     public ListItemValue selected;
 
     public UserOrProjectSelectionDialog(final @Uses WorkspaceUserNode user,
-                               @Service ApplicationContext context,
-                               @Structure ObjectBuilderFactory obf)
+                                        @Service ApplicationContext context,
+                                        @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
@@ -65,7 +63,8 @@ public class UserOrProjectSelectionDialog
 
         JSplitPane dialog = new JSplitPane();
 
-        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter(){
+        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter()
+        {
             @Override
             public void keyReleased(KeyEvent keyEvent)
             {
@@ -80,7 +79,8 @@ public class UserOrProjectSelectionDialog
             }
         });
 
-        addProjectsView.getSearchInputField().addKeyListener(new KeyAdapter(){
+        addProjectsView.getSearchInputField().addKeyListener(new KeyAdapter()
+        {
             @Override
             public void keyReleased(KeyEvent keyEvent)
             {
@@ -94,7 +94,8 @@ public class UserOrProjectSelectionDialog
                 }
             }
         });
-        addProjectsView.getModel().addTableModelListener(new TableModelListener(){
+        addProjectsView.getModel().addTableModelListener(new TableModelListener()
+        {
 
             public void tableChanged(TableModelEvent tableModelEvent)
             {
@@ -105,7 +106,8 @@ public class UserOrProjectSelectionDialog
             }
         });
 
-        addUsersView.getModel().addTableModelListener(new TableModelListener(){
+        addUsersView.getModel().addTableModelListener(new TableModelListener()
+        {
 
             public void tableChanged(TableModelEvent tableModelEvent)
             {
@@ -116,7 +118,7 @@ public class UserOrProjectSelectionDialog
             }
         });
 
-        
+
         dialog.setLeftComponent(addUsersView);
         dialog.setRightComponent(addProjectsView);
         dialog.setPreferredSize(dialogSize);

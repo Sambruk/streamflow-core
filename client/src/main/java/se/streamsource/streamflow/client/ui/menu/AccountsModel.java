@@ -33,7 +33,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,7 +118,8 @@ public class AccountsModel
     {
         UnitOfWork uow = uowf.newUnitOfWork();
         final ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder(ListItemValue.class);
-        repository.individual().visitAccounts(new AccountVisitor(){
+        repository.individual().visitAccounts(new AccountVisitor()
+        {
 
             public void visitAccount(Account account)
             {

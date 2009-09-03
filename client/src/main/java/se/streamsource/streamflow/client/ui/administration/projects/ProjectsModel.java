@@ -30,7 +30,7 @@ import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -133,7 +133,7 @@ public class ProjectsModel
         builder.prototype().string().set(newName);
 
         projects.project(list.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
-        
+
         refresh();
     }
 }

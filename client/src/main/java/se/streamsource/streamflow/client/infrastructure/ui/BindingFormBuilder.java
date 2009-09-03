@@ -21,17 +21,8 @@ import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -93,6 +84,7 @@ public class BindingFormBuilder
                         return new JXDatePicker();
                     }
                 };
+
         public abstract Component newField();
     }
 
@@ -138,17 +130,17 @@ public class BindingFormBuilder
         label.setLabelFor(component);
         formBuilder.nextLine();
 
-        if(component instanceof JXDatePicker)
+        if (component instanceof JXDatePicker)
         {
             // Limit pickable dates to future 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
             calendar.add(Calendar.DAY_OF_MONTH, 1);
-            ((JXDatePicker)component).getMonthView().setLowerBound(calendar.getTime());
+            ((JXDatePicker) component).getMonthView().setLowerBound(calendar.getTime());
             // Set date format
-            ((JXDatePicker)component).setFormats(new SimpleDateFormat(getResource(WorkspaceResources.date_format)));
+            ((JXDatePicker) component).setFormats(new SimpleDateFormat(getResource(WorkspaceResources.date_format)));
         }
-        
+
         return this;
     }
 

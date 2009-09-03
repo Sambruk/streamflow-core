@@ -17,11 +17,7 @@ package se.streamsource.streamflow.client.ui.overview;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTree;
-import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
-import org.jdesktop.swingx.renderer.IconValue;
-import org.jdesktop.swingx.renderer.StringValue;
-import org.jdesktop.swingx.renderer.WrappingIconPanel;
-import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.jdesktop.swingx.renderer.*;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -33,15 +29,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 
-import javax.swing.AbstractAction;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -49,10 +37,7 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -67,9 +52,9 @@ public class OverviewView
     private OverviewModel model;
 
     public OverviewView(final @Service ApplicationContext context,
-                         @Uses final OverviewModel model,
-                         @Uses final AccountModel accountModel,
-                         final @Structure ObjectBuilderFactory obf)
+                        @Uses final OverviewModel model,
+                        @Uses final AccountModel accountModel,
+                        final @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
@@ -111,7 +96,7 @@ public class OverviewView
                     public String getString(Object o)
                     {
                         if (o instanceof OverviewProjectNode)
-                            return ((OverviewProjectNode)o).projectName();
+                            return ((OverviewProjectNode) o).projectName();
                         else if (o instanceof OverviewProjectsNode)
                             return i18n.text(OverviewResources.projects_node);
                         else if (o instanceof OverviewProjectAssignmentsNode)
@@ -173,8 +158,7 @@ public class OverviewView
                     if (node instanceof OverviewProjectsNode)
                     {
                         view = new JPanel();
-                    }
-                    else if (node instanceof OverviewProjectAssignmentsNode)
+                    } else if (node instanceof OverviewProjectAssignmentsNode)
                     {
                         OverviewProjectAssignmentsNode projectAssignmentsNode = (OverviewProjectAssignmentsNode) node;
                         final OverviewProjectAssignmentsModel assignmentsModel = projectAssignmentsNode.assignmentsModel();
@@ -243,7 +227,7 @@ public class OverviewView
                 {
                     try
                     {
-                        ((OverviewProjectsNode)node).refresh();
+                        ((OverviewProjectsNode) node).refresh();
                         model.reload((TreeNode) node);
                     } catch (Exception e)
                     {

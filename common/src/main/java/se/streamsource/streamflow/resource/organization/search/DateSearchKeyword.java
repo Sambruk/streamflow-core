@@ -17,22 +17,34 @@ package se.streamsource.streamflow.resource.organization.search;
 /**
  * JAVADOC
  */
-public enum DateSearchKeyword 
+public enum DateSearchKeyword
 {
-	TODAY
-	{ 
-        public String toString(){ return "TODAY"; } 
-    }, 
+    TODAY
+            {
+                public String toString()
+                {
+                    return "TODAY";
+                }
+            },
     YESTERDAY
-    { 
-        public String toString(){ return "YESTERDAY"; } 
-    }, 
+            {
+                public String toString()
+                {
+                    return "YESTERDAY";
+                }
+            },
     HOUR
-    { 
-        public String toString(){ return "HOUR"; } 
-    }, 
+            {
+                public String toString()
+                {
+                    return "HOUR";
+                }
+            },
     WEEK
-    { 
-        public String toString(){ return "WEEK"; } 
-    }
+            {
+                public String toString()
+                {
+                    return "WEEK";
+                }
+            }
 }

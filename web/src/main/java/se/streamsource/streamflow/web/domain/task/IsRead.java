@@ -43,7 +43,7 @@ public interface IsRead
     }
 
     public abstract class IsReadMixin
-        implements IsRead, IsReadState
+            implements IsRead, IsReadState
     {
         public void markAsRead()
         {

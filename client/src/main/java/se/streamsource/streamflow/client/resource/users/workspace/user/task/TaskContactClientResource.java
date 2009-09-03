@@ -61,11 +61,10 @@ public class TaskContactClientResource
         putCommand("changeAddress", address);
     }
 
-    public void changeEmailAddress(ContactEmailValue emailAddress) throws ResourceException 
+    public void changeEmailAddress(ContactEmailValue emailAddress) throws ResourceException
     {
         putCommand("changeEmailAddress", emailAddress);
     }
-
 
 
 }

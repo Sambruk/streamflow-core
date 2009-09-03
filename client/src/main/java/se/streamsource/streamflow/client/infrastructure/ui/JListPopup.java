@@ -14,10 +14,7 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import javax.swing.JList;
-import javax.swing.JPopupMenu;
-import javax.swing.ListModel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 

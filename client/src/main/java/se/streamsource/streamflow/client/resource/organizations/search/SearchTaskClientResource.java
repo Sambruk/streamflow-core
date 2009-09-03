@@ -14,10 +14,10 @@
 
 package se.streamsource.streamflow.client.resource.organizations.search;
 
-import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
+import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
 
 /**
  * JAVADOC

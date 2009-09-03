@@ -118,7 +118,7 @@ public class ClientResourceAssembler
                 OverviewProjectClientResource.class,
                 OverviewProjectAssignmentsClientResource.class
 
-                ).visibleIn(Visibility.application);
+        ).visibleIn(Visibility.application);
 
         // /organizations
         module.addObjects(OrganizationClientResource.class,

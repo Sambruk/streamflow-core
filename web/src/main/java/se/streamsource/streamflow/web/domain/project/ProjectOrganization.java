@@ -33,7 +33,7 @@ public interface ProjectOrganization
     }
 
     class ProjectOrganizationMixin
-        implements ProjectOrganization
+            implements ProjectOrganization
     {
         @This
         ProjectOrganizationState state;

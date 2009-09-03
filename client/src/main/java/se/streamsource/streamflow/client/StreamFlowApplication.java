@@ -58,16 +58,10 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
@@ -159,7 +153,7 @@ public class StreamFlowApplication
         });
 */
     }
-    
+
     public void init(@Uses final AccountsModel accountsModel, @Structure final ObjectBuilderFactory obf) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
         this.accountsModel = accountsModel;
@@ -255,7 +249,7 @@ public class StreamFlowApplication
                     Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.ready.name());
                     Logger.getLogger(LoggerCategories.PROGRESS).info(LoggerCategories.DONE);
 
-                    Logger.getLogger(LoggerCategories.HTTP).info(request.getResourceRef().toString() +"->"+response.getStatus());
+                    Logger.getLogger(LoggerCategories.HTTP).info(request.getResourceRef().toString() + "->" + response.getStatus());
 
                     super.afterHandle(request, response);
                 }
@@ -304,6 +298,7 @@ public class StreamFlowApplication
 
     // Menu actions
     // Account menu
+
     @Action
     public void showWorkspaceWindow()
     {

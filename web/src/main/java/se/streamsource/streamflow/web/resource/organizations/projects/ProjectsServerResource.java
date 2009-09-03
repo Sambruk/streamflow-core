@@ -61,7 +61,7 @@ public class ProjectsServerResource
         {
             throw new ResourceException(e);
         }
-        
+
         String identity = getRequest().getAttributes().get("organization").toString();
 
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Project"));

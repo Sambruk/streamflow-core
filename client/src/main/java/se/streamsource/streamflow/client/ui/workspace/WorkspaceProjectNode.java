@@ -35,10 +35,11 @@ public class WorkspaceProjectNode
 {
     private LabelsModel labelsModel;
 
-    @Uses String projectName;
+    @Uses
+    String projectName;
 
     public WorkspaceProjectNode(@Uses WorkspaceProjectClientResource workspaceProjectClientResource,
-                             @Structure ObjectBuilderFactory obf)
+                                @Structure ObjectBuilderFactory obf)
     {
         super(workspaceProjectClientResource);
 
@@ -75,11 +76,11 @@ public class WorkspaceProjectNode
 
     public ListValue findUsers(String name) throws ResourceException
     {
-        return ((WorkspaceProjectClientResource)getUserObject()).findUsers(name);
+        return ((WorkspaceProjectClientResource) getUserObject()).findUsers(name);
     }
 
     public ListValue findProjects(String name) throws ResourceException
     {
-        return ((WorkspaceProjectClientResource)getUserObject()).findProjects(name);
+        return ((WorkspaceProjectClientResource) getUserObject()).findProjects(name);
     }
 }

@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
  */
 @AppliesTo(Event.class)
 public class EventSideEffect
-    extends GenericSideEffect
+        extends GenericSideEffect
 {
     @Service
     Iterable<EventListener> listeners;

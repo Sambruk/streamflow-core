@@ -17,8 +17,8 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import javax.swing.ImageIcon;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 /**

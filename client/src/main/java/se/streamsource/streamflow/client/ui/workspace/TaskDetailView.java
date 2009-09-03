@@ -22,8 +22,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
-import javax.swing.JLabel;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 
 /**
@@ -108,7 +107,7 @@ public class TaskDetailView
     {
         if (model == null && index != -1)
             return; // Ignore since no model is set
-        
+
         super.setSelectedIndex(index);
     }
 }

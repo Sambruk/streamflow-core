@@ -30,6 +30,7 @@ public class LabelsClientResource
     {
         super(context, reference);
     }
+
     public ListValue labels() throws ResourceException
     {
         return query("labels", ListValue.class);

@@ -55,7 +55,6 @@ public abstract class AbstractTableSelectionModel<T>
     boolean[] columnEditable = {true, false};
 
 
-
     public Class<?> getColumnClass(int column)
     {
         return columnClasses[column];

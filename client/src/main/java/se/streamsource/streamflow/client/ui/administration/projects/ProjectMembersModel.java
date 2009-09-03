@@ -40,8 +40,10 @@ import java.util.Set;
 public class ProjectMembersModel
         implements TreeModel, Refreshable
 {
-    @Uses private MembersClientResource members;
-    @Uses OrganizationalUnitAdministrationModel ouAdminModel;
+    @Uses
+    private MembersClientResource members;
+    @Uses
+    OrganizationalUnitAdministrationModel ouAdminModel;
 
     @Structure
     ObjectBuilderFactory obf;
@@ -128,7 +130,7 @@ public class ProjectMembersModel
     {
         try
         {
-            for (String value: newMembers)
+            for (String value : newMembers)
             {
                 MemberClientResource member = this.members.member(value);
                 member.put(null);

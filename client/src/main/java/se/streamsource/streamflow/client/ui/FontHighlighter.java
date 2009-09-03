@@ -18,8 +18,7 @@ import org.jdesktop.swingx.decorator.AbstractHighlighter;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -41,7 +40,7 @@ public class FontHighlighter
     @Override
     public Component highlight(Component component, ComponentAdapter componentAdapter)
     {
-        if (getHighlightPredicate().isHighlighted(component,  componentAdapter))
+        if (getHighlightPredicate().isHighlighted(component, componentAdapter))
             component.setFont(highlightedFont);
         else
             component.setFont(normalFont);

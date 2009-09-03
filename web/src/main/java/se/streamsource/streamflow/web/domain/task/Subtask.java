@@ -34,7 +34,7 @@ public interface Subtask
     }
 
     class SubtaskMixin
-        implements Subtask
+            implements Subtask
     {
         @This
         SubtaskState state;

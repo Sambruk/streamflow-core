@@ -22,7 +22,7 @@ import java.util.Date;
  * Query that restricts what events to return
  */
 public class EventQuery
-    implements EventSpecification
+        implements EventSpecification
 {
     private Date afterDate; // Only return events after this date
     private String name; // Only return events with this name

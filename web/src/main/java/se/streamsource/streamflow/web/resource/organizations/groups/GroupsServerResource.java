@@ -49,7 +49,7 @@ public class GroupsServerResource
         {
             builder.addListItem(group.getDescription(), EntityReference.getEntityReference(group));
         }
-        
+
         return builder.newList();
     }
 

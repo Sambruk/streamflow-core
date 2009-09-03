@@ -14,12 +14,12 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
@@ -27,14 +27,14 @@ import se.streamsource.streamflow.client.resource.organizations.OrganizationClie
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
  */
 public class OrganizationalUnitAdministrationModel
-    implements Refreshable
+        implements Refreshable
 {
     @Structure
     ValueBuilderFactory vbf;

@@ -29,7 +29,7 @@ public class OrganizationAssembler
     {
         module.addServices(BootstrapDataService.class).instantiateOnStartup();
 
-        if (module.layerAssembly().applicationAssembly().mode()== Application.Mode.development)
+        if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.development)
             module.addServices(TestDataService.class).instantiateOnStartup();
     }
 }

@@ -19,8 +19,8 @@ import org.jdesktop.swingx.error.ErrorInfo;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 
-import javax.swing.SwingUtilities;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.logging.Level;

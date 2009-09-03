@@ -41,7 +41,7 @@ import java.util.Observer;
  */
 public class TaskContactView
         extends JPanel
-    implements Observer
+        implements Observer
 {
     private StateBinder contactBinder;
     private StateBinder phoneNumberBinder;
@@ -73,7 +73,7 @@ public class TaskContactView
 
         phoneNumberBinder = new StateBinder();
         phoneNumberBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        ContactPhoneValue phoneTemplate =  phoneNumberBinder.bindingTemplate(ContactPhoneValue.class);
+        ContactPhoneValue phoneTemplate = phoneNumberBinder.bindingTemplate(ContactPhoneValue.class);
 
         addressBinder = new StateBinder();
         addressBinder.setResourceMap(appContext.getResourceMap(getClass()));
@@ -85,13 +85,13 @@ public class TaskContactView
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, contactBinder);
         bb
-        .appendLine(WorkspaceResources.name_label, defaultFocusField = (JTextField)TEXTFIELD.newField(), template.name())
-        .appendLine(WorkspaceResources.contact_id_label, TEXTFIELD, template.contactId())
-        .appendLine(WorkspaceResources.phone_label, TEXTFIELD, phoneTemplate.phoneNumber(), phoneNumberBinder)
-        .appendLine(WorkspaceResources.address_label, TEXTFIELD, addressTemplate.address(), addressBinder)
-        .appendLine(WorkspaceResources.email_label, TEXTFIELD, emailTemplate.emailAddress(), emailBinder)
-        .appendLine(WorkspaceResources.company_label, TEXTFIELD, template.company())
-        .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note());
+                .appendLine(WorkspaceResources.name_label, defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name())
+                .appendLine(WorkspaceResources.contact_id_label, TEXTFIELD, template.contactId())
+                .appendLine(WorkspaceResources.phone_label, TEXTFIELD, phoneTemplate.phoneNumber(), phoneNumberBinder)
+                .appendLine(WorkspaceResources.address_label, TEXTFIELD, addressTemplate.address(), addressBinder)
+                .appendLine(WorkspaceResources.email_label, TEXTFIELD, emailTemplate.emailAddress(), emailBinder)
+                .appendLine(WorkspaceResources.company_label, TEXTFIELD, template.company())
+                .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note());
 
 
         contactBinder.addObserver(this);
@@ -157,10 +157,10 @@ public class TaskContactView
         {
             try
             {
-                model.changePhoneNumber((String) property.get());   
+                model.changePhoneNumber((String) property.get());
             } catch (ResourceException e)
             {
-               throw new OperationException(WorkspaceResources.could_not_change_phone_number, e);
+                throw new OperationException(WorkspaceResources.could_not_change_phone_number, e);
             }
         } else if (property.qualifiedName().name().equals("address"))
         {
@@ -169,7 +169,7 @@ public class TaskContactView
                 model.changeAddress((String) property.get());
             } catch (ResourceException e)
             {
-               throw new OperationException(WorkspaceResources.could_not_change_address, e);
+                throw new OperationException(WorkspaceResources.could_not_change_address, e);
             }
         } else if (property.qualifiedName().name().equals("emailAddress"))
         {
@@ -178,13 +178,14 @@ public class TaskContactView
                 model.changeEmailAddress((String) property.get());
             } catch (ResourceException e)
             {
-               throw new OperationException(WorkspaceResources.could_not_change_email_address, e);
+                throw new OperationException(WorkspaceResources.could_not_change_email_address, e);
             }
         }
     }
 
     @Override
-    public void requestFocus() {
+    public void requestFocus()
+    {
         super.requestFocus();
         defaultFocusField.requestFocus();
     }

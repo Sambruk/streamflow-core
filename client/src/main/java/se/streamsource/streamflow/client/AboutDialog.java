@@ -18,15 +18,14 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.swingx.util.WindowUtils;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
  */
 public class AboutDialog
-    extends JPanel
+        extends JPanel
 {
     public AboutDialog()
     {

@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui;
 
 import org.restlet.resource.ResourceException;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 /**
  * JAVADOC

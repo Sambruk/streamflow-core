@@ -41,7 +41,8 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     public static final int IS_READ = 10;
     public static final int IS_DROPPED = 11;
 
-    @Uses TaskListClientResource resource;
+    @Uses
+    TaskListClientResource resource;
 
     @Structure
     ValueBuilderFactory vbf;
@@ -134,14 +135,14 @@ public abstract class TaskTableModel<T extends TaskListDTO>
                 List<ListItemValue> labels = task.labels().get().items().get();
                 if (labels.size() > 0)
                 {
-                    desc+= " (";
+                    desc += " (";
                     String comma = "";
                     for (ListItemValue label : labels)
                     {
-                        desc+=comma+label.description().get();
-                        comma=",";
+                        desc += comma + label.description().get();
+                        comma = ",";
                     }
-                    desc+=")";
+                    desc += ")";
                 }
                 return desc;
             }

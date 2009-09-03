@@ -14,16 +14,13 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
-import java.awt.Component;
-import java.beans.PropertyChangeListener;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * JAVADOC
@@ -46,7 +43,7 @@ public class FormEditor
         {
             if (component instanceof JPanel)
             {
-                init(((JPanel)component).getComponents());
+                init(((JPanel) component).getComponents());
             } else if (component instanceof JLabel)
             {
                 final JLabel label = (JLabel) component;

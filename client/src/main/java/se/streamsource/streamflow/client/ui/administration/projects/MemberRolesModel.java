@@ -31,8 +31,10 @@ import java.util.List;
 public class MemberRolesModel
         extends AbstractTableModel
 {
-    @Uses OrganizationalUnitAdministrationModel organizationModel;
-    @Uses MemberClientResource member;
+    @Uses
+    OrganizationalUnitAdministrationModel organizationModel;
+    @Uses
+    MemberClientResource member;
 
     ListValue memberRoles;
     List<ListItemValue> allRoles;
@@ -68,8 +70,10 @@ public class MemberRolesModel
     {
         switch (column)
         {
-            case 0: return memberRoles.items().get().contains(allRoles.get(row));
-            case 1: return allRoles.get(row).description().get();
+            case 0:
+                return memberRoles.items().get().contains(allRoles.get(row));
+            case 1:
+                return allRoles.get(row).description().get();
         }
         return null;
     }

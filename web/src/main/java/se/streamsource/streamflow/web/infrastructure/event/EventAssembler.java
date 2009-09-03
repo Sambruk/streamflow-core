@@ -14,16 +14,16 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * JAVADOC
  */
 public class EventAssembler
-    implements Assembler
+        implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {

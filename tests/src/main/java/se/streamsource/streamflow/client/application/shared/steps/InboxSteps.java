@@ -92,7 +92,7 @@ public class InboxSteps
         } else if (read.equals("unread"))
         {
             ensureThat(!taskEntity.isRead().get());
-        } else 
+        } else
         {
             ensureThat(false);
         }
@@ -103,7 +103,7 @@ public class InboxSteps
     public void ownedByProject()
     {
         TaskEntity taskEntity = (TaskEntity) task;
-        ensureThat((Owner)projectInbox, equalTo(taskEntity.owner().get()));
+        ensureThat((Owner) projectInbox, equalTo(taskEntity.owner().get()));
     }
 
 
@@ -130,7 +130,7 @@ public class InboxSteps
     @When("user assigns the task to himself")
     public void assignTaskToUser()
     {
-        inbox.assignTo(task,userSteps.user);
+        inbox.assignTo(task, userSteps.user);
     }
 
     @Then("the task is assigned to user")
@@ -143,7 +143,7 @@ public class InboxSteps
     @When("task is delegated from user to project")
     public void delegateTask()
     {
-        inbox.delegateTo(task, (Delegatee)projectInbox, userSteps.user);
+        inbox.delegateTo(task, (Delegatee) projectInbox, userSteps.user);
     }
 
 

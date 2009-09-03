@@ -27,15 +27,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 
-import javax.swing.ActionMap;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JLabel;
-import javax.swing.event.ListDataListener;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
-import java.awt.BorderLayout;
+import javax.swing.event.ListDataListener;
+import java.awt.*;
 import java.io.IOException;
 
 /**
@@ -133,7 +128,7 @@ public class TaskCommentsView
         {
             CommentDTO commentDTO = (CommentDTO) model.getElementAt(i);
             String text = commentDTO.text().get().replace("\n", "<br/>");
-            JLabel comment = new JLabel("<html><b>"+commentDTO.commenter().get()+", "+commentDTO.creationDate().get()+"</b>"+(commentDTO.isPublic().get() ? " ("+ i18n.text(WorkspaceResources.public_comment)+")": "")+"<p>"+ text +"</p></html>");
+            JLabel comment = new JLabel("<html><b>" + commentDTO.commenter().get() + ", " + commentDTO.creationDate().get() + "</b>" + (commentDTO.isPublic().get() ? " (" + i18n.text(WorkspaceResources.public_comment) + ")" : "") + "<p>" + text + "</p></html>");
             comments.add(comment);
         }
         TaskCommentsView.this.validate();

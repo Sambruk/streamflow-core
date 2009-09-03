@@ -18,7 +18,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 /**
  * Exception thrown by model in the client if something goes wrong in accessing the server-side REST API.
- *
+ * <p/>
  * The constructor requires that you provide an enumeration key as the message. This is then used with the
  * {@link i18n} class to get the actual message. This ensures that all messages use i18n properly.
  */

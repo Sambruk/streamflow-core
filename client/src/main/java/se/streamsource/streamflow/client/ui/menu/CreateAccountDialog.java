@@ -29,11 +29,12 @@ import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.PASSWORD;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import static se.streamsource.streamflow.client.ui.menu.MenuResources.*;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 /**
  * JAVADOC

@@ -38,7 +38,7 @@ public class AccountSettingsValueTest
     {
         objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
 
-        ValueBuilder<AccountSettingsValue> settings =  valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
+        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
         settings.newInstance();
     }
 
@@ -48,7 +48,7 @@ public class AccountSettingsValueTest
     {
         objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
 
-        ValueBuilder<AccountSettingsValue> settings =  valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
+        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
         settings.prototype().server().set("###Illegal###");
         settings.newInstance();
 
@@ -59,7 +59,7 @@ public class AccountSettingsValueTest
     {
         objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
 
-        ValueBuilder<AccountSettingsValue> settings =  valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
+        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
         settings.prototype().server().set("http://ec2-79-125-55-249.eu-west-1.compute.amazonaws.com:8040/streamflow");
         settings.newInstance();
     }
@@ -70,7 +70,7 @@ public class AccountSettingsValueTest
     {
         objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
 
-        ValueBuilder<AccountSettingsValue> settings =  valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
+        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
         settings.prototype().userName().set("madsenevoldsen");
     }
 
@@ -79,7 +79,7 @@ public class AccountSettingsValueTest
     {
         objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
 
-        ValueBuilder<AccountSettingsValue> settings =  valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
+        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
         settings.prototype().userName().set("mads.enevoldsen");
     }
 
@@ -89,7 +89,7 @@ public class AccountSettingsValueTest
     {
         objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
 
-        ValueBuilder<AccountSettingsValue> settings =  valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
+        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
         settings.prototype().password().set("secret");
     }
 
@@ -98,7 +98,7 @@ public class AccountSettingsValueTest
     {
         objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
 
-        ValueBuilder<AccountSettingsValue> settings =  valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
+        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
         settings.prototype().password().set("mySecret#!()%#");
     }
 

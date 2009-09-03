@@ -51,11 +51,13 @@ public interface TaskId
     }
 
     abstract class TaskIdMixin
-        implements TaskId, TaskIdState
+            implements TaskId, TaskIdState
     {
-        @This TaskIdState state;
+        @This
+        TaskIdState state;
 
-        @This TaskId id;
+        @This
+        TaskId id;
 
         public void assignId(IdGenerator idgen)
         {

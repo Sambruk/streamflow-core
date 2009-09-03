@@ -42,6 +42,7 @@ public interface Participant
      * Return all projects that this participant has access to.
      * This includes projects that this participant is transitively
      * a member of through groups.
+     *
      * @return all projects that this participant is a member of
      */
     Iterable<Project> allProjects();
@@ -52,6 +53,7 @@ public interface Participant
 
     /**
      * Return all groups that this participant is a member of, transitively.
+     *
      * @return all groups that this participant is a member of
      */
     Iterable<Group> allGroups();
@@ -59,6 +61,7 @@ public interface Participant
     interface ParticipantState
     {
         ManyAssociation<Project> projects();
+
         ManyAssociation<Group> groups();
     }
 
@@ -127,7 +130,7 @@ public interface Participant
             for (Group group : state.groups())
             {
                 if (!groups.contains(group))
-                groups.add(group);
+                    groups.add(group);
 
                 // Add transitively
                 for (Group group1 : group.allGroups())

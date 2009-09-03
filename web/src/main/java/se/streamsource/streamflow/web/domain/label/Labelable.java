@@ -25,6 +25,7 @@ import org.qi4j.api.mixin.Mixins;
 public interface Labelable
 {
     void addLabel(Label label);
+
     void removeLabel(Label label);
 
     interface LabelableState
@@ -33,7 +34,7 @@ public interface Labelable
     }
 
     class LabelableMixin
-        implements Labelable
+            implements Labelable
     {
         @This
         LabelableState state;

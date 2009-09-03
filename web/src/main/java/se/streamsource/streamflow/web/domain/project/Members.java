@@ -52,6 +52,7 @@ public interface Members
         Property<MembersValue> members();
 
         boolean isMember(Participant participant);
+
         Iterable<Role> getRoles(Participant participant);
     }
 
@@ -67,7 +68,8 @@ public interface Members
         @Structure
         UnitOfWorkFactory uowf;
 
-        @This Project project;
+        @This
+        Project project;
 
         public boolean isMember(Participant participant)
         {
@@ -80,7 +82,7 @@ public interface Members
         public void createMember(Participant participant)
         {
             if (isMember(participant))
-                    return;
+                return;
             ValueBuilder<MemberValue> builder = vbf.newValueBuilder(MemberValue.class);
             builder.prototype().participant().set(EntityReference.getEntityReference(participant));
             ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();

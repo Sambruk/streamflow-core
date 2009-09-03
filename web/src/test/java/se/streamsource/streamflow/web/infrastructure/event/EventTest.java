@@ -30,7 +30,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * JAVADOC
  */
 public class EventTest
-    extends AbstractQi4jTest
+        extends AbstractQi4jTest
 {
     @Service
     EventReplay replayer;

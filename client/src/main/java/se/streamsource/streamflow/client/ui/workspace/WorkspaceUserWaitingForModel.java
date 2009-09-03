@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
@@ -31,8 +31,8 @@ public class WorkspaceUserWaitingForModel
     public WorkspaceUserWaitingForModel()
     {
         columnNames = new String[]{"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
-        columnClasses = new Class[] {Boolean.class, String.class, String.class, String.class, Date.class};
-        columnEditable = new boolean[] {true, false, false, false, false};
+        columnClasses = new Class[]{Boolean.class, String.class, String.class, String.class, Date.class};
+        columnEditable = new boolean[]{true, false, false, false, false};
     }
 
     @Override

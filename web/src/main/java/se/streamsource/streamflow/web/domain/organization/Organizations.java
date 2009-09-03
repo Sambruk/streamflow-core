@@ -27,7 +27,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
@@ -55,12 +55,13 @@ public interface Organizations
     }
 
     class OrganizationsMixin
-        implements Organizations
+            implements Organizations
     {
         @Service
         IdentityGenerator idGen;
 
-        @This OrganizationsState state;
+        @This
+        OrganizationsState state;
 
         public Organization createOrganization(String name)
         {
@@ -78,7 +79,7 @@ public interface Organizations
     }
 
     class OrganisationsStateMixin
-        implements OrganizationsState
+            implements OrganizationsState
     {
         @Structure
         UnitOfWorkFactory uowf;

@@ -39,7 +39,7 @@ public interface Labels
     }
 
     class LabelsMixin
-        implements Labels
+            implements Labels
     {
         @Structure
         UnitOfWorkFactory uowf;

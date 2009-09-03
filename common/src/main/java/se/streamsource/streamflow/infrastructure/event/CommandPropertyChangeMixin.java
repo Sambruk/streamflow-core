@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @AppliesTo(CommandPropertyChangeMixin.CommandPropertyChangeAppliesTo.class)
 public class CommandPropertyChangeMixin
-    implements InvocationHandler
+        implements InvocationHandler
 {
     private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
 
@@ -45,7 +45,7 @@ public class CommandPropertyChangeMixin
         {
             // changeFoo -> fooChanged
             String name = method.getName().substring("change".length());
-            name = Introspector.decapitalize(name)+"Changed";
+            name = Introspector.decapitalize(name) + "Changed";
             Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
             eventMethod = proxy.getClass().getMethod(name, parameterTypes);
             methodMappings.put(method, eventMethod);
@@ -57,7 +57,7 @@ public class CommandPropertyChangeMixin
     }
 
     public static class CommandPropertyChangeAppliesTo
-        implements AppliesToFilter
+            implements AppliesToFilter
     {
         public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
         {

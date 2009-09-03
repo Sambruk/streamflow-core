@@ -86,7 +86,7 @@ public class WorkspaceUIAssembler
                 WorkspaceProjectWaitingForView.class);
 
         UIAssemblers.addDialogs(module, UserOrProjectSelectionDialog.class, ProjectSelectionDialog.class);
-        
+
         UIAssemblers.addDialogs(module, AddCommentDialog.class);
 
         UIAssemblers.addMV(module,

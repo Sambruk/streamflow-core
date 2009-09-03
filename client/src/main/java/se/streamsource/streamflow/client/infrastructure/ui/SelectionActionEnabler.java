@@ -14,8 +14,7 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import javax.swing.Action;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -46,7 +45,7 @@ public class SelectionActionEnabler
             for (int i = 0; i < action.length; i++)
             {
                 Action action1 = action[i];
-                action1.setEnabled(!((ListSelectionModel)e.getSource()).isSelectionEmpty());
+                action1.setEnabled(!((ListSelectionModel) e.getSource()).isSelectionEmpty());
             }
         }
     }

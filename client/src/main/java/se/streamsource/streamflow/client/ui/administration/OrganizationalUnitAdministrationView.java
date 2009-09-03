@@ -15,13 +15,12 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdminView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdminView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
 
-import javax.swing.JList;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 
 /**
  * JAVADOC

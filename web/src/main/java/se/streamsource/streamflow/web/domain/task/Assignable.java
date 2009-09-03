@@ -34,6 +34,7 @@ import java.util.Date;
 public interface Assignable
 {
     void assignTo(Assignee assignee);
+
     void unassign();
 
     interface AssignableState
@@ -82,8 +83,8 @@ public interface Assignable
     }
 
     abstract class AssignOnStatusChangeConcern
-        extends ConcernOf<TaskStatus>
-        implements TaskStatus
+            extends ConcernOf<TaskStatus>
+            implements TaskStatus
     {
         @This
         AssignableState state;

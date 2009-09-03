@@ -35,7 +35,7 @@ public class WorkspaceProjectAssignmentsNode
         int unread = model.count();
         if (unread > 0)
         {
-            text += " ("+unread+")";
+            text += " (" + unread + ")";
         } else
         {
             text += "                ";

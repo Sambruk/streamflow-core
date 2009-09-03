@@ -26,12 +26,13 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.CHECKBOX;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.util.Date;
 
 /**
@@ -45,8 +46,8 @@ public class AddCommentDialog
     public NewCommentCommand command;
 
     public AddCommentDialog(@Service ApplicationContext appContext,
-                               @Structure ValueBuilderFactory vbf,
-                               @Uses EntityReference user
+                            @Structure ValueBuilderFactory vbf,
+                            @Uses EntityReference user
     )
     {
         setActionMap(appContext.getActionMap(this));
@@ -63,7 +64,6 @@ public class AddCommentDialog
         TaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
         NewCommentCommand template = TaskBinder.bindingTemplate(NewCommentCommand.class);
 
-        
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, TaskBinder);
         bb.appendLine(WorkspaceResources.comment_public_label, CHECKBOX, template.isPublic());

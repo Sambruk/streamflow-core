@@ -27,10 +27,10 @@ import java.util.logging.Logger;
  */
 @Mixins(ReindexOnStartupService.ReindexOnStartupMixin.class)
 public interface ReindexOnStartupService
-    extends Activatable, ServiceComposite
+        extends Activatable, ServiceComposite
 {
     class ReindexOnStartupMixin
-        implements Activatable
+            implements Activatable
     {
         @Service
         Reindexer reindexer;

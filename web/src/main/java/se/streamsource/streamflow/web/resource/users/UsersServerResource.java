@@ -107,7 +107,7 @@ public class UsersServerResource
             // Join the organization
             user.join(org);
 
-            setLocationRef("users/"+user.identity().get());
+            setLocationRef("users/" + user.identity().get());
             uow.complete();
         } catch (Exception e)
         {

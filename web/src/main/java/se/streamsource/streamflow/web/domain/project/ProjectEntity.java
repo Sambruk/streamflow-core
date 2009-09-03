@@ -20,13 +20,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.label.Labels;
-import se.streamsource.streamflow.web.domain.task.Assignments;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.Delegations;
-import se.streamsource.streamflow.web.domain.task.Inbox;
-import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.TaskId;
-import se.streamsource.streamflow.web.domain.task.WaitingFor;
+import se.streamsource.streamflow.web.domain.task.*;
 
 /**
  * JAVADOC
@@ -58,9 +52,10 @@ public interface ProjectEntity
         Removable.RemovableState
 {
     class ProjectIdGeneratorMixin
-        implements IdGenerator
+            implements IdGenerator
     {
-        @This ProjectOrganizationState state;
+        @This
+        ProjectOrganizationState state;
 
         public void assignId(TaskId task)
         {

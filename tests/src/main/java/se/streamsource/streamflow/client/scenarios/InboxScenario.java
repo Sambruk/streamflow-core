@@ -15,9 +15,9 @@
 package se.streamsource.streamflow.client.scenarios;
 
 import se.streamsource.streamflow.client.application.shared.steps.InboxSteps;
-import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ProjectSteps;
+import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**

@@ -90,7 +90,7 @@ public interface User
             }
             catch (NoSuchAlgorithmException e)
             {
-                throw new IllegalStateException("No SHA algorithm founde",e);
+                throw new IllegalStateException("No SHA algorithm founde", e);
             }
             catch (UnsupportedEncodingException e)
             {

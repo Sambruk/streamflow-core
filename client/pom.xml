@@ -81,12 +81,12 @@
         </dependency>
 
         <!-- REST -->
-<!--
-        <dependency>
-            <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-rest</artifactId>
-        </dependency>
--->
+        <!--
+                <dependency>
+                    <groupId>org.qi4j.extension</groupId>
+                    <artifactId>qi4j-rest</artifactId>
+                </dependency>
+        -->
         <dependency>
             <groupId>org.qi4j.library</groupId>
             <artifactId>qi4j-lib-rdf</artifactId>

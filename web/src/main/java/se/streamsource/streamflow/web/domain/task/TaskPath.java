@@ -33,9 +33,10 @@ public interface TaskPath
     }
 
     class TaskPathMixin
-        implements TaskPath
+            implements TaskPath
     {
-        @This TaskPathState state;
+        @This
+        TaskPathState state;
 
         public Iterable<Task> getPath()
         {

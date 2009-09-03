@@ -27,15 +27,15 @@ import java.util.Date;
 /**
  * Representation of a domain-event. An event is triggered by calling a method
  * that is of the form:
- * @Event
- * void someName(DomainEvent event, SomeParam param);
  *
+ * @Event void someName(DomainEvent event, SomeParam param);
+ * <p/>
  * The "event" argument should be invoked with null, as it will be created during
  * the method call. If it is not null, then the method call is a replay of previously
  * created events.
  */
 public interface DomainEvent
-    extends ValueComposite, Identity
+        extends ValueComposite, Identity
 {
     // Dummy event to be used when calling event methods from commands
     public static final DomainEvent CREATE = new DomainEventDummy();
@@ -64,7 +64,7 @@ public interface DomainEvent
 
     // Dummy event class
     class DomainEventDummy
-        implements DomainEvent
+            implements DomainEvent
     {
         public Property<String> usecase()
         {

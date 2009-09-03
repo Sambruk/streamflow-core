@@ -135,7 +135,7 @@ public class ProjectSteps
 
         boolean found = false;
 
-        for (Project project: ouEntity.projects())
+        for (Project project : ouEntity.projects())
         {
             if (project.getDescription().equals(name))
             {
@@ -169,7 +169,7 @@ public class ProjectSteps
     {
         OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) organizationalUnitSteps.ou;
 
-        for (Project project: ouEntity.projects())
+        for (Project project : ouEntity.projects())
         {
             if (project.getDescription().equals(name))
             {

@@ -82,7 +82,7 @@ public interface OrganizationalUnits
             if (!state.organizationalUnits().remove(ou))
                 return; // OU is not a sub-OU of this OU
 
-            ((Removable)ou).remove();
+            ((Removable) ou).remove();
         }
     }
 

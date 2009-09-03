@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client;
 
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import java.util.Locale;
 
 /**

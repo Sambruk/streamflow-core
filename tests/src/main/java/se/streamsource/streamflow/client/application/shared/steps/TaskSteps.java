@@ -96,7 +96,7 @@ public class TaskSteps
         try
         {
             task.describe(description);
-        } catch(Exception e)
+        } catch (Exception e)
         {
             taskException = e;
         }
@@ -156,7 +156,7 @@ public class TaskSteps
         try
         {
             task.dueOn(past);
-        } catch(Exception e)
+        } catch (Exception e)
         {
             taskException = e;
         }
@@ -183,7 +183,7 @@ public class TaskSteps
         } else if (can.equals("cannot"))
         {
             ensureThat(label, CoreMatchers.nullValue());
-        } else 
+        } else
         {
             ensureThat(false);
         }

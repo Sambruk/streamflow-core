@@ -23,12 +23,12 @@ import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 
 /**
  * JAVADOC
-*/
+ */
 @Concerns(EventCreationConcern.class)
 @SideEffects(EventSideEffect.class)
 @Mixins(Tester.TestMixin.class)
 interface TestEntity
-    extends EntityComposite, Tester, Tester.TestState
+        extends EntityComposite, Tester, Tester.TestState
 {
 }
 

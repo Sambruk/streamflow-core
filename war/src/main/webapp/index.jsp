@@ -1,41 +1,41 @@
-<%@page import="java.io.InputStream,java.util.Properties,info.aduna.io.IOUtil" %>
+<%@page import="info.aduna.io.IOUtil,java.io.InputStream,java.util.Properties" %>
 
 <%
-InputStream is = getClass().getResourceAsStream("/version.properties");
-Properties p = IOUtil.readProperties(is);
-pageContext.setAttribute("application_version", p.getProperty("application.version"));
-pageContext.setAttribute("application_buildKey", p.getProperty("application.buildKey"));
-pageContext.setAttribute("application_buildNumber", p.getProperty("application.buildNumber"));
-pageContext.setAttribute("application_revision", p.getProperty("application.revision"));
+    InputStream is = getClass().getResourceAsStream("/version.properties");
+    Properties p = IOUtil.readProperties(is);
+    pageContext.setAttribute("application_version", p.getProperty("application.version"));
+    pageContext.setAttribute("application_buildKey", p.getProperty("application.buildKey"));
+    pageContext.setAttribute("application_buildNumber", p.getProperty("application.buildNumber"));
+    pageContext.setAttribute("application_revision", p.getProperty("application.revision"));
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>StreamFlow client</title>
-  <link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
+    <title>StreamFlow client</title>
+    <link rel="stylesheet" type="text/css" href="css/stylesheet.css"/>
 </head>
 
 <body>
 
 <ul class="home-download all_os ">
- <li class="all_os"> 
- 	<a class="download-link download-streamflow" href="webstart/streamflow.jnlp"> 
+    <li class="all_os">
+        <a class="download-link download-streamflow" href="webstart/streamflow.jnlp">
  		<span><strong>Ladda ner StreamFlow</strong> 
  		<em>${application_version}</em> 
  		<em class="download-lang">F&ouml;r alla operativsystem</em></span>
- 	</a> 
- </li>
+        </a>
+    </li>
 </ul>
 
 <!--<a href="webstart/streamflow.jnlp">StreamFlow client</a><br />-->
 
 <div id="foot">
-<ul id="versioninfo">
-<li>Version: ${application_version}</li>
-<li>Build: ${application_buildKey} ${application_buildNumber}</li>
-<li>Revision: ${application_revision}</li>
-</ul>
+    <ul id="versioninfo">
+        <li>Version: ${application_version}</li>
+        <li>Build: ${application_buildKey} ${application_buildNumber}</li>
+        <li>Revision: ${application_revision}</li>
+    </ul>
 </div>
 
 </body>

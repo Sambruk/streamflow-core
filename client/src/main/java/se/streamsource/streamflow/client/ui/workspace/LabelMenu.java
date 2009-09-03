@@ -20,10 +20,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MenuEvent;
@@ -42,8 +39,10 @@ public class LabelMenu
     TaskDTO task;
     ListSelectionModel selectionModel;
 
-    @Uses LabelsModel labelsModel;
-    @Uses TaskTableModel taskModel;
+    @Uses
+    LabelsModel labelsModel;
+    @Uses
+    TaskTableModel taskModel;
 
     public LabelMenu()
     {
@@ -57,7 +56,7 @@ public class LabelMenu
     {
         if (e.getValueIsAdjusting())
             return;
-        
+
         selectionModel = (ListSelectionModel) e.getSource();
 
         if (selectionModel.isSelectionEmpty())

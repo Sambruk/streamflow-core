@@ -31,9 +31,11 @@ import java.util.Iterator;
 public class AdministrationNode
         implements TreeNode, Refreshable
 {
-    @Structure ObjectBuilderFactory obf;
+    @Structure
+    ObjectBuilderFactory obf;
 
-    @Uses AccountsModel accountsModel;
+    @Uses
+    AccountsModel accountsModel;
 
     WeakModelMap<AccountModel, AccountAdministrationNode> models = new WeakModelMap<AccountModel, AccountAdministrationNode>()
     {

@@ -18,11 +18,7 @@ import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.RecordManagerOptions;
 import jdbm.btree.BTree;
-import jdbm.helper.ByteArrayComparator;
-import jdbm.helper.ByteArraySerializer;
-import jdbm.helper.LongSerializer;
-import jdbm.helper.MRU;
-import jdbm.helper.Serializer;
+import jdbm.helper.*;
 import jdbm.recman.CacheRecordManager;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -46,12 +42,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSpecification
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -61,10 +52,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Mixins(EventSourceService.EventSourceMixin.class)
 public interface EventSourceService
-    extends EventListener, EventSource, Activatable, ServiceComposite
+        extends EventListener, EventSource, Activatable, ServiceComposite
 {
     class EventSourceMixin
-        implements EventListener, EventSource, Activatable
+            implements EventListener, EventSource, Activatable
     {
         @Structure
         Qi4jSPI spi;
@@ -88,14 +79,14 @@ public interface EventSourceService
 
         public void activate() throws Exception
         {
-            File dataFile = new File( fileConfig.dataDirectory(), descriptor.identity()+"/events");
+            File dataFile = new File(fileConfig.dataDirectory(), descriptor.identity() + "/events");
             File directory = dataFile.getAbsoluteFile().getParentFile();
             directory.mkdirs();
             String name = dataFile.getAbsolutePath();
             Properties properties = new Properties();
-            properties.put( RecordManagerOptions.AUTO_COMMIT, "false" );
-            properties.put( RecordManagerOptions.DISABLE_TRANSACTIONS, "false" );
-            initialize( name, properties );
+            properties.put(RecordManagerOptions.AUTO_COMMIT, "false");
+            properties.put(RecordManagerOptions.DISABLE_TRANSACTIONS, "false");
+            initialize(name, properties);
         }
 
         public void passivate() throws Exception
@@ -136,7 +127,7 @@ public interface EventSourceService
                         {
                             // Store all events from this UoW as one array
                             JSONStringer json = new JSONStringer();
-                            
+
 /*
                             json.array();
                             for (DomainEvent domainEvent : eventList)
@@ -176,22 +167,21 @@ public interface EventSourceService
             events.add(event);
         }
 
-        private void initialize( String name, Properties properties )
-            throws IOException
+        private void initialize(String name, Properties properties)
+                throws IOException
         {
-            recordManager = RecordManagerFactory.createRecordManager( name, properties );
+            recordManager = RecordManagerFactory.createRecordManager(name, properties);
             serializer = new ByteArraySerializer();
-            recordManager = new CacheRecordManager( recordManager, new MRU( 1000 ) );
-            long recid = recordManager.getNamedObject( "index" );
-            if( recid != 0 )
+            recordManager = new CacheRecordManager(recordManager, new MRU(1000));
+            long recid = recordManager.getNamedObject("index");
+            if (recid != 0)
             {
-                index = BTree.load( recordManager, recid );
-            }
-            else
+                index = BTree.load(recordManager, recid);
+            } else
             {
                 ByteArrayComparator comparator = new ByteArrayComparator();
-                index = BTree.createInstance( recordManager, comparator, serializer, new LongSerializer(), 16 );
-                recordManager.setNamedObject( "index", index.getRecid() );
+                index = BTree.createInstance(recordManager, comparator, serializer, new LongSerializer(), 16);
+                recordManager.setNamedObject("index", index.getRecid());
             }
             recordManager.commit();
         }

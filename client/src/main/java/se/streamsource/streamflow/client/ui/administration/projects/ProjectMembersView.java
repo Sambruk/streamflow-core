@@ -25,16 +25,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.util.Set;
 
 /**
@@ -67,23 +63,24 @@ public class ProjectMembersView
         memberRoleTree = new JXTree(membersModel);
         memberRoleTree.setRootVisible(false);
         memberRoleTree.setShowsRootHandles(true);
-        memberRoleTree.addTreeSelectionListener(new TreeSelectionListener() {
+        memberRoleTree.addTreeSelectionListener(new TreeSelectionListener()
+        {
 
-                public void valueChanged(TreeSelectionEvent treeSelectionEvent)
+            public void valueChanged(TreeSelectionEvent treeSelectionEvent)
+            {
+                TreePath newPath = treeSelectionEvent.getNewLeadSelectionPath();
+                if (newPath == null)
                 {
-                    TreePath newPath = treeSelectionEvent.getNewLeadSelectionPath();
-                    if (newPath == null)
-                    {
-                        setRightComponent(new JPanel());
-                    } else
-                    {
-                        TreeNodeValue value = (TreeNodeValue) newPath.getPathComponent(1);
-                        MemberRolesModel memberRolesModel = membersModel.memberRolesModel(value.entity().get().identity());
-                        memberRolesModel.refresh();
-                        setRightComponent(obf.newObjectBuilder(MemberRolesView.class).use(memberRolesModel).newInstance());
-                    }
+                    setRightComponent(new JPanel());
+                } else
+                {
+                    TreeNodeValue value = (TreeNodeValue) newPath.getPathComponent(1);
+                    MemberRolesModel memberRolesModel = membersModel.memberRolesModel(value.entity().get().identity());
+                    memberRolesModel.refresh();
+                    setRightComponent(obf.newObjectBuilder(MemberRolesView.class).use(memberRolesModel).newInstance());
                 }
             }
+        }
         );
 
         memberRoleTree.setCellRenderer(new DefaultTreeCellRenderer()

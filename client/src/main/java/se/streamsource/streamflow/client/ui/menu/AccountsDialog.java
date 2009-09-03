@@ -32,14 +32,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnable
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AccountView;
 
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -86,8 +82,8 @@ public class AccountsDialog
         accountList.setCellRenderer(new ListItemCellRenderer());
 
         JScrollPane scroll = new JScrollPane(accountList);
-        scroll.setMinimumSize(new Dimension(200,300));
-        scroll.setPreferredSize(new Dimension(200,300));
+        scroll.setMinimumSize(new Dimension(200, 300));
+        scroll.setPreferredSize(new Dimension(200, 300));
         add(scroll, BorderLayout.WEST);
 
         JPanel toolbar = new JPanel();

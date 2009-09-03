@@ -20,5 +20,5 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 public interface Refreshable
 {
     public void refresh()
-        throws Exception;
+            throws Exception;
 }

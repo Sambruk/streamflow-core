@@ -40,7 +40,7 @@ import java.io.IOException;
  * JAVADOC
  */
 public class IndividualSteps
-    extends Steps
+        extends Steps
 {
     @Structure
     UnitOfWorkFactory uowf;

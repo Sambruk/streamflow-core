@@ -24,6 +24,7 @@ import org.qi4j.api.mixin.Mixins;
 public interface Subtasks
 {
     void addSubtask(Subtask subtask);
+
     void removeSubtask(Subtask subtask);
 
     interface SubtasksState
@@ -32,10 +33,12 @@ public interface Subtasks
     }
 
     class SubtasksMixin
-        implements Subtasks
+            implements Subtasks
     {
-        @This SubtasksState state;
-        @This Subtasks subtasks;
+        @This
+        SubtasksState state;
+        @This
+        Subtasks subtasks;
 
         public void addSubtask(Subtask subtask)
         {

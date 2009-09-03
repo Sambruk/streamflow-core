@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Uses;
 
-import javax.swing.JScrollPane;
+import javax.swing.*;
 
 /**
  * JAVADOC

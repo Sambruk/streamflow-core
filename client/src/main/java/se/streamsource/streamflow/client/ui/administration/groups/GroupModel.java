@@ -22,7 +22,7 @@ import se.streamsource.streamflow.client.resource.organizations.groups.participa
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -37,7 +37,8 @@ public class GroupModel
         this.group = group;
     }
 
-    @Uses private GroupClientResource group;
+    @Uses
+    private GroupClientResource group;
 
     public int getSize()
     {
@@ -54,7 +55,7 @@ public class GroupModel
     {
         try
         {
-            for (String value: participants)
+            for (String value : participants)
             {
                 ParticipantClientResource participant = group.participants().participant(value);
                 participant.put(null);

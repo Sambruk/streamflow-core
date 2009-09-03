@@ -29,8 +29,8 @@ public class WorkspaceNode
     private WorkspaceProjectsNode projectsNode;
 
     public WorkspaceNode(@Uses WorkspaceUserNode userNode,
-                      @Uses WorkspaceProjectsNode projectsNode,
-                      @Uses AccountModel accountModel)
+                         @Uses WorkspaceProjectsNode projectsNode,
+                         @Uses AccountModel accountModel)
     {
         super(accountModel);
         this.userNode = userNode;

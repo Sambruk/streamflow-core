@@ -26,10 +26,8 @@ import se.streamsource.streamflow.client.ui.administration.projects.members.Tabl
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Set;
@@ -40,15 +38,15 @@ import java.util.Set;
 public class SelectUsersAndGroupsDialog
         extends JPanel
 {
-    Dimension dialogSize = new Dimension(600,300);
+    Dimension dialogSize = new Dimension(600, 300);
     private TableSelectionView addGroupsView;
     private TableSelectionView addUsersView;
 
     private Set<String> usersAndGroups;
 
     public SelectUsersAndGroupsDialog(@Service ApplicationContext context,
-                                 final @Uses OrganizationalUnitAdministrationModel organizationModel,
-                                 @Structure ObjectBuilderFactory obf)
+                                      final @Uses OrganizationalUnitAdministrationModel organizationModel,
+                                      @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
 
@@ -58,9 +56,10 @@ public class SelectUsersAndGroupsDialog
         this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, "#Search users").newInstance();
 
         TableMultipleSelectionModel groupsModel = obf.newObject(TableMultipleSelectionModel.class);
-        this.addGroupsView= obf.newObjectBuilder(TableSelectionView.class).use(groupsModel, "#Search groups").newInstance();
+        this.addGroupsView = obf.newObjectBuilder(TableSelectionView.class).use(groupsModel, "#Search groups").newInstance();
 
-        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter(){
+        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter()
+        {
             @Override
             public void keyReleased(KeyEvent keyEvent)
             {
@@ -75,7 +74,8 @@ public class SelectUsersAndGroupsDialog
             }
         });
 
-        addGroupsView.getSearchInputField().addKeyListener(new KeyAdapter(){
+        addGroupsView.getSearchInputField().addKeyListener(new KeyAdapter()
+        {
             @Override
             public void keyReleased(KeyEvent keyEvent)
             {
@@ -102,8 +102,8 @@ public class SelectUsersAndGroupsDialog
     @Action
     public void execute()
     {
-        usersAndGroups = ((TableMultipleSelectionModel)addUsersView.getModel()).getSelected();
-        usersAndGroups.addAll(((TableMultipleSelectionModel)addGroupsView.getModel()).getSelected());
+        usersAndGroups = ((TableMultipleSelectionModel) addUsersView.getModel()).getSelected();
+        usersAndGroups.addAll(((TableMultipleSelectionModel) addGroupsView.getModel()).getSelected());
 
         WindowUtils.findWindow(this).dispose();
     }

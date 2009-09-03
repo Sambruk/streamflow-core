@@ -18,8 +18,8 @@ import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.usecase.Usecase;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -39,10 +39,12 @@ import java.io.InputStream;
 public class BaseServerResource
         extends ServerResource
 {
-    protected @Structure
+    protected
+    @Structure
     UnitOfWorkFactory uowf;
 
-    protected @Structure
+    protected
+    @Structure
     Qi4jSPI spi;
     Usecase usecase = UsecaseBuilder.newUsecase("Get identity");
 

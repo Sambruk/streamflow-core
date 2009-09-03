@@ -14,16 +14,16 @@
 
 package se.streamsource.streamflow.web.domain.label;
 
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.bootstrap.AssemblyException;
 import static org.qi4j.api.common.Visibility.application;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * JAVADOC
  */
 public class LabelAssembler
-    implements Assembler
+        implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {

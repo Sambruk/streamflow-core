@@ -28,21 +28,20 @@ import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
+import javax.swing.*;
 
 /**
  * Dialog for changing password
  */
 public class ChangePasswordDialog
-    extends JPanel
+        extends JPanel
 {
     private StateBinder passwordBinder;
     private JPasswordField confirmPassword;
     private JPasswordField newPassword;
 
-    private @Service
+    private
+    @Service
     DialogService dialogs;
 
     private ChangePasswordCommand command;
@@ -81,7 +80,7 @@ public class ChangePasswordDialog
     @Action
     public void execute()
     {
-        if (new String(confirmPassword.getPassword()).equals(new String (newPassword.getPassword())))
+        if (new String(confirmPassword.getPassword()).equals(new String(newPassword.getPassword())))
         {
             WindowUtils.findWindow(this).dispose();
         } else

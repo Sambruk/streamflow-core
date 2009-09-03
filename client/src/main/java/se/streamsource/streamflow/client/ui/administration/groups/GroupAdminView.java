@@ -21,9 +21,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -34,7 +32,7 @@ import javax.swing.event.ListSelectionListener;
 public class GroupAdminView
         extends JSplitPane
 {
-    @Uses 
+    @Uses
     ObjectBuilder<GroupView> groupView;
 
     public GroupAdminView(@Uses GroupsView groupsView,

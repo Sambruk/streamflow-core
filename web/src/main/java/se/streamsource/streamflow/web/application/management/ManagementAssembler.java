@@ -27,13 +27,13 @@ import javax.management.MBeanServer;
  * JAVADOC
  */
 public class ManagementAssembler
-    implements Assembler
+        implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
         if (module.layerAssembly().applicationAssembly().mode().equals(Application.Mode.production))
         {
-            module.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
+            module.importServices(MBeanServer.class).importedBy(MBeanServerImporter.class);
             module.addServices(ManagerService.class).instantiateOnStartup();
 
             module.addServices(ReindexerService.class).identifiedBy("reindexer");

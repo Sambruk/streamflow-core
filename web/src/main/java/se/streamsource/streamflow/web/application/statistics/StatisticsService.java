@@ -40,12 +40,8 @@ import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import static java.util.Arrays.*;
+import java.sql.*;
+import static java.util.Arrays.asList;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -56,7 +52,6 @@ import java.util.logging.Logger;
  * Generate statistics data to a JDBC database. This service
  * listens for domain events, and on "completed" it will put
  * information about the task into the database.
- * 
  */
 @Mixins(StatisticsService.StatisticsMixin.class)
 public interface StatisticsService
@@ -173,7 +168,8 @@ public interface StatisticsService
                         // Figure out which group the user belongs to
                         Participant.ParticipantState participant = (Participant.ParticipantState) assignee;
                         String groupName = null;
-                        findgroup: for (Group group : participant.groups())
+                        findgroup:
+                        for (Group group : participant.groups())
                         {
                             Members.MembersState members = (Members.MembersState) owner;
                             if (members.isMember(group))
@@ -218,7 +214,7 @@ public interface StatisticsService
                         logger.log(Level.SEVERE, "Could not rollback", e);
                     }
                 }
-            }finally
+            } finally
             {
                 if (newLastId != null)
                     lastId = newLastId;

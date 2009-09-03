@@ -14,13 +14,13 @@
 
 package se.streamsource.streamflow.client.resource.organizations;
 
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Context;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -56,7 +56,7 @@ public class OrganizationClientResource
     {
         ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
         builder.prototype().string().set(groupName);
-        return query("findGroups", builder.newInstance(), ListValue.class);        
+        return query("findGroups", builder.newInstance(), ListValue.class);
     }
 
     public ListValue findProjects(String projectName) throws ResourceException

@@ -27,13 +27,7 @@ import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.Assignable;
-import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Delegatable;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.task.TaskStatus;
+import se.streamsource.streamflow.web.domain.task.*;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -66,9 +60,9 @@ public class WorkspaceProjectDelegationsServerResource
     @Override
     protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
     {
-        ((DelegatedTaskDTO)prototype).delegatedOn().set(task.delegatedOn().get());
+        ((DelegatedTaskDTO) prototype).delegatedOn().set(task.delegatedOn().get());
         Owner owner = uowf.currentUnitOfWork().get(Owner.class, task.owner().get().identity().get());
-        ((DelegatedTaskDTO)prototype).delegatedFrom().set(owner.getDescription());
+        ((DelegatedTaskDTO) prototype).delegatedFrom().set(owner.getDescription());
 
         super.buildTask(prototype, labelBuilder, labelPrototype, task);
     }

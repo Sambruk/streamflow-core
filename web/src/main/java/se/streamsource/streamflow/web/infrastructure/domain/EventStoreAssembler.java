@@ -18,14 +18,14 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.web.infrastructure.event.EventSourceService;
 import se.streamsource.streamflow.web.infrastructure.event.EventRecorderService;
+import se.streamsource.streamflow.web.infrastructure.event.EventSourceService;
 
 /**
  * Handle recording, storage and playback of events
  */
 public class EventStoreAssembler
-    implements Assembler
+        implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {

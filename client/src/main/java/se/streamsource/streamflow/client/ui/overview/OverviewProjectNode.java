@@ -29,10 +29,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class OverviewProjectNode
         extends DefaultMutableTreeNode
 {
-    @Uses String projectName;
+    @Uses
+    String projectName;
 
     public OverviewProjectNode(@Uses OverviewProjectClientResource projectClientResource,
-                             @Structure ObjectBuilderFactory obf)
+                               @Structure ObjectBuilderFactory obf)
     {
         super(projectClientResource);
 

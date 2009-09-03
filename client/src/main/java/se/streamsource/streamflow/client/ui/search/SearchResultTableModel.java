@@ -15,10 +15,11 @@
 package se.streamsource.streamflow.client.ui.search;
 
 import org.restlet.resource.ResourceException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.organizations.search.SearchClientResource;
 import se.streamsource.streamflow.client.ui.workspace.TaskTableModel;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
 
 import java.util.Date;
 
@@ -31,8 +32,8 @@ public class SearchResultTableModel
     public SearchResultTableModel()
     {
         columnNames = new String[]{"", text(description_column_header), text(created_column_header)};
-        columnClasses = new Class[] {Boolean.class, String.class, Date.class};
-        columnEditable = new boolean[] {false, false, false};
+        columnClasses = new Class[]{Boolean.class, String.class, Date.class};
+        columnEditable = new boolean[]{false, false, false};
     }
 
     @Override

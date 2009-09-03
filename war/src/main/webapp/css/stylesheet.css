@@ -1,17 +1,76 @@
-a:link, a:visited { color: #0489B7; text-decoration: none; }
+a:link, a:visited {
+    color: #0489B7;
+    text-decoration: none;
+}
 
-ul { position: relative; margin: 1em 0; padding: 0; }
-ul.home-download { font-family: verdana,sans-serif; margin: 0px auto; width: 300px; }
-	ul.home-download, ul.home-downlad li { -moz-background-clip: border; -moz-background-inline-policy: continuous; -moz-background-origin: padding; background: transparent none repeat scroll 0 0; list-style-type: none; padding: 0; }
-	ul.home-download li a.download-link span { color: #09700B; line-height: 1.2; postition: static; } 
-	ul.home-download li a.download-link em { display: block; font-size: 73%; font-style: normal; }
-	ul.home-download li a.download-link em.download-lang { color: #42A313; margin-top: 5px; }
-	
-a.download-link { -moz-background-clip: border; -moz-background-inline-policy: continuous; -moz-background-origin: padding; background: transparent url(../images/download-button.png) no-repeat scroll 0 0; color: #09700B; display: block; height: 63px; padding: 15px 15px 15px 60px; }
+ul {
+    position: relative;
+    margin: 1em 0;
+    padding: 0;
+}
 
-strong { font-weight: bold; }
+ul.home-download {
+    font-family: verdana, sans-serif;
+    margin: 0px auto;
+    width: 300px;
+}
 
-#foot { background: #F0F0F0 none repeat scroll 0 0; text-align: center; }
-	#foot #versioninfo { background: #F0F0F0 url(../images/bg_foot.png) repeat-x scroll 0 0; color: #666666; list-style-image: none; list-style-position: outside; list-style-type: none; padding: 0.5em; }
-	#foot #versioninfo li { display: inline; }
+ul.home-download, ul.home-downlad li {
+    -moz-background-clip: border;
+    -moz-background-inline-policy: continuous;
+    -moz-background-origin: padding;
+    background: transparent none repeat scroll 0 0;
+    list-style-type: none;
+    padding: 0;
+}
+
+ul.home-download li a.download-link span {
+    color: #09700B;
+    line-height: 1.2;
+    postition: static;
+}
+
+ul.home-download li a.download-link em {
+    display: block;
+    font-size: 73%;
+    font-style: normal;
+}
+
+ul.home-download li a.download-link em.download-lang {
+    color: #42A313;
+    margin-top: 5px;
+}
+
+a.download-link {
+    -moz-background-clip: border;
+    -moz-background-inline-policy: continuous;
+    -moz-background-origin: padding;
+    background: transparent url(../images/download-button.png) no-repeat scroll 0 0;
+    color: #09700B;
+    display: block;
+    height: 63px;
+    padding: 15px 15px 15px 60px;
+}
+
+strong {
+    font-weight: bold;
+}
+
+#foot {
+    background: #F0F0F0 none repeat scroll 0 0;
+    text-align: center;
+}
+
+#foot #versioninfo {
+    background: #F0F0F0 url(../images/bg_foot.png) repeat-x scroll 0 0;
+    color: #666666;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    padding: 0.5em;
+}
+
+#foot #versioninfo li {
+    display: inline;
+}
 

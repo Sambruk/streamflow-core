@@ -42,7 +42,7 @@ import java.util.List;
  * /users/{user}/workspace/user/{view}/{task}/comments
  */
 public class TaskCommentsServerResource
-    extends BaseServerResource
+        extends BaseServerResource
 {
     @Structure
     UnitOfWorkFactory uowf;

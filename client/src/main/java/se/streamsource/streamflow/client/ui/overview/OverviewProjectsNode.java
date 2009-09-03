@@ -21,7 +21,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceProjectNode;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -32,13 +31,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class OverviewProjectsNode
         extends DefaultMutableTreeNode
-    implements Refreshable
+        implements Refreshable
 {
     private AccountModel account;
     private ObjectBuilderFactory obf;
 
     public OverviewProjectsNode(@Uses AccountModel account,
-                              @Structure final ObjectBuilderFactory obf) throws Exception
+                                @Structure final ObjectBuilderFactory obf) throws Exception
     {
         super(account);
         this.account = account;
@@ -74,7 +73,7 @@ public class OverviewProjectsNode
 
         for (ListItemValue project : projects.items().get())
         {
-            OverviewProjectClientResource projectClientResource =  projectsClientResource.project(project.entity().get().identity());
+            OverviewProjectClientResource projectClientResource = projectsClientResource.project(project.entity().get().identity());
             add(obf.newObjectBuilder(OverviewProjectNode.class).use(projectClientResource, project.description().get()).newInstance());
         }
     }

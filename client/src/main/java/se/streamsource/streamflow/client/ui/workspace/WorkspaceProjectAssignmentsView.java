@@ -20,10 +20,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -34,7 +31,8 @@ public class WorkspaceProjectAssignmentsView
     @Uses
     protected ObjectBuilder<ProjectSelectionDialog> projectSelectionDialog;
 
-    @Uses LabelMenu labelMenu;
+    @Uses
+    LabelMenu labelMenu;
 
     protected void buildPopupMenu(JPopupMenu popup)
     {

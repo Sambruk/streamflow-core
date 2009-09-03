@@ -97,5 +97,5 @@ public class LabelsServerResource
         }
 
         return null;
-    }    
+    }
 }

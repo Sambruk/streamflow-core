@@ -29,11 +29,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSourceListene
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.json.JSONObject;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,101 +40,102 @@ import java.util.logging.Logger;
 @Mixins({EventRecorderService.EventRecorderMixin.class, EventRecorderService.EventReplayMixin.class})
 public interface EventRecorderService
         extends EventSourceListener, EventReplay, ServiceComposite, Activatable
-    {
-        class EventRecorderMixin
+{
+    class EventRecorderMixin
             implements EventSourceListener, Activatable
+    {
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        @Service
+        FileConfiguration config;
+        private File eventDir;
+
+        @Service
+        EventSource source;
+
+        private BufferedWriter out;
+        public Logger logger;
+
+        public void activate() throws Exception
         {
-            @Structure
-            UnitOfWorkFactory uowf;
+            logger = Logger.getLogger(getClass().getName());
+            eventDir = new File(config.dataDirectory(), "events");
+            eventDir.mkdirs();
 
-            @Service
-            FileConfiguration config;
-            private File eventDir;
-
-            @Service
-            EventSource source;
-
-            private BufferedWriter out;
-            public Logger logger;
-
-            public void activate() throws Exception
-            {
-                logger = Logger.getLogger(getClass().getName());
-                eventDir = new File(config.dataDirectory(), "events");
-                eventDir.mkdirs();
-                
 //                source.registerListener(this);
-            }
+        }
 
-            public void passivate() throws Exception
+        public void passivate() throws Exception
+        {
+            source.unregisterListener(this);
+
+            if (out != null)
             {
-                source.unregisterListener(this);
-
-                if (out != null)
-                {
-                    out.close();
-                }
-            }
-
-            public void eventsAvailable(EventSource source, EventSpecification specification)
-            {
-                Iterable<DomainEvent> events = source.events(specification, null, 100);
-
-                try
-                {
-                    if (out == null)
-                    {
-                        out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(eventDir, "events.json"), true)));
-                    }
-
-                    for (DomainEvent domainEvent : events)
-                    {
-                        out.append(domainEvent.toJSON()).append('\n');
-                    }
-
-                    out.flush();
-                } catch (IOException e)
-                {
-                    logger.log(Level.SEVERE, "Could not store events", e);
-
-                }
+                out.close();
             }
         }
 
-        class EventReplayMixin
-            implements EventReplay
+        public void eventsAvailable(EventSource source, EventSpecification specification)
         {
-            @Structure UnitOfWorkFactory uowf;
+            Iterable<DomainEvent> events = source.events(specification, null, 100);
 
-            public void replayEvent(DomainEvent event)
-                    throws Exception
+            try
             {
-                UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase(event.name().get()));
-                String identity = event.entity().get();
-                Object entity = uow.get(Object.class, identity);
-                String name = event.name().get();
-                Method eventMethod = null;
-                for (Method method : entity.getClass().getMethods())
+                if (out == null)
                 {
-                    if (method.getName().equals(name))
-                    {
-                        eventMethod = method;
-                        break;
-                    }
+                    out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(eventDir, "events.json"), true)));
                 }
 
-                JSONObject jsonObject = new JSONObject(event.parameters().get());
-                Object[] params = new Object[eventMethod.getParameterTypes().length];
-                params[0] = event;
-                for (int idx = 1; idx < params.length; idx++)
+                for (DomainEvent domainEvent : events)
                 {
-                    String paramName = "param"+idx;
-                    params[idx] = jsonObject.get(paramName);
+                    out.append(domainEvent.toJSON()).append('\n');
                 }
 
-                eventMethod.invoke(entity, params);
+                out.flush();
+            } catch (IOException e)
+            {
+                logger.log(Level.SEVERE, "Could not store events", e);
 
-                uow.complete();
             }
         }
     }
+
+    class EventReplayMixin
+            implements EventReplay
+    {
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        public void replayEvent(DomainEvent event)
+                throws Exception
+        {
+            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase(event.name().get()));
+            String identity = event.entity().get();
+            Object entity = uow.get(Object.class, identity);
+            String name = event.name().get();
+            Method eventMethod = null;
+            for (Method method : entity.getClass().getMethods())
+            {
+                if (method.getName().equals(name))
+                {
+                    eventMethod = method;
+                    break;
+                }
+            }
+
+            JSONObject jsonObject = new JSONObject(event.parameters().get());
+            Object[] params = new Object[eventMethod.getParameterTypes().length];
+            params[0] = event;
+            for (int idx = 1; idx < params.length; idx++)
+            {
+                String paramName = "param" + idx;
+                params[idx] = jsonObject.get(paramName);
+            }
+
+            eventMethod.invoke(entity, params);
+
+            uow.complete();
+        }
+    }
+}

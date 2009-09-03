@@ -85,7 +85,7 @@ public class AccountAdministrationNode
 
         return -1;
     }
-    
+
     public AccountModel accountModel()
     {
         return accountModel;

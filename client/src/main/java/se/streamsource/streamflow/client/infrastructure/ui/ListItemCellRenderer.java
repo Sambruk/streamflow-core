@@ -16,9 +16,8 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * List renderer for lists that use ListItemValue as items.

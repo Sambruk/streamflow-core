@@ -23,10 +23,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC

@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @AppliesTo(EventPropertyChangedMixin.EventPropertyChangeAppliesTo.class)
 public class EventPropertyChangedMixin
-    implements InvocationHandler
+        implements InvocationHandler
 {
     private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
 
@@ -42,7 +42,7 @@ public class EventPropertyChangedMixin
         if (propertyMethod == null)
         {
             // Find property method
-            propertyMethod = method.getDeclaringClass().getMethod(method.getName().substring(0, method.getName().length()-"Changed".length()));
+            propertyMethod = method.getDeclaringClass().getMethod(method.getName().substring(0, method.getName().length() - "Changed".length()));
             methodMappings.put(method, propertyMethod);
         }
 
@@ -53,7 +53,7 @@ public class EventPropertyChangedMixin
     }
 
     public static class EventPropertyChangeAppliesTo
-        implements AppliesToFilter
+            implements AppliesToFilter
     {
         public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
         {

@@ -14,19 +14,15 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Mark a method as an event. The first parameter
  * of the method must be a "DomainEvent", and when
  * calling it from commands you must send in {@link DomainEvent#CREATE}
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( { ElementType.METHOD } )
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
 @Documented
 public @interface Event
 {

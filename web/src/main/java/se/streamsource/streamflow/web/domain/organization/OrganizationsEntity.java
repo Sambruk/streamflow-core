@@ -20,7 +20,7 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
  * JAVADOC
  */
 public interface OrganizationsEntity
-    extends Organizations, DomainEntity
+        extends Organizations, DomainEntity
 {
     public static final String ORGANIZATIONS_ID = "organizations";
 }

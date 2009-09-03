@@ -20,7 +20,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * Accept all events
  */
 public class AllEventsSpecification
-    implements EventSpecification
+        implements EventSpecification
 {
     public boolean accept(DomainEvent event)
     {

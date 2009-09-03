@@ -24,7 +24,7 @@ import se.streamsource.streamflow.client.resource.organizations.roles.RolesClien
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 import java.util.List;
 
 /**

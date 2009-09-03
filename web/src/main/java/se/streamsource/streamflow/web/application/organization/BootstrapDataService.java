@@ -21,7 +21,7 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
@@ -70,10 +70,10 @@ public interface BootstrapDataService
                 ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
                 contactBuilder.prototype().name().set("Administrator");
                 ContactValue contact = contactBuilder.newInstance();
-                ((Contactable)user).updateContact(contact);
+                ((Contactable) user).updateContact(contact);
 
                 // Join organization
-                ((OrganizationParticipations)user).join(ou);
+                ((OrganizationParticipations) user).join(ou);
 
                 uow.complete();
             }

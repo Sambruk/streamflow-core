@@ -28,9 +28,9 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -170,7 +170,7 @@ public class TaskContactServerResource
         ContactValue contact = task.contacts().get().get(idx).<ContactValue>buildWith().prototype();
 
         // Create an empty phone value if it doesnt exist already
-        if(contact.phoneNumbers().get().isEmpty())
+        if (contact.phoneNumbers().get().isEmpty())
         {
             ContactPhoneValue phone = vbf.newValue(ContactPhoneValue.class).<ContactPhoneValue>buildWith().prototype();
             phone.phoneNumber().set(phoneValue.phoneNumber().get());
@@ -194,9 +194,9 @@ public class TaskContactServerResource
         ContactValue contact = task.contacts().get().get(idx).<ContactValue>buildWith().prototype();
 
         // Create an empty phone value if it doesnt exist already
-        if(contact.addresses().get().isEmpty())
+        if (contact.addresses().get().isEmpty())
         {
-            ContactAddressValue address =  vbf.newValue(ContactAddressValue.class).<ContactAddressValue>buildWith().prototype();
+            ContactAddressValue address = vbf.newValue(ContactAddressValue.class).<ContactAddressValue>buildWith().prototype();
             address.address().set(addressValue.address().get());
             contact.addresses().get().add(address);
         } else
@@ -218,9 +218,9 @@ public class TaskContactServerResource
         ContactValue contact = task.contacts().get().get(idx).<ContactValue>buildWith().prototype();
 
         // Create an empty phone value if it doesnt exist already
-        if(contact.emailAddresses().get().isEmpty())
+        if (contact.emailAddresses().get().isEmpty())
         {
-            ContactEmailValue email =  vbf.newValue(ContactEmailValue.class).<ContactEmailValue>buildWith().prototype();
+            ContactEmailValue email = vbf.newValue(ContactEmailValue.class).<ContactEmailValue>buildWith().prototype();
             email.emailAddress().set(emailValue.emailAddress().get());
             contact.emailAddresses().get().add(email);
         } else
@@ -230,7 +230,6 @@ public class TaskContactServerResource
 
         task.updateContact(idx, contact.<ContactValue>buildWith().newInstance());
     }
-
 
 
     @Override

@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.web.domain.group;
 
-import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.api.common.Visibility.application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -23,7 +23,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * JAVADOC
  */
 public class GroupAssembler
-    implements Assembler
+        implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {

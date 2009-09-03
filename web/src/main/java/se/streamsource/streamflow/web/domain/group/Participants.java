@@ -44,7 +44,8 @@ public interface Participants
         @Structure
         ValueBuilderFactory vbf;
 
-        @This Group group;
+        @This
+        Group group;
 
         public void addParticipant(Participant participant)
         {

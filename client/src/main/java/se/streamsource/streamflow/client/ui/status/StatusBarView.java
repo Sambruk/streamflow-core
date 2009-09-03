@@ -25,11 +25,8 @@ import org.jdesktop.swingx.search.Searchable;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.LoggerCategories;
 
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingConstants;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.logging.Handler;
@@ -161,7 +158,7 @@ public class StatusBarView
 
         public void publish(LogRecord record)
         {
-            JXFrame frame = (JXFrame) ((SingleFrameApplication)Application.getInstance()).getMainFrame();
+            JXFrame frame = (JXFrame) ((SingleFrameApplication) Application.getInstance()).getMainFrame();
 
             String[] message = record.getMessage().split("/");
             if (message.length == 1)
@@ -170,14 +167,12 @@ public class StatusBarView
                 {
                     pbar.setIndeterminate(false);
                     frame.setWaiting(false);
-                }
-                else
+                } else
                 {
                     pbar.setIndeterminate(true);
                     frame.setWaiting(true);
                 }
-            }
-            else
+            } else
             {
                 int max = Integer.parseInt(message[1]);
                 int current = Integer.parseInt(message[0]);

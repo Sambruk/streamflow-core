@@ -14,12 +14,12 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import org.qi4j.api.value.ValueComposite;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 public interface NewTestCommand
-    extends ValueComposite
+        extends ValueComposite
 {
 
     @UseDefaults

@@ -49,8 +49,10 @@ public class TableMultipleSelectionModel
     {
         switch (column)
         {
-            case 0: return selected.get(getModel().items().get().get(row));
-            case 1: return getModel().items().get().get(row).description().get();
+            case 0:
+                return selected.get(getModel().items().get().get(row));
+            case 1:
+                return getModel().items().get().get(row).description().get();
         }
         return null;
     }

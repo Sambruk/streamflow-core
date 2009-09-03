@@ -51,9 +51,10 @@ public interface IdGenerator
     }
 
     abstract class IdGeneratorMixin
-        implements IdGenerator, IdGeneratorState
+            implements IdGenerator, IdGeneratorState
     {
-        @This IdGeneratorState state;
+        @This
+        IdGeneratorState state;
 
         // Commands
         public void assignId(TaskId task)
@@ -82,7 +83,7 @@ public interface IdGenerator
 
             String date = format.format(now.getTime());
 
-            String taskId = date+"-"+current;
+            String taskId = date + "-" + current;
 
             task.assignId(taskId);
         }

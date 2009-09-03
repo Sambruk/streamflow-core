@@ -24,11 +24,13 @@ import org.qi4j.api.mixin.Mixins;
 public interface Delegations
 {
     void accept(Task task, Assignee assignee);
+
     void reject(Task task);
+
     void completeDelegatedTask(Task task, Assignee assignee);
 
     class DelegationsMixin
-        implements Delegations
+            implements Delegations
     {
         @This
         Owner owner;

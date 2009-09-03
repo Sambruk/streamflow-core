@@ -24,7 +24,7 @@ import java.io.IOException;
  * Model for task details.
  */
 public class TaskDetailModel
-    implements Refreshable
+        implements Refreshable
 {
     @Uses
     TaskCommentsModel comments;

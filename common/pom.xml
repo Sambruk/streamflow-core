@@ -46,6 +46,6 @@
             <artifactId>qi4j-core-testsupport</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
     </dependencies>
 </project>

@@ -14,12 +14,7 @@
 
 package se.streamsource.streamflow.web;
 
-import org.qi4j.bootstrap.ApplicationAssembler;
-import org.qi4j.bootstrap.ApplicationAssembly;
-import org.qi4j.bootstrap.ApplicationAssemblyFactory;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.*;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.organization.OrganizationAssembler;

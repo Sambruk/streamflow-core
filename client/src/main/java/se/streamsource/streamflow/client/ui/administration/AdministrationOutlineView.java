@@ -29,13 +29,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -47,7 +42,8 @@ public class AdministrationOutlineView
 
     @Service
     DialogService dialogs;
-    @Uses Iterable<NameDialog> nameDialogs;
+    @Uses
+    Iterable<NameDialog> nameDialogs;
 
     public AdministrationOutlineView(@Service ApplicationContext context, @Uses AdministrationModel model) throws Exception
     {

@@ -64,7 +64,7 @@ public class TaskContactsAdminView
                     {
                         ContactValue contactValue = (ContactValue) list.getModel().getElementAt(idx);
                         // Set empty initial values for phoneNumber, email and address.
-                        if(contactValue.phoneNumbers().get().isEmpty())
+                        if (contactValue.phoneNumbers().get().isEmpty())
                         {
                             ContactPhoneValue phone = vbf.newValue(ContactPhoneValue.class).<ContactPhoneValue>buildWith().prototype();
                             contactValue.phoneNumbers().get().add(phone);
@@ -84,7 +84,7 @@ public class TaskContactsAdminView
                             contactValue.emailAddresses().get().add(email);
 
                         }
-                        
+
                         TaskContactsClientResource taskContactsClientResource = taskContactsView.getTaskContactsResource();
                         TaskContactModel taskContactModel = obf.newObjectBuilder(TaskContactModel.class).use(contactValue, taskContactsClientResource.taskContact(idx)).newInstance();
                         taskContactsView.getContactView().setModel(taskContactModel);

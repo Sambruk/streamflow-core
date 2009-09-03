@@ -60,8 +60,9 @@ public class TaskGeneralModel
     {
         generalClientResource.changeNote(newNote);
     }
-    
-    public void changeDueOn(Date newDueOn) throws ResourceException {
-    	generalClientResource.changeDueOn(newDueOn);
+
+    public void changeDueOn(Date newDueOn) throws ResourceException
+    {
+        generalClientResource.changeDueOn(newDueOn);
     }
 }

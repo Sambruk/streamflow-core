@@ -26,5 +26,6 @@ public interface EventSource
     Iterable<DomainEvent> events(EventSpecification specification, Date startDate, int maxEvents);
 
     void registerListener(EventSourceListener subscriber, EventSpecification specification);
+
     void unregisterListener(EventSourceListener subscriber);
 }

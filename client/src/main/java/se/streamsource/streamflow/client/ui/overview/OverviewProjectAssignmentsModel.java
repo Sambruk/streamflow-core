@@ -14,9 +14,10 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.created_column_header;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.description_column_header;
 import se.streamsource.streamflow.client.ui.workspace.TaskTableModel;
 import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
 
@@ -31,8 +32,8 @@ public class OverviewProjectAssignmentsModel
     public OverviewProjectAssignmentsModel()
     {
         columnNames = new String[]{"", text(description_column_header), text(created_column_header), text(OverviewResources.assigned_to_column_header)};
-        columnClasses = new Class[] {Boolean.class, String.class, Date.class, String.class};
-        columnEditable = new boolean[] {false, false, false, false};
+        columnClasses = new Class[]{Boolean.class, String.class, Date.class, String.class};
+        columnEditable = new boolean[]{false, false, false, false};
     }
 
     @Override

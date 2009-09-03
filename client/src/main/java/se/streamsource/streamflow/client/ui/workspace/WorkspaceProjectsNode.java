@@ -30,13 +30,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceProjectsNode
         extends DefaultMutableTreeNode
-    implements Refreshable
+        implements Refreshable
 {
     private AccountModel account;
     private ObjectBuilderFactory obf;
 
     public WorkspaceProjectsNode(@Uses AccountModel account,
-                              @Structure final ObjectBuilderFactory obf) throws Exception
+                                 @Structure final ObjectBuilderFactory obf) throws Exception
     {
         super(account);
         this.account = account;
@@ -71,7 +71,7 @@ public class WorkspaceProjectsNode
 
         for (ListItemValue project : projects.items().get())
         {
-            WorkspaceProjectClientResource workspaceProjectResource =  user.workspace().projects().project(project.entity().get().identity());
+            WorkspaceProjectClientResource workspaceProjectResource = user.workspace().projects().project(project.entity().get().identity());
             add(obf.newObjectBuilder(WorkspaceProjectNode.class).use(workspaceProjectResource, project.description().get()).newInstance());
         }
     }
