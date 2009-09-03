@@ -88,7 +88,8 @@ public class SearchTasksServerResource
 
                     if (lowerBoundDate == null || upperBoundDate == null)
                     {
-                        continue;
+                        // Abort query
+                        return vbf.newValue(SearchTaskListDTO.class);
                     }
                     queryBuilder.where(and(
                             ge(templateFor(TaskEntity.class).createdOn(), lowerBoundDate),
