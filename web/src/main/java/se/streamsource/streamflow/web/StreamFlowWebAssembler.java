@@ -19,12 +19,14 @@ import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.application.security.SecurityAssembler;
+import se.streamsource.streamflow.web.application.statistics.StatisticsAssembler;
 import se.streamsource.streamflow.web.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.web.domain.WebDomainAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EventStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.event.EventAssembler;
+import se.streamsource.streamflow.web.infrastructure.database.DatabaseAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 
@@ -81,7 +83,7 @@ public class StreamFlowWebAssembler
 
     private void assembleDomainInfrastructureLayer(LayerAssembly domainInfrastructureLayer) throws AssemblyException
     {
-//        new DatabaseAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Database"));
+        new DatabaseAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Database"));
         new EventStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Event Store"));
         new ServerEntityStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Store"));
         new EntityFinderAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Finder"));
@@ -100,7 +102,7 @@ public class StreamFlowWebAssembler
         new ManagementAssembler().assemble(appLayer.moduleAssembly("Management"));
         new SecurityAssembler().assemble(appLayer.moduleAssembly("Security"));
         new OrganizationAssembler().assemble(appLayer.moduleAssembly("Organization"));
-//        new StatisticsAssembler().assemble(appLayer.moduleAssembly("Statistics"));
+        new StatisticsAssembler().assemble(appLayer.moduleAssembly("Statistics"));
     }
 
     protected void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException

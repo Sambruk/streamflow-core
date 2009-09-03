@@ -23,6 +23,7 @@ import jdbm.recman.CacheRecordManager;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -31,6 +32,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.value.ValueCompositeType;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.qi4j.spi.util.json.JSONStringer;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
@@ -43,6 +45,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSpecification
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -73,9 +77,16 @@ public interface EventSourceService
         @Structure
         UnitOfWorkFactory uowf;
 
+        @This
+        EventSource source;
+
         Map<UnitOfWork, List<DomainEvent>> uows = new HashMap<UnitOfWork, List<DomainEvent>>();
 
         Map<EventSourceListener, EventSpecification> listeners = new ConcurrentHashMap<EventSourceListener, EventSpecification>();
+
+        List<DomainEvent> currentEvents;
+        EventSpecification currentSpecification;
+
 
         public void activate() throws Exception
         {
@@ -105,7 +116,11 @@ public interface EventSourceService
 
         public Iterable<DomainEvent> events(EventSpecification specification, Date startDate, int maxEvents)
         {
-            return null;
+            // Current listener wants events
+            if (currentEvents != null && specification == currentSpecification )
+                return currentEvents;
+
+            return Collections.emptyList(); // TODO Implement this
         }
 
         public synchronized void notifyEvent(DomainEvent event)
@@ -125,10 +140,10 @@ public interface EventSourceService
                     {
                         if (status.equals(UnitOfWorkStatus.COMPLETED))
                         {
+/*
                             // Store all events from this UoW as one array
                             JSONStringer json = new JSONStringer();
 
-/*
                             json.array();
                             for (DomainEvent domainEvent : eventList)
                             {
@@ -140,22 +155,32 @@ public interface EventSourceService
                             recordManager.insert(json.toString().getBytes("UTF-8"), serializer);
 */
 
-/*
                             synchronized (listeners)
                             {
                                 for (Map.Entry<EventSourceListener,EventSpecification> listener : listeners.entrySet())
                                 {
-                                    try
+                                    // Filter events for the source
+                                    currentEvents = null;
+                                    for (DomainEvent domainEvent : eventList)
                                     {
-                                        subscriber.notifyEvents(eventList);
-                                    } catch (Exception e)
-                                    {
-                                        // Ignore if subscriber could not handle events
-                                        Logger.getLogger(subscriber.getClass().getName()).log(Level.SEVERE, "Could not handle events", e);
+                                        if (listener.getValue().accept(domainEvent))
+                                        {
+                                            if (currentEvents == null)
+                                                currentEvents = new ArrayList<DomainEvent>();
+
+                                            currentEvents.add(domainEvent);
+                                        }
                                     }
+
+                                    if (currentEvents != null)
+                                    {
+                                        currentSpecification = listener.getValue();
+                                        listener.getKey().eventsAvailable(source, listener.getValue());
+                                    }
+
+                                    currentEvents = null;
                                 }
                             }
-*/
                         }
 
                         uows.remove(unitOfWork);

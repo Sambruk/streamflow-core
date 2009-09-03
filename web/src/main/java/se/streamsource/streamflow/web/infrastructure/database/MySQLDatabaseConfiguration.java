@@ -12,22 +12,18 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.event.source;
+package se.streamsource.streamflow.web.infrastructure.database;
 
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import java.util.Date;
-
-import org.qi4j.api.common.Optional;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.property.Property;
 
 /**
- * Source of events
+ * Configuration for the MySQL DataSource
  */
-public interface EventSource
+public interface MySQLDatabaseConfiguration
+    extends ConfigurationComposite
 {
-    Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents);
-
-    void registerListener(EventSourceListener subscriber, @Optional EventSpecification specification);
-
-    void unregisterListener(EventSourceListener subscriber);
+    Property<String> host();
+    Property<String> username();
+    Property<String> password();
 }

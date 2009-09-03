@@ -22,7 +22,7 @@ import java.io.IOException;
  * Management methods for StreamFlow. These operations are available
  * through JMX.
  */
-public interface Manager
+public interface ManagerOperations
 {
     public void reindex();
 

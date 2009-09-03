@@ -12,22 +12,16 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.event.source;
+package se.streamsource.streamflow.web.application.management;
 
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import org.qi4j.api.constraint.Name;
 
-import java.util.Date;
-
-import org.qi4j.api.common.Optional;
+import java.io.IOException;
 
 /**
- * Source of events
+ * Management attributes for StreamFlow. These attributes are available
+ * through JMX.
  */
-public interface EventSource
+public interface ManagerAttributes
 {
-    Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents);
-
-    void registerListener(EventSourceListener subscriber, @Optional EventSpecification specification);
-
-    void unregisterListener(EventSourceListener subscriber);
 }

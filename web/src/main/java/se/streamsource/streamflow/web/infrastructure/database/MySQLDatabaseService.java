@@ -19,29 +19,34 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.injection.scope.This;
 
 import javax.sql.DataSource;
 
 /**
- * JAVADOC
+ * DataSource for MySQL database.
  */
 @Mixins(MySQLDatabaseService.MySQLDatabaseMixin.class)
 public interface MySQLDatabaseService
-        extends DataSource, Activatable, ServiceComposite
+        extends DataSource, Configuration, Activatable, ServiceComposite
 {
     class MySQLDatabaseMixin
             extends BasicDataSource
             implements Activatable
     {
+        @This
+        Configuration<MySQLDatabaseConfiguration> config;
+
         public MysqlConnectionPoolDataSource dataSource;
 
         public void activate() throws Exception
         {
             Class.forName("com.mysql.jdbc.Driver");
             setDriverClassName("com.mysql.jdbc.Driver");
-            setUsername("streamflow");
-            setPassword("streamflow");
-            setUrl("jdbc:mysql://localhost:3306/streamflow");
+            setUsername(config.configuration().username().get());
+            setPassword(config.configuration().password().get());
+            setUrl("jdbc:mysql://"+config.configuration().host().get()+"/streamflow");
         }
 
         public void passivate() throws Exception
