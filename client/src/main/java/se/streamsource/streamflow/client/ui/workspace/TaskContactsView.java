@@ -55,6 +55,8 @@ public class TaskContactsView
         contactView = obf.newObject(TaskContactView.class);
 
         contacts = new JList();
+        JScrollPane contactsScrollPane = new JScrollPane();
+        contactsScrollPane.setViewportView(contacts);
         contacts.setCellRenderer(new DefaultListCellRenderer()
         {
 
@@ -71,7 +73,7 @@ public class TaskContactsView
                 return super.getListCellRendererComponent(jList, contact.name().get(), i, b, b1);
             }
         });
-        add(contacts, BorderLayout.CENTER);
+        add(contactsScrollPane, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("add")));
@@ -112,6 +114,10 @@ public class TaskContactsView
             try
             {
                 model.refresh();
+                if (model.getSize() > 0 && contacts.getSelectedIndex()==-1)
+                {
+                    contacts.setSelectedIndex(0);
+                }
             } catch (Exception e)
             {
                 exception.uncaughtException(e);
@@ -122,10 +128,11 @@ public class TaskContactsView
     {
         this.model = model;
         contacts.setModel(model);
-        if (model.getSize() > 0)
+        if (model.getSize() > 0 && isVisible())
         {
             contacts.setSelectedIndex(0);
         }
+
     }
 
     public TaskContactView getContactView()
