@@ -338,8 +338,10 @@ public interface ManagerService
             public AttributeList setAttributes(AttributeList attributeList)
             {
                 AttributeList list = new AttributeList();
-                for (Attribute attribute : (List<Attribute>)attributeList)
+                for (int i = 0; i < list.size(); i++)
                 {
+                    Attribute attribute = (Attribute) list.get(i);
+
                     try
                     {
                         setAttribute(attribute);
