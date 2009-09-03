@@ -47,4 +47,16 @@ public class SearchResultTableModel
         getResource().search(text);
         refresh();
     }
+
+    @Override
+    public void markAsUnread(int idx) throws ResourceException
+    {
+        // Ignore
+    }
+
+    @Override
+    public void markAsRead(int idx) throws ResourceException
+    {
+        // Ignore
+    }
 }
