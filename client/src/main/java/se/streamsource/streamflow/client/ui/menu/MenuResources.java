@@ -26,5 +26,9 @@ enum MenuResources
     create_account_name,
     create_account_server,
     create_account_username,
-    create_account_password
+    create_account_password,
+
+    helpMenu,
+    help,
+    showAbout
 }

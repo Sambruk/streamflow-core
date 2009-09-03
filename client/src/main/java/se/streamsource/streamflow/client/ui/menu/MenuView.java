@@ -17,6 +17,8 @@ package se.streamsource.streamflow.client.ui.menu;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.ResourceMap;
 import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import static se.streamsource.streamflow.infrastructure.configuration.FileConfiguration.OS.mac;
 
 import javax.swing.*;
 
@@ -28,7 +30,7 @@ public class MenuView
 {
     private ApplicationContext context;
 
-    public MenuView(@Service ApplicationContext context)
+    public MenuView(@Service ApplicationContext context, @Service FileConfiguration config)
     {
         setActionMap(context.getActionMap());
         this.context = context;
@@ -43,6 +45,15 @@ public class MenuView
                 "showOverviewWindow",
                 "showAdministrationWindow",
                 "showSearchWindow");
+        if(mac == config.os()){
+            menu("helpMenu",
+                    "help");
+        } else
+        {
+            menu("helpMenu",
+                    "help",
+                    "showAbout");
+        }
 
     }
 

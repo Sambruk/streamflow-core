@@ -18,6 +18,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.JXFrame;
+import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -130,30 +131,8 @@ public class StreamFlowApplication
 
         setMainFrame(workspaceWindow);
 
-/*
-        Application application = Application.getApplication();
-        application.setEnabledAboutMenu(true);
-        application.addApplicationListener(new ApplicationAdapter()
-        {
-            @Override
-            public void handleAbout(ApplicationEvent applicationEvent)
-            {
-                applicationEvent.setHandled(true);
-                JXDialog dialog = new JXDialog(workspaceWindow, new AboutDialog());
-                dialog.pack();
-                dialog.setVisible(true);
-            }
-
-            @Override
-            public void handleQuit(ApplicationEvent applicationEvent)
-            {
-                applicationEvent.setHandled(true);
-                shutdown();
-            }
-        });
-*/
     }
-
+    
     public void init(@Uses final AccountsModel accountsModel, @Structure final ObjectBuilderFactory obf) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
         this.accountsModel = accountsModel;
@@ -212,6 +191,16 @@ public class StreamFlowApplication
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
         frame.setJMenuBar(menuView);
+
+        try {
+            //Check for Mac OS - and load if we are on Mac
+            getClass().getClassLoader().loadClass("com.apple.eawt.Application");
+            new MacOsUIExtension(this).attachMacUIExtension();
+
+        } catch (ClassNotFoundException e) {
+            //Do nothing
+        }
+        
 
         showWorkspaceWindow();
     }
@@ -371,9 +360,18 @@ public class StreamFlowApplication
     }
 
     @Action
+    public void showAbout()
+    {
+        dialogs.showOkDialog(getMainFrame(), new AboutDialog());
+    }
+    
+    @Action
     public void help()
     {
-        JOptionPane.showMessageDialog(this.getMainFrame(), "#showhelp");
+        JXPanel dummyHelp = new JXPanel(new FlowLayout());
+        dummyHelp.add(new JLabel("#showhelp"));
+        dialogs.showOkCancelHelpDialog(getMainFrame(), dummyHelp);
+        
     }
 
     @Override

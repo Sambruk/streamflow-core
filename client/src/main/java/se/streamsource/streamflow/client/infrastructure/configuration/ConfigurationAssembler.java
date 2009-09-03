@@ -32,7 +32,9 @@ public class ConfigurationAssembler
     {
         System.setProperty("application", "StreamFlowClient");
 
-        module.addServices(FileConfiguration.class, ServiceConfiguration.class).instantiateOnStartup();
+        module.addServices(ServiceConfiguration.class).instantiateOnStartup();
+
+        module.addServices(FileConfiguration.class).instantiateOnStartup().visibleIn(Visibility.application);
 
         // Configurations
         module.addEntities(JdbmConfiguration.class).visibleIn(Visibility.layer);

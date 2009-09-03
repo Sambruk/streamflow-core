@@ -54,7 +54,7 @@ public class StreamFlowClientAssembler
         LayerAssembly uiLayer = assembly.layerAssembly("UI");
 
         // Define layer usage
-        uiLayer.uses(clientDomainLayer);
+        uiLayer.uses(clientDomainLayer,clientDomainInfrastructureLayer);
         clientDomainLayer.uses(clientDomainInfrastructureLayer);
 
         assembleUILayer(uiLayer);
