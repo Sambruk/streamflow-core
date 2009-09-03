@@ -29,4 +29,6 @@ public interface ManagerOperations
     public String exportDatabase(@Name("Compress") boolean compress) throws IOException;
 
     public String importDatabase(@Name("Filename") String name) throws IOException;
+
+    public String exportEvents(@Name("Compress") boolean compress) throws IOException;
 }

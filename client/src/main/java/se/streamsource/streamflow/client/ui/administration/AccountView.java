@@ -118,31 +118,6 @@ public class AccountView
                 .appendButtonLine(am.get("register"))
                 .appendButtonLine(am.get("changePassword"));
 
-/*
-        bb = new BindingFormBuilder(builder, connectedBinder);
-        bb.appendLine(connected_separator, CHECKBOX, new AbstractPropertyInstance<Boolean>(new GenericPropertyInfo(new MetaInfo(), false, false, QualifiedName.fromClass(AccountConnection.class, "connected"), Boolean.class))
-        {
-            public Boolean get()
-            {
-                return model.account().isEnabled();
-            }
-
-            public void set(Boolean newValue) throws IllegalArgumentException, IllegalStateException
-            {
-                if (newValue)
-                    try
-                    {
-                        model.account().server();
-                    } catch (OperationException e)
-                    {
-                        throw new IllegalArgumentException(e.getMessage());
-                    }
-                else
-                    model.account().disconnect();
-            }
-        });
-*/
-
         setViewportView(panel);
     }
 
@@ -198,7 +173,6 @@ public class AccountView
     public void register()
     {
         model.register();
-        getActionMap().get("register").setEnabled(false);
     }
 
     @Action
@@ -228,7 +202,5 @@ public class AccountView
         builder = model.settings().buildWith();
         settingsBinder.updateWith(builder.prototype());
         connectedBinder.update();
-
-        getActionMap().get("register").setEnabled(!model.isRegistered());
     }
 }

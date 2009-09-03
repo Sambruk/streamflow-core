@@ -18,6 +18,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -27,6 +28,7 @@ public class EventAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addServices(EventSourceService.class).visibleIn(Visibility.application);
+        module.addValues(DomainEvent.class).visibleIn(Visibility.application);
+        module.addServices(EventSourceService.class).identifiedBy("events").visibleIn(Visibility.application);
     }
 }

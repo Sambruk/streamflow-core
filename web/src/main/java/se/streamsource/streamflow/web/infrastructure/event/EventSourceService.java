@@ -22,8 +22,8 @@ import jdbm.helper.*;
 import jdbm.recman.CacheRecordManager;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -31,10 +31,12 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.value.ValueCompositeType;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.service.ServiceDescriptor;
-import org.qi4j.spi.util.json.JSONStringer;
+import org.qi4j.spi.util.json.*;
+import org.qi4j.spi.value.ValueCompositeType;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -77,8 +79,14 @@ public interface EventSourceService
         @Structure
         UnitOfWorkFactory uowf;
 
+        @Structure
+        ModuleSPI module;
+
         @This
         EventSource source;
+
+        @This
+        Identity identity;
 
         Map<UnitOfWork, List<DomainEvent>> uows = new HashMap<UnitOfWork, List<DomainEvent>>();
 
@@ -86,10 +94,14 @@ public interface EventSourceService
 
         List<DomainEvent> currentEvents;
         EventSpecification currentSpecification;
+        public ValueCompositeType domainEventType;
+        public Logger logger;
 
 
         public void activate() throws Exception
         {
+            logger = Logger.getLogger(identity.identity().get());
+
             File dataFile = new File(fileConfig.dataDirectory(), descriptor.identity() + "/events");
             File directory = dataFile.getAbsoluteFile().getParentFile();
             directory.mkdirs();
@@ -98,6 +110,8 @@ public interface EventSourceService
             properties.put(RecordManagerOptions.AUTO_COMMIT, "false");
             properties.put(RecordManagerOptions.DISABLE_TRANSACTIONS, "false");
             initialize(name, properties);
+
+            domainEventType = module.valueDescriptor(DomainEvent.class.getName()).valueType();
         }
 
         public void passivate() throws Exception
@@ -117,10 +131,44 @@ public interface EventSourceService
         public Iterable<DomainEvent> events(EventSpecification specification, Date startDate, int maxEvents)
         {
             // Current listener wants events
-            if (currentEvents != null && specification == currentSpecification )
+            if (currentEvents != null && specification == currentSpecification)
                 return currentEvents;
 
-            return Collections.emptyList(); // TODO Implement this
+            // Find events that match the specification and startdate
+            List<DomainEvent> events = new ArrayList<DomainEvent>();
+
+            try
+            {
+                Long startTime = startDate == null ? Long.MIN_VALUE : startDate.getTime();
+                TupleBrowser browser = index.browse(startTime);
+
+                Tuple tuple = new Tuple();
+                while (browser.getNext(tuple))
+                {
+                    byte[] eventData = (byte[]) tuple.getValue();
+                    String eventJson = new String(eventData, "UTF-8");
+                    JSONTokener tokener = new JSONTokener(eventJson);
+                    JSONArray array = (JSONArray) tokener.nextValue();
+                    for (int i = 0; i  < array.length(); i++)
+                    {
+                        JSONObject valueJson = (JSONObject) array.get(i);
+                        DomainEvent event = (DomainEvent) domainEventType.fromJSON(valueJson, module);
+                        if (specification.accept(event))
+                            events.add(event);
+                    }
+
+                    if (events.size() > maxEvents)
+                        break; // Max size has been reached
+                }
+            } catch (IOException e)
+            {
+                logger.log(Level.WARNING, "Could not load events", e);
+            } catch (JSONException e)
+            {
+                logger.log(Level.WARNING, "Could not deserialize events", e);
+            }
+
+            return events;
         }
 
         public synchronized void notifyEvent(DomainEvent event)
@@ -134,53 +182,63 @@ public interface EventSourceService
                 {
                     public void beforeCompletion() throws UnitOfWorkCompletionException
                     {
+                        if (eventList.size() > 0)
+                        {
+                            try
+                            {
+                                // Store all events from this UoW as one array
+                                storeEvents(eventList);
+                            } catch (Exception e)
+                            {
+                                throw new UnitOfWorkCompletionException(e);
+                            }
+                        }
                     }
 
                     public void afterCompletion(UnitOfWorkStatus status)
                     {
-                        if (status.equals(UnitOfWorkStatus.COMPLETED))
+                        try
                         {
-/*
-                            // Store all events from this UoW as one array
-                            JSONStringer json = new JSONStringer();
-
-                            json.array();
-                            for (DomainEvent domainEvent : eventList)
+                            if (status.equals(UnitOfWorkStatus.COMPLETED))
                             {
-                                ValueCompositeType type = spi.getValueDescriptor(domainEvent).valueType();
-                                type.toJSON(domainEvent, json);
-                            }
-                            json.endArray();
-
-                            recordManager.insert(json.toString().getBytes("UTF-8"), serializer);
-*/
-
-                            synchronized (listeners)
-                            {
-                                for (Map.Entry<EventSourceListener,EventSpecification> listener : listeners.entrySet())
+                                if (eventList.size() > 0)
                                 {
-                                    // Filter events for the source
-                                    currentEvents = null;
-                                    for (DomainEvent domainEvent : eventList)
-                                    {
-                                        if (listener.getValue().accept(domainEvent))
-                                        {
-                                            if (currentEvents == null)
-                                                currentEvents = new ArrayList<DomainEvent>();
+                                    recordManager.commit();
 
-                                            currentEvents.add(domainEvent);
+                                    synchronized (listeners)
+                                    {
+                                        for (Map.Entry<EventSourceListener, EventSpecification> listener : listeners.entrySet())
+                                        {
+                                            // Filter events for the source
+                                            currentEvents = null;
+                                            for (DomainEvent domainEvent : eventList)
+                                            {
+                                                if (listener.getValue().accept(domainEvent))
+                                                {
+                                                    if (currentEvents == null)
+                                                        currentEvents = new ArrayList<DomainEvent>();
+
+                                                    currentEvents.add(domainEvent);
+                                                }
+                                            }
+
+                                            if (currentEvents != null)
+                                            {
+                                                currentSpecification = listener.getValue();
+                                                listener.getKey().eventsAvailable(source, listener.getValue());
+                                            }
+
+                                            currentEvents = null;
                                         }
                                     }
-
-                                    if (currentEvents != null)
-                                    {
-                                        currentSpecification = listener.getValue();
-                                        listener.getKey().eventsAvailable(source, listener.getValue());
-                                    }
-
-                                    currentEvents = null;
                                 }
+                            } else
+                            {
+                                recordManager.rollback();
                             }
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
                         }
 
                         uows.remove(unitOfWork);
@@ -190,6 +248,23 @@ public interface EventSourceService
                 uows.put(unitOfWork, events);
             }
             events.add(event);
+        }
+
+        private void storeEvents(List<DomainEvent> eventList)
+                throws JSONException, IOException
+        {
+            JSONStringer json = new JSONStringer();
+
+            json.array();
+            for (DomainEvent domainEvent : eventList)
+            {
+                domainEventType.toJSON(domainEvent, json);
+            }
+            json.endArray();
+
+            Long timeStamp = eventList.get(0).on().get().getTime();
+            String jsonString = json.toString();
+            index.insert(timeStamp, jsonString.getBytes("UTF-8"), false);
         }
 
         private void initialize(String name, Properties properties)
@@ -204,8 +279,8 @@ public interface EventSourceService
                 index = BTree.load(recordManager, recid);
             } else
             {
-                ByteArrayComparator comparator = new ByteArrayComparator();
-                index = BTree.createInstance(recordManager, comparator, serializer, new LongSerializer(), 16);
+                LongComparator comparator = new LongComparator();
+                index = BTree.createInstance(recordManager, comparator,new LongSerializer() , serializer, 16);
                 recordManager.setNamedObject("index", index.getRecid());
             }
             recordManager.commit();

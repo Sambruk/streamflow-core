@@ -42,6 +42,9 @@ import org.qi4j.spi.service.ServiceDescriptor;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.entity.EntityDescriptor;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.infrastructure.database.MySQLDatabaseConfiguration;
 
 import javax.management.*;
@@ -75,6 +78,9 @@ public interface ManagerService
 
         @Service
         DatabaseImport importDatabase;
+
+        @Service
+        EventSource eventSource;
 
         @Service
         FileConfiguration fileConfig;
@@ -208,7 +214,7 @@ public interface ManagerService
         public String exportDatabase(boolean compress) throws IOException
         {
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
-            File exportFile = new File(exports, "streamflow_" + format.format(new Date()) + (compress ? ".json.gz" : ".json"));
+            File exportFile = new File(exports, "streamflow_data_" + format.format(new Date()) + (compress ? ".json.gz" : ".json"));
             OutputStream out = new FileOutputStream(exportFile);
 
             if (compress)
@@ -244,6 +250,29 @@ public interface ManagerService
             }
 
             return "Data imported successfully";
+        }
+
+        public String exportEvents(@Name("Compress") boolean compress) throws IOException
+        {
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
+            File exportFile = new File(exports, "streamflow_events_" + format.format(new Date()) + (compress ? ".json.gz" : ".json"));
+            OutputStream out = new FileOutputStream(exportFile);
+
+            if (compress)
+            {
+                out = new GZIPOutputStream(out);
+            }
+
+            Writer writer = new OutputStreamWriter(out, "UTF-8");
+            Iterable<DomainEvent> events = eventSource.events(new AllEventsSpecification(), null, Integer.MAX_VALUE);
+            for (DomainEvent event : events)
+            {
+                writer.write(event.toJSON()+"\n");
+            }
+
+            writer.close();
+
+            return "Events exported to " + exportFile.getAbsolutePath();
         }
 
         // Attributes

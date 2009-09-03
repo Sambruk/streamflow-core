@@ -78,6 +78,8 @@ public class BaseServerResource
                 uow.discard();
         }
 
+        System.out.println("Server TAG: "+info.getTag().getName());
+
         return info;
     }
 
