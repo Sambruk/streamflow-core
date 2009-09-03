@@ -14,30 +14,11 @@
 
 package se.streamsource.streamflow.web.resource.organizations.search;
 
-import static org.qi4j.api.query.QueryExpressions.and;
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.ge;
-import static org.qi4j.api.query.QueryExpressions.le;
-import static org.qi4j.api.query.QueryExpressions.matches;
-import static org.qi4j.api.query.QueryExpressions.or;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import org.hamcrest.CoreMatchers;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
-
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
@@ -48,6 +29,16 @@ import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * JAVADOC
