@@ -38,6 +38,8 @@ public class ManagementAssembler
 
             module.addServices(ReindexerService.class).identifiedBy("reindexer");
             module.addServices(ReindexOnStartupService.class).instantiateOnStartup();
+
+            module.addServices(EventManagerService.class).instantiateOnStartup();
         }
     }
 }

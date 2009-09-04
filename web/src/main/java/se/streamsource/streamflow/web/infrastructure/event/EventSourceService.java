@@ -142,13 +142,13 @@ public interface EventSourceService
                                         {
                                             final List<DomainEvent> listenerEvents = currentEvents;
                                             final EventSpecification currentSpecification = listener.getValue();
-
+                                            final EventSourceListener esl = listener.getKey();
                                             // Notify listener asynchronously
                                             eventNotifier.execute(new Runnable()
                                             {
                                                 public void run()
                                                 {
-                                                    listener.getKey().eventsAvailable(new EventStore()
+                                                    esl.eventsAvailable(new EventStore()
                                                     {
                                                         public Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents)
                                                         {
@@ -157,7 +157,7 @@ public interface EventSourceService
                                                             else // Delegate to store
                                                                 return eventStore.events(specification, startDate, maxEvents);
                                                         }
-                                                    }, listener.getValue());
+                                                    }, currentSpecification);
                                                 }
                                             });
                                         }

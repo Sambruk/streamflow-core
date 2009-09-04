@@ -86,10 +86,10 @@ public class TaskContactView
         BindingFormBuilder bb = new BindingFormBuilder(builder, contactBinder);
         bb
                 .appendLine(WorkspaceResources.name_label, defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name())
-                .appendLine(WorkspaceResources.contact_id_label, TEXTFIELD, template.contactId())
                 .appendLine(WorkspaceResources.phone_label, TEXTFIELD, phoneTemplate.phoneNumber(), phoneNumberBinder)
                 .appendLine(WorkspaceResources.address_label, TEXTFIELD, addressTemplate.address(), addressBinder)
                 .appendLine(WorkspaceResources.email_label, TEXTFIELD, emailTemplate.emailAddress(), emailBinder)
+                .appendLine(WorkspaceResources.contact_id_label, TEXTFIELD, template.contactId())
                 .appendLine(WorkspaceResources.company_label, TEXTFIELD, template.company())
                 .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note());
 
