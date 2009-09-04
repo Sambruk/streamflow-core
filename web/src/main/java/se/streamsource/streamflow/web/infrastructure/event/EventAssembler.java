@@ -15,9 +15,11 @@
 package se.streamsource.streamflow.web.infrastructure.event;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.ApplicationAssembly;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -29,6 +31,11 @@ public class EventAssembler
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
         module.addValues(DomainEvent.class).visibleIn(Visibility.application);
-        module.addServices(EventSourceService.class).identifiedBy("events").visibleIn(Visibility.application);
+        module.addServices(EventSourceService.class).identifiedBy("eventsource").visibleIn(Visibility.application);
+
+        if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
+            module.addServices(JdbmEventStoreService.class).identifiedBy("eventstore").visibleIn(Visibility.application);
+        else
+            module.addServices(MemoryEventStoreService.class).identifiedBy("eventstore").visibleIn(Visibility.application);
     }
 }

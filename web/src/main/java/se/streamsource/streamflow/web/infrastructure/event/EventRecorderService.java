@@ -27,6 +27,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.json.JSONObject;
 
 import java.io.*;
@@ -76,9 +77,9 @@ public interface EventRecorderService
             }
         }
 
-        public void eventsAvailable(EventSource source, EventSpecification specification)
+        public void eventsAvailable(EventStore eventStore, EventSpecification specification)
         {
-            Iterable<DomainEvent> events = source.events(specification, null, 100);
+            Iterable<DomainEvent> events = eventStore.events(specification, null, 100);
 
             try
             {

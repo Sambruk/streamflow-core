@@ -25,10 +25,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.configuration.Configuration;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.*;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.label.LabelEntity;
@@ -96,7 +93,7 @@ public interface StatisticsService
             source.unregisterListener(this);
         }
 
-        public void eventsAvailable(EventSource source, EventSpecification specification)
+        public void eventsAvailable(EventStore eventStore, EventSpecification specification)
         {
             if (config.configuration().enabled().get())
             {
@@ -113,7 +110,7 @@ public interface StatisticsService
                     }
                 }
 
-                Iterable<DomainEvent> events = source.events(specification, config.configuration().lastEventDate().get(), Integer.MAX_VALUE);
+                Iterable<DomainEvent> events = eventStore.events(specification, config.configuration().lastEventDate().get(), Integer.MAX_VALUE);
 
                 Connection conn = null;
                 UnitOfWork uow = null;

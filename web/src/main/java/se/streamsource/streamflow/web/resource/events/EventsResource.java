@@ -22,10 +22,7 @@ import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.*;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -78,9 +75,9 @@ public class EventsResource
             this.writer = writer;
         }
 
-        public void eventsAvailable(EventSource source, EventSpecification specification)
+        public void eventsAvailable(EventStore eventStore, EventSpecification specification)
         {
-            Iterable<DomainEvent> events = source.events(specification, null, 100);
+            Iterable<DomainEvent> events = eventStore.events(specification, null, 100);
 
             try
             {

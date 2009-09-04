@@ -22,42 +22,36 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.security.Verifier;
+import org.restlet.security.SecretVerifier;
 import se.streamsource.streamflow.web.domain.user.User;
 
 /**
  * Accept login if username==password
  */
 public class PasswordVerifierService
-        extends Verifier
+        extends SecretVerifier
 {
     @Structure
     UnitOfWorkFactory uowf;
 
-    public int verify(Request request, Response response)
+    public boolean verify(String username, char[] password)
     {
-        ChallengeResponse challengeResponse = request.getChallengeResponse();
-        if (challengeResponse == null)
-            return Verifier.RESULT_MISSING;
-
-        String username = challengeResponse.getIdentifier();
-        String password = new String(request.getChallengeResponse().getSecret());
-
         UnitOfWork unitOfWork = uowf.newUnitOfWork();
 
         try
         {
             User user = unitOfWork.get(User.class, username);
 
-            if (user.verifyPassword(password))
+            if (user.verifyPassword(new String(password)))
             {
-                return Verifier.RESULT_VALID;
+                return true;
             } else
             {
-                return Verifier.RESULT_INVALID;
+                return false;
             }
         } catch (NoSuchEntityException e)
         {
-            return Verifier.RESULT_INVALID;
+            return false;
         } finally
         {
             unitOfWork.discard();

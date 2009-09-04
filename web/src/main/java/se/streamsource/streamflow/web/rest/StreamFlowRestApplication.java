@@ -47,9 +47,6 @@ public class StreamFlowRestApplication
 
     @Optional
     @Service
-    Authorizer authorizer;
-
-    @Service
     Verifier verifier;
 
     @Structure

@@ -14,13 +14,15 @@
 
 package se.streamsource.streamflow.infrastructure.event.source;
 
+import org.qi4j.api.common.Optional;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import java.util.Date;
+
 /**
- * Event handlers are recomended to implement this interface.
- * It will be called after a UoW has been completed successfully
- * to inform about all events created during that UoW. Discarded
- * or failed UoW's will not cause this method to be called.
+ * JAVADOC
  */
-public interface EventSourceListener
+public interface EventStore
 {
-    void eventsAvailable(EventStore source, EventSpecification specification);
+    Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents);
 }

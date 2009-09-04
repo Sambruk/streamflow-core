@@ -25,8 +25,6 @@ import org.qi4j.api.common.Optional;
  */
 public interface EventSource
 {
-    Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents);
-
     void registerListener(EventSourceListener subscriber, @Optional EventSpecification specification);
 
     void unregisterListener(EventSourceListener subscriber);

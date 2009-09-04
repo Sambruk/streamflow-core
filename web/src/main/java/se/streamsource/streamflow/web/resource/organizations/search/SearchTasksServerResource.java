@@ -167,9 +167,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 	{
 		if (UserSearchKeyword.ME.toString().equalsIgnoreCase(search))
 		{
-			// TODO: Fix the subject!
-			Subject subject = Subject.getSubject(AccessController.getContext());
-//			Subject subject = getRequest().getClientInfo().getSubject();
+			Subject subject = getRequest().getClientInfo().getSubject();
 			if (subject == null)
 				return "administrator";
 			else

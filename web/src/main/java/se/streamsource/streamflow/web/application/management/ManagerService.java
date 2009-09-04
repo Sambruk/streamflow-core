@@ -44,6 +44,7 @@ import org.qi4j.spi.entity.EntityDescriptor;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.infrastructure.database.MySQLDatabaseConfiguration;
 
@@ -80,7 +81,7 @@ public interface ManagerService
         DatabaseImport importDatabase;
 
         @Service
-        EventSource eventSource;
+        EventStore eventStore;
 
         @Service
         FileConfiguration fileConfig;
@@ -264,7 +265,7 @@ public interface ManagerService
             }
 
             Writer writer = new OutputStreamWriter(out, "UTF-8");
-            Iterable<DomainEvent> events = eventSource.events(new AllEventsSpecification(), null, Integer.MAX_VALUE);
+            Iterable<DomainEvent> events = eventStore.events(new AllEventsSpecification(), null, Integer.MAX_VALUE);
             for (DomainEvent event : events)
             {
                 writer.write(event.toJSON()+"\n");
