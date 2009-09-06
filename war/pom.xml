@@ -101,7 +101,46 @@
                     </deployer>
                 </configuration>
             </plugin>
-
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>wagon-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>upload-war</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload-single</goal>
+						</goals>
+						<configuration>
+							<fromFile>target/${project.build.finalName}.war</fromFile>
+							<serverId>deploy.streamflow</serverId>
+							<url>scp://${deploy.server}/root</url>
+							<toFile>streamflow.war</toFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>ssh</executable>
+                    <arguments>
+                        <argument>-i</argument>
+                        <argument>${ec2.privateKey}</argument>
+                        <argument>root@${deploy.server}</argument>
+                        <argument>sh deploy.sh</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -113,7 +152,8 @@
                 </property>
             </activation>
             <properties>
-                <cargo.url>${cargo.nightly.url}</cargo.url>
+                <deploy.server>${deploy.nightly.server}</deploy.server>
+                <cargo.url>http://${deploy.nightly.server}/manager</cargo.url>
                 <cargo.username>${cargo.nightly.username}</cargo.username>
                 <cargo.password>${cargo.nightly.password}</cargo.password>
             </properties>
@@ -126,7 +166,8 @@
                 </property>
             </activation>
             <properties>
-                <cargo.url>${cargo.release.url}</cargo.url>
+                <deploy.server>${deploy.release.server}</deploy.server>
+                <cargo.url>http://${deploy.release.server}/manager</cargo.url>
                 <cargo.username>${cargo.release.username}</cargo.username>
                 <cargo.password>${cargo.release.password}</cargo.password>
             </properties>
