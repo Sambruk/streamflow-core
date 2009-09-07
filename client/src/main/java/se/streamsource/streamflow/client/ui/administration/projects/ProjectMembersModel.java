@@ -32,13 +32,16 @@ import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.util.Observable;
 import java.util.Set;
 
 /**
  * JAVADOC
  */
 public class ProjectMembersModel
+    extends Observable
         implements TreeModel, Refreshable
+    
 {
     @Uses
     private MembersClientResource members;

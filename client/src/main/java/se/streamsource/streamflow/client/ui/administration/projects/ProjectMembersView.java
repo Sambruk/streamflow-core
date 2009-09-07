@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 
@@ -104,6 +105,7 @@ public class ProjectMembersView
         toolbar.add(new JButton(getActionMap().get("add")));
         toolbar.add(new JButton(getActionMap().get("remove")));
         members.add(toolbar, BorderLayout.SOUTH);
+        memberRoleTree.getSelectionModel().addTreeSelectionListener(new SelectionActionEnabler(getActionMap().get("remove")));
 
         setLeftComponent(members);
         setRightComponent(new JPanel());

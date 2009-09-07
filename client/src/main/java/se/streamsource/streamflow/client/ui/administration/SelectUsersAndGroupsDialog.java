@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -53,10 +54,10 @@ public class SelectUsersAndGroupsDialog
         setActionMap(context.getActionMap(this));
 
         TableMultipleSelectionModel usersModel = obf.newObject(TableMultipleSelectionModel.class);
-        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, "#Search users").newInstance();
+        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, i18n.text(AdministrationResources.search_users)).newInstance();
 
         TableMultipleSelectionModel groupsModel = obf.newObject(TableMultipleSelectionModel.class);
-        this.addGroupsView = obf.newObjectBuilder(TableSelectionView.class).use(groupsModel, "#Search groups").newInstance();
+        this.addGroupsView = obf.newObjectBuilder(TableSelectionView.class).use(groupsModel, i18n.text(AdministrationResources.search_groups)).newInstance();
 
         addUsersView.getSearchInputField().addKeyListener(new KeyAdapter()
         {

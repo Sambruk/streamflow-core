@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -52,14 +53,14 @@ public class UserOrProjectSelectionDialog
     {
         super(new BorderLayout());
 
-        setName("#Search user or project");
+        setName(i18n.text(WorkspaceResources.search_users_projects));
         setActionMap(context.getActionMap(this));
 
         TableSingleSelectionModel usersModel = obf.newObject(TableSingleSelectionModel.class);
-        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, "#Search users").newInstance();
+        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, i18n.text(WorkspaceResources.search_user)).newInstance();
 
         TableSingleSelectionModel projectsModel = obf.newObject(TableSingleSelectionModel.class);
-        this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, "#Search projects").newInstance();
+        this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, i18n.text(WorkspaceResources.search_project)).newInstance();
 
         JSplitPane dialog = new JSplitPane();
 

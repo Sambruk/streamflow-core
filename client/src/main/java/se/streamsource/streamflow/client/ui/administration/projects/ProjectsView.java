@@ -22,6 +22,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -65,6 +66,8 @@ public class ProjectsView
         toolbar.add(new JButton(am.get("add")));
         toolbar.add(new JButton(am.get("remove")));
         add(toolbar, BorderLayout.SOUTH);
+
+        projectList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
     }
 
     @Action

@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -49,11 +50,11 @@ public class ProjectSelectionDialog
     {
         super(new BorderLayout());
 
-        setName("#Search project");
+        setName(i18n.text(WorkspaceResources.search_project));
         setActionMap(context.getActionMap(this));
 
         TableSingleSelectionModel projectsModel = obf.newObject(TableSingleSelectionModel.class);
-        this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, "#Search projects").newInstance();
+        this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, i18n.text(WorkspaceResources.search_project)).newInstance();
 
         addProjectsView.getSearchInputField().addKeyListener(new KeyAdapter()
         {

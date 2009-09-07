@@ -84,5 +84,9 @@ public enum WorkspaceResources
     could_not_change_phone_number,
     could_not_change_address,
     could_not_change_email_address,
-    date_format
+    date_format,
+
+    search_project,
+    search_users_projects,
+    search_user
 }
