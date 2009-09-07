@@ -22,7 +22,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
-import se.streamsource.streamflow.domain.project.ProjectStates;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 
 /**
@@ -35,18 +34,10 @@ public interface Projects
 
     void removeProject(Project project);
 
-    void completeProject(Project project);
-
     interface ProjectsState
     {
         @Aggregated
         ManyAssociation<Project> projects();
-
-        ManyAssociation<Project> active();
-
-        ManyAssociation<Project> completed();
-
-        ManyAssociation<Project> dropped();
     }
 
     class ProjectsMixin
@@ -77,7 +68,6 @@ public interface Projects
             ProjectEntity project = builder.newInstance();
 
             state.projects().add(state.projects().count(), project);
-            state.active().add(state.active().count(), project);
 
             return project;
         }
@@ -86,27 +76,7 @@ public interface Projects
         {
             if (state.projects().remove(project))
             {
-                if (project.getStatus().equals(ProjectStates.ACTIVE))
-                {
-                    state.active().remove(project);
-                } else if (project.getStatus().equals(ProjectStates.COMPLETED))
-                {
-                    state.completed().remove(project);
-                } else if (project.getStatus().equals(ProjectStates.DROPPED))
-                {
-                    state.dropped().remove(project);
-                }
-
-                project.remove();
-            }
-        }
-
-        public void completeProject(Project project)
-        {
-            if (project.complete())
-            {
-                state.active().remove(project);
-                state.completed().add(state.completed().count(), project);
+                project.removeEntity();
             }
         }
     }

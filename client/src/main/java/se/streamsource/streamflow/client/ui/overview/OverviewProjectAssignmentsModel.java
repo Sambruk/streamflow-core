@@ -18,7 +18,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
 import static se.streamsource.streamflow.client.ui.overview.OverviewResources.created_column_header;
 import static se.streamsource.streamflow.client.ui.overview.OverviewResources.description_column_header;
-import se.streamsource.streamflow.client.ui.workspace.TaskTableModel;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
 
 import java.util.Date;

@@ -120,10 +120,16 @@ public class AccountAdministrationNode
         return false;
     }
 
-    public void refresh() throws Exception
+    public void refresh()
     {
-        organizations = accountModel.organizations();
-        models.clear();
+        try
+        {
+            models.clear();
+            organizations = accountModel.organizations();
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_refresh, e);
+        }
     }
 
     public void update(Observable o, Object arg)
@@ -133,7 +139,7 @@ public class AccountAdministrationNode
             refresh();
         } catch (Exception e)
         {
-            new OperationException(AdministrationResources.could_not_refresh_list_of_organizations, e);
+            new OperationException(AdministrationResources.could_not_refresh, e);
         }
     }
 }

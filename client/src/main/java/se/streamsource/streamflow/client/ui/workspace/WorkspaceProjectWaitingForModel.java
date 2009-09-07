@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 import java.util.Date;

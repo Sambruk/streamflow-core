@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
-import se.streamsource.streamflow.client.ui.workspace.TaskTableView;
+import se.streamsource.streamflow.client.ui.task.TaskTableView;
 
 import javax.swing.*;
 

@@ -25,7 +25,6 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 
@@ -215,8 +214,6 @@ public class OverviewView
                 }
             }
         });
-
-        overviewTree.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(overviewTree.getSearchable()).newInstance());
 
         overviewTree.addTreeWillExpandListener(new TreeWillExpandListener()
         {

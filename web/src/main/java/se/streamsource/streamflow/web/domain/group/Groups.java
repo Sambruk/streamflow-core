@@ -70,7 +70,7 @@ public interface Groups
         {
             if (state.groups().remove(group))
             {
-                group.remove();
+                group.removeEntity();
             }
         }
     }

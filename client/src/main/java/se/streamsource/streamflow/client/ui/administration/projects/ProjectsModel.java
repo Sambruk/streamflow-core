@@ -84,12 +84,18 @@ public class ProjectsModel
         return list.get(index);
     }
 
-    public void refresh() throws ResourceException
+    public void refresh()
     {
-        // Get Project list
-        list = projects.projects().items().get();
+        try
+        {
+            // Get Project list
+            list = projects.projects().items().get();
 
-        fireContentsChanged(this, 0, list.size());
+            fireContentsChanged(this, 0, list.size());
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_refresh, e);
+        }
     }
 
     public void removeProject(String id)

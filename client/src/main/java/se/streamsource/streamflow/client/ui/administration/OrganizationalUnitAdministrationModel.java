@@ -72,7 +72,7 @@ public class OrganizationalUnitAdministrationModel
         return rolesModel;
     }
 
-    public void refresh() throws ResourceException
+    public void refresh()
     {
         groupsModel.refresh();
         projectsModel.refresh();
@@ -92,13 +92,13 @@ public class OrganizationalUnitAdministrationModel
         }
     }
 
-    public void newOrganizationalUnit(String name)
+    public void createOrganizationalUnit(String name)
     {
         try
         {
             ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
             builder.prototype().string().set(name);
-            organization.organizationalUnits().newOrganizationalUnit(builder.newInstance());
+            organization.organizationalUnits().createOrganizationalUnit(builder.newInstance());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_create_new_organization, e);

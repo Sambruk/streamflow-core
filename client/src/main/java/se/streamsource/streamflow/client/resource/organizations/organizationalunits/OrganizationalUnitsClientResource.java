@@ -39,9 +39,9 @@ public class OrganizationalUnitsClientResource
         return query("organizationalUnits", ListValue.class);
     }
 
-    public void newOrganizationalUnit(StringDTO value) throws ResourceException
+    public void createOrganizationalUnit(StringDTO value) throws ResourceException
     {
-        postCommand("newOrganizationalUnit", value);
+        postCommand("createOrganizationalUnit", value);
     }
 
     public void removeOrganizationalUnit(EntityReferenceDTO entity) throws ResourceException

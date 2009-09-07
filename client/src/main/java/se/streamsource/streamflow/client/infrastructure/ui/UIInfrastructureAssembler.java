@@ -30,8 +30,7 @@ public class UIInfrastructureAssembler
     {
         module.addObjects(
                 DialogService.class,
-                UncaughtExceptionHandler.class,
-                SearchFocus.class
+                UncaughtExceptionHandler.class
         ).visibleIn(Visibility.layer);
 
         module.importServices(UncaughtExceptionHandler.class).importedBy(NewObjectImporter.class).visibleIn(Visibility.application);

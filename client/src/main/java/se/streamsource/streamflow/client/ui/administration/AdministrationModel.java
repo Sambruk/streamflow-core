@@ -24,6 +24,7 @@ import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 /**
  * JAVADOC
@@ -72,7 +73,7 @@ public class AdministrationModel
         return (AdministrationNode) super.getRoot();
     }
 
-    public void refresh() throws Exception
+    public void refresh()
     {
         getRoot().refresh();
         reload(getRoot());
@@ -81,5 +82,10 @@ public class AdministrationModel
     public AccountAdministrationNode accountAdministration(Account account)
     {
         return nodes.get(account);
+    }
+
+    public void createOrganizationalUnit(OrganizationalStructureAdministrationNode orgNode, String name)
+    {
+        orgNode.model().createOrganizationalUnit(name);
     }
 }

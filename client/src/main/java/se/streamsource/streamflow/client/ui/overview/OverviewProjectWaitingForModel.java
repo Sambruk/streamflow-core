@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui.overview;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
-import se.streamsource.streamflow.client.ui.workspace.TaskTableModel;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 

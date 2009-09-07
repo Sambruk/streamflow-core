@@ -12,9 +12,11 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.workspace;
+package se.streamsource.streamflow.client.ui.task;
 
+import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
@@ -33,10 +35,11 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
+import se.streamsource.streamflow.client.ui.workspace.UserOrProjectSelectionDialog;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
@@ -46,8 +49,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -59,14 +60,13 @@ public abstract class TaskTableView
         extends JPanel
 {
     @Service
-    DialogService dialogs;
+    protected DialogService dialogs;
 
     @Uses
     protected ObjectBuilder<UserOrProjectSelectionDialog> userOrProjectSelectionDialog;
-
-    protected
+    
     @Service
-    StreamFlowApplication application;
+    protected StreamFlowApplication application;
 
     protected JXTable taskTable;
     protected TaskTableModel model;
@@ -79,8 +79,6 @@ public abstract class TaskTableView
                      @Structure final ObjectBuilderFactory obf,
                      @Structure ValueBuilderFactory vbf)
     {
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK + InputEvent.ALT_DOWN_MASK), "completeTasks");
-
         this.model = model;
         this.detailsView = detailsView;
         setLayout(new BorderLayout());
@@ -109,6 +107,7 @@ public abstract class TaskTableView
 
         // Table
         taskTable = new JXTable(model);
+        taskTable.setActionMap(am);
 
         JScrollPane taskScrollPane = new JScrollPane(taskTable);
 
@@ -156,8 +155,6 @@ public abstract class TaskTableView
             }
         }, Color.black, Color.lightGray));
         taskTable.setEditable(true);
-
-        taskTable.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(taskTable.getSearchable()).newInstance());
 
         // Popup
         JPopupMenu popup = new JPopupMenu();
@@ -209,7 +206,7 @@ public abstract class TaskTableView
                             }
                             TaskDetailModel taskModel = model.taskDetailModel(dto.task().get().identity());
                             taskModel.general().addObserver(descriptionUpdater);
-                            taskModel.refresh();
+//                            taskModel.refresh();
 
                             detailsView.setTaskModel(taskModel);
 
@@ -299,22 +296,36 @@ public abstract class TaskTableView
         model.refresh();
     }
 
-    @org.jdesktop.application.Action()
-    public void markTasksAsUnread() throws ResourceException
+    @org.jdesktop.application.Action(block = Task.BlockingScope.ACTION)
+    public Task markTasksAsUnread() throws ResourceException
     {
-        for (int row : getReverseSelectedTasks())
+        return new Task(Application.getInstance())
         {
-            model.markAsUnread(row);
-        }
+            protected Object doInBackground() throws Exception
+            {
+                for (int row : getReverseSelectedTasks())
+                {
+                    model.markAsUnread(row);
+                }
+                return null;
+            }
+        };
     }
 
-    @org.jdesktop.application.Action()
-    public void markTasksAsRead() throws ResourceException
+    @org.jdesktop.application.Action(block = Task.BlockingScope.ACTION)
+    public Task markTasksAsRead() throws ResourceException
     {
-        for (int row : getReverseSelectedTasks())
+        return new Task(Application.getInstance())
         {
-            model.markAsRead(row);
-        }
+            protected Object doInBackground() throws Exception
+            {
+                for (int row : getReverseSelectedTasks())
+                {
+                    model.markAsRead(row);
+                }
+                return null;
+            }
+        };
     }
 
     @org.jdesktop.application.Action

@@ -17,6 +17,8 @@ import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
 
+import javax.swing.*;
+
 public class MacOsUIExtension
 {
     private StreamFlowApplication application;
@@ -47,5 +49,25 @@ public class MacOsUIExtension
 
             }
         });
+    }
+
+    /**
+     * Replace all "ctrl" keystrokes with "meta" (Apple command) keystrokes.
+     */
+    public void convertAccelerators()
+    {
+        ActionMap actions = application.getContext().getActionMap();
+        Object[] keys = actions.allKeys();
+        for (Object key : keys)
+        {
+            Action action = actions.get(key);
+            KeyStroke keyStroke = (KeyStroke) action.getValue(Action.ACCELERATOR_KEY);
+            if (keyStroke != null && keyStroke.toString().contains("ctrl"))
+            {
+                keyStroke = KeyStroke.getKeyStroke(keyStroke.toString().replace("ctrl", "meta"));
+                action.putValue(Action.ACCELERATOR_KEY, keyStroke);
+            }
+            System.out.println(key+"="+keyStroke);
+        }
     }
 }

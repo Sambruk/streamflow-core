@@ -140,8 +140,8 @@ public interface StatisticsService
                             stmt.setString(idx++, id);
                             stmt.setString(idx++, task.taskId().get());
                             stmt.setString(idx++, task.description().get());
-                            stmt.setDate(idx++, new java.sql.Date(task.createdOn().get().getTime()));
-                            stmt.setDate(idx++, new java.sql.Date(event.on().get().getTime()));
+                            stmt.setTimestamp(idx++, new java.sql.Timestamp(task.createdOn().get().getTime()));
+                            stmt.setTimestamp(idx++, new java.sql.Timestamp(event.on().get().getTime()));
                             stmt.setLong(idx++, event.on().get().getTime() - task.createdOn().get().getTime());
                             Assignee assignee = task.assignedTo().get();
                             stmt.setString(idx++, assignee.getDescription());
@@ -185,7 +185,8 @@ public interface StatisticsService
                         }
                     }
 
-                    conn.commit();
+                    if (conn != null)
+                        conn.commit();
 
                     config.configuration().lastEventDate().set(newLastDate);
                     config.configuration().unitOfWork().apply();

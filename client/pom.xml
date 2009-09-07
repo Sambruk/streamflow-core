@@ -100,6 +100,21 @@
             <artifactId>org.restlet.ext.xml</artifactId>
         </dependency>
 
+        <!-- Help -->
+        <dependency>
+            <groupId>javax.help</groupId>
+            <artifactId>javahelp</artifactId>
+            <version>2.0.02</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>streamflow.help</groupId>
+            <artifactId>streamflowhelp</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/lib/apidoc.jar</systemPath>
+        </dependency>
+
         <!-- Build time dependency -->
         <dependency>
             <groupId>com.apple.ui</groupId>

@@ -14,11 +14,15 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
+import se.streamsource.streamflow.client.OperationException;
+
 /**
- * JAVADOC
+ * Implemented by models that want to be refreshable. If an
+ * exception occurs during refresh the method should throw
+ * an OperationException.
  */
 public interface Refreshable
 {
     public void refresh()
-            throws Exception;
+        throws OperationException;
 }

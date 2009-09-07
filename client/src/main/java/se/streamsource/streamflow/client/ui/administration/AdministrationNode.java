@@ -100,7 +100,7 @@ public class AdministrationNode
         };
     }
 
-    public void refresh() throws Exception
+    public void refresh()
     {
         for (AccountAdministrationNode model : models)
         {

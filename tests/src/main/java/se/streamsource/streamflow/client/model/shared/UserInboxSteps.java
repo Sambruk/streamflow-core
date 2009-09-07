@@ -25,7 +25,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.workspace.TaskGeneralModel;
+import se.streamsource.streamflow.client.ui.task.TaskGeneralModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserInboxModel;
 
 /**

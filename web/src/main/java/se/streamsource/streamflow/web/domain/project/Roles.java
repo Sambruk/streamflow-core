@@ -67,7 +67,7 @@ public interface Roles
         {
             if (state.roles().remove(role))
             {
-                role.remove();
+                role.removeEntity();
             }
         }
 

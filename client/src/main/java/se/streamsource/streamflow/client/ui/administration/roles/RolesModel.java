@@ -84,7 +84,7 @@ public class RolesModel
             fireContentsChanged(this, 0, list.size());
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_roles, e);
+            throw new OperationException(AdministrationResources.could_not_refresh, e);
         }
     }
 

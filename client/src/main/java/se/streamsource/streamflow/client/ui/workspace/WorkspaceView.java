@@ -27,7 +27,6 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.SearchFocus;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 
@@ -379,8 +378,6 @@ public class WorkspaceView
                 }
             }
         });
-
-        workspaceTree.addFocusListener(obf.newObjectBuilder(SearchFocus.class).use(workspaceTree.getSearchable()).newInstance());
 
         workspaceTree.addTreeWillExpandListener(new TreeWillExpandListener()
         {

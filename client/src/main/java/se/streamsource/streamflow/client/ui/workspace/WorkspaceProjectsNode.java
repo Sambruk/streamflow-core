@@ -17,9 +17,11 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -62,17 +64,22 @@ public class WorkspaceProjectsNode
     }
 
     public void refresh()
-            throws Exception
     {
-        se.streamsource.streamflow.client.resource.users.UserClientResource user = account.userResource();
-        ListValue projects = user.workspace().projects().listProjects();
-
-        super.removeAllChildren();
-
-        for (ListItemValue project : projects.items().get())
+        try
         {
-            WorkspaceProjectClientResource workspaceProjectResource = user.workspace().projects().project(project.entity().get().identity());
-            add(obf.newObjectBuilder(WorkspaceProjectNode.class).use(workspaceProjectResource, project.description().get()).newInstance());
+            se.streamsource.streamflow.client.resource.users.UserClientResource user = account.userResource();
+            ListValue projects = user.workspace().projects().listProjects();
+
+            super.removeAllChildren();
+
+            for (ListItemValue project : projects.items().get())
+            {
+                WorkspaceProjectClientResource workspaceProjectResource = user.workspace().projects().project(project.entity().get().identity());
+                add(obf.newObjectBuilder(WorkspaceProjectNode.class).use(workspaceProjectResource, project.description().get()).newInstance());
+            }
+        } catch (ResourceException e)
+        {
+            throw new OperationException(WorkspaceResources.could_not_refresh_projects, e);
         }
     }
 }

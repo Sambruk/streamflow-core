@@ -17,8 +17,10 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.common.Visibility;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
+import se.streamsource.streamflow.client.ui.task.*;
 
 /**
  * JAVADOC
@@ -28,6 +30,8 @@ public class WorkspaceUIAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
+        module.addObjects(WorkspaceWindow.class).visibleIn(Visibility.layer);
+
         module.addObjects(
                 WorkspaceNode.class,
                 WorkspaceUserNode.class,

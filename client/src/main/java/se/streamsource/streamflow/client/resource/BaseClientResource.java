@@ -94,10 +94,15 @@ public class BaseClientResource
         {
             getConditions().getMatch().add(getTag());
         }
-        Representation rep = super.post(entity);
-        setTag(null);
+            Representation rep = super.post(entity);
+            setTag(null);
 
-        return rep;
+            if (!getResponse().getStatus().isSuccess())
+            {
+                throw new ResourceException(getResponse().getStatus());
+            }
+
+            return rep;
     }
 
     @Override

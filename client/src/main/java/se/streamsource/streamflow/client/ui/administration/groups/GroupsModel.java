@@ -93,12 +93,18 @@ public class GroupsModel
         return groups == null ? null : groups.get(index);
     }
 
-    public void refresh() throws ResourceException
+    public void refresh()
     {
-        // Get label list
-        groups = groupsResource.groups().items().get();
+        try
+        {
+            // Get label list
+            groups = groupsResource.groups().items().get();
 
-        fireContentsChanged(this, 0, groups.size());
+            fireContentsChanged(this, 0, groups.size());
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_refresh, e);
+        }
     }
 
 

@@ -17,10 +17,13 @@ package se.streamsource.streamflow.client.ui.overview;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -63,18 +66,23 @@ public class OverviewProjectsNode
     }
 
     public void refresh()
-            throws Exception
     {
-        se.streamsource.streamflow.client.resource.users.UserClientResource user = account.userResource();
-        OverviewProjectsClientResource projectsClientResource = user.overview().projects();
-        ListValue projects = projectsClientResource.listProjects();
-
-        super.removeAllChildren();
-
-        for (ListItemValue project : projects.items().get())
+        try
         {
-            OverviewProjectClientResource projectClientResource = projectsClientResource.project(project.entity().get().identity());
-            add(obf.newObjectBuilder(OverviewProjectNode.class).use(projectClientResource, project.description().get()).newInstance());
+            se.streamsource.streamflow.client.resource.users.UserClientResource user = account.userResource();
+            OverviewProjectsClientResource projectsClientResource = user.overview().projects();
+            ListValue projects = projectsClientResource.listProjects();
+
+            super.removeAllChildren();
+
+            for (ListItemValue project : projects.items().get())
+            {
+                OverviewProjectClientResource projectClientResource = projectsClientResource.project(project.entity().get().identity());
+                add(obf.newObjectBuilder(OverviewProjectNode.class).use(projectClientResource, project.description().get()).newInstance());
+            }
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_refresh,  e);
         }
     }
 }

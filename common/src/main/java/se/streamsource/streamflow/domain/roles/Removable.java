@@ -18,32 +18,70 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.Event;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * Generic interface for removing objects. They are not
  * physically removed, but are instead only marked as removed.
  * All state still exists and can be queried.
+ *
+ * Queries for entities that include this one should ensure that the removed flag is set to false
+ * before allowing it to be included.
  */
 @Mixins(Removable.RemovableMixin.class)
 public interface Removable
 {
-    void remove();
+    /**
+     * Mark the entity as removed
+     *
+     * @return true if the entity was removed. False if the entity was already marked as removed
+     */
+    boolean removeEntity();
+
+    /**
+     * Mark the entity as not-removed
+     *
+     * @return true if the entity was reinstate. False if the entity was already active.
+     */
+    boolean reinstate();
 
     interface RemovableState
     {
         @UseDefaults
         Property<Boolean> removed();
+
+        @Event
+        void removedChanged(DomainEvent event, boolean isRemoved);
     }
 
     class RemovableMixin
             implements Removable
     {
-        @This
-        RemovableState state;
+        @This RemovableState state;
 
-        public void remove()
+        public boolean removeEntity()
         {
-            state.removed().set(true);
+            if (!state.removed().get())
+            {
+                state.removedChanged(DomainEvent.CREATE, true);
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        public boolean reinstate()
+        {
+            if (state.removed().get())
+            {
+                state.removedChanged(DomainEvent.CREATE, false);
+                return true;
+            } else
+            {
+                return false;
+            }
         }
     }
 }

@@ -30,7 +30,10 @@ import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.util.Enumeration;
+import java.util.ArrayList;
 
 /**
  * JAVADOC
@@ -44,10 +47,12 @@ public class AdministrationOutlineView
     DialogService dialogs;
     @Uses
     Iterable<NameDialog> nameDialogs;
+    private AdministrationModel model;
 
     public AdministrationOutlineView(@Service ApplicationContext context, @Uses AdministrationModel model) throws Exception
     {
         super(new BorderLayout());
+        this.model = model;
 
         tree = new JXTree(model);
 
@@ -117,7 +122,23 @@ public class AdministrationOutlineView
             dialogs.showOkCancelHelpDialog(this, dialog);
             if (dialog.name() != null)
             {
-                orgNode.model().newOrganizationalUnit(dialog.name());
+                ArrayList<Integer> expandedRows = new ArrayList<Integer>();
+                for (int i = 0; i < tree.getRowCount(); i++)
+                {
+                    if (tree.isExpanded(i))
+                        expandedRows.add(i);
+                }
+                int[] selected = tree.getSelectionRows();
+                orgNode.model().createOrganizationalUnit(dialog.name());
+
+                model.createOrganizationalUnit(orgNode, dialog.name());
+
+                model.refresh();
+                for (Integer expandedRow : expandedRows)
+                {
+                    tree.expandRow(expandedRow);
+                }
+                tree.setSelectionRows(selected);
             }
         }
     }
@@ -135,6 +156,8 @@ public class AdministrationOutlineView
             {
                 OrganizationalStructureAdministrationNode orgParent = (OrganizationalStructureAdministrationNode) parent;
                 orgParent.model().removeOrganizationalUnit(orgNode.ou().entity().get());
+                model.refresh();
+
             }
         }
     }

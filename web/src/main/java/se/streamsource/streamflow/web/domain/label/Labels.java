@@ -59,7 +59,7 @@ public interface Labels
         {
             if (state.labels().remove(label))
             {
-                label.remove();
+                label.removeEntity();
             }
         }
 

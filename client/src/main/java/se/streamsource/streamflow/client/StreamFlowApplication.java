@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.ProxyActions;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.JXFrame;
@@ -44,9 +45,7 @@ import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
-import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
-import se.streamsource.streamflow.client.ui.menu.AccountsModel;
-import se.streamsource.streamflow.client.ui.menu.MenuView;
+import se.streamsource.streamflow.client.ui.menu.*;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewResources;
 import se.streamsource.streamflow.client.ui.overview.OverviewView;
@@ -58,12 +57,17 @@ import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 
+import javax.help.CSH;
+import javax.help.HelpBroker;
+import javax.help.HelpSet;
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
@@ -73,6 +77,9 @@ import java.util.logging.Logger;
 /**
  * Controller for the application
  */
+@ProxyActions({
+        "createTask", "completeTasks", "assignTasksToMe", "markTasksAsRead", "markTasksAsUnread", "dropTasks", "forwardTasks", "delegateTasks", // Task related proxy actions 
+        "find"})
 public class StreamFlowApplication
         extends SingleFrameApplication
 {
@@ -97,9 +104,7 @@ public class StreamFlowApplication
 
     JXFrame searchWindow;
 
-    MenuView menuView;
-
-    JXFrame workspaceWindow;
+    WorkspaceWindow workspaceWindow;
     WorkspaceView workspaceView;
     WorkspaceModel workspaceModel;
 
@@ -111,6 +116,7 @@ public class StreamFlowApplication
     AdministrationView administrationView;
     AdministrationModel administrationModel;
     public SearchView searchView;
+    public HelpBroker hb;
 
     public StreamFlowApplication()
     {
@@ -118,26 +124,37 @@ public class StreamFlowApplication
 
         getContext().getResourceManager().setApplicationBundleNames(Arrays.asList("se.streamsource.streamflow.client.resources.StreamFlowApplication"));
 
-        workspaceWindow = new JXFrame(i18n.text(WorkspaceResources.window_name));
         overviewWindow = new JXFrame(i18n.text(OverviewResources.window_name));
+        overviewWindow.setLocationByPlatform(true);
 
         administrationWindow = new JXFrame(i18n.text(AdministrationResources.window_name));
+        administrationWindow.setLocationByPlatform(true);
+
         searchWindow = new JXFrame(i18n.text(SearchResources.window_name));
-
-        workspaceWindow.setLocationByPlatform(true);
-
-        JXStatusBar bar = new StatusBarView(getContext());
-        workspaceWindow.setStatusBar(bar);
-
-        setMainFrame(workspaceWindow);
-
+        searchWindow.setLocationByPlatform(true);
     }
-    
-    public void init(@Uses final AccountsModel accountsModel, @Structure final ObjectBuilderFactory obf) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
+
+    public void init(@Uses final AccountsModel accountsModel,
+                     @Structure final ObjectBuilderFactory obf,
+                     @Uses WorkspaceWindow workspaceWindow) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
+        this.workspaceWindow = workspaceWindow;
+        setMainFrame(workspaceWindow.getFrame());
+
+        try
+        {
+            //Check for Mac OS - and load if we are on Mac
+            getClass().getClassLoader().loadClass("com.apple.eawt.Application");
+            MacOsUIExtension osUIExtension = new MacOsUIExtension(this);
+            osUIExtension.attachMacUIExtension();
+            osUIExtension.convertAccelerators();
+
+        } catch (ClassNotFoundException e)
+        {
+            //Do nothing
+        }
+
         this.accountsModel = accountsModel;
-        JFrame frame = getMainFrame();
-        frame.setTitle("StreamFlow");
 
         ListDataListener workspaceListener = new ListDataListener()
         {
@@ -173,6 +190,7 @@ public class StreamFlowApplication
                 }
             }
         };
+
         accountsModel.addListDataListener(workspaceListener);
         workspaceListener.contentsChanged(null);
 
@@ -180,27 +198,32 @@ public class StreamFlowApplication
         administrationView = obf.newObjectBuilder(AdministrationView.class).use(administrationModel).newInstance();
         administrationWindow.getContentPane().setLayout(new BorderLayout());
         administrationWindow.getContentPane().add(administrationView, BorderLayout.CENTER);
+        administrationWindow.setJMenuBar(obf.newObjectBuilder(AdministrationMenuBar.class).newInstance());
 
         overviewWindow.getContentPane().setLayout(new BorderLayout());
+        overviewWindow.setJMenuBar(obf.newObjectBuilder(OverviewMenuBar.class).newInstance());
 
         searchWindow.getContentPane().setLayout(new BorderLayout());
         searchWindow.setMinimumSize(new Dimension(600, 600));
+        searchWindow.setJMenuBar(obf.newObjectBuilder(SearchMenuBar.class).newInstance());
 
-        menuView = obf.newObject(MenuView.class);
-
-        frame.setPreferredSize(new Dimension(1000, 600));
-        frame.pack();
-        frame.setJMenuBar(menuView);
-
-        try {
-            //Check for Mac OS - and load if we are on Mac
-            getClass().getClassLoader().loadClass("com.apple.eawt.Application");
-            new MacOsUIExtension(this).attachMacUIExtension();
-
-        } catch (ClassNotFoundException e) {
-            //Do nothing
+        // Help system
+        String helpHS = "api.hs";
+        ClassLoader cl = getClass().getClassLoader();
+        HelpSet hs;
+        try
+        {
+            URL hsURL = HelpSet.findHelpSet(cl, helpHS);
+            hs = new HelpSet(null, hsURL);
+        } catch (Exception ee)
+        {
+            // Say what the exception really is
+            System.out.println("HelpSet " + ee.getMessage());
+            System.out.println("HelpSet " + helpHS + " not found");
+            return;
         }
-        
+        // Create a HelpBroker object:
+        hb = hs.createHelpBroker();        
 
         showWorkspaceWindow();
     }
@@ -220,6 +243,7 @@ public class StreamFlowApplication
                 {
                     Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.loading.name());
                     Logger.getLogger(LoggerCategories.PROGRESS).info("loading");
+
 /*
                     try
                     {
@@ -291,7 +315,7 @@ public class StreamFlowApplication
     @Action
     public void showWorkspaceWindow()
     {
-        if (!workspaceWindow.isVisible())
+        if (!workspaceWindow.getFrame().isVisible())
         {
             if (workspaceView != null)
                 try
@@ -364,14 +388,12 @@ public class StreamFlowApplication
     {
         dialogs.showOkDialog(getMainFrame(), new AboutDialog());
     }
-    
+
     @Action
-    public void help()
+    public void showHelp(ActionEvent event)
     {
-        JXPanel dummyHelp = new JXPanel(new FlowLayout());
-        dummyHelp.add(new JLabel("#showhelp"));
-        dialogs.showOkCancelHelpDialog(getMainFrame(), dummyHelp);
-        
+        hb.setCurrentID("intro");
+        hb.setDisplayed(true);
     }
 
     @Override
@@ -384,5 +406,11 @@ public class StreamFlowApplication
     protected void shutdown()
     {
         super.shutdown();
+    }
+
+    @Override
+    protected void show(JComponent jComponent)
+    {
+        super.show(jComponent);
     }
 }

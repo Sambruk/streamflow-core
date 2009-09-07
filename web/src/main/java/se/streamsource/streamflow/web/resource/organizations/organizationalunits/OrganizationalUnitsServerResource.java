@@ -46,18 +46,20 @@ public class OrganizationalUnitsServerResource
         return builder.newList();
     }
 
-    public void newOrganizationalUnit(StringDTO value) throws ResourceException
+    public void createOrganizationalUnit(StringDTO value) throws ResourceException
     {
-        String organization = getRequest().getAttributes().get("organizationa").toString();
+        String organization = getRequestAttributes().get("organization").toString();
         OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
+
         ous.createOrganizationalUnit(value.string().get());
     }
 
     public void removeOrganizationalUnit(EntityReferenceDTO entity) throws ResourceException
     {
-        String organization = getRequest().getAttributes().get("organizationa").toString();
+        String organization = getRequest().getAttributes().get("organization").toString();
         OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
         OrganizationalUnit ou = uowf.currentUnitOfWork().get(OrganizationalUnit.class, entity.entity().get().identity());
+
         ous.removeOrganizationalUnit(ou);
     }
 }

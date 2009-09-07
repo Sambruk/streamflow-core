@@ -54,5 +54,5 @@ public enum AdministrationResources
     confirm_password,
     passwords_do_not_match,
     old_password_incorrect,
-    password_changed
+    could_not_refresh, password_changed
 }
