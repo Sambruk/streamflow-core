@@ -55,9 +55,11 @@ public class ProjectsView
         JPopupMenu popup = new JPopupMenu();
         popup.add(am.get("rename"));
 
+        JScrollPane scrollPane = new JScrollPane();
         projectList = new JListPopup(model, popup);
         projectList.setCellRenderer(new ListItemCellRenderer());
-        add(projectList, BorderLayout.CENTER);
+        scrollPane.setViewportView(projectList);
+        add(scrollPane, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("add")));
