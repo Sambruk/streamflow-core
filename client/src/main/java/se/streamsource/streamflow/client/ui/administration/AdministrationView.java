@@ -68,13 +68,7 @@ public class AdministrationView
                     {
                         OrganizationalStructureAdministrationNode ouNode = (OrganizationalStructureAdministrationNode) node;
                         OrganizationalUnitAdministrationModel ouAdminModel = ouNode.model();
-                        try
-                        {
-                            ouAdminModel.refresh();
-                        } catch (ResourceException e1)
-                        {
-                            e1.printStackTrace();
-                        }
+                        ouAdminModel.refresh();
                         view = obf.newObjectBuilder(OrganizationalUnitAdministrationView.class).use(ouAdminModel,
                                 ouAdminModel.groupsModel(),
                                 ouAdminModel.projectsModel(),
