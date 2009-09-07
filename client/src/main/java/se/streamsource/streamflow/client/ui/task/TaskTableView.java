@@ -133,6 +133,7 @@ public abstract class TaskTableView
 
             public String getString(Object value)
             {
+                if (value == null) return "";
                 Date time = (Date) value;
                 return format.format(time);
             }

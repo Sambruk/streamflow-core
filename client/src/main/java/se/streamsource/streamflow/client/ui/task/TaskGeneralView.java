@@ -156,4 +156,11 @@ public class TaskGeneralView
     {
         super.addNotify();
     }
+
+    @Override
+    public void requestFocus()
+    {
+        super.requestFocus();
+        descriptionField.requestFocus();
+    }
 }
