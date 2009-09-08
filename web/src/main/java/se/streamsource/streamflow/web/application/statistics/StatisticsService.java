@@ -82,10 +82,21 @@ public interface StatisticsService
             logger = Logger.getLogger(StatisticsService.class.getName());
 
             sql = new Properties();
-            InputStream asStream = getClass().getResourceAsStream("statisticsdatabase.properties");
-            sql.load(asStream);
+            InputStream asStream = null;
+			try
+			{
+				asStream = getClass().getResourceAsStream("statisticsdatabase.properties");
+	            sql.load(asStream);
 
-            source.registerListener(this, new EventQuery(config.configuration().lastEventDate().get(), "completed", null, null));
+	            source.registerListener(this, new EventQuery(config.configuration().lastEventDate().get(), "completed", null, null));
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+				throw e;
+			} finally 
+			{
+				asStream.close();
+			}
         }
 
         public void passivate() throws Exception
