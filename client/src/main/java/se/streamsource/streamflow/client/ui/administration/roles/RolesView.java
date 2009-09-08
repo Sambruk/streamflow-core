@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -68,7 +69,14 @@ public class RolesView
         String name = dialog.name();
         if (name != null)
         {
-            model.newRole(name);
+            try
+            {
+                model.newRole(name);
+
+            }catch(OperationConflictException oce)
+            {
+                dialogs.showOkCancelHelpDialog(this, new JLabel(oce.getMessage()));
+            }
         }
     }
 

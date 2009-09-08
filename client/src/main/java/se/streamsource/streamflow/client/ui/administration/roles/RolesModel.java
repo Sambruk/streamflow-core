@@ -19,7 +19,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
+import org.restlet.data.Status;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -57,8 +59,13 @@ public class RolesModel
         {
             roles.post(new StringRepresentation(description));
             refresh();
+
         } catch (ResourceException e)
         {
+            if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
+            {
+                throw new OperationConflictException(AdministrationResources.could_not_create_role_name_already_exists, e);
+            }
             throw new OperationException(AdministrationResources.could_not_create_role, e);
         }
 

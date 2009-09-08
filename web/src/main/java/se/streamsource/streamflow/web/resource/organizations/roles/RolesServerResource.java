@@ -16,15 +16,20 @@ package se.streamsource.streamflow.web.resource.organizations.roles;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.project.Role;
 import se.streamsource.streamflow.web.domain.project.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+
+import java.io.IOException;
 
 /**
  * Mapped to:
@@ -59,11 +64,21 @@ public class RolesServerResource
         {
             roles.createRole(entity.getText());
             uow.complete();
-        } catch (Exception e)
+
+        } catch (IOException ioe)
+        {
+            uow.discard();
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ioe.getMessage());
+
+        } catch (DuplicateDescriptionException e)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+
+        } catch (UnitOfWorkCompletionException e)
         {
             uow.discard();
         }
-
         return null;
     }
 

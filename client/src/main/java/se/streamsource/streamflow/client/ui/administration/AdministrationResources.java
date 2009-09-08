@@ -61,6 +61,6 @@ public enum AdministrationResources
     could_not_rename_project_name_already_exists,
     could_not_rename_project,
     could_not_rename_group_name_already_exist,
-    could_not_rename_group, 
-    search_users
+    could_not_rename_group,
+    could_not_create_role_name_already_exists, search_users
 }

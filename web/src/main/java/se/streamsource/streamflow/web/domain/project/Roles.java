@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ import java.util.List;
 @Mixins(Roles.RolesMixin.class)
 public interface Roles
 {
-    Role createRole(String name);
+    Role createRole(String name) throws DuplicateDescriptionException;
 
     void removeRole(Role role);
 
@@ -52,8 +53,16 @@ public interface Roles
         @Structure
         UnitOfWorkFactory uowf;
 
-        public Role createRole(String name)
+        public Role createRole(String name) throws DuplicateDescriptionException
         {
+            for(Role arole : state.roles() )
+            {
+                if(arole.hasDescription(name))
+                {
+                    throw new DuplicateDescriptionException();
+                }
+            }
+
             // Create role
             Role role = uowf.currentUnitOfWork().newEntity(RoleEntity.class);
             role.describe(name);
