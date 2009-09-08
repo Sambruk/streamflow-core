@@ -139,7 +139,7 @@ public class AccountAdministrationNode
             refresh();
         } catch (Exception e)
         {
-            new OperationException(AdministrationResources.could_not_refresh, e);
+            throw new OperationException(AdministrationResources.could_not_refresh, e);
         }
     }
 }
