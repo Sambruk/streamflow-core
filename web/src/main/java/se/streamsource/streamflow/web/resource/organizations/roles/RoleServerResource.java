@@ -14,13 +14,12 @@
 
 package se.streamsource.streamflow.web.resource.organizations.roles;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.web.domain.project.RoleEntity;
 import se.streamsource.streamflow.web.domain.project.Roles;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
@@ -32,9 +31,6 @@ import se.streamsource.streamflow.web.resource.BaseServerResource;
 public class RoleServerResource
         extends BaseServerResource
 {
-    @Structure
-    protected UnitOfWorkFactory uowf;
-
     @Override
     protected Representation delete() throws ResourceException
     {

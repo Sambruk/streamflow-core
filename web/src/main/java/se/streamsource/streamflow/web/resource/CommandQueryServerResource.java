@@ -14,6 +14,13 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.logging.Logger;
+
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
@@ -23,14 +30,12 @@ import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.runtime.util.Annotations;
-import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.util.json.JSONException;
 import org.qi4j.spi.value.ValueDescriptor;
@@ -38,16 +43,14 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.representation.*;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.ObjectRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.logging.Logger;
+import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 /**
  * Base class for command/query resources.
@@ -70,13 +73,7 @@ public class CommandQueryServerResource
         extends BaseServerResource
 {
     @Structure
-    protected UnitOfWorkFactory uowf;
-
-    @Structure
     protected ValueBuilderFactory vbf;
-
-    @Structure
-    protected Qi4jSPI spi;
 
     @Structure
     protected Module module;

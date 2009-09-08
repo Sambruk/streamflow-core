@@ -14,13 +14,12 @@
 
 package se.streamsource.streamflow.client.resource.organizations;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -31,10 +30,6 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 public class OrganizationClientResource
         extends OrganizationalUnitClientResource
 {
-    @Structure
-    protected ValueBuilderFactory vbf;
-
-
     public OrganizationClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);

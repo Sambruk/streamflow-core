@@ -14,13 +14,13 @@
 
 package se.streamsource.streamflow.web.resource.organizations.projects.members;
 
-import org.qi4j.api.injection.scope.Structure;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
@@ -32,9 +32,6 @@ import se.streamsource.streamflow.web.resource.BaseServerResource;
 public class MemberServerResource
         extends BaseServerResource
 {
-    @Structure
-    protected UnitOfWorkFactory uowf;
-
     @Override
     protected Representation put(Representation representation) throws ResourceException
     {

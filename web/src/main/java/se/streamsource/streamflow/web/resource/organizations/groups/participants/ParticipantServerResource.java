@@ -14,13 +14,13 @@
 
 package se.streamsource.streamflow.web.resource.organizations.groups.participants;
 
-import org.qi4j.api.injection.scope.Structure;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
@@ -32,9 +32,6 @@ import se.streamsource.streamflow.web.resource.BaseServerResource;
 public class ParticipantServerResource
         extends BaseServerResource
 {
-    @Structure
-    protected UnitOfWorkFactory uowf;
-
     //TODO do a check if the orgunit actually contains the project
     @Override
     protected Representation put(Representation representation) throws ResourceException

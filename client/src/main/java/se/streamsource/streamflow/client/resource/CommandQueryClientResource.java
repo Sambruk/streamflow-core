@@ -14,13 +14,14 @@
 
 package se.streamsource.streamflow.client.resource;
 
+import java.io.IOException;
+
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyTypeDescriptor;
@@ -34,8 +35,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 
-import java.io.IOException;
-
 /**
  * Base class for client-side Command/Query resources
  */
@@ -44,9 +43,6 @@ public class CommandQueryClientResource
 {
     @Structure
     protected UnitOfWorkFactory uowf;
-
-    @Structure
-    protected ValueBuilderFactory vbf;
 
     @Structure
     protected Qi4jSPI spi;
