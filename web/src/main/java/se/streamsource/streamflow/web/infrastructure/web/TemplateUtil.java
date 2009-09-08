@@ -27,15 +27,15 @@ public class TemplateUtil
 {
     public static String getTemplate(String resourceName, Class resourceClass) throws IOException
     {
-        String template = "";
+        StringBuilder template = new StringBuilder("");
         InputStream in = resourceClass.getResourceAsStream(resourceName);
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line;
         while ((line = reader.readLine()) != null)
-            template += line + "\n";
+            template.append(line + "\n");
         reader.close();
 
-        return template;
+        return template.toString();
     }
 
     public static String eval(String template, String... parameters)
@@ -54,13 +54,14 @@ public class TemplateUtil
     public static String methodList(Class methodClass)
     {
         // List methods
-        String links = "";
+        StringBuilder links = new StringBuilder("");
         Method[] methods = methodClass.getMethods();
         for (Method method : methods)
         {
-            links += "<li><a href=\"" + method.getName() + "/\" rel=\"" + method.getName() + "\">" + method.getName() + "</a></li>\n";
+            links.append("<li><a href=\"").append(method.getName()).append("/\" rel=\"")
+            	.append(method.getName()).append("\">").append(method.getName()).append("</a></li>\n");
         }
 
-        return links;
+        return links.toString();
     }
 }

@@ -128,24 +128,30 @@ public class CommandQueryServerResource
 
     protected Representation listOperations() throws ResourceException
     {
-        // List methods
-        String links = "";
-        Method[] methods = getClass().getMethods();
-        for (Method method : methods)
-        {
-            if (isQueryMethod(method))
-                links += "<li><a href=\"?operation=" + method.getName() + "\" rel=\"" + method.getName() + "\">" + method.getName() + "</a></li>\n";
-        }
+		// List methods
+		StringBuilder links = new StringBuilder("");
+		Method[] methods = getClass().getMethods();
+		for (Method method : methods)
+		{
+			if (isQueryMethod(method))
+				links.append("<li><a href=\"?operation=").append(
+						method.getName()).append("\" rel=\"").append(
+						method.getName()).append("\">")
+						.append(method.getName()).append("</a></li>\n");
+		}
 
-        try
-        {
-            String template = TemplateUtil.getTemplate("resources/links.html", CommandQueryServerResource.class);
-            String content = TemplateUtil.eval(template, "$content", links, "$title", getRequest().getResourceRef().getLastSegment() + " operations");
-            return new StringRepresentation(content, MediaType.TEXT_HTML);
-        } catch (IOException e)
-        {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
-        }
+		try
+		{
+			String template = TemplateUtil.getTemplate("resources/links.html",
+					CommandQueryServerResource.class);
+			String content = TemplateUtil.eval(template, "$content", links.toString(),
+					"$title", getRequest().getResourceRef().getLastSegment()
+							+ " operations");
+			return new StringRepresentation(content, MediaType.TEXT_HTML);
+		} catch (IOException e)
+		{
+			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
+		}
     }
 
     @Override

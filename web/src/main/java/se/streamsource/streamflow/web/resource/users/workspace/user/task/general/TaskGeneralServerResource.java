@@ -63,15 +63,15 @@ public class TaskGeneralServerResource
         TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
         builder.prototype().description().set(task.description().get());
 
-        String labels = "";
-        String comma = "";
-        for (Label label : task.labels())
-        {
-            labels += comma + label.getDescription();
-            comma = ",";
-        }
+		StringBuilder labels = new StringBuilder("");
+		String comma = "";
+		for (Label label : task.labels())
+		{
+			labels.append(comma).append(label.getDescription());
+			comma = ",";
+		}
 
-        builder.prototype().labels().set(labels);
+		builder.prototype().labels().set(labels.toString());
         builder.prototype().note().set(task.note().get());
         builder.prototype().creationDate().set(task.createdOn().get());
         builder.prototype().taskId().set(task.taskId().get());

@@ -131,20 +131,20 @@ public abstract class TaskTableModel<T extends TaskListDTO>
                 return !task.status().get().equals(TaskStates.ACTIVE);
             case 1:
             {
-                String desc = task.description().get();
+                StringBuilder desc = new StringBuilder(task.description().get());
                 List<ListItemValue> labels = task.labels().get().items().get();
                 if (labels.size() > 0)
                 {
-                    desc += " (";
+                    desc.append(" (");
                     String comma = "";
                     for (ListItemValue label : labels)
                     {
-                        desc += comma + label.description().get();
+                        desc.append(comma + label.description().get());
                         comma = ",";
                     }
-                    desc += ")";
+                    desc.append(")");
                 }
-                return desc;
+                return desc.toString();
             }
             case 2:
                 return task.creationDate().get();

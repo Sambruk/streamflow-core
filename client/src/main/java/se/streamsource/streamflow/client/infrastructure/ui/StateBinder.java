@@ -139,13 +139,13 @@ public class StateBinder
             ConstraintViolationException cve = (ConstraintViolationException) e;
             String[] messages = cve.getLocalizedMessages(errorMessages);
             JXErrorPane errorPane = new JXErrorPane();
-            String message = "<html>";
+            StringBuilder message = new StringBuilder("<html>");
             for (String s : messages)
             {
-                message += s + "<br/>";
+                message.append(s + "<br/>");
             }
-            message += "</html>";
-            JLabel messageLabel = new JLabel(message);
+            message.append("</html>");
+            JLabel messageLabel = new JLabel(message.toString());
             JOptionPane.showMessageDialog(component, messageLabel, errorMessages.getString("property_constraint_violation"), JOptionPane.ERROR_MESSAGE);
 /*
             JXDialog dialog = new JXDialog(WindowUtils.findJFrame(component), messageLabel);
@@ -449,21 +449,21 @@ public class StateBinder
             if (!result)
             {
                 Window window = WindowUtils.findWindow(input);
-                String message = "Invalid value";
+                StringBuilder message = new StringBuilder("Invalid value");
 
                 if (exception instanceof ConstraintViolationException)
                 {
                     ConstraintViolationException ex = (ConstraintViolationException) exception;
                     String[] messages = ex.getLocalizedMessages(errorMessages);
-                    message = "<html>";
+                    message = new StringBuilder("<html>");
                     for (String s : messages)
                     {
-                        message += "<p>" + s + "</p>";
+                        message.append("<p>" + s + "</p>");
                     }
-                    message += "</html>";
+                    message.append("</html>");
                 }
 
-                JLabel main = new JLabel(message);
+                JLabel main = new JLabel(message.toString());
 
                 JXDialog dialog;
                 if (window instanceof Frame)
