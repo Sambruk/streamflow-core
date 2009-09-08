@@ -14,14 +14,18 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.OperationConflictException;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -47,6 +51,9 @@ public class ProjectsModel
 
     @Uses
     OrganizationalUnitAdministrationModel organizationModel;
+
+    @Service
+    DialogService dialogs;
 
     ProjectsClientResource projects;
     private List<ListItemValue> list;
@@ -128,9 +135,12 @@ public class ProjectsModel
             refresh();
         } catch (ResourceException e)
         {
+            if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
+            {
+                throw new OperationConflictException(AdministrationResources.could_not_create_project_name_already_exists, e);
+            }
             throw new OperationException(AdministrationResources.could_not_create_project, e);
         }
-
     }
 
     public void describe(int selectedIndex, String newName) throws ResourceException

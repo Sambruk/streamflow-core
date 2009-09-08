@@ -18,6 +18,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
@@ -71,14 +72,11 @@ public class ProjectsServerResource
         try
         {
             projects.createProject(description);
+            uow.complete();
         } catch (DuplicateDescriptionException e)
         {
-            e.printStackTrace();
-        }
-
-        try
-        {
-            uow.complete();
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
         } catch (UnitOfWorkCompletionException e)
         {
             uow.discard();

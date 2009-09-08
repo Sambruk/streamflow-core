@@ -21,6 +21,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import org.restlet.data.Status;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -74,15 +75,11 @@ public class GroupsServerResource
         try
         {
             groups.createGroup(name);
+            uow.complete();
         } catch (DuplicateDescriptionException e)
         {
-            //throw new ResourceException
-            e.printStackTrace();
-        }
-
-        try
-        {
-            uow.complete();
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
         } catch (UnitOfWorkCompletionException e)
         {
             uow.discard();

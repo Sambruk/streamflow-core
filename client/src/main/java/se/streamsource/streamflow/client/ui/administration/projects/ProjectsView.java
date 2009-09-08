@@ -19,6 +19,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
@@ -79,7 +80,13 @@ public class ProjectsView
 
         if (dialog.name() != null)
         {
-            model.newProject(dialog.name());
+            try
+            {
+                model.newProject(dialog.name());
+            } catch(OperationConflictException oe)
+            {
+                dialogs.showOkCancelHelpDialog(this, new JLabel(oe.getMessage()));
+            }
         }
     }
 

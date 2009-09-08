@@ -26,6 +26,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -83,7 +84,13 @@ public class GroupsView
         String name = dialog.name();
         if (name != null)
         {
-            model.newGroup(name);
+            try
+            {
+                model.newGroup(name);
+            } catch(OperationConflictException oce)
+            {
+                dialogs.showOkCancelHelpDialog(this, new JLabel(oce.getMessage()));
+            }
         }
     }
 
