@@ -20,6 +20,8 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.matches;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.and;
+import static org.qi4j.api.query.QueryExpressions.eq;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
@@ -109,8 +111,10 @@ public class OrganizationServerResource
         if (query.string().get().length() > 0)
         {
             QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
-            queryBuilder.where(matches(
-                    templateFor(GroupEntity.class).description(), "^" + query.string().get()));
+            queryBuilder.where(
+                    and(
+                            eq(templateFor(GroupEntity.class).removed(), false),
+                            matches(templateFor(GroupEntity.class).description(), "^" + query.string().get())));
             Query<GroupEntity> groups = queryBuilder.newQuery(uow);
 
             try
@@ -138,8 +142,9 @@ public class OrganizationServerResource
         if (query.string().get().length() > 0)
         {
             QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-            queryBuilder.where(matches(
-                    templateFor(ProjectEntity.class).description(), "^" + query.string().get()));
+            queryBuilder.where(and(
+                    eq(templateFor(ProjectEntity.class).removed(), false),
+                    matches(templateFor(ProjectEntity.class).description(), "^" + query.string().get())));
             Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
 
             try

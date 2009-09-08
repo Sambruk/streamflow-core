@@ -44,6 +44,7 @@ import se.streamsource.streamflow.web.resource.organizations.projects.members.Me
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRolesServerResource;
+import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.search.SearchTaskServerResource;
 import se.streamsource.streamflow.web.resource.organizations.search.SearchTasksServerResource;
@@ -163,7 +164,7 @@ public class APIv1Router
         attach("/organizations/{organization}/projects/{labels}/labels", createServerResourceFinder(LabelsServerResource.class));
         attach("/organizations/{organization}/projects/{labels}/labels/{label}", createServerResourceFinder(LabelServerResource.class));
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
-        attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RolesServerResource.class));
+        attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RoleServerResource.class));
         attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));
         attach("/organizations/{organization}/search", createServerResourceFinder(SearchTasksServerResource.class));
         attach("/organizations/{organization}/search/{task}", createServerResourceFinder(SearchTaskServerResource.class));

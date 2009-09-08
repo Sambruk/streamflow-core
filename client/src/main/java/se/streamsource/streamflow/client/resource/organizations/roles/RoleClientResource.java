@@ -17,13 +17,13 @@ package se.streamsource.streamflow.client.resource.organizations.roles;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.client.resource.BaseClientResource;
 
 /**
  * JAVADOC
  */
 public class RoleClientResource
-        extends CommandQueryClientResource
+        extends BaseClientResource
 {
     public RoleClientResource(@Uses Context context, @Uses Reference reference)
     {
