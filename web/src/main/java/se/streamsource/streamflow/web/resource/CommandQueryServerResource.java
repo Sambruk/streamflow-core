@@ -356,6 +356,10 @@ public class CommandQueryServerResource
             return returnValue;
         } catch (InvocationTargetException e)
         {
+            if (e.getTargetException() instanceof ResourceException)
+            {
+                throw (ResourceException) e.getTargetException();
+            }
             getResponse().setEntity(new ObjectRepresentation(e));
 
             throw new ResourceException(e.getTargetException());

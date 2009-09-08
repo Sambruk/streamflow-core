@@ -58,5 +58,9 @@ public enum AdministrationResources
     old_password_incorrect,
     could_not_refresh, password_changed,
     search_groups,
+    could_not_rename_project_name_already_exists,
+    could_not_rename_project,
+    could_not_rename_group_name_already_exist,
+    could_not_rename_group, 
     search_users
 }

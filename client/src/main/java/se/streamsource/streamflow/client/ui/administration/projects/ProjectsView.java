@@ -18,7 +18,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
@@ -98,14 +97,20 @@ public class ProjectsView
     }
 
     @Action
-    public void rename() throws ResourceException
+    public void rename()
     {
         NameDialog dialog = nameDialogs.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         if (dialog.name() != null)
         {
-            model.describe(projectList.getSelectedIndex(), dialog.name());
+            try
+            {
+                model.describe(projectList.getSelectedIndex(), dialog.name());
+            } catch(OperationConflictException oce)
+            {
+                dialogs.showOkCancelHelpDialog(this, new JLabel(oce.getMessage()));
+            }
         }
     }
 

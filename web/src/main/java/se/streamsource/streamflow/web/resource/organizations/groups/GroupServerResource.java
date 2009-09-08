@@ -20,8 +20,10 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import org.restlet.data.Status;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -33,12 +35,25 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class GroupServerResource
         extends CommandQueryServerResource
 {
-    public void describe(StringDTO stringValue)
+    public void describe(StringDTO stringValue) throws ResourceException
     {
-        String taskId = (String) getRequest().getAttributes().get("group");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
+        String groupId = (String) getRequest().getAttributes().get("group");
+        Describable describable = uowf.currentUnitOfWork().get(Describable.class, groupId);
 
-        describable.describe(stringValue.string().get());
+        String identity = getRequest().getAttributes().get("organization").toString();
+
+        Groups.GroupsState groups = uowf.currentUnitOfWork().get(Groups.GroupsState.class, identity);
+
+        String newName = stringValue.string().get();
+        for (Group group : groups.groups())
+        {
+            if (group.hasDescription(newName))
+            {
+                throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
+            }
+        }
+
+        describable.describe(newName);
     }
 
     // TODO before deleting look through all projects and groups containing the group

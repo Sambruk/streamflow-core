@@ -20,13 +20,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.NameDialog;
-import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -102,14 +101,20 @@ public class GroupsView
     }
 
     @Action
-    public void rename() throws ResourceException
+    public void rename()
     {
         NameDialog dialog = nameDialogs.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         if (dialog.name() != null)
         {
-            model.describe(groupList.getSelectedIndex(), dialog.name());
+            try
+            {
+                model.describe(groupList.getSelectedIndex(), dialog.name());
+            } catch(OperationConflictException e)
+            {
+                dialogs.showOkCancelHelpDialog(this, new JLabel(e.getMessage()));
+            }
         }
     }
 

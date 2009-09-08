@@ -143,13 +143,22 @@ public class ProjectsModel
         }
     }
 
-    public void describe(int selectedIndex, String newName) throws ResourceException
+    public void describe(int selectedIndex, String newName)
     {
         ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
         builder.prototype().string().set(newName);
 
-        projects.project(list.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
-
+        try
+        {
+            projects.project(list.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
+        } catch(ResourceException e)
+        {
+            if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
+            {
+                throw new OperationConflictException(AdministrationResources.could_not_rename_project_name_already_exists,e);
+            }
+            throw new OperationException(AdministrationResources.could_not_rename_project,e);
+        }
         refresh();
     }
 }

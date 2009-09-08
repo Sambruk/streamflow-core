@@ -23,16 +23,14 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.project.Projects;
-import se.streamsource.streamflow.web.domain.project.Role;
-import se.streamsource.streamflow.web.domain.project.Roles;
+import se.streamsource.streamflow.web.domain.project.*;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -68,12 +66,26 @@ public class ProjectServerResource
         return builder.newInstance();
     }
 
-    public void describe(StringDTO stringValue)
+    public void describe(StringDTO stringValue) throws ResourceException
     {
-        String taskId = (String) getRequest().getAttributes().get("project");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
+        String projectId = (String) getRequest().getAttributes().get("project");
+        Describable describable = uowf.currentUnitOfWork().get(Describable.class, projectId);
 
-        describable.describe(stringValue.string().get());
+        String identity = getRequest().getAttributes().get("organization").toString();
+
+        Projects.ProjectsState projects = uowf.currentUnitOfWork().get(Projects.ProjectsState.class, identity);
+
+        String newName = stringValue.string().get();
+
+        for (Project project : projects.projects())
+        {
+            if (project.hasDescription(newName))
+            {
+                throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
+            }
+        }
+        
+        describable.describe(newName);
     }
 
     @Override

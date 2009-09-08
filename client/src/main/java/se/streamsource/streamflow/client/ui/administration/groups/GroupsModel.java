@@ -119,13 +119,21 @@ public class GroupsModel
         return groupModels.get(id);
     }
 
-    public void describe(int selectedIndex, String newName) throws ResourceException
+    public void describe(int selectedIndex, String newName)
     {
         ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
         builder.prototype().string().set(newName);
 
-        groupsResource.group(groups.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
-
+        try
+        {
+            groupsResource.group(groups.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
+        } catch (ResourceException e)
+        {
+            if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus())) {
+                throw new OperationConflictException(AdministrationResources.could_not_rename_group_name_already_exist, e);
+            }
+            throw new OperationException(AdministrationResources.could_not_rename_group, e);
+        }
         refresh();
     }
 }
