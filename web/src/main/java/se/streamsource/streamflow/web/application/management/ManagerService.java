@@ -247,11 +247,12 @@ public interface ManagerService
             if (!importFile.exists())
                 return "No such import file:" + importFile.getAbsolutePath();
 
-            InputStream in1 = new FileInputStream(importFile);
-            if (importFile.getName().endsWith("gz")) ;
-            in1 = new GZIPInputStream(in1);
-            Reader in = new InputStreamReader(in1, "UTF-8");
-
+            InputStream in1 = new FileInputStream(importFile); 
+            if (importFile.getName().endsWith("gz")) 
+            { 
+            	in1 = new GZIPInputStream(in1); 
+            } 
+            Reader in = new InputStreamReader(in1, "UTF-8"); 
             try
             {
                 importDatabase.importFrom(in);
