@@ -17,16 +17,19 @@ package se.streamsource.streamflow.client.ui.overview;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.common.Visibility;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 /**
  * JAVADOC
  */
-public class OverviewUIAssembler
+public class OverviewAssembler
         implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
+        module.addObjects(OverviewWindow.class).visibleIn(Visibility.layer);
+
         module.addObjects(
                 OverviewNode.class,
                 OverviewProjectsNode.class,

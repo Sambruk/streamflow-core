@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.workspace;
+package se.streamsource.streamflow.client.ui.task;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -30,6 +30,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
 import javax.swing.*;

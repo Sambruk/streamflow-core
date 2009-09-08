@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.common.Visibility;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdministrationAssembler;
@@ -31,6 +32,8 @@ public class AdministrationAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
+        module.addObjects(AdministrationWindow.class).visibleIn(Visibility.layer);
+
         module.addObjects(AdministrationNode.class,
                 AccountAdministrationNode.class,
                 OrganizationalStructureAdministrationNode.class);

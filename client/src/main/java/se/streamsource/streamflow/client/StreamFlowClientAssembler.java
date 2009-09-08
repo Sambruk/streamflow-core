@@ -24,9 +24,9 @@ import se.streamsource.streamflow.client.resource.ClientResourceAssembler;
 import se.streamsource.streamflow.client.ui.UIAssembler;
 import se.streamsource.streamflow.client.ui.administration.AdministrationAssembler;
 import se.streamsource.streamflow.client.ui.menu.MenuAssembler;
-import se.streamsource.streamflow.client.ui.overview.OverviewUIAssembler;
+import se.streamsource.streamflow.client.ui.overview.OverviewAssembler;
 import se.streamsource.streamflow.client.ui.search.SearchAssembler;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceUIAssembler;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceAssembler;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
 
@@ -75,8 +75,8 @@ public class StreamFlowClientAssembler
         new SearchAssembler().assemble(uiLayer.moduleAssembly("Search"));
         new AdministrationAssembler().assemble(uiLayer.moduleAssembly("Administration"));
         new MenuAssembler().assemble(uiLayer.moduleAssembly("Menu"));
-        new WorkspaceUIAssembler().assemble(uiLayer.moduleAssembly("Workspace"));
-        new OverviewUIAssembler().assemble(uiLayer.moduleAssembly("Overview"));
+        new WorkspaceAssembler().assemble(uiLayer.moduleAssembly("Workspace"));
+        new OverviewAssembler().assemble(uiLayer.moduleAssembly("Overview"));
         new UIAssembler().assemble(uiLayer.moduleAssembly("UI View"));
         new UIInfrastructureAssembler().assemble(uiLayer.moduleAssembly("View infrastructure"));
         new RestletClientAssembler().assemble(uiLayer.moduleAssembly("REST Client"));

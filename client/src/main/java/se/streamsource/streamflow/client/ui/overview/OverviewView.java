@@ -27,12 +27,10 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.AccountSelector;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeWillExpandListener;
+import javax.swing.event.*;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -52,12 +50,11 @@ public class OverviewView
 
     public OverviewView(final @Service ApplicationContext context,
                         @Uses final OverviewModel model,
-                        @Uses final AccountModel accountModel,
                         final @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
-
         this.model = model;
+
         overviewTree = new JXTree(model);
         overviewTree.expandAll();
         overviewTree.setRootVisible(false);
@@ -225,7 +222,7 @@ public class OverviewView
                     try
                     {
                         ((OverviewProjectsNode) node).refresh();
-                        model.reload((TreeNode) node);
+                        OverviewView.this.model.reload((TreeNode) node);
                     } catch (Exception e)
                     {
                         e.printStackTrace();

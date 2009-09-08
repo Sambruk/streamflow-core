@@ -36,7 +36,8 @@ public class UIAssembler
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
         module.addObjects(
-                StreamFlowApplication.class
+                StreamFlowApplication.class,
+                AccountSelector.class
         );
 
         // SAF objects

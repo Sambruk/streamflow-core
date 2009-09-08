@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.search;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.common.Visibility;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 /**
@@ -27,8 +28,9 @@ public class SearchAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        UIAssemblers.addViews(module,
-                SearchView.class, SearchResultTableView.class);
+        module.addObjects(SearchWindow.class).visibleIn(Visibility.layer);
+
+        UIAssemblers.addViews(module, SearchView.class, SearchResultTableView.class);
 
         UIAssemblers.addModels(module, SearchResultTableModel.class);
     }

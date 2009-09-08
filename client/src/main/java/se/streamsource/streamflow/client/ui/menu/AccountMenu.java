@@ -14,28 +14,25 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.ResourceMap;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import static se.streamsource.streamflow.infrastructure.configuration.FileConfiguration.OS.mac;
+
+import javax.swing.*;
 
 /**
- * File menu
+ * Account menu
  */
-public class HelpMenu
+public class AccountMenu
         extends AbstractMenu
 {
-    @Service FileConfiguration config;
-
     protected void init()
     {
-        if (config.os() == FileConfiguration.OS.mac)
-        {
-            menu("helpMenu",
-                    "showHelp");
-        } else
-        {
-            menu("helpMenu",
-                    "showHelp",
-                    "showAbout");
-        }
+        menu("accountMenu",
+                "manageAccounts",
+                "selectAccount"
+                );
     }
 }

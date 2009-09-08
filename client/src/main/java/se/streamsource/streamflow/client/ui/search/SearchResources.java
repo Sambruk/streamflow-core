@@ -19,5 +19,5 @@ package se.streamsource.streamflow.client.ui.search;
  */
 public enum SearchResources
 {
-    window_name
+    could_not_switch_account, window_name
 }

@@ -25,7 +25,7 @@ import se.streamsource.streamflow.client.ui.task.*;
 /**
  * JAVADOC
  */
-public class WorkspaceUIAssembler
+public class WorkspaceAssembler
         implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException

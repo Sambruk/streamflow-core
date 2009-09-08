@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.workspace;
+package se.streamsource.streamflow.client.ui.administration;
 
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Application;
@@ -21,31 +21,36 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
+import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
+import se.streamsource.streamflow.client.ui.menu.SearchMenuBar;
+import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
+import se.streamsource.streamflow.client.ui.overview.OverviewResources;
+import se.streamsource.streamflow.client.ui.overview.OverviewView;
+import se.streamsource.streamflow.client.ui.search.SearchView;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import java.awt.*;
 
 /**
- * Workspace window
+ * Administration window
  */
-public class WorkspaceWindow
+public class AdministrationWindow
     extends FrameView
 {
-    public WorkspaceWindow(@Service Application application,
-                           @Uses WorkspaceMenuBar menu,
-                           @Uses WorkspaceView view)
+    public AdministrationWindow(
+            @Service Application application,
+            @Uses AdministrationMenuBar menu,
+            @Uses AdministrationView view)
     {
         super(application);
 
-        JXFrame frame = new JXFrame(i18n.text(WorkspaceResources.window_name));
+        JXFrame frame = new JXFrame(i18n.text(AdministrationResources.window_name));
         frame.setLocationByPlatform(true);
         frame.getContentPane().add(view);
+
         setFrame(frame);
         setMenuBar(menu);
-
-        JXStatusBar bar = new StatusBarView(getContext());
-        setStatusBar(bar);
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();

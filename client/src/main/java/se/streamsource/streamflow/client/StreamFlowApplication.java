@@ -18,9 +18,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ProxyActions;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.swingx.JXErrorPane;
-import org.jdesktop.swingx.JXFrame;
-import org.jdesktop.swingx.JXPanel;
-import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
@@ -41,30 +38,18 @@ import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.AdministrationView;
-import se.streamsource.streamflow.client.ui.menu.*;
-import se.streamsource.streamflow.client.ui.overview.OverviewModel;
-import se.streamsource.streamflow.client.ui.overview.OverviewResources;
-import se.streamsource.streamflow.client.ui.overview.OverviewView;
-import se.streamsource.streamflow.client.ui.search.SearchResources;
-import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
-import se.streamsource.streamflow.client.ui.search.SearchView;
-import se.streamsource.streamflow.client.ui.status.StatusBarView;
+import se.streamsource.streamflow.client.ui.AccountSelector;
+import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
+import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
+import se.streamsource.streamflow.client.ui.menu.AccountsModel;
+import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
+import se.streamsource.streamflow.client.ui.search.SearchWindow;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 
-import javax.help.CSH;
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import javax.swing.*;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.net.URL;
@@ -102,43 +87,34 @@ public class StreamFlowApplication
 
     JLabel label;
 
-    JXFrame searchWindow;
-
+    private AccountSelector accountSelector;
     WorkspaceWindow workspaceWindow;
-    WorkspaceView workspaceView;
-    WorkspaceModel workspaceModel;
 
-    JXFrame overviewWindow;
-    OverviewView overviewView;
-    OverviewModel overviewModel;
+    OverviewWindow overviewWindow;
 
-    JXFrame administrationWindow;
-    AdministrationView administrationView;
-    AdministrationModel administrationModel;
-    public SearchView searchView;
-    public HelpBroker hb;
+    SearchWindow searchWindow;
+
+    AdministrationWindow administrationWindow;
+
+    HelpBroker hb;
 
     public StreamFlowApplication()
     {
         super();
 
         getContext().getResourceManager().setApplicationBundleNames(Arrays.asList("se.streamsource.streamflow.client.resources.StreamFlowApplication"));
-
-        overviewWindow = new JXFrame(i18n.text(OverviewResources.window_name));
-        overviewWindow.setLocationByPlatform(true);
-
-        administrationWindow = new JXFrame(i18n.text(AdministrationResources.window_name));
-        administrationWindow.setLocationByPlatform(true);
-
-        searchWindow = new JXFrame(i18n.text(SearchResources.window_name));
-        searchWindow.setLocationByPlatform(true);
     }
 
     public void init(@Uses final AccountsModel accountsModel,
                      @Structure final ObjectBuilderFactory obf,
-                     @Uses WorkspaceWindow workspaceWindow) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
+                     @Uses AccountSelector accountSelector
+                     ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
-        this.workspaceWindow = workspaceWindow;
+        this.accountSelector = accountSelector;
+        this.workspaceWindow = obf.newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
+        this.overviewWindow = obf.newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
+        this.searchWindow = obf.newObjectBuilder(SearchWindow.class).use(accountSelector).newInstance();
+        this.administrationWindow = obf.newObjectBuilder(AdministrationWindow.class).use(accountsModel).newInstance();
         setMainFrame(workspaceWindow.getFrame());
 
         try
@@ -148,64 +124,12 @@ public class StreamFlowApplication
             MacOsUIExtension osUIExtension = new MacOsUIExtension(this);
             osUIExtension.attachMacUIExtension();
             osUIExtension.convertAccelerators();
-
         } catch (ClassNotFoundException e)
         {
             //Do nothing
         }
 
         this.accountsModel = accountsModel;
-
-        ListDataListener workspaceListener = new ListDataListener()
-        {
-            public void intervalAdded(ListDataEvent e)
-            {
-                contentsChanged(e);
-            }
-
-            public void intervalRemoved(ListDataEvent e)
-            {
-                contentsChanged(e);
-            }
-
-            public void contentsChanged(ListDataEvent e)
-            {
-                if (accountsModel.getSize() > 0 && workspaceView == null)
-                {
-                    AccountModel accountModel = accountsModel.accountModel(0);
-                    workspaceModel = obf.newObjectBuilder(WorkspaceModel.class).use(accountModel).newInstance();
-                    workspaceView = obf.newObjectBuilder(WorkspaceView.class).use(workspaceModel, accountModel).newInstance();
-                    getMainFrame().getContentPane().add(workspaceView);
-                } else
-                {
-                    if (workspaceView != null)
-                    {
-                        Container container = getMainFrame().getContentPane();
-                        container.remove(workspaceView);
-                        container.validate();
-                        getMainFrame().pack();
-                    }
-                    workspaceModel = null;
-                    workspaceView = null;
-                }
-            }
-        };
-
-        accountsModel.addListDataListener(workspaceListener);
-        workspaceListener.contentsChanged(null);
-
-        administrationModel = obf.newObjectBuilder(AdministrationModel.class).use(accountsModel).newInstance();
-        administrationView = obf.newObjectBuilder(AdministrationView.class).use(administrationModel).newInstance();
-        administrationWindow.getContentPane().setLayout(new BorderLayout());
-        administrationWindow.getContentPane().add(administrationView, BorderLayout.CENTER);
-        administrationWindow.setJMenuBar(obf.newObjectBuilder(AdministrationMenuBar.class).newInstance());
-
-        overviewWindow.getContentPane().setLayout(new BorderLayout());
-        overviewWindow.setJMenuBar(obf.newObjectBuilder(OverviewMenuBar.class).newInstance());
-
-        searchWindow.getContentPane().setLayout(new BorderLayout());
-        searchWindow.setMinimumSize(new Dimension(600, 600));
-        searchWindow.setJMenuBar(obf.newObjectBuilder(SearchMenuBar.class).newInstance());
 
         // Help system
         String helpHS = "api.hs";
@@ -215,17 +139,23 @@ public class StreamFlowApplication
         {
             URL hsURL = HelpSet.findHelpSet(cl, helpHS);
             hs = new HelpSet(null, hsURL);
+
+            // Create a HelpBroker object:
+            hb = hs.createHelpBroker();
         } catch (Exception ee)
         {
             // Say what the exception really is
             System.out.println("HelpSet " + ee.getMessage());
             System.out.println("HelpSet " + helpHS + " not found");
-            return;
         }
-        // Create a HelpBroker object:
-        hb = hs.createHelpBroker();        
 
         showWorkspaceWindow();
+
+        // Auto-select first account
+        if (accountsModel.getSize() == 1)
+        {
+            accountSelector.setSelectedIndex(0);
+        }
     }
 
     @Override
@@ -297,14 +227,20 @@ public class StreamFlowApplication
         dialogs.showOkDialog(getMainFrame(), dialog);
     }
 
+    @Action
+    public void selectAccount()
+    {
+        accountSelector.clearSelection();
+    }
+
     public AccountsModel accountsModel()
     {
         return accountsModel;
     }
 
-    public WorkspaceView getWorkspaceView()
+    public String getSelectedUser()
     {
-        return workspaceView;
+        return accountSelector.isSelectionEmpty() ? null : accountSelector.getSelectedAccount().settings().userName().get();
     }
 
     // Controller actions -------------------------------------------
@@ -317,14 +253,6 @@ public class StreamFlowApplication
     {
         if (!workspaceWindow.getFrame().isVisible())
         {
-            if (workspaceView != null)
-                try
-                {
-                    workspaceView.refreshTree();
-                } catch (Exception e)
-                {
-                    // Ignore
-                }
             show(workspaceWindow);
         }
     }
@@ -332,17 +260,8 @@ public class StreamFlowApplication
     @Action
     public void showOverviewWindow() throws Exception
     {
-        if (overviewView == null)
+        if (!overviewWindow.getFrame().isVisible())
         {
-            AccountModel accountModel = accountsModel.accountModel(0);
-            overviewModel = obf.newObjectBuilder(OverviewModel.class).use(accountModel).newInstance();
-            overviewView = obf.newObjectBuilder(OverviewView.class).use(overviewModel, accountModel).newInstance();
-            overviewWindow.getContentPane().add(overviewView);
-        }
-
-        if (!overviewWindow.isVisible())
-        {
-            overviewView.refreshTree();
             show(overviewWindow);
         }
     }
@@ -350,24 +269,14 @@ public class StreamFlowApplication
     @Action
     public void showAdministrationWindow() throws Exception
     {
-        administrationModel.refresh();
-        if (!administrationWindow.isVisible())
+        if (!administrationWindow.getFrame().isVisible())
             show(administrationWindow);
     }
 
     @Action
     public void showSearchWindow() throws Exception
     {
-        if (searchView == null)
-        {
-            String organization = accountsModel.accountModel(0).userResource().administration().organizations().roots().get().get(0).entity().get().identity();
-            SearchResultTableModel model = obf.newObjectBuilder(SearchResultTableModel.class).use(accountsModel.accountModel(0).serverResource().organizations().organization(organization).search()).newInstance();
-            searchView = obf.newObjectBuilder(SearchView.class).use(model).newInstance();
-            searchWindow.getContentPane().add(searchView, BorderLayout.CENTER);
-            searchWindow.pack();
-        }
-
-        if (!searchWindow.isVisible())
+        if (!searchWindow.getFrame().isVisible())
             show(searchWindow);
     }
 
@@ -392,8 +301,11 @@ public class StreamFlowApplication
     @Action
     public void showHelp(ActionEvent event)
     {
-        hb.setCurrentID("intro");
-        hb.setDisplayed(true);
+        if (hb != null)
+        {
+            hb.setCurrentID("intro");
+            hb.setDisplayed(true);
+        }
     }
 
     @Override

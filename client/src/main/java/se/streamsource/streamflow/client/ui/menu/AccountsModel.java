@@ -36,6 +36,8 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observer;
+import java.util.Observable;
 
 /**
  * JAVADOC
@@ -67,7 +69,15 @@ public class AccountsModel
             UnitOfWork uow = uowf.newUnitOfWork();
             Account acc = uow.get(Account.class, key);
             uow.discard();
-            return obf.newObjectBuilder(AccountModel.class).use(acc).newInstance();
+            AccountModel accountModel = obf.newObjectBuilder(AccountModel.class).use(acc).newInstance();
+            accountModel.addObserver(new Observer()
+            {
+                public void update(Observable o, Object arg)
+                {
+                    refresh();
+                }
+            });
+            return accountModel;
         }
     };
 
@@ -118,6 +128,7 @@ public class AccountsModel
     {
         UnitOfWork uow = uowf.newUnitOfWork();
         final ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder(ListItemValue.class);
+        accounts.clear();
         repository.individual().visitAccounts(new AccountVisitor()
         {
 

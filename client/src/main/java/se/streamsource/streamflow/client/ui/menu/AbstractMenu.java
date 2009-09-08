@@ -40,7 +40,7 @@ public abstract class AbstractMenu
 
     abstract protected void init();
 
-    protected void menu(String menuName, String... actionNames)
+    protected void menu(String menuName, String... menuItems)
     {
         ActionMap am = getActionMap();
 
@@ -48,23 +48,25 @@ public abstract class AbstractMenu
         String menuTitle = resourceMap.getString(menuName);
         setText(menuTitle);
         setMnemonic(menuTitle.charAt(0));
-        for (String actionName : actionNames)
+        for (String menuItem : menuItems)
         {
-            if (actionName.equals("---"))
+            if (menuItem.equals("---"))
             {
                 add(new JSeparator());
             } else
             {
+                String actionName = menuItem.startsWith("*") ? menuItem.substring(1) : menuItem;
                 Action menuItemAction = am.get(actionName);
+
                 if (menuItemAction == null)
                 {
                     Logger.getLogger("menu").warning("Could not find menu action:"+actionName);
                     continue;
                 }
-                JMenuItem menuItem = new JMenuItem();
-                menuItem.setAction(menuItemAction);
-                menuItem.setIcon(null);
-                add(menuItem);
+                JMenuItem item = menuItem.startsWith("*") ? new JCheckBoxMenuItem() : new JMenuItem();
+                item.setAction(menuItemAction);
+                item.setIcon(null);
+                add(item);
             }
         }
     }

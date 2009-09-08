@@ -67,7 +67,6 @@ public class MacOsUIExtension
                 keyStroke = KeyStroke.getKeyStroke(keyStroke.toString().replace("ctrl", "meta"));
                 action.putValue(Action.ACCELERATOR_KEY, keyStroke);
             }
-            System.out.println(key+"="+keyStroke);
         }
     }
 }

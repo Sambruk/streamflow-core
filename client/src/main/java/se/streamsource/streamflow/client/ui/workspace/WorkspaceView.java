@@ -29,12 +29,10 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.AccountSelector;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeWillExpandListener;
+import javax.swing.event.*;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -51,21 +49,34 @@ public class WorkspaceView
     private JXTree workspaceTree;
     private JSplitPane pane;
     private WorkspaceModel model;
+    private CardLayout cardLayout;
+    public String accountName = "";
 
     public WorkspaceView(final @Service ApplicationContext context,
-                         @Uses final WorkspaceModel model,
-                         @Uses final AccountModel accountModel,
+                         @Uses final AccountSelector accountSelector,
                          final @Structure ObjectBuilderFactory obf)
     {
-        super(new BorderLayout());
+        setLayout(cardLayout = new CardLayout());
 
+        JPanel accountSelection = new JPanel(new BorderLayout());
+        accountSelection.add(accountSelector, BorderLayout.CENTER);
+        accountSelection.setMinimumSize(new Dimension(300, 200));
+        accountSelection.setPreferredSize(new Dimension(300, 200));
+        accountSelection.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), i18n.text(WorkspaceResources.select_account)));
+        accountSelection.getInsets();
+        JPanel accountSelectionView = new JPanel();
+        accountSelectionView.add(accountSelection);
+        add(accountSelectionView, "selector");
+
+        JPanel workspace = new JPanel(new BorderLayout());
+        add(workspace, "workspace");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTree");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTable");
         setActionMap(context.getActionMap(this));
 
 
         this.model = model;
-        workspaceTree = new JXTree(model)
+        workspaceTree = new JXTree()
         {
             protected void doFind()
             {
@@ -114,7 +125,7 @@ public class WorkspaceView
                     public String getString(Object o)
                     {
                         if (o instanceof WorkspaceUserNode)
-                            return accountModel.settings().name().get();
+                            return accountName;
                         else if (o instanceof WorkspaceProjectNode)
                             return ((WorkspaceProjectNode) o).projectName();
                         else if (o instanceof WorkspaceProjectsNode)
@@ -166,7 +177,7 @@ public class WorkspaceView
 
         pane.setLeftComponent(workspaceOutline);
 
-        add(pane, BorderLayout.CENTER);
+        workspace.add(pane, BorderLayout.CENTER);
 
         workspaceTree.addTreeSelectionListener(new TreeSelectionListener()
         {
@@ -402,6 +413,29 @@ public class WorkspaceView
             }
         });
 
+
+        ListSelectionListener workspaceListener = new ListSelectionListener()
+        {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    if (accountSelector.isSelectionEmpty())
+                    {
+                        cardLayout.show(WorkspaceView.this, "selector");
+                    }
+                    else
+                    {
+                        AccountModel accountModel = accountSelector.getSelectedAccount();
+                        accountName = accountModel.settings().name().get();
+                        setModel(obf.newObjectBuilder(WorkspaceModel.class).use(accountModel).newInstance());
+                        cardLayout.show(WorkspaceView.this, "workspace");
+                    }
+                }
+            }
+        };
+
+        accountSelector.addListSelectionListener(workspaceListener);
     }
 
     public String getSelectedUser()
@@ -412,6 +446,13 @@ public class WorkspaceView
     public JSplitPane getPane()
     {
         return pane;
+    }
+
+    public void setModel(WorkspaceModel model)
+    {
+        this.model = model;
+        workspaceTree.setModel(model);
+        refreshTree();
     }
 
     public void refreshTree()

@@ -36,6 +36,7 @@ public class MenuAssembler
                 FileMenu.class,
                 SearchMenu.class,
                 ViewMenu.class,
+                AccountMenu.class,
                 TaskMenu.class,
                 WindowMenu.class,
                 HelpMenu.class

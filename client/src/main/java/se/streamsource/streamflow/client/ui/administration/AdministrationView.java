@@ -23,6 +23,8 @@ import org.restlet.resource.ResourceException;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.AncestorEvent;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 

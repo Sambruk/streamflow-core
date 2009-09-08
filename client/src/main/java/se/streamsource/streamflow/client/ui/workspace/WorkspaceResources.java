@@ -88,5 +88,5 @@ public enum WorkspaceResources
 
     search_project,
     search_users_projects,
-    search_user
+    select_account, search_user
 }

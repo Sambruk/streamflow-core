@@ -32,6 +32,7 @@ public class WorkspaceMenuBar
     public WorkspaceMenuBar(@Uses FileMenu fileMenu,
                             @Uses SearchMenu searchMenu,
                             @Uses ViewMenu viewMenu,
+                            @Uses AccountMenu accountMenu,
                             @Uses TaskMenu taskMenu,
                             @Uses WindowMenu windowMenu,
                             @Uses HelpMenu helpMenu
@@ -40,6 +41,7 @@ public class WorkspaceMenuBar
         add(fileMenu);
         add(searchMenu);
         add(viewMenu);
+        add(accountMenu);
         add(taskMenu);
         add(windowMenu);
         add(helpMenu);

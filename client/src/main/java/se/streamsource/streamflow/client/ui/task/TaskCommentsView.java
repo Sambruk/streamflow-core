@@ -23,7 +23,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
-import se.streamsource.streamflow.client.ui.workspace.AddCommentDialog;
+import se.streamsource.streamflow.client.ui.task.AddCommentDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -88,7 +88,7 @@ public class TaskCommentsView
     @Action
     public void addTaskComment() throws ResourceException, IOException
     {
-        AddCommentDialog dialog = addCommentDialogs.use(EntityReference.parseEntityReference(app.getWorkspaceView().getSelectedUser())).newInstance();
+        AddCommentDialog dialog = addCommentDialogs.use(EntityReference.parseEntityReference(app.getSelectedUser())).newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         if (dialog.command() != null)

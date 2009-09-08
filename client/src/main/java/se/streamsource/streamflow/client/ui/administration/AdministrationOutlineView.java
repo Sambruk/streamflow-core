@@ -30,6 +30,8 @@ import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
 import javax.swing.*;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.AncestorEvent;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.Enumeration;
@@ -49,7 +51,7 @@ public class AdministrationOutlineView
     Iterable<NameDialog> nameDialogs;
     private AdministrationModel model;
 
-    public AdministrationOutlineView(@Service ApplicationContext context, @Uses AdministrationModel model) throws Exception
+    public AdministrationOutlineView(@Service ApplicationContext context, @Uses final AdministrationModel model) throws Exception
     {
         super(new BorderLayout());
         this.model = model;
@@ -102,6 +104,23 @@ public class AdministrationOutlineView
         popup.add(am.get("removeOrganizationalUnit"));
 
         tree.addMouseListener(new PopupMenuTrigger(popup));
+
+
+        addAncestorListener(new AncestorListener()
+        {
+            public void ancestorAdded(AncestorEvent event)
+            {
+                model.refresh();
+            }
+
+            public void ancestorRemoved(AncestorEvent event)
+            {
+            }
+
+            public void ancestorMoved(AncestorEvent event)
+            {
+            }
+        });
     }
 
 
@@ -129,7 +148,6 @@ public class AdministrationOutlineView
                         expandedRows.add(i);
                 }
                 int[] selected = tree.getSelectionRows();
-                orgNode.model().createOrganizationalUnit(dialog.name());
 
                 model.createOrganizationalUnit(orgNode, dialog.name());
 
