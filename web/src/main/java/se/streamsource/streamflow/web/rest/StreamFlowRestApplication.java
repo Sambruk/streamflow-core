@@ -32,6 +32,8 @@ import org.restlet.security.Verifier;
 import se.streamsource.streamflow.web.StreamFlowWebAssembler;
 import se.streamsource.streamflow.web.resource.APIv1Router;
 
+import java.util.logging.Logger;
+
 /**
  * JAVADOC
  */
@@ -50,7 +52,7 @@ public class StreamFlowRestApplication
     Verifier verifier;
 
     @Structure
-    org.qi4j.api.structure.Application app;
+    ApplicationSPI app;
 
     public StreamFlowRestApplication(@Uses Context parentContext) throws Exception
     {
@@ -58,28 +60,6 @@ public class StreamFlowRestApplication
 
         getMetadataService().addExtension("srj", APPLICATION_SPARQL_JSON);
 
-        // Start Qi4j
-        Energy4Java is = new Energy4Java();
-        final ApplicationSPI app = is.newApplication(new StreamFlowWebAssembler(this));
-
-        app.activate();
-
-        app.findModule("Web", "REST").objectBuilderFactory().newObjectBuilder(StreamFlowRestApplication.class).injectTo(this);
-
-        Runtime.getRuntime().addShutdownHook(new Thread()
-        {
-            @Override
-            public void run()
-            {
-                try
-                {
-                    app.passivate();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     /**
@@ -96,5 +76,45 @@ public class StreamFlowRestApplication
         versions.attach("/v1", api);
 
         return versions;
+    }
+
+    @Override
+    public void start() throws Exception
+    {
+
+        // Start Qi4j
+        Energy4Java is = new Energy4Java();
+        app = is.newApplication(new StreamFlowWebAssembler(this));
+
+        app.activate();
+
+        app.findModule("Web", "REST").objectBuilderFactory().newObjectBuilder(StreamFlowRestApplication.class).injectTo(this);
+
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    Logger.getLogger("streamflow").info("VM shutdown; passivating StreamFlow");
+                    app.passivate();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        super.start();
+    }
+
+    @Override
+    public void stop() throws Exception
+    {
+        super.stop();
+
+        Logger.getLogger("streamflow").info("Passivating StreamFlow");
+        app.passivate();
     }
 }

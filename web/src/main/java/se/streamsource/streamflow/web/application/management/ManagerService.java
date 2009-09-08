@@ -31,6 +31,7 @@ import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Entity;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.property.Numbers;
 import org.qi4j.api.composite.Composite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.entitystore.jdbm.DatabaseExport;
@@ -96,6 +97,8 @@ public interface ManagerService
         Iterable<ServiceReference<Configuration>> configurableServices;
 
         public File exports;
+        public ObjectName objectName;
+        private List<ObjectName> configurableServiceNames = new ArrayList<ObjectName>();
 
         public void activate() throws Exception
         {
@@ -161,8 +164,8 @@ public interface ManagerService
             mmb.setManagedResource(this, "ObjectReference");
 
             // Register the Model MBean in the MBean Server
-            ObjectName mapName = new ObjectName("StreamFlow:name=Manager");
-            server.registerMBean(mmb, mapName);
+            objectName = new ObjectName("StreamFlow:name=Manager");
+            server.registerMBean(mmb, objectName);
 
             // Expose configurable services
             exportConfigurableServices();
@@ -198,12 +201,19 @@ public interface ManagerService
 
                 MBeanInfo mbeanInfo = new MBeanInfo(serviceClass, name, attributes.toArray(new MBeanAttributeInfo[attributes.size()]), null, operations.toArray(new MBeanOperationInfo[operations.size()]), null);
                 Object mbean = new ConfigurableService(configurableService, mbeanInfo, name, properties);
-                server.registerMBean(mbean, new ObjectName("StreamFlow:name="+name));
+                ObjectName configurableServiceName = new ObjectName("StreamFlow:name=" + name);
+                server.registerMBean(mbean, configurableServiceName);
+                configurableServiceNames.add(configurableServiceName);
             }
         }
 
         public void passivate() throws Exception
         {
+            server.unregisterMBean(objectName);
+            for (ObjectName configurableServiceName : configurableServiceNames)
+            {
+                server.unregisterMBean(configurableServiceName);
+            }
         }
 
         // Operations
