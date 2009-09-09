@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.resource;
 
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
@@ -32,6 +33,10 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 import java.io.InputStream;
+import java.security.AccessControlContext;
+
+import se.streamsource.streamflow.web.application.security.OperationPermission;
+import se.streamsource.streamflow.web.application.security.AccessPolicy;
 
 /**
  * Base class for server-side resources.
@@ -46,6 +51,11 @@ public class BaseServerResource
     protected
     @Structure
     Qi4jSPI spi;
+
+    protected
+    @Service
+    AccessPolicy policy;
+
     Usecase usecase = UsecaseBuilder.newUsecase("Get identity");
 
     protected Representation getHtml(String resourceName) throws ResourceException
@@ -86,5 +96,20 @@ public class BaseServerResource
     protected String getConditionalIdentityAttribute()
     {
         return null;
+    }
+
+    protected String getOperation()
+    {
+        return "all";
+    }
+
+    protected void checkPermission(Object securedObject)
+    {
+        String operation = getOperation();
+        String context = getRequest().getResourceRef().getLastSegment();
+        OperationPermission operationPermission = new OperationPermission(context, operation);
+
+        AccessControlContext accessControlContext = policy.getAccessControlContext(getRequest().getClientInfo().getSubject(), securedObject);
+        accessControlContext.checkPermission(operationPermission);
     }
 }

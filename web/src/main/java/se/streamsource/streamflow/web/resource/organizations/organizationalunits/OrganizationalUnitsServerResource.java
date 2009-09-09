@@ -42,9 +42,6 @@ import java.security.AccessControlContext;
 public class OrganizationalUnitsServerResource
         extends CommandQueryServerResource
 {
-    @Service
-    AccessPolicy policy;
-
     public ListValue organizationalunits()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
@@ -65,6 +62,7 @@ public class OrganizationalUnitsServerResource
     {
         String organization = getRequestAttributes().get("organization").toString();
         OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
+
         checkPermission(ous);
 
         ous.createOrganizationalUnit(value.string().get());
@@ -77,15 +75,5 @@ public class OrganizationalUnitsServerResource
         OrganizationalUnit ou = uowf.currentUnitOfWork().get(OrganizationalUnit.class, entity.entity().get().identity());
 
         ous.removeOrganizationalUnit(ou);
-    }
-
-    public void checkPermission(Object securedObject)
-    {
-        String operation = getOperation();
-        String context = getRequest().getResourceRef().getLastSegment();
-        OperationPermission operationPermission = new OperationPermission(context, operation);
-
-        AccessControlContext accessControlContext = policy.getAccessControlContext(getRequest().getClientInfo().getSubject(), securedObject);
-        accessControlContext.checkPermission(operationPermission);
     }
 }
