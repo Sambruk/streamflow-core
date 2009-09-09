@@ -23,7 +23,6 @@ import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
@@ -71,7 +70,7 @@ public class GroupsModel
         {
             if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
             {
-                throw new OperationConflictException(AdministrationResources.could_not_create_group_name_already_exists, e);
+                throw new OperationException(AdministrationResources.could_not_create_group_name_already_exists, e);
             }
             throw new OperationException(AdministrationResources.could_not_create_group, e);
         }
@@ -130,7 +129,7 @@ public class GroupsModel
         } catch (ResourceException e)
         {
             if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus())) {
-                throw new OperationConflictException(AdministrationResources.could_not_rename_group_name_already_exist, e);
+                throw new OperationException(AdministrationResources.could_not_rename_group_name_already_exist, e);
             }
             throw new OperationException(AdministrationResources.could_not_rename_group, e);
         }

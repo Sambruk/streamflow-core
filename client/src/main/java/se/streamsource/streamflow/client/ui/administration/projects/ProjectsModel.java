@@ -24,7 +24,6 @@ import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
@@ -137,7 +136,7 @@ public class ProjectsModel
         {
             if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
             {
-                throw new OperationConflictException(AdministrationResources.could_not_create_project_name_already_exists, e);
+                throw new OperationException(AdministrationResources.could_not_create_project_name_already_exists, e);
             }
             throw new OperationException(AdministrationResources.could_not_create_project, e);
         }
@@ -155,7 +154,7 @@ public class ProjectsModel
         {
             if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
             {
-                throw new OperationConflictException(AdministrationResources.could_not_rename_project_name_already_exists,e);
+                throw new OperationException(AdministrationResources.could_not_rename_project_name_already_exists,e);
             }
             throw new OperationException(AdministrationResources.could_not_rename_project,e);
         }

@@ -14,16 +14,15 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.SwingXUtilities;
-import org.jdesktop.swingx.util.WindowUtils;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.qi4j.api.injection.scope.Service;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Status;
-import se.streamsource.streamflow.client.StreamFlowApplication;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowResources;
 
 import javax.swing.*;
@@ -67,6 +66,15 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                         {
                             // User is not allowed to do this operation
                             JXDialog dialog = new JXDialog(frame, new JLabel(i18n.text(StreamFlowResources.operation_not_permitted)));
+                            dialog.setLocationRelativeTo(frame);
+                            dialog.pack();
+                            dialog.setVisible(true);
+                            main.show(dialog);
+                            return;
+                        } else if (re.getStatus().equals(Status.CLIENT_ERROR_CONFLICT))
+                        {
+                            // Operation failed because of a conflict
+                            JXDialog dialog = new JXDialog(frame, new JLabel(ex.getMessage()));
                             dialog.setLocationRelativeTo(frame);
                             dialog.pack();
                             dialog.setVisible(true);

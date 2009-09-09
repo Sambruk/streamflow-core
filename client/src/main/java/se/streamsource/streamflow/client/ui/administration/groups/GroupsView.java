@@ -20,7 +20,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.OperationConflictException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
@@ -83,13 +82,7 @@ public class GroupsView
         String name = dialog.name();
         if (name != null)
         {
-            try
-            {
-                model.newGroup(name);
-            } catch(OperationConflictException oce)
-            {
-                dialogs.showOkCancelHelpDialog(this, new JLabel(oce.getMessage()));
-            }
+            model.newGroup(name);
         }
     }
 
@@ -108,13 +101,7 @@ public class GroupsView
 
         if (dialog.name() != null)
         {
-            try
-            {
-                model.describe(groupList.getSelectedIndex(), dialog.name());
-            } catch(OperationConflictException e)
-            {
-                dialogs.showOkCancelHelpDialog(this, new JLabel(e.getMessage()));
-            }
+            model.describe(groupList.getSelectedIndex(), dialog.name());
         }
     }
 
