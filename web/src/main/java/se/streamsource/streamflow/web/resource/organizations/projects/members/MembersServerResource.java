@@ -38,7 +38,6 @@ public class MembersServerResource
         String identity = getRequest().getAttributes().get("project").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
         Members.MembersState members = uow.get(Members.MembersState.class, identity);
-        checkPermission(members);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (MemberValue member : members.members().get().members().get())
@@ -54,7 +53,6 @@ public class MembersServerResource
         String identity = getRequest().getAttributes().get("project").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
         Members.MembersState members = uow.get(Members.MembersState.class, identity);
-        checkPermission(members);
 
         ValueBuilder<TreeValue> builder = vbf.newValueBuilder(TreeValue.class);
         for (MemberValue member : members.members().get().members().get())

@@ -41,7 +41,6 @@ public class UserInboxTaskServerResource
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
         Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
         Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
-
         inbox.completeTask(task, assignee);
     }
 
@@ -52,7 +51,6 @@ public class UserInboxTaskServerResource
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
         Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
         Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
-
         inbox.dropTask(task, assignee);
     }
 
@@ -60,7 +58,6 @@ public class UserInboxTaskServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
-
         describable.describe(stringValue.string().get());
     }
 
@@ -72,7 +69,6 @@ public class UserInboxTaskServerResource
         String userId = (String) getRequest().getAttributes().get("user");
         Inbox inbox = uow.get(Inbox.class, userId);
         Assignee assignee = uow.get(Assignee.class, userId);
-
         inbox.assignTo(task, assignee);
     }
 
@@ -85,7 +81,6 @@ public class UserInboxTaskServerResource
         Inbox inbox = uow.get(Inbox.class, userId);
         Delegator delegator = uow.get(Delegator.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
-
         inbox.delegateTo(task, delegatee, delegator); // TODO Role
     }
 
@@ -95,7 +90,6 @@ public class UserInboxTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Inbox receiverInbox = uow.get(Inbox.class, reference.entity().get().identity());
-
         receiverInbox.receiveTask(task);
     }
 
@@ -106,7 +100,6 @@ public class UserInboxTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
         Inbox inbox = uow.get(Inbox.class, userId);
-
         inbox.markAsRead(task);
     }
 
@@ -117,7 +110,6 @@ public class UserInboxTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
         Inbox inbox = uow.get(Inbox.class, userId);
-
         inbox.markAsUnread(task);
     }
 
@@ -127,7 +119,6 @@ public class UserInboxTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Label label = uow.get(Label.class, reference.entity().get().identity());
-
         task.addLabel(label);
     }
 
@@ -137,7 +128,6 @@ public class UserInboxTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Label label = uow.get(Label.class, reference.entity().get().identity());
-
         task.removeLabel(label);
     }
 
@@ -149,7 +139,6 @@ public class UserInboxTaskServerResource
             String taskId = (String) getRequest().getAttributes().get("task");
             UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
             Task task = uow.get(Task.class, taskId);
-
             uow.remove(task);
             uow.complete();
         } catch (UnitOfWorkCompletionException e)

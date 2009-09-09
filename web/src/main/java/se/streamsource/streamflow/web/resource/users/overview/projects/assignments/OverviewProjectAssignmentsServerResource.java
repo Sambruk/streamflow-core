@@ -44,8 +44,6 @@ public class OverviewProjectAssignmentsServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         String projectId = (String) getRequest().getAttributes().get("project");
 
-        Project project = uow.get(Project.class, projectId);
-        checkPermission(project);
         // Find all Active tasks owned by "project"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Association<Assignee> assignedTo = templateFor(Assignable.AssignableState.class).assignedTo();

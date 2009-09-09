@@ -43,7 +43,6 @@ public class GroupsServerResource
     {
         String identity = getRequest().getAttributes().get("organization").toString();
         Groups.GroupsState groups = uowf.currentUnitOfWork().get(Groups.GroupsState.class, identity);
-        checkPermission(groups);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (Group group : groups.groups())

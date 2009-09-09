@@ -36,7 +36,6 @@ public class ParticipantsServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         String identity = getRequest().getAttributes().get("organization").toString();
         Groups.GroupsState groups = uow.get(Groups.GroupsState.class, identity);
-        checkPermission(groups);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
         String groupId = getRequest().getAttributes().get("group").toString();

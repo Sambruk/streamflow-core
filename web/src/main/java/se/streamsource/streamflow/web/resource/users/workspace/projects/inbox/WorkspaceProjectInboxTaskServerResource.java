@@ -42,7 +42,6 @@ public class WorkspaceProjectInboxTaskServerResource
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
         Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, projectId);
         Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
-
         inbox.completeTask(task, assignee);
     }
 
@@ -62,7 +61,6 @@ public class WorkspaceProjectInboxTaskServerResource
         Task task = uow.get(Task.class, taskId);
         Assignee assignee = uow.get(Assignee.class, userId);
         Inbox inbox = uow.get(Inbox.class, projectId);
-
         inbox.assignTo(task, assignee);
     }
 
@@ -76,7 +74,6 @@ public class WorkspaceProjectInboxTaskServerResource
         Inbox inbox = uow.get(Inbox.class, projectId);
         Delegator delegator = uow.get(Delegator.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
-
         inbox.delegateTo(task, delegatee, delegator);
     }
 
@@ -86,7 +83,6 @@ public class WorkspaceProjectInboxTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Inbox receiverInbox = uow.get(Inbox.class, reference.entity().get().identity());
-
         receiverInbox.receiveTask(task);
     }
 
@@ -97,7 +93,6 @@ public class WorkspaceProjectInboxTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("project");
         Inbox inbox = uow.get(Inbox.class, userId);
-
         inbox.markAsRead(task);
     }
 
@@ -108,7 +103,6 @@ public class WorkspaceProjectInboxTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("project");
         Inbox inbox = uow.get(Inbox.class, userId);
-
         inbox.markAsUnread(task);
     }
 
@@ -118,7 +112,6 @@ public class WorkspaceProjectInboxTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Label label = uow.get(Label.class, reference.entity().get().identity());
-
         task.addLabel(label);
     }
 
@@ -128,7 +121,6 @@ public class WorkspaceProjectInboxTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Label label = uow.get(Label.class, reference.entity().get().identity());
-
         task.removeLabel(label);
     }
 

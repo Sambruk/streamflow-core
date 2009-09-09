@@ -37,7 +37,6 @@ public class LabelServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("label");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
-
         describable.describe(stringValue.string().get());
     }
 
@@ -52,7 +51,6 @@ public class LabelServerResource
         Labels labels = uow.get(Labels.class, labelsId);
 
         LabelEntity group = uow.get(LabelEntity.class, identity);
-
         labels.removeLabel(group);
 
         try

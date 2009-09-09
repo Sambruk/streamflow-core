@@ -62,7 +62,6 @@ public class WorkspaceProjectAssignmentsServerResource
         String userId = (String) getRequest().getAttributes().get("user");
         Assignments assignments = uow.get(Assignments.class, projectId);
         Assignee assignee = uow.get(Assignee.class, userId);
-
         assignments.createAssignedTask(assignee);
     }
 }

@@ -58,7 +58,6 @@ public class UserAssignedTaskServerResource
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
         Assignments assignments = uowf.currentUnitOfWork().get(Assignments.class, id);
         Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
-
         assignments.dropAssignedTask(task, assignee);
     }
 
@@ -71,7 +70,6 @@ public class UserAssignedTaskServerResource
         Assignments assignments = uowf.currentUnitOfWork().get(Assignments.class, userId);
         Delegator delegator = uow.get(Delegator.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
-
         assignments.delegateAssignedTaskTo(task, delegatee, delegator);
     }
 
@@ -94,7 +92,6 @@ public class UserAssignedTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
         Assignments assignments = uow.get(Assignments.class, userId);
-
         assignments.markAssignedTaskAsRead(task);
     }
 
@@ -105,7 +102,6 @@ public class UserAssignedTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
         Assignments assignments = uow.get(Assignments.class, userId);
-
         assignments.markAssignedTaskAsUnread(task);
     }
 
@@ -115,7 +111,6 @@ public class UserAssignedTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Label label = uow.get(Label.class, reference.entity().get().identity());
-
         task.addLabel(label);
     }
 
@@ -125,7 +120,6 @@ public class UserAssignedTaskServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
         Label label = uow.get(Label.class, reference.entity().get().identity());
-
         task.removeLabel(label);
     }
 

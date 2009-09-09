@@ -43,7 +43,6 @@ public class ProjectsServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
         Projects.ProjectsState projectsState = uowf.currentUnitOfWork().get(Projects.ProjectsState.class, identity);
 
-        checkPermission(projectsState);
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (Project project : projectsState.projects())
         {

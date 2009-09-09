@@ -85,7 +85,6 @@ public class TaskGeneralServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
-
         describable.describe(stringValue.string().get());
     }
 
@@ -93,7 +92,6 @@ public class TaskGeneralServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Notable notable = uowf.currentUnitOfWork().get(Notable.class, taskId);
-
         notable.changeNote(noteValue.string().get());
     }
 
@@ -101,7 +99,6 @@ public class TaskGeneralServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         DueOn dueOn = uowf.currentUnitOfWork().get(DueOn.class, taskId);
-
         dueOn.dueOn(dueOnValue.date().get());
     }
 }

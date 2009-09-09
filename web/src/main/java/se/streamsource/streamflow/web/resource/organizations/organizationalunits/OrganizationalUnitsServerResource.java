@@ -64,6 +64,8 @@ public class OrganizationalUnitsServerResource
         OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
         OrganizationalUnit ou = uowf.currentUnitOfWork().get(OrganizationalUnit.class, entity.entity().get().identity());
 
+        checkPermission(ous);
+
         ous.removeOrganizationalUnit(ou);
     }
 }

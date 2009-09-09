@@ -41,8 +41,6 @@ public class OverviewProjectsServerResource
         String id = (String) getRequest().getAttributes().get("user");
         Participant participant = uow.get(Participant.class, id);
 
-        checkPermission(participant);
-
         for (Project project : participant.allProjects())
         {
             builder.prototype().entity().set(EntityReference.getEntityReference(project));

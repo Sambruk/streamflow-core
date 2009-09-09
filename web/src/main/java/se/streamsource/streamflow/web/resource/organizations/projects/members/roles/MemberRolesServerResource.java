@@ -37,7 +37,6 @@ public class MemberRolesServerResource
         String memberId = getRequest().getAttributes().get("member").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
         Members.MembersState members = uow.get(Members.MembersState.class, identity);
-        checkPermission(members);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (MemberValue member : members.members().get().members().get())
