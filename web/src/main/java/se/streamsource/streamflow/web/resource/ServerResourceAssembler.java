@@ -81,6 +81,7 @@ public class ServerResourceAssembler
         // Resources
         module.addObjects(
                 APIv1Router.class,
+                AccessFilter.class,
                 StreamFlowServerResource.class,
 
                 // /users
