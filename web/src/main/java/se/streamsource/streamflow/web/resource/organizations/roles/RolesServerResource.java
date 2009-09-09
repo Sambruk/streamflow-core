@@ -43,6 +43,7 @@ public class RolesServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
         Roles.RolesState roles = uowf.currentUnitOfWork().get(Roles.RolesState.class, identity);
 
+        checkPermission(roles);
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (Role role : roles.roles())
         {
@@ -59,6 +60,7 @@ public class RolesServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
 
         Roles roles = uow.get(Roles.class, identity);
+        checkPermission(roles);
 
         try
         {

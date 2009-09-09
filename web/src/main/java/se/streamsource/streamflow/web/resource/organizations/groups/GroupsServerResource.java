@@ -39,11 +39,11 @@ public class GroupsServerResource
         extends CommandQueryServerResource
 {
 
-    // get???
     public ListValue groups()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
         Groups.GroupsState groups = uowf.currentUnitOfWork().get(Groups.GroupsState.class, identity);
+        checkPermission(groups);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (Group group : groups.groups())
@@ -71,6 +71,7 @@ public class GroupsServerResource
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("New Group"));
 
         Groups groups = uow.get(Groups.class, identity);
+        checkPermission(groups);
 
         try
         {

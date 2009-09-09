@@ -14,16 +14,17 @@
 
 package se.streamsource.streamflow.web.resource.organizations.groups.participants;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
-
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
+
+import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -43,6 +44,14 @@ public class ParticipantServerResource
 
         String id = getRequest().getAttributes().get("group").toString();
         Group group = uow.get(Group.class, id);
+        try
+        {
+            checkPermission(group);
+        } catch(AccessControlException e)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+        }
 
         group.addParticipant(participant);
 
@@ -69,6 +78,14 @@ public class ParticipantServerResource
         String id = getRequest().getAttributes().get("group").toString();
         Group group = uow.get(Group.class, id);
 
+        try
+        {
+            checkPermission(group);
+        } catch(AccessControlException e)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+        }
         group.removeParticipant(participant);
 
         try

@@ -43,6 +43,7 @@ public class GroupServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
 
         Groups.GroupsState groups = uowf.currentUnitOfWork().get(Groups.GroupsState.class, identity);
+        checkPermission(groups);
 
         String newName = stringValue.string().get();
         for (Group group : groups.groups())
@@ -65,6 +66,7 @@ public class GroupServerResource
         String org = getRequest().getAttributes().get("organization").toString();
 
         Groups groups = uow.get(Groups.class, org);
+        checkPermission(groups);
 
         String identity = getRequest().getAttributes().get("group").toString();
         GroupEntity group = uow.get(GroupEntity.class, identity);

@@ -15,9 +15,7 @@
 package se.streamsource.streamflow.web.resource.organizations.organizationalunits;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
 import org.restlet.resource.ResourceException;
-import org.restlet.security.UserPrincipal;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -25,15 +23,7 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.web.application.security.AccessPolicy;
-import se.streamsource.streamflow.web.application.security.LoginContext;
-import se.streamsource.streamflow.web.application.security.OperationPermission;
-
-import javax.security.auth.Subject;
-import java.util.Date;
-import java.security.AccessControlContext;
 
 /**
  * Mapped to:
@@ -47,7 +37,7 @@ public class OrganizationalUnitsServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
         OrganizationalUnits.OrganizationalUnitsState ous = uowf.currentUnitOfWork().get(OrganizationalUnits.OrganizationalUnitsState.class, identity);
 
-        policy.getAccessControlContext(getRequest().getClientInfo().getSubject(), ous).checkPermission(new OperationPermission("organizationalUnits", "organizationalUnits"));
+        checkPermission(ous);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (OrganizationalUnit ou : ous.organizationalUnits())

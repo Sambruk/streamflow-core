@@ -84,7 +84,8 @@ public class ProjectServerResource
                 throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
             }
         }
-        
+
+        checkPermission(describable);
         describable.describe(newName);
     }
 
@@ -100,6 +101,7 @@ public class ProjectServerResource
         String identity = getRequest().getAttributes().get("project").toString();
         ProjectEntity projectEntity = uow.get(ProjectEntity.class, identity);
 
+        checkPermission(projects);
         projects.removeProject(projectEntity);
 
         try

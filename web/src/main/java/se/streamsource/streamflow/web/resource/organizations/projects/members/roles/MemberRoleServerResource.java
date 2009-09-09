@@ -20,11 +20,14 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import org.restlet.data.Status;
 
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.Role;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
+
+import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -45,6 +48,15 @@ public class MemberRoleServerResource
 
         String id = getRequest().getAttributes().get("project").toString();
         Project project = uow.get(Project.class, id);
+
+        try
+        {
+            checkPermission(project);
+        } catch(AccessControlException e)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+        }
 
         project.addRole(participant, role);
 
@@ -72,6 +84,15 @@ public class MemberRoleServerResource
 
         String roleName = getRequest().getAttributes().get("role").toString();
         Role role = uow.get(Role.class, roleName);
+
+        try
+        {
+            checkPermission(project);
+        } catch(AccessControlException e)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+        }
 
         project.removeRole(participant, role);
 

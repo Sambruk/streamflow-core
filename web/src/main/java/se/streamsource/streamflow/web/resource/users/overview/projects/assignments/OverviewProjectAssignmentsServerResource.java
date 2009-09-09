@@ -29,6 +29,7 @@ import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -43,6 +44,8 @@ public class OverviewProjectAssignmentsServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         String projectId = (String) getRequest().getAttributes().get("project");
 
+        Project project = uow.get(Project.class, projectId);
+        checkPermission(project);
         // Find all Active tasks owned by "project"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Association<Assignee> assignedTo = templateFor(Assignable.AssignableState.class).assignedTo();

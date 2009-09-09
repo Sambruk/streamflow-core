@@ -56,6 +56,7 @@ public class OrganizationServerResource
         String taskId = (String) getRequest().getAttributes().get("organization");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
 
+        checkPermission(describable);
         describable.describe(stringValue.string().get());
     }
 

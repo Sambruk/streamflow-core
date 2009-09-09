@@ -39,6 +39,7 @@ public class OverviewProjectAssignmentsTaskServerResource
         String taskId = (String) getRequest().getAttributes().get("task");
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
         Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, projectId);
+        checkPermission(inbox);
         Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
         inbox.completeTask(task, assignee);
     }
@@ -47,6 +48,7 @@ public class OverviewProjectAssignmentsTaskServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
+        checkPermission(describable);
         describable.describe(stringValue.string().get());
     }
 
