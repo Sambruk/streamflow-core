@@ -100,7 +100,7 @@ public class AdministrationOutlineView
 
         ActionMap am = context.getActionMap(this);
         JPopupMenu popup = new JPopupMenu();
-        popup.add(am.get("addOrganizationalUnit"));
+        popup.add(am.get("createOrganizationalUnit"));
         popup.add(am.get("removeOrganizationalUnit"));
 
         tree.addMouseListener(new PopupMenuTrigger(popup));
@@ -130,7 +130,7 @@ public class AdministrationOutlineView
     }
 
     @Action
-    public void addOrganizationalUnit()
+    public void createOrganizationalUnit()
     {
         Object node = tree.getSelectionPath().getLastPathComponent();
         if (node instanceof OrganizationalStructureAdministrationNode)

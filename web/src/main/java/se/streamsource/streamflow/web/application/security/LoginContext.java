@@ -12,13 +12,31 @@
  *
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.web.application.security;
+
+import java.util.Date;
 
 /**
- * i18n resources that don't fit in any of the other resource enumerations.
+ * Login context
  */
-public enum StreamFlowResources
+public class LoginContext
 {
-    startup_error,
-    operation_not_permitted
+    String loginMethod;
+    Date loginDate;
+
+    public LoginContext(String loginMethod, Date loginDate)
+    {
+        this.loginMethod = loginMethod;
+        this.loginDate = loginDate;
+    }
+
+    public String getLoginMethod()
+    {
+        return loginMethod;
+    }
+
+    public Date getLoginDate()
+    {
+        return loginDate;
+    }
 }

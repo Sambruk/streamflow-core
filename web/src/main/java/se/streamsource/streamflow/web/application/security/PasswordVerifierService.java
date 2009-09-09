@@ -21,9 +21,11 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.security.Verifier;
-import org.restlet.security.SecretVerifier;
+import org.restlet.security.*;
+import org.restlet.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.user.User;
+
+import java.util.Date;
 
 /**
  * Accept login if username==password
@@ -33,6 +35,19 @@ public class PasswordVerifierService
 {
     @Structure
     UnitOfWorkFactory uowf;
+
+    @Override
+    public int verify(Request request, Response response)
+    {
+        int result =  super.verify(request, response);
+        if (result == Verifier.RESULT_VALID)
+        {
+            LoginContext loginContext = new LoginContext("BASIC", new Date());
+            request.getClientInfo().getSubject().getPublicCredentials().add(loginContext);
+        }
+
+        return result;
+    }
 
     public boolean verify(String username, char[] password)
     {

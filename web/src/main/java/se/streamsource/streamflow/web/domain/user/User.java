@@ -47,6 +47,8 @@ public interface User
         boolean isCorrectPassword(String password);
 
         String hashPassword(String password);
+
+        boolean isAdministrator();
     }
 
     abstract class UserMixin
@@ -96,6 +98,11 @@ public interface User
             {
                 throw new IllegalStateException(e.getMessage(), e);
             }
+        }
+
+        public boolean isAdministrator()
+        {
+            return userName().get().equals("administrator");
         }
     }
 }

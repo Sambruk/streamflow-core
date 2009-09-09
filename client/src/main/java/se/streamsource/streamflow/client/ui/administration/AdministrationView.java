@@ -64,8 +64,6 @@ public class AdministrationView
 
                     if (node instanceof AccountAdministrationNode)
                     {
-                        AccountAdministrationNode accountAdmin = (AccountAdministrationNode) node;
-                        view = obf.newObjectBuilder(AccountView.class).use(accountAdmin.accountModel()).newInstance();
                     } else if (node instanceof OrganizationalStructureAdministrationNode)
                     {
                         OrganizationalStructureAdministrationNode ouNode = (OrganizationalStructureAdministrationNode) node;

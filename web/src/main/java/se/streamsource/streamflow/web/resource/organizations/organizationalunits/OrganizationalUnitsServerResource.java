@@ -15,7 +15,9 @@
 package se.streamsource.streamflow.web.resource.organizations.organizationalunits;
 
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.restlet.resource.ResourceException;
+import org.restlet.security.UserPrincipal;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -23,7 +25,15 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.web.application.security.AccessPolicy;
+import se.streamsource.streamflow.web.application.security.LoginContext;
+import se.streamsource.streamflow.web.application.security.OperationPermission;
+
+import javax.security.auth.Subject;
+import java.util.Date;
+import java.security.AccessControlContext;
 
 /**
  * Mapped to:
@@ -32,10 +42,15 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class OrganizationalUnitsServerResource
         extends CommandQueryServerResource
 {
+    @Service
+    AccessPolicy policy;
+
     public ListValue organizationalunits()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
         OrganizationalUnits.OrganizationalUnitsState ous = uowf.currentUnitOfWork().get(OrganizationalUnits.OrganizationalUnitsState.class, identity);
+
+        policy.getAccessControlContext(getRequest().getClientInfo().getSubject(), ous).checkPermission(new OperationPermission("organizationalUnits", "organizationalUnits"));
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (OrganizationalUnit ou : ous.organizationalUnits())
@@ -50,6 +65,7 @@ public class OrganizationalUnitsServerResource
     {
         String organization = getRequestAttributes().get("organization").toString();
         OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
+        checkPermission(ous);
 
         ous.createOrganizationalUnit(value.string().get());
     }
@@ -61,5 +77,15 @@ public class OrganizationalUnitsServerResource
         OrganizationalUnit ou = uowf.currentUnitOfWork().get(OrganizationalUnit.class, entity.entity().get().identity());
 
         ous.removeOrganizationalUnit(ou);
+    }
+
+    public void checkPermission(Object securedObject)
+    {
+        String operation = getOperation();
+        String context = getRequest().getResourceRef().getLastSegment();
+        OperationPermission operationPermission = new OperationPermission(context, operation);
+
+        AccessControlContext accessControlContext = policy.getAccessControlContext(getRequest().getClientInfo().getSubject(), securedObject);
+        accessControlContext.checkPermission(operationPermission);
     }
 }

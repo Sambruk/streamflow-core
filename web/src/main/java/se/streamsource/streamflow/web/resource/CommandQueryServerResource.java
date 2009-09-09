@@ -52,6 +52,14 @@ import org.restlet.resource.ResourceException;
 
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.logging.Logger;
+import java.security.AccessControlException;
+
 /**
  * Base class for command/query resources.
  * <p/>
@@ -118,7 +126,7 @@ public class CommandQueryServerResource
         }
     }
 
-    private String getOperation()
+    protected String getOperation()
     {
         return getRequest().getResourceRef().getQueryAsForm().getFirstValue("operation");
     }
@@ -363,6 +371,12 @@ public class CommandQueryServerResource
             {
                 throw (ResourceException) e.getTargetException();
             }
+            else if (e.getTargetException() instanceof AccessControlException)
+            {
+                // Operation not allowed - return 403
+                throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+            }
+
             getResponse().setEntity(new ObjectRepresentation(e));
 
             throw new ResourceException(e.getTargetException());

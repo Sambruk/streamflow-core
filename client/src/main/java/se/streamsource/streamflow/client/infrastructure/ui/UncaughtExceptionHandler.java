@@ -15,9 +15,16 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 import org.jdesktop.swingx.JXErrorPane;
+import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.SwingXUtilities;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.qi4j.api.injection.scope.Service;
+import org.restlet.resource.ResourceException;
+import org.restlet.data.Status;
 import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.StreamFlowResources;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,18 +46,40 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
         uncaughtException(Thread.currentThread(), e);
     }
 
-    public void uncaughtException(Thread t, Throwable e)
+    public void uncaughtException(Thread t, final Throwable e)
     {
         final Throwable ex = unwrap(e);
+
+        Object source = EventQueue.getCurrentEvent().getSource();
+        final Frame frame = source instanceof Component ? SwingXUtilities.getAncestor(Frame.class, (Component) source) : main.getMainFrame();
 
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
+                if (ex instanceof OperationException)
+                {
+                    Throwable cause = ex.getCause();
+                    if (cause instanceof ResourceException)
+                    {
+                        ResourceException re = (ResourceException) cause;
+                        if (re.getStatus().equals(Status.CLIENT_ERROR_FORBIDDEN))
+                        {
+                            // User is not allowed to do this operation
+                            JXDialog dialog = new JXDialog(frame, new JLabel(i18n.text(StreamFlowResources.operation_not_permitted)));
+                            dialog.setLocationRelativeTo(frame);
+                            dialog.pack();
+                            dialog.setVisible(true);
+                            main.show(dialog);
+                            return;
+                        }
+                    }
+                }
+
                 JXErrorPane pane = new JXErrorPane();
                 pane.setErrorInfo(new ErrorInfo("Uncaught exception", ex.getMessage(), null, "Error", ex, Level.SEVERE, Collections.<String, String>emptyMap()));
                 pane.setPreferredSize(new Dimension(700, 400));
-                JXErrorPane.showDialog(main.getMainFrame(), pane);
+                JXErrorPane.showDialog(frame, pane);
             }
         });
     }

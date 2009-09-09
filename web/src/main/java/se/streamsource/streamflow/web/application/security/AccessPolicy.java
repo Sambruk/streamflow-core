@@ -12,13 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.web.application.security;
+
+import se.streamsource.streamflow.web.domain.user.User;
+
+import java.security.AccessControlContext;
+
+import org.restlet.security.UserPrincipal;
+
+import javax.security.auth.Subject;
 
 /**
- * i18n resources that don't fit in any of the other resource enumerations.
+ * Used to check if a particular user has
+ * a particular permission on a particular object
  */
-public enum StreamFlowResources
+public interface AccessPolicy
 {
-    startup_error,
-    operation_not_permitted
+    AccessControlContext getAccessControlContext(Subject subject, Object securedObject);
 }

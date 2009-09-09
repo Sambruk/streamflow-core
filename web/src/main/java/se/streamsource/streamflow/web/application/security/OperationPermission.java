@@ -12,13 +12,27 @@
  *
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.web.application.security;
+
+import java.security.BasicPermission;
 
 /**
- * i18n resources that don't fit in any of the other resource enumerations.
+ * Permission implementation for StreamFlow. The name has a two-level structure:
+ * the first part is what kind of object is being invoked, and the second is the operation to be performed.
+ *
+ * Example:
+ * organizationalUnits.createOrganizationalUnit
  */
-public enum StreamFlowResources
+public class OperationPermission
+    extends BasicPermission
 {
-    startup_error,
-    operation_not_permitted
+    public OperationPermission(String object, String operation)
+    {
+        super(object+"."+operation);
+    }
+
+    public OperationPermission(String name)
+    {
+        super(name);
+    }
 }
