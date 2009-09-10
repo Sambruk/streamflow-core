@@ -30,7 +30,6 @@ import org.restlet.routing.Router;
 import org.restlet.security.Verifier;
 import se.streamsource.streamflow.web.StreamFlowWebAssembler;
 import se.streamsource.streamflow.web.resource.APIv1Router;
-import se.streamsource.streamflow.web.resource.AccessFilter;
 
 import java.util.logging.Logger;
 
@@ -75,10 +74,7 @@ public class StreamFlowRestApplication
         Router versions = new Router(getContext());
         versions.attach("/v1", api);
 
-        AccessFilter filter = factory.newObject(AccessFilter.class);
-        filter.setNext(versions);
-
-        return filter;
+        return versions;
     }
 
     @Override

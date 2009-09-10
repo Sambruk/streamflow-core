@@ -38,6 +38,8 @@ import se.streamsource.streamflow.web.resource.organizations.search.SearchTaskSe
 import se.streamsource.streamflow.web.resource.organizations.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.UserServerResource;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
+import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
+import se.streamsource.streamflow.web.resource.users.UsersRouter;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.OverviewServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectServerResource;
@@ -81,7 +83,8 @@ public class ServerResourceAssembler
         // Resources
         module.addObjects(
                 APIv1Router.class,
-                AccessFilter.class,
+                UsersRouter.class,
+                UserAccessFilter.class,
                 StreamFlowServerResource.class,
 
                 // /users
