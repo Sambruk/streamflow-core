@@ -143,5 +143,7 @@ public class ClientResourceAssembler
 
                 SearchClientResource.class,
                 SearchTaskClientResource.class).visibleIn(Visibility.application);
+
+        module.addObjects(EventsClientResource.class).visibleIn(Visibility.application);
     }
 }

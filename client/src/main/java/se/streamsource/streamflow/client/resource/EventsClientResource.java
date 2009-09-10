@@ -12,20 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.event.source;
+package se.streamsource.streamflow.client.resource;
 
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import org.restlet.Context;
+import org.restlet.data.Reference;
+import org.restlet.resource.ClientResource;
+import org.qi4j.api.injection.scope.Uses;
 
 /**
- * Accept all events
+ * JAVADOC
  */
-public class AllEventsSpecification
-        implements EventSpecification
+public class EventsClientResource
+    extends ClientResource
 {
-    public static final EventSpecification INSTANCE = new AllEventsSpecification();
-
-    public boolean accept(DomainEvent event)
+    public EventsClientResource(@Uses Context context, @Uses Reference reference)
     {
-        return true;
+        super(context, reference);
     }
 }

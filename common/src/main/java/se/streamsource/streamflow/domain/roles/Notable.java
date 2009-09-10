@@ -18,11 +18,12 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
- * JAVADOC
+ * Maintain a note. A note is a longer multi-line string.
  */
-@Mixins(Notable.NotableMixin.class)
 public interface Notable
 {
     void changeNote(String newNote);
@@ -31,17 +32,8 @@ public interface Notable
     {
         @UseDefaults
         Property<String> note();
-    }
 
-    class NotableMixin
-            implements Notable
-    {
-        @This
-        NotableState state;
-
-        public void changeNote(String newNote)
-        {
-            state.note().set(newNote);
-        }
+        @Event
+        void noteChanged(DomainEvent event, String newNote);
     }
 }

@@ -30,10 +30,6 @@
                 </executions>
                 <configuration>
                     <dependencies>
-                        <!--                  <excludes>
-                           <exclude>commons-lang:commons-lang</exclude>
-                        </excludes>
-                        -->
                     </dependencies>
                     <jnlp>
                         <outputFile>streamflow.jnlp</outputFile>
@@ -56,6 +52,8 @@
                             <gen>false</gen>
                         </keystoreConfig>
                     </sign>
+                    <pack200>true</pack200>
+                    <gzip>true</gzip>
                     <unsign>true</unsign>
                     <verbose>false</verbose>
                 </configuration>

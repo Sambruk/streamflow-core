@@ -34,6 +34,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -93,6 +94,9 @@ public interface EventSourceService
         // EventSource implementation
         public void registerListener(EventSourceListener listener, EventSpecification specification)
         {
+            if (specification == null)
+                specification = AllEventsSpecification.INSTANCE;
+
             listeners.put(listener, specification);
         }
 

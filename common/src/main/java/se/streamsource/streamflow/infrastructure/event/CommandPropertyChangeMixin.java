@@ -27,6 +27,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Generic mixin for simple command methods that update a property.
+ *
+ * It can implement methods that follow these rules:
+ * * The method must have one parameter
+ * * The name must start with "change"
+ *
+ * Example: void changeFoo(String newValue) -> invoke event method "fooChanged(newValue);"
+ *
  */
 @AppliesTo(CommandPropertyChangeMixin.CommandPropertyChangeAppliesTo.class)
 public class CommandPropertyChangeMixin

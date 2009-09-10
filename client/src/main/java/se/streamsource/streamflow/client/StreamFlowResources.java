@@ -20,5 +20,5 @@ package se.streamsource.streamflow.client;
 public enum StreamFlowResources
 {
     startup_error,
-    operation_not_permitted
+    could_not_process_events, operation_not_permitted
 }

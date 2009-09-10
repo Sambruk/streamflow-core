@@ -29,8 +29,15 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
+import org.qi4j.spi.structure.ModuleSPI;
+import org.qi4j.spi.value.ValueCompositeType;
+import org.qi4j.spi.util.json.JSONException;
+import org.qi4j.spi.util.json.JSONTokener;
 import org.restlet.Client;
 import org.restlet.Restlet;
+import org.restlet.representation.Representation;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -39,6 +46,7 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.AccountSelector;
+import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
@@ -46,16 +54,24 @@ import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.search.SearchWindow;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,11 +93,17 @@ public class StreamFlowApplication
     @Structure
     UnitOfWorkFactory uowf;
 
+    @Structure
+    ModuleSPI module;
+
     @Service
     DialogService dialogs;
 
     @Service
     IndividualRepository individualRepo;
+
+    @Service
+    EventListener eventListener;
 
     AccountsModel accountsModel;
 
@@ -94,9 +116,13 @@ public class StreamFlowApplication
 
     SearchWindow searchWindow;
 
+    DebugWindow debugWindow;
+
     AdministrationWindow administrationWindow;
 
     HelpBroker hb;
+
+    ValueCompositeType domainEventType;
 
     public StreamFlowApplication()
     {
@@ -108,14 +134,9 @@ public class StreamFlowApplication
     public void init(@Uses final AccountsModel accountsModel,
                      @Structure final ObjectBuilderFactory obf,
                      @Uses AccountSelector accountSelector
-                     ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
+    ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
-        this.accountSelector = accountSelector;
-        this.workspaceWindow = obf.newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
-        this.overviewWindow = obf.newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
-        this.searchWindow = obf.newObjectBuilder(SearchWindow.class).use(accountSelector).newInstance();
-        this.administrationWindow = obf.newObjectBuilder(AdministrationWindow.class).use(accountsModel).newInstance();
-        setMainFrame(workspaceWindow.getFrame());
+        domainEventType = module.valueDescriptor(DomainEvent.class.getName()).valueType();
 
         try
         {
@@ -128,6 +149,14 @@ public class StreamFlowApplication
         {
             //Do nothing
         }
+
+        this.accountSelector = accountSelector;
+        this.workspaceWindow = obf.newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
+        this.overviewWindow = obf.newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
+        this.searchWindow = obf.newObjectBuilder(SearchWindow.class).use(accountSelector).newInstance();
+        this.administrationWindow = obf.newObjectBuilder(AdministrationWindow.class).use(accountsModel).newInstance();
+        this.debugWindow = obf.newObjectBuilder(DebugWindow.class).newInstance();
+        setMainFrame(workspaceWindow.getFrame());
 
         this.accountsModel = accountsModel;
 
@@ -194,6 +223,29 @@ public class StreamFlowApplication
 
                     Logger.getLogger(LoggerCategories.HTTP).info(request.getResourceRef().toString() + "->" + response.getStatus());
 
+                    if (response.getStatus().isSuccess() && (request.getMethod().equals(Method.POST) || request.getMethod().equals(Method.PUT)))
+                    {
+                        try
+                        {
+                            Representation entity = response.getEntity();
+                            if (entity != null && !(entity instanceof EmptyRepresentation))
+                            {
+                                BufferedReader reader = new BufferedReader(entity.getReader());
+                                String json;
+                                while ((json = reader.readLine()) != null)
+                                {
+                                    JSONTokener tokener = new JSONTokener(json);
+                                    DomainEvent domainEvent = (DomainEvent) domainEventType.fromJSON(tokener.nextValue(), module);
+                                    eventListener.notifyEvent(domainEvent);
+                                }
+                            }
+                        } catch (Exception e)
+                        {
+                            throw new OperationException(StreamFlowResources.could_not_process_events, e);
+                        }
+                    }
+
+
                     super.afterHandle(request, response);
                 }
             };
@@ -243,6 +295,11 @@ public class StreamFlowApplication
         return accountSelector.isSelectionEmpty() ? null : accountSelector.getSelectedAccount().settings().userName().get();
     }
 
+    public AccountSelector getAccountSelector()
+    {
+        return accountSelector;
+    }
+
     // Controller actions -------------------------------------------
 
     // Menu actions
@@ -278,6 +335,13 @@ public class StreamFlowApplication
     {
         if (!searchWindow.getFrame().isVisible())
             show(searchWindow);
+    }
+
+    @Action
+    public void showDebugWindow() throws Exception
+    {
+        if (!debugWindow.getFrame().isVisible())
+            show(debugWindow);
     }
 
     @Action

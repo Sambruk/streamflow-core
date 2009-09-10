@@ -36,6 +36,7 @@ public class WindowMenu
                 "showWorkspaceWindow",
                 "showOverviewWindow",
                 "showSearchWindow",
-                "showAdministrationWindow");
+                "showAdministrationWindow",
+                "showDebugWindow");
     }
 }

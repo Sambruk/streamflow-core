@@ -41,6 +41,7 @@ public class WorkspaceWindow
         JXFrame frame = new JXFrame(i18n.text(WorkspaceResources.window_name));
         frame.setLocationByPlatform(true);
         frame.getContentPane().add(view);
+        frame.getRootPane().setOpaque(true);
         setFrame(frame);
         setMenuBar(menu);
 
@@ -51,4 +52,5 @@ public class WorkspaceWindow
         frame.pack();
     }
 
+    
 }

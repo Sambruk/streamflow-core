@@ -25,6 +25,7 @@ import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.structure.Module;
@@ -43,16 +44,19 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.ObjectRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
+import org.restlet.representation.*;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -79,12 +83,17 @@ import java.security.AccessControlException;
  */
 public class CommandQueryServerResource
         extends BaseServerResource
+        implements EventSourceListener
 {
     @Structure
     protected ValueBuilderFactory vbf;
 
     @Structure
     protected Module module;
+
+    @Service
+    EventSource source;
+    public Iterable<DomainEvent> events;
 
     public CommandQueryServerResource()
     {
@@ -164,6 +173,7 @@ public class CommandQueryServerResource
     {
         String operation = getOperation();
         UnitOfWork uow = null;
+        source.registerListener(this, new AllEventsSpecification());
         try
         {
             Method method = getResourceMethod(operation);
@@ -172,12 +182,27 @@ public class CommandQueryServerResource
             int tries = 0;
             while (tries < 10)
             {
-                uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase(getRequest().getResourceRef().getLastSegment()));
+                uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase(operation));
 
                 Representation rep = returnRepresentation(invoke(method, args), variant);
                 try
                 {
                     uow.complete();
+
+                    if (rep instanceof EmptyRepresentation && events != null)
+                    {
+                        rep = new WriterRepresentation(MediaType.APPLICATION_JSON)
+                        {
+                            public void write(Writer writer) throws IOException
+                            {
+                                for (DomainEvent event : events)
+                                {
+                                    writer.write(event.toJSON()+"\n");
+                                }
+                            }
+                        };
+                    }
+
                     return rep;
                 } catch (ConcurrentEntityModificationException e)
                 {
@@ -200,6 +225,9 @@ public class CommandQueryServerResource
         {
             setStatus(Status.SERVER_ERROR_INTERNAL);
             return new ObjectRepresentation(ex, MediaType.APPLICATION_JAVA_OBJECT);
+        } finally
+        {
+            source.unregisterListener(this);
         }
     }
 
@@ -240,6 +268,11 @@ public class CommandQueryServerResource
     protected Representation put(Representation representation, Variant variant) throws ResourceException
     {
         return post(representation, variant);
+    }
+
+    public void eventsAvailable(EventStore source, EventSpecification specification)
+    {
+        events = source.events(specification, null, Integer.MAX_VALUE);
     }
 
     private Method getResourceMethod(String operation)

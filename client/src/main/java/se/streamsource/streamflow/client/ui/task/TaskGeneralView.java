@@ -82,8 +82,6 @@ public class TaskGeneralView
 
         taskBinder.addObserver(this);
 
-        descriptionField.setFocusAccelerator('B');
-
         form.setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
         form.setFocusCycleRoot(true);
         form.setFocusable(true);
@@ -147,7 +145,7 @@ public class TaskGeneralView
             issueLabel.setVisible(issueVisible);
             ((JLabel) issueLabel.getClientProperty("labeledBy")).setVisible(issueVisible);
 
-            descriptionField.grabFocus();
+//            descriptionField.grabFocus();
         }
     }
 
@@ -155,12 +153,5 @@ public class TaskGeneralView
     public void addNotify()
     {
         super.addNotify();
-    }
-
-    @Override
-    public void requestFocus()
-    {
-        super.requestFocus();
-        descriptionField.requestFocus();
     }
 }

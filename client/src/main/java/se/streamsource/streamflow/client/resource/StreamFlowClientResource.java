@@ -50,4 +50,9 @@ public class StreamFlowClientResource
     {
         return getSubResource("organizations", OrganizationsClientResource.class);
     }
+
+    public EventsClientResource events()
+    {
+        return getSubResource("events", EventsClientResource.class);
+    }
 }

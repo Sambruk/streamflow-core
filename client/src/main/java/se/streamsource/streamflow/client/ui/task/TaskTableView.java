@@ -170,7 +170,7 @@ public abstract class TaskTableView
             {
                 TaskGeneralModel generalModel = (TaskGeneralModel) arg;
                 String newValue = generalModel.getGeneral().description().get();
-                getSelectedTask().description().set(newValue);
+                model.setValueAt(newValue, taskTable.getSelectedRow(), 1);
             }
         };
 

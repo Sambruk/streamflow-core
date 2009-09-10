@@ -49,6 +49,11 @@ public class BaseClientResource
 
     private BaseClientResource root;
 
+    public BaseClientResource(Context context, Reference reference)
+    {
+        super(context, reference);
+    }
+
     public void setRoot(BaseClientResource root)
     {
         this.root = root;
@@ -79,11 +84,6 @@ public class BaseClientResource
         {
             this.tag = tag;
         }
-    }
-
-    public BaseClientResource(Context context, Reference reference)
-    {
-        super(context, reference);
     }
 
     @Override

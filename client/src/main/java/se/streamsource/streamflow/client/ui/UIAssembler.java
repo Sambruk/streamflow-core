@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.common.Visibility;
+import static org.qi4j.api.common.Visibility.layer;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -24,6 +25,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
+import se.streamsource.streamflow.client.ui.events.ClientEventSourceService;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.*;
 
@@ -41,14 +44,18 @@ public class UIAssembler
         );
 
         // SAF objects
-        module.importServices(StreamFlowApplication.class, ApplicationContext.class, ActionMap.class).visibleIn(Visibility.layer);
+        module.importServices(StreamFlowApplication.class, ApplicationContext.class, AccountSelector.class).visibleIn(layer);
+
+        module.addValues(DomainEvent.class).visibleIn(layer);
 
         module.addServices(DummyDataService.class).instantiateOnStartup();
-        module.addServices(ApplicationInitializationService.class).instantiateOnStartup();
+        module.addServices(ApplicationInitializationService.class, ClientEventSourceService.class).instantiateOnStartup();
 
         UIAssemblers.addDialogs(module, NameDialog.class, SelectUsersAndGroupsDialog.class);
 
         UIAssemblers.addModels(module, TableMultipleSelectionModel.class,
                 TableSingleSelectionModel.class);
+
+        module.addObjects(DebugWindow.class);
     }
 }

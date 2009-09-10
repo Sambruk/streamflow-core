@@ -177,9 +177,21 @@ public abstract class TaskTableModel<T extends TaskListDTO>
                             getResource().task(task.identity()).complete();
 
                             taskValue.status().set(TaskStates.COMPLETED);
+                            fireTableCellUpdated(rowIndex, column);
                         }
                     }
                     break;
+                }
+                case 1:
+                {
+                    String description = (String) aValue;
+                    TaskDTO taskValue = tasks.get(rowIndex);
+                    if (!description.equals(taskValue.description().get()))
+                    {
+                        taskValue.description().set(description);
+                        fireTableCellUpdated(rowIndex, column);
+                    }
+
                 }
             }
         } catch (ResourceException e)
@@ -225,16 +237,26 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         getResource().createTask();
     }
 
+
+    public void completeTask(int idx)
+    {
+        setValueAt(true, idx, 0);
+    }
+
     public void removeTask(int idx) throws ResourceException
     {
         TaskDTO task = tasks.get(idx);
         getResource().task(task.task().get().identity()).delete();
+        tasks.remove(idx);
+        fireTableRowsDeleted(idx, idx);
     }
 
     public void assignToMe(int idx) throws ResourceException
     {
         TaskDTO task = tasks.get(idx);
         getResource().task(task.task().get().identity()).assignToMe();
+        tasks.remove(idx);
+        fireTableRowsDeleted(idx, idx);
     }
 
     public void markAsRead(int idx) throws ResourceException
@@ -244,6 +266,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         {
             getResource().task(task.task().get().identity()).markAsRead();
             task.isRead().set(true);
+            fireTableCellUpdated(idx, 1);
         }
     }
 
@@ -254,6 +277,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         {
             getResource().task(task.task().get().identity()).markAsUnread();
             task.isRead().set(false);
+            fireTableCellUpdated(idx, 1);
         }
     }
 
@@ -261,12 +285,16 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     {
         TaskDTO task = tasks.get(idx);
         getResource().task(task.task().get().identity()).delegate(delegateeId);
+        tasks.remove(idx);
+        fireTableRowsDeleted(idx, idx);
     }
 
     public void forward(int idx, String receiverId) throws ResourceException
     {
         TaskDTO task = tasks.get(idx);
         getResource().task(task.task().get().identity()).forward(receiverId);
+        tasks.remove(idx);
+        fireTableRowsDeleted(idx, idx);
     }
 
     public void addLabel(int idx, ListItemValue label) throws ResourceException
@@ -281,6 +309,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
 
         getResource().task(task.task().get().identity()).addLabel(labelId);
         task.labels().get().items().get().add(label);
+        fireTableCellUpdated(idx, 1);
     }
 
     public void removeLabel(int idx, ListItemValue label) throws ResourceException
@@ -289,6 +318,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         String labelId = label.entity().get().identity();
         getResource().task(task.task().get().identity()).removeLabel(labelId);
         task.labels().get().items().get().remove(label);
+        fireTableCellUpdated(idx, 1);
     }
 
     public void dropTask(int idx) throws ResourceException
@@ -297,15 +327,12 @@ public abstract class TaskTableModel<T extends TaskListDTO>
 
         TaskClientResource taskClientResource = getResource().task(task.task().get().identity());
         taskClientResource.drop();
+        tasks.remove(idx);
+        fireTableRowsDeleted(idx, idx);
     }
 
     public TaskDetailModel taskDetailModel(String id)
     {
         return taskModels.get(id);
-    }
-
-    public void completeTask(int idx)
-    {
-        setValueAt(true, idx, 0);
     }
 }

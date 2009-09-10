@@ -45,7 +45,7 @@ public class EventsResource
     @Override
     protected Representation get(Variant variant) throws ResourceException
     {
-        return new WriterRepresentation(MediaType.TEXT_PLAIN)
+        return new WriterRepresentation(MediaType.TEXT_PLAIN, 1000)
         {
             public void write(Writer writer) throws IOException
             {
@@ -55,6 +55,8 @@ public class EventsResource
                 {
                     synchronized (writer)
                     {
+                        writer.write("Event start");
+                        writer.flush();
                         writer.wait();
                     }
                 } catch (InterruptedException e)
@@ -77,7 +79,7 @@ public class EventsResource
 
         public void eventsAvailable(EventStore eventStore, EventSpecification specification)
         {
-            Iterable<DomainEvent> events = eventStore.events(specification, null, 100);
+            Iterable<DomainEvent> events = eventStore.events(specification, null, 100000);
 
             try
             {
