@@ -29,7 +29,9 @@
         <!-- Help contents -->
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
-            <artifactId>streamflow-help</artifactId>
+            <artifactId>streamflow-help-sv_gov</artifactId>
+            <version>${version.streamflow}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Qi4j -->

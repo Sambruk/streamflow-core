@@ -30,17 +30,16 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.value.ValueCompositeType;
-import org.qi4j.spi.util.json.JSONException;
 import org.qi4j.spi.util.json.JSONTokener;
+import org.qi4j.spi.value.ValueCompositeType;
 import org.restlet.Client;
 import org.restlet.Restlet;
-import org.restlet.representation.Representation;
-import org.restlet.representation.EmptyRepresentation;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -59,19 +58,14 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.UnsupportedLookAndFeelException;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -161,7 +155,7 @@ public class StreamFlowApplication
         this.accountsModel = accountsModel;
 
         // Help system
-        String helpHS = "help.hs";
+        String helpHS = "StreamFlowHelp.hs";
         ClassLoader cl = getClass().getClassLoader();
         HelpSet hs;
         try

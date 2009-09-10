@@ -4,27 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
-        <artifactId>streamflow</artifactId>
+        <artifactId>streamflow-help</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
     <groupId>se.streamsource.streamflow</groupId>
-    <artifactId>streamflow-help</artifactId>
+    <artifactId>streamflow-help-sv_gov</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>StreamFlow help</name>
-    <description>StreamFlow help</description>
+    <packaging>jar</packaging>
+    <name>StreamFlow help sv_gov</name>
+    <description>StreamFlow help sv_gov</description>
 
-     <modules> 
-        <module>sv_gov</module>
-    </modules>
-
-    <build>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <inherited>false</inherited>
-        </plugin>
-      </plugins>
-    </build>
 </project>
