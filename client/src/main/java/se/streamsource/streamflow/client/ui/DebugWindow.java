@@ -74,7 +74,6 @@ public class DebugWindow
         {
             eventModel.addRow(new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()});
         }
-        eventTable.scrollRowToVisible(eventModel.getRowCount());
     }
 
     @Action

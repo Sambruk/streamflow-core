@@ -92,17 +92,32 @@ public interface EventSourceService
         }
 
         // EventSource implementation
-        public void registerListener(EventSourceListener listener, EventSpecification specification)
+
+        public void registerListener(EventSourceListener listener, EventSpecification specification, boolean asynchronous)
         {
             if (specification == null)
                 specification = AllEventsSpecification.INSTANCE;
 
+            if (asynchronous)
+            {
+                listener = new AsynchronousListener(listener);
+            }
+
             listeners.put(listener, specification);
+        }
+
+        public void registerListener(EventSourceListener listener, EventSpecification specification)
+        {
+            registerListener(listener, specification, true);
         }
 
         public void unregisterListener(EventSourceListener subscriber)
         {
-            listeners.remove(subscriber);
+            EventSpecification removed = listeners.remove(subscriber);
+            if (removed == null)
+            {
+                listeners.remove(new AsynchronousListener(subscriber));
+            }
         }
 
         public void notifyEvent(DomainEvent event)
@@ -147,12 +162,8 @@ public interface EventSourceService
                                             final List<DomainEvent> listenerEvents = currentEvents;
                                             final EventSpecification currentSpecification = listener.getValue();
                                             final EventSourceListener esl = listener.getKey();
-                                            // Notify listener asynchronously
-                                            eventNotifier.execute(new Runnable()
-                                            {
-                                                public void run()
-                                                {
-                                                    esl.eventsAvailable(new EventStore()
+
+                                            esl.eventsAvailable(new EventStore()
                                                     {
                                                         public Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents)
                                                         {
@@ -162,8 +173,6 @@ public interface EventSourceService
                                                                 return eventStore.events(specification, startDate, maxEvents);
                                                         }
                                                     }, currentSpecification);
-                                                }
-                                            });
                                         }
                                     }
                                 }
@@ -177,6 +186,63 @@ public interface EventSourceService
                 uows.put(unitOfWork, events);
             }
             events.add(event);
+        }
+
+        class AsynchronousListener
+            implements EventSourceListener
+        {
+            private EventSourceListener listener;
+
+            AsynchronousListener(EventSourceListener listener)
+            {
+                this.listener = listener;
+            }
+
+            public EventSourceListener getListener()
+            {
+                return listener;
+            }
+
+            public void eventsAvailable(EventStore source, final EventSpecification currentSpecification)
+            {
+                final Iterable<DomainEvent> listenerEvents = source.events(currentSpecification, null, Integer.MAX_VALUE);
+
+                eventNotifier.execute(new Runnable()
+                {
+                    public void run()
+                    {
+                        listener.eventsAvailable(new EventStore()
+                        {
+                            public Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents)
+                            {
+                                if (specification == currentSpecification)
+                                    return listenerEvents;
+                                else // Delegate to store
+                                    return eventStore.events(specification, startDate, maxEvents);
+                            }
+                        }, currentSpecification);
+                    }
+                });
+            }
+
+            @Override
+            public boolean equals(Object o)
+            {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+
+                AsynchronousListener that = (AsynchronousListener) o;
+
+                if (!listener.equals(that.listener)) return false;
+
+                return true;
+            }
+
+            @Override
+            public int hashCode()
+            {
+                return listener.hashCode();
+            }
         }
     }
 }

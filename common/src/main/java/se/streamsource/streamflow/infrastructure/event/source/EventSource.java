@@ -25,7 +25,9 @@ import org.qi4j.api.common.Optional;
  */
 public interface EventSource
 {
-    void registerListener(EventSourceListener subscriber, @Optional EventSpecification specification);
+    void registerListener(EventSourceListener subscriber, EventSpecification specification, boolean asynchronous);
+
+    void registerListener(EventSourceListener subscriber, EventSpecification specification);
 
     void unregisterListener(EventSourceListener subscriber);
 }

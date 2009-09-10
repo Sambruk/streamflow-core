@@ -68,9 +68,16 @@ public interface ClientEventSourceService
         private Map<EventSourceListener, EventSpecification> listeners = new ConcurrentHashMap<EventSourceListener, EventSpecification>();
 
         // EventSource implementation
+
+        public void registerListener(EventSourceListener subscriber, EventSpecification specification, boolean asynchronous)
+        {
+            // Ignore asynch for now
+            listeners.put(subscriber, specification);
+        }
+
         public void registerListener(EventSourceListener listener, EventSpecification specification)
         {
-            listeners.put(listener, specification);
+            registerListener(listener, specification, false);
         }
 
         public void unregisterListener(EventSourceListener subscriber)

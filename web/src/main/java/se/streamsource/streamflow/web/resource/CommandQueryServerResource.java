@@ -173,7 +173,7 @@ public class CommandQueryServerResource
     {
         String operation = getOperation();
         UnitOfWork uow = null;
-        source.registerListener(this, new AllEventsSpecification());
+        source.registerListener(this, AllEventsSpecification.INSTANCE, false);
         try
         {
             Method method = getResourceMethod(operation);
@@ -195,10 +195,13 @@ public class CommandQueryServerResource
                         {
                             public void write(Writer writer) throws IOException
                             {
+                                int count = 0;
                                 for (DomainEvent event : events)
                                 {
                                     writer.write(event.toJSON()+"\n");
+                                    count++;
                                 }
+                                System.out.println("Returned "+count+" events");
                             }
                         };
                     }

@@ -49,7 +49,7 @@ public class EventsResource
         {
             public void write(Writer writer) throws IOException
             {
-                source.registerListener(new EventSubscriberWriter(writer), new AllEventsSpecification());
+                source.registerListener(new EventSubscriberWriter(writer), AllEventsSpecification.INSTANCE);
 
                 try
                 {

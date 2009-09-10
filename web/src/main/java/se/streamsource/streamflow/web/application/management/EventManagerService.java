@@ -60,7 +60,7 @@ public interface EventManagerService
             objectName = new ObjectName("StreamFlow:name=domainevents");
             server.registerMBean(mbean, objectName);
 
-            source.registerListener(this, new AllEventsSpecification());
+            source.registerListener(this, AllEventsSpecification.INSTANCE);
         }
 
         public void passivate() throws Exception
