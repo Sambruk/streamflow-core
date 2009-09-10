@@ -161,7 +161,7 @@ public class StreamFlowApplication
         this.accountsModel = accountsModel;
 
         // Help system
-        String helpHS = "api.hs";
+        String helpHS = "help.hs";
         ClassLoader cl = getClass().getClassLoader();
         HelpSet hs;
         try
@@ -367,7 +367,7 @@ public class StreamFlowApplication
     {
         if (hb != null)
         {
-            hb.setCurrentID("intro");
+            hb.setCurrentID("top");
             hb.setDisplayed(true);
         }
     }

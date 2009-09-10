@@ -64,6 +64,7 @@
         <module>tests</module>
         <module>webstart</module>
         <module>war</module>
+        <module>help</module>
     </modules>
 
     <scm>
@@ -280,6 +281,12 @@
                 <version>${version.streamflow}</version>
             </dependency>
 
+            <dependency>
+                <groupId>se.streamsource.streamflow</groupId>
+                <artifactId>streamflow-help</artifactId>
+                <version>${version.streamflow}</version>
+                <scope>runtime</scope>
+            </dependency>
             <!-- Qi4j -->
             <dependency>
                 <groupId>org.qi4j.core</groupId>

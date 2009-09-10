@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='ISO-8859-1'  ?>
+<!DOCTYPE toc
+  PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN"
+         "http://java.sun.com/products/javahelp/toc_2_0.dtd">
+<toc version="2.0">
+<tocitem text="StreamFlow" image="toplevelfolder">
+
+   <tocitem text="Introduction to StreamFlow Help" target="top"/>
+
+   <tocitem text="Menus">
+      <tocitem text="File Menu" target="menus.file"/>
+      <tocitem text="Edit Menu" target="menus.edit"/>
+      <tocitem text="Build Menu" target="menus.build"/>
+      <tocitem text="Debug Menu" target="menus.debug"/>
+      <tocitem text="Preferences Menu" target="menus.preferences"/>
+      <tocitem text="Windows Menu" target="menus.windows"/>
+      <tocitem text="Help Menu" target="menus.help"/>
+   </tocitem>
+
+</tocitem>
+</toc>

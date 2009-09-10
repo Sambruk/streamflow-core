@@ -26,6 +26,12 @@
             <artifactId>streamflow-common</artifactId>
         </dependency>
 
+        <!-- Help contents -->
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-help</artifactId>
+        </dependency>
+
         <!-- Qi4j -->
         <dependency>
             <groupId>org.qi4j.core</groupId>
@@ -105,14 +111,6 @@
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
             <version>2.0.02</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>streamflow.help</groupId>
-            <artifactId>streamflowhelp</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/src/main/lib/apidoc.jar</systemPath>
         </dependency>
 
         <!-- Build time dependency -->
