@@ -22,6 +22,8 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Restlet;
+import org.restlet.Client;
+import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.domain.individual.Account;
@@ -51,7 +53,7 @@ public class AccountModel
     ValueBuilderFactory vbf;
 
     @Service
-    Restlet client;
+    Uniform client;
 
     @Uses
     Account account;

@@ -63,6 +63,9 @@ public class ProjectsServerResource
             throw new ResourceException(e);
         }
 
+        if (description == null)
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
+
         String identity = getRequest().getAttributes().get("organization").toString();
 
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Project"));

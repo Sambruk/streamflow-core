@@ -28,6 +28,9 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.Client;
+import org.restlet.Uniform;
+import org.restlet.security.Verifier;
 import org.restlet.data.*;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
@@ -92,7 +95,7 @@ public interface AccountEntity
             description.describe(newAccountSettings.name().get());
         }
 
-        public void changePassword(Restlet client, ChangePasswordCommand changePassword) throws ResourceException
+        public void changePassword(Uniform client, ChangePasswordCommand changePassword) throws ResourceException
         {
             user(client).changePassword(changePassword);
 
@@ -103,7 +106,7 @@ public interface AccountEntity
         }
 
         // AccountRegistration
-        public void register(Restlet client) throws ResourceException
+        public void register(Uniform client) throws ResourceException
         {
             ValueBuilder<RegisterUserCommand> commandBuilder = vbf.newValueBuilder(RegisterUserCommand.class);
             commandBuilder.prototype().username().set(state.settings().get().userName().get());
@@ -126,21 +129,22 @@ public interface AccountEntity
         }
 
         // AccountConnection
-        public StreamFlowClientResource server(Restlet client)
+        public StreamFlowClientResource server(Uniform client)
         {
             AccountSettingsValue settings = accountSettings();
             Reference serverRef = new Reference(settings.server().get());
             serverRef.addSegment("streamflow").addSegment("v1").addSegment("");
 
             AuthenticationFilter filter = new AuthenticationFilter(uowf, account);
-            filter.setNext(client);
+            filter.setNext((Restlet) client);
 
             Context childContext = new Context();
-            childContext.setClientDispatcher(filter);
-            return obf.newObjectBuilder(StreamFlowClientResource.class).use(childContext, serverRef).newInstance();
+            StreamFlowClientResource flowClientResource = obf.newObjectBuilder(StreamFlowClientResource.class).use(childContext, serverRef).newInstance();
+            flowClientResource.setNext(filter);
+            return flowClientResource;
         }
 
-        public UserClientResource user(Restlet client)
+        public UserClientResource user(Uniform client)
         {
             return server(client).users().user(accountSettings().userName().get());
         }
@@ -148,9 +152,6 @@ public interface AccountEntity
 
     class AuthenticationFilter extends Filter
     {
-        private String username;
-        private String password;
-        private IndividualRepository repo;
         private UnitOfWorkFactory uowf;
         private AccountSettings account;
 
@@ -178,6 +179,36 @@ public interface AccountEntity
             request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, settings.userName().get(), settings.password().get()));
 
             return super.beforeHandle(request, response);
+        }
+    }
+    class AuthenticationVerifier extends Verifier
+    {
+        private UnitOfWorkFactory uowf;
+        private AccountSettings account;
+
+        public AuthenticationVerifier(UnitOfWorkFactory uowf, AccountSettings account)
+        {
+            this.uowf = uowf;
+            this.account = account;
+        }
+
+        public int verify(Request request, Response response)
+        {
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            AccountSettingsValue settings;
+            if (uow == null)
+            {
+                uow = uowf.newUnitOfWork();
+                settings = uow.get(account).accountSettings();
+                uow.discard();
+            } else
+            {
+                settings = uow.get(account).accountSettings();
+            }
+
+            request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, settings.userName().get(), settings.password().get()));
+
+            return Verifier.RESULT_VALID;
         }
     }
 }

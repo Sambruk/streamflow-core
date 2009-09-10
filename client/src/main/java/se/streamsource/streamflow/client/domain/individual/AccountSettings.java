@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.domain.individual;
 
 import org.restlet.Restlet;
+import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
@@ -27,5 +28,5 @@ public interface AccountSettings
 
     void updateSettings(AccountSettingsValue newAccountSettings);
 
-    void changePassword(Restlet client, ChangePasswordCommand changePassword) throws ResourceException;
+    void changePassword(Uniform client, ChangePasswordCommand changePassword) throws ResourceException;
 }

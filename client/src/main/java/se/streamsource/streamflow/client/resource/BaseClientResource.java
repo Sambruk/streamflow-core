@@ -20,6 +20,7 @@ import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.restlet.Context;
+import org.restlet.Uniform;
 import org.restlet.data.*;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.NodeSet;
@@ -164,7 +165,9 @@ public class BaseClientResource
 
     protected <T extends ClientResource> T getResource(Reference ref, Class<T> clientResource)
     {
-        return obf.newObjectBuilder(clientResource).use(getContext(), ref).newInstance();
+        T resource = obf.newObjectBuilder(clientResource).use(getContext(), ref).newInstance();
+        resource.setNext(getNext());
+        return resource;
     }
 
     /**
@@ -242,7 +245,8 @@ public class BaseClientResource
 
     protected <T extends ClientResource> T getResource(String ref, Class<T> resourceClass)
     {
-        return obf.newObjectBuilder(resourceClass).use(getContext(), new Reference(getReference(), ref)).newInstance();
+        Reference reference = new Reference(getReference(), ref);
+        return getResource(reference, resourceClass);
     }
 
     public DomRepresentation getResponseEntityAsDom()

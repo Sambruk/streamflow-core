@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.restlet.Restlet;
+import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
 
 /**
@@ -22,7 +22,7 @@ import org.restlet.resource.ResourceException;
  */
 public interface AccountRegistration
 {
-    void register(Restlet client) throws ResourceException;
+    void register(Uniform client) throws ResourceException;
 
     boolean isRegistered();
 }

@@ -26,6 +26,8 @@ import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Restlet;
+import org.restlet.Client;
+import org.restlet.Uniform;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.Individual;
@@ -56,7 +58,7 @@ public interface DummyDataService
         IndividualRepository individualRepository;
 
         @Service
-        Restlet client;
+        Uniform client;
 
         @Structure
         Application app;
