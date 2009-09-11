@@ -285,6 +285,12 @@ public class CommandQueryServerResource
         return post(representation, variant);
     }
 
+    @Override
+    protected Representation delete(Variant variant) throws ResourceException
+    {
+        return post(null, variant);
+    }
+
     public void eventsAvailable(EventStore source, EventSpecification specification)
     {
         events = source.events(specification, null, Integer.MAX_VALUE);
