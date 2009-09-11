@@ -52,8 +52,10 @@
                             <gen>false</gen>
                         </keystoreConfig>
                     </sign>
+<!--
                     <pack200>true</pack200>
                     <gzip>true</gzip>
+-->
                     <unsign>true</unsign>
                     <verbose>false</verbose>
                 </configuration>
