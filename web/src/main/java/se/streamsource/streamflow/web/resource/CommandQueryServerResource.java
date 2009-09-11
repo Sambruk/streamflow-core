@@ -39,7 +39,10 @@ import org.qi4j.api.value.ValueComposite;
 import org.qi4j.runtime.util.Annotations;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.util.json.JSONException;
+import org.qi4j.spi.util.json.JSONWriter;
 import org.qi4j.spi.value.ValueDescriptor;
+import org.qi4j.spi.value.ValueCompositeType;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
@@ -89,7 +92,7 @@ public class CommandQueryServerResource
     protected ValueBuilderFactory vbf;
 
     @Structure
-    protected Module module;
+    protected ModuleSPI module;
 
     @Service
     EventSource source;
@@ -196,10 +199,19 @@ public class CommandQueryServerResource
                             public void write(Writer writer) throws IOException
                             {
                                 int count = 0;
-                                for (DomainEvent event : events)
+                                ValueCompositeType type = module.valueDescriptor(DomainEvent.class.getName()).valueType();
+                                try
                                 {
-                                    writer.write(event.toJSON()+"\n");
-                                    count++;
+                                    JSONWriter json = new JSONWriter(writer).array();
+                                    for (DomainEvent event : events)
+                                    {
+                                        type.toJSON(event, json);
+                                        count++;
+                                    }
+                                    json.endArray();
+                                } catch (JSONException e)
+                                {
+                                    throw (IOException) new IOException("Could not write JSON").initCause(e);
                                 }
                                 System.out.println("Returned "+count+" events");
                             }

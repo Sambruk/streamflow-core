@@ -16,13 +16,17 @@ package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
  * JAVADOC
@@ -38,23 +42,29 @@ public interface Projects
     {
         @Aggregated
         ManyAssociation<Project> projects();
+
+        @Event
+        ProjectEntity projectCreated(DomainEvent event, String id, OrganizationalUnit ou);
+
+        @Event
+        void projectRemoved(DomainEvent event, Project project);
     }
 
-    class ProjectsMixin
-            implements Projects
+    abstract class ProjectsMixin
+            implements Projects, ProjectsState
     {
         @This
-        ProjectsState state;
-
-        @This
         OrganizationalUnit ou;
+
+        @Service
+        IdentityGenerator idgen;
 
         @Structure
         UnitOfWorkFactory uowf;
 
         public Project createProject(String name) throws DuplicateDescriptionException
         {
-            for (Project aProject : state.projects())
+            for (Project aProject : projects())
             {
                 if (aProject.hasDescription(name))
                 {
@@ -62,22 +72,35 @@ public interface Projects
                 }
             }
 
-            EntityBuilder<ProjectEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(ProjectEntity.class);
-            builder.instance().describe(name);
-            builder.instance().organizationalUnit().set(ou);
-            ProjectEntity project = builder.newInstance();
+            String id = idgen.generate(ProjectEntity.class);
 
-            state.projects().add(state.projects().count(), project);
+            ProjectEntity project = projectCreated(DomainEvent.CREATE, id, ou);
+            project.describe(name);
 
             return project;
         }
 
         public void removeProject(Project project)
         {
-            if (state.projects().remove(project))
-            {
-                project.removeEntity();
-            }
+            if (projects().contains(project))
+                projectRemoved(DomainEvent.CREATE, project);
+        }
+
+        public void projectRemoved(DomainEvent event, Project project)
+        {
+            projects().remove(project);
+            project.removeEntity();
+        }
+
+        public ProjectEntity projectCreated(DomainEvent event, String id, OrganizationalUnit ou)
+        {
+            EntityBuilder<ProjectEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(ProjectEntity.class, id);
+            builder.instance().organizationalUnit().set(ou);
+            ProjectEntity project = builder.newInstance();
+
+            projects().add(project);
+
+            return project;
         }
     }
 

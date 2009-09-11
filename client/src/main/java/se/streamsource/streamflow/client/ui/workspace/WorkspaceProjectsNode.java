@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
@@ -24,6 +25,7 @@ import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 

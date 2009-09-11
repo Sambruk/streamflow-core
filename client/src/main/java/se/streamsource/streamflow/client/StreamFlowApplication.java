@@ -53,6 +53,7 @@ import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.search.SearchWindow;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -78,6 +79,8 @@ import java.util.logging.Logger;
 public class StreamFlowApplication
         extends SingleFrameApplication
 {
+    public static ValueCompositeType DOMAIN_EVENT_TYPE;
+
     @Structure
     ObjectBuilderFactory obf;
 
@@ -116,8 +119,6 @@ public class StreamFlowApplication
 
     HelpBroker hb;
 
-    ValueCompositeType domainEventType;
-
     public StreamFlowApplication()
     {
         super();
@@ -130,7 +131,8 @@ public class StreamFlowApplication
                      @Uses AccountSelector accountSelector
     ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
-        domainEventType = module.valueDescriptor(DomainEvent.class.getName()).valueType();
+        DOMAIN_EVENT_TYPE = module.valueDescriptor(DomainEvent.class.getName()).valueType();
+        CommandQueryClientResource.DOMAIN_EVENT_TYPE = DOMAIN_EVENT_TYPE;
 
         try
         {
@@ -216,29 +218,6 @@ public class StreamFlowApplication
                     Logger.getLogger(LoggerCategories.PROGRESS).info(LoggerCategories.DONE);
 
                     Logger.getLogger(LoggerCategories.HTTP).info(request.getResourceRef().toString() + "->" + response.getStatus());
-
-                    if (response.getStatus().isSuccess() && (request.getMethod().equals(Method.POST) || request.getMethod().equals(Method.PUT)))
-                    {
-                        try
-                        {
-                            Representation entity = response.getEntity();
-                            if (entity != null && !(entity instanceof EmptyRepresentation))
-                            {
-                                BufferedReader reader = new BufferedReader(entity.getReader());
-                                String json;
-                                while ((json = reader.readLine()) != null)
-                                {
-                                    JSONTokener tokener = new JSONTokener(json);
-                                    DomainEvent domainEvent = (DomainEvent) domainEventType.fromJSON(tokener.nextValue(), module);
-                                    eventListener.notifyEvent(domainEvent);
-                                }
-                            }
-                        } catch (Exception e)
-                        {
-                            throw new OperationException(StreamFlowResources.could_not_process_events, e);
-                        }
-                    }
-
 
                     super.afterHandle(request, response);
                 }

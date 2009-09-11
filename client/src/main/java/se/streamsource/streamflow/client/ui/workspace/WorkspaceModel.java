@@ -15,8 +15,18 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Service;
 
 import javax.swing.tree.DefaultTreeModel;
+
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import java.util.logging.Logger;
 
 /**
  * JAVADOC
@@ -24,9 +34,24 @@ import javax.swing.tree.DefaultTreeModel;
 public class WorkspaceModel
         extends DefaultTreeModel
 {
-    public WorkspaceModel(@Uses WorkspaceNode node)
+    public WorkspaceModel(@Uses WorkspaceNode node, @Service EventSource source)
     {
         super(node);
+
+        source.registerListener(new EventSourceListener()
+        {
+            public void eventsAvailable(EventStore source, EventSpecification specification)
+            {
+                for (DomainEvent domainEvent : source.events(specification, null, Integer.MAX_VALUE))
+                {
+                    if (domainEvent.name().get().equals("projectRemoved"))
+                    {
+                        Logger.getLogger("workspace").info("Refresh project list");
+                        getRoot().getProjectsNode().refresh();
+                    }
+                }
+            }
+        }, AllEventsSpecification.INSTANCE);
     }
 
     @Override

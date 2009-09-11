@@ -51,9 +51,6 @@ public interface ClientEventSourceService
     class ClientEventSourceMixin
             implements EventSource, EventListener, Activatable, EventStore
     {
-        @Service
-        StreamFlowApplication application;
-
         public Reader reader;
         public Iterable<DomainEvent> events;
 

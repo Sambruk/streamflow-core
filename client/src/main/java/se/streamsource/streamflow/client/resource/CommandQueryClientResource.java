@@ -15,25 +15,37 @@
 package se.streamsource.streamflow.client.resource;
 
 import java.io.IOException;
+import java.io.BufferedReader;
 
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.structure.ModuleSPI;
+import org.qi4j.spi.util.json.JSONTokener;
+import org.qi4j.spi.util.json.JSONArray;
+import org.qi4j.spi.util.json.JSONObject;
 import org.qi4j.spi.property.PropertyTypeDescriptor;
 import org.qi4j.spi.value.ValueDescriptor;
+import org.qi4j.spi.value.ValueCompositeType;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.data.Method;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.StreamFlowResources;
 
 /**
  * Base class for client-side Command/Query resources
@@ -49,6 +61,11 @@ public class CommandQueryClientResource
 
     @Structure
     protected Module module;
+
+    @Service
+    protected EventListener eventListener;
+
+    public static ValueCompositeType DOMAIN_EVENT_TYPE;
 
     public CommandQueryClientResource(@Uses org.restlet.Context context, @Uses Reference reference)
     {
@@ -151,12 +168,12 @@ public class CommandQueryClientResource
         });
     }
 
-    protected Representation postCommand(String operation) throws ResourceException
+    protected void postCommand(String operation) throws ResourceException
     {
-        return postCommand(operation, null);
+        postCommand(operation, null);
     }
 
-    protected Representation postCommand(String operation, ValueComposite command) throws ResourceException
+    protected void postCommand(String operation, ValueComposite command) throws ResourceException
     {
         Representation commandRepresentation;
         if (command != null)
@@ -169,10 +186,40 @@ public class CommandQueryClientResource
         setReference(operationRef);
         try
         {
-            return post(commandRepresentation);
+            Representation events = post(commandRepresentation);
+            if (!getStatus().isSuccess())
+            {
+                throw new ResourceException(getStatus());
+            } else
+            {
+                processEvents(events);
+            }
         } finally
         {
             setReference(ref);
+        }
+    }
+
+    private void processEvents(Representation entity)
+    {
+        if (getResponse().getStatus().isSuccess() && (getRequest().getMethod().equals(Method.POST) || getRequest().getMethod().equals(Method.PUT)))
+        {
+            try
+            {
+                if (entity != null && !(entity instanceof EmptyRepresentation))
+                {
+                    JSONArray array = new JSONArray(entity.getText());
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        JSONObject event = array.getJSONObject(i);
+                        DomainEvent domainEvent = (DomainEvent) DOMAIN_EVENT_TYPE.fromJSON(event, module);
+                        eventListener.notifyEvent(domainEvent);
+                    }
+                }
+            } catch (Exception e)
+            {
+                throw new OperationException(StreamFlowResources.could_not_process_events, e);
+            }
         }
     }
 
@@ -200,10 +247,13 @@ public class CommandQueryClientResource
             {
                 try
                 {
-                    put(commandRepresentation);
+                    Representation events = put(commandRepresentation);
                     if (!getStatus().isSuccess())
                     {
                         throw new ResourceException(getStatus());
+                    } else
+                    {
+                        processEvents(events);
                     }
                     break;
                 } catch (ResourceException e)

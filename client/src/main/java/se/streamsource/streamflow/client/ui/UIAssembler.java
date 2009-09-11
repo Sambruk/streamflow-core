@@ -46,10 +46,8 @@ public class UIAssembler
         // SAF objects
         module.importServices(StreamFlowApplication.class, ApplicationContext.class, AccountSelector.class).visibleIn(layer);
 
-        module.addValues(DomainEvent.class).visibleIn(layer);
-
         module.addServices(DummyDataService.class).instantiateOnStartup();
-        module.addServices(ApplicationInitializationService.class, ClientEventSourceService.class).instantiateOnStartup();
+        module.addServices(ApplicationInitializationService.class).instantiateOnStartup();
 
         UIAssemblers.addDialogs(module, NameDialog.class, SelectUsersAndGroupsDialog.class);
 

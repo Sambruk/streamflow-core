@@ -128,7 +128,8 @@ public class BaseClientResource
 
         Representation rep = super.get(mediaType);
 
-        setTag(rep.getTag());
+        if (rep != null && getResponse().getStatus().isSuccess())
+            setTag(rep.getTag());
 
         return rep;
     }

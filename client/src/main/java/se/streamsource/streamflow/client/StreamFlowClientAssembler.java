@@ -22,6 +22,7 @@ import se.streamsource.streamflow.client.infrastructure.domain.ClientEntityStore
 import se.streamsource.streamflow.client.infrastructure.ui.UIInfrastructureAssembler;
 import se.streamsource.streamflow.client.resource.ClientResourceAssembler;
 import se.streamsource.streamflow.client.ui.UIAssembler;
+import se.streamsource.streamflow.client.ui.events.ClientEventSourceAssembler;
 import se.streamsource.streamflow.client.ui.administration.AdministrationAssembler;
 import se.streamsource.streamflow.client.ui.menu.MenuAssembler;
 import se.streamsource.streamflow.client.ui.overview.OverviewAssembler;
@@ -96,6 +97,7 @@ public class StreamFlowClientAssembler
     {
         new ConfigurationAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Configuration"));
         new ClientEntityStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Client EntityStore"));
+        new ClientEventSourceAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Client EventSource"));
     }
 
 }
