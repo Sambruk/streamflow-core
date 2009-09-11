@@ -30,6 +30,7 @@ import se.streamsource.streamflow.web.domain.project.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.io.IOException;
+import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -59,10 +60,10 @@ public class RolesServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
 
         Roles roles = uow.get(Roles.class, identity);
-        checkPermission(roles);
 
         try
         {
+            checkPermission(roles);
             roles.createRole(entity.getText());
             uow.complete();
 
@@ -79,6 +80,10 @@ public class RolesServerResource
         } catch (UnitOfWorkCompletionException e)
         {
             uow.discard();
+        } catch(AccessControlException ae)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
         return null;
     }

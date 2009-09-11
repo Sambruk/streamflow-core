@@ -30,6 +30,7 @@ import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.io.IOException;
+import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -71,10 +72,10 @@ public class ProjectsServerResource
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Project"));
 
         Projects projects = uow.get(Projects.class, identity);
-        checkPermission(projects);
 
         try
         {
+            checkPermission(projects);
             projects.createProject(description);
             uow.complete();
         } catch (DuplicateDescriptionException e)
@@ -83,7 +84,12 @@ public class ProjectsServerResource
             throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
         } catch (UnitOfWorkCompletionException e)
         {
+            // what about http error code?
             uow.discard();
+        } catch (AccessControlException ae)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
         return null;
     }

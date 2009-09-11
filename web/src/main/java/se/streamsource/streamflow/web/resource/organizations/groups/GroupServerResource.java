@@ -28,6 +28,8 @@ import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
+import java.security.AccessControlException;
+
 /**
  * Mapped to:
  * /organizations/{organization}/groups/{group}
@@ -66,7 +68,14 @@ public class GroupServerResource
         String org = getRequest().getAttributes().get("organization").toString();
 
         Groups groups = uow.get(Groups.class, org);
-        checkPermission(groups);
+        try
+        {
+            checkPermission(groups);
+        } catch(AccessControlException ae)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+        }
 
         String identity = getRequest().getAttributes().get("group").toString();
         GroupEntity group = uow.get(GroupEntity.class, identity);

@@ -33,6 +33,8 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.project.*;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
+import java.security.AccessControlException;
+
 /**
  * Mapped to:
  * /organizations/{organization}/projects/{project}
@@ -101,15 +103,19 @@ public class ProjectServerResource
         String identity = getRequest().getAttributes().get("project").toString();
         ProjectEntity projectEntity = uow.get(ProjectEntity.class, identity);
 
-        checkPermission(projects);
-        projects.removeProject(projectEntity);
 
         try
         {
+            checkPermission(projects);
+            projects.removeProject(projectEntity);
             uow.complete();
         } catch (UnitOfWorkCompletionException e)
         {
             throw new ResourceException(e);
+        } catch(AccessControlException ae)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
 
         return null;

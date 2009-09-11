@@ -30,6 +30,7 @@ import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.io.IOException;
+import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -70,10 +71,10 @@ public class GroupsServerResource
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("New Group"));
 
         Groups groups = uow.get(Groups.class, identity);
-        checkPermission(groups);
 
         try
         {
+            checkPermission(groups);
             groups.createGroup(name);
             uow.complete();
         } catch (DuplicateDescriptionException e)
@@ -83,6 +84,10 @@ public class GroupsServerResource
         } catch (UnitOfWorkCompletionException e)
         {
             uow.discard();
+        } catch(AccessControlException ae)
+        {
+            uow.discard();
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
 
         return null;
