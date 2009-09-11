@@ -28,6 +28,8 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
 import java.io.IOException;
 
 /**
@@ -82,6 +84,22 @@ public class TaskContactsView
         add(toolbar, BorderLayout.SOUTH);
 
         contacts.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+
+        setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
+        setFocusCycleRoot(true);
+        setFocusable(true);
+        addFocusListener(new FocusListener()
+        {
+            public void focusGained(FocusEvent e)
+            {
+                Component defaultComp = getFocusTraversalPolicy().getDefaultComponent(contactView);
+                defaultComp.requestFocusInWindow();
+            }
+
+            public void focusLost(FocusEvent e)
+            {
+            }
+        });
     }
 
     @org.jdesktop.application.Action

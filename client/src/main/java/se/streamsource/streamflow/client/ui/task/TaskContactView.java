@@ -34,6 +34,8 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -54,6 +56,7 @@ public class TaskContactView
     public ValueBuilder<ContactValue> valueBuilder;
     private CardLayout layout = new CardLayout();
     JTextField defaultFocusField;
+    public JPanel form;
 
     public TaskContactView(@Service ApplicationContext appContext)
     {
@@ -63,7 +66,7 @@ public class TaskContactView
         FormLayout formLayout = new FormLayout(
                 "200dlu",
                 "");
-        JPanel form = new JPanel();
+        form = new JPanel();
         JScrollPane scrollPane = new JScrollPane(form);
         DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
         builder.setDefaultDialogBorder();
@@ -102,6 +105,7 @@ public class TaskContactView
 
         add(new JPanel(), "EMPTY");
         add(scrollPane, "CONTACT");
+
     }
 
 
@@ -182,12 +186,5 @@ public class TaskContactView
                 throw new OperationException(WorkspaceResources.could_not_change_email_address, e);
             }
         }
-    }
-
-    @Override
-    public void requestFocus()
-    {
-        super.requestFocus();
-        defaultFocusField.requestFocus();
     }
 }

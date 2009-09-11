@@ -74,7 +74,7 @@ import java.util.logging.Logger;
  */
 @ProxyActions({
         "createTask", "completeTasks", "assignTasksToMe", "markTasksAsRead", "markTasksAsUnread", "dropTasks", "forwardTasks", "delegateTasks", // Task related proxy actions 
-        "find"})
+        "find", "selectTree", "selectTable", "selectDetails"})
 public class StreamFlowApplication
         extends SingleFrameApplication
 {
@@ -257,7 +257,8 @@ public class StreamFlowApplication
             JXErrorPane.showDialog(getMainFrame(), new ErrorInfo(i18n.text(StreamFlowResources.startup_error), e.getMessage(), null, "#error", e, Level.SEVERE, Collections.<String, String>emptyMap()));
             shutdown();
         }
-        System.out.println("Startup done");
+
+        Logger.getLogger("streamflow").info("Startup done");
 
     }
 

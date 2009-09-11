@@ -39,7 +39,9 @@ public class BindingFormBuilder
                 {
                     public Component newField()
                     {
-                        return new JLabel();
+                        JLabel jLabel = new JLabel();
+                        jLabel.setFocusable(false);
+                        return jLabel;
                     }
                 },
         TEXTFIELD
@@ -124,6 +126,7 @@ public class BindingFormBuilder
         String resource = getResource(resourceKey, args);
 
         JLabel label = formBuilder.append(resource);
+        label.setFocusable(false);
         formBuilder.nextLine();
         stateBinderIn.bind(component, property);
         formBuilder.append(component);

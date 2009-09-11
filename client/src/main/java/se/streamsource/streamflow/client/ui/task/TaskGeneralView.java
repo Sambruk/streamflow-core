@@ -32,6 +32,11 @@ import javax.swing.*;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
+import java.awt.Component;
+import java.awt.ContainerOrderFocusTraversalPolicy;
+import java.awt.DefaultFocusTraversalPolicy;
 
 /**
  * JAVADOC
@@ -53,6 +58,7 @@ public class TaskGeneralView
     public JXDatePicker dueOnField;
     private JToggleButton editButton;
     private JLabel issueLabel;
+    public JPanel form;
 
     public TaskGeneralView(@Service ApplicationContext appContext)
     {
@@ -60,7 +66,8 @@ public class TaskGeneralView
         FormLayout layout = new FormLayout(
                 "200dlu",
                 "");
-        JPanel form = new JPanel();
+        form = new JPanel();
+        form.setFocusable(false);
         DefaultFormBuilder builder = new DefaultFormBuilder(layout, form);
         builder.setDefaultDialogBorder();
 
@@ -82,9 +89,22 @@ public class TaskGeneralView
 
         taskBinder.addObserver(this);
 
-        form.setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
-        form.setFocusCycleRoot(true);
-        form.setFocusable(true);
+        setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
+        setFocusCycleRoot(true);
+        setFocusable(true);
+
+        addFocusListener(new FocusListener()
+        {
+            public void focusGained(FocusEvent e)
+            {
+                Component defaultComp = getFocusTraversalPolicy().getDefaultComponent(form);
+                defaultComp.requestFocusInWindow();
+            }
+
+            public void focusLost(FocusEvent e)
+            {
+            }
+        });
     }
 
     public void setModel(TaskGeneralModel taskGeneralModel)

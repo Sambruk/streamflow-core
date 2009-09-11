@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.AccountSelector;
+import se.streamsource.streamflow.client.ui.task.TaskTableView;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -70,8 +71,9 @@ public class WorkspaceView
 
         JPanel workspace = new JPanel(new BorderLayout());
         add(workspace, "workspace");
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTree");
-        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTable");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK+Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTree");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK+Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTable");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK+Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectDetails");
         setActionMap(context.getActionMap(this));
 
 
@@ -480,6 +482,29 @@ public class WorkspaceView
     {
         Component right = pane.getRightComponent();
         if (right != null)
-            right.requestFocusInWindow();
+        {
+            if (right instanceof TaskTableView)
+            {
+                TaskTableView ttv = (TaskTableView) right;
+                ttv.getTaskTable().requestFocusInWindow();
+            } else
+                right.requestFocusInWindow();
+
+        }
+    }
+
+    @Action
+    public void selectDetails()
+    {
+        Component right = pane.getRightComponent();
+        if (right != null)
+        {
+            if (right instanceof TaskTableView)
+            {
+                TaskTableView ttv = (TaskTableView) right;
+                ttv.getTaskDetail().requestFocusInWindow();
+            } else
+                right.requestFocusInWindow();
+        }
     }
 }

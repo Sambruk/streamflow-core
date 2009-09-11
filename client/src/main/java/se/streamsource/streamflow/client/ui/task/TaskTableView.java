@@ -49,9 +49,12 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
 /**
  * Base class for all views of task lists.
@@ -71,7 +74,6 @@ public abstract class TaskTableView
     protected JXTable taskTable;
     protected TaskTableModel model;
     private TaskDetailView detailsView;
-    private JPanel noTaskSelected;
 
     public void init(@Service ApplicationContext context,
                      @Uses final TaskTableModel model,
@@ -85,10 +87,6 @@ public abstract class TaskTableView
         final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setOneTouchExpandable(true);
         add(splitPane, BorderLayout.CENTER);
-
-        noTaskSelected = new JPanel();
-        noTaskSelected.setMaximumSize(new Dimension(0, 0));
-        noTaskSelected.setOpaque(true);
 
         ActionMap am = context.getActionMap(TaskTableView.class, this);
         setActionMap(am);
@@ -107,7 +105,13 @@ public abstract class TaskTableView
 
         // Table
         taskTable = new JXTable(model);
-        taskTable.setActionMap(am);
+        taskTable.getActionMap().getParent().setParent(am);
+        taskTable.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+          KeyboardFocusManager.getCurrentKeyboardFocusManager()
+            .getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
+        taskTable.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
+          KeyboardFocusManager.getCurrentKeyboardFocusManager()
+            .getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
 
         JScrollPane taskScrollPane = new JScrollPane(taskTable);
 
@@ -122,7 +126,7 @@ public abstract class TaskTableView
         taskTable.setAutoCreateColumnsFromModel(false);
 
         splitPane.setTopComponent(taskScrollPane);
-        splitPane.setBottomComponent(noTaskSelected);
+        splitPane.setBottomComponent(detailsView);
         splitPane.setResizeWeight(0.3D);
 
         JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
@@ -188,8 +192,6 @@ public abstract class TaskTableView
                         if (taskTable.getSelectionModel().isSelectionEmpty())
                         {
                             detailsView.setTaskModel(null);
-                            splitPane.setBottomComponent(noTaskSelected);
-//                            splitPane.setDividerLocation(1D);
                         } else
                         {
                             TaskDTO dto = null;
@@ -200,10 +202,6 @@ public abstract class TaskTableView
                             {
                                 // Ignore
                                 return;
-                            }
-                            if (splitPane.getBottomComponent() != detailsView)
-                            {
-                                splitPane.setBottomComponent(detailsView);
                             }
                             TaskDetailModel taskModel = model.taskDetailModel(dto.task().get().identity());
                             taskModel.general().addObserver(descriptionUpdater);
@@ -250,6 +248,11 @@ public abstract class TaskTableView
         return taskTable;
     }
 
+    public TaskDetailView getTaskDetail()
+    {
+        return detailsView;
+    }
+
     public TaskDTO getSelectedTask()
     {
         int selectedRow = getTaskTable().getSelectedRow();
@@ -284,7 +287,13 @@ public abstract class TaskTableView
         table.scrollRowToVisible(index);
 
         detailsView.setSelectedIndex(0);
-        detailsView.getComponentAt(0).requestFocus();
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                detailsView.getSelectedComponent().requestFocusInWindow();
+            }
+        });
     }
 
     @org.jdesktop.application.Action()

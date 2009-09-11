@@ -30,9 +30,6 @@ public class ViewMenu
 {
     protected void init()
     {
-        menu("viewMenu",
-                "selectOutline",
-                "selectTaskTable",
-                "selectTaskDetails");
+        menu("viewMenu");
     }
 }

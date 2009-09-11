@@ -25,6 +25,9 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
+import java.awt.KeyboardFocusManager;
 
 /**
  * JAVADOC
@@ -64,6 +67,23 @@ public class TaskDetailView
         setMnemonicAt(4, KeyEvent.VK_5);
 
         setTaskModel(null);
+
+        setFocusable(true);
+//        setFocusCycleRoot(true);
+
+/*
+        addFocusListener(new FocusListener()
+        {
+            public void focusGained(FocusEvent e)
+            {
+                getSelectedComponent().requestFocusInWindow();
+            }
+
+            public void focusLost(FocusEvent e)
+            {
+            }
+        });
+*/
     }
 
     public void setTaskModel(TaskDetailModel model)
