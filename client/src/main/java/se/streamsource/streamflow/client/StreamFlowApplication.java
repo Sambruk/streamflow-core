@@ -30,20 +30,18 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.util.json.JSONTokener;
 import org.qi4j.spi.value.ValueCompositeType;
 import org.restlet.Client;
 import org.restlet.Restlet;
-import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.JavaHelpService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
@@ -53,17 +51,12 @@ import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.search.SearchWindow;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.help.HelpBroker;
-import javax.help.HelpSet;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
@@ -102,6 +95,9 @@ public class StreamFlowApplication
     @Service
     EventListener eventListener;
 
+    @Service
+    JavaHelpService javaHelp;
+
     AccountsModel accountsModel;
 
     JLabel label;
@@ -116,8 +112,6 @@ public class StreamFlowApplication
     DebugWindow debugWindow;
 
     AdministrationWindow administrationWindow;
-
-    HelpBroker hb;
 
     public StreamFlowApplication()
     {
@@ -154,25 +148,14 @@ public class StreamFlowApplication
         this.debugWindow = obf.newObjectBuilder(DebugWindow.class).newInstance();
         setMainFrame(workspaceWindow.getFrame());
 
+        // Add context sensitive help
+        javaHelp.enableHelp(workspaceWindow.getRootPane(),"workspace");
+        javaHelp.enableHelp(overviewWindow.getRootPane(), "overview");
+        javaHelp.enableHelp(searchWindow.getRootPane(), "search");
+        javaHelp.enableHelp(administrationWindow.getRootPane(), "administration");
+        javaHelp.enableHelp(debugWindow.getRootPane(), "debug");
+        
         this.accountsModel = accountsModel;
-
-        // Help system
-        String helpHS = "StreamFlowHelp.hs";
-        ClassLoader cl = getClass().getClassLoader();
-        HelpSet hs;
-        try
-        {
-            URL hsURL = HelpSet.findHelpSet(cl, helpHS);
-            hs = new HelpSet(null, hsURL);
-
-            // Create a HelpBroker object:
-            hb = hs.createHelpBroker();
-        } catch (Exception ee)
-        {
-            // Say what the exception really is
-            System.out.println("HelpSet " + ee.getMessage());
-            System.out.println("HelpSet " + helpHS + " not found");
-        }
 
         showWorkspaceWindow();
 
@@ -250,6 +233,7 @@ public class StreamFlowApplication
     public void manageAccounts()
     {
         AccountsDialog dialog = accountsDialog.use(accountsModel).newInstance();
+        javaHelp.enableHelp(dialog.getRootPane(), "account");
         dialogs.showOkDialog(getMainFrame(), dialog);
     }
 
@@ -339,11 +323,8 @@ public class StreamFlowApplication
     @Action
     public void showHelp(ActionEvent event)
     {
-        if (hb != null)
-        {
-            hb.setCurrentID("top");
-            hb.setDisplayed(true);
-        }
+        javaHelp.getHelpBroker().setCurrentID("top");
+        javaHelp.getHelpBroker().setDisplayed(true);
     }
 
     @Override

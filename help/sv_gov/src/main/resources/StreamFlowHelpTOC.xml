@@ -7,15 +7,34 @@
 
    <tocitem text="Introduktion" target="intro"/>
 
-   <tocitem text="Menus">
-      <tocitem text="File Menu" target="menus.file"/>
-      <tocitem text="Edit Menu" target="menus.edit"/>
-      <tocitem text="Build Menu" target="menus.build"/>
-      <tocitem text="Debug Menu" target="menus.debug"/>
-      <tocitem text="Preferences Menu" target="menus.preferences"/>
-      <tocitem text="Windows Menu" target="menus.windows"/>
-      <tocitem text="Help Menu" target="menus.help"/>
+   <tocitem text="Arbetsyta" target="workspace">
+
    </tocitem>
 
+   <tocitem text="Översikt" target="overview">
+
+   </tocitem>
+
+   <tocitem text="Sök"  target="search">
+
+   </tocitem>
+
+    <tocitem text="Administration" target="administration">
+
+    </tocitem>
+
+    <tocitem text="Debug" target="debug">
+
+    </tocitem>
+
+    <tocitem text="Konton" target="account">
+
+    </tocitem>
+
+    <tocitem text="Menu" target="menu">
+        <tocitem text="Fil" target="menu.file"/>
+        <tocitem text="Vy"  target="menu.view"/>
+    </tocitem>
+   
 </tocitem>
 </toc>

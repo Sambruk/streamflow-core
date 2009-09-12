@@ -7,4 +7,11 @@
 	<mapID target="toplevelfolder" url="images/toplevel.gif" />
 	<mapID target="top" url="streamflow.html" />
     <mapID target="intro" url="intro.html"/>
+    <mapID target="workspace" url="workspace/workspace.html"/>
+    <mapID target="overview" url="overview/overview.html"/>
+    <mapID target="search" url="search/search.html"/>
+    <mapID target="administration" url="administration/administration.html"/>
+    <mapID target="debug" url="debug/debug.html"/>
+    <mapID target="account" url="account/account.html"/>
+    <mapID target="menu" url="menu/menu.html"/>
 </map>
