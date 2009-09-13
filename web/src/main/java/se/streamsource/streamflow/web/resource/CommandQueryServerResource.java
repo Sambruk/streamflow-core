@@ -14,21 +14,13 @@
 
 package se.streamsource.streamflow.web.resource;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.logging.Logger;
-
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
-import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
@@ -38,34 +30,30 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.runtime.util.Annotations;
 import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.util.json.JSONException;
 import org.qi4j.spi.util.json.JSONWriter;
-import org.qi4j.spi.value.ValueDescriptor;
 import org.qi4j.spi.value.ValueCompositeType;
-import org.qi4j.spi.structure.ModuleSPI;
+import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.representation.*;
 import org.restlet.resource.ResourceException;
-
-import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.logging.Logger;
-import java.security.AccessControlException;
 
 /**
  * Base class for command/query resources.
@@ -140,7 +128,12 @@ public class CommandQueryServerResource
 
     protected String getOperation()
     {
-        return getRequest().getResourceRef().getQueryAsForm().getFirstValue("operation");
+        String operation = getRequest().getResourceRef().getQueryAsForm().getFirstValue("operation");
+        if (operation == null)
+        {
+            operation = getRequest().getMethod().getName().toLowerCase() + "Operation";
+        }
+        return operation;
     }
 
     protected Representation listOperations() throws ResourceException
@@ -169,6 +162,12 @@ public class CommandQueryServerResource
 		{
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 		}
+    }
+
+    @Override
+    protected Representation delete(Variant variant) throws ResourceException
+    {
+        return post(null, variant);
     }
 
     @Override
@@ -285,12 +284,6 @@ public class CommandQueryServerResource
         return post(representation, variant);
     }
 
-    @Override
-    protected Representation delete(Variant variant) throws ResourceException
-    {
-        return post(null, variant);
-    }
-
     public void eventsAvailable(EventStore source, EventSpecification specification)
     {
         events = source.events(specification, null, Integer.MAX_VALUE);
@@ -327,6 +320,11 @@ public class CommandQueryServerResource
                 Object command = vbf.newValueFromJSON(commandType, json);
 
                 return new Object[]{command};
+            } else if (getRequest().getEntity().getMediaType().equals(MediaType.TEXT_PLAIN))
+            {
+                ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+                builder.prototype().string().set(getRequest().getEntityAsText());
+                return new Object[]{builder.newInstance()};
             } else
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format");
         } else

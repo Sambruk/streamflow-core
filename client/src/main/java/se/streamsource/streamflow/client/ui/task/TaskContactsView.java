@@ -93,7 +93,10 @@ public class TaskContactsView
             public void focusGained(FocusEvent e)
             {
                 Component defaultComp = getFocusTraversalPolicy().getDefaultComponent(contactView);
-                defaultComp.requestFocusInWindow();
+                if (defaultComp != null)
+                {
+                    defaultComp.requestFocusInWindow();    
+                }
             }
 
             public void focusLost(FocusEvent e)

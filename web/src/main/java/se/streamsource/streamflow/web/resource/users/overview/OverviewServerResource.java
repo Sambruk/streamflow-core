@@ -17,12 +17,13 @@ package se.streamsource.streamflow.web.resource.users.overview;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to /user/{userid}/overview
  */
 public class OverviewServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
     @Override
     protected Representation get() throws ResourceException

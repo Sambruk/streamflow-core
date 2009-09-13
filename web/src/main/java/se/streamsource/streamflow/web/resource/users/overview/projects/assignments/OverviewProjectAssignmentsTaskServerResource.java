@@ -17,8 +17,6 @@ package se.streamsource.streamflow.web.resource.users.overview.projects.assignme
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -50,8 +48,7 @@ public class OverviewProjectAssignmentsTaskServerResource
         describable.describe(stringValue.string().get());
     }
 
-    @Override
-    protected Representation delete(Variant variant) throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         try
         {
@@ -72,6 +69,5 @@ public class OverviewProjectAssignmentsTaskServerResource
         {
             e.printStackTrace();
         }
-        return null;
     }
 }

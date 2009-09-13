@@ -27,13 +27,13 @@ import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to /organizations/{id}.
  */
 public class OrganizationsServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
     @Structure
     UnitOfWorkFactory uowf;

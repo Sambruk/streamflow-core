@@ -19,17 +19,15 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
-import java.io.IOException;
 import java.security.AccessControlException;
 
 /**
@@ -52,19 +50,11 @@ public class ProjectsServerResource
         return builder.newList();
     }
 
-    @Override
-    protected Representation post(Representation entity, Variant variant) throws ResourceException
-    {
-        String description = null;
-        try
-        {
-            description = entity.getText();
-        } catch (IOException e)
-        {
-            throw new ResourceException(e);
-        }
 
-        if (description == null)
+
+    public void postOperation(StringDTO name) throws ResourceException
+    {
+        if (name == null)
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
 
         String identity = getRequest().getAttributes().get("organization").toString();
@@ -76,7 +66,7 @@ public class ProjectsServerResource
         try
         {
             checkPermission(projects);
-            projects.createProject(description);
+            projects.createProject(name.string().get());
             uow.complete();
         } catch (DuplicateDescriptionException e)
         {
@@ -91,6 +81,5 @@ public class ProjectsServerResource
             uow.discard();
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
-        return null;
     }
 }

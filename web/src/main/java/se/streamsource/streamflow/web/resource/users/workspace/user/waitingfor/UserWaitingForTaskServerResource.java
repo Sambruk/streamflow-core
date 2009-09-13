@@ -17,8 +17,6 @@ package se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Task;
@@ -54,8 +52,7 @@ public class UserWaitingForTaskServerResource
         waitingFor.markWaitingForAsRead(task);
     }
 
-    @Override
-    protected Representation delete(Variant variant) throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         try
         {
@@ -68,6 +65,5 @@ public class UserWaitingForTaskServerResource
         {
             e.printStackTrace();
         }
-        return null;
     }
 }

@@ -17,10 +17,8 @@ package se.streamsource.streamflow.web.resource.organizations.groups;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.group.Group;
@@ -59,9 +57,7 @@ public class GroupServerResource
         describable.describe(newName);
     }
 
-    // TODO before deleting look through all projects and groups containing the group
-    @Override
-    protected Representation delete(Variant variant) throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete group"));
 
@@ -89,8 +85,6 @@ public class GroupServerResource
         {
             throw new ResourceException(e);
         }
-
-        return null;
     }
 
 }

@@ -24,8 +24,6 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -57,8 +55,7 @@ public class TaskContactServerResource
         getVariants().put(Method.ALL, MediaType.APPLICATION_JSON);
     }
 
-    @Override
-    protected Representation delete(Variant variant) throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task contact"));
 
@@ -74,44 +71,7 @@ public class TaskContactServerResource
         {
             uow.discard();
         }
-        return null;
     }
-
-    /*
-    @Override
-    protected Representation put(Representation representation, Variant variant) throws ResourceException
-    {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Update task contacts"));
-        try
-        {
-            ContactValue contact = vbf.newValueFromJSON(ContactValue.class, representation.getText());
-
-            TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
-            String taskContactIndex = getRequest().getAttributes().get("index").toString();
-
-            ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
-            contactBuilder.prototype().company().set(contact.company().get());
-            contactBuilder.prototype().name().set(contact.name().get());
-            contactBuilder.prototype().isCompany().set(contact.isCompany().get());
-            contactBuilder.prototype().note().set(contact.note().get());
-            contactBuilder.prototype().picture().set(contact.picture().get());
-
-            contactBuilder.prototype().addresses().set(contact.addresses().get());
-            contactBuilder.prototype().emailAddresses().set(contact.emailAddresses().get());
-            contactBuilder.prototype().phoneNumbers().set(contact.phoneNumbers().get());
-            ContactValue contactValue = contactBuilder.newInstance();
-
-            task.updateContact(Integer.parseInt(taskContactIndex), contactValue);
-
-            uow.complete();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            uow.discard();
-        }
-
-        return null;
-    }*/
 
     public void changeName(StringDTO name)
     {

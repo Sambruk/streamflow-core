@@ -18,11 +18,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;
 
@@ -31,11 +30,10 @@ import java.security.AccessControlException;
  * /organizations/{organization}/groups/{group}/participants/{participant}
  */
 public class ParticipantServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
     //TODO do a check if the orgunit actually contains the project
-    @Override
-    protected Representation put(Representation representation) throws ResourceException
+    public void putOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Add participant"));
 
@@ -63,12 +61,9 @@ public class ParticipantServerResource
             uow.discard();
             throw new ResourceException(e);
         }
-
-        return null;
     }
 
-    @Override
-    protected Representation delete() throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Remove participant"));
 
@@ -96,9 +91,6 @@ public class ParticipantServerResource
             uow.discard();
             throw new ResourceException(e);
         }
-
-        return null;
-
     }
 
 }

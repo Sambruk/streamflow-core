@@ -18,11 +18,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;
 
@@ -31,10 +30,9 @@ import java.security.AccessControlException;
  * /organizations/{organization}/projects/{project}/members/{member}
  */
 public class MemberServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
-    @Override
-    protected Representation put(Representation representation) throws ResourceException
+    public void putOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Add member"));
 
@@ -62,12 +60,9 @@ public class MemberServerResource
             uow.discard();
             throw new ResourceException(e);
         }
-
-        return null;
     }
 
-    @Override
-    protected Representation delete() throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Remove member"));
 
@@ -94,7 +89,5 @@ public class MemberServerResource
             uow.discard();
             throw new ResourceException(e);
         }
-
-        return null;
     }
 }

@@ -14,18 +14,15 @@
 
 package se.streamsource.streamflow.web.resource.organizations.projects.members.roles;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
-
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.restlet.data.Status;
-
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.Role;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;
 
@@ -34,10 +31,9 @@ import java.security.AccessControlException;
  * /organizations/{organization}/projects/{project}/members/{member}/roles/{role}
  */
 public class MemberRoleServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
-    @Override
-    protected Representation put(Representation representation) throws ResourceException
+    public void putOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Add role"));
         String member = getRequest().getAttributes().get("member").toString();
@@ -68,12 +64,9 @@ public class MemberRoleServerResource
             uow.discard();
             throw new ResourceException(e);
         }
-
-        return null;
     }
 
-    @Override
-    protected Representation delete() throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Remove role"));
         String member = getRequest().getAttributes().get("member").toString();
@@ -104,6 +97,5 @@ public class MemberRoleServerResource
             uow.discard();
             throw new ResourceException(e);
         }
-        return null;
     }
 }

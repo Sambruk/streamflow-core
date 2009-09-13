@@ -19,17 +19,15 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.project.Role;
 import se.streamsource.streamflow.web.domain.project.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
-import java.io.IOException;
 import java.security.AccessControlException;
 
 /**
@@ -52,8 +50,7 @@ public class RolesServerResource
         return builder.newList();
     }
 
-    @Override
-    protected Representation post(Representation entity, Variant variant) throws ResourceException
+    public void postOperation(StringDTO name) throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Role"));
 
@@ -64,13 +61,8 @@ public class RolesServerResource
         try
         {
             checkPermission(roles);
-            roles.createRole(entity.getText());
+            roles.createRole(name.string().get());
             uow.complete();
-
-        } catch (IOException ioe)
-        {
-            uow.discard();
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, ioe.getMessage());
 
         } catch (DuplicateDescriptionException e)
         {
@@ -85,7 +77,6 @@ public class RolesServerResource
             uow.discard();
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
-        return null;
     }
 
 }

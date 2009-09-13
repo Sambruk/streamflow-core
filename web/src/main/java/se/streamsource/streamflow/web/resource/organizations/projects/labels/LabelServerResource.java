@@ -17,8 +17,6 @@ package se.streamsource.streamflow.web.resource.organizations.projects.labels;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -40,8 +38,7 @@ public class LabelServerResource
         describable.describe(stringValue.string().get());
     }
 
-    @Override
-    protected Representation delete(Variant variant) throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete label"));
 
@@ -60,8 +57,6 @@ public class LabelServerResource
         {
             throw new ResourceException(e);
         }
-
-        return null;
     }
 
 }

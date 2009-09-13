@@ -24,8 +24,6 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -91,8 +89,7 @@ public class ProjectServerResource
         describable.describe(newName);
     }
 
-    @Override
-    protected Representation delete(Variant variant) throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete project"));
 
@@ -117,8 +114,6 @@ public class ProjectServerResource
             uow.discard();
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
-
-        return null;
     }
 
 }

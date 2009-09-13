@@ -22,16 +22,14 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -68,25 +66,15 @@ public class LabelsServerResource
         return listBuilder.newInstance();
     }
 
-    @Override
-    protected Representation post(Representation representation, Variant variant) throws ResourceException
+    public void postOperation(StringDTO name) throws ResourceException
     {
-        String name = null;
-        try
-        {
-            name = representation.getText();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
         String identity = getRequest().getAttributes().get("labels").toString();
 
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("New label"));
 
         Labels labels = uow.get(Labels.class, identity);
 
-        labels.createLabel().describe(name);
+        labels.createLabel().describe(name.string().get());
 
         try
         {
@@ -95,7 +83,5 @@ public class LabelsServerResource
         {
             uow.discard();
         }
-
-        return null;
     }
 }

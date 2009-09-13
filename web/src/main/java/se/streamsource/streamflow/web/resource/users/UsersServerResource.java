@@ -76,15 +76,12 @@ public class UsersServerResource
     }
 
 
-    @Override
-    protected Representation post(Representation representation, Variant variant) throws ResourceException
+    public void postOperation(RegisterUserCommand registerUser) throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Register user"));
 
         try
         {
-            RegisterUserCommand registerUser = vbf.newValueFromJSON(RegisterUserCommand.class, representation.getText());
-
             // Check if user already exists
             try
             {
@@ -92,7 +89,7 @@ public class UsersServerResource
 
                 if (!existingUser.isCorrectPassword(registerUser.password().get()))
                     throw new WrongPasswordException();
-                return null; // Already exists
+                return; // Already exists
             } catch (NoSuchEntityException e)
             {
                 // Ok!
@@ -114,6 +111,5 @@ public class UsersServerResource
             uow.discard();
             throw new ResourceException(e);
         }
-        return null;
     }
 }

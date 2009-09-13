@@ -33,7 +33,7 @@ import se.streamsource.streamflow.web.domain.comment.CommentValue;
 import se.streamsource.streamflow.web.domain.comment.Commentable;
 import se.streamsource.streamflow.web.domain.comment.Commenter;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.resource.BaseServerResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ import java.util.List;
  * /users/{user}/workspace/user/{view}/{task}/comments
  */
 public class TaskCommentsServerResource
-        extends BaseServerResource
+        extends CommandQueryServerResource
 {
     @Structure
     UnitOfWorkFactory uowf;
@@ -78,13 +78,12 @@ public class TaskCommentsServerResource
         return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
     }
 
-    @Override
-    protected Representation post(Representation representation, Variant variant) throws ResourceException
+    public void postOperation(NewCommentCommand comment) throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Add task comment"));
         try
         {
-            NewCommentCommand comment = vbf.newValueFromJSON(NewCommentCommand.class, representation.getText());
+            //NewCommentCommand comment = vbf.newValueFromJSON(NewCommentCommand.class, representation.getText());
             Commentable commentable = uow.get(Commentable.class, getRequest().getAttributes().get("task").toString());
             ValueBuilder<CommentValue> builder = vbf.newValueBuilder(CommentValue.class);
             CommentValue prototype = builder.prototype();
@@ -99,7 +98,5 @@ public class TaskCommentsServerResource
             e.printStackTrace();
             uow.discard();
         }
-
-        return null;
     }
 }

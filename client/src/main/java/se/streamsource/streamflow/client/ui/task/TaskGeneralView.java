@@ -21,22 +21,20 @@ import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
-import java.awt.event.FocusListener;
-import java.awt.event.FocusEvent;
-import java.awt.Component;
-import java.awt.ContainerOrderFocusTraversalPolicy;
-import java.awt.DefaultFocusTraversalPolicy;
 
 /**
  * JAVADOC
@@ -98,7 +96,10 @@ public class TaskGeneralView
             public void focusGained(FocusEvent e)
             {
                 Component defaultComp = getFocusTraversalPolicy().getDefaultComponent(form);
-                defaultComp.requestFocusInWindow();
+                if (defaultComp != null)
+                {
+                    defaultComp.requestFocusInWindow();
+                }
             }
 
             public void focusLost(FocusEvent e)

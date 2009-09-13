@@ -17,8 +17,6 @@ package se.streamsource.streamflow.web.resource.users.workspace.projects.inbox;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -125,8 +123,7 @@ public class WorkspaceProjectInboxTaskServerResource
     }
 
 
-    @Override
-    protected Representation delete(Variant variant) throws ResourceException
+    public void deleteOperation() throws ResourceException
     {
         try
         {
@@ -139,6 +136,5 @@ public class WorkspaceProjectInboxTaskServerResource
         {
             e.printStackTrace();
         }
-        return null;
     }
 }

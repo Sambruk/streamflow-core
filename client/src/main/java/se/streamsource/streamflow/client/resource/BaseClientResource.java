@@ -20,7 +20,6 @@ import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.restlet.Context;
-import org.restlet.Uniform;
 import org.restlet.data.*;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.NodeSet;
@@ -95,15 +94,15 @@ public class BaseClientResource
         {
             getConditions().getMatch().add(getTag());
         }
-            Representation rep = super.post(entity);
-            setTag(null);
+        Representation rep = super.post(entity);
+        setTag(null);
 
-            if (!getResponse().getStatus().isSuccess())
-            {
-                throw new ResourceException(getResponse().getStatus());
-            }
+        if (!getResponse().getStatus().isSuccess())
+        {
+            throw new ResourceException(getResponse().getStatus());
+        }
 
-            return rep;
+        return rep;
     }
 
     @Override
@@ -136,7 +135,7 @@ public class BaseClientResource
 
     protected Reference postCommand(ValueComposite command) throws ResourceException
     {
-        post(new StringRepresentation(command.toJSON()));
+        post(new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON));
         return getLocationRef();
     }
 
