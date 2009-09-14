@@ -30,13 +30,14 @@ public class UIInfrastructureAssembler
     {
         module.addObjects(
                 DialogService.class,
-                UncaughtExceptionHandler.class
+                UncaughtExceptionHandler.class,
+                JavaHelp.class
         ).visibleIn(Visibility.layer);
 
-        module.importServices(UncaughtExceptionHandler.class).importedBy(NewObjectImporter.class).visibleIn(Visibility.application);
+        module.importServices(UncaughtExceptionHandler.class,
+                JavaHelp.class).importedBy(NewObjectImporter.class).visibleIn(Visibility.application);
         module.addServices(
                 ExceptionHandlerService.class).instantiateOnStartup();
-        module.addServices(JavaHelpService.class).instantiateOnStartup().visibleIn(Visibility.application);
         module.importServices(DialogService.class).importedBy(NewObjectImporter.class).visibleIn(Visibility.application);
     }
 }

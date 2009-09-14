@@ -39,7 +39,7 @@ import org.restlet.data.Response;
 import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.JavaHelpService;
+import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.ui.AccountSelector;
@@ -96,7 +96,7 @@ public class StreamFlowApplication
     EventListener eventListener;
 
     @Service
-    JavaHelpService javaHelp;
+    JavaHelp javaHelp;
 
     AccountsModel accountsModel;
 
