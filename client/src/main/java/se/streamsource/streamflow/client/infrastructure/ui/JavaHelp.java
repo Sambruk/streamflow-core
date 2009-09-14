@@ -47,14 +47,21 @@ public class JavaHelp
         }
     }
 
-    public HelpBroker getHelpBroker()
-    {
-        return hb;
-    }
 
     public void enableHelp(Component c, String helpID)
     {
-        hb.enableHelp(c, helpID, hb.getHelpSet());
-        hb.enableHelpKey(c, helpID, hb.getHelpSet());
+        if(hb != null)
+        {
+            hb.enableHelp(c, helpID, hb.getHelpSet());
+            hb.enableHelpKey(c, helpID, hb.getHelpSet());
+        }
+    }
+
+    public void init() {
+        if(hb != null)
+        {
+            hb.setCurrentID("top");
+            hb.setViewDisplayed(true);
+        }
     }
 }

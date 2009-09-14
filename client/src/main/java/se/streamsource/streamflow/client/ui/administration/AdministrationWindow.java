@@ -14,21 +14,14 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
-import org.jdesktop.swingx.JXStatusBar;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
-import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
-import se.streamsource.streamflow.client.ui.menu.SearchMenuBar;
-import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
-import se.streamsource.streamflow.client.ui.status.StatusBarView;
-import se.streamsource.streamflow.client.ui.overview.OverviewResources;
-import se.streamsource.streamflow.client.ui.overview.OverviewView;
-import se.streamsource.streamflow.client.ui.search.SearchView;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
 
 import java.awt.*;
 
@@ -40,6 +33,7 @@ public class AdministrationWindow
 {
     public AdministrationWindow(
             @Service Application application,
+            @Service JavaHelp javaHelp,
             @Uses AdministrationMenuBar menu,
             @Uses AdministrationView view)
     {
@@ -54,6 +48,7 @@ public class AdministrationWindow
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
+        javaHelp.enableHelp(this.getRootPane(),"administration");
     }
 
 }

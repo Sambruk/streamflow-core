@@ -14,15 +14,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXStatusBar;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import java.awt.*;
 
@@ -33,6 +34,7 @@ public class WorkspaceWindow
     extends FrameView
 {
     public WorkspaceWindow(@Service Application application,
+                           @Service JavaHelp javaHelp,
                            @Uses WorkspaceMenuBar menu,
                            @Uses WorkspaceView view)
     {
@@ -50,6 +52,7 @@ public class WorkspaceWindow
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
+        javaHelp.enableHelp(this.getRootPane(),"workspace");
     }
 
     

@@ -14,28 +14,23 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
-import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
-import org.jdesktop.swingx.JXStatusBar;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
-import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
-import se.streamsource.streamflow.client.ui.menu.SearchMenuBar;
-import se.streamsource.streamflow.client.ui.status.StatusBarView;
-import se.streamsource.streamflow.client.ui.overview.OverviewResources;
-import se.streamsource.streamflow.client.ui.overview.OverviewView;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.menu.SearchMenuBar;
 
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 /**
@@ -45,6 +40,7 @@ public class SearchWindow
     extends FrameView
 {
     public SearchWindow(@Service Application application,
+                        @Service JavaHelp javaHelp,
                         @Uses SearchMenuBar menu,
                         @Uses final AccountSelector accountSelector,
                         @Structure final ObjectBuilderFactory obf)
@@ -89,6 +85,7 @@ public class SearchWindow
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
+        javaHelp.enableHelp(this.getRootPane(),"search");
     }
 
 }

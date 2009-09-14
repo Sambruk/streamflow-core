@@ -148,13 +148,6 @@ public class StreamFlowApplication
         this.debugWindow = obf.newObjectBuilder(DebugWindow.class).newInstance();
         setMainFrame(workspaceWindow.getFrame());
 
-        // Add context sensitive help
-        javaHelp.enableHelp(workspaceWindow.getRootPane(),"workspace");
-        javaHelp.enableHelp(overviewWindow.getRootPane(), "overview");
-        javaHelp.enableHelp(searchWindow.getRootPane(), "search");
-        javaHelp.enableHelp(administrationWindow.getRootPane(), "administration");
-        javaHelp.enableHelp(debugWindow.getRootPane(), "debug");
-        
         this.accountsModel = accountsModel;
 
         showWorkspaceWindow();
@@ -233,7 +226,6 @@ public class StreamFlowApplication
     public void manageAccounts()
     {
         AccountsDialog dialog = accountsDialog.use(accountsModel).newInstance();
-        javaHelp.enableHelp(dialog.getRootPane(), "account");
         dialogs.showOkDialog(getMainFrame(), dialog);
     }
 
@@ -323,8 +315,7 @@ public class StreamFlowApplication
     @Action
     public void showHelp(ActionEvent event)
     {
-        javaHelp.getHelpBroker().setCurrentID("top");
-        javaHelp.getHelpBroker().setDisplayed(true);
+        javaHelp.init();
     }
 
     @Override

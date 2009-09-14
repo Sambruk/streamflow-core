@@ -14,29 +14,21 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
-import org.jdesktop.swingx.JXStatusBar;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
-import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
-import se.streamsource.streamflow.client.ui.status.StatusBarView;
-import se.streamsource.streamflow.client.ui.overview.OverviewResources;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
-import se.streamsource.streamflow.client.ui.search.SearchView;
-import se.streamsource.streamflow.client.ui.search.SearchResources;
-import se.streamsource.streamflow.client.ui.AccountSelector;
+import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.AccountSelector;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
 
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 /**
@@ -47,6 +39,7 @@ public class OverviewWindow
 {
     public OverviewWindow(
             @Service Application application,
+            @Service JavaHelp javaHelp,
             @Uses OverviewMenuBar menu,
             @Structure final ObjectBuilderFactory obf,
             @Uses final AccountSelector accountSelector)
@@ -61,6 +54,7 @@ public class OverviewWindow
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
+        javaHelp.enableHelp(this.getRootPane(),"overview");
 
         accountSelector.addListSelectionListener(new ListSelectionListener()
         {
