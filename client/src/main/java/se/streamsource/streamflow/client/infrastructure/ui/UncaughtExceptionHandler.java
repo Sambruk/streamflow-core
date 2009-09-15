@@ -80,16 +80,24 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                             dialog.setVisible(true);
                             main.show(dialog);
                             return;
+                        }  else
+                        {
+                            showErrorDialog(ex, frame);
+                            return;
                         }
                     }
                 }
 
-                JXErrorPane pane = new JXErrorPane();
-                pane.setErrorInfo(new ErrorInfo("Uncaught exception", ex.getMessage(), null, "Error", ex, Level.SEVERE, Collections.<String, String>emptyMap()));
-                pane.setPreferredSize(new Dimension(700, 400));
-                JXErrorPane.showDialog(frame, pane);
-            }
+                showErrorDialog(ex, frame);
+            }                                                
         });
+    }
+
+    private void showErrorDialog(Throwable ex, Frame frame) {
+        JXErrorPane pane = new JXErrorPane();
+        pane.setErrorInfo(new ErrorInfo("Uncaught exception", ex.getMessage(), null, "Error", ex, Level.SEVERE, Collections.<String, String>emptyMap()));
+        pane.setPreferredSize(new Dimension(700, 400));
+        JXErrorPane.showDialog(frame, pane);
     }
 
     private Throwable unwrap(Throwable e)
