@@ -11,8 +11,16 @@
  * limitations under the License.
  *
  */
-package se.streamsource.streamflow.domain.organization;
+package se.streamsource.streamflow.resource.organization;
 
-public class DuplicateDescriptionException extends Exception
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+public interface MergeOrganizationalUnitCommand
+    extends ValueComposite
 {
+    Property<EntityReference> from();
+
+    Property<EntityReference> to();
 }

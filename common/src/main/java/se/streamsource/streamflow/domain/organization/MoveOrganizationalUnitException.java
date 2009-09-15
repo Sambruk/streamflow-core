@@ -11,16 +11,8 @@
  * limitations under the License.
  *
  */
-package se.streamsource.streamflow.resource.organization;
+package se.streamsource.streamflow.domain.organization;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-public interface MoveOrganizationalUnitDTO
-    extends ValueComposite
+public class MoveOrganizationalUnitException extends Exception
 {
-    Property<EntityReference> from();
-
-    Property<EntityReference> to();
 }

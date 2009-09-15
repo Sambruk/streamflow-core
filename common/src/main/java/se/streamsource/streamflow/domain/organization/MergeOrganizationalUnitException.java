@@ -13,6 +13,6 @@
  */
 package se.streamsource.streamflow.domain.organization;
 
-public class DuplicateDescriptionException extends Exception
+public class MergeOrganizationalUnitException extends Exception
 {
 }
