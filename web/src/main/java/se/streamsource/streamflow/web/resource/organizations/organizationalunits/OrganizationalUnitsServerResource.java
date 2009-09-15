@@ -16,7 +16,9 @@ package se.streamsource.streamflow.web.resource.organizations.organizationalunit
 
 import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
+import org.restlet.data.Status;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -64,8 +66,15 @@ public class OrganizationalUnitsServerResource
         OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
         OrganizationalUnit ou = uowf.currentUnitOfWork().get(OrganizationalUnit.class, entity.entity().get().identity());
 
-        checkPermission(ous);
+        try
+        {
+            checkPermission(ous);
 
-        ous.removeOrganizationalUnit(ou);
+            ous.removeOrganizationalUnit(ou);
+
+        } catch(OpenProjectExistsException pe)
+        {
+            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, pe.getMessage());
+        }
     }
 }

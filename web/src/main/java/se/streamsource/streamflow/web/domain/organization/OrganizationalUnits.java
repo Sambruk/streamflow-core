@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
+import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.Aggregated;
@@ -27,6 +28,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.Event;
@@ -36,14 +38,14 @@ import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 /**
  * JAVADOC
  */
-@Concerns(EventCreationConcern.class)
+@Concerns({EventCreationConcern.class, OrganizationalUnits.OrganizationalUnitsConcern.class})
 @SideEffects(EventSideEffect.class)
 @Mixins(OrganizationalUnits.OrganizationsMixin.class)
 public interface OrganizationalUnits
 {
     OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
 
-    void removeOrganizationalUnit(OrganizationalUnit ou);
+    void removeOrganizationalUnit(OrganizationalUnit ou) throws OpenProjectExistsException;
 
     @Mixins(OrganizationalUnitsStateMixin.class)
     interface OrganizationalUnitsState
@@ -77,7 +79,7 @@ public interface OrganizationalUnits
             return ou;
         }
 
-        public void removeOrganizationalUnit(OrganizationalUnit ou)
+        public void removeOrganizationalUnit(OrganizationalUnit ou) throws OpenProjectExistsException
         {
             if (!state.organizationalUnits().remove(ou))
                 return; // OU is not a sub-OU of this OU
@@ -105,6 +107,35 @@ public interface OrganizationalUnits
             OrganizationalUnitEntity ou = ouBuilder.newInstance();
             state.organizationalUnits().add(state.organizationalUnits().count(), ou);
             return ou;
+        }
+    }
+
+    abstract class OrganizationalUnitsConcern
+        extends ConcernOf<OrganizationalUnits>
+        implements OrganizationalUnits
+    {
+        public void removeOrganizationalUnit(OrganizationalUnit ou) throws OpenProjectExistsException
+        {
+            OrganizationalUnitEntity entity = (OrganizationalUnitEntity)ou;
+
+            if(entity.projects().count() > 0)
+            {
+                throw new OpenProjectExistsException("There are open projects");
+            }
+            else
+            {
+                for(OrganizationalUnit oue : entity.organizationalUnits())
+                {
+                    OrganizationalUnitEntity e = (OrganizationalUnitEntity)oue;
+
+                    if(e.projects().count() > 0)
+                     {
+                         throw new OpenProjectExistsException("There are open projects");
+                     }
+                }
+            }
+
+            next.removeOrganizationalUnit(ou);
         }
     }
 }
