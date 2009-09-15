@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Ã–berg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard …berg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
@@ -66,5 +66,10 @@ public class OrganizationClientResource
         ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
         builder.prototype().string().set(search);
         return query("findTasks", builder.newInstance(), ListValue.class);
+    }
+
+    public void move(MoveOrganizationalUnitDTO moveDTO) throws ResourceException
+    {
+        putCommand("moveOrganizationalUnit", moveDTO);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Ã–berg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard …berg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,27 @@
 
 package se.streamsource.streamflow.web.resource.organizations;
 
-import static org.qi4j.api.query.QueryExpressions.matches;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import static org.qi4j.api.query.QueryExpressions.and;
-import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitDTO;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
@@ -159,5 +157,17 @@ public class OrganizationServerResource
             }
         }
         return listBuilder.newList();
+    }
+
+    public void moveOrganizationalUnit(MoveOrganizationalUnitDTO moveValue)
+    {
+        String ouId = (String) getRequest().getAttributes().get("organization");
+        OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
+        OrganizationalUnit fromEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.from().get().identity());
+        OrganizationalUnit toEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.to().get().identity());
+
+        checkPermission(ou);
+
+        ou.moveOrganizationalUnit(fromEntity, toEntity);
     }
 }

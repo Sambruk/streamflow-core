@@ -17,6 +17,8 @@ package se.streamsource.streamflow.web.domain.organization;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
  * An organizational unit represents a part of an organization.
@@ -26,13 +28,23 @@ public interface OrganizationalUnit
 {
     Organization getOrganization();
 
+    void moveOrganizationalUnit(OrganizationalUnit from, OrganizationalUnit to);
+
+    void mergeOrganizationalUnit(OrganizationalUnit from, OrganizationalUnit to);
+
     interface OrganizationalUnitState
     {
         Association<Organization> organization();
+
+        @Event
+        void organizationalUnitMoved(DomainEvent event, OrganizationalUnit from, OrganizationalUnit to);
+
+        @Event
+        void organizationalUnitMerged(DomainEvent event, OrganizationalUnit from, OrganizationalUnit to);
     }
 
-    class OrganizationalUnitMixin
-            implements OrganizationalUnit
+    abstract class OrganizationalUnitMixin
+            implements OrganizationalUnit, OrganizationalUnitState
     {
         @This
         OrganizationalUnitState state;
@@ -40,6 +52,50 @@ public interface OrganizationalUnit
         public Organization getOrganization()
         {
             return state.organization().get();
+        }
+
+        public void moveOrganizationalUnit(OrganizationalUnit from, OrganizationalUnit to)
+        {
+            OrganizationalUnitEntity uoe = (OrganizationalUnitEntity) state;
+            OrganizationalUnitEntity target = (OrganizationalUnitEntity) to;
+            OrganizationalUnitEntity source = (OrganizationalUnitEntity) from;
+            if (uoe.identity().get().equals(target.identity().get()))
+            {
+                // Exception cannot move to itself
+            }
+
+            if (target.organizationalUnits().contains(uoe))
+            {
+                // Exception invalid to
+            }
+
+            if (!source.organizationalUnits().contains(uoe))
+            {
+                // Exception invalid from
+            }
+
+            organizationalUnitMoved(DomainEvent.CREATE, from , to);
+        }
+
+        public void mergeOrganizationalUnit(OrganizationalUnit from, OrganizationalUnit to)
+        {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        public void organizationalUnitMoved(DomainEvent event, OrganizationalUnit from, OrganizationalUnit to)
+        {
+            OrganizationalUnitEntity oue = (OrganizationalUnitEntity) state;
+            OrganizationalUnitEntity fromEntity = (OrganizationalUnitEntity) from;
+            OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
+
+            fromEntity.organizationalUnits().remove(oue);
+            toEntity.organizationalUnits().add(oue);
+        }
+
+        public void organizationalUnitMerged(DomainEvent event, OrganizationalUnit from, OrganizationalUnit to)
+        {
+            //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 }
