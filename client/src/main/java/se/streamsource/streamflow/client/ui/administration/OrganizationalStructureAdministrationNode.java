@@ -25,12 +25,16 @@ import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 /**
  * JAVADOC
  */
 public class OrganizationalStructureAdministrationNode
-        extends DefaultMutableTreeNode
+        extends DefaultMutableTreeNode implements Transferable
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -83,5 +87,20 @@ public class OrganizationalStructureAdministrationNode
     public OrganizationalUnitAdministrationModel model()
     {
         return model;
+    }
+
+    public DataFlavor[] getTransferDataFlavors() {
+
+        DataFlavor[] result = {new DataFlavor(OrganizationalStructureAdministrationNode.class,"OrganizationalStructureNode")};
+        return result;
+    }
+
+    public boolean isDataFlavorSupported(DataFlavor dataFlavor) {
+        return "OrganizationalStructureNode".equals(dataFlavor.getHumanPresentableName());
+    }
+
+    public Object getTransferData(DataFlavor dataFlavor) throws UnsupportedFlavorException, IOException {
+
+        return ((OrganizationalStructureAdministrationNode)parent).ou().entity().get();
     }
 }

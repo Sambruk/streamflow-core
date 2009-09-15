@@ -14,21 +14,29 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import org.jdesktop.application.Application;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
+
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -38,6 +46,12 @@ public class OrganizationalUnitAdministrationModel
 {
     @Structure
     ValueBuilderFactory vbf;
+
+    @Service
+    DialogService dialogs;
+
+    @Service
+    Application application;
 
     private GroupsModel groupsModel;
     private ProjectsModel projectsModel;
@@ -114,7 +128,39 @@ public class OrganizationalUnitAdministrationModel
             organization.organizationalUnits().removeOrganizationalUnit(builder.newInstance());
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_remove_organization, e);
+            if(Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
+            {
+                dialogs.showOkCancelHelpDialog(application.getContext().getFocusOwner(),
+                        new JLabel(i18n.text(AdministrationResources.could_not_remove_organisation_with_open_projects)));
+
+            } else
+            {
+                throw new OperationException(AdministrationResources.could_not_remove_organization, e);
+            }
+
         }
+    }
+
+    public void moveOrganizationalUnit(EntityReference fromID, EntityReference toID)
+    {
+        try {
+            ValueBuilder<MoveOrganizationalUnitCommand> builder = vbf.newValueBuilder(MoveOrganizationalUnitCommand.class);
+            MoveOrganizationalUnitCommand dto = builder.prototype();
+            dto.from().set(fromID);
+            dto.to().set(toID);
+
+            organization.move(builder.newInstance());
+        } catch (ResourceException e) {
+           if(Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
+            {
+                dialogs.showOkCancelHelpDialog(application.getContext().getFocusOwner(),
+                        new JLabel(i18n.text(AdministrationResources.could_not_move_organisation_with_conflicts)));
+
+            } else
+            {
+                throw new OperationException(AdministrationResources.could_not_move_organization, e);
+            }
+        }
+
     }
 }

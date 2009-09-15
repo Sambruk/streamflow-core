@@ -21,20 +21,21 @@ import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
 import javax.swing.*;
-import javax.swing.event.AncestorListener;
 import javax.swing.event.AncestorEvent;
-import javax.swing.tree.TreePath;
+import javax.swing.event.AncestorListener;
 import java.awt.*;
-import java.util.Enumeration;
+import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 
 /**
@@ -61,6 +62,7 @@ public class AdministrationOutlineView
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
         tree.setEditable(true);
+
 
         DefaultTreeRenderer renderer = new DefaultTreeRenderer(new WrappingProvider(
                 new IconValue()
@@ -102,6 +104,8 @@ public class AdministrationOutlineView
         JPopupMenu popup = new JPopupMenu();
         popup.add(am.get("createOrganizationalUnit"));
         popup.add(am.get("removeOrganizationalUnit"));
+        popup.add(am.get("moveOrganizationalUnit"));
+        popup.add(am.get("mergeOrganizationalUnit"));
 
         tree.addMouseListener(new PopupMenuTrigger(popup));
 
@@ -176,6 +180,77 @@ public class AdministrationOutlineView
                 orgParent.model().removeOrganizationalUnit(orgNode.ou().entity().get());
                 model.refresh();
 
+            }
+        }
+    }
+
+    @Action
+    public void moveOrganizationalUnit()
+    {
+       System.out.println("Start move.");
+        tree.setDragEnabled(true);
+        tree.setDropMode(DropMode.ON);
+        tree.setTransferHandler(new MoveTransferHandler());
+    }
+
+    @Action
+    public void mergeOrganizationalUnit()
+    {
+       System.out.println("Start merge."); 
+    }
+
+    class MoveTransferHandler extends TransferHandler
+    {
+
+        @Override
+        public int getSourceActions(JComponent c) {
+            return MOVE;
+        }
+
+        @Override
+        public Transferable createTransferable(JComponent c) {
+            return (OrganizationalStructureAdministrationNode)((JXTree)c).getSelectionPath().getLastPathComponent();
+        }
+
+        @Override
+        public void exportDone(JComponent c, Transferable t, int action) {
+
+            JXTree tree = (JXTree)c;
+            tree.setDragEnabled(false);
+            tree.setTransferHandler(null);
+
+        }
+
+        @Override
+        public boolean canImport(TransferSupport transferSupport) {
+            if("OrganizationalStructureNode".equals(transferSupport.getDataFlavors()[0].getHumanPresentableName()))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean importData(TransferSupport transferSupport) {
+            System.out.println("Import start");
+            try
+            {
+                OrganizationalStructureAdministrationNode movedNode =
+                        (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
+
+                OrganizationalStructureAdministrationNode dropNode =
+                        (OrganizationalStructureAdministrationNode)tree.getDropLocation()
+                                .getPath().getLastPathComponent();
+
+                EntityReference from = (EntityReference)transferSupport.getTransferable().getTransferData(transferSupport.getDataFlavors()[0]);
+
+                movedNode.model().moveOrganizationalUnit(from, dropNode.ou().entity().get());
+
+                return true;
+
+            } catch(Exception e)
+            {
+                throw new OperationException(AdministrationResources.could_not_move_organization, e);
             }
         }
     }

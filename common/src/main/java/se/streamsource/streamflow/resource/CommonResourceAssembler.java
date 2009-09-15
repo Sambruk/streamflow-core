@@ -36,6 +36,8 @@ import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
+import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
+import se.streamsource.streamflow.resource.organization.MergeOrganizationalUnitCommand;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -61,7 +63,9 @@ public class CommonResourceAssembler
                 StringDTO.class,
                 DateDTO.class,
                 EntityReferenceDTO.class,
-                NewCommentCommand.class).visibleIn(Visibility.application);
+                NewCommentCommand.class,
+                MoveOrganizationalUnitCommand.class,
+                MergeOrganizationalUnitCommand.class).visibleIn(Visibility.application);
 
         // Queries
         module.addValues(UserSpecification.class, TasksQuery.class).visibleIn(Visibility.application);
