@@ -27,9 +27,12 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.sideeffect.SideEffectOf;
+import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.domain.roles.Removable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +41,7 @@ import java.util.List;
 /**
  * JAVADOC
  */
+@SideEffects(Members.RemovableSideEffect.class)
 @Concerns(Members.LifecycleConcern.class)
 @Mixins(Members.MembersMixin.class)
 public interface Members
@@ -215,4 +219,21 @@ public interface Members
         }
     }
 
+    abstract class RemovableSideEffect
+        extends SideEffectOf<Removable>
+        implements Removable
+    {
+        @This Members members;
+
+        public boolean removeEntity()
+        {
+            if (result.removeEntity())
+            {
+                // Remove all members from the project
+                members.removeAllMembers();
+            }
+
+            return true;
+        }
+    }
 }

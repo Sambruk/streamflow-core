@@ -19,12 +19,16 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.sideeffect.SideEffects;
+import org.qi4j.api.sideeffect.SideEffectOf;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.domain.roles.Removable;
 
 /**
  * JAVADOC
  */
+@SideEffects(Participants.RemovableSideEffect.class)
 @Mixins(Participants.ParticipantsMixin.class)
 public interface Participants
 {
@@ -81,6 +85,33 @@ public interface Participants
             participants().remove(participant);
         }
 
+    }
+
+    class RemovableSideEffect
+            extends SideEffectOf<Removable>
+            implements Removable
+    {
+        @This ParticipantsState state;
+        @This Participants participants;
+
+        public boolean removeEntity()
+        {
+            if (result.removeEntity())
+            {
+                // Make participants leave
+                for (Participant participant : state.participants().toList())
+                {
+                    participants.removeParticipant(participant);
+                }
+            }
+
+            return true;
+        }
+
+        public boolean reinstate()
+        {
+            return result.reinstate();
+        }
     }
 
 }

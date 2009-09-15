@@ -25,7 +25,6 @@ import se.streamsource.streamflow.web.domain.project.Project;
 /**
  * JAVADOC
  */
-@SideEffects(GroupEntity.RemovableLifeycleSideEffect.class)
 public interface GroupEntity
         extends Group,
         Describable.DescribableState,
@@ -34,40 +33,4 @@ public interface GroupEntity
         Removable.RemovableState,
         DomainEntity
 {
-    class RemovableLifeycleSideEffect
-            extends SideEffectOf<Removable>
-            implements Removable
-    {
-        @This GroupEntity thisGroup;
-
-        public boolean removeEntity()
-        {
-            if (result.removeEntity())
-            {
-                // Make participants leave
-                for (Participant participant : thisGroup.participants().toList())
-                {
-                    thisGroup.removeParticipant(participant);
-                }
-
-                // Leave other groups and projects
-                for (Group group : thisGroup.groups().toList())
-                {
-                    group.removeParticipant(thisGroup);
-                }
-
-                for (Project project : thisGroup.projects().toList())
-                {
-                    project.removeMember(thisGroup);
-                }
-            }
-
-            return true;
-        }
-
-        public boolean reinstate()
-        {
-            return result.reinstate();
-        }
-    }
 }

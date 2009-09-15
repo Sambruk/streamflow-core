@@ -27,7 +27,6 @@ import se.streamsource.streamflow.web.domain.task.*;
 /**
  * JAVADOC
  */
-@SideEffects(ProjectEntity.RemoveMembersOnRemoveSideEffect.class)
 @Mixins(ProjectEntity.ProjectIdGeneratorMixin.class)
 public interface ProjectEntity
         extends DomainEntity,
@@ -63,24 +62,6 @@ public interface ProjectEntity
         public void assignId(TaskId task)
         {
             state.organizationalUnit().get().getOrganization().assignId(task);
-        }
-    }
-
-    abstract class RemoveMembersOnRemoveSideEffect
-        extends SideEffectOf<Removable>
-        implements Removable
-    {
-        @This Members members;
-
-        public boolean removeEntity()
-        {
-            if (result.removeEntity())
-            {
-                // Remove all members from the project
-                members.removeAllMembers();
-            }
-
-            return true;
         }
     }
 }
