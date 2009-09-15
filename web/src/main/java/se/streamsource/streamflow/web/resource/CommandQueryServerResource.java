@@ -45,12 +45,15 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.*;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
+import javax.security.auth.Subject;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessControlException;
+import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedActionException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -91,7 +94,6 @@ public class CommandQueryServerResource
 
         setNegotiated(true);
     }
-
 
     @Override
     protected Representation get(Variant variant) throws ResourceException
@@ -410,13 +412,28 @@ public class CommandQueryServerResource
         return args;
     }
 
-    private Object invoke(Method method, Object[] args)
+    private Object invoke(final Method method, final Object[] args)
             throws ResourceException
     {
         try
         {
-            Object returnValue = method.invoke(this, args);
-            return returnValue;
+            Subject subject = getRequest().getClientInfo().getSubject();
+            final Object commandObject = this;
+            try
+            {
+                Object returnValue = Subject.doAs(subject, new PrivilegedExceptionAction()
+                {
+                    public Object run() throws Exception
+                    {
+                        return method.invoke(commandObject, args);
+                    }
+                });
+
+                return returnValue;
+            } catch (PrivilegedActionException e)
+            {
+                throw e.getCause();
+            }
         } catch (InvocationTargetException e)
         {
             if (e.getTargetException() instanceof ResourceException)
@@ -432,7 +449,7 @@ public class CommandQueryServerResource
             getResponse().setEntity(new ObjectRepresentation(e));
 
             throw new ResourceException(e.getTargetException());
-        } catch (Exception e)
+        } catch (Throwable e)
         {
             throw new ResourceException(e);
         }
