@@ -24,9 +24,12 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.infrastructure.event.Event;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +50,8 @@ public interface Members
 
     void removeRole(Participant participant, Role role);
 
+    void removeAllMembers();
+
     interface MembersState
     {
         Property<MembersValue> members();
@@ -54,6 +59,12 @@ public interface Members
         boolean isMember(Participant participant);
 
         Iterable<Role> getRoles(Participant participant);
+
+        @Event
+        void memberCreated(DomainEvent event, Participant participant);
+
+        @Event
+        void memberRemoved(DomainEvent event, Participant participant);
     }
 
     abstract class MembersMixin
@@ -71,25 +82,14 @@ public interface Members
         @This
         Project project;
 
-        public boolean isMember(Participant participant)
-        {
-            EntityReference participantRef = EntityReference.getEntityReference(participant);
-            MembersValue membersValue = state.members().get();
-            MemberValue memberValue = membersValue.getMemberValue(participantRef);
-            return memberValue != null;
-        }
-
         public void createMember(Participant participant)
         {
             if (isMember(participant))
                 return;
-            ValueBuilder<MemberValue> builder = vbf.newValueBuilder(MemberValue.class);
-            builder.prototype().participant().set(EntityReference.getEntityReference(participant));
-            ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
-            List<MemberValue> members = membersBuilder.prototype().members().get();
-            members.add(builder.newInstance());
-            state.members().set(membersBuilder.newInstance());
-            participant.addProject(project);
+
+            memberCreated(DomainEvent.CREATE, participant);
+
+            participant.joinProject(project);
         }
 
         public void addRole(Participant participant, Role role)
@@ -120,9 +120,8 @@ public interface Members
             MemberValue memberValue = membersBuilder.prototype().getMemberValue(participantRef);
             if (memberValue != null)
             {
-                membersBuilder.prototype().members().get().remove(memberValue);
-                state.members().set(membersBuilder.newInstance());
-                participant.removeProject(project);
+                memberRemoved(DomainEvent.CREATE, participant);
+                participant.leaveProject(project);
             }
         }
 
@@ -136,6 +135,47 @@ public interface Members
             {
                 if (memberValue.roles().get().remove(roleRef))
                     state.members().set(membersBuilder.newInstance());
+            }
+        }
+
+        public void removeAllMembers()
+        {
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            for (MemberValue memberValue : state.members().get().members().get())
+            {
+                Participant participant = uow.get(Participant.class, memberValue.participant().get().identity());
+                removeMember(participant);
+            }
+        }
+
+        public boolean isMember(Participant participant)
+        {
+            EntityReference participantRef = EntityReference.getEntityReference(participant);
+            MembersValue membersValue = state.members().get();
+            MemberValue memberValue = membersValue.getMemberValue(participantRef);
+            return memberValue != null;
+        }
+
+        // Events
+        public void memberCreated(DomainEvent event, Participant participant)
+        {
+            ValueBuilder<MemberValue> builder = vbf.newValueBuilder(MemberValue.class);
+            builder.prototype().participant().set(EntityReference.getEntityReference(participant));
+            ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
+            List<MemberValue> members = membersBuilder.prototype().members().get();
+            members.add(builder.newInstance());
+            state.members().set(membersBuilder.newInstance());
+        }
+
+        public void memberRemoved(DomainEvent event, Participant participant)
+        {
+            EntityReference participantRef = EntityReference.getEntityReference(participant);
+            ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
+            MemberValue memberValue = membersBuilder.prototype().getMemberValue(participantRef);
+            if (memberValue != null)
+            {
+                membersBuilder.prototype().members().get().remove(memberValue);
+                state.members().set(membersBuilder.newInstance());
             }
         }
 

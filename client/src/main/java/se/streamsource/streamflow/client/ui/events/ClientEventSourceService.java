@@ -36,6 +36,7 @@ import javax.swing.event.ListSelectionListener;
 import java.util.Map;
 import java.util.Date;
 import java.util.Collections;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.io.Reader;
 import java.io.BufferedReader;
@@ -62,7 +63,7 @@ public interface ClientEventSourceService
         {
         }
 
-        private Map<EventSourceListener, EventSpecification> listeners = new ConcurrentHashMap<EventSourceListener, EventSpecification>();
+        private Map<EventSourceListener, EventSpecification> listeners = new WeakHashMap<EventSourceListener, EventSpecification>();
 
         // EventSource implementation
 

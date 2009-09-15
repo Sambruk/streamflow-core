@@ -23,6 +23,7 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.domain.roles.Removable;
 
 /**
  * Mapped to:
@@ -39,12 +40,15 @@ public class WorkspaceProjectsServerResource
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
         String id = (String) getRequest().getAttributes().get("user");
-        Participant participant = uow.get(Participant.class, id);
+        Participant.ParticipantState participant = uow.get(Participant.ParticipantState.class, id);
 
         for (Project project : participant.allProjects())
         {
-            builder.prototype().entity().set(EntityReference.getEntityReference(project));
-            listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
+            if (!((Removable.RemovableState)project).removed().get())
+            {
+                builder.prototype().entity().set(EntityReference.getEntityReference(project));
+                listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
+            }
         }
         return listBuilder.newList();
     }

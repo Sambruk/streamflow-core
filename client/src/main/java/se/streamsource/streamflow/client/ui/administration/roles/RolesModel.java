@@ -74,7 +74,7 @@ public class RolesModel
     {
         try
         {
-            roles.role(id).delete();
+            roles.role(id).deleteCommand();
             refresh();
         } catch (ResourceException e)
         {

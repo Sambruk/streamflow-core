@@ -108,7 +108,7 @@ public class ProjectsModel
     {
         try
         {
-            projects.project(id).delete();
+            projects.project(id).deleteCommand();
             refresh();
         } catch (ResourceException e)
         {

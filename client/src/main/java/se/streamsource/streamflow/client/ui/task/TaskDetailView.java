@@ -100,6 +100,7 @@ public class TaskDetailView
 */
             validateTree();
             setSelectedIndex(-1);
+            setEnabled(false);
         } else
         {
             generalView.setModel(model.general());
@@ -110,6 +111,7 @@ public class TaskDetailView
             setPreferredSize(new Dimension(getWidth(), 500));
 */
             validateTree();
+            setEnabled(true);
 
             if (getSelectedIndex() == -1)
             {

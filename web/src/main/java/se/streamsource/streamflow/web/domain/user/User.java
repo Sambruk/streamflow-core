@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.domain.user;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.common.UseDefaults;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import sun.misc.BASE64Encoder;
@@ -30,9 +31,11 @@ import java.security.NoSuchAlgorithmException;
 @Mixins(User.UserMixin.class)
 public interface User
 {
-    boolean verifyPassword(String password);
+    boolean login(String password);
 
     void changePassword(String currentPassword, String newPassword) throws WrongPasswordException;
+
+    void changeEnabled(boolean enabled);
 
     interface UserState
     {
@@ -41,22 +44,39 @@ public interface User
 
         Property<String> hashedPassword();
 
-        @Event
-        void passwordChanged(DomainEvent event, String hashedPassword);
+        @UseDefaults
+        Property<Boolean> disabled();
 
         boolean isCorrectPassword(String password);
 
         String hashPassword(String password);
 
         boolean isAdministrator();
+
+        @Event
+        void passwordChanged(DomainEvent event, String hashedPassword);
+
+        @Event
+        void failedLogin(DomainEvent event);
+
+        @Event
+        void enabledChanged(DomainEvent event, boolean enabled);
     }
 
     abstract class UserMixin
             implements User, UserState
     {
-        public boolean verifyPassword(String password)
+        public boolean login(String password)
         {
-            return isCorrectPassword(password);
+            if (disabled().get())
+                return false;
+
+            boolean correct = isCorrectPassword(password);
+
+            if (!correct)
+                failedLogin(DomainEvent.CREATE);
+
+            return correct;
         }
 
         public void changePassword(String currentPassword, String newPassword) throws WrongPasswordException
@@ -73,6 +93,10 @@ public interface User
         public void passwordChanged(DomainEvent event, String hashedPassword)
         {
             hashedPassword().set(hashedPassword);
+        }
+
+        public void failedLogin(DomainEvent event)
+        {
         }
 
         public boolean isCorrectPassword(String password)

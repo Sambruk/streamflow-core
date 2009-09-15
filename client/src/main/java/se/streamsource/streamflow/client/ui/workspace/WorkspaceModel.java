@@ -24,6 +24,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSourceListene
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.logging.Logger;
@@ -34,24 +35,24 @@ import java.util.logging.Logger;
 public class WorkspaceModel
         extends DefaultTreeModel
 {
+    public EventSourceListener subscriber;
+
     public WorkspaceModel(@Uses WorkspaceNode node, @Service EventSource source)
     {
         super(node);
 
-        source.registerListener(new EventSourceListener()
+        // Reload project list whenever someone join or leave a project/group
+        subscriber = new EventSourceListener()
         {
             public void eventsAvailable(EventStore source, EventSpecification specification)
             {
-                for (DomainEvent domainEvent : source.events(specification, null, Integer.MAX_VALUE))
-                {
-                    if (domainEvent.name().get().equals("projectRemoved"))
-                    {
-                        Logger.getLogger("workspace").info("Refresh project list");
-                        getRoot().getProjectsNode().refresh();
-                    }
-                }
+                Logger.getLogger("workspace").info("Refresh project list");
+                getRoot().getProjectsNode().refresh();
+                reload(getRoot().getProjectsNode());
             }
-        }, AllEventsSpecification.INSTANCE);
+        };
+        source.registerListener(subscriber, new EventQuery().
+                withNames("joinedProject","leftProject","joinedGroup","leftGroup"));
     }
 
     @Override

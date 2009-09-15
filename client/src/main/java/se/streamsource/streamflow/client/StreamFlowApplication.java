@@ -66,7 +66,7 @@ import java.util.logging.Logger;
 /**
  * Controller for the application
  */
-@ProxyActions({
+@ProxyActions({"cut","copy","paste",
         "createTask", "completeTasks", "assignTasksToMe", "markTasksAsRead", "markTasksAsUnread", "dropTasks", "forwardTasks", "delegateTasks", // Task related proxy actions 
         "find", "selectTree", "selectTable", "selectDetails"})
 public class StreamFlowApplication
@@ -144,7 +144,7 @@ public class StreamFlowApplication
         this.workspaceWindow = obf.newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
         this.overviewWindow = obf.newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
         this.searchWindow = obf.newObjectBuilder(SearchWindow.class).use(accountSelector).newInstance();
-        this.administrationWindow = obf.newObjectBuilder(AdministrationWindow.class).use(accountsModel).newInstance();
+        this.administrationWindow = obf.newObjectBuilder(AdministrationWindow.class).use(accountSelector).newInstance();
         this.debugWindow = obf.newObjectBuilder(DebugWindow.class).newInstance();
         setMainFrame(workspaceWindow.getFrame());
 

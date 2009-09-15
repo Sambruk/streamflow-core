@@ -33,6 +33,9 @@ public class ManagementAssembler
     {
         if (module.layerAssembly().applicationAssembly().mode().equals(Application.Mode.production))
         {
+            module.addObjects(CompositeMBean.class);
+            module.addTransients(ManagerComposite.class);
+
             module.importServices(MBeanServer.class).importedBy(MBeanServerImporter.class);
             module.addServices(ManagerService.class).instantiateOnStartup();
 

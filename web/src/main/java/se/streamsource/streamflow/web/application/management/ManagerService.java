@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.application.management;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -24,16 +25,14 @@ import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.entity.association.EntityStateHolder;
-import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Entity;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.property.Numbers;
-import org.qi4j.api.composite.Composite;
-import org.qi4j.api.structure.Module;
+import org.qi4j.api.composite.TransientBuilderFactory;
+import org.qi4j.api.composite.TransientBuilder;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.entitystore.jdbm.DatabaseExport;
 import org.qi4j.entitystore.jdbm.DatabaseImport;
 import org.qi4j.index.reindexer.Reindexer;
@@ -46,8 +45,10 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.infrastructure.database.MySQLDatabaseConfiguration;
 
 import javax.management.*;
 import javax.management.modelmbean.*;
@@ -60,32 +61,18 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * JMX Management MBean for StreamFlow
+ * JMX Management for StreamFlow. Exposes all configurable services as MBeans,
+ * as well as the default ManagerComposite
  */
 @Mixins(ManagerService.ManagerMixin.class)
 public interface ManagerService
-        extends ManagerOperations, ServiceComposite, Activatable
+        extends ServiceComposite, Activatable
 {
     class ManagerMixin
-            implements ManagerOperations, ManagerAttributes, Activatable
+            implements Activatable
     {
         @Service
         MBeanServer server;
-
-        @Service
-        Reindexer reindexer;
-
-        @Service
-        DatabaseExport exportDatabase;
-
-        @Service
-        DatabaseImport importDatabase;
-
-        @Service
-        EventStore eventStore;
-
-        @Service
-        FileConfiguration fileConfig;
 
         @Structure
         UnitOfWorkFactory uowf;
@@ -93,79 +80,40 @@ public interface ManagerService
         @Structure
         Qi4jSPI spi;
 
+        @Uses
+        TransientBuilder<ManagerComposite> managerBuilder;
+
+        @Uses
+        ObjectBuilder<CompositeMBean> mbeanBuilder;
+
         @Service
         Iterable<ServiceReference<Configuration>> configurableServices;
 
-        public File exports;
         public ObjectName objectName;
         private List<ObjectName> configurableServiceNames = new ArrayList<ObjectName>();
+        public ManagerComposite manager;
 
         public void activate() throws Exception
         {
-            exports = new File(fileConfig.dataDirectory(), "exports");
-            exports.mkdirs();
+            ResourceBundle bundle = ResourceBundle.getBundle(Manager.class.getName());
 
-            // Register methods as operations
-            Method[] methods = ManagerOperations.class.getMethods();
-            ResourceBundle bundle = ResourceBundle.getBundle(ManagerOperations.class.getName());
-            ModelMBeanOperationInfo[] operations = new ModelMBeanOperationInfo[methods.length];
-            for (int i = 0; i < methods.length; i++)
-            {
-                Method method = methods[i];
-                String name = method.getName();
-                try
-                {
-                    name = bundle.getString(name + ".name");
-                } catch (MissingResourceException e)
-                {
-                    // Ignore
-                }
+            Properties version = new Properties();
+            version.load(getClass().getResourceAsStream("/version.properties"));
 
-                MBeanParameterInfo[] signature = new MBeanParameterInfo[method.getParameterTypes().length];
-                Annotation[][] annotations = method.getParameterAnnotations();
-                for (int j = 0; j < method.getParameterTypes().length; j++)
-                {
-                    Class<?> parameterType = method.getParameterTypes()[j];
-                    Name paramName = getAnnotationOfType(annotations[j], Name.class);
-                    String nameStr = paramName == null ? "param" + j : paramName.value();
-                    signature[j] = new MBeanParameterInfo(nameStr, parameterType.getName(), nameStr);
-                }
+            String versionString = version.getProperty("application.name")+" "+
+                    version.getProperty("application.version")+" build:"+
+                    version.getProperty("application.buildNumber")+" revision:"+
+                    version.getProperty("application.revision");
+            managerBuilder.prototype().version().set(versionString);
 
-                ModelMBeanOperationInfo operation =
-                        new ModelMBeanOperationInfo(method.getName(), name, signature, method.getReturnType().getName(), MBeanOperationInfo.ACTION);
-                operations[i] = operation;
-            }
+            manager = managerBuilder.newInstance();
+            CompositeMBean mbean = mbeanBuilder.use(manager, Manager.class, bundle).newInstance();
 
-            // Register methods as attributes
-            methods = ManagerAttributes.class.getMethods();
-            ModelMBeanAttributeInfo[] attributes = new ModelMBeanAttributeInfo[methods.length/2];
-            int idx = 0;
-            for (Method method : methods)
-            {
-                if (method.getName().startsWith("get"))
-                {
-                    String name = method.getName().substring(3);
-                    ModelMBeanAttributeInfo attribute = new ModelMBeanAttributeInfo(name, name, method, ManagerAttributes.class.getMethod("set"+name, method.getReturnType()));
-                    attributes[idx++] = attribute;
-                }
-            }
-
-
-            ModelMBeanInfo mmbi =
-                    new ModelMBeanInfoSupport(ManagerOperations.class.getName(),
-                            "StreamFlow manager",
-                            attributes,
-                            null,  // no constructors
-                            operations,
-                            null); // no notifications
-
-            // Make the Model MBean and link it to the resource
-            ModelMBean mmb = new RequiredModelMBean(mmbi);
-            mmb.setManagedResource(this, "ObjectReference");
+            manager.activate();
 
             // Register the Model MBean in the MBean Server
             objectName = new ObjectName("StreamFlow:name=Manager");
-            server.registerMBean(mmb, objectName);
+            server.registerMBean(mbean, objectName);
 
             // Expose configurable services
             exportConfigurableServices();
@@ -205,99 +153,19 @@ public interface ManagerService
                 server.registerMBean(mbean, configurableServiceName);
                 configurableServiceNames.add(configurableServiceName);
             }
+
+
         }
 
         public void passivate() throws Exception
         {
+            manager.passivate();
+
             server.unregisterMBean(objectName);
             for (ObjectName configurableServiceName : configurableServiceNames)
             {
                 server.unregisterMBean(configurableServiceName);
             }
-        }
-
-        // Operations
-        public void reindex()
-        {
-            reindexer.reindex();
-        }
-
-        public String exportDatabase(boolean compress) throws IOException
-        {
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
-            File exportFile = new File(exports, "streamflow_data_" + format.format(new Date()) + (compress ? ".json.gz" : ".json"));
-            OutputStream out = new FileOutputStream(exportFile);
-
-            if (compress)
-            {
-                out = new GZIPOutputStream(out);
-            }
-
-            Writer writer = new OutputStreamWriter(out, "UTF-8");
-            exportDatabase.exportTo(writer);
-            writer.close();
-
-            return "Database exported to " + exportFile.getAbsolutePath();
-        }
-
-        public String importDatabase(@Name("Filename") String name) throws IOException
-        {
-            File importFile = new File(exports, name);
-
-            if (!importFile.exists())
-                return "No such import file:" + importFile.getAbsolutePath();
-
-            InputStream in1 = new FileInputStream(importFile); 
-            if (importFile.getName().endsWith("gz")) 
-            { 
-            	in1 = new GZIPInputStream(in1); 
-            } 
-            Reader in = new InputStreamReader(in1, "UTF-8"); 
-            try
-            {
-                importDatabase.importFrom(in);
-            } finally
-            {
-                in.close();
-            }
-
-            return "Data imported successfully";
-        }
-
-        public String exportEvents(@Name("Compress") boolean compress) throws IOException
-        {
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
-            File exportFile = new File(exports, "streamflow_events_" + format.format(new Date()) + (compress ? ".json.gz" : ".json"));
-            OutputStream out = new FileOutputStream(exportFile);
-
-            if (compress)
-            {
-                out = new GZIPOutputStream(out);
-            }
-
-            Writer writer = new OutputStreamWriter(out, "UTF-8");
-            Iterable<DomainEvent> events = eventStore.events(new AllEventsSpecification(), null, Integer.MAX_VALUE);
-            for (DomainEvent event : events)
-            {
-                writer.write(event.toJSON()+"\n");
-            }
-
-            writer.close();
-
-            return "Events exported to " + exportFile.getAbsolutePath();
-        }
-
-        // Attributes
-        private <T extends Annotation> T getAnnotationOfType(Annotation[] annotations, Class<T> annotationType)
-        {
-            for (Annotation annotation : annotations)
-            {
-                if (annotationType.equals(annotation.annotationType()))
-                {
-                    return annotationType.cast(annotation);
-                }
-            }
-            return null;
         }
 
         class ConfigurableService

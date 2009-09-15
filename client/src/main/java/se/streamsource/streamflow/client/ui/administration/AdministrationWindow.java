@@ -18,37 +18,65 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
 
-import java.awt.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.Dimension;
 
 /**
  * Administration window
  */
 public class AdministrationWindow
-    extends FrameView
+        extends FrameView
 {
     public AdministrationWindow(
             @Service Application application,
             @Service JavaHelp javaHelp,
             @Uses AdministrationMenuBar menu,
-            @Uses AdministrationView view)
+            @Uses final AccountSelector accountSelector,
+            @Structure final ObjectBuilderFactory obf)
     {
         super(application);
 
-        JXFrame frame = new JXFrame(i18n.text(AdministrationResources.window_name));
+        final JXFrame frame = new JXFrame(i18n.text(AdministrationResources.window_name));
         frame.setLocationByPlatform(true);
-        frame.getContentPane().add(view);
 
         setFrame(frame);
         setMenuBar(menu);
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
-        javaHelp.enableHelp(this.getRootPane(),"administration");
+        javaHelp.enableHelp(this.getRootPane(), "administration");
+
+        accountSelector.addListSelectionListener(new ListSelectionListener()
+        {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    if (accountSelector.isSelectionEmpty())
+                    {
+                        frame.getContentPane().removeAll();
+                    } else
+                    {
+                        frame.getContentPane().removeAll();
+
+                        AccountModel selectedAccount = accountSelector.getSelectedAccount();
+                        AdministrationView administrationView = obf.newObjectBuilder(AdministrationView.class).use(selectedAccount).newInstance();
+
+                        frame.getContentPane().add(administrationView);
+                    }
+                    frame.pack();
+                }
+            }
+        });
     }
 
 }

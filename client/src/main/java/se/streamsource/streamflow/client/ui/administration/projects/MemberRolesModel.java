@@ -53,11 +53,11 @@ public class MemberRolesModel
             MemberRoleClientResource memberRole = member.roles().role(role.entity().get().identity());
             if ((Boolean) value)
             {
-                memberRole.put(null);
+                memberRole.putCommand(null);
                 memberRoles.items().get().add(role);
             } else
             {
-                memberRole.delete();
+                memberRole.deleteCommand();
                 memberRoles.items().get().remove(role);
             }
         } catch (ResourceException e)

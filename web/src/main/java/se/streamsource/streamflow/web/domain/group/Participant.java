@@ -23,6 +23,8 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.infrastructure.event.Event;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,39 +36,51 @@ import java.util.List;
 public interface Participant
         extends Identity, Describable
 {
-    void addProject(Project project);
+    void joinProject(Project project);
 
-    void removeProject(Project project);
+    void leaveProject(Project project);
 
-    /**
-     * Return all projects that this participant has access to.
-     * This includes projects that this participant is transitively
-     * a member of through groups.
-     *
-     * @return all projects that this participant is a member of
-     */
-    Iterable<Project> allProjects();
+    void joinGroup(Group group);
 
-    void addGroup(Group group);
-
-    void removeGroup(Group group);
-
-    /**
-     * Return all groups that this participant is a member of, transitively.
-     *
-     * @return all groups that this participant is a member of
-     */
-    Iterable<Group> allGroups();
+    void leaveGroup(Group group);
 
     interface ParticipantState
     {
         ManyAssociation<Project> projects();
 
         ManyAssociation<Group> groups();
+
+        /**
+         * Return all projects that this participant has access to.
+         * This includes projects that this participant is transitively
+         * a member of through groups.
+         *
+         * @return all projects that this participant is a member of
+         */
+        Iterable<Project> allProjects();
+
+        /**
+         * Return all groups that this participant is a member of, transitively.
+         *
+         * @return all groups that this participant is a member of
+         */
+        Iterable<Group> allGroups();
+
+        @Event
+        void joinedProject(DomainEvent event, Project project);
+
+        @Event
+        void leftProject(DomainEvent event, Project project);
+
+        @Event
+        void joinedGroup(DomainEvent event, Group group);
+
+        @Event
+        void leftGroup(DomainEvent event, Group group);
     }
 
     abstract class ParticipantMixin
-            implements Participant
+            implements Participant, ParticipantState
     {
         @Structure
         Module module;
@@ -80,14 +94,20 @@ public interface Participant
         @This
         ParticipantState state;
 
-        public void addProject(Project project)
+        public void joinProject(Project project)
         {
-            state.projects().add(project);
+            if (state.projects().contains(project))
+                return;
+
+            joinedProject(DomainEvent.CREATE, project);
         }
 
-        public void removeProject(Project project)
+        public void leaveProject(Project project)
         {
-            state.projects().remove(project);
+            if (!state.projects().contains(project))
+                return;
+
+            leftProject(DomainEvent.CREATE, project);
         }
 
         public Iterable<Project> allProjects()
@@ -103,7 +123,7 @@ public interface Participant
             // Get group projects
             for (Group group : state.groups())
             {
-                Iterable<Project> groupProjects = group.allProjects();
+                Iterable<Project> groupProjects = ((ParticipantState)group).allProjects();
                 for (Project groupProject : groupProjects)
                 {
                     if (!projects.contains(groupProject))
@@ -114,14 +134,14 @@ public interface Participant
             return projects;
         }
 
-        public void addGroup(Group group)
+        public void joinGroup(Group group)
         {
-            state.groups().add(group);
+            joinedGroup(DomainEvent.CREATE, group);
         }
 
-        public void removeGroup(Group group)
+        public void leaveGroup(Group group)
         {
-            state.groups().remove(group);
+            leftGroup(DomainEvent.CREATE, group);
         }
 
         public Iterable<Group> allGroups()
@@ -133,7 +153,7 @@ public interface Participant
                     groups.add(group);
 
                 // Add transitively
-                for (Group group1 : group.allGroups())
+                for (Group group1 : ((ParticipantState)group).allGroups())
                 {
                     if (!groups.contains(group1))
                         groups.add(group);
@@ -141,6 +161,26 @@ public interface Participant
             }
 
             return groups;
+        }
+
+        public void joinedProject(DomainEvent event, Project project)
+        {
+            state.projects().add(project);
+        }
+
+        public void leftProject(DomainEvent event, Project project)
+        {
+            state.projects().remove(project);
+        }
+
+        public void joinedGroup(DomainEvent event, Group group)
+        {
+            state.groups().add(group);
+        }
+
+        public void leftGroup(DomainEvent event, Group group)
+        {
+            state.groups().remove(group);
         }
     }
 }

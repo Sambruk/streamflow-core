@@ -44,27 +44,9 @@ public class AdministrationModel
         }
     };
 
-    public AdministrationModel(@Uses AdministrationNode root, @Uses AccountsModel accountsModel)
+    public AdministrationModel(@Uses AdministrationNode root)
     {
         super(root);
-
-        accountsModel.addListDataListener(new ListDataListener()
-        {
-            public void intervalAdded(ListDataEvent e)
-            {
-                contentsChanged(e);
-            }
-
-            public void intervalRemoved(ListDataEvent e)
-            {
-                contentsChanged(e);
-            }
-
-            public void contentsChanged(ListDataEvent e)
-            {
-                reload();
-            }
-        });
     }
 
     @Override
@@ -77,11 +59,6 @@ public class AdministrationModel
     {
         getRoot().refresh();
         reload(getRoot());
-    }
-
-    public AccountAdministrationNode accountAdministration(Account account)
-    {
-        return nodes.get(account);
     }
 
     public void createOrganizationalUnit(OrganizationalStructureAdministrationNode orgNode, String name)

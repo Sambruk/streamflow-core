@@ -58,7 +58,7 @@ public class GroupModel
             for (String value : participants)
             {
                 ParticipantClientResource participant = group.participants().participant(value);
-                participant.put(null);
+                participant.create();
             }
         } catch (ResourceException e)
         {
@@ -70,7 +70,7 @@ public class GroupModel
     {
         try
         {
-            group.participants().participant(participant).delete();
+            group.participants().participant(participant).deleteCommand();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_remove_participant, e);

@@ -29,7 +29,9 @@ import se.streamsource.streamflow.infrastructure.event.source.*;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
- * JAVADOC
+ * Service for exposing domain events through JMX. Allows all domain events to be listened to
+ * as JMX Notifications. The event name is set as notification name, and the JSON serialization of
+ * the event is used as user date in the notifications.
  */
 @Mixins(EventManagerService.EventManagerMixin.class)
 public interface EventManagerService

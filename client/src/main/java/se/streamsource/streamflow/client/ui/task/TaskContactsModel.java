@@ -93,7 +93,7 @@ public class TaskContactsModel
     {
         try
         {
-            contactsClientResource.taskContact(selectedIndex).delete();
+            contactsClientResource.taskContact(selectedIndex).deleteCommand();
         } catch (ResourceException e)
         {
             throw new OperationException(TaskResources.could_not_remove_contact, e);

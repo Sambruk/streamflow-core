@@ -19,6 +19,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.infrastructure.event.Event;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -33,14 +35,17 @@ public interface Participants
     interface ParticipantsState
     {
         ManyAssociation<Participant> participants();
+
+        @Event
+        void participantJoined(DomainEvent event, Participant participant);
+
+        @Event
+        void participantRemoved(DomainEvent event, Participant participant);
     }
 
-    class ParticipantsMixin
-            implements Participants
+    abstract class ParticipantsMixin
+            implements Participants, ParticipantsState
     {
-        @This
-        ParticipantsState state;
-
         @Structure
         ValueBuilderFactory vbf;
 
@@ -49,20 +54,33 @@ public interface Participants
 
         public void addParticipant(Participant participant)
         {
-            if (!state.participants().contains(participant))
+            if (!participants().contains(participant))
             {
-                state.participants().add(state.participants().count(), participant);
-                participant.addGroup(group);
+                participantJoined(DomainEvent.CREATE, participant);
+                participant.joinGroup(group);
             }
         }
 
         public void removeParticipant(Participant participant)
         {
-            if (state.participants().remove(participant))
+            if (participants().contains(participant))
             {
-                participant.removeGroup(group);
+                participantRemoved(DomainEvent.CREATE, participant);
+                participant.leaveGroup(group);
             }
         }
+
+        // Events
+        public void participantJoined(DomainEvent event, Participant participant)
+        {
+            participants().add(participant);
+        }
+
+        public void participantRemoved(DomainEvent event, Participant participant)
+        {
+            participants().remove(participant);
+        }
+
     }
 
 }

@@ -17,44 +17,58 @@ package se.streamsource.streamflow.infrastructure.event.source;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
- * Query that restricts what events to return
+ * Query that restricts what events to return. Uses fluent API style to build
+ * up what criteria is used to accept an event.
  */
 public class EventQuery
         implements EventSpecification
 {
     private Date afterDate; // Only return events after this date
-    private String name; // Only return events with this name
-    private String entity; // Only return events on this entity
-    private String by; // Only return events caused by this user
+    private List<String> names; // Only return events with these names
+    private List<String> entities; // Only return events on these entity
+    private List<String> by; // Only return events caused by these users
 
-    public EventQuery(Date afterDate, String name, String entity, String by)
+    public EventQuery()
+    {
+    }
+
+    public EventQuery afterDate(Date afterDate)
     {
         this.afterDate = afterDate;
-        this.name = name;
-        this.entity = entity;
-        this.by = by;
+        return this;
     }
 
-    public Date afterDate()
+    public EventQuery withNames(String... name)
     {
-        return afterDate;
+        if (names == null)
+            names = new ArrayList<String>();
+
+        names.addAll(Arrays.asList(name));
+
+        return this;
     }
 
-    public String name()
+    public EventQuery onEntities(String... entities)
     {
-        return name;
+        if (this.entities == null)
+            this.entities = new ArrayList<String>();
+
+        this.entities.addAll(Arrays.asList(entities));
+        return this;
     }
 
-    public String entity()
+    public EventQuery by(String... by)
     {
-        return entity;
-    }
+        if (this.by == null)
+            this.by = new ArrayList<String>();
 
-    public String by()
-    {
-        return by;
+        this.by.addAll(Arrays.asList(by));
+        return this;
     }
 
     public boolean accept(DomainEvent event)
@@ -63,13 +77,13 @@ public class EventQuery
         if (afterDate != null && event.on().get().before(afterDate))
             return false;
 
-        if (name != null && !event.name().get().equals(name))
+        if (names != null && !names.contains(event.name().get()))
             return false;
 
-        if (entity != null && !event.entity().get().equals(entity))
+        if (entities != null && !entities.contains(event.entity().get()))
             return false;
 
-        if (by != null && !event.by().get().equals(by))
+        if (by != null && !by.contains(event.by().get()))
             return false;
 
         return true; // Event is accepted

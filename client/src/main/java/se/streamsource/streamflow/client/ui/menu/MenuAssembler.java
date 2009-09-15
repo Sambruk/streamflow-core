@@ -34,6 +34,7 @@ public class MenuAssembler
                 AdministrationMenuBar.class);
         UIAssemblers.addViews(module,
                 FileMenu.class,
+                EditMenu.class,
                 SearchMenu.class,
                 ViewMenu.class,
                 AccountMenu.class,

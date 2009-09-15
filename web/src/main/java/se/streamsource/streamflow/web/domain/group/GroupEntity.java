@@ -14,40 +14,60 @@
 
 package se.streamsource.streamflow.web.domain.group;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.Lifecycle;
-import org.qi4j.api.entity.LifecycleException;
+import org.qi4j.api.sideeffect.SideEffectOf;
+import org.qi4j.api.sideeffect.SideEffects;
+import org.qi4j.api.injection.scope.This;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
+import se.streamsource.streamflow.web.domain.project.Project;
 
 /**
  * JAVADOC
  */
-@Concerns(GroupEntity.GroupLifeycleConcern.class)
+@SideEffects(GroupEntity.RemovableLifeycleSideEffect.class)
 public interface GroupEntity
         extends Group,
         Describable.DescribableState,
+        Participant.ParticipantState,
         Participants.ParticipantsState,
         Removable.RemovableState,
         DomainEntity
 {
-    class GroupLifeycleConcern
-            extends ConcernOf<Lifecycle>
-            implements Lifecycle
+    class RemovableLifeycleSideEffect
+            extends SideEffectOf<Removable>
+            implements Removable
     {
-        public void create() throws LifecycleException
+        @This GroupEntity thisGroup;
+
+        public boolean removeEntity()
         {
-            next.create();
+            if (result.removeEntity())
+            {
+                // Make participants leave
+                for (Participant participant : thisGroup.participants().toList())
+                {
+                    thisGroup.removeParticipant(participant);
+                }
+
+                // Leave other groups and projects
+                for (Group group : thisGroup.groups().toList())
+                {
+                    group.removeParticipant(thisGroup);
+                }
+
+                for (Project project : thisGroup.projects().toList())
+                {
+                    project.removeMember(thisGroup);
+                }
+            }
+
+            return true;
         }
 
-        public void remove() throws LifecycleException
+        public boolean reinstate()
         {
-            // TODO Remove from other groups
-            // TODO Remove from project role assignments
-
-            next.remove();
+            return result.reinstate();
         }
     }
 }

@@ -17,35 +17,22 @@ package se.streamsource.streamflow.client.ui.menu;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.ResourceMap;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import static se.streamsource.streamflow.infrastructure.configuration.FileConfiguration.OS.mac;
 
 import javax.swing.*;
 
 /**
- * Menu bar for the Workspace window
+ * Tasks menu
  */
-public class WorkspaceMenuBar
-        extends JMenuBar
+public class EditMenu
+        extends AbstractMenu
 {
-    public WorkspaceMenuBar(@Uses FileMenu fileMenu,
-                            @Uses EditMenu editMenu,
-                            @Uses SearchMenu searchMenu,
-                            @Uses ViewMenu viewMenu,
-                            @Uses AccountMenu accountMenu,
-                            @Uses TaskMenu taskMenu,
-                            @Uses WindowMenu windowMenu,
-                            @Uses HelpMenu helpMenu
-                            )
+    protected void init()
     {
-        add(fileMenu);
-        add(editMenu);
-        add(searchMenu);
-        add(viewMenu);
-        add(accountMenu);
-        add(taskMenu);
-        add(windowMenu);
-        add(helpMenu);
+        menu("editMenu",
+                "cut",
+                "copy",
+                "paste");
     }
 }

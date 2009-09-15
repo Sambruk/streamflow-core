@@ -202,7 +202,7 @@ public class CommandQueryClientResource
 
     private void processEvents(Representation entity)
     {
-        if (getResponse().getStatus().isSuccess() && (getRequest().getMethod().equals(Method.POST) || getRequest().getMethod().equals(Method.PUT)))
+        if (getResponse().getStatus().isSuccess() && (getRequest().getMethod().equals(Method.POST) || getRequest().getMethod().equals(Method.DELETE) || getRequest().getMethod().equals(Method.PUT)))
         {
             try
             {
@@ -223,7 +223,12 @@ public class CommandQueryClientResource
         }
     }
 
-    protected void putCommand(String operation) throws ResourceException
+    public void create() throws ResourceException
+    {
+        putCommand(null);
+    }
+
+    public void putCommand(String operation) throws ResourceException
     {
         putCommand(operation, null);
     }
@@ -238,8 +243,11 @@ public class CommandQueryClientResource
             commandRepresentation = new EmptyRepresentation();
 
         Reference ref = getReference();
-        Reference operationRef = ref.clone().addQueryParameter("operation", operation);
-        setReference(operationRef);
+        if (operation != null)
+        {
+            Reference operationRef = ref.clone().addQueryParameter("operation", operation);
+            setReference(operationRef);
+        }
         try
         {
             int tries = 3;
@@ -279,6 +287,45 @@ public class CommandQueryClientResource
         } finally
         {
             setReference(ref);
+        }
+    }
+
+    public void deleteCommand() throws ResourceException
+    {
+
+        int tries = 3;
+        while (true)
+        {
+            try
+            {
+                Representation events = delete();
+                if (!getStatus().isSuccess())
+                {
+                    throw new ResourceException(getStatus());
+                } else
+                {
+                    processEvents(events);
+                }
+                break;
+            } catch (ResourceException e)
+            {
+                if (e.getStatus().equals(Status.CONNECTOR_ERROR_COMMUNICATION) ||
+                        e.getStatus().equals(Status.CONNECTOR_ERROR_CONNECTION))
+                {
+                    if (tries == 0)
+                        throw e; // Give up
+                    else
+                    {
+                        // Try again
+                        tries--;
+                        continue;
+                    }
+                } else
+                {
+                    // Abort
+                    throw e;
+                }
+            }
         }
     }
 }

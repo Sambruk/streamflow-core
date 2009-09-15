@@ -88,7 +88,7 @@ public interface StatisticsService
 				asStream = getClass().getResourceAsStream("statisticsdatabase.properties");
 	            sql.load(asStream);
 
-	            source.registerListener(this, new EventQuery(config.configuration().lastEventDate().get(), "completed", null, null));
+	            source.registerListener(this, new EventQuery().afterDate(config.configuration().lastEventDate().get()).withNames("completed"));
 			} catch (Exception e)
 			{
 				e.printStackTrace();

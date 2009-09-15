@@ -18,11 +18,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.restlet.data.ChallengeResponse;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.security.*;
-import org.restlet.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.user.User;
 
 import java.util.Date;
@@ -57,7 +56,7 @@ public class PasswordVerifierService
         {
             User user = unitOfWork.get(User.class, username);
 
-            if (user.verifyPassword(new String(password)))
+            if (user.login(new String(password)))
             {
                 return true;
             } else
@@ -69,7 +68,13 @@ public class PasswordVerifierService
             return false;
         } finally
         {
-            unitOfWork.discard();
+            try
+            {
+                unitOfWork.complete();
+            } catch (UnitOfWorkCompletionException e)
+            {
+                unitOfWork.discard();
+            }
         }
     }
 }

@@ -39,7 +39,7 @@ public class OverviewProjectsServerResource
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
         String id = (String) getRequest().getAttributes().get("user");
-        Participant participant = uow.get(Participant.class, id);
+        Participant.ParticipantState participant = uow.get(Participant.ParticipantState.class, id);
 
         for (Project project : participant.allProjects())
         {

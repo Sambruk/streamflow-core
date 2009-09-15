@@ -80,7 +80,7 @@ public class GroupsModel
     {
         try
         {
-            groupsResource.group(id).delete();
+            groupsResource.group(id).deleteCommand();
             refresh();
         } catch (ResourceException e)
         {

@@ -246,7 +246,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     public void removeTask(int idx) throws ResourceException
     {
         TaskDTO task = tasks.get(idx);
-        getResource().task(task.task().get().identity()).delete();
+        getResource().task(task.task().get().identity()).deleteCommand();
         tasks.remove(idx);
         fireTableRowsDeleted(idx, idx);
     }

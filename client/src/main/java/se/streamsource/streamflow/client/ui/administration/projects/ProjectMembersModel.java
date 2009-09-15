@@ -136,7 +136,7 @@ public class ProjectMembersModel
             for (String value : newMembers)
             {
                 MemberClientResource member = this.members.member(value);
-                member.put(null);
+                member.create();
             }
             refresh();
         } catch (ResourceException e)
@@ -149,7 +149,7 @@ public class ProjectMembersModel
     {
         try
         {
-            members.member(entityReference.identity()).delete();
+            members.member(entityReference.identity()).deleteCommand();
             refresh();
         } catch (ResourceException e)
         {

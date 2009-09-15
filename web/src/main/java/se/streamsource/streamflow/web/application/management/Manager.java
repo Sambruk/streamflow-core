@@ -15,6 +15,9 @@
 package se.streamsource.streamflow.web.application.management;
 
 import org.qi4j.api.constraint.Name;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.property.Computed;
+import org.qi4j.api.property.Immutable;
 
 import java.io.IOException;
 
@@ -22,7 +25,7 @@ import java.io.IOException;
  * Management methods for StreamFlow. These operations are available
  * through JMX.
  */
-public interface ManagerOperations
+public interface Manager
 {
     public void reindex();
 
@@ -31,4 +34,10 @@ public interface ManagerOperations
     public String importDatabase(@Name("Filename") String name) throws IOException;
 
     public String exportEvents(@Name("Compress") boolean compress) throws IOException;
+
+    @Computed
+    Property<Integer> failedLogins();
+
+    @Immutable
+    Property<String> version();
 }

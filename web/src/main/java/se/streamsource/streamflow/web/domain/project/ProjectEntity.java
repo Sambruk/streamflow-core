@@ -16,6 +16,8 @@ package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.sideeffect.SideEffectOf;
+import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
@@ -25,6 +27,7 @@ import se.streamsource.streamflow.web.domain.task.*;
 /**
  * JAVADOC
  */
+@SideEffects(ProjectEntity.RemoveMembersOnRemoveSideEffect.class)
 @Mixins(ProjectEntity.ProjectIdGeneratorMixin.class)
 public interface ProjectEntity
         extends DomainEntity,
@@ -60,6 +63,24 @@ public interface ProjectEntity
         public void assignId(TaskId task)
         {
             state.organizationalUnit().get().getOrganization().assignId(task);
+        }
+    }
+
+    abstract class RemoveMembersOnRemoveSideEffect
+        extends SideEffectOf<Removable>
+        implements Removable
+    {
+        @This Members members;
+
+        public boolean removeEntity()
+        {
+            if (result.removeEntity())
+            {
+                // Remove all members from the project
+                members.removeAllMembers();
+            }
+
+            return true;
         }
     }
 }

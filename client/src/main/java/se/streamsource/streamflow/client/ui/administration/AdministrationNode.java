@@ -35,7 +35,7 @@ public class AdministrationNode
     ObjectBuilderFactory obf;
 
     @Uses
-    AccountsModel accountsModel;
+    AccountModel accountsModel;
 
     WeakModelMap<AccountModel, AccountAdministrationNode> models = new WeakModelMap<AccountModel, AccountAdministrationNode>()
     {
@@ -48,12 +48,12 @@ public class AdministrationNode
 
     public TreeNode getChildAt(final int childIndex)
     {
-        return models.get(accountsModel.accountModel(childIndex));
+        return models.get(accountsModel);
     }
 
     public int getChildCount()
     {
-        return accountsModel.getSize();
+        return 1;
     }
 
     public TreeNode getParent()
@@ -63,14 +63,7 @@ public class AdministrationNode
 
     public int getIndex(TreeNode node)
     {
-        AccountAdministrationNode accNode = (AccountAdministrationNode) node;
-        for (int i = 0; i < accountsModel.getSize(); i++)
-        {
-            AccountModel accountModel = accountsModel.accountModel(i);
-            if (accountModel == accNode.accountModel())
-                return i;
-        }
-        return -1;
+        return 0;
     }
 
     public boolean getAllowsChildren()
