@@ -23,7 +23,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -52,7 +51,7 @@ public class GroupsServerResource
         return builder.newList();
     }
 
-    public void postOperation(StringDTO name) throws ResourceException
+    public void postOperation(String name) throws ResourceException
     {
         String identity = getRequest().getAttributes().get("organization").toString();
 
@@ -63,7 +62,7 @@ public class GroupsServerResource
         try
         {
             checkPermission(groups);
-            groups.createGroup(name.string().get());
+            groups.createGroup(name);
             uow.complete();
         } catch (DuplicateDescriptionException e)
         {

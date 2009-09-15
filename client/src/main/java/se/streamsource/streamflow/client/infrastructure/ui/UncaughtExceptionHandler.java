@@ -80,10 +80,6 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                             dialog.setVisible(true);
                             main.show(dialog);
                             return;
-                        }  else
-                        {
-                            showErrorDialog(ex, frame);
-                            return;
                         }
                     }
                 }

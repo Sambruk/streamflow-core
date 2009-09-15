@@ -23,7 +23,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.project.Role;
 import se.streamsource.streamflow.web.domain.project.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -50,7 +49,7 @@ public class RolesServerResource
         return builder.newList();
     }
 
-    public void postOperation(StringDTO name) throws ResourceException
+    public void postOperation(String name) throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Role"));
 
@@ -61,7 +60,7 @@ public class RolesServerResource
         try
         {
             checkPermission(roles);
-            roles.createRole(name.string().get());
+            roles.createRole(name);
             uow.complete();
 
         } catch (DuplicateDescriptionException e)

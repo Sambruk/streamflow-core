@@ -25,7 +25,6 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -66,7 +65,7 @@ public class LabelsServerResource
         return listBuilder.newInstance();
     }
 
-    public void postOperation(StringDTO name) throws ResourceException
+    public void postOperation(String name) throws ResourceException
     {
         String identity = getRequest().getAttributes().get("labels").toString();
 
@@ -74,7 +73,7 @@ public class LabelsServerResource
 
         Labels labels = uow.get(Labels.class, identity);
 
-        labels.createLabel().describe(name.string().get());
+        labels.createLabel().describe(name);
 
         try
         {

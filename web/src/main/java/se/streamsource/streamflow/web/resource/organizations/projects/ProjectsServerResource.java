@@ -23,7 +23,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -50,13 +49,8 @@ public class ProjectsServerResource
         return builder.newList();
     }
 
-
-
-    public void postOperation(StringDTO name) throws ResourceException
+    public void postOperation(String name) throws ResourceException
     {
-        if (name == null)
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
-
         String identity = getRequest().getAttributes().get("organization").toString();
 
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Project"));
@@ -66,7 +60,7 @@ public class ProjectsServerResource
         try
         {
             checkPermission(projects);
-            projects.createProject(name.string().get());
+            projects.createProject(name);
             uow.complete();
         } catch (DuplicateDescriptionException e)
         {

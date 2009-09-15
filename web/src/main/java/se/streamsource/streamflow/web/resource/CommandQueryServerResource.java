@@ -43,7 +43,6 @@ import org.restlet.representation.*;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.*;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import java.io.IOException;
@@ -165,13 +164,13 @@ public class CommandQueryServerResource
     }
 
     @Override
-    protected Representation delete(Variant variant) throws ResourceException
+    final protected Representation delete(Variant variant) throws ResourceException
     {
         return post(null, variant);
     }
 
     @Override
-    protected Representation post(Representation entity, Variant variant) throws ResourceException
+    final protected Representation post(Representation entity, Variant variant) throws ResourceException
     {
         String operation = getOperation();
         UnitOfWork uow = null;
@@ -279,7 +278,7 @@ public class CommandQueryServerResource
     }
 
     @Override
-    protected Representation put(Representation representation, Variant variant) throws ResourceException
+    final protected Representation put(Representation representation, Variant variant) throws ResourceException
     {
         return post(representation, variant);
     }
@@ -322,9 +321,10 @@ public class CommandQueryServerResource
                 return new Object[]{command};
             } else if (getRequest().getEntity().getMediaType().equals(MediaType.TEXT_PLAIN))
             {
-                ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-                builder.prototype().string().set(getRequest().getEntityAsText());
-                return new Object[]{builder.newInstance()};
+                String text = getRequest().getEntityAsText();
+                if (text == null)
+                    throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
+                return new Object[]{text};
             } else
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format");
         } else
