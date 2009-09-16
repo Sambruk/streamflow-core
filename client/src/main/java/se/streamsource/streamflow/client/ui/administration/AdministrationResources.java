@@ -65,5 +65,12 @@ public enum AdministrationResources
     could_not_create_role_name_already_exists,
     search_users,
     could_not_remove_organisation_with_open_projects,
-    could_not_move_organisation_with_conflicts, could_not_move_organization, could_not_switch_account
+    could_not_move_organisation_with_conflicts,
+    could_not_move_organization,
+    could_not_merge_organisation_with_conflicts,
+    could_not_merge_organization,
+    could_not_switch_account,
+    nothing_selected,
+    move_to,
+    merge_to
 }

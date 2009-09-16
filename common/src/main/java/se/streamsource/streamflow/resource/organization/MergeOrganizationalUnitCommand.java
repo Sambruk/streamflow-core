@@ -20,7 +20,7 @@ import org.qi4j.api.value.ValueComposite;
 public interface MergeOrganizationalUnitCommand
     extends ValueComposite
 {
-    Property<EntityReference> from();
+    Property<EntityReference> parent();
 
     Property<EntityReference> to();
 }

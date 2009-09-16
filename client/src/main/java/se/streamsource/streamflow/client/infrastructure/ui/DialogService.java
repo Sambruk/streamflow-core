@@ -38,7 +38,7 @@ public class DialogService
     @Service
     ApplicationContext context;
 
-    public void showOkCancelHelpDialog(Component component, JComponent main)
+    public JXDialog showOkCancelHelpDialog(Component component, JComponent main)
     {
         Window window = WindowUtils.findWindow(component);
         JXDialog dialog;
@@ -52,6 +52,8 @@ public class DialogService
         dialog.pack();
         dialog.setLocationRelativeTo(SwingUtilities.windowForComponent(component));
         dialog.setVisible(true);
+
+        return dialog;
     }
 
     public void showOkDialog(Component component, JComponent main)

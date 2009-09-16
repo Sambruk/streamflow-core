@@ -33,19 +33,19 @@ public interface OrganizationalUnit
 {
     Organization getOrganization();
 
-    void moveOrganizationalUnit(OrganizationalUnit from, OrganizationalUnit to) throws MoveOrganizationalUnitException;
+    void moveOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MoveOrganizationalUnitException;
 
-    void mergeOrganizationalUnit(OrganizationalUnit from, OrganizationalUnit to) throws MergeOrganizationalUnitException;
+    void mergeOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MergeOrganizationalUnitException;
 
     interface OrganizationalUnitState
     {
         Association<Organization> organization();
 
         @Event
-        void organizationalUnitMoved(DomainEvent event, OrganizationalUnit from, OrganizationalUnit to);
+        void organizationalUnitMoved(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to);
 
         @Event
-        void organizationalUnitMerged(DomainEvent event, OrganizationalUnit from, OrganizationalUnit to);
+        void organizationalUnitMerged(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to);
     }
 
     abstract class OrganizationalUnitMixin
@@ -59,11 +59,11 @@ public interface OrganizationalUnit
             return state.organization().get();
         }
 
-        public void moveOrganizationalUnit(OrganizationalUnit from, OrganizationalUnit to) throws MoveOrganizationalUnitException
+        public void moveOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MoveOrganizationalUnitException
         {
             OrganizationalUnitEntity uoe = (OrganizationalUnitEntity) state;
             OrganizationalUnitEntity target = (OrganizationalUnitEntity) to;
-            OrganizationalUnitEntity source = (OrganizationalUnitEntity) from;
+            OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
             if (uoe.identity().get().equals(target.identity().get()))
             {
                 throw new MoveOrganizationalUnitException();
@@ -74,19 +74,19 @@ public interface OrganizationalUnit
                 throw new MoveOrganizationalUnitException();
             }
 
-            if (!source.organizationalUnits().contains(uoe))
+            if (!parentEntity.organizationalUnits().contains(uoe))
             {
                 throw new MoveOrganizationalUnitException();
             }
 
-            organizationalUnitMoved(DomainEvent.CREATE, from , to);
+            organizationalUnitMoved(DomainEvent.CREATE, parent , to);
         }
 
-        public void mergeOrganizationalUnit(OrganizationalUnit from, OrganizationalUnit to) throws MergeOrganizationalUnitException
+        public void mergeOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MergeOrganizationalUnitException
         {
             OrganizationalUnitEntity uoe = (OrganizationalUnitEntity) state;
             OrganizationalUnitEntity target = (OrganizationalUnitEntity) to;
-            OrganizationalUnitEntity source = (OrganizationalUnitEntity) from;
+            OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
             if (uoe.identity().get().equals(target.identity().get()))
             {
                 throw new MergeOrganizationalUnitException();
@@ -97,7 +97,7 @@ public interface OrganizationalUnit
                 throw new MergeOrganizationalUnitException();
             }
 
-            if (!source.organizationalUnits().contains(uoe))
+            if (!parentEntity.organizationalUnits().contains(uoe))
             {
                 throw new MergeOrganizationalUnitException();
             }
@@ -107,27 +107,27 @@ public interface OrganizationalUnit
                 throw new MergeOrganizationalUnitException();
             }
 
-            organizationalUnitMerged(DomainEvent.CREATE, from, to);
+            organizationalUnitMerged(DomainEvent.CREATE, parent, to);
         }
 
 
-        public void organizationalUnitMoved(DomainEvent event, OrganizationalUnit from, OrganizationalUnit to)
+        public void organizationalUnitMoved(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to)
         {
             OrganizationalUnitEntity oue = (OrganizationalUnitEntity) state;
-            OrganizationalUnitEntity fromEntity = (OrganizationalUnitEntity) from;
+            OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
             OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
 
-            fromEntity.organizationalUnits().remove(oue);
+            parentEntity.organizationalUnits().remove(oue);
             toEntity.organizationalUnits().add(oue);
         }
 
-        public void organizationalUnitMerged(DomainEvent event, OrganizationalUnit from, OrganizationalUnit to)
+        public void organizationalUnitMerged(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to)
         {
             OrganizationalUnitEntity oue = (OrganizationalUnitEntity) state;
-            OrganizationalUnitEntity fromEntity = (OrganizationalUnitEntity) from;
+            OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
             OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
 
-            fromEntity.organizationalUnits().remove(oue);
+            parentEntity.organizationalUnits().remove(oue);
 
             while (oue.roles().count() > 0)
             {

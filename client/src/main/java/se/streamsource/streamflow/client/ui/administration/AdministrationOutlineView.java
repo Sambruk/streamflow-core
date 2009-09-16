@@ -21,11 +21,12 @@ import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingProvider;
-import org.qi4j.api.entity.EntityReference;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.NameDialog;
@@ -36,7 +37,6 @@ import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import java.awt.*;
-import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -46,16 +46,20 @@ import java.util.logging.Logger;
 public class AdministrationOutlineView
         extends JPanel
 {
-    final private JXTree tree;
+    private JXTree tree;
 
     @Service
     DialogService dialogs;
     @Uses
     Iterable<NameDialog> nameDialogs;
-    private AdministrationModel model;
-    public EventSourceListener subscriber;
 
-    public AdministrationOutlineView(@Service ApplicationContext context,
+    private AdministrationModel model;
+    EventSourceListener subscriber;
+
+    @Structure
+    ObjectBuilderFactory obf;
+
+    public AdministrationOutlineView(@Service ApplicationContext context, 
                                      @Uses final AdministrationModel model,
                                      @Service EventSource source) throws Exception
     {
@@ -121,6 +125,7 @@ public class AdministrationOutlineView
         JPopupMenu popup = new JPopupMenu();
         popup.add(am.get("createOrganizationalUnit"));
         popup.add(am.get("removeOrganizationalUnit"));
+        popup.add(new JSeparator());
         popup.add(am.get("moveOrganizationalUnit"));
         popup.add(am.get("mergeOrganizationalUnit"));
 
@@ -204,71 +209,35 @@ public class AdministrationOutlineView
     @Action
     public void moveOrganizationalUnit()
     {
-       System.out.println("Start move.");
-        tree.setDragEnabled(true);
-        tree.setDropMode(DropMode.ON);
-        tree.setTransferHandler(new MoveTransferHandler());
+        OrganizationalStructureAdministrationNode parent =
+                        (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getParentPath().getLastPathComponent();
+
+        OrganizationalStructureAdministrationNode moved =
+                        (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
+
+        MoveAndMergeOrganizationDialog moveAndMergeDialog = obf.newObjectBuilder(MoveAndMergeOrganizationDialog.class).use(model).newInstance();
+        moveAndMergeDialog.setFromParent(parent);
+        moveAndMergeDialog.setMoved(moved);
+        moveAndMergeDialog.setOperation(MoveAndMergeOrganizationDialog.MOVE);
+
+        dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), moveAndMergeDialog).setTitle(i18n.text(AdministrationResources.move_to));
     }
 
     @Action
     public void mergeOrganizationalUnit()
     {
-       System.out.println("Start merge."); 
-    }
+        OrganizationalStructureAdministrationNode parent =
+                        (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getParentPath().getLastPathComponent();
 
-    class MoveTransferHandler extends TransferHandler
-    {
-
-        @Override
-        public int getSourceActions(JComponent c) {
-            return MOVE;
-        }
-
-        @Override
-        public Transferable createTransferable(JComponent c) {
-            return (OrganizationalStructureAdministrationNode)((JXTree)c).getSelectionPath().getLastPathComponent();
-        }
-
-        @Override
-        public void exportDone(JComponent c, Transferable t, int action) {
-
-            JXTree tree = (JXTree)c;
-            tree.setDragEnabled(false);
-            tree.setTransferHandler(null);
-
-        }
-
-        @Override
-        public boolean canImport(TransferSupport transferSupport) {
-            if("OrganizationalStructureNode".equals(transferSupport.getDataFlavors()[0].getHumanPresentableName()))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean importData(TransferSupport transferSupport) {
-            System.out.println("Import start");
-            try
-            {
-                OrganizationalStructureAdministrationNode movedNode =
+        OrganizationalStructureAdministrationNode moved =
                         (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
-                OrganizationalStructureAdministrationNode dropNode =
-                        (OrganizationalStructureAdministrationNode)tree.getDropLocation()
-                                .getPath().getLastPathComponent();
+       MoveAndMergeOrganizationDialog moveAndMergeDialog = obf.newObjectBuilder(MoveAndMergeOrganizationDialog.class).use(model).newInstance();
+       moveAndMergeDialog.setFromParent(parent);
+       moveAndMergeDialog.setMoved(moved);
+       moveAndMergeDialog.setOperation(MoveAndMergeOrganizationDialog.MERGE);
 
-                EntityReference from = (EntityReference)transferSupport.getTransferable().getTransferData(transferSupport.getDataFlavors()[0]);
-
-                movedNode.model().moveOrganizationalUnit(from, dropNode.ou().entity().get());
-
-                return true;
-
-            } catch(Exception e)
-            {
-                throw new OperationException(AdministrationResources.could_not_move_organization, e);
-            }
-        }
+        dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), moveAndMergeDialog).setTitle(i18n.text(AdministrationResources.merge_to));
     }
+
 }

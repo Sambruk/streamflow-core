@@ -32,9 +32,10 @@ import se.streamsource.streamflow.client.resource.organizations.OrganizationClie
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
+import se.streamsource.streamflow.resource.organization.MergeOrganizationalUnitCommand;
+import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
 
 import javax.swing.*;
 
@@ -146,7 +147,7 @@ public class OrganizationalUnitAdministrationModel
         try {
             ValueBuilder<MoveOrganizationalUnitCommand> builder = vbf.newValueBuilder(MoveOrganizationalUnitCommand.class);
             MoveOrganizationalUnitCommand dto = builder.prototype();
-            dto.from().set(fromID);
+            dto.parent().set(fromID);
             dto.to().set(toID);
 
             organization.move(builder.newInstance());
@@ -159,6 +160,29 @@ public class OrganizationalUnitAdministrationModel
             } else
             {
                 throw new OperationException(AdministrationResources.could_not_move_organization, e);
+            }
+        }
+
+    }
+
+    public void mergeOrganizationalUnit(EntityReference fromID, EntityReference toID)
+    {
+        try {
+            ValueBuilder<MergeOrganizationalUnitCommand> builder = vbf.newValueBuilder(MergeOrganizationalUnitCommand.class);
+            MergeOrganizationalUnitCommand dto = builder.prototype();
+            dto.parent().set(fromID);
+            dto.to().set(toID);
+
+            organization.merge(builder.newInstance());
+        } catch (ResourceException e) {
+           if(Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
+            {
+                dialogs.showOkCancelHelpDialog(application.getContext().getFocusOwner(),
+                        new JLabel(i18n.text(AdministrationResources.could_not_merge_organisation_with_conflicts)));
+
+            } else
+            {
+                throw new OperationException(AdministrationResources.could_not_merge_organization, e);
             }
         }
 

@@ -50,7 +50,7 @@ public class AdministrationAssembler
         UIAssemblers.addMV(module,
                 AccountModel.class,
                 AccountView.class);
-        UIAssemblers.addDialogs(module, ChangePasswordDialog.class);
+        UIAssemblers.addDialogs(module, ChangePasswordDialog.class, MoveAndMergeOrganizationDialog.class);
         UIAssemblers.addTasks(module, TestConnectionTask.class);
 
         // Other administration modules

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard …berg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard ï¿½berg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,14 +167,14 @@ public class OrganizationServerResource
     {
         String ouId = (String) getRequest().getAttributes().get("organization");
         OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
-        OrganizationalUnit fromEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.from().get().identity());
+        OrganizationalUnit parentEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.parent().get().identity());
         OrganizationalUnit toEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.to().get().identity());
 
         checkPermission(ou);
 
         try
         {
-            ou.moveOrganizationalUnit(fromEntity, toEntity);
+            ou.moveOrganizationalUnit(parentEntity, toEntity);
         } catch (MoveOrganizationalUnitException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
@@ -185,14 +185,14 @@ public class OrganizationServerResource
     {
         String ouId = (String) getRequest().getAttributes().get("organization");
         OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
-        OrganizationalUnit fromEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.from().get().identity());
+        OrganizationalUnit parentEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.parent().get().identity());
         OrganizationalUnit toEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.to().get().identity());
 
         checkPermission(ou);
 
         try
         {
-            ou.mergeOrganizationalUnit(fromEntity, toEntity);
+            ou.mergeOrganizationalUnit(parentEntity, toEntity);
         } catch (MergeOrganizationalUnitException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
