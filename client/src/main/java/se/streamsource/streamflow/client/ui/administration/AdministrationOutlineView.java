@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
+import se.streamsource.streamflow.infrastructure.event.source.*;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
@@ -37,6 +38,7 @@ import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * JAVADOC
@@ -44,25 +46,40 @@ import java.util.ArrayList;
 public class AdministrationOutlineView
         extends JPanel
 {
-    private JXTree tree;
+    final private JXTree tree;
 
     @Service
     DialogService dialogs;
     @Uses
     Iterable<NameDialog> nameDialogs;
     private AdministrationModel model;
+    public EventSourceListener subscriber;
 
-    public AdministrationOutlineView(@Service ApplicationContext context, @Uses final AdministrationModel model) throws Exception
+    public AdministrationOutlineView(@Service ApplicationContext context,
+                                     @Uses final AdministrationModel model,
+                                     @Service EventSource source) throws Exception
     {
         super(new BorderLayout());
         this.model = model;
-
         tree = new JXTree(model);
 
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
         tree.setEditable(true);
 
+        subscriber = new EventSourceListener()
+        {
+
+            public void eventsAvailable(EventStore source, EventSpecification specification)
+            {
+                Logger.getLogger("administration").info("Refresh organizational overview");
+                model.getRoot().refresh();
+                model.reload(model.getRoot());
+                tree.expandAll();
+            }
+        };
+        source.registerListener(subscriber, new EventQuery().
+                withNames("organizationalUnitMoved", "organizationalUnitMerged"));
 
         DefaultTreeRenderer renderer = new DefaultTreeRenderer(new WrappingProvider(
                 new IconValue()

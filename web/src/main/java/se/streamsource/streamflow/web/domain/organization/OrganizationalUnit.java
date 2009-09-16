@@ -22,7 +22,7 @@ import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitExce
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.project.Role;
+import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.project.Project;
 
 /**
@@ -132,7 +132,7 @@ public interface OrganizationalUnit
             // TODO fix duplicated names
             // duplicate role names (case sensitive?)
             // move usage to existing role then delete role
-            for (Role role : fromEntity.roles())
+            for (ProjectRole role : fromEntity.roles())
             {
                 fromEntity.roles().remove(role);
                 toEntity.roles().add(role);
