@@ -129,28 +129,24 @@ public interface OrganizationalUnit
 
             fromEntity.organizationalUnits().remove(oue);
 
-            // TODO fix duplicated names
-            // duplicate role names (case sensitive?)
-            // move usage to existing role then delete role
-            for (ProjectRole role : fromEntity.roles())
+            for (ProjectRole role : oue.roles())
             {
-                fromEntity.roles().remove(role);
+                oue.roles().remove(role);
                 toEntity.roles().add(role);
             }
 
-            // duplicate group name: Idea: change groupname to somehitng unique (prefix by old OU name)
-            for (Group group: fromEntity.groups())
+            for (Group group: oue.groups())
             {
-                fromEntity.groups().remove(group);
+                oue.groups().remove(group);
                 toEntity.groups().add(group);
             }
 
-            // duplicate project name: same as for group
-            for (Project project: fromEntity.projects())
+            for (Project project: oue.projects())
             {
-                fromEntity.projects().remove(project);
+                oue.projects().remove(project);
                 toEntity.projects().add(project);
             }
+            oue.remove();
         }
     }
 }
