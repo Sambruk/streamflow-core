@@ -87,6 +87,7 @@ public class APIv1Router
 
         // OrganizationalUnits
         attach("/organizations", createServerResourceFinder(OrganizationsServerResource.class));
+// Test of composite CQSR        attach("/organizations/{entity}", createServerCompositeFinder(OrganizationCompositeResource.class));
         attach("/organizations/{organization}", createServerResourceFinder(OrganizationServerResource.class));
         attach("/organizations/{organization}/groups", createServerResourceFinder(GroupsServerResource.class));
         attach("/organizations/{organization}/groups/{group}", createServerResourceFinder(GroupServerResource.class));
