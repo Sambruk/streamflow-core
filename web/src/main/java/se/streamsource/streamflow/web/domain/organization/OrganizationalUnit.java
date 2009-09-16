@@ -107,6 +107,7 @@ public interface OrganizationalUnit
                 throw new MergeOrganizationalUnitException();
             }
 
+            uoe.removeEntity();
             organizationalUnitMerged(DomainEvent.CREATE, parent, to);
         }
 
@@ -147,7 +148,6 @@ public interface OrganizationalUnit
                 toEntity.projects().add(project);
                 oue.projects().remove(project);
             }
-            oue.remove();
         }
     }
 }
