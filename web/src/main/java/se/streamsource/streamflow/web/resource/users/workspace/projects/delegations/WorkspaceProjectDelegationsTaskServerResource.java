@@ -15,8 +15,6 @@
 package se.streamsource.streamflow.web.resource.users.workspace.projects.delegations;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
@@ -67,16 +65,9 @@ public class WorkspaceProjectDelegationsTaskServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        try
-        {
-            String taskId = (String) getRequest().getAttributes().get("task");
-            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
-            Task task = uow.get(Task.class, taskId);
-            uow.remove(task);
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            e.printStackTrace();
-        }
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
+        uow.remove(task);
     }
 }

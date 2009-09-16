@@ -16,18 +16,12 @@ package se.streamsource.streamflow.web.resource.organizations.groups;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -55,26 +49,11 @@ public class GroupsServerResource
     {
         String identity = getRequest().getAttributes().get("organization").toString();
 
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("New Group"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         Groups groups = uow.get(Groups.class, identity);
 
-        try
-        {
-            checkPermission(groups);
-            groups.createGroup(name);
-            uow.complete();
-        } catch (DuplicateDescriptionException e)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-        } catch (UnitOfWorkCompletionException e)
-        {
-            uow.discard();
-        } catch(AccessControlException ae)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
+        checkPermission(groups);
+        groups.createGroup(name);
     }
 }

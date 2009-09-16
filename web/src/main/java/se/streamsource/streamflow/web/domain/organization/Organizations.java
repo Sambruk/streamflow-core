@@ -28,7 +28,6 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
-import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
@@ -45,10 +44,10 @@ public interface Organizations
     @Mixins(OrganisationsStateMixin.class)
     interface OrganizationsState
     {
-        @Event
+
         OrganizationEntity organizationCreated(DomainEvent event, String id);
 
-        @Event
+
         UserEntity userCreated(DomainEvent event, String username, String password);
 
         Organization findByName(String name);

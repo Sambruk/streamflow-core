@@ -15,53 +15,34 @@
 package se.streamsource.streamflow.web.infrastructure.event;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
- * JAVADOC
+ * Tester of domain events and commands.
+ *
+ * All methods are using the generic mixins which
+ * provide default implementations of entity create/remove
+ * and property change.
  */
-@Mixins(Tester.TestMixin.class)
 public interface Tester
 {
-    void doStuff(String aParameter);
+    TestEntity createTester();
+    boolean removeTester(Tester entity);
 
+    void changeProp(String aParameter);
 
-    @Mixins(TestEntity.TestStateMixin.class)
     interface TestState
     {
+        ManyAssociation<Tester> testers();
+
         @Optional
         Property<String> prop();
 
-        @Event
-        void stuffDone(@Optional DomainEvent event, String aParameter);
+        TestEntity testerCreated(DomainEvent event, String id);
+        void testerRemoved(DomainEvent event, Tester tester);
+
+        void propChanged(DomainEvent event, String aParameter);
     }
-
-    class TestMixin
-            implements Tester
-    {
-        @This
-        TestState state;
-
-        public void doStuff(String aParameter)
-        {
-            state.stuffDone(null, aParameter);
-        }
-    }
-
-    public abstract class TestStateMixin
-            implements TestState
-    {
-        @This
-        TestState state;
-
-        public void stuffDone(DomainEvent event, String aParameter)
-        {
-            state.prop().set(aParameter);
-        }
-    }
-
 }

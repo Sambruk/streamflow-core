@@ -25,7 +25,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Generic mixin for simple event methods that update a property.
+ * Generic mixin for simple event methods that update a property. They have to follow this pattern:
+ * void fooChanged(DomainEvent event, SomeType newValue)
+ * This will cause the property "foo" to be updated with the "newValue"
  */
 @AppliesTo(EventPropertyChangedMixin.EventPropertyChangeAppliesTo.class)
 public class EventPropertyChangedMixin

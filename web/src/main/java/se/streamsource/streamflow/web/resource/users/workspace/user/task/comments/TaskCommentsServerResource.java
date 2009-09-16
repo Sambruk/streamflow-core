@@ -80,23 +80,16 @@ public class TaskCommentsServerResource
 
     public void postOperation(NewCommentCommand comment) throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Add task comment"));
-        try
-        {
-            //NewCommentCommand comment = vbf.newValueFromJSON(NewCommentCommand.class, representation.getText());
-            Commentable commentable = uow.get(Commentable.class, getRequest().getAttributes().get("task").toString());
-            ValueBuilder<CommentValue> builder = vbf.newValueBuilder(CommentValue.class);
-            CommentValue prototype = builder.prototype();
-            prototype.commenter().set(comment.commenter().get());
-            prototype.creationDate().set(comment.creationDate().get());
-            prototype.text().set(comment.text().get());
-            prototype.isPublic().set(comment.isPublic().get());
-            commentable.addComment(builder.newInstance());
-            uow.complete();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            uow.discard();
-        }
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        //NewCommentCommand comment = vbf.newValueFromJSON(NewCommentCommand.class, representation.getText());
+        Commentable commentable = uow.get(Commentable.class, getRequest().getAttributes().get("task").toString());
+        ValueBuilder<CommentValue> builder = vbf.newValueBuilder(CommentValue.class);
+        CommentValue prototype = builder.prototype();
+        prototype.commenter().set(comment.commenter().get());
+        prototype.creationDate().set(comment.creationDate().get());
+        prototype.text().set(comment.text().get());
+        prototype.isPublic().set(comment.isPublic().get());
+        commentable.addComment(builder.newInstance());
     }
 }

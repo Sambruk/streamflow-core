@@ -15,12 +15,14 @@
 package se.streamsource.streamflow.web.resource.users.workspace.projects.assignments;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -73,24 +75,16 @@ public class WorkspaceProjectAssignmentsTaskServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        try
-        {
-            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
-            String userId = (String) getRequest().getAttributes().get("user");
-            String taskId = (String) getRequest().getAttributes().get("task");
-            Owner owner = uow.get(Owner.class, userId);
-            TaskEntity task = uow.get(TaskEntity.class, taskId);
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String userId = (String) getRequest().getAttributes().get("user");
+        String taskId = (String) getRequest().getAttributes().get("task");
+        Owner owner = uow.get(Owner.class, userId);
+        TaskEntity task = uow.get(TaskEntity.class, taskId);
 
-            if (task.owner().get().equals(owner))
-            {
-                // Only delete task if user owns it
-                uow.remove(task);
-            }
-
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
+        if (task.owner().get().equals(owner))
         {
-            e.printStackTrace();
+            // Only delete task if user owns it
+            uow.remove(task);
         }
     }
 }

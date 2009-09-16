@@ -20,7 +20,6 @@ import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
-import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
  * Role for maintaining descriptions of entities.
@@ -40,7 +39,6 @@ public interface Describable
         @UseDefaults
         Property<String> description();
 
-        @Event
         void described(DomainEvent event, String description);
     }
 

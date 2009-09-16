@@ -14,21 +14,13 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.sideeffect.SideEffects;
-import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
-import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
+import se.streamsource.streamflow.web.domain.DomainEntity;
 
 /**
  * JAVADOC
  */
-@Concerns(EventCreationConcern.class)
-@SideEffects(EventSideEffect.class)
-@Mixins(Tester.TestMixin.class)
 interface TestEntity
-        extends EntityComposite, Tester, Tester.TestState
+        extends DomainEntity, Tester, Tester.TestState
 {
 }
 

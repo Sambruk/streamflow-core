@@ -52,8 +52,8 @@ public class ProjectServerResource
 
         try
         {
-            ProjectRoles.RolesState roles = uowf.currentUnitOfWork().get(ProjectRoles.RolesState.class, getRequest().getAttributes().get("organization").toString());
-            for (ProjectRole projectRole : roles.roles())
+            ProjectRoles.ProjectRolesState roles = uowf.currentUnitOfWork().get(ProjectRoles.ProjectRolesState.class, getRequest().getAttributes().get("organization").toString());
+            for (ProjectRole projectRole : roles.projectRoles())
             {
                 if (projectRole.getDescription().equals(query.string().get()))
                 {

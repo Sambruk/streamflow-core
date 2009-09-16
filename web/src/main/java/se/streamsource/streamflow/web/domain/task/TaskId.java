@@ -20,7 +20,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.Matches;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
 
 /**
@@ -46,7 +45,7 @@ public interface TaskId
         @Optional
         Property<String> taskId();
 
-        @Event
+
         void taskIdAssigned(DomainEvent event, String id);
     }
 

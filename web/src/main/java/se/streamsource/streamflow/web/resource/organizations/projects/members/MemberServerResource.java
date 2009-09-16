@@ -64,30 +64,14 @@ public class MemberServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Remove member"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         String member = getRequest().getAttributes().get("member").toString();
         Participant participant = uow.get(Participant.class, member);
 
         String id = getRequest().getAttributes().get("project").toString();
         Project project = uow.get(Project.class, id);
-        try
-        {
-            checkPermission(project);
-        } catch(AccessControlException e)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
+        checkPermission(project);
         project.removeMember(participant);
-
-        try
-        {
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            uow.discard();
-            throw new ResourceException(e);
-        }
     }
 }

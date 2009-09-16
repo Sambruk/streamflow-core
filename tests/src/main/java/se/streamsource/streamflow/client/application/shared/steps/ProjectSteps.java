@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.hamcrest.CoreMatchers;
-import static org.hamcrest.CoreMatchers.equalTo;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
@@ -26,7 +25,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
@@ -48,19 +46,11 @@ public class ProjectSteps
 
     public Project project;
 
-    private DuplicateDescriptionException duplicateDescriptionException;
-
     @When("project named $name is created")
     public void newProject(String name)
     {
         OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) organizationalUnitSteps.ou;
-        try
-        {
-            project = ouEntity.createProject(name);
-        } catch (DuplicateDescriptionException e)
-        {
-            duplicateDescriptionException = e;
-        }
+        project = ouEntity.createProject(name);
     }
 
 
@@ -121,13 +111,6 @@ public class ProjectSteps
         }
     }
 
-    @Then("no DuplicateDescriptionException is thrown")
-    public void noDDException()
-    {
-        ensureThat(duplicateDescriptionException, CoreMatchers.nullValue());
-    }
-
-
     @Then("project named $name $can be found")
     public void groupAdded(String name, String can)
     {
@@ -155,14 +138,6 @@ public class ProjectSteps
         }
 
 
-    }
-
-    @Then("projectexception $name is thrown")
-    public void exceptionThrown(String name)
-    {
-        ensureThat(duplicateDescriptionException.getClass().getSimpleName(), equalTo(name));
-
-        duplicateDescriptionException = null;
     }
 
     private Project findProject(String name)

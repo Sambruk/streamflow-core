@@ -65,7 +65,7 @@ public class ParticipantServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Remove participant"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         String participantId = getRequest().getAttributes().get("participant").toString();
         Participant participant = uow.get(Participant.class, participantId);
@@ -73,24 +73,8 @@ public class ParticipantServerResource
         String id = getRequest().getAttributes().get("group").toString();
         Group group = uow.get(Group.class, id);
 
-        try
-        {
-            checkPermission(group);
-        } catch(AccessControlException e)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
+        checkPermission(group);
         group.removeParticipant(participant);
-
-        try
-        {
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            uow.discard();
-            throw new ResourceException(e);
-        }
     }
 
 }

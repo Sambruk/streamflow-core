@@ -15,15 +15,10 @@
 package se.streamsource.streamflow.web.resource.organizations.roles;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.project.ProjectRoleEntity;
 import se.streamsource.streamflow.web.domain.project.ProjectRoles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -34,7 +29,7 @@ public class RoleServerResource
 {
     public void deleteOperation() throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete role"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         String org = getRequest().getAttributes().get("organization").toString();
 
@@ -43,23 +38,8 @@ public class RoleServerResource
         String identity = getRequest().getAttributes().get("role").toString();
         ProjectRoleEntity projectRole = uow.get(ProjectRoleEntity.class, identity);
 
-        try
-        {
-            checkPermission(projectRoles);
-        } catch(AccessControlException e)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
+        checkPermission(projectRoles);
 
-        projectRoles.removeRole(projectRole);
-
-        try
-        {
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            throw new ResourceException(e);
-        }
+        projectRoles.removeProjectRole(projectRole);
     }
 }

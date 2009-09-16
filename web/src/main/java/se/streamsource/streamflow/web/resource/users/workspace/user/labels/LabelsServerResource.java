@@ -17,9 +17,7 @@ package se.streamsource.streamflow.web.resource.users.workspace.user.labels;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
@@ -69,18 +67,10 @@ public class LabelsServerResource
     {
         String identity = getRequest().getAttributes().get("labels").toString();
 
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("New label"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         Labels labels = uow.get(Labels.class, identity);
 
         labels.createLabel().describe(name);
-
-        try
-        {
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            uow.discard();
-        }
     }
 }

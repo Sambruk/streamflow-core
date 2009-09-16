@@ -22,7 +22,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 
 import java.util.Date;
 
@@ -37,7 +36,7 @@ public interface CreatedOn
     {
         Property<Date> createdOn();
 
-        @Event
+
         void created(DomainEvent event);
     }
 

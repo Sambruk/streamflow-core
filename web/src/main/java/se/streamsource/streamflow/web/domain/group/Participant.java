@@ -19,15 +19,14 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.sideeffect.SideEffectOf;
+import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.sideeffect.SideEffects;
-import org.qi4j.api.sideeffect.SideEffectOf;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
-import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.project.Project;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,16 +69,16 @@ public interface Participant
          */
         Iterable<Group> allGroups();
 
-        @Event
+        
         void joinedProject(DomainEvent event, Project project);
 
-        @Event
+
         void leftProject(DomainEvent event, Project project);
 
-        @Event
+
         void joinedGroup(DomainEvent event, Group group);
 
-        @Event
+
         void leftGroup(DomainEvent event, Group group);
     }
 

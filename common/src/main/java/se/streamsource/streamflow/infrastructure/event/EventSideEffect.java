@@ -21,9 +21,9 @@ import org.qi4j.api.sideeffect.GenericSideEffect;
 import java.lang.reflect.Method;
 
 /**
- * Generate event
+ * Notify event listeners that an event was created
  */
-@AppliesTo(Event.class)
+@AppliesTo(EventMethodFilter.class)
 public class EventSideEffect
         extends GenericSideEffect
 {
@@ -33,13 +33,10 @@ public class EventSideEffect
     @Override
     protected void invoke(Method method, Object[] args) throws Throwable
     {
-        if (args[0] != null && DomainEvent.class.equals(method.getParameterTypes()[0]))
+        DomainEvent event = (DomainEvent) args[0];
+        for (EventListener listener : listeners)
         {
-            DomainEvent event = (DomainEvent) args[0];
-            for (EventListener listener : listeners)
-            {
-                listener.notifyEvent(event);
-            }
+            listener.notifyEvent(event);
         }
     }
 }

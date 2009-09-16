@@ -14,13 +14,9 @@
 
 package se.streamsource.streamflow.web.domain.group;
 
-import org.qi4j.api.sideeffect.SideEffectOf;
-import org.qi4j.api.sideeffect.SideEffects;
-import org.qi4j.api.injection.scope.This;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
-import se.streamsource.streamflow.web.domain.project.Project;
 
 /**
  * JAVADOC

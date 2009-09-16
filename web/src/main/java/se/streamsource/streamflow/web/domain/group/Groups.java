@@ -14,66 +14,40 @@
 
 package se.streamsource.streamflow.web.domain.group;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
  */
-@Mixins(Groups.GroupsMixin.class)
+@Concerns(Groups.DescribeCreatedGroupConcern.class)
 public interface Groups
 {
-    Group createGroup(String name) throws DuplicateDescriptionException;
+    GroupEntity createGroup(String name);
 
-    void removeGroup(Group group);
+    boolean removeGroup(Group group);
 
     interface GroupsState
     {
         @Aggregated
         ManyAssociation<Group> groups();
+
+        GroupEntity groupCreated(DomainEvent event, String id);
+        void groupRemoved(DomainEvent event, Group group);
     }
-
-    class GroupsMixin
-            implements Groups
+    abstract class DescribeCreatedGroupConcern
+        extends ConcernOf<Groups>
+        implements Groups
     {
-        @This
-        GroupsState state;
-
-        @Structure
-        UnitOfWorkFactory uowf;
-
-        public Group createGroup(String name) throws DuplicateDescriptionException
+        public GroupEntity createGroup(String name)
         {
-            for (Group agroup : state.groups())
-            {
-                if (agroup.hasDescription(name))
-                {
-                    throw new DuplicateDescriptionException();
-                }
-            }
-
-            // Create group
-            Group group = uowf.currentUnitOfWork().newEntity(GroupEntity.class);
+            GroupEntity group = next.createGroup(name);
             group.describe(name);
-
-            state.groups().add(state.groups().count(), group);
-
             return group;
         }
-
-        public void removeGroup(Group group)
-        {
-            if (state.groups().remove(group))
-            {
-                group.removeEntity();
-            }
-        }
     }
-
 
 }

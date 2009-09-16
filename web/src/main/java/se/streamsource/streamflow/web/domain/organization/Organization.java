@@ -20,6 +20,7 @@ import se.streamsource.streamflow.web.domain.project.IdGenerator;
  * JAVADOC
  */
 public interface Organization
-        extends OrganizationalUnit, IdGenerator
+        extends OrganizationalUnit,
+        IdGenerator
 {
 }

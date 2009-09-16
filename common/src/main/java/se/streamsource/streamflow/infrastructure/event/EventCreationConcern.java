@@ -38,7 +38,7 @@ import java.util.Iterator;
 /**
  * Generate event
  */
-@AppliesTo(Event.class)
+@AppliesTo(EventMethodFilter.class)
 public class EventCreationConcern
         extends GenericConcern
 {

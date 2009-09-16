@@ -19,7 +19,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
  * Status for a task. Possible transitions are:
@@ -39,10 +38,10 @@ public interface TaskStatus
         @UseDefaults
         Property<TaskStates> status();
 
-        @Event
+
         void completed(DomainEvent event);
 
-        @Event
+
         void dropped(DomainEvent event);
     }
 

@@ -14,81 +14,40 @@
 
 package se.streamsource.streamflow.web.domain.project;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
-
-import java.util.List;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
  */
-@Mixins(ProjectRoles.RolesMixin.class)
+@Concerns(ProjectRoles.DescribeCreatedRoleConcern.class)
 public interface ProjectRoles
 {
-    ProjectRole createRole(String name) throws DuplicateDescriptionException;
+    ProjectRoleEntity createProjectRole(String name);
 
-    void removeRole(ProjectRole projectRole);
+    boolean removeProjectRole(ProjectRole projectRole);
 
-    boolean hasRole(ProjectRole projectRole);
-
-    List<ProjectRole> getRoles();
-
-    interface RolesState
+    interface ProjectRolesState
     {
         @Aggregated
-        ManyAssociation<ProjectRole> roles();
+        ManyAssociation<ProjectRole> projectRoles();
+
+        ProjectRoleEntity projectRoleCreated(DomainEvent event, String id);
+        void projectRoleRemoved(DomainEvent event, ProjectRole role);
     }
 
-    class RolesMixin
-            implements ProjectRoles
+    abstract class DescribeCreatedRoleConcern
+        extends ConcernOf<ProjectRoles>
+        implements ProjectRoles
     {
-        @This
-        RolesState state;
-
-        @Structure
-        UnitOfWorkFactory uowf;
-
-        public ProjectRole createRole(String name) throws DuplicateDescriptionException
+        public ProjectRoleEntity createRole(String name)
         {
-            for(ProjectRole arole : state.roles() )
-            {
-                if(arole.hasDescription(name))
-                {
-                    throw new DuplicateDescriptionException();
-                }
-            }
-
-            // Create role
-            ProjectRole projectRole = uowf.currentUnitOfWork().newEntity(ProjectRoleEntity.class);
-            projectRole.describe(name);
-
-            state.roles().add(state.roles().count(), projectRole);
-
-            return projectRole;
-        }
-
-        public void removeRole(ProjectRole projectRole)
-        {
-            if (state.roles().remove(projectRole))
-            {
-                projectRole.removeEntity();
-            }
-        }
-
-        public boolean hasRole(ProjectRole projectRole)
-        {
-            return state.roles().contains(projectRole);
-        }
-
-        public List<ProjectRole> getRoles()
-        {
-            return state.roles().toList();
+            ProjectRoleEntity role = next.createProjectRole(name);
+            role.describe(name);
+            return role;
         }
     }
-
 }

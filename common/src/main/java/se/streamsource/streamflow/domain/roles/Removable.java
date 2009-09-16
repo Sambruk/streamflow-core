@@ -18,7 +18,6 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -51,7 +50,6 @@ public interface Removable
         @UseDefaults
         Property<Boolean> removed();
 
-        @Event
         void removedChanged(DomainEvent event, boolean isRemoved);
     }
 

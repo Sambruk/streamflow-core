@@ -125,6 +125,9 @@ public interface EventRecorderService
                 }
             }
 
+            if (eventMethod == null)
+                throw new IllegalArgumentException("No such event method:"+name);
+
             JSONObject jsonObject = new JSONObject(event.parameters().get());
             Object[] params = new Object[eventMethod.getParameterTypes().length];
             params[0] = event;

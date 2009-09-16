@@ -25,7 +25,6 @@ import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 
 import java.util.Date;
 
@@ -54,10 +53,10 @@ public interface Delegatable
         @Optional
         Property<Date> delegatedOn();
 
-        @Event
+
         void delegatedTo(DomainEvent create, Delegatee delegatee, Delegator delegator, Delegations delegatedFrom);
 
-        @Event
+
         void delegationRejected(DomainEvent event);
     }
 

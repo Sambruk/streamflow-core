@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.hamcrest.CoreMatchers;
-import static org.hamcrest.CoreMatchers.equalTo;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
@@ -23,7 +22,6 @@ import static org.jbehave.util.JUnit4Ensure.ensureThat;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
@@ -43,19 +41,11 @@ public class GroupSteps
     @Uses
     UserSteps userSteps;
 
-    private DuplicateDescriptionException duplicateDescriptionException;
-
     @When("group named $name is created")
     public void newGroup(String name)
     {
         OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) organizationalUnitSteps.ou;
-        try
-        {
-            ouEntity.createGroup(name);
-        } catch (DuplicateDescriptionException e)
-        {
-            duplicateDescriptionException = e;
-        }
+        ouEntity.createGroup(name);
     }
 
 
@@ -113,13 +103,6 @@ public class GroupSteps
         }
     }
 
-    @Then("no DuplicateDescriptionException is thrown")
-    public void noDDException()
-    {
-        ensureThat(duplicateDescriptionException, CoreMatchers.nullValue());
-    }
-
-
     @Then("group named $name $can be found")
     public void groupAdded(String name, String can)
     {
@@ -147,14 +130,6 @@ public class GroupSteps
         }
 
 
-    }
-
-    @Then("groupexception $name is thrown")
-    public void exceptionThrown(String name)
-    {
-        ensureThat(duplicateDescriptionException.getClass().getSimpleName(), equalTo(name));
-
-        duplicateDescriptionException = null;
     }
 
     private Group findGroup(String name)

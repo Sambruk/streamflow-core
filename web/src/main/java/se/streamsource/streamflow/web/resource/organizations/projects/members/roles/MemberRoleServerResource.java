@@ -68,7 +68,7 @@ public class MemberRoleServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Remove role"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
         String member = getRequest().getAttributes().get("member").toString();
         Participant participant = uow.get(Participant.class, member);
 
@@ -78,24 +78,8 @@ public class MemberRoleServerResource
         String roleName = getRequest().getAttributes().get("role").toString();
         ProjectRole projectRole = uow.get(ProjectRole.class, roleName);
 
-        try
-        {
-            checkPermission(project);
-        } catch(AccessControlException e)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
+        checkPermission(project);
 
         project.removeRole(participant, projectRole);
-
-        try
-        {
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            uow.discard();
-            throw new ResourceException(e);
-        }
     }
 }

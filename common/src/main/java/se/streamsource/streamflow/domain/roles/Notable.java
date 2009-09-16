@@ -15,11 +15,8 @@
 package se.streamsource.streamflow.domain.roles;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
  * Maintain a note. A note is a longer multi-line string.
@@ -33,7 +30,6 @@ public interface Notable
         @UseDefaults
         Property<String> note();
 
-        @Event
         void noteChanged(DomainEvent event, String newNote);
     }
 }

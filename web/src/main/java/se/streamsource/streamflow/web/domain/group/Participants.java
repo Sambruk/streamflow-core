@@ -18,12 +18,11 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.sideeffect.SideEffectOf;
-import se.streamsource.streamflow.infrastructure.event.Event;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import org.qi4j.api.sideeffect.SideEffects;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.roles.Removable;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -40,10 +39,10 @@ public interface Participants
     {
         ManyAssociation<Participant> participants();
 
-        @Event
+
         void participantJoined(DomainEvent event, Participant participant);
 
-        @Event
+
         void participantRemoved(DomainEvent event, Participant participant);
     }
 

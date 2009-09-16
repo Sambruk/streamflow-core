@@ -16,18 +16,12 @@ package se.streamsource.streamflow.web.resource.organizations.projects;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -53,27 +47,11 @@ public class ProjectsServerResource
     {
         String identity = getRequest().getAttributes().get("organization").toString();
 
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Project"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         Projects projects = uow.get(Projects.class, identity);
 
-        try
-        {
-            checkPermission(projects);
-            projects.createProject(name);
-            uow.complete();
-        } catch (DuplicateDescriptionException e)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-        } catch (UnitOfWorkCompletionException e)
-        {
-            // what about http error code?
-            uow.discard();
-        } catch (AccessControlException ae)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
+        checkPermission(projects);
+        projects.createProject(name);
     }
 }

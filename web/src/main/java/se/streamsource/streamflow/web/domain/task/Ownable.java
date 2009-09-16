@@ -19,7 +19,6 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 
 /**
  * JAVADOC
@@ -34,7 +33,7 @@ public interface Ownable
         @Optional
         Association<Owner> owner();
 
-        @Event
+
         void ownerChanged(DomainEvent event, Owner newOwner);
     }
 

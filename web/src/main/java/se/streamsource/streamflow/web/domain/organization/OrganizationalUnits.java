@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard …berg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard ï¿½berg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 
@@ -47,18 +46,17 @@ public interface OrganizationalUnits
 
     void removeOrganizationalUnit(OrganizationalUnit ou) throws OpenProjectExistsException;
 
-    @Mixins(OrganizationalUnitsStateMixin.class)
     interface OrganizationalUnitsState
     {
         @Aggregated
         ManyAssociation<OrganizationalUnit> organizationalUnits();
 
-        @Event
         OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id);
+        void organizationalUnitRemoved(DomainEvent create, OrganizationalUnit ou);
     }
 
-    class OrganizationsMixin
-            implements OrganizationalUnits
+    abstract class OrganizationsMixin
+            implements OrganizationalUnits, OrganizationalUnitsState
     {
         @Service
         IdentityGenerator idGenerator;
@@ -66,49 +64,39 @@ public interface OrganizationalUnits
         @This
         OrganizationalUnit.OrganizationalUnitState ouState;
 
-        @This
-        OrganizationalUnitsState state;
-
         @Structure
         UnitOfWorkFactory uowf;
 
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
-            OrganizationalUnitEntity ou = state.organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
+            OrganizationalUnitEntity ou = organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
             ou.describe(name);
             return ou;
         }
 
         public void removeOrganizationalUnit(OrganizationalUnit ou) throws OpenProjectExistsException
         {
-            if (!state.organizationalUnits().remove(ou))
+            if (!organizationalUnits().contains(ou))
                 return; // OU is not a sub-OU of this OU
 
+            organizationalUnitRemoved(DomainEvent.CREATE, ou);
             ((Removable) ou).removeEntity();
         }
-
-    }
-
-    abstract class OrganizationalUnitsStateMixin
-            implements OrganizationalUnitsState
-    {
-        @This
-        OrganizationalUnitsState state;
-
-        @This
-        OrganizationalUnit.OrganizationalUnitState ouState;
-
-        @Structure
-        UnitOfWorkFactory uowf;
 
         public OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id)
         {
             EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class, id);
             ouBuilder.instance().organization().set(ouState.organization().get());
             OrganizationalUnitEntity ou = ouBuilder.newInstance();
-            state.organizationalUnits().add(state.organizationalUnits().count(), ou);
+            organizationalUnits().add(organizationalUnits().count(), ou);
             return ou;
         }
+
+        public void organizationalUnitRemoved(DomainEvent create, OrganizationalUnit ou)
+        {
+            organizationalUnits().remove(ou);
+        }
+
     }
 
     abstract class OrganizationalUnitsConcern

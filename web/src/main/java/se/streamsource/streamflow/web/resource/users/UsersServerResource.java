@@ -18,7 +18,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -34,7 +33,6 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
-import se.streamsource.streamflow.web.domain.user.WrongPasswordException;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -78,38 +76,30 @@ public class UsersServerResource
 
     public void postOperation(RegisterUserCommand registerUser) throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Register user"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
+        // Check if user already exists
         try
         {
-            // Check if user already exists
-            try
-            {
-                UserEntity existingUser = uow.get(UserEntity.class, registerUser.username().get());
+            UserEntity existingUser = uow.get(UserEntity.class, registerUser.username().get());
 
-                if (!existingUser.isCorrectPassword(registerUser.password().get()))
-                    throw new WrongPasswordException();
-                return; // Already exists
-            } catch (NoSuchEntityException e)
-            {
-                // Ok!
-            }
-
-            Organizations orgs = uow.get(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
-
-            UserEntity user = (UserEntity) orgs.createUser(registerUser.username().get(), registerUser.password().get());
-
-            // Lookup the bootstrap organization
-            Organization org = uow.get(OrganizationEntity.class, "Organization");
-            // Join the organization
-            user.join(org);
-
-            setLocationRef("users/" + user.identity().get());
-            uow.complete();
-        } catch (Exception e)
+            if (!existingUser.isCorrectPassword(registerUser.password().get()))
+                throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+            return; // Already exists
+        } catch (NoSuchEntityException e)
         {
-            uow.discard();
-            throw new ResourceException(e);
+            // Ok!
         }
+
+        Organizations orgs = uow.get(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+
+        UserEntity user = (UserEntity) orgs.createUser(registerUser.username().get(), registerUser.password().get());
+
+        // Lookup the bootstrap organization
+        Organization org = uow.get(OrganizationEntity.class, "Organization");
+        // Join the organization
+        user.join(org);
+
+        setLocationRef("users/" + user.identity().get());
     }
 }

@@ -22,7 +22,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 
 import java.util.Date;
 
@@ -45,10 +44,10 @@ public interface Assignable
         @Optional
         Property<Date> assignedOn();
 
-        @Event
+
         void assignedTo(DomainEvent event, Assignee assignee);
 
-        @Event
+
         void unassigned(DomainEvent event);
     }
 

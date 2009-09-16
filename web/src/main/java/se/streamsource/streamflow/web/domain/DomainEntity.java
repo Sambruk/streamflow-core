@@ -18,8 +18,12 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffects;
+import se.streamsource.streamflow.infrastructure.event.CommandEntityCreateMixin;
+import se.streamsource.streamflow.infrastructure.event.CommandEntityRemoveMixin;
 import se.streamsource.streamflow.infrastructure.event.CommandPropertyChangeMixin;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.EventEntityCreatedMixin;
+import se.streamsource.streamflow.infrastructure.event.EventEntityRemovedMixin;
 import se.streamsource.streamflow.infrastructure.event.EventPropertyChangedMixin;
 import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 
@@ -28,7 +32,9 @@ import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
  */
 @Concerns(EventCreationConcern.class)
 @SideEffects(EventSideEffect.class)
-@Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class})
+@Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class,
+        EventEntityCreatedMixin.class, EventEntityRemovedMixin.class,
+        CommandEntityCreateMixin.class, CommandEntityRemoveMixin.class})
 public interface DomainEntity
         extends EntityComposite
 {

@@ -20,7 +20,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.web.domain.task.TaskId;
 
 import java.text.SimpleDateFormat;
@@ -43,10 +42,10 @@ public interface IdGenerator
         @Optional
         Property<Long> lastIdDate();
 
-        @Event
+
         void counterSet(DomainEvent event, long counter);
 
-        @Event
+
         void dateChanged(DomainEvent create, long timeInMillis);
     }
 

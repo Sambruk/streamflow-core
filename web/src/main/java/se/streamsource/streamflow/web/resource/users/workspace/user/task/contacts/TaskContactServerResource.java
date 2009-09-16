@@ -16,9 +16,7 @@ package se.streamsource.streamflow.web.resource.users.workspace.user.task.contac
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
@@ -57,20 +55,12 @@ public class TaskContactServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task contact"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
         String taskContactIndex = getRequest().getAttributes().get("index").toString();
 
         task.deleteContact(Integer.parseInt(taskContactIndex));
-
-        try
-        {
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            uow.discard();
-        }
     }
 
     public void changeName(StringDTO name)

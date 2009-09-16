@@ -69,8 +69,8 @@ public interface TestDataService
 
             cc.addParticipant(user);
 
-            ProjectRole agent = ou.createRole("Agent");
-            ProjectRole manager = ou.createRole("Manager");
+            ProjectRole agent = ou.createProjectRole("Agent");
+            ProjectRole manager = ou.createProjectRole("Manager");
 
             // Create tasks
             for (int i = 0; i < 30; i++)

@@ -14,11 +14,10 @@
 
 package se.streamsource.streamflow.web.domain.user;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.common.UseDefaults;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
@@ -53,13 +52,13 @@ public interface User
 
         boolean isAdministrator();
 
-        @Event
+
         void passwordChanged(DomainEvent event, String hashedPassword);
 
-        @Event
+
         void failedLogin(DomainEvent event);
 
-        @Event
+
         void enabledChanged(DomainEvent event, boolean enabled);
     }
 

@@ -15,8 +15,6 @@
 package se.streamsource.streamflow.web.resource.organizations.groups;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
@@ -25,8 +23,6 @@ import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -59,32 +55,16 @@ public class GroupServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete group"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         String org = getRequest().getAttributes().get("organization").toString();
 
         Groups groups = uow.get(Groups.class, org);
-        try
-        {
-            checkPermission(groups);
-        } catch(AccessControlException ae)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
-
+        checkPermission(groups);
         String identity = getRequest().getAttributes().get("group").toString();
         GroupEntity group = uow.get(GroupEntity.class, identity);
 
         groups.removeGroup(group);
-
-        try
-        {
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            throw new ResourceException(e);
-        }
     }
 
 }

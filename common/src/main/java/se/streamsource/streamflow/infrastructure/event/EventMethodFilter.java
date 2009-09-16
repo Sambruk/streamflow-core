@@ -14,16 +14,19 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
-import java.lang.annotation.*;
+import org.qi4j.api.common.AppliesToFilter;
+
+import java.lang.reflect.Method;
 
 /**
- * Mark a method as an event. The first parameter
- * of the method must be a "DomainEvent", and when
- * calling it from commands you must send in {@link DomainEvent#CREATE}
+ * Filter for Event methods. Event methods
+ * have DomainEvent as their first method parameter.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-@Documented
-public @interface Event
+public class EventMethodFilter
+    implements AppliesToFilter
 {
+    public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
+    {
+        return method.getParameterTypes().length > 0 && method.getParameterTypes()[0].equals(DomainEvent.class);
+    }
 }

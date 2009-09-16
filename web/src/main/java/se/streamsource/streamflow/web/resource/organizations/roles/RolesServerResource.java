@@ -16,18 +16,12 @@ package se.streamsource.streamflow.web.resource.organizations.roles;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.project.ProjectRoles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.security.AccessControlException;
 
 /**
  * Mapped to:
@@ -39,10 +33,10 @@ public class RolesServerResource
     public ListValue roles()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
-        ProjectRoles.RolesState roles = uowf.currentUnitOfWork().get(ProjectRoles.RolesState.class, identity);
+        ProjectRoles.ProjectRolesState roles = uowf.currentUnitOfWork().get(ProjectRoles.ProjectRolesState.class, identity);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (ProjectRole projectRole : roles.roles())
+        for (ProjectRole projectRole : roles.projectRoles())
         {
             builder.addListItem(projectRole.getDescription(), EntityReference.getEntityReference(projectRole));
         }
@@ -51,31 +45,14 @@ public class RolesServerResource
 
     public void postOperation(String name) throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create Role"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         String identity = getRequest().getAttributes().get("organization").toString();
 
         ProjectRoles projectRoles = uow.get(ProjectRoles.class, identity);
 
-        try
-        {
-            checkPermission(projectRoles);
-            projectRoles.createRole(name);
-            uow.complete();
-
-        } catch (DuplicateDescriptionException e)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-
-        } catch (UnitOfWorkCompletionException e)
-        {
-            uow.discard();
-        } catch(AccessControlException ae)
-        {
-            uow.discard();
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
+        checkPermission(projectRoles);
+        projectRoles.createProjectRole(name);
     }
 
 }

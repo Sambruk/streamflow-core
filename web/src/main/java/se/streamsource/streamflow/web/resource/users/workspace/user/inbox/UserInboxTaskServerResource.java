@@ -15,14 +15,17 @@
 package se.streamsource.streamflow.web.resource.users.workspace.user.inbox;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
-import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Delegator;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -131,16 +134,9 @@ public class UserInboxTaskServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        try
-        {
-            String taskId = (String) getRequest().getAttributes().get("task");
-            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete task"));
-            Task task = uow.get(Task.class, taskId);
-            uow.remove(task);
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            e.printStackTrace();
-        }
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
+        uow.remove(task);
     }
 }

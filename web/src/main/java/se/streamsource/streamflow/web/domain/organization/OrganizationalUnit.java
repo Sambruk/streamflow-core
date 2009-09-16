@@ -20,7 +20,6 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Event;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.project.Project;
@@ -41,10 +40,8 @@ public interface OrganizationalUnit
     {
         Association<Organization> organization();
 
-        @Event
         void organizationalUnitMoved(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to);
 
-        @Event
         void organizationalUnitMerged(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to);
     }
 
@@ -130,11 +127,11 @@ public interface OrganizationalUnit
 
             parentEntity.organizationalUnits().remove(oue);
 
-            while (oue.roles().count() > 0)
+            while (oue.projectRoles().count() > 0)
             {
-                ProjectRole role = oue.roles().get(0);
-                toEntity.roles().add(role);
-                oue.roles().remove(role);
+                ProjectRole role = oue.projectRoles().get(0);
+                toEntity.projectRoles().add(role);
+                oue.projectRoles().remove(role);
             }
             while (oue.groups().count() >0)
             {

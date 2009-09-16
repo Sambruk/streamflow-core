@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.unitofwork.UnitOfWork;
@@ -48,7 +50,10 @@ public class EventTest
     {
         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
         TestEntity entity = uow.newEntity(TestEntity.class, "123");
-        entity.doStuff("Foo");
+        entity.changeProp("Foo");
+        TestEntity tester = entity.createTester();
+        boolean removed = entity.removeTester(tester);
+        assertThat(removed, is(true));
         uow.complete();
     }
 
@@ -69,7 +74,7 @@ public class EventTest
 
         objectBuilderFactory.newObjectBuilder(EventTest.class).injectTo(this);
 
-        String json = "{\"identity\":\"cf905e2e-41ea-4a42-8d52-fa9caa9ec326-0\",\"by\":\"anonymous\",\"entity\":\"123\",\"entityType\":\"se.streamsource.streamflow.web.infrastructure.event.TestEntity\",\"name\":\"stuffDone\",\"on\":\"2009-08-12T15:27:56.365Z\",\"parameters\":\"{\\\"param1\\\":\\\"Foo\\\"}\"}";
+        String json = "{\"identity\":\"cf905e2e-41ea-4a42-8d52-fa9caa9ec326-0\",\"by\":\"anonymous\",\"entity\":\"123\",\"entityType\":\"se.streamsource.streamflow.web.infrastructure.event.TestEntity\",\"name\":\"propChanged\",\"on\":\"2009-08-12T15:27:56.365Z\",\"parameters\":\"{\\\"param1\\\":\\\"Foo\\\"}\"}";
 
         DomainEvent event = valueBuilderFactory.newValueFromJSON(DomainEvent.class, json);
 

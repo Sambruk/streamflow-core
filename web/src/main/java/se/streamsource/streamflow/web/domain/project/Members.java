@@ -23,16 +23,15 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
-import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.infrastructure.event.Event;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.roles.Removable;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.group.Participant;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,10 +63,10 @@ public interface Members
 
         Iterable<ProjectRole> getRoles(Participant participant);
 
-        @Event
+
         void memberCreated(DomainEvent event, Participant participant);
 
-        @Event
+
         void memberRemoved(DomainEvent event, Participant participant);
     }
 
