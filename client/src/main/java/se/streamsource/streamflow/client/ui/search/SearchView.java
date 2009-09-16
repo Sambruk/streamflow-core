@@ -21,6 +21,10 @@ import org.restlet.resource.ResourceException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
+
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 /**
  * JAVADOC
@@ -41,11 +45,35 @@ public class SearchView
         ActionMap am = context.getActionMap(this);
 
         searchField = new JTextField(100);
+        final String searchText = i18n.text(SearchResources.enter_search_text);
+        searchField.setText(searchText);
+        searchField.setForeground(Color.gray);
         setMinimumSize(new Dimension(500, 0));
         add(searchField, BorderLayout.NORTH);
         add(resultView, BorderLayout.CENTER);
 
         searchField.setAction(am.get("search"));
+
+        searchField.addFocusListener(new FocusListener()
+        {
+            public void focusGained(FocusEvent e)
+            {
+                if (searchField.getText().equals(searchText))
+                {
+                    searchField.setText("");
+                    searchField.setForeground(Color.black);
+                }
+            }
+
+            public void focusLost(FocusEvent e)
+            {
+                if (searchField.getText().equals(""))
+                {
+                    searchField.setText(searchText);
+                    searchField.setForeground(Color.gray);
+                }
+            }
+        });
     }
 
     @org.jdesktop.application.Action

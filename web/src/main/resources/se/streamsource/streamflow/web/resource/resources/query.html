@@ -1,12 +1,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>$title</title>
+    <title>$name</title>
 </head>
 
 <body>
 <form action="" method="GET">
+    <input name="operation" value="$name" type="hidden"/>
     $content
-    <input name="$name" value="Query" type="submit"/>
+    <input value="Query" type="submit"/>
 </form>
 </body>
 

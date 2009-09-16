@@ -52,12 +52,12 @@ public class ProjectServerResource
 
         try
         {
-            Roles.RolesState roles = uowf.currentUnitOfWork().get(Roles.RolesState.class, getRequest().getAttributes().get("organization").toString());
-            for (Role role : roles.roles())
+            ProjectRoles.RolesState roles = uowf.currentUnitOfWork().get(ProjectRoles.RolesState.class, getRequest().getAttributes().get("organization").toString());
+            for (ProjectRole projectRole : roles.roles())
             {
-                if (role.getDescription().equals(query.string().get()))
+                if (projectRole.getDescription().equals(query.string().get()))
                 {
-                    builder.prototype().entity().set(EntityReference.getEntityReference(role));
+                    builder.prototype().entity().set(EntityReference.getEntityReference(projectRole));
                 }
             }
         } catch (NoSuchEntityException e)

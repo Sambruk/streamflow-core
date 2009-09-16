@@ -12,25 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.web.resource.organizations.groups;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.domain.roles.Removable;
-import se.streamsource.streamflow.web.domain.DomainEntity;
-
-import java.util.Set;
+import org.qi4j.api.composite.TransientComposite;
 
 /**
  * JAVADOC
  */
-public interface RoleEntity
-        extends Role,
-        Describable.DescribableState,
-        Removable.RemovableState,
-        DomainEntity
+public interface GroupResource
+    extends TransientComposite
 {
-    @UseDefaults
-    Property<Set<PermissionValue>> permissions();
 }

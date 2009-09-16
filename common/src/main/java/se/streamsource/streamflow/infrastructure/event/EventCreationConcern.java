@@ -31,7 +31,9 @@ import se.streamsource.streamflow.infrastructure.json.JSONWriter;
 import javax.security.auth.Subject;
 import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.security.Principal;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Generate event
@@ -70,7 +72,11 @@ public class EventCreationConcern
                 prototype.by().set("unknown");
             else
             {
-                prototype.by().set(subject.getPrincipals().iterator().next().getName());
+                Iterator<Principal> iterator = subject.getPrincipals().iterator();
+                if (iterator.hasNext())
+                    prototype.by().set(iterator.next().getName());
+                else
+                    prototype.by().set("unknown");
             }
 
             prototype.identity().set(idGenerator.generate(DomainEvent.class));

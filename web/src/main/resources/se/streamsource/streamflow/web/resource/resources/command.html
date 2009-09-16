@@ -1,11 +1,14 @@
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>$title</title>
+</head>
+
 <body>
-
-<form action="$uri" method="POST">
-    Command:<br/>
-    <textarea rows="10" cols="80">$command</textarea><br/>
-    <input type="SUBMIT" value="Invoke command"/>
+<form action="" method="POST">
+    <input name="operation" value="$name" type="hidden"/>
+    $content
+    <input value="Send command" type="submit"/>
 </form>
-
 </body>
+
 </html>

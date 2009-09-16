@@ -22,6 +22,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
@@ -51,6 +52,7 @@ public class BaseServerResource
     protected
     @Structure
     Qi4jSPI spi;
+
 
     protected
     @Service

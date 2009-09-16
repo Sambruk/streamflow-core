@@ -21,7 +21,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.project.Role;
+import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;
@@ -40,7 +40,7 @@ public class MemberRoleServerResource
         Participant participant = uow.get(Participant.class, member);
 
         String roleId = getRequest().getAttributes().get("role").toString();
-        Role role = uow.get(Role.class, roleId);
+        ProjectRole projectRole = uow.get(ProjectRole.class, roleId);
 
         String id = getRequest().getAttributes().get("project").toString();
         Project project = uow.get(Project.class, id);
@@ -54,7 +54,7 @@ public class MemberRoleServerResource
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
 
-        project.addRole(participant, role);
+        project.addRole(participant, projectRole);
 
         try
         {
@@ -76,7 +76,7 @@ public class MemberRoleServerResource
         Project project = uow.get(Project.class, id);
 
         String roleName = getRequest().getAttributes().get("role").toString();
-        Role role = uow.get(Role.class, roleName);
+        ProjectRole projectRole = uow.get(ProjectRole.class, roleName);
 
         try
         {
@@ -87,7 +87,7 @@ public class MemberRoleServerResource
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
 
-        project.removeRole(participant, role);
+        project.removeRole(participant, projectRole);
 
         try
         {

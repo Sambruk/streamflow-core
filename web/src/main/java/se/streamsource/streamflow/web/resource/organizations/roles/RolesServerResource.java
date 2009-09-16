@@ -23,8 +23,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.DuplicateDescriptionException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.project.Role;
-import se.streamsource.streamflow.web.domain.project.Roles;
+import se.streamsource.streamflow.web.domain.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.project.ProjectRoles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;
@@ -39,12 +39,12 @@ public class RolesServerResource
     public ListValue roles()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
-        Roles.RolesState roles = uowf.currentUnitOfWork().get(Roles.RolesState.class, identity);
+        ProjectRoles.RolesState roles = uowf.currentUnitOfWork().get(ProjectRoles.RolesState.class, identity);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (Role role : roles.roles())
+        for (ProjectRole projectRole : roles.roles())
         {
-            builder.addListItem(role.getDescription(), EntityReference.getEntityReference(role));
+            builder.addListItem(projectRole.getDescription(), EntityReference.getEntityReference(projectRole));
         }
         return builder.newList();
     }
@@ -55,12 +55,12 @@ public class RolesServerResource
 
         String identity = getRequest().getAttributes().get("organization").toString();
 
-        Roles roles = uow.get(Roles.class, identity);
+        ProjectRoles projectRoles = uow.get(ProjectRoles.class, identity);
 
         try
         {
-            checkPermission(roles);
-            roles.createRole(name);
+            checkPermission(projectRoles);
+            projectRoles.createRole(name);
             uow.complete();
 
         } catch (DuplicateDescriptionException e)

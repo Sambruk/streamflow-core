@@ -35,6 +35,7 @@ public class StreamFlowRestAssembler
     {
         module.addObjects(StreamFlowRestApplication.class,
                 ResourceFinder.class,
+                CompositeFinder.class,
                 EntityStateSerializer.class,
                 EntityTypeSerializer.class);
 

@@ -19,8 +19,8 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.domain.project.RoleEntity;
-import se.streamsource.streamflow.web.domain.project.Roles;
+import se.streamsource.streamflow.web.domain.project.ProjectRoleEntity;
+import se.streamsource.streamflow.web.domain.project.ProjectRoles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;
@@ -38,21 +38,21 @@ public class RoleServerResource
 
         String org = getRequest().getAttributes().get("organization").toString();
 
-        Roles roles = uow.get(Roles.class, org);
+        ProjectRoles projectRoles = uow.get(ProjectRoles.class, org);
 
         String identity = getRequest().getAttributes().get("role").toString();
-        RoleEntity role = uow.get(RoleEntity.class, identity);
+        ProjectRoleEntity projectRole = uow.get(ProjectRoleEntity.class, identity);
 
         try
         {
-            checkPermission(roles);
+            checkPermission(projectRoles);
         } catch(AccessControlException e)
         {
             uow.discard();
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
 
-        roles.removeRole(role);
+        projectRoles.removeRole(projectRole);
 
         try
         {

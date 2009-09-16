@@ -20,8 +20,10 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.web.resource.events.EventsResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.groups.GroupResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
@@ -80,12 +82,15 @@ public class ServerResourceAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
+        module.addTransients(OrganizationCompositeResource.class, GroupResource.class);
+
         // Resources
         module.addObjects(
                 APIv1Router.class,
                 UsersRouter.class,
                 UserAccessFilter.class,
                 StreamFlowServerResource.class,
+                CompositeCommandQueryServerResource.class,
 
                 // /users
                 UsersServerResource.class,

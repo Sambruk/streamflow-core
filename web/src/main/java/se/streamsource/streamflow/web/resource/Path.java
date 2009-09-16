@@ -12,16 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.web.resource;
 
-import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.domain.roles.Removable;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Documented;
 
 /**
- * JAVADOC
+ * Denotes a subpath for a Composite resource mixin type.
  */
-public interface Role
-        extends Delegatee, Describable, Removable
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
+@Documented
+public @interface Path
 {
+    String value();
 }

@@ -12,26 +12,16 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.web.domain.role;
 
-import static org.qi4j.api.common.Visibility.application;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Removable;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
 
 /**
  * JAVADOC
  */
-public class ProjectAssembler
-        implements Assembler
+public interface Role
+        extends Delegatee, Describable, Removable
 {
-    public void assemble(ModuleAssembly module)
-            throws AssemblyException
-    {
-        module.addEntities(
-                ProjectRoleEntity.class,
-                ProjectEntity.class).visibleIn(application);
-
-        module.addValues(PermissionValue.class, MembersValue.class, MemberValue.class).visibleIn(application);
-    }
 }

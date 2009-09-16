@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.resource;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.rest.ExtensionMediaTypeFilter;
 import org.qi4j.rest.entity.EntitiesResource;
 import org.qi4j.rest.entity.EntityResource;
@@ -33,6 +34,7 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.streamflow.web.resource.events.EventsResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
@@ -57,6 +59,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.task.contact
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
+import se.streamsource.streamflow.web.rest.CompositeFinder;
 
 /**
  * Router for v1 of the StreamFlow REST API.
@@ -141,6 +144,14 @@ public class APIv1Router
             return auth;
         } else
             return finder;
+    }
+
+    private Restlet createServerCompositeFinder(Class<? extends TransientComposite> resource)
+    {
+        CompositeFinder finder = factory.newObject(CompositeFinder.class);
+        finder.setTargetClass(resource);
+
+        return finder;
     }
 
 }

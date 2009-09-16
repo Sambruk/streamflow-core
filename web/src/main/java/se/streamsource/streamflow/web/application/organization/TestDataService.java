@@ -27,7 +27,7 @@ import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.project.Role;
+import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
@@ -69,8 +69,8 @@ public interface TestDataService
 
             cc.addParticipant(user);
 
-            Role agent = ou.createRole("Agent");
-            Role manager = ou.createRole("Manager");
+            ProjectRole agent = ou.createRole("Agent");
+            ProjectRole manager = ou.createRole("Manager");
 
             // Create tasks
             for (int i = 0; i < 30; i++)

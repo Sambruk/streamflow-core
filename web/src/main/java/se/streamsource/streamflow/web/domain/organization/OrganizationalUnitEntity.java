@@ -20,7 +20,7 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
 import se.streamsource.streamflow.web.domain.project.Projects;
-import se.streamsource.streamflow.web.domain.project.Roles;
+import se.streamsource.streamflow.web.domain.project.ProjectRoles;
 
 /**
  * JAVADOC
@@ -30,7 +30,7 @@ public interface OrganizationalUnitEntity
         // Roles
         OrganizationalUnit,
         Groups,
-        Roles,
+        ProjectRoles,
         OrganizationalUnits,
         Projects,
         Describable,
@@ -43,7 +43,7 @@ public interface OrganizationalUnitEntity
         Groups.GroupsState,
         Projects.ProjectsState,
         Removable.RemovableState,
-        Roles.RolesState,
+        ProjectRoles.RolesState,
         IdGenerator.IdGeneratorState
 {
 }

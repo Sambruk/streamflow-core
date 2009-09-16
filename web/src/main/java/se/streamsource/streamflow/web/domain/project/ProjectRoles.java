@@ -27,25 +27,25 @@ import java.util.List;
 /**
  * JAVADOC
  */
-@Mixins(Roles.RolesMixin.class)
-public interface Roles
+@Mixins(ProjectRoles.RolesMixin.class)
+public interface ProjectRoles
 {
-    Role createRole(String name) throws DuplicateDescriptionException;
+    ProjectRole createRole(String name) throws DuplicateDescriptionException;
 
-    void removeRole(Role role);
+    void removeRole(ProjectRole projectRole);
 
-    boolean hasRole(Role role);
+    boolean hasRole(ProjectRole projectRole);
 
-    List<Role> getRoles();
+    List<ProjectRole> getRoles();
 
     interface RolesState
     {
         @Aggregated
-        ManyAssociation<Role> roles();
+        ManyAssociation<ProjectRole> roles();
     }
 
     class RolesMixin
-            implements Roles
+            implements ProjectRoles
     {
         @This
         RolesState state;
@@ -53,9 +53,9 @@ public interface Roles
         @Structure
         UnitOfWorkFactory uowf;
 
-        public Role createRole(String name) throws DuplicateDescriptionException
+        public ProjectRole createRole(String name) throws DuplicateDescriptionException
         {
-            for(Role arole : state.roles() )
+            for(ProjectRole arole : state.roles() )
             {
                 if(arole.hasDescription(name))
                 {
@@ -64,28 +64,28 @@ public interface Roles
             }
 
             // Create role
-            Role role = uowf.currentUnitOfWork().newEntity(RoleEntity.class);
-            role.describe(name);
+            ProjectRole projectRole = uowf.currentUnitOfWork().newEntity(ProjectRoleEntity.class);
+            projectRole.describe(name);
 
-            state.roles().add(state.roles().count(), role);
+            state.roles().add(state.roles().count(), projectRole);
 
-            return role;
+            return projectRole;
         }
 
-        public void removeRole(Role role)
+        public void removeRole(ProjectRole projectRole)
         {
-            if (state.roles().remove(role))
+            if (state.roles().remove(projectRole))
             {
-                role.removeEntity();
+                projectRole.removeEntity();
             }
         }
 
-        public boolean hasRole(Role role)
+        public boolean hasRole(ProjectRole projectRole)
         {
-            return state.roles().contains(role);
+            return state.roles().contains(projectRole);
         }
 
-        public List<Role> getRoles()
+        public List<ProjectRole> getRoles()
         {
             return state.roles().toList();
         }

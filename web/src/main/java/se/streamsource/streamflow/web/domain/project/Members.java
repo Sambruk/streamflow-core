@@ -48,11 +48,11 @@ public interface Members
 {
     void createMember(Participant participant);
 
-    void addRole(Participant participant, Role role);
+    void addRole(Participant participant, ProjectRole projectRole);
 
     void removeMember(Participant participant);
 
-    void removeRole(Participant participant, Role role);
+    void removeRole(Participant participant, ProjectRole projectRole);
 
     void removeAllMembers();
 
@@ -62,7 +62,7 @@ public interface Members
 
         boolean isMember(Participant participant);
 
-        Iterable<Role> getRoles(Participant participant);
+        Iterable<ProjectRole> getRoles(Participant participant);
 
         @Event
         void memberCreated(DomainEvent event, Participant participant);
@@ -96,7 +96,7 @@ public interface Members
             participant.joinProject(project);
         }
 
-        public void addRole(Participant participant, Role role)
+        public void addRole(Participant participant, ProjectRole projectRole)
         {
             EntityReference participantRef = EntityReference.getEntityReference(participant);
             ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
@@ -104,7 +104,7 @@ public interface Members
             if (memberValue != null)
             {
                 List<EntityReference> roles = memberValue.roles().get();
-                EntityReference roleRef = EntityReference.getEntityReference(role);
+                EntityReference roleRef = EntityReference.getEntityReference(projectRole);
                 for (EntityReference entityReference : roles)
                 {
                     if (entityReference.equals(roleRef))
@@ -129,10 +129,10 @@ public interface Members
             }
         }
 
-        public void removeRole(Participant participant, Role role)
+        public void removeRole(Participant participant, ProjectRole projectRole)
         {
             EntityReference participantRef = EntityReference.getEntityReference(participant);
-            EntityReference roleRef = EntityReference.getEntityReference(role);
+            EntityReference roleRef = EntityReference.getEntityReference(projectRole);
             ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
             MemberValue memberValue = membersBuilder.prototype().getMemberValue(participantRef);
             if (memberValue != null)
@@ -183,18 +183,18 @@ public interface Members
             }
         }
 
-        public Iterable<Role> getRoles(Participant participant)
+        public Iterable<ProjectRole> getRoles(Participant participant)
         {
             EntityReference participantRef = EntityReference.getEntityReference(participant);
             MemberValue memberValue = state.members().get().getMemberValue(participantRef);
             if (memberValue != null)
             {
-                List<Role> roles = new ArrayList<Role>();
+                List<ProjectRole> projectRoles = new ArrayList<ProjectRole>();
                 for (EntityReference entityReference : memberValue.roles().get())
                 {
-                    roles.add(uowf.currentUnitOfWork().get(Role.class, entityReference.identity()));
+                    projectRoles.add(uowf.currentUnitOfWork().get(ProjectRole.class, entityReference.identity()));
                 }
-                return roles;
+                return projectRoles;
             } else
                 return Collections.emptyList();
         }

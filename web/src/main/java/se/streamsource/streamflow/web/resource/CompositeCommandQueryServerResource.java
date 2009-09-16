@@ -15,10 +15,12 @@
 package se.streamsource.streamflow.web.resource;
 
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
@@ -28,8 +30,10 @@ import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.api.util.Classes;
 import org.qi4j.runtime.util.Annotations;
 import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.property.PropertyDescriptor;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.util.json.JSONException;
 import org.qi4j.spi.util.json.JSONWriter;
@@ -39,21 +43,31 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.representation.*;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.ObjectRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
+import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
 import java.io.IOException;
 import java.io.Writer;
+import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessControlException;
-import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -74,10 +88,13 @@ import java.util.logging.Logger;
  * <p/>
  * DELETE: resources implement this on their own.
  */
-public class CommandQueryServerResource
+public class CompositeCommandQueryServerResource
         extends BaseServerResource
         implements EventSourceListener
 {
+    @Uses
+    TransientComposite composite;
+
     @Structure
     protected ValueBuilderFactory vbf;
 
@@ -88,7 +105,7 @@ public class CommandQueryServerResource
     EventSource source;
     public Iterable<DomainEvent> events;
 
-    public CommandQueryServerResource()
+    public CompositeCommandQueryServerResource()
     {
         getVariants().put(org.restlet.data.Method.ALL, Arrays.asList(MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
 
@@ -99,7 +116,7 @@ public class CommandQueryServerResource
     protected Representation get(Variant variant) throws ResourceException
     {
         String operation = getOperation();
-        if (operation == null)
+        if (operation.equals("getOperation"))
         {
             return listOperations();
         } else
@@ -110,15 +127,73 @@ public class CommandQueryServerResource
             {
                 Method method = getResourceMethod(operation);
 
-                if (getRequest().getResourceRef().hasQuery() || method.getParameterTypes().length == 0)
+                if (isCommandMethod(method))
                 {
-                    // Invoke query
-                    Object[] args = getQueryArguments(method);
-                    return returnRepresentation(invoke(method, args), variant);
+                    // Show command form
+                    String form = "";
+
+                    Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
+                    ValueDescriptor valueDescriptor = module.valueDescriptor(valueType.getName());
+
+                    for (PropertyDescriptor propertyDescriptor : valueDescriptor.state().properties())
+                    {
+                        String propertyInput = propertyDescriptor.qualifiedName().name()+
+                                ":<input type=\"text\" name=\""+
+                                propertyDescriptor.qualifiedName().name()+"\"/><br/>";
+
+                        form+=propertyInput;
+                    }
+
+                    try
+                    {
+                        String template = TemplateUtil.getTemplate("resources/command.html", getClass());
+                        String html = TemplateUtil.eval(template,
+                                "$name", method.getName(),
+                                "$content", form);
+
+                        // Show query form
+                        return new StringRepresentation(html, MediaType.TEXT_HTML);
+                    } catch (IOException e)
+                    {
+                        throw new ResourceException(e);
+                    }
                 } else
                 {
-                    // Show form
-                    return new StringRepresentation(""); // TODO
+                    if (getRequest().getResourceRef().hasQuery() && (getRequest().getResourceRef().getQueryAsForm().size() > 1 || method.getParameterTypes().length == 0))
+                    {
+                        // Invoke query
+                        Object[] args = getQueryArguments(method);
+                        return returnRepresentation(invoke(method, args), variant);
+                    } else
+                    {
+                        String form = "";
+
+                        Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
+                        ValueDescriptor valueDescriptor = module.valueDescriptor(valueType.getName());
+
+                        for (PropertyDescriptor propertyDescriptor : valueDescriptor.state().properties())
+                        {
+                            String propertyInput = propertyDescriptor.qualifiedName().name()+
+                                    ":<input type=\"text\" name=\""+
+                                    propertyDescriptor.qualifiedName().name()+"\"/><br/>";
+
+                            form+=propertyInput;
+                        }
+
+                        try
+                        {
+                            String template = TemplateUtil.getTemplate("resources/query.html", getClass());
+                            String html = TemplateUtil.eval(template,
+                                    "$name", method.getName(),
+                                    "$content", form);
+
+                            // Show query form
+                            return new StringRepresentation(html, MediaType.TEXT_HTML);
+                        } catch (IOException e)
+                        {
+                            throw new ResourceException(e);
+                        }
+                    }
                 }
             } finally
             {
@@ -139,30 +214,57 @@ public class CommandQueryServerResource
 
     protected Representation listOperations() throws ResourceException
     {
-		// List methods
-		StringBuilder links = new StringBuilder("");
-		Method[] methods = getClass().getMethods();
-		for (Method method : methods)
-		{
-			if (isQueryMethod(method))
-				links.append("<li><a href=\"?operation=").append(
-						method.getName()).append("\" rel=\"").append(
-						method.getName()).append("\">")
-						.append(method.getName()).append("</a></li>\n");
-		}
+        // List methods
+        Method[] methods = composite.getClass().getMethods();
+        StringBuilder queries = new StringBuilder("");
+        for (Method method : methods)
+        {
+            if (isQueryMethod(method))
+                queries.append("<li><a href=\"?operation=").append(
+                        method.getName()).append("\" rel=\"").append(
+                        method.getName()).append("\">")
+                        .append(method.getName()).append("</a></li>\n");
+        }
 
-		try
-		{
-			String template = TemplateUtil.getTemplate("resources/links.html",
-					CommandQueryServerResource.class);
-			String content = TemplateUtil.eval(template, "$content", links.toString(),
-					"$title", getRequest().getResourceRef().getLastSegment()
-							+ " operations");
-			return new StringRepresentation(content, MediaType.TEXT_HTML);
-		} catch (IOException e)
-		{
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
-		}
+        StringBuilder commands = new StringBuilder("");
+        for (Method method : methods)
+        {
+            if (isCommandMethod(method))
+                commands.append("<li><a href=\"?operation=").append(
+                        method.getName()).append("\" rel=\"").append(
+                        method.getName()).append("\">")
+                        .append(method.getName()).append("</a></li>\n");
+        }
+
+        StringBuilder links = new StringBuilder("");
+        for (Class mixinType : Classes.interfacesOf(composite.getClass().getInterfaces()[0]))
+        {
+            Path path = (Path) mixinType.getAnnotation(Path.class);
+            if (path != null)
+            {
+                links.append("<li><a href=\"").append(
+                        path.value()).append("/\" rel=\"").append(
+                        path.value()).append("\">")
+                        .append(path.value()).append("</a></li>\n");
+
+            }
+        }
+
+        try
+        {
+            String template = TemplateUtil.getTemplate("resources/links.html",
+                    CompositeCommandQueryServerResource.class);
+            String content = TemplateUtil.eval(template,
+                    "$queries", queries.toString(),
+                    "$commands", commands.toString(),
+                    "$links", links.toString(),
+                    "$title", getRequest().getResourceRef().getLastSegment()
+                            + " operations");
+            return new StringRepresentation(content, MediaType.TEXT_HTML);
+        } catch (IOException e)
+        {
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
+        }
     }
 
     @Override
@@ -187,12 +289,53 @@ public class CommandQueryServerResource
             {
                 uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase(operation));
 
-                Representation rep = returnRepresentation(invoke(method, args), variant);
+                getCommandRoles(uow, method, args);
+
+                // Invoke command
+                invoke(method, args);
+
                 try
                 {
                     uow.complete();
 
-                    if (rep instanceof EmptyRepresentation && events != null)
+                    MediaType responseType = getRequest().getClientInfo().getPreferredMediaType(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML));
+
+                    Representation rep;
+                    if (responseType == null || (responseType.equals(MediaType.TEXT_PLAIN)))
+                    {
+                        rep = new WriterRepresentation(MediaType.TEXT_PLAIN)
+                        {
+                            public void write(Writer writer) throws IOException
+                            {
+                                for (DomainEvent event : events)
+                                {
+                                    writer.write(event.toJSON()+"\n");
+                                }
+                            }
+                        };
+                    } else if (responseType.equals(MediaType.TEXT_HTML))
+                    {
+                        rep = new WriterRepresentation(MediaType.TEXT_HTML)
+                        {
+                            public void write(Writer writer) throws IOException
+                            {
+                                String template = TemplateUtil.getTemplate("resources/events.html", getClass());
+                                StringWriter string = new StringWriter();
+                                for (DomainEvent event : events)
+                                {
+                                    string.write("<tr>"+
+                                            "<td>"+event.usecase().get()+"</td>"+
+                                            "<td>"+event.name().get()+"</td>"+
+                                            "<td>"+event.on().get()+"</td>"+
+                                            "<td>"+event.entity().get()+"</td>"+
+                                            "<td>"+event.parameters().get()+"</td>"+
+                                            "<td>"+event.by().get()+"</td></tr>");
+                                }
+
+                                writer.write(TemplateUtil.eval(template, "$events", string.toString()));
+                            }
+                        };
+                    } else
                     {
                         rep = new WriterRepresentation(MediaType.APPLICATION_JSON)
                         {
@@ -213,7 +356,7 @@ public class CommandQueryServerResource
                                 {
                                     throw (IOException) new IOException("Could not write JSON").initCause(e);
                                 }
-                                System.out.println("Returned "+count+" events");
+                                System.out.println("Returned " + count + " events");
                             }
                         };
                     }
@@ -246,6 +389,18 @@ public class CommandQueryServerResource
         }
     }
 
+    private void getCommandRoles(UnitOfWork uow, Method method, Object[] args)
+    {
+        // Try to satisfy role parameters in method
+        for (int i = 1; i < args.length; i++)
+        {
+            Class roleType = method.getParameterTypes()[i];
+            Name nameAnnotation = Annotations.getAnnotationOfType(method.getParameterAnnotations()[i], Name.class);
+            String id = (String) getRequestAttributes().get(nameAnnotation.value());
+            args[i] = uow.get(roleType, id);
+        }
+    }
+
     private Representation returnRepresentation(Object returnValue, Variant variant) throws ResourceException
     {
         if (returnValue != null)
@@ -259,7 +414,7 @@ public class CommandQueryServerResource
                 {
                     try
                     {
-                        String template = TemplateUtil.getTemplate("resources/value.html", CommandQueryServerResource.class);
+                        String template = TemplateUtil.getTemplate("resources/value.html", CompositeCommandQueryServerResource.class);
                         String content = TemplateUtil.eval(template, "$content", ((Value) returnValue).toJSON());
                         return new StringRepresentation(content, MediaType.TEXT_HTML);
                     } catch (IOException e)
@@ -293,7 +448,7 @@ public class CommandQueryServerResource
     private Method getResourceMethod(String operation)
             throws ResourceException
     {
-        for (Method method : getClass().getMethods())
+        for (Method method : composite.getClass().getInterfaces()[0].getMethods())
         {
             if (method.getName().equals(operation))
             {
@@ -303,15 +458,37 @@ public class CommandQueryServerResource
         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
+    /**
+     * A query method has the following attributes
+     * - Returns a Value
+     *
+     * @param method
+     * @return
+     */
     private boolean isQueryMethod(Method method)
     {
         return Value.class.isAssignableFrom(method.getReturnType());
+    }
+
+    /**
+     * A command method has the following attributes:
+     * - Returns void
+     * - Has a Value as the first parameter
+     *
+     * @param method
+     * @return
+     */
+    private boolean isCommandMethod(Method method)
+    {
+        return method.getReturnType().equals(Void.TYPE) && method.getParameterTypes().length > 0 && Value.class.isAssignableFrom(method.getParameterTypes()[0]);
     }
 
     private Object[] getCommandArguments(Method method) throws ResourceException
     {
         if (method.getParameterTypes().length > 0)
         {
+            Object[] args = new Object[method.getParameterTypes().length];
+
             Class<? extends Value> commandType = (Class<? extends Value>) method.getParameterTypes()[0];
 
             if (getRequest().getEntity().getMediaType().equals(MediaType.APPLICATION_JSON))
@@ -319,15 +496,22 @@ public class CommandQueryServerResource
                 String json = getRequest().getEntityAsText();
 
                 Object command = vbf.newValueFromJSON(commandType, json);
-
-                return new Object[]{command};
+                args[0] = command;
+                return args;
             } else if (getRequest().getEntity().getMediaType().equals(MediaType.TEXT_PLAIN))
             {
                 String text = getRequest().getEntityAsText();
                 if (text == null)
                     throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
-                return new Object[]{text};
-            } else
+                args[0] = text;
+                return args;
+            } else if (getRequest().getEntity().getMediaType().equals((MediaType.APPLICATION_WWW_FORM)))
+            {
+                Form asForm = getRequest().getEntityAsForm();
+                Class<?> valueType = method.getParameterTypes()[0];
+                args[0] = getValueFromForm((Class<ValueComposite>) valueType, asForm);
+                return args;
+            }else
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format");
         } else
         {
@@ -349,12 +533,12 @@ public class CommandQueryServerResource
             args[0] = requestValue;
         } else
         {
-            final Form asForm = getRequest().getResourceRef().getQueryAsForm();
-
+            Form asForm = getRequest().getResourceRef().getQueryAsForm();
             if (args.length == 1 && ValueComposite.class.isAssignableFrom(method.getParameterTypes()[0]))
             {
                 Class<?> valueType = method.getParameterTypes()[0];
-                args[0] = getValueFromQuery((Class<ValueComposite>) valueType);
+
+                args[0] = getValueFromForm((Class<ValueComposite>) valueType, asForm);
             } else
             {
                 for (Annotation[] annotations : method.getParameterAnnotations())
@@ -382,14 +566,13 @@ public class CommandQueryServerResource
         try
         {
             Subject subject = getRequest().getClientInfo().getSubject();
-            final Object commandObject = this;
             try
             {
                 Object returnValue = Subject.doAs(subject, new PrivilegedExceptionAction()
                 {
                     public Object run() throws Exception
                     {
-                        return method.invoke(commandObject, args);
+                        return method.invoke(composite, args);
                     }
                 });
 
@@ -403,8 +586,7 @@ public class CommandQueryServerResource
             if (e.getTargetException() instanceof ResourceException)
             {
                 throw (ResourceException) e.getTargetException();
-            }
-            else if (e.getTargetException() instanceof AccessControlException)
+            } else if (e.getTargetException() instanceof AccessControlException)
             {
                 // Operation not allowed - return 403
                 throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
@@ -419,9 +601,8 @@ public class CommandQueryServerResource
         }
     }
 
-    private ValueComposite getValueFromQuery(Class<ValueComposite> valueType)
+    private ValueComposite getValueFromForm(Class<ValueComposite> valueType, final Form asForm)
     {
-        final Form asForm = getRequest().getResourceRef().getQueryAsForm();
         ValueBuilder<ValueComposite> builder = vbf.newValueBuilder(valueType);
         final ValueDescriptor descriptor = spi.getValueDescriptor(builder.prototype());
         builder.withState(new StateHolder()
