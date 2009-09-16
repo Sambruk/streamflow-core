@@ -129,22 +129,23 @@ public interface OrganizationalUnit
 
             fromEntity.organizationalUnits().remove(oue);
 
-            for (ProjectRole role : oue.roles())
+            while (oue.roles().count() > 0)
             {
-                oue.roles().remove(role);
+                ProjectRole role = oue.roles().get(0);
                 toEntity.roles().add(role);
+                oue.roles().remove(role);
             }
-
-            for (Group group: oue.groups())
+            while (oue.groups().count() >0)
             {
-                oue.groups().remove(group);
+                Group group = oue.groups().get(0);
                 toEntity.groups().add(group);
+                oue.groups().remove(group);
             }
-
-            for (Project project: oue.projects())
+            while (oue.projects().count() >0)
             {
-                oue.projects().remove(project);
+                Project project = oue.projects().get(0);
                 toEntity.projects().add(project);
+                oue.projects().remove(project);
             }
             oue.remove();
         }
