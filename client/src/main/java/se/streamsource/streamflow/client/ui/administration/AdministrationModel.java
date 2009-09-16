@@ -16,11 +16,14 @@ package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.infrastructure.event.source.*;
 
 import javax.swing.tree.DefaultTreeModel;
+import java.util.logging.Logger;
 
 /**
  * JAVADOC
@@ -30,6 +33,7 @@ public class AdministrationModel
 {
     @Structure
     ObjectBuilderFactory obf;
+    private EventSourceListener subscriber;
 
     WeakModelMap<Account, AccountAdministrationNode> nodes = new WeakModelMap<Account, AccountAdministrationNode>()
     {
@@ -40,9 +44,23 @@ public class AdministrationModel
         }
     };
 
-    public AdministrationModel(@Uses AdministrationNode root)
+    public AdministrationModel(@Uses AdministrationNode root, @Service EventSource source)
     {
         super(root);
+
+        subscriber = new EventSourceListener()
+        {
+
+            public void eventsAvailable(EventStore source, EventSpecification specification)
+            {
+                Logger.getLogger("administration").info("Refresh organizational overview");
+                getRoot().refresh();
+                reload(getRoot());
+            }
+        };
+        source.registerListener(subscriber, new EventQuery().
+                withNames("organizationalUnitMoved", "organizationalUnitMerged"));
+
     }
 
     @Override

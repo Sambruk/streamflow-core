@@ -31,14 +31,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
-import se.streamsource.streamflow.infrastructure.event.source.*;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 /**
  * JAVADOC
@@ -54,14 +52,12 @@ public class AdministrationOutlineView
     Iterable<NameDialog> nameDialogs;
 
     private AdministrationModel model;
-    EventSourceListener subscriber;
 
     @Structure
     ObjectBuilderFactory obf;
 
     public AdministrationOutlineView(@Service ApplicationContext context, 
-                                     @Uses final AdministrationModel model,
-                                     @Service EventSource source) throws Exception
+                                     @Uses final AdministrationModel model) throws Exception
     {
         super(new BorderLayout());
         this.model = model;
@@ -70,20 +66,6 @@ public class AdministrationOutlineView
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
         tree.setEditable(true);
-
-        subscriber = new EventSourceListener()
-        {
-
-            public void eventsAvailable(EventStore source, EventSpecification specification)
-            {
-                Logger.getLogger("administration").info("Refresh organizational overview");
-                model.getRoot().refresh();
-                model.reload(model.getRoot());
-                tree.expandAll();
-            }
-        };
-        source.registerListener(subscriber, new EventQuery().
-                withNames("organizationalUnitMoved", "organizationalUnitMerged"));
 
         DefaultTreeRenderer renderer = new DefaultTreeRenderer(new WrappingProvider(
                 new IconValue()
