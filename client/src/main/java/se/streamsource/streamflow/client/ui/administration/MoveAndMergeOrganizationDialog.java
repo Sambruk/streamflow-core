@@ -22,6 +22,7 @@ import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.Icons;
@@ -34,18 +35,14 @@ import java.awt.*;
 public class MoveAndMergeOrganizationDialog
     extends JPanel {
 
-    public static final String MOVE = "MOVE";
-    public static final String MERGE = "MERGE";
-    private String operation;
-
     @Service
     DialogService dialogs;
 
     private JXTree tree;
 
     private AdministrationModel model;
-    private OrganizationalStructureAdministrationNode fromParent;
-    private OrganizationalStructureAdministrationNode moved;
+
+    private EntityReference target;
 
     public MoveAndMergeOrganizationDialog(@Service ApplicationContext context,
                               @Uses final AdministrationModel model) throws Exception
@@ -107,18 +104,12 @@ public class MoveAndMergeOrganizationDialog
             return;
         }
         
-        OrganizationalStructureAdministrationNode target =
+        OrganizationalStructureAdministrationNode selected =
                    (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
-        if(MOVE.equals(operation))
-        {
+        target = selected.ou().entity().get();
 
-           moved.model().moveOrganizationalUnit(fromParent.ou().entity().get(), target.ou().entity().get());
-       } else
-       {
-           moved.model().mergeOrganizationalUnit(fromParent.ou().entity().get(), target.ou().entity().get());
-       }
-       WindowUtils.findWindow(this).dispose();
+        WindowUtils.findWindow(this).dispose();
     }
 
     @Action
@@ -127,33 +118,8 @@ public class MoveAndMergeOrganizationDialog
         WindowUtils.findWindow(this).dispose();
     }
 
-    public String getOperation()
+    public EntityReference target()
     {
-        return operation;
-    }
-
-    public void setOperation(String operation)
-    {
-        this.operation = operation;
-    }
-
-    public OrganizationalStructureAdministrationNode getFromParent()
-    {
-        return fromParent;
-    }
-
-    public void setFromParent(OrganizationalStructureAdministrationNode fromParent)
-    {
-        this.fromParent = fromParent;
-    }
-
-    public OrganizationalStructureAdministrationNode getMoved()
-    {
-        return moved;
-    }
-
-    public void setMoved(OrganizationalStructureAdministrationNode moved)
-    {
-        this.moved = moved;
+        return target;
     }
 }

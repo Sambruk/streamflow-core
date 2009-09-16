@@ -216,11 +216,18 @@ public class AdministrationOutlineView
                         (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
         MoveAndMergeOrganizationDialog moveAndMergeDialog = obf.newObjectBuilder(MoveAndMergeOrganizationDialog.class).use(model).newInstance();
-        moveAndMergeDialog.setFromParent(parent);
-        moveAndMergeDialog.setMoved(moved);
-        moveAndMergeDialog.setOperation(MoveAndMergeOrganizationDialog.MOVE);
 
-        dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), moveAndMergeDialog).setTitle(i18n.text(AdministrationResources.move_to));
+        dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), moveAndMergeDialog, i18n.text(AdministrationResources.move_to));
+        
+        if( moveAndMergeDialog.target() != null
+                && !moved.ou().entity().get().equals(moveAndMergeDialog.target()))
+        {
+            moved.model().moveOrganizationalUnit(parent.ou().entity().get(), moveAndMergeDialog.target());
+        } else
+        {
+            dialogs.showOkDialog(WindowUtils.findWindow(this), new JLabel(i18n.text(AdministrationResources.could_not_move_organization)));
+        }
+
     }
 
     @Action
@@ -232,12 +239,19 @@ public class AdministrationOutlineView
         OrganizationalStructureAdministrationNode moved =
                         (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
-       MoveAndMergeOrganizationDialog moveAndMergeDialog = obf.newObjectBuilder(MoveAndMergeOrganizationDialog.class).use(model).newInstance();
-       moveAndMergeDialog.setFromParent(parent);
-       moveAndMergeDialog.setMoved(moved);
-       moveAndMergeDialog.setOperation(MoveAndMergeOrganizationDialog.MERGE);
+        MoveAndMergeOrganizationDialog moveAndMergeDialog = obf.newObjectBuilder(MoveAndMergeOrganizationDialog.class).use(model).newInstance();
 
-        dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), moveAndMergeDialog).setTitle(i18n.text(AdministrationResources.merge_to));
+        dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), moveAndMergeDialog, i18n.text(AdministrationResources.merge_to));
+
+        if(moveAndMergeDialog.target() != null
+                && !moved.ou().entity().get().equals(moveAndMergeDialog.target()))
+        {
+            moved.model().mergeOrganizationalUnit(parent.ou().entity().get(), moveAndMergeDialog.target()); 
+        } else
+        {
+            dialogs.showOkDialog(WindowUtils.findWindow(this), new JLabel(i18n.text(AdministrationResources.could_not_merge_organization)));
+        }
+
     }
 
 }

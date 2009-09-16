@@ -142,12 +142,12 @@ public class OrganizationalUnitAdministrationModel
         }
     }
 
-    public void moveOrganizationalUnit(EntityReference fromID, EntityReference toID)
+    public void moveOrganizationalUnit(EntityReference parentID, EntityReference toID)
     {
         try {
             ValueBuilder<MoveOrganizationalUnitCommand> builder = vbf.newValueBuilder(MoveOrganizationalUnitCommand.class);
             MoveOrganizationalUnitCommand dto = builder.prototype();
-            dto.parent().set(fromID);
+            dto.parent().set(parentID);
             dto.to().set(toID);
 
             organization.move(builder.newInstance());
@@ -165,12 +165,12 @@ public class OrganizationalUnitAdministrationModel
 
     }
 
-    public void mergeOrganizationalUnit(EntityReference fromID, EntityReference toID)
+    public void mergeOrganizationalUnit(EntityReference parentID, EntityReference toID)
     {
         try {
             ValueBuilder<MergeOrganizationalUnitCommand> builder = vbf.newValueBuilder(MergeOrganizationalUnitCommand.class);
             MergeOrganizationalUnitCommand dto = builder.prototype();
-            dto.parent().set(fromID);
+            dto.parent().set(parentID);
             dto.to().set(toID);
 
             organization.merge(builder.newInstance());

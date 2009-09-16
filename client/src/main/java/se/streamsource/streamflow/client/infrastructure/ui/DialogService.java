@@ -38,8 +38,20 @@ public class DialogService
     @Service
     ApplicationContext context;
 
-    public JXDialog showOkCancelHelpDialog(Component component, JComponent main)
+    public void showOkCancelHelpDialog(Component component, JComponent main)
     {
+        JXDialog dialog = createDialog(component, main);
+        dialog.setVisible(true);
+    }
+
+    public void showOkCancelHelpDialog(Component component, JComponent main, String title)
+    {
+        JXDialog dialog = createDialog(component,main);
+        dialog.setTitle(title);
+        dialog.setVisible(true);
+    }
+
+    private JXDialog createDialog(Component component, JComponent main) {
         Window window = WindowUtils.findWindow(component);
         JXDialog dialog;
         if (window instanceof Frame)
@@ -51,8 +63,6 @@ public class DialogService
 
         dialog.pack();
         dialog.setLocationRelativeTo(SwingUtilities.windowForComponent(component));
-        dialog.setVisible(true);
-
         return dialog;
     }
 
