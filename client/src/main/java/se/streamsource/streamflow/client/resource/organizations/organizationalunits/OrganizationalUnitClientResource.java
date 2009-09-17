@@ -20,6 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
 import se.streamsource.streamflow.client.resource.organizations.search.SearchClientResource;
@@ -48,6 +49,11 @@ public class OrganizationalUnitClientResource
     public RolesClientResource roles() throws ResourceException
     {
         return getSubResource("roles", RolesClientResource.class);
+    }
+
+    public AdministratorsClientResource administrators() throws ResourceException
+    {
+        return getSubResource("administrators", AdministratorsClientResource.class);
     }
 
     public OrganizationalUnitsClientResource organizationalUnits() throws ResourceException

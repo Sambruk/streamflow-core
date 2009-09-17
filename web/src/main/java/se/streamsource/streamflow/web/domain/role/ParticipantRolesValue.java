@@ -12,18 +12,23 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.web.domain.role;
 
-import org.qi4j.api.entity.association.Association;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
- * JAVADOC
+ * Roles that a particular participant has
  */
-public interface ProjectOrganization
+public interface ParticipantRolesValue
+    extends ValueComposite
 {
-    interface ProjectOrganizationState
-    {
-        Association<OrganizationalUnit> organizationalUnit();
-    }
+    Property<EntityReference> participant();
+
+    @UseDefaults
+    Property<List<EntityReference>> roles();
 }

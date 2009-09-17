@@ -30,8 +30,6 @@ import se.streamsource.streamflow.web.domain.project.Project;
 @Mixins(OrganizationalUnit.OrganizationalUnitMixin.class)
 public interface OrganizationalUnit
 {
-    Organization getOrganization();
-
     void moveOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MoveOrganizationalUnitException;
 
     void mergeOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MergeOrganizationalUnitException;
@@ -50,11 +48,6 @@ public interface OrganizationalUnit
     {
         @This
         OrganizationalUnitState state;
-
-        public Organization getOrganization()
-        {
-            return state.organization().get();
-        }
 
         public void moveOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MoveOrganizationalUnitException
         {

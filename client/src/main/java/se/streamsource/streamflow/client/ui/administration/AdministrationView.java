@@ -72,7 +72,8 @@ public class AdministrationView
                         view = obf.newObjectBuilder(OrganizationalUnitAdministrationView.class).use(ouAdminModel,
                                 ouAdminModel.groupsModel(),
                                 ouAdminModel.projectsModel(),
-                                ouAdminModel.rolesModel()).newInstance();
+                                ouAdminModel.rolesModel(),
+                                ouAdminModel.administratorsModel()).newInstance();
                     }
 
                     setRightComponent(view);

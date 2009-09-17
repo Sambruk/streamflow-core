@@ -26,6 +26,8 @@ import se.streamsource.streamflow.client.resource.organizations.groups.participa
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorClientResource;
+import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRoleClientResource;
@@ -140,6 +142,9 @@ public class ClientResourceAssembler
 
                 RolesClientResource.class,
                 RoleClientResource.class,
+
+                AdministratorsClientResource.class,
+                AdministratorClientResource.class,
 
                 SearchClientResource.class,
                 SearchTaskClientResource.class).visibleIn(Visibility.application);

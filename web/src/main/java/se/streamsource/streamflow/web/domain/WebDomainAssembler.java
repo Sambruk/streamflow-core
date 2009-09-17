@@ -22,6 +22,7 @@ import se.streamsource.streamflow.web.domain.group.GroupAssembler;
 import se.streamsource.streamflow.web.domain.label.LabelAssembler;
 import se.streamsource.streamflow.web.domain.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.domain.project.ProjectAssembler;
+import se.streamsource.streamflow.web.domain.role.RoleAssembler;
 import se.streamsource.streamflow.web.domain.task.TaskAssembler;
 import se.streamsource.streamflow.web.domain.user.UserAssembler;
 
@@ -38,6 +39,7 @@ public class WebDomainAssembler
         new LabelAssembler().assemble(domainLayer.moduleAssembly("Label"));
         new OrganizationAssembler().assemble(domainLayer.moduleAssembly("Organization"));
         new ProjectAssembler().assemble(domainLayer.moduleAssembly("Project"));
+        new RoleAssembler().assemble(domainLayer.moduleAssembly("Role"));
         new TaskAssembler().assemble(domainLayer.moduleAssembly("Task"));
         new UserAssembler().assemble(domainLayer.moduleAssembly("User"));
     }

@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
+import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
 import se.streamsource.streamflow.resource.organization.MergeOrganizationalUnitCommand;
@@ -37,7 +38,7 @@ import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCo
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.*;
+import javax.swing.JLabel;
 
 /**
  * JAVADOC
@@ -57,6 +58,7 @@ public class OrganizationalUnitAdministrationModel
     private GroupsModel groupsModel;
     private ProjectsModel projectsModel;
     private RolesModel rolesModel;
+    private AdministratorsModel administratorsModel;
     private OrganizationClientResource organization;
 
     public OrganizationalUnitAdministrationModel(@Structure ObjectBuilderFactory obf, @Uses OrganizationClientResource organization) throws ResourceException
@@ -65,6 +67,7 @@ public class OrganizationalUnitAdministrationModel
         groupsModel = obf.newObjectBuilder(GroupsModel.class).use(organization.groups()).newInstance();
         projectsModel = obf.newObjectBuilder(ProjectsModel.class).use(organization.projects(), this).newInstance();
         rolesModel = obf.newObjectBuilder(RolesModel.class).use(organization.roles()).newInstance();
+        administratorsModel = obf.newObjectBuilder(AdministratorsModel.class).use(organization.administrators()).newInstance();
     }
 
     public OrganizationClientResource getOrganization()
@@ -85,6 +88,11 @@ public class OrganizationalUnitAdministrationModel
     public RolesModel rolesModel()
     {
         return rolesModel;
+    }
+
+    public AdministratorsModel administratorsModel()
+    {
+        return administratorsModel;
     }
 
     public void refresh()

@@ -40,7 +40,7 @@ public class OrganizationalUnitSteps
     @Structure
     ValueBuilderFactory vbf;
 
-    public OrganizationalUnit ou;
+    public OrganizationalUnitEntity ou;
 
     private Exception thrownException;
 

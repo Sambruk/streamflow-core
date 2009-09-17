@@ -20,6 +20,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.label.Labels;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
@@ -65,7 +66,7 @@ public interface ProjectEntity
 
         public void assignId(TaskId task)
         {
-            state.organizationalUnit().get().getOrganization().assignId(task);
+            ((OrganizationalUnit.OrganizationalUnitState)state.organizationalUnit().get()).organization().get().assignId(task);
         }
     }
 }

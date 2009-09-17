@@ -12,19 +12,17 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.roles;
+package se.streamsource.streamflow.client.ui.administration.policy;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Status;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
+import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.AbstractListModel;
 import java.util.List;
@@ -32,14 +30,14 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public class RolesModel
+public class AdministratorsModel
         extends AbstractListModel
 {
     @Structure
     ValueBuilderFactory vbf;
 
     @Uses
-    private RolesClientResource roles;
+    private AdministratorsClientResource administrators;
 
     private List<ListItemValue> list;
 
@@ -53,33 +51,29 @@ public class RolesModel
         return list == null ? null : list.get(index);
     }
 
-    public void createRole(String description)
+    public void addAdministrator(String description)
     {
         try
         {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(description);
-            roles.createRole(builder.newInstance());
+            administrators.post(new StringRepresentation(description));
+            refresh();
 
         } catch (ResourceException e)
         {
-            if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
-            {
-                throw new OperationException(AdministrationResources.could_not_create_role_name_already_exists, e);
-            }
-            throw new OperationException(AdministrationResources.could_not_create_role, e);
+            throw new OperationException(AdministrationResources.could_not_add_administrator, e);
         }
 
     }
 
-    public void removeRole(String id)
+    public void removeAdministrator(String id)
     {
         try
         {
-            roles.role(id).deleteCommand();
+            administrators.role(id).deleteCommand();
+            refresh();
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_remove_role, e);
+            throw new OperationException(AdministrationResources.could_not_remove_administrator, e);
         }
     }
 
@@ -87,7 +81,7 @@ public class RolesModel
     {
         try
         {
-            list = roles.roles().items().get();
+            list = administrators.administrators().items().get();
             fireContentsChanged(this, 0, list.size());
         } catch (ResourceException e)
         {

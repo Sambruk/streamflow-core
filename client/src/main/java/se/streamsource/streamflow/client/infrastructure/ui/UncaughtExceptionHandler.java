@@ -16,7 +16,6 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.JXErrorPane;
-import org.jdesktop.swingx.SwingXUtilities;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.data.Status;
@@ -25,8 +24,12 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowResources;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Frame;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -50,7 +53,7 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
         final Throwable ex = unwrap(e);
 
         Object source = EventQueue.getCurrentEvent().getSource();
-        final Frame frame = source instanceof Component ? SwingXUtilities.getAncestor(Frame.class, (Component) source) : main.getMainFrame();
+        final Frame frame = source instanceof Component ? (Frame) SwingUtilities.getAncestorOfClass(Frame.class, (Component) source) : main.getMainFrame();
 
         SwingUtilities.invokeLater(new Runnable()
         {

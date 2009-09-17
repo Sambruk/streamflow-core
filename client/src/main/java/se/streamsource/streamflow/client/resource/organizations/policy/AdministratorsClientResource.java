@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.organizations.roles;
+package se.streamsource.streamflow.client.resource.organizations.policy;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -25,26 +25,26 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 /**
  * JAVADOC
  */
-public class RolesClientResource
+public class AdministratorsClientResource
         extends CommandQueryClientResource
 {
-    public RolesClientResource(@Uses Context context, @Uses Reference reference)
+    public AdministratorsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public ListValue roles() throws ResourceException
+    public ListValue administrators() throws ResourceException
     {
-        return query("roles", ListValue.class);
+        return query("administrators", ListValue.class);
     }
 
-    public void createRole(StringDTO value) throws ResourceException
+    public void addAdministrator(StringDTO value) throws ResourceException
     {
         postCommand(value);
     }
 
-    public RoleClientResource role(String id)
+    public AdministratorClientResource role(String id)
     {
-        return getSubResource(id, RoleClientResource.class);
+        return getSubResource(id, AdministratorClientResource.class);
     }
 }

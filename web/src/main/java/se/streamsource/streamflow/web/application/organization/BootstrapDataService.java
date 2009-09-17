@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.application.organization;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
@@ -25,11 +26,10 @@ import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.web.domain.organization.Organization;
-import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.user.User;
+import se.streamsource.streamflow.web.domain.role.Role;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
@@ -52,32 +52,72 @@ public interface BootstrapDataService
         {
             UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Bootstrap data"));
 
+            OrganizationsEntity organizations;
             try
             {
                 // Check if organizations entity exists
-                uow.get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
-                uow.discard();
+                organizations = uow.get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
             } catch (NoSuchEntityException e)
             {
                 // Create bootstrap data
-                OrganizationsEntity organizations = uow.newEntity(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
+                organizations = uow.newEntity(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
+            }
 
-                Organization ou = organizations.createOrganization("Organization");
-
-                // User
-                User user = organizations.createUser(UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME);
+            // Check if admin exists
+            UserEntity admin;
+            try
+            {
+                admin = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
+            } catch (NoSuchEntityException e)
+            {
+                // Create admin
+                admin = organizations.createUser(UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME);
 
                 ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
                 contactBuilder.prototype().name().set("Administrator");
                 ContactValue contact = contactBuilder.newInstance();
-                ((Contactable) user).updateContact(contact);
-
-                // Join organization
-                ((OrganizationParticipations) user).join(ou);
-
-                uow.complete();
+                admin.updateContact(contact);
             }
 
+
+            Query<OrganizationEntity> orgs = organizations.findAll();
+
+            if (orgs.count() == 0)
+            {
+                // Create default organization
+                Organization ou = organizations.createOrganization("Organization");
+            }
+
+            for (OrganizationEntity org : orgs)
+            {
+                Role administrator;
+                if (org.roles().count() == 0)
+                {
+                    // Administrator role
+                    administrator = org.createRole("Administrator");
+                } else
+                {
+                    administrator = org.roles().get(0);
+                }
+
+                // Administrator should be member of all organizations
+                if (!admin.organizations().contains(org))
+                {
+                    admin.join(org);
+                }
+
+                // Assign admin role to administrator
+                org.grantRole(admin, administrator);
+            }
+
+            Organization ou = organizations.createOrganization("Organization");
+
+            // Make sure all organizations have administrators
+
+            // TODO
+
+
+            uow.complete();
         }
 
         public void passivate() throws Exception

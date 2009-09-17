@@ -19,6 +19,9 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
+import se.streamsource.streamflow.web.domain.project.IdGenerator;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
+import se.streamsource.streamflow.web.domain.role.Roles;
 
 /**
  * A root organization.
@@ -27,7 +30,12 @@ import org.qi4j.api.injection.scope.This;
 public interface OrganizationEntity
         extends OrganizationalUnitEntity,
         // Roles
-        Organization
+        Organization,
+
+        // State
+        IdGenerator.IdGeneratorState,
+        RolePolicy.RolePolicyState,
+        Roles.RolesState
 {
     class LifecycleConcern
             extends ConcernOf<Lifecycle>

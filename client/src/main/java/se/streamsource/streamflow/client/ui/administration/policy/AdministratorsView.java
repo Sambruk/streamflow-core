@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.roles;
+package se.streamsource.streamflow.client.ui.administration.policy;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -20,39 +20,42 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
-import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.util.Set;
 
 /**
  * JAVADOC
  */
-public class RolesView
+public class AdministratorsView
         extends JPanel
 {
-    RolesModel model;
+    AdministratorsModel model;
 
     @Service
     DialogService dialogs;
 
     @Uses
-    Iterable<NameDialog> nameDialogs;
+    Iterable<SelectUsersAndGroupsDialog> selectUsersAndGroupsDialogs;
 
-    public JList roleList;
+    public JList administratorList;
 
-    public RolesView(@Service ApplicationContext context, @Uses final RolesModel model)
+    public AdministratorsView(@Service ApplicationContext context, @Uses final AdministratorsModel model)
     {
         super(new BorderLayout());
         this.model = model;
 
         setActionMap(context.getActionMap(this));
 
-        roleList = new JList(model);
+        administratorList = new JList(model);
 
-        roleList.setCellRenderer(new ListItemCellRenderer());
-        add(roleList, BorderLayout.CENTER);
+        administratorList.setCellRenderer(new ListItemCellRenderer());
+        add(administratorList, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(getActionMap().get("add")));
@@ -63,22 +66,22 @@ public class RolesView
     @Action
     public void add()
     {
-        NameDialog dialog = nameDialogs.iterator().next();
+        SelectUsersAndGroupsDialog dialog = selectUsersAndGroupsDialogs.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog);
-        String name = dialog.name();
-        if (name != null)
+        Set<String> added = dialog.getUsersAndGroups();
+        if (added != null)
         {
-            model.createRole(name);
-            model.refresh();
+            for (String identity : added)
+            {
+                model.addAdministrator(identity);
+            }
         }
     }
 
     @Action
     public void remove()
     {
-        ListItemValue selected = (ListItemValue) roleList.getSelectedValue();
-        model.removeRole(selected.entity().get().identity());
-        model.refresh();
+        ListItemValue selected = (ListItemValue) administratorList.getSelectedValue();
+        model.removeAdministrator(selected.entity().get().identity());
     }
-
 }

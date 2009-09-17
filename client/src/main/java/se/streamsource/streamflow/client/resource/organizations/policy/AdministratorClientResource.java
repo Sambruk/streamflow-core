@@ -12,18 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.client.resource.organizations.policy;
 
-import org.qi4j.api.entity.association.Association;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.Context;
+import org.restlet.data.Reference;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 
 /**
  * JAVADOC
  */
-public interface ProjectOrganization
+public class AdministratorClientResource
+        extends CommandQueryClientResource
 {
-    interface ProjectOrganizationState
+    public AdministratorClientResource(@Uses Context context, @Uses Reference reference)
     {
-        Association<OrganizationalUnit> organizationalUnit();
+        super(context, reference);
     }
 }

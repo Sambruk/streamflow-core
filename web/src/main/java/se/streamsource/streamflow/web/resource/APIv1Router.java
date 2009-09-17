@@ -14,10 +14,10 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.rest.ExtensionMediaTypeFilter;
 import org.qi4j.rest.entity.EntitiesResource;
 import org.qi4j.rest.entity.EntityResource;
@@ -34,12 +34,13 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.streamflow.web.resource.events.EventsResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorServerResource;
+import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
@@ -50,16 +51,16 @@ import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerRes
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.search.SearchTaskServerResource;
 import se.streamsource.streamflow.web.resource.organizations.search.SearchTasksServerResource;
+import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
-import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
-import se.streamsource.streamflow.web.rest.ResourceFinder;
 import se.streamsource.streamflow.web.rest.CompositeFinder;
+import se.streamsource.streamflow.web.rest.ResourceFinder;
 
 /**
  * Router for v1 of the StreamFlow REST API.
@@ -103,6 +104,8 @@ public class APIv1Router
         attach("/organizations/{organization}/projects/{labels}/labels/{label}", createServerResourceFinder(LabelServerResource.class));
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RoleServerResource.class));
+        attach("/organizations/{organization}/administrators", createServerResourceFinder(AdministratorsServerResource.class));
+        attach("/organizations/{organization}/administrators/{administrator}", createServerResourceFinder(AdministratorServerResource.class));
         attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));
         attach("/organizations/{organization}/search", createServerResourceFinder(SearchTasksServerResource.class));
         attach("/organizations/{organization}/search/{task}", createServerResourceFinder(SearchTaskServerResource.class));

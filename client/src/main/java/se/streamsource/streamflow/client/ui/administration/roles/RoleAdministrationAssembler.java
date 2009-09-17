@@ -27,8 +27,6 @@ public class RoleAdministrationAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        //UIAssemblers.addViews(module, RolesView.class);
-
         UIAssemblers.addMV(module, RolesModel.class,
                 RolesView.class);
     }

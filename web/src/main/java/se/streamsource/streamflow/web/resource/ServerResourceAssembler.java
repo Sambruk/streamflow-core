@@ -18,15 +18,17 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.web.resource.events.EventsResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
+import se.streamsource.streamflow.web.resource.organizations.groups.GroupResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.groups.GroupResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorServerResource;
+import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
@@ -38,10 +40,10 @@ import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerRes
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.search.SearchTaskServerResource;
 import se.streamsource.streamflow.web.resource.organizations.search.SearchTasksServerResource;
-import se.streamsource.streamflow.web.resource.users.UserServerResource;
-import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
+import se.streamsource.streamflow.web.resource.users.UserServerResource;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
+import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.OverviewServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectServerResource;
@@ -161,6 +163,9 @@ public class ServerResourceAssembler
 
                 RolesServerResource.class,
                 RoleServerResource.class,
+
+                AdministratorsServerResource.class,
+                AdministratorServerResource.class,
 
                 SearchTasksServerResource.class,
                 SearchTaskServerResource.class,

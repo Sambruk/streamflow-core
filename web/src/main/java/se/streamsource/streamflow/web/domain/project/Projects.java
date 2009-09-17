@@ -24,7 +24,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 
 /**
  * JAVADOC
@@ -49,7 +49,7 @@ public interface Projects
             implements Projects, ProjectsState
     {
         @This
-        OrganizationalUnit ou;
+        OrganizationalUnitEntity ou;
 
         @Service
         IdentityGenerator idgen;

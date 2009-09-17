@@ -12,18 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.web.domain.role;
 
-import org.qi4j.api.entity.association.Association;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * JAVADOC
  */
-public interface ProjectOrganization
+public class RoleAssembler
+    implements Assembler
 {
-    interface ProjectOrganizationState
+    public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        Association<OrganizationalUnit> organizationalUnit();
+        module.addEntities(RoleEntity.class).visibleIn(Visibility.application);
     }
 }

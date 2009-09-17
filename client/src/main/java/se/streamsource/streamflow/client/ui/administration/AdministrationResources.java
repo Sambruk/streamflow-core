@@ -72,5 +72,5 @@ public enum AdministrationResources
     could_not_switch_account,
     nothing_selected,
     move_to,
-    merge_to
+    administrators_tab, could_not_add_administrator, could_not_remove_administrator, merge_to
 }

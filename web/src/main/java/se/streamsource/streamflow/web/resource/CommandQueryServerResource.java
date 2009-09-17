@@ -213,7 +213,6 @@ public class CommandQueryServerResource
                                 {
                                     throw (IOException) new IOException("Could not write JSON").initCause(e);
                                 }
-                                System.out.println("Returned "+count+" events");
                             }
                         };
                     }

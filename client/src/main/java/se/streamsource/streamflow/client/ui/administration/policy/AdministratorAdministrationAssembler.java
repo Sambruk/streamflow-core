@@ -12,18 +12,22 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.client.ui.administration.policy;
 
-import org.qi4j.api.entity.association.Association;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 /**
  * JAVADOC
  */
-public interface ProjectOrganization
+public class AdministratorAdministrationAssembler
+        implements Assembler
 {
-    interface ProjectOrganizationState
+    public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        Association<OrganizationalUnit> organizationalUnit();
+        UIAssemblers.addMV(module, AdministratorsModel.class,
+                AdministratorsView.class);
     }
 }

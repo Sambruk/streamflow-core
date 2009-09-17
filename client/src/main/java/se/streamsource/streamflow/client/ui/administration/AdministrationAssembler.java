@@ -14,12 +14,13 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.api.common.Visibility;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.policy.AdministratorAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.roles.RoleAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
@@ -57,5 +58,6 @@ public class AdministrationAssembler
         new GroupAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Groups"));
         new ProjectAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Projects"));
         new RoleAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Roles"));
+        new AdministratorAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Administrators"));
     }
 }

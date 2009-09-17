@@ -20,8 +20,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
@@ -37,41 +39,71 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
 @Mixins(Organizations.OrganizationsMixin.class)
 public interface Organizations
 {
-    Organization createOrganization(String name);
+    OrganizationEntity createOrganization(String name);
 
-    User createUser(String username, String password);
+    /**
+     * Create user with the given password.
+     *
+     * @param username of the new user
+     * @param password of the new user
+     * @return the created user
+     * @throws IllegalArgumentException if user with given name already exists
+     */
+    UserEntity createUser(String username, String password)
+            throws IllegalArgumentException;
 
     @Mixins(OrganisationsStateMixin.class)
     interface OrganizationsState
     {
-
         OrganizationEntity organizationCreated(DomainEvent event, String id);
-
 
         UserEntity userCreated(DomainEvent event, String username, String password);
 
-        Organization findByName(String name);
+        OrganizationEntity findByName(String name);
+
+        Query<OrganizationEntity> findAll();
     }
 
     class OrganizationsMixin
             implements Organizations
     {
+        @Structure
+        UnitOfWorkFactory uowf;
+
         @Service
         IdentityGenerator idGen;
 
         @This
         OrganizationsState state;
 
-        public Organization createOrganization(String name)
+        public OrganizationEntity createOrganization(String name)
         {
 //            OrganizationEntity ou = state.organizationCreated(CREATE, idGen.generate(OrganizationEntity.class));
             OrganizationEntity ou = state.organizationCreated(CREATE, "Organization");
+
+            // Change name
             ou.describe(name);
+
+            // Create Administrator role
+            ou.createRole("Administrator");
+
             return ou;
         }
 
-        public User createUser(String username, String password)
+        public UserEntity createUser(String username, String password)
+                throws IllegalArgumentException
         {
+            // Check if user already exist
+            try
+            {
+                uowf.currentUnitOfWork().get(User.class, username);
+
+                throw new IllegalArgumentException("user_already_exists");
+            } catch (NoSuchEntityException e)
+            {
+                // Ok!
+            }
+
             UserEntity user = state.userCreated(CREATE, username, password);
             return user;
         }
@@ -111,6 +143,12 @@ public interface Organizations
             return qbf.newQueryBuilder(OrganizationEntity.class).
                     where(QueryExpressions.eq(template.description(), name)).
                     newQuery(uowf.currentUnitOfWork()).find();
+        }
+
+        public Query<OrganizationEntity> findAll()
+        {
+            return qbf.newQueryBuilder(OrganizationEntity.class).
+                    newQuery(uowf.currentUnitOfWork());
         }
     }
 }

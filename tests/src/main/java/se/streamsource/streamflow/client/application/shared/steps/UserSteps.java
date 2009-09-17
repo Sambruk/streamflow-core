@@ -49,25 +49,25 @@ public class UserSteps
     @When("user is removed from the organization")
     public void leaveFromOrganization()
     {
-        user.leave(organizationalUnitSteps.ou.getOrganization());
+        user.leave(organizationalUnitSteps.ou.organization().get());
     }
 
 
     @When("user joins the organization")
     public void joinOrganization()
     {
-        user.join(organizationalUnitSteps.ou.getOrganization());
+        user.join(organizationalUnitSteps.ou.organization().get());
     }
 
     @Then("the user is not part of the organization")
     public void notPartOfOrganization()
     {
-        ensureThat(!user.organizations().contains(organizationalUnitSteps.ou.getOrganization()));
+        ensureThat(!user.organizations().contains(organizationalUnitSteps.ou.organization().get()));
     }
 
     @Then("the user is part of the organization")
     public void partOfOrganization()
     {
-        ensureThat(user.organizations().contains(organizationalUnitSteps.ou.getOrganization()));
+        ensureThat(user.organizations().contains(organizationalUnitSteps.ou.organization().get()));
     }
 }
