@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -61,6 +62,8 @@ public class AdministratorsView
         toolbar.add(new JButton(getActionMap().get("add")));
         toolbar.add(new JButton(getActionMap().get("remove")));
         add(toolbar, BorderLayout.SOUTH);
+
+        addAncestorListener(new RefreshWhenVisible(model));
     }
 
     @Action

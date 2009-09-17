@@ -20,6 +20,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -32,6 +33,7 @@ import java.util.List;
  */
 public class AdministratorsModel
         extends AbstractListModel
+    implements Refreshable
 {
     @Structure
     ValueBuilderFactory vbf;

@@ -21,9 +21,11 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
@@ -42,13 +44,14 @@ public class UserAdministrationServerResource
         ValueBuilder<TreeValue> listBuilder = vbf.newValueBuilder(TreeValue.class);
         String id = (String) getRequest().getAttributes().get("user");
         OrganizationParticipations organizationParticipations = uowf.currentUnitOfWork().get(OrganizationParticipations.class, id);
+        Participant participant = (Participant) organizationParticipations;
         List<TreeNodeValue> list = listBuilder.prototype().roots().get();
         OrganizationParticipations.OrganizationParticipationsState state = (OrganizationParticipations.OrganizationParticipationsState) organizationParticipations;
-        addOrganizationalUnits(state.organizations(), list);
+        addOrganizationalUnits(state.organizations(), list, participant);
         return listBuilder.newInstance();
     }
 
-    private void addOrganizationalUnits(Iterable<? extends OrganizationalUnit> organizations, List<TreeNodeValue> list)
+    private void addOrganizationalUnits(Iterable<? extends OrganizationalUnit> organizations, List<TreeNodeValue> list, Participant participant)
     {
         for (OrganizationalUnit organization : organizations)
         {
@@ -58,8 +61,12 @@ public class UserAdministrationServerResource
             itemValue.description().set(((Describable) organization).getDescription());
             itemValue.entity().set(EntityReference.getEntityReference(organization));
             List<TreeNodeValue> subOrgs = itemValue.children().get();
-            addOrganizationalUnits(((OrganizationalUnits.OrganizationalUnitsState) organization).organizationalUnits(), subOrgs);
-            list.add(valueBuilder.newInstance());
+
+            addOrganizationalUnits(((OrganizationalUnits.OrganizationalUnitsState) organization).organizationalUnits(), subOrgs, participant);
+
+            RolePolicy.RolePolicyState rolePolicy = (RolePolicy.RolePolicyState) ou;
+            if (rolePolicy.hasRoles(participant))
+                list.add(valueBuilder.newInstance());
         }
     }
 }

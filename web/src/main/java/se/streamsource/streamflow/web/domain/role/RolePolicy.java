@@ -17,14 +17,16 @@ package se.streamsource.streamflow.web.domain.role;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import static org.qi4j.api.entity.EntityReference.getEntityReference;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.group.Participant;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Policy for managging Roles assigned to Participants. Participants
@@ -49,11 +51,16 @@ public interface RolePolicy
         boolean participantHasRole(Participant participant, Role role);
 
         List<EntityReference> participantsWithRole(Role role);
+
+        boolean hasRoles(Participant participant);
     }
 
     abstract class RolePolicyMixin
             implements RolePolicy, RolePolicyState
     {
+        @Structure
+        ValueBuilderFactory vbf;
+
         public void grantRole(Participant participant, Role role)
         {
             if (participantHasRole(participant, role))
@@ -89,6 +96,15 @@ public interface RolePolicy
                 }
                 idx++;
             }
+
+            // Participant is not in list - add it
+            EntityReference roleRef = getEntityReference(role);
+            ValueBuilder<ParticipantRolesValue> builder = vbf.newValueBuilder(ParticipantRolesValue.class);
+            builder.prototype().participant().set(participantRef);
+            builder.prototype().roles().get().add(roleRef);
+            List<ParticipantRolesValue> policy = policy().get();
+            policy.add(builder.newInstance());
+            policy().set(policy);
         }
 
         public void roleRevoked(DomainEvent event, Participant participant, Role role)
@@ -158,6 +174,11 @@ public interface RolePolicy
 
             }
             return participants;
+        }
+
+        public boolean hasRoles(Participant participant)
+        {
+            return getRoles(participant) != null;
         }
     }
 }

@@ -20,7 +20,6 @@ import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
-import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.role.Roles;
 
 /**
@@ -34,7 +33,6 @@ public interface OrganizationEntity
 
         // State
         IdGenerator.IdGeneratorState,
-        RolePolicy.RolePolicyState,
         Roles.RolesState
 {
     class LifecycleConcern

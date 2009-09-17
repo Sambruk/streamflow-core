@@ -86,6 +86,7 @@ public interface BootstrapDataService
             {
                 // Create default organization
                 Organization ou = organizations.createOrganization("Organization");
+                uow.apply();
             }
 
             for (OrganizationEntity org : orgs)
@@ -109,13 +110,6 @@ public interface BootstrapDataService
                 // Assign admin role to administrator
                 org.grantRole(admin, administrator);
             }
-
-            Organization ou = organizations.createOrganization("Organization");
-
-            // Make sure all organizations have administrators
-
-            // TODO
-
 
             uow.complete();
         }

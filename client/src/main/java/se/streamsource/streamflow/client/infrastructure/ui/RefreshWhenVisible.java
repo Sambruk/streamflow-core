@@ -12,22 +12,34 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.role;
+package se.streamsource.streamflow.client.infrastructure.ui;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.AncestorEvent;
 
 /**
- * JAVADOC
+ * Refresh a Refreshable when a view becomes visible.
  */
-public class RoleAssembler
-    implements Assembler
+public class RefreshWhenVisible
+    implements AncestorListener
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
+    private Refreshable refreshable;
+
+    public RefreshWhenVisible(Refreshable refreshable)
     {
-        module.addEntities(RoleEntity.class).visibleIn(Visibility.application);
-        module.addValues(ParticipantRolesValue.class).visibleIn(Visibility.application);
+        this.refreshable = refreshable;
+    }
+
+    public void ancestorAdded(AncestorEvent event)
+    {
+        refreshable.refresh();
+    }
+
+    public void ancestorRemoved(AncestorEvent event)
+    {
+    }
+
+    public void ancestorMoved(AncestorEvent event)
+    {
     }
 }

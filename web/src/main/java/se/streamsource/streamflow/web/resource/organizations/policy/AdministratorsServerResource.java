@@ -24,6 +24,7 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.role.Role;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
@@ -44,7 +45,8 @@ public class AdministratorsServerResource
         OrganizationEntity organization = (OrganizationEntity) ouState.organization().get();
         Role adminRole = organization.roles().get(0);
 
-        List<EntityReference> admins = organization.participantsWithRole(adminRole);
+        RolePolicy.RolePolicyState rolePolicy = (RolePolicy.RolePolicyState) ouState;
+        List<EntityReference> admins = rolePolicy.participantsWithRole(adminRole);
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (EntityReference admin : admins)
         {
