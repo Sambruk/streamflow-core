@@ -39,10 +39,19 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.representation.*;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.ObjectRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
+import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
@@ -52,9 +61,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessControlException;
-import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -237,6 +247,8 @@ public class CommandQueryServerResource
             throw ex;
         } catch (Exception ex)
         {
+            Logger.getLogger("command").log(Level.SEVERE, "Could not process command:"+operation, ex);
+
             setStatus(Status.SERVER_ERROR_INTERNAL);
             return new ObjectRepresentation(ex, MediaType.APPLICATION_JAVA_OBJECT);
         } finally
@@ -408,6 +420,8 @@ public class CommandQueryServerResource
                 // Operation not allowed - return 403
                 throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
             }
+
+            Logger.getLogger("command").log(Level.SEVERE, "Could not invoke command:"+method.getName(), e.getTargetException());
 
             getResponse().setEntity(new ObjectRepresentation(e));
 
