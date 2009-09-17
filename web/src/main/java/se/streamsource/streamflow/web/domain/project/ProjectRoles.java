@@ -43,7 +43,7 @@ public interface ProjectRoles
         extends ConcernOf<ProjectRoles>
         implements ProjectRoles
     {
-        public ProjectRoleEntity createRole(String name)
+        public ProjectRoleEntity createProjectRole(String name)
         {
             ProjectRoleEntity role = next.createProjectRole(name);
             role.describe(name);

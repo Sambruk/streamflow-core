@@ -16,12 +16,14 @@ package se.streamsource.streamflow.infrastructure.event;
 
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.common.AppliesToFilter;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.EntityStateHolder;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.spi.Qi4jSPI;
 import se.streamsource.streamflow.domain.roles.Removable;
@@ -58,6 +60,9 @@ public class CommandEntityRemoveMixin
     @Structure
     Qi4jSPI spi;
 
+    @This
+    EntityComposite composite;
+
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         Method eventMethod = methodMappings.get(method);
@@ -67,7 +72,7 @@ public class CommandEntityRemoveMixin
             String name = method.getName().substring("remove".length());
             name = Introspector.decapitalize(name) + "Removed";
             Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
-            eventMethod = proxy.getClass().getMethod(name, parameterTypes);
+            eventMethod = composite.getClass().getMethod(name, parameterTypes);
             methodMappings.put(method, eventMethod);
         }
 
@@ -77,7 +82,7 @@ public class CommandEntityRemoveMixin
             // removeFoo -> foos
             String name = method.getName().substring("remove".length());
             name = Introspector.decapitalize(name) + "s";
-            manyAssociationMethod = proxy.getClass().getMethod(name);
+            manyAssociationMethod = composite.getClass().getMethod(name);
             manyAssociationMappings.put(method, manyAssociationMethod);
         }
 
@@ -86,7 +91,7 @@ public class CommandEntityRemoveMixin
         if (!manyAssociation.contains(args[0]))
                 return false; // ManyAssociation does not contain entity
 
-        eventMethod.invoke(proxy, DomainEvent.CREATE, args[0]);
+        eventMethod.invoke(composite, DomainEvent.CREATE, args[0]);
 
         // Call Removable.removeEntity()
         if (args[0] instanceof Removable)

@@ -41,7 +41,7 @@ public interface Projects
         @Aggregated
         ManyAssociation<Project> projects();
 
-        ProjectEntity projectCreated(DomainEvent event, String id, OrganizationalUnit ou);
+        ProjectEntity projectCreated(DomainEvent event, String id);
         void projectRemoved(DomainEvent event, Project project);
     }
 

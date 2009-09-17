@@ -23,6 +23,7 @@ import org.qi4j.api.entity.association.EntityStateHolder;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 import java.beans.Introspector;
@@ -52,6 +53,9 @@ public class CommandEntityCreateMixin
     @Structure
     UnitOfWorkFactory uowf;
 
+    @This
+    EntityComposite composite;
+
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         Method eventMethod = methodMappings.get(method);
@@ -61,14 +65,14 @@ public class CommandEntityCreateMixin
             String name = method.getName().substring("create".length());
             name = Introspector.decapitalize(name) + "Created";
             Class[] parameterTypes = new Class[]{DomainEvent.class, String.class};
-            eventMethod = proxy.getClass().getMethod(name, parameterTypes);
+            eventMethod = composite.getClass().getMethod(name, parameterTypes);
             methodMappings.put(method, eventMethod);
         }
 
         // Generate id
         String id = idGen.generate((Class<? extends Identity>) method.getReturnType());
 
-        Object entity = eventMethod.invoke(proxy, DomainEvent.CREATE, id);
+        Object entity = eventMethod.invoke(composite, DomainEvent.CREATE, id);
 
         return entity;
     }
