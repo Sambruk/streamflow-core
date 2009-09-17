@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import com.jgoodies.forms.builder.ButtonBarBuilder2;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
+import org.jdesktop.swingx.SwingXUtilities;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -62,7 +63,7 @@ public class DialogService
         dialog.setModal(true);
 
         dialog.pack();
-        dialog.setLocationRelativeTo(SwingUtilities.windowForComponent(component));
+        dialog.setLocationRelativeTo(SwingXUtilities.getAncestor(Frame.class, component));
         return dialog;
     }
 
