@@ -32,7 +32,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import javax.swing.*;
 import java.awt.*;
 
-public class MoveAndMergeOrganizationDialog
+public class SelectOrganizationalUnitDialog
     extends JPanel {
 
     @Service
@@ -44,7 +44,7 @@ public class MoveAndMergeOrganizationDialog
 
     private EntityReference target;
 
-    public MoveAndMergeOrganizationDialog(@Service ApplicationContext context,
+    public SelectOrganizationalUnitDialog(@Service ApplicationContext context,
                               @Uses final AdministrationModel model) throws Exception
     {
         super(new BorderLayout());

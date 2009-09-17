@@ -197,7 +197,7 @@ public class AdministrationOutlineView
         OrganizationalStructureAdministrationNode moved =
                         (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
-        MoveAndMergeOrganizationDialog moveAndMergeDialog = obf.newObjectBuilder(MoveAndMergeOrganizationDialog.class).use(model).newInstance();
+        SelectOrganizationalUnitDialog moveAndMergeDialog = obf.newObjectBuilder(SelectOrganizationalUnitDialog.class).use(model).newInstance();
 
         dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), moveAndMergeDialog, i18n.text(AdministrationResources.move_to));
         
@@ -221,7 +221,7 @@ public class AdministrationOutlineView
         OrganizationalStructureAdministrationNode moved =
                         (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
-        MoveAndMergeOrganizationDialog moveAndMergeDialog = obf.newObjectBuilder(MoveAndMergeOrganizationDialog.class).use(model).newInstance();
+        SelectOrganizationalUnitDialog moveAndMergeDialog = obf.newObjectBuilder(SelectOrganizationalUnitDialog.class).use(model).newInstance();
 
         dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this), moveAndMergeDialog, i18n.text(AdministrationResources.merge_to));
 
