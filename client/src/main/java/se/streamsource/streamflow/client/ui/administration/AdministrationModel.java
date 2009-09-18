@@ -14,13 +14,18 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.Account;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import javax.swing.tree.DefaultTreeModel;
 import java.util.logging.Logger;
@@ -30,6 +35,7 @@ import java.util.logging.Logger;
  */
 public class AdministrationModel
         extends DefaultTreeModel
+        implements Refreshable
 {
     @Structure
     ObjectBuilderFactory obf;

@@ -18,6 +18,7 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -29,13 +30,30 @@ public interface Roles
     RoleEntity createRole(String name);
     void removeRole(RoleEntity projectRole);
 
+    @Mixins(Roles.RolesMixin.class)
     interface RolesState
     {
         @Aggregated
         ManyAssociation<Role> roles();
 
+        Role getAdministratorRole()
+            throws IllegalStateException;
+
         RoleEntity roleCreated(DomainEvent event, String id);
         void roleRemoved(DomainEvent event, RoleEntity role);
+    }
+
+    public abstract class RolesMixin
+        implements RolesState
+    {
+        public Role getAdministratorRole()
+                throws IllegalStateException
+        {
+            if (roles().count() > 0)
+                return roles().get(0);
+            else
+                throw new IllegalStateException("There's no Administrator role!");
+        }
     }
 
     abstract class DescribeCreatedRoleConcern

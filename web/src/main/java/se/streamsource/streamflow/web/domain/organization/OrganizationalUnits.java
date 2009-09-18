@@ -33,6 +33,8 @@ import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
+import se.streamsource.streamflow.web.domain.role.Roles;
 
 /**
  * JAVADOC
@@ -61,16 +63,26 @@ public interface OrganizationalUnits
         @Service
         IdentityGenerator idGenerator;
 
-        @This
-        OrganizationalUnit.OrganizationalUnitState ouState;
-
         @Structure
         UnitOfWorkFactory uowf;
 
+        @This
+        RolePolicy policy;
+
+        @This
+        Roles.RolesState roles;
+
+        @This
+        OrganizationalUnit.OrganizationalUnitState ouState;
+        
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
             OrganizationalUnitEntity ou = organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
             ou.describe(name);
+
+            // Add current user as administrator
+            ou.grantAdministratorToCurrentUser();
+
             return ou;
         }
 

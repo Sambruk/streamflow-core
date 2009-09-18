@@ -26,6 +26,7 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationParticipat
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
@@ -62,11 +63,15 @@ public class UserAdministrationServerResource
             itemValue.entity().set(EntityReference.getEntityReference(organization));
             List<TreeNodeValue> subOrgs = itemValue.children().get();
 
-            addOrganizationalUnits(((OrganizationalUnits.OrganizationalUnitsState) organization).organizationalUnits(), subOrgs, participant);
-
             RolePolicy.RolePolicyState rolePolicy = (RolePolicy.RolePolicyState) ou;
-            if (rolePolicy.hasRoles(participant))
+
+            if (rolePolicy.hasRoles(participant) || participant.identity().get().equals(UserEntity.ADMINISTRATOR_USERNAME))
+            {
+                addOrganizationalUnits(((OrganizationalUnits.OrganizationalUnitsState) organization).organizationalUnits(), subOrgs, participant);
                 list.add(valueBuilder.newInstance());
+
+            } else
+                addOrganizationalUnits(((OrganizationalUnits.OrganizationalUnitsState) organization).organizationalUnits(), list, participant);
         }
     }
 }

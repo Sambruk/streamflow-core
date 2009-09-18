@@ -69,7 +69,7 @@ public class AdministratorsServerResource
         Role adminRole = organization.roles().get(0);
 
         checkPermission(ou);
-        organization.grantRole(participant, adminRole);
+        ou.grantRole(participant, adminRole);
     }
 
 }

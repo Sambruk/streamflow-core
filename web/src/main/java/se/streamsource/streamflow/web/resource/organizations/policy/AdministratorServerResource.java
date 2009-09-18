@@ -43,8 +43,8 @@ public class AdministratorServerResource
         OrganizationEntity organization = (OrganizationEntity) ou.organization().get();
         Role adminRole = organization.roles().get(0);
 
-        checkPermission(organization);
+        checkPermission(ou);
 
-        organization.revokeRole(participant, adminRole);
+        ou.revokeRole(participant, adminRole);
     }
 }

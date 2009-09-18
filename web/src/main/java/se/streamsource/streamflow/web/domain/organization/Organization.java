@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.domain.organization;
 
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
-import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.role.Roles;
 
 /**
@@ -24,7 +23,6 @@ import se.streamsource.streamflow.web.domain.role.Roles;
 public interface Organization
         extends OrganizationalUnit,
         Roles,
-        RolePolicy,
         IdGenerator
 {
 }

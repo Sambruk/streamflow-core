@@ -28,14 +28,21 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
-import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
+import javax.swing.JTree;
+import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
@@ -111,24 +118,18 @@ public class AdministrationOutlineView
         popup.add(am.get("moveOrganizationalUnit"));
         popup.add(am.get("mergeOrganizationalUnit"));
 
-        tree.addMouseListener(new PopupMenuTrigger(popup));
-
-
-        addAncestorListener(new AncestorListener()
+        tree.addMouseListener(new PopupMenuTrigger(popup)
         {
-            public void ancestorAdded(AncestorEvent event)
+            @Override
+            protected void showPopup(MouseEvent e)
             {
-                model.refresh();
-            }
-
-            public void ancestorRemoved(AncestorEvent event)
-            {
-            }
-
-            public void ancestorMoved(AncestorEvent event)
-            {
+                if (tree.getSelectionPath().getLastPathComponent() instanceof OrganizationalStructureAdministrationNode)
+                    super.showPopup(e);
             }
         });
+
+
+        addAncestorListener(new RefreshWhenVisible(model));
     }
 
 

@@ -18,13 +18,22 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import static org.qi4j.api.entity.EntityReference.getEntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 
+import javax.security.auth.Subject;
+import java.security.AccessController;
+import java.security.PermissionCollection;
+import java.security.Principal;
+import java.security.AllPermission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +47,8 @@ public interface RolePolicy
     void grantRole(Participant participant, Role role);
 
     void revokeRole(Participant participant, Role role);
+
+    void grantAdministratorToCurrentUser();
 
     interface RolePolicyState
     {
@@ -53,6 +64,8 @@ public interface RolePolicy
         List<EntityReference> participantsWithRole(Role role);
 
         boolean hasRoles(Participant participant);
+
+        PermissionCollection getPermissions(Participant participant);
     }
 
     abstract class RolePolicyMixin
@@ -60,6 +73,12 @@ public interface RolePolicy
     {
         @Structure
         ValueBuilderFactory vbf;
+
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        @This
+        OrganizationalUnit.OrganizationalUnitState ouState;
 
         public void grantRole(Participant participant, Role role)
         {
@@ -75,6 +94,19 @@ public interface RolePolicy
                 return;
 
             roleRevoked(DomainEvent.CREATE, participant,  role);
+        }
+
+        public void grantAdministratorToCurrentUser()
+        {
+            Subject subject = Subject.getSubject(AccessController.getContext());
+            if (subject != null)
+            {
+                Principal principal = subject.getPrincipals().iterator().next();
+                Participant user = uowf.currentUnitOfWork().get(Participant.class, principal.getName());
+                OrganizationEntity org = (OrganizationEntity) ouState.organization().get();
+                Role administrator = org.getAdministratorRole();
+                grantRole(user, administrator);
+            }
         }
 
         public void roleGranted(DomainEvent event, Participant participant, Role role)
@@ -178,7 +210,22 @@ public interface RolePolicy
 
         public boolean hasRoles(Participant participant)
         {
-            return getRoles(participant) != null;
+            ParticipantRolesValue value = getRoles(participant);
+            return value != null && !value.roles().get().isEmpty();
+        }
+
+        public PermissionCollection getPermissions(Participant participant)
+        {
+            PermissionCollection permissions = null;
+
+            // If participant has any role, it's the Admin role -> AllPermissions
+            if (hasRoles(participant))
+            {
+                permissions = new AllPermission().newPermissionCollection();
+                permissions.add(new AllPermission());
+            }
+            
+            return permissions;
         }
     }
 }

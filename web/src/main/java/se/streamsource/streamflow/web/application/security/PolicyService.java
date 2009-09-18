@@ -14,18 +14,20 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import se.streamsource.streamflow.web.domain.user.User;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
-
-import java.security.*;
-
-import org.restlet.security.UserPrincipal;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.restlet.security.UserPrincipal;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
 
 import javax.security.auth.Subject;
+import java.security.AccessControlContext;
+import java.security.AllPermission;
+import java.security.PermissionCollection;
+import java.security.Principal;
+import java.security.ProtectionDomain;
 
 /**
  * JAVADOC
@@ -55,7 +57,12 @@ public interface PolicyService
                 permissions.add(new AllPermission());
             } else
             {
-                // TODO - Calculate permissions for use
+                if (securedObject instanceof RolePolicy)
+                {
+                    RolePolicy.RolePolicyState policy = (RolePolicy.RolePolicyState) securedObject;
+
+                    permissions = policy.getPermissions(userEntity);
+                }
             }
 
             Principal[] principals = new Principal[]{};

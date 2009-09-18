@@ -49,8 +49,13 @@ public class PopupMenuTrigger extends MouseAdapter
             if (selectionModel != null && selectionModel.isSelectionEmpty())
                 return;
 
-            popup.show(e.getComponent(),
-                    e.getX(), e.getY());
+            showPopup(e);
         }
+    }
+
+    protected void showPopup(MouseEvent e)
+    {
+        popup.show(e.getComponent(),
+                    e.getX(), e.getY());
     }
 }
