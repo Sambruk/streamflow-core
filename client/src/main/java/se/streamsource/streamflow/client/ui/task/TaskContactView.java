@@ -22,20 +22,20 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.FocusListener;
-import java.awt.event.FocusEvent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.CardLayout;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -184,6 +184,15 @@ public class TaskContactView
             } catch (ResourceException e)
             {
                 throw new OperationException(WorkspaceResources.could_not_change_email_address, e);
+            }
+        } else if (property.qualifiedName().name().equals("contactId"))
+        {
+            try
+            {
+                model.changeContactId((String) property.get());
+            } catch (ResourceException e)
+            {
+                throw new OperationException(WorkspaceResources.could_not_change_contact_id, e);
             }
         }
     }

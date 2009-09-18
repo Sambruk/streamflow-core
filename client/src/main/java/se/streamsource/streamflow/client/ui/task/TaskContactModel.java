@@ -75,6 +75,13 @@ public class TaskContactModel
         taskContactClientResource.changeNote(builder.newInstance());
     }
 
+    public void changeContactId(String newId) throws ResourceException
+    {
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(newId);
+        taskContactClientResource.changeContactId(builder.newInstance());
+    }
+
     public void changeCompany(String newCompany) throws ResourceException
     {
         ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);

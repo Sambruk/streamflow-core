@@ -93,6 +93,21 @@ public class TaskContactServerResource
         task.updateContact(idx, builder.newInstance());
     }
 
+    public void changeContactId(StringDTO contactId)
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+
+        int idx = Integer.parseInt(taskContactIndex);
+        ContactValue contact = task.contacts().get().get(idx);
+
+        ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class).withPrototype(contact);
+        builder.prototype().contactId().set(contactId.string().get());
+
+        task.updateContact(idx, builder.newInstance());
+    }
+
     public void changeCompany(StringDTO company)
     {
         String taskId = (String) getRequest().getAttributes().get("task");

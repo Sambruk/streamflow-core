@@ -46,6 +46,11 @@ public class TaskContactClientResource
         putCommand("changeNote", note);
     }
 
+    public void changeContactId(StringDTO name) throws ResourceException
+    {
+        putCommand("changeContactId", name);
+    }
+
     public void changeCompany(StringDTO company) throws ResourceException
     {
         putCommand("changeCompany", company);

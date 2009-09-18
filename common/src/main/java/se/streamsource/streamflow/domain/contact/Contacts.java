@@ -60,8 +60,7 @@ public interface Contacts
         public void updateContact(int index, ContactValue contact)
         {
             List<ContactValue> contacts = state.contacts().get();
-            contacts.add(index, contact);
-            contacts.remove(index + 1);
+            contacts.set(index, contact);
             state.contacts().set(contacts);
         }
 
