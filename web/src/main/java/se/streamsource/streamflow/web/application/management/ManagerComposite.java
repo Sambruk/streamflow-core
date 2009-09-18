@@ -84,7 +84,7 @@ public interface ManagerComposite
         public void activate() throws Exception
         {
             exports = new File(fileConfig.dataDirectory(), "exports");
-            if (!exports.mkdirs())
+            if (!exports.exists() && !exports.mkdirs())
                 throw new IllegalStateException("Could not create directory for exports");
 
             source.registerListener(this, new EventQuery().withNames("failedLogin"));

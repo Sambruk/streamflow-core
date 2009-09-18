@@ -77,6 +77,17 @@ public interface Projects
 
             return project;
         }
+
+        public boolean removeProject(Project project)
+        {
+            if (projects().contains(project))
+            {
+                projectRemoved(DomainEvent.CREATE, project);
+                project.removeEntity();
+                return true;
+            } else
+                return false;
+        }
     }
 
 

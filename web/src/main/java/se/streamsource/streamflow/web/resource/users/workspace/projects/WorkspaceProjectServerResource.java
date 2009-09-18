@@ -18,6 +18,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.representation.Representation;
@@ -56,7 +57,7 @@ public class WorkspaceProjectServerResource
         if (query.string().get().length() > 0)
         {
             QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
-            queryBuilder.where(QueryExpressions.matches(
+            queryBuilder.where(matches(
                     QueryExpressions.templateFor(UserEntity.class).userName(), "^" + query.string().get()));
             Query<UserEntity> users = queryBuilder.newQuery(uow);
 
@@ -87,7 +88,7 @@ public class WorkspaceProjectServerResource
         {
             QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
             queryBuilder.where(
-                    QueryExpressions.matches(
+                    matches(
                             QueryExpressions.templateFor(GroupEntity.class).description(), "^" + query.string().get()));
             Query<GroupEntity> groups = queryBuilder.newQuery(uow);
 
@@ -117,8 +118,9 @@ public class WorkspaceProjectServerResource
         if (query.string().get().length() > 0)
         {
             QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-            queryBuilder.where(QueryExpressions.matches(
-                    QueryExpressions.templateFor(ProjectEntity.class).description(), "^" + query.string().get()));
+            queryBuilder.where(and(
+                    eq(templateFor(ProjectEntity.class).removed(), false),
+                    matches(templateFor(ProjectEntity.class).description(), "^" + query.string().get())));
             Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
 
             try

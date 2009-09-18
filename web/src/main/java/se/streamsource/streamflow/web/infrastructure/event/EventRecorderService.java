@@ -62,7 +62,7 @@ public interface EventRecorderService
         {
             logger = Logger.getLogger(getClass().getName());
             eventDir = new File(config.dataDirectory(), "events");
-            if (!eventDir.mkdirs())
+            if (!eventDir.exists() && !eventDir.mkdirs())
                 throw new IllegalStateException("Could not create directory for event data");
 
 //                source.registerListener(this);
