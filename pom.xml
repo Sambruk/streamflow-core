@@ -33,7 +33,7 @@
         </repository>
         <repository>
             <id>prefuse-repository</id>
-            <url>http://complexitymap.com/repository/</url>
+            <url>http://www.astrogrid.org/maven/</url>
         </repository>
         <repository>
             <id>aduna</id>

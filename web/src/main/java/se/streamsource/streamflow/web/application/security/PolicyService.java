@@ -62,6 +62,11 @@ public interface PolicyService
                     RolePolicy.RolePolicyState policy = (RolePolicy.RolePolicyState) securedObject;
 
                     permissions = policy.getPermissions(userEntity);
+                } else
+                {
+                    // By default we allow all
+                    permissions = new AllPermission().newPermissionCollection();
+                    permissions.add(new AllPermission());
                 }
             }
 
