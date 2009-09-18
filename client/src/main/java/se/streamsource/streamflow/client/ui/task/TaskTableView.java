@@ -43,18 +43,32 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import static java.util.Collections.reverseOrder;
+import static java.util.Collections.sort;
+import java.util.Date;
 import java.util.List;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Base class for all views of task lists.
@@ -174,7 +188,7 @@ public abstract class TaskTableView
             {
                 TaskGeneralModel generalModel = (TaskGeneralModel) arg;
                 String newValue = generalModel.getGeneral().description().get();
-                model.setValueAt(newValue, taskTable.getSelectedRow(), 1);
+                model.setValueAt(newValue, taskTable.convertRowIndexToModel(taskTable.getSelectedRow()), 1);
             }
         };
 
@@ -210,7 +224,7 @@ public abstract class TaskTableView
                             detailsView.setTaskModel(taskModel);
 
                             if (detailsView.getSelectedIndex() != -1)
-                                model.markAsRead(taskTable.getSelectedRow());
+                                model.markAsRead(taskTable.convertRowIndexToModel(taskTable.getSelectedRow()));
                         }
                     } catch (Exception e1)
                     {
@@ -259,7 +273,7 @@ public abstract class TaskTableView
         if (selectedRow == -1)
             return null;
         else
-            return model.getTask(selectedRow);
+            return model.getTask(getTaskTable().convertRowIndexToModel(selectedRow));
     }
 
     public Iterable<TaskDTO> getSelectedTasks()
@@ -268,7 +282,7 @@ public abstract class TaskTableView
         List<TaskDTO> tasks = new ArrayList<TaskDTO>();
         for (int i = 0; i < rows.length; i++)
         {
-            int row = rows[i];
+            int row = getTaskTable().convertRowIndexToModel(rows[i]);
             TaskDTO task = (TaskDTO) model.getTask(row);
             tasks.add(task);
         }
@@ -370,8 +384,9 @@ public abstract class TaskTableView
         for (int i = 0; i < rows.length; i++)
         {
             int row = rows[i];
-            list.add(0, row);
+            list.add(taskTable.convertRowIndexToModel(row));
         }
+        sort(list, reverseOrder());
         return list;
     }
 }
