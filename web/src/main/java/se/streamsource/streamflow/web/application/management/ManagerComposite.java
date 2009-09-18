@@ -16,40 +16,38 @@ package se.streamsource.streamflow.web.application.management;
 
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
-import org.qi4j.api.property.Property;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.ComputedPropertyInstance;
 import org.qi4j.api.property.GenericPropertyInfo;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.service.Activatable;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.State;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.index.reindexer.Reindexer;
 import org.qi4j.entitystore.jdbm.DatabaseExport;
 import org.qi4j.entitystore.jdbm.DatabaseImport;
+import org.qi4j.index.reindexer.Reindexer;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
-import java.io.IOException;
 import java.io.File;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-import java.io.Writer;
-import java.io.OutputStreamWriter;
-import java.io.InputStream;
 import java.io.FileInputStream;
-import java.io.Reader;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.GZIPInputStream;
-
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * JAVADOC
@@ -86,7 +84,8 @@ public interface ManagerComposite
         public void activate() throws Exception
         {
             exports = new File(fileConfig.dataDirectory(), "exports");
-            exports.mkdirs();
+            if (!exports.mkdirs())
+                throw new IllegalStateException("Could not create directory for exports");
 
             source.registerListener(this, new EventQuery().withNames("failedLogin"));
         }
