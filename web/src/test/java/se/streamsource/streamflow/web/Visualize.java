@@ -16,8 +16,8 @@ package se.streamsource.streamflow.web;
 
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.library.swing.envisage.Envisage;
 import org.qi4j.spi.structure.ApplicationModelSPI;
+import org.qi4j.envisage.Envisage;
 
 /**
  * Visualize the web part of the application
