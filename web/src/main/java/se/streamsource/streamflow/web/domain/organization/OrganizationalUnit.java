@@ -21,6 +21,7 @@ import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitExc
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.group.Group;
+import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectRole;
 
@@ -98,7 +99,7 @@ public interface OrganizationalUnit
             while (oue.groups().count() >0)
             {
                 Group group = oue.groups().get(0);
-                oue.groupRemoved(DomainEvent.CREATE, group);
+                oue.groupRemoved(DomainEvent.CREATE, (GroupEntity) group);
                 toEntity.groupAdded(DomainEvent.CREATE, group);
             }
             while (oue.projects().count() >0)

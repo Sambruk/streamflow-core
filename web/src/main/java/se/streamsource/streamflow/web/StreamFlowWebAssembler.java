@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web;
 
 import org.qi4j.bootstrap.*;
+import org.qi4j.runtime.bootstrap.ApplicationAssemblyImpl;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.organization.OrganizationAssembler;
@@ -47,7 +48,10 @@ public class StreamFlowWebAssembler
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
         assembly.setName("StreamFlow web");
-        assembly.setVersion("0.1");
+        if (assembly instanceof ApplicationAssemblyImpl)
+        {
+            ((ApplicationAssemblyImpl) assembly).setVersion("0.1");
+        }
         LayerAssembly configurationLayer = assembly.layerAssembly("Configuration");
         LayerAssembly domainInfrastructureLayer = assembly.layerAssembly("Domain infrastructure");
         LayerAssembly domainLayer = assembly.layerAssembly("Domain");

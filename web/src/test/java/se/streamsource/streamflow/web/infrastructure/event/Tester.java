@@ -41,6 +41,7 @@ public interface Tester
         Property<String> prop();
 
         TestEntity testerCreated(DomainEvent event, String id);
+        void testerAdded(DomainEvent event, TestEntity tester);
         void testerRemoved(DomainEvent event, Tester tester);
 
         void propChanged(DomainEvent event, String aParameter);
