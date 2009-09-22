@@ -18,6 +18,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.List;
 
@@ -33,15 +34,21 @@ public interface Commentable
     {
         @UseDefaults
         Property<List<CommentValue>> comments();
+        void commentAdded(DomainEvent event, CommentValue comment);
     }
 
-    class CommentableMixin
-            implements Commentable
+    abstract class CommentableMixin
+            implements Commentable, CommentableState
     {
         @This
         CommentableState state;
 
         public void addComment(CommentValue comment)
+        {
+            commentAdded(DomainEvent.CREATE, comment);
+        }
+
+        public void commentAdded(DomainEvent event, CommentValue comment)
         {
             List<CommentValue> comments = state.comments().get();
             comments.add(comment);
