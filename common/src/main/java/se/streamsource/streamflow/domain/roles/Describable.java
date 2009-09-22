@@ -27,9 +27,7 @@ import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE
 @Mixins(Describable.DescribableMixin.class)
 public interface Describable
 {
-    void describe(@MaxLength(50) String newDescription);
-
-    boolean hasDescription(String description);
+    void changeDescription(@MaxLength(50) String newDescription);
 
     String getDescription();
 
@@ -39,20 +37,15 @@ public interface Describable
         @UseDefaults
         Property<String> description();
 
-        void described(DomainEvent event, String description);
+        void descriptionChanged(DomainEvent event, String description);
     }
 
     public abstract class DescribableMixin
             implements Describable, DescribableState
     {
-        public void describe(String newDescription)
+        public void changeDescription(String newDescription)
         {
-            described(CREATE, newDescription);
-        }
-
-        public boolean hasDescription(String description)
-        {
-            return description().get().equals(description);
+            descriptionChanged(CREATE, newDescription);
         }
 
         public String getDescription()
@@ -61,7 +54,7 @@ public interface Describable
         }
 
         // State
-        public void described(DomainEvent event, String description)
+        public void descriptionChanged(DomainEvent event, String description)
         {
             description().set(description);
         }

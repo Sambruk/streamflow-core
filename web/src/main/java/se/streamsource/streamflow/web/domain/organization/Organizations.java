@@ -82,7 +82,7 @@ public interface Organizations
             OrganizationEntity ou = state.organizationCreated(CREATE, "Organization");
 
             // Change name
-            ou.describe(name);
+            ou.changeDescription(name);
 
             // Create Administrator role
             ou.createRole("Administrator");

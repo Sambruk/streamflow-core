@@ -40,6 +40,7 @@ public interface Roles
             throws IllegalStateException;
 
         RoleEntity roleCreated(DomainEvent event, String id);
+        void roleAdded(DomainEvent event, RoleEntity role);
         void roleRemoved(DomainEvent event, RoleEntity role);
     }
 
@@ -63,7 +64,7 @@ public interface Roles
         public RoleEntity createRole(String name)
         {
             RoleEntity role = next.createRole(name);
-            role.describe(name);
+            role.changeDescription(name);
             return role;
         }
     }

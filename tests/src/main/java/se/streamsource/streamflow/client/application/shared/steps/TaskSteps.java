@@ -95,7 +95,7 @@ public class TaskSteps
     {
         try
         {
-            task.describe(description);
+            task.changeDescription(description);
         } catch (Exception e)
         {
             taskException = e;
@@ -166,7 +166,7 @@ public class TaskSteps
     public void addLabel(String name)
     {
         Label label = userSteps.user.createLabel();
-        label.describe(name);
+        label.changeDescription(name);
 
         task.addLabel(label);
     }

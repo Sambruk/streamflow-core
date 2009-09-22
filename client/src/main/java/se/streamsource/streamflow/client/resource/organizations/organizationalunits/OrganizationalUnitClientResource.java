@@ -23,7 +23,7 @@ import se.streamsource.streamflow.client.resource.organizations.groups.GroupsCli
 import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
-import se.streamsource.streamflow.client.resource.organizations.search.SearchClientResource;
+import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 
 /**
  * JAVADOC

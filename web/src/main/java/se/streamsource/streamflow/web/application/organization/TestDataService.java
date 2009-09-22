@@ -56,7 +56,7 @@ public interface TestDataService
             UserEntity user = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
 
             OrganizationalUnitEntity ou = (OrganizationalUnitEntity) user.organizations().iterator().next();
-            ou.describe("WayGroup");
+            ou.changeDescription("WayGroup");
 
             // Create suborganizations
             OrganizationalUnit jayway = ou.createOrganizationalUnit("Jayway");
@@ -74,15 +74,15 @@ public interface TestDataService
 
             // Create tasks
             for (int i = 0; i < 30; i++)
-                user.createTask().describe("Arbetsuppgift " + i);
+                user.createTask().changeDescription("Arbetsuppgift " + i);
 
             // Create project
             Project project = ou.createProject("Information query");
 
             // Create labels
-            project.createLabel().describe("Question");
-            project.createLabel().describe("Issue chase");
-            project.createLabel().describe("Suggestion");
+            project.createLabel().changeDescription("Question");
+            project.createLabel().changeDescription("Issue chase");
+            project.createLabel().changeDescription("Suggestion");
 
             project.createMember(user);
             project.addRole(user, agent);
@@ -97,12 +97,12 @@ public interface TestDataService
 
             // Create tasks
             for (int i = 0; i < 30; i++)
-                project.createTask().describe("Arbetsuppgift " + i);
+                project.createTask().changeDescription("Arbetsuppgift " + i);
 
             // Create labels
-            user.createLabel().describe("Label 1");
-            user.createLabel().describe("Label 2");
-            user.createLabel().describe("Label 3");
+            user.createLabel().changeDescription("Label 1");
+            user.createLabel().changeDescription("Label 2");
+            user.createLabel().changeDescription("Label 3");
 
             uow.complete();
         }

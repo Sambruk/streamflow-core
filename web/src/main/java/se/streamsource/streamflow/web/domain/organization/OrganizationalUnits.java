@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.domain.organization;
 
 import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -35,8 +36,7 @@ import se.streamsource.streamflow.web.domain.role.Roles;
 /**
  * JAVADOC
  */
-//@Concerns({EventCreationConcern.class, OrganizationalUnits.OrganizationalUnitsConcern.class})
-//@SideEffects(EventSideEffect.class)
+@Concerns({OrganizationalUnits.OrganizationalUnitsConcern.class})
 @Mixins(OrganizationalUnits.OrganizationsMixin.class)
 public interface OrganizationalUnits
 {
@@ -75,8 +75,7 @@ public interface OrganizationalUnits
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
             OrganizationalUnitEntity ou = organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
-            organizationalUnitAdded(DomainEvent.CREATE, ou);
-            ou.describe(name);
+            ou.changeDescription(name);
 
             // Add current user as administrator
             ou.grantAdministratorToCurrentUser();

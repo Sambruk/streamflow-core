@@ -71,20 +71,10 @@ public class ProjectServerResource
 
         String identity = getRequest().getAttributes().get("organization").toString();
 
-        Projects.ProjectsState projects = uowf.currentUnitOfWork().get(Projects.ProjectsState.class, identity);
-
         String newName = stringValue.string().get();
 
-        for (Project project : projects.projects())
-        {
-            if (project.hasDescription(newName))
-            {
-                throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
-            }
-        }
-
         checkPermission(describable);
-        describable.describe(newName);
+        describable.changeDescription(newName);
     }
 
     public void deleteOperation() throws ResourceException

@@ -48,6 +48,7 @@ public class StreamFlowClientAssembler
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
         assembly.setName("StreamFlow client");
+        assembly.setVersion("0.1");
 
         // Create layers
         LayerAssembly clientDomainInfrastructureLayer = assembly.layerAssembly("Client domain infrastructure");

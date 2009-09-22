@@ -36,7 +36,7 @@ public interface DescribableResource
     {
         public void describe(StringDTO stringValue, Describable describable)
         {
-            describable.describe(stringValue.string().get());
+            describable.changeDescription(stringValue.string().get());
         }
     }
 }

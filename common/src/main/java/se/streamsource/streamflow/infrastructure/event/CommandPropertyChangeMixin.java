@@ -17,7 +17,9 @@ package se.streamsource.streamflow.infrastructure.event;
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.common.AppliesToFilter;
 import org.qi4j.api.injection.scope.State;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.entity.EntityComposite;
 
 import java.beans.Introspector;
 import java.lang.reflect.InvocationHandler;
@@ -44,6 +46,9 @@ public class CommandPropertyChangeMixin
     @State
     StateHolder state;
 
+    @This
+    EntityComposite composite;
+
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         Method eventMethod = methodMappings.get(method);
@@ -54,11 +59,11 @@ public class CommandPropertyChangeMixin
             String name = method.getName().substring("change".length());
             name = Introspector.decapitalize(name) + "Changed";
             Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
-            eventMethod = proxy.getClass().getMethod(name, parameterTypes);
+            eventMethod = composite.getClass().getInterfaces()[0].getMethod(name, parameterTypes);
             methodMappings.put(method, eventMethod);
         }
 
-        eventMethod.invoke(proxy, DomainEvent.CREATE, args[0]);
+        eventMethod.invoke(composite, DomainEvent.CREATE, args[0]);
 
         return null;
     }

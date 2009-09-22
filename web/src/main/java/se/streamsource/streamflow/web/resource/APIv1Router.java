@@ -49,11 +49,10 @@ import se.streamsource.streamflow.web.resource.organizations.projects.members.ro
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
-import se.streamsource.streamflow.web.resource.organizations.search.SearchTaskServerResource;
-import se.streamsource.streamflow.web.resource.organizations.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
+import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactServerResource;
@@ -107,12 +106,6 @@ public class APIv1Router
         attach("/organizations/{organization}/administrators", createServerResourceFinder(AdministratorsServerResource.class));
         attach("/organizations/{organization}/administrators/{administrator}", createServerResourceFinder(AdministratorServerResource.class));
         attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));
-        attach("/organizations/{organization}/search", createServerResourceFinder(SearchTasksServerResource.class));
-        attach("/organizations/{organization}/search/{task}", createServerResourceFinder(SearchTaskServerResource.class));
-        attach("/organizations/{organization}/search/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
-        attach("/organizations/{organization}/search/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
-        attach("/organizations/{organization}/search/{task}/contacts/{index}", createServerResourceFinder(TaskContactServerResource.class));
-        attach("/organizations/{organization}/search/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
 
         // Events
         attach("/events", createServerResourceFinder(EventsResource.class));

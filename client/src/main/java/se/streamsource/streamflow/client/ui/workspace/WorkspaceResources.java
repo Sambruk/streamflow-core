@@ -88,5 +88,5 @@ public enum WorkspaceResources
 
     search_project,
     search_users_projects,
-    select_account, could_not_change_contact_id, search_user
+    select_account, could_not_change_contact_id, could_not_refresh, search_user
 }

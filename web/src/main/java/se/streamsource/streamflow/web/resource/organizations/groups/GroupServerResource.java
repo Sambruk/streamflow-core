@@ -15,11 +15,9 @@
 package se.streamsource.streamflow.web.resource.organizations.groups;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -42,15 +40,8 @@ public class GroupServerResource
         checkPermission(groups);
 
         String newName = stringValue.string().get();
-        for (Group group : groups.groups())
-        {
-            if (group.hasDescription(newName))
-            {
-                throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
-            }
-        }
 
-        describable.describe(newName);
+        describable.changeDescription(newName);
     }
 
     public void deleteOperation() throws ResourceException

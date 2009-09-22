@@ -59,7 +59,7 @@ public class OrganizationServerResource
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
 
         checkPermission(describable);
-        describable.describe(stringValue.string().get());
+        describable.changeDescription(stringValue.string().get());
     }
 
     @Override

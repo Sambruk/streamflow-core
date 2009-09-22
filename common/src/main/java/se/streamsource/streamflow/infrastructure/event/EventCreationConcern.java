@@ -21,6 +21,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -54,6 +55,13 @@ public class EventCreationConcern
     @Service
     IdentityGenerator idGenerator;
 
+    String version;
+
+    public EventCreationConcern(@Structure Application application)
+    {
+        version = application.version();
+    }
+
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         if (args[0] == DomainEvent.CREATE)
@@ -81,6 +89,7 @@ public class EventCreationConcern
 
             prototype.identity().set(idGenerator.generate(DomainEvent.class));
             prototype.usecase().set(uowf.currentUnitOfWork().usecase().name());
+            prototype.version().set(version);
 
             JSONStringer json = new JSONStringer();
             JSONWriter params = json.object();

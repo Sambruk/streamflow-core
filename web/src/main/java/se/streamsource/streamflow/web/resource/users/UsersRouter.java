@@ -54,6 +54,8 @@ import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewP
 import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
+import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
 
 public class UsersRouter
         extends Router
@@ -98,6 +100,13 @@ public class UsersRouter
         attach("/workspace/projects/{project}/{view}/{task}/contacts/{index}", createServerResourceFinder(TaskContactServerResource.class));
         attach("/workspace/projects/{project}/{view}/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
         attach("/administration", createServerResourceFinder(UserAdministrationServerResource.class));
+
+        attach("/search", createServerResourceFinder(SearchTasksServerResource.class));
+        attach("/search/{task}", createServerResourceFinder(SearchTaskServerResource.class));
+        attach("/search/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
+        attach("/search/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
+        attach("/search/{task}/contacts/{index}", createServerResourceFinder(TaskContactServerResource.class));
+        attach("/search/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
 
         // Overview
         attach("/overview/projects", createServerResourceFinder(OverviewProjectsServerResource.class));

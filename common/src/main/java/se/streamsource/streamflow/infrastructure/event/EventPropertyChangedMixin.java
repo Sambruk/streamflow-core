@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EventPropertyChangedMixin
         implements InvocationHandler
 {
-    private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
+    private static Map<Method, Method> methodMappings = new ConcurrentHashMap<Method, Method>();
 
     @State
     StateHolder state;

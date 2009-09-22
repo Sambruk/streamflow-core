@@ -16,13 +16,12 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Observable;
 
@@ -48,7 +47,7 @@ public class TaskGeneralModel
             super.notifyObservers(this);
         } catch (Exception e)
         {
-            throw new OperationException(WorkspaceResources.could_not_refresh_comments,  e);
+            throw new OperationException(WorkspaceResources.could_not_refresh,  e);
         }
     }
 

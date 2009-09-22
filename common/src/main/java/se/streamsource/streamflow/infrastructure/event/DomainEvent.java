@@ -62,6 +62,9 @@ public interface DomainEvent
     // Type of the entity being invoked
     Property<String> entityType();
 
+    // Version of the application
+    Property<String> version();
+
     // Dummy event class
     class DomainEventDummy
             implements DomainEvent
@@ -92,6 +95,12 @@ public interface DomainEvent
         }
 
         public Property<String> parameters()
+        {
+            return null;
+        }
+
+
+        public Property<String> version()
         {
             return null;
         }

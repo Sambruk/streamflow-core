@@ -50,7 +50,7 @@ public class WorkspaceProjectInboxTaskServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
-        describable.describe(stringValue.string().get());
+        describable.changeDescription(stringValue.string().get());
     }
 
     public void assignToMe()

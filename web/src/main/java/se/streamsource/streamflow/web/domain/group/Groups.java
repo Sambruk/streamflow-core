@@ -38,7 +38,8 @@ public interface Groups
         ManyAssociation<Group> groups();
 
         GroupEntity groupCreated(DomainEvent event, String id);
-        void groupRemoved(DomainEvent event, Group group);
+        void groupAdded(DomainEvent event, GroupEntity group);
+        void groupRemoved(DomainEvent event, GroupEntity group);
         void groupAdded(DomainEvent event, Group group);
     }
 
@@ -59,7 +60,7 @@ public interface Groups
         public GroupEntity createGroup(String name)
         {
             GroupEntity group = next.createGroup(name);
-            group.describe(name);
+            group.changeDescription(name);
             return group;
         }
     }

@@ -38,8 +38,8 @@ import se.streamsource.streamflow.web.resource.organizations.projects.members.ro
 import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
-import se.streamsource.streamflow.web.resource.organizations.search.SearchTaskServerResource;
-import se.streamsource.streamflow.web.resource.organizations.search.SearchTasksServerResource;
+import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UserServerResource;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;

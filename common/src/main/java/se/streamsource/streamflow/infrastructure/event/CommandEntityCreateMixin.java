@@ -35,14 +35,16 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Generic mixin for simple command methods that create an entity and add it to a collection. They have to follow this pattern:
  * SomeType createFoo(<args>)
- * This will generated an id for "SomeType" (so SomeType needs to extend EntityComposite!) and then call the event method "fooCreated(DomainEvent.CREATE, id)".
+ * This will generated an id for "SomeType" (so SomeType needs to extend EntityComposite!) and then call the event method "fooCreated(DomainEvent.CREATE, id)"
+ * followed by "fooAdded(DomainEvent.CREATE, entity)".
  * The new entity is then returned from the method.
  */
 @AppliesTo(CommandEntityCreateMixin.CommandEntityCreateAppliesTo.class)
 public class CommandEntityCreateMixin
         implements InvocationHandler
 {
-    private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
+    private static Map<Method, Method> createdMappings = new ConcurrentHashMap();
+    private static Map<Method, Method> addedMappings = new ConcurrentHashMap();
 
     @Service
     IdentityGenerator idGen;
@@ -58,21 +60,39 @@ public class CommandEntityCreateMixin
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
-        Method eventMethod = methodMappings.get(method);
-        if (eventMethod == null)
+        Method createdMethod = createdMappings.get(method);
+        Method addedMethod = null;
+        if (createdMethod == null)
         {
             // createFoo -> fooCreated
             String name = method.getName().substring("create".length());
-            name = Introspector.decapitalize(name) + "Created";
-            Class[] parameterTypes = new Class[]{DomainEvent.class, String.class};
-            eventMethod = composite.getClass().getMethod(name, parameterTypes);
-            methodMappings.put(method, eventMethod);
+            {
+                String createdName = Introspector.decapitalize(name) + "Created";
+                Class[] parameterTypes = new Class[]{DomainEvent.class, String.class};
+                createdMethod = composite.getClass().getMethod(createdName, parameterTypes);
+                createdMappings.put(method, createdMethod);
+            }
+
+            // createFoo -> fooAdded
+            {
+                String addedName = Introspector.decapitalize(name) + "Added";
+                Class[] parameterTypes = new Class[]{DomainEvent.class, method.getReturnType()};
+                addedMethod = composite.getClass().getMethod(addedName, parameterTypes);
+                addedMappings.put(method, addedMethod);
+            }
+        } else
+        {
+            addedMethod = addedMappings.get(method);
         }
 
         // Generate id
         String id = idGen.generate((Class<? extends Identity>) method.getReturnType());
 
-        Object entity = eventMethod.invoke(composite, DomainEvent.CREATE, id);
+        // Create entity
+        Object entity = createdMethod.invoke(composite, DomainEvent.CREATE, id);
+
+        // Add entity to collection
+        addedMethod.invoke(composite, DomainEvent.CREATE, entity);
 
         return entity;
     }

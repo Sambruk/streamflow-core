@@ -22,6 +22,7 @@ import se.streamsource.streamflow.infrastructure.event.CommandEntityCreateMixin;
 import se.streamsource.streamflow.infrastructure.event.CommandEntityRemoveMixin;
 import se.streamsource.streamflow.infrastructure.event.CommandPropertyChangeMixin;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.EventEntityAddedMixin;
 import se.streamsource.streamflow.infrastructure.event.EventEntityCreatedMixin;
 import se.streamsource.streamflow.infrastructure.event.EventEntityRemovedMixin;
 import se.streamsource.streamflow.infrastructure.event.EventPropertyChangedMixin;
@@ -33,7 +34,7 @@ import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 @Concerns(EventCreationConcern.class)
 @SideEffects(EventSideEffect.class)
 @Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class,
-        EventEntityCreatedMixin.class, EventEntityRemovedMixin.class,
+        EventEntityCreatedMixin.class, EventEntityAddedMixin.class, EventEntityRemovedMixin.class,
         CommandEntityCreateMixin.class, CommandEntityRemoveMixin.class})
 public interface DomainEntity
         extends EntityComposite

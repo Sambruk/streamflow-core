@@ -143,7 +143,12 @@ public class BaseClientResource
     {
         Representation result = get(MediaType.APPLICATION_JSON);
 
-        return vbf.newValueFromJSON(resultValue, result.getText());
+        if (getStatus().isSuccess())
+            return vbf.newValueFromJSON(resultValue, result.getText());
+        else
+        {
+            throw new ResourceException(getStatus());
+        }
     }
 
     public void clearTag()

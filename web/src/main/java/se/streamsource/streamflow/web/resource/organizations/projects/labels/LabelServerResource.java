@@ -33,7 +33,7 @@ public class LabelServerResource
     {
         String taskId = (String) getRequest().getAttributes().get("label");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
-        describable.describe(stringValue.string().get());
+        describable.changeDescription(stringValue.string().get());
     }
 
     public void deleteOperation() throws ResourceException

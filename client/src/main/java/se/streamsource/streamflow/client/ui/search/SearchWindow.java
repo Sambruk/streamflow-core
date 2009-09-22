@@ -21,17 +21,16 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.SearchMenuBar;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.Dimension;
 
 /**
  * Search window
@@ -63,18 +62,12 @@ public class SearchWindow
                     {
                         frame.getContentPane().removeAll();
 
-                        try
-                        {
-                            AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                            String organization = selectedAccount.userResource().administration().organizations().roots().get().get(0).entity().get().identity();
-                            SearchResultTableModel model = obf.newObjectBuilder(SearchResultTableModel.class).use(selectedAccount.serverResource().organizations().organization(organization).search()).newInstance();
-                            SearchView searchView = obf.newObjectBuilder(SearchView.class).use(model).newInstance();
+                        AccountModel selectedAccount = accountSelector.getSelectedAccount();
+                        SearchClientResource search = selectedAccount.userResource().search();
+                        SearchResultTableModel model = obf.newObjectBuilder(SearchResultTableModel.class).use(search).newInstance();
+                        SearchView searchView = obf.newObjectBuilder(SearchView.class).use(model).newInstance();
 
-                            frame.getContentPane().add(searchView);
-                        } catch (ResourceException e1)
-                        {
-                            throw new OperationException(SearchResources.could_not_switch_account, e1);
-                        }
+                        frame.getContentPane().add(searchView);
                     }
                 }
             }

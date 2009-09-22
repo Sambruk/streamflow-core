@@ -64,7 +64,7 @@ public interface Projects
 
             ProjectEntity project = projectCreated(DomainEvent.CREATE, id);
             projectAdded(DomainEvent.CREATE, project);
-            project.describe(name);
+            project.changeDescription(name);
 
             return project;
         }

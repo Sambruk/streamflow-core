@@ -28,7 +28,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.Client;
 import org.restlet.Uniform;
 import org.restlet.security.Verifier;
 import org.restlet.data.*;
@@ -92,7 +91,7 @@ public interface AccountEntity
         public void updateSettings(AccountSettingsValue newAccountSettings)
         {
             state.settings().set(newAccountSettings);
-            description.describe(newAccountSettings.name().get());
+            description.changeDescription(newAccountSettings.name().get());
         }
 
         public void changePassword(Uniform client, ChangePasswordCommand changePassword) throws ResourceException

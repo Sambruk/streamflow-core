@@ -38,6 +38,7 @@ public interface ProjectRoles
         ManyAssociation<ProjectRole> projectRoles();
 
         ProjectRoleEntity projectRoleCreated(DomainEvent event, String id);
+        void projectRoleAdded(DomainEvent event, ProjectRoleEntity role);
         void projectRoleRemoved(DomainEvent event, ProjectRole role);
         void projectRoleAdded(DomainEvent event, ProjectRole role);
     }
@@ -58,7 +59,7 @@ public interface ProjectRoles
         public ProjectRoleEntity createProjectRole(String name)
         {
             ProjectRoleEntity role = next.createProjectRole(name);
-            role.describe(name);
+            role.changeDescription(name);
             return role;
         }
     }

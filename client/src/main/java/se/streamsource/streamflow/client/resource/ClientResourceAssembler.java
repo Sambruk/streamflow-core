@@ -34,8 +34,8 @@ import se.streamsource.streamflow.client.resource.organizations.projects.members
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRolesClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RoleClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
-import se.streamsource.streamflow.client.resource.organizations.search.SearchClientResource;
-import se.streamsource.streamflow.client.resource.organizations.search.SearchTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
+import se.streamsource.streamflow.client.resource.users.search.SearchTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
