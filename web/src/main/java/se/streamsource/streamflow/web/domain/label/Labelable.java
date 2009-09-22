@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.domain.label;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -25,21 +26,36 @@ import org.qi4j.api.mixin.Mixins;
 public interface Labelable
 {
     void addLabel(Label label);
-
     void removeLabel(Label label);
 
     interface LabelableState
     {
         ManyAssociation<LabelEntity> labels();
+
+        void labelAdded(DomainEvent event, Label label);
+        void labelRemoved(DomainEvent event, Label label);
     }
 
-    class LabelableMixin
-            implements Labelable
+    abstract class LabelableMixin
+            implements Labelable, LabelableState
     {
         @This
         LabelableState state;
 
         public void addLabel(Label label)
+        {
+            labelAdded(DomainEvent.CREATE, label);
+        }
+
+        public void removeLabel(Label label)
+        {
+            if (state.labels().contains((LabelEntity) label))
+            {
+                labelRemoved(DomainEvent.CREATE, label);
+            }
+        }
+
+        public void labelAdded(DomainEvent event, Label label)
         {
             for (int i = 0; i < state.labels().count(); i++)
             {
@@ -53,7 +69,7 @@ public interface Labelable
             state.labels().add((LabelEntity) label);
         }
 
-        public void removeLabel(Label label)
+        public void labelRemoved(DomainEvent event, Label label)
         {
             state.labels().remove((LabelEntity) label);
         }

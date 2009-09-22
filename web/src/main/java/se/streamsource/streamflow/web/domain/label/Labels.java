@@ -18,8 +18,9 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -28,18 +29,19 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 public interface Labels
 {
     Label createLabel();
-
     void removeLabel(Label label);
-
     Iterable<Label> getLabels();
 
     interface LabelsState
     {
         ManyAssociation<Label> labels();
+
+        Label labelCreated(DomainEvent event);
+        void labelRemoved(DomainEvent event, Label label);
     }
 
-    class LabelsMixin
-            implements Labels
+    abstract class LabelsMixin
+            implements Labels, LabelsState
     {
         @Structure
         UnitOfWorkFactory uowf;
@@ -49,16 +51,14 @@ public interface Labels
 
         public Label createLabel()
         {
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            Label label = uow.newEntity(Label.class);
-            state.labels().add(state.labels().count(), label);
-            return label;
+            return labelCreated(DomainEvent.CREATE);
         }
 
         public void removeLabel(Label label)
         {
-            if (state.labels().remove(label))
+            if (state.labels().contains(label))
             {
+                labelRemoved(DomainEvent.CREATE, label);
                 label.removeEntity();
             }
         }
@@ -66,6 +66,20 @@ public interface Labels
         public Iterable<Label> getLabels()
         {
             return state.labels();
+        }
+
+
+        public Label labelCreated(DomainEvent event)
+        {
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            Label label = uow.newEntity(Label.class);
+            state.labels().add(state.labels().count(), label);
+            return label;
+        }
+
+        public void labelRemoved(DomainEvent event, Label label)
+        {
+            state.labels().remove(label);
         }
     }
 }
