@@ -57,7 +57,7 @@ public class AdministratorsServerResource
         return builder.newList();
     }
 
-    public void postOperation(StringDTO participantId) throws ResourceException
+    public void addAdministrator(StringDTO participantId) throws ResourceException
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 

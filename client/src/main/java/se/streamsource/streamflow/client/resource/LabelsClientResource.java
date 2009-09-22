@@ -44,6 +44,6 @@ public class LabelsClientResource
 
     public void createLabel(StringDTO name) throws ResourceException
     {
-        postCommand(name);
+        postCommand("createLabel",name);
     }
 }

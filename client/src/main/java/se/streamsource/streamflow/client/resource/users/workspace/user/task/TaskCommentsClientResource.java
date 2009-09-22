@@ -18,7 +18,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
@@ -28,7 +28,7 @@ import java.io.IOException;
  * Comments on a task
  */
 public class TaskCommentsClientResource
-        extends BaseClientResource
+        extends CommandQueryClientResource
 {
     public TaskCommentsClientResource(@Uses Context context, @Uses Reference reference)
     {
@@ -42,6 +42,6 @@ public class TaskCommentsClientResource
 
     public void addComment(NewCommentCommand value) throws ResourceException
     {
-        postCommand(value);
+        postCommand("addComment", value);
     }
 }

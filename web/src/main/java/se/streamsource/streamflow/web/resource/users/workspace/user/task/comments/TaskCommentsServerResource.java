@@ -78,7 +78,7 @@ public class TaskCommentsServerResource
         return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
     }
 
-    public void postOperation(NewCommentCommand comment) throws ResourceException
+    public void addComment(NewCommentCommand comment) throws ResourceException
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 

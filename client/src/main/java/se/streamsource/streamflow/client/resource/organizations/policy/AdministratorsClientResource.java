@@ -40,7 +40,7 @@ public class AdministratorsClientResource
 
     public void addAdministrator(StringDTO value) throws ResourceException
     {
-        postCommand(value);
+        postCommand("addAdministrator", value);
     }
 
     public AdministratorClientResource role(String id)

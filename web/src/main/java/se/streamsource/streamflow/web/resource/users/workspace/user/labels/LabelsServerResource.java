@@ -64,7 +64,7 @@ public class LabelsServerResource
         return listBuilder.newInstance();
     }
 
-    public void postOperation(StringDTO name) throws ResourceException
+    public void createLabel(StringDTO name) throws ResourceException
     {
         String identity = getRequest().getAttributes().get("labels").toString();
 

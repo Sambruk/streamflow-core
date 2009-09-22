@@ -18,14 +18,14 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 
 /**
  * JAVADOC
  */
 public class UsersClientResource
-        extends BaseClientResource
+        extends CommandQueryClientResource
 {
     public UsersClientResource(@Uses Context context, @Uses Reference reference)
     {
@@ -39,6 +39,6 @@ public class UsersClientResource
 
     public void register(RegisterUserCommand command) throws ResourceException
     {
-        postCommand(command);
+        postCommand("register", command);
     }
 }

@@ -74,7 +74,7 @@ public class UsersServerResource
     }
 
 
-    public void postOperation(RegisterUserCommand registerUser) throws ResourceException
+    public void register(RegisterUserCommand registerUser) throws ResourceException
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
