@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.domain.organization;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * List of organizations a participant is a member of.
@@ -31,22 +32,41 @@ public interface OrganizationParticipations
     interface OrganizationParticipationsState
     {
         ManyAssociation<Organization> organizations();
+
+        void organizationJoined(DomainEvent event, Organization org);
+        void organizationLeft(DomainEvent event, Organization org);
     }
 
-    class OrganizationParticipationsMixin
-            implements OrganizationParticipations
+    abstract class OrganizationParticipationsMixin
+            implements OrganizationParticipations, OrganizationParticipationsState
     {
         @This
         OrganizationParticipationsState state;
 
         public void join(Organization ou)
         {
-            state.organizations().add(ou);
+            if (!state.organizations().contains(ou))
+            {
+                organizationJoined(DomainEvent.CREATE, ou);
+            }
         }
 
         public void leave(Organization ou)
         {
-            state.organizations().remove(ou);
+            if (state.organizations().contains(ou))
+            {
+                organizationLeft(DomainEvent.CREATE, ou);
+            }
+        }
+
+        public void organizationJoined(DomainEvent event, Organization org)
+        {
+            state.organizations().add(org);
+        }
+
+        public void organizationLeft(DomainEvent event, Organization org)
+        {
+            state.organizations().remove(org);
         }
     }
 }
