@@ -12,21 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.organizations.search;
+package se.streamsource.streamflow.web.resource.users.search;
 
-import org.qi4j.api.injection.scope.Uses;
-import org.restlet.Context;
-import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
- * JAVADOC
+ * Mapped to:
+ * /organizations/{organization}/search/{task}
  */
-public class SearchTaskClientResource
-        extends TaskClientResource
+public class SearchTaskServerResource
+        extends CommandQueryServerResource
 {
-    public SearchTaskClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
 }
