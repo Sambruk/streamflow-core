@@ -18,6 +18,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.List;
 
@@ -27,31 +28,43 @@ import java.util.List;
 @Mixins(HasContactsWithRole.HasContactsWithRoleMixin.class)
 public interface HasContactsWithRole
 {
-    Iterable<ContactRoleValue> contacts();
+    Iterable<ContactRoleValue> getContacts();
 
     void addContact(ContactRoleValue contact);
-
     void removeContact(ContactRoleValue contact);
 
-    class HasContactsWithRoleMixin
-            implements HasContactsWithRole
+    abstract class HasContactsWithRoleMixin
+            implements HasContactsWithRole, HasContactsWithRoleState
     {
         @This
         HasContactsWithRoleState state;
 
-        public Iterable<ContactRoleValue> contacts()
+        public Iterable<ContactRoleValue> getContacts()
         {
             return state.contacts().get();
         }
 
         public void addContact(ContactRoleValue contact)
         {
+            contactAdded(DomainEvent.CREATE, contact);
+        }
+
+        public void removeContact(ContactRoleValue contact)
+        {
+            if (state.contacts().get().contains(contact))
+            {
+                contactRemoved(DomainEvent.CREATE, contact);
+            }
+        }
+
+        public void contactAdded(DomainEvent event, ContactRoleValue contact)
+        {
             List<ContactRoleValue> contacts = state.contacts().get();
             contacts.add(contact);
             state.contacts().set(contacts);
         }
 
-        public void removeContact(ContactRoleValue contact)
+        public void contactRemoved(DomainEvent event, ContactRoleValue contact)
         {
             List<ContactRoleValue> contacts = state.contacts().get();
             contacts.remove(contact);
@@ -64,5 +77,7 @@ public interface HasContactsWithRole
         @UseDefaults
         Property<List<ContactRoleValue>> contacts();
 
+        void contactAdded(DomainEvent event, ContactRoleValue contact);
+        void contactRemoved(DomainEvent event, ContactRoleValue contact);
     }
 }

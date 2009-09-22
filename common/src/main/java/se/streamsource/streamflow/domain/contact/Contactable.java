@@ -17,6 +17,7 @@ package se.streamsource.streamflow.domain.contact;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -32,22 +33,29 @@ public interface Contactable
     interface ContactableState
     {
         Property<ContactValue> contact();
+
+        void contactUpdated(DomainEvent event, ContactValue contact);
     }
 
-    class ContactableMixin
-            implements Contactable
+    abstract class ContactableMixin
+            implements Contactable, ContactableState
     {
         @This
         ContactableState state;
 
         public void updateContact(ContactValue newContact)
         {
-            state.contact().set(newContact);
+            contactUpdated(DomainEvent.CREATE, newContact);
         }
 
         public ContactValue getContact()
         {
             return state.contact().get();
+        }
+
+        public void contactUpdated(DomainEvent event, ContactValue contact)
+        {
+            state.contact().set(contact);
         }
     }
 }
