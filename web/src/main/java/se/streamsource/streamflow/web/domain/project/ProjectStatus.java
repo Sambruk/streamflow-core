@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.project.ProjectStates;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * Status for a project. Possible transitions are:
@@ -30,21 +31,20 @@ import se.streamsource.streamflow.domain.project.ProjectStates;
 public interface ProjectStatus
 {
     ProjectStates getStatus();
-
-    boolean complete();
-
-    boolean drop();
-
-    boolean archive();
+    void complete();
+    void drop();
+    void archive();
 
     interface ProjectStatusState
     {
         @UseDefaults
         Property<ProjectStates> status();
+
+        void projectStatusChanged(DomainEvent event, ProjectStates newStatus);
     }
 
-    class ProjectStatusMixin
-            implements ProjectStatus
+    abstract class ProjectStatusMixin
+            implements ProjectStatus, ProjectStatusState
     {
         @This
         ProjectStatusState status;
@@ -54,40 +54,33 @@ public interface ProjectStatus
             return status.status().get();
         }
 
-        public boolean complete()
+        public void complete()
         {
             if (status.status().get().equals(ProjectStates.ACTIVE))
             {
-                status.status().set(ProjectStates.COMPLETED);
-                return true;
-            } else
-            {
-                return false;
+                projectStatusChanged(DomainEvent.CREATE, ProjectStates.COMPLETED);
             }
         }
 
-        public boolean drop()
+        public void drop()
         {
             if (status.status().get().equals(ProjectStates.ACTIVE))
             {
-                status.status().set(ProjectStates.DROPPED);
-                return true;
-            } else
-            {
-                return false;
+                projectStatusChanged(DomainEvent.CREATE, ProjectStates.DROPPED);
             }
         }
 
-        public boolean archive()
+        public void archive()
         {
             if (status.status().get().equals(ProjectStates.COMPLETED) || status.status().get().equals(ProjectStates.DROPPED))
             {
-                status.status().set(ProjectStates.ARCHIVED);
-                return true;
-            } else
-            {
-                return false;
-            }
+                projectStatusChanged(DomainEvent.CREATE, ProjectStates.ARCHIVED);
+            } 
+        }
+
+        public void projectStatusChanged(DomainEvent event, ProjectStates newStatus)
+        {
+            status.status().set(newStatus);
         }
     }
 
