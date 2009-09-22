@@ -72,7 +72,6 @@ public interface TaskId
             {
                 state.taskIdAssigned(DomainEvent.CREATE, id);
             }
-            state.taskId().set(id);
         }
 
         // Event

@@ -18,6 +18,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -31,15 +32,22 @@ public interface Subtask
     {
         @Optional
         Association<Subtasks> parentTask();
+
+        void parentTaskChanged(DomainEvent event, Subtasks subtasks);
     }
 
-    class SubtaskMixin
-            implements Subtask
+    abstract class SubtaskMixin
+            implements Subtask, SubtaskState
     {
         @This
         SubtaskState state;
 
         public void changeParentTask(Subtasks subtasks)
+        {
+            parentTaskChanged(DomainEvent.CREATE, subtasks);
+        }
+
+        public void parentTaskChanged(DomainEvent event, Subtasks subtasks)
         {
             state.parentTask().set(subtasks);
         }
