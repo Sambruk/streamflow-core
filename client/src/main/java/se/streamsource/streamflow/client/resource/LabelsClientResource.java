@@ -19,6 +19,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -39,5 +40,10 @@ public class LabelsClientResource
     public LabelClientResource label(String id)
     {
         return getSubResource(id, LabelClientResource.class);
+    }
+
+    public void createLabel(StringDTO name) throws ResourceException
+    {
+        postCommand(name);
     }
 }

@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.domain.organization;
 
 import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -25,22 +24,19 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
-import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.role.Roles;
 
 /**
  * JAVADOC
  */
-@Concerns({EventCreationConcern.class, OrganizationalUnits.OrganizationalUnitsConcern.class})
-@SideEffects(EventSideEffect.class)
+//@Concerns({EventCreationConcern.class, OrganizationalUnits.OrganizationalUnitsConcern.class})
+//@SideEffects(EventSideEffect.class)
 @Mixins(OrganizationalUnits.OrganizationsMixin.class)
 public interface OrganizationalUnits
 {
@@ -55,6 +51,7 @@ public interface OrganizationalUnits
 
         OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id);
         void organizationalUnitRemoved(DomainEvent create, OrganizationalUnit ou);
+        void organizationalUnitAdded(DomainEvent event, OrganizationalUnit ou);
     }
 
     abstract class OrganizationsMixin
@@ -78,6 +75,7 @@ public interface OrganizationalUnits
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
             OrganizationalUnitEntity ou = organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
+            organizationalUnitAdded(DomainEvent.CREATE, ou);
             ou.describe(name);
 
             // Add current user as administrator
@@ -100,7 +98,6 @@ public interface OrganizationalUnits
             EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class, id);
             ouBuilder.instance().organization().set(ouState.organization().get());
             OrganizationalUnitEntity ou = ouBuilder.newInstance();
-            organizationalUnits().add(organizationalUnits().count(), ou);
             return ou;
         }
 
@@ -109,6 +106,10 @@ public interface OrganizationalUnits
             organizationalUnits().remove(ou);
         }
 
+        public void organizationalUnitAdded(DomainEvent event, OrganizationalUnit ou)
+        {
+            organizationalUnits().add(organizationalUnits().count(), ou);
+        }
     }
 
     abstract class OrganizationalUnitsConcern

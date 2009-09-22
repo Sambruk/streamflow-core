@@ -40,7 +40,7 @@ public class RolesClientResource
 
     public void createRole(StringDTO value) throws ResourceException
     {
-        postCommand(value);
+        postCommand("createRole", value);
     }
 
     public RoleClientResource role(String id)

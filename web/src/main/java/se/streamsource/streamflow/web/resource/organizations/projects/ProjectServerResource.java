@@ -18,9 +18,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
@@ -91,7 +89,7 @@ public class ProjectServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Delete project"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         String org = getRequest().getAttributes().get("organization").toString();
 
@@ -100,18 +98,12 @@ public class ProjectServerResource
         String identity = getRequest().getAttributes().get("project").toString();
         ProjectEntity projectEntity = uow.get(ProjectEntity.class, identity);
 
-
         try
         {
             checkPermission(projects);
             projects.removeProject(projectEntity);
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            throw new ResourceException(e);
         } catch(AccessControlException ae)
         {
-            uow.discard();
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
     }

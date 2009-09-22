@@ -19,6 +19,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -43,7 +44,7 @@ public class ProjectsServerResource
         return builder.newList();
     }
 
-    public void postOperation(String name) throws ResourceException
+    public void createProject(StringDTO name) throws ResourceException
     {
         String identity = getRequest().getAttributes().get("organization").toString();
 
@@ -52,6 +53,6 @@ public class ProjectsServerResource
         Projects projects = uow.get(Projects.class, identity);
 
         checkPermission(projects);
-        projects.createProject(name);
+        projects.createProject(name.string().get());
     }
 }

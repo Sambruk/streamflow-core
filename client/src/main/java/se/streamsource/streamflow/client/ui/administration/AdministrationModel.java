@@ -65,7 +65,7 @@ public class AdministrationModel
             }
         };
         source.registerListener(subscriber, new EventQuery().
-                withNames("organizationalUnitMoved", "organizationalUnitMerged"));
+                withNames("organizationalUnitRemoved", "organizationalUnitAdded"));
 
     }
 

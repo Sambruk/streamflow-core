@@ -19,6 +19,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -45,7 +46,7 @@ public class GroupsServerResource
         return builder.newList();
     }
 
-    public void postOperation(String name) throws ResourceException
+    public void createGroup(StringDTO name) throws ResourceException
     {
         String identity = getRequest().getAttributes().get("organization").toString();
 
@@ -54,6 +55,6 @@ public class GroupsServerResource
         Groups groups = uow.get(Groups.class, identity);
 
         checkPermission(groups);
-        groups.createGroup(name);
+        groups.createGroup(name.string().get());
     }
 }

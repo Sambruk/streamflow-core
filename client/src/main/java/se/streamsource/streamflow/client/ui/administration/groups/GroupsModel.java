@@ -20,7 +20,6 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
@@ -64,7 +63,9 @@ public class GroupsModel
     {
         try
         {
-            groupsResource.post(new StringRepresentation(description));
+            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+            builder.prototype().string().set(description);
+            groupsResource.createGroup(builder.newInstance());
             refresh();
         } catch (ResourceException e)
         {

@@ -21,8 +21,8 @@ import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitExc
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.web.domain.project.ProjectRole;
 
 /**
  * An organizational unit represents a part of an organization.
@@ -37,10 +37,6 @@ public interface OrganizationalUnit
     interface OrganizationalUnitState
     {
         Association<Organization> organization();
-
-        void organizationalUnitMoved(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to);
-
-        void organizationalUnitMerged(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to);
     }
 
     abstract class OrganizationalUnitMixin
@@ -51,93 +47,69 @@ public interface OrganizationalUnit
 
         public void moveOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MoveOrganizationalUnitException
         {
-            OrganizationalUnitEntity uoe = (OrganizationalUnitEntity) state;
-            OrganizationalUnitEntity target = (OrganizationalUnitEntity) to;
+            OrganizationalUnitEntity oue = (OrganizationalUnitEntity) state;
+            OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
             OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
-            if (uoe.identity().get().equals(target.identity().get()))
+            if (oue.identity().get().equals(toEntity.identity().get()))
             {
                 throw new MoveOrganizationalUnitException();
             }
 
-            if (target.organizationalUnits().contains(uoe))
+            if (toEntity.organizationalUnits().contains(oue))
             {
                 throw new MoveOrganizationalUnitException();
             }
 
-            if (!parentEntity.organizationalUnits().contains(uoe))
+            if (!parentEntity.organizationalUnits().contains(oue))
             {
                 throw new MoveOrganizationalUnitException();
             }
 
-            organizationalUnitMoved(DomainEvent.CREATE, parent , to);
+            parentEntity.organizationalUnitRemoved(DomainEvent.CREATE, oue);
+            toEntity.organizationalUnitAdded(DomainEvent.CREATE, oue);
         }
 
         public void mergeOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MergeOrganizationalUnitException
         {
-            OrganizationalUnitEntity uoe = (OrganizationalUnitEntity) state;
-            OrganizationalUnitEntity target = (OrganizationalUnitEntity) to;
-            OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
-            if (uoe.identity().get().equals(target.identity().get()))
-            {
-                throw new MergeOrganizationalUnitException();
-            }
-
-            if (target.organizationalUnits().contains(uoe))
-            {
-                throw new MergeOrganizationalUnitException();
-            }
-
-            if (!parentEntity.organizationalUnits().contains(uoe))
-            {
-                throw new MergeOrganizationalUnitException();
-            }
-
-            if (uoe.organizationalUnits().count() != 0)
-            {
-                throw new MergeOrganizationalUnitException();
-            }
-
-            uoe.removeEntity();
-            organizationalUnitMerged(DomainEvent.CREATE, parent, to);
-        }
-
-
-        public void organizationalUnitMoved(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to)
-        {
             OrganizationalUnitEntity oue = (OrganizationalUnitEntity) state;
-            OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
             OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
-
-            parentEntity.organizationalUnits().remove(oue);
-            toEntity.organizationalUnits().add(oue);
-        }
-
-        public void organizationalUnitMerged(DomainEvent event, OrganizationalUnit parent, OrganizationalUnit to)
-        {
-            OrganizationalUnitEntity oue = (OrganizationalUnitEntity) state;
             OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
-            OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
+            if (oue.identity().get().equals(toEntity.identity().get()))
+            {
+                throw new MergeOrganizationalUnitException();
+            }
 
-            parentEntity.organizationalUnits().remove(oue);
+            if (!parentEntity.organizationalUnits().contains(oue))
+            {
+                throw new MergeOrganizationalUnitException();
+            }
+
+            if (oue.organizationalUnits().count() != 0)
+            {
+                throw new MergeOrganizationalUnitException();
+            }
 
             while (oue.projectRoles().count() > 0)
             {
                 ProjectRole role = oue.projectRoles().get(0);
-                toEntity.projectRoles().add(role);
-                oue.projectRoles().remove(role);
+                oue.projectRoleRemoved(DomainEvent.CREATE, role);
+                toEntity.projectRoleAdded(DomainEvent.CREATE, role);
             }
             while (oue.groups().count() >0)
             {
                 Group group = oue.groups().get(0);
-                toEntity.groups().add(group);
-                oue.groups().remove(group);
+                oue.groupRemoved(DomainEvent.CREATE, group);
+                toEntity.groupAdded(DomainEvent.CREATE, group);
             }
             while (oue.projects().count() >0)
             {
                 Project project = oue.projects().get(0);
-                toEntity.projects().add(project);
-                oue.projects().remove(project);
+                oue.projectRemoved(DomainEvent.CREATE, project);
+                toEntity.projectAdded(DomainEvent.CREATE, project);
             }
+
+            parentEntity.organizationalUnitRemoved(DomainEvent.CREATE, oue);
+            oue.removeEntity();
         }
     }
 }

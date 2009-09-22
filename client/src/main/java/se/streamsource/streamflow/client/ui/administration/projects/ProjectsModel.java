@@ -21,7 +21,6 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -130,7 +129,9 @@ public class ProjectsModel
     {
         try
         {
-            projects.post(new StringRepresentation(projectName));
+            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+            builder.prototype().string().set(projectName);
+            projects.createProject(builder.newInstance());
             refresh();
         } catch (ResourceException e)
         {

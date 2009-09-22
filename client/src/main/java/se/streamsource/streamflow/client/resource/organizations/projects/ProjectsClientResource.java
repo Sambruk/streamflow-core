@@ -20,6 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -40,5 +41,10 @@ public class ProjectsClientResource
     public ProjectClientResource project(String id)
     {
         return getSubResource(id, ProjectClientResource.class);
+    }
+
+    public void createProject(StringDTO name) throws ResourceException
+    {
+        postCommand("createProject",name);
     }
 }

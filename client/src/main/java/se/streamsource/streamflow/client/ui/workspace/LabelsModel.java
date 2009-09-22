@@ -18,7 +18,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
@@ -90,7 +89,9 @@ public class LabelsModel
     {
         try
         {
-            labels.post(new StringRepresentation(description));
+            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+            builder.prototype().string().set(description);
+            labels.createLabel(builder.newInstance());
             refresh();
         } catch (ResourceException e)
         {

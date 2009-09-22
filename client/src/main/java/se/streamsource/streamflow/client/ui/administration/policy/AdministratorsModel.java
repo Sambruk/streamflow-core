@@ -16,16 +16,17 @@ package se.streamsource.streamflow.client.ui.administration.policy;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -57,7 +58,9 @@ public class AdministratorsModel
     {
         try
         {
-            administrators.post(new StringRepresentation(description));
+            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+            builder.prototype().string().set(description);
+            administrators.addAdministrator(builder.newInstance());
             refresh();
 
         } catch (ResourceException e)

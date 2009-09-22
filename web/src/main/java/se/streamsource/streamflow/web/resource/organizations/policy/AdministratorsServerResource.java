@@ -19,6 +19,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
@@ -56,14 +57,14 @@ public class AdministratorsServerResource
         return builder.newList();
     }
 
-    public void postOperation(String participantId) throws ResourceException
+    public void postOperation(StringDTO participantId) throws ResourceException
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
         String identity = getRequest().getAttributes().get("organization").toString();
 
         OrganizationalUnitEntity ou = uow.get(OrganizationalUnitEntity.class, identity);
-        Participant participant = uow.get(Participant.class, participantId);
+        Participant participant = uow.get(Participant.class, participantId.string().get());
 
         OrganizationEntity organization = (OrganizationEntity) ou.organization().get();
         Role adminRole = organization.roles().get(0);

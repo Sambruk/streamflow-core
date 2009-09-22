@@ -43,6 +43,7 @@ public interface Projects
 
         ProjectEntity projectCreated(DomainEvent event, String id);
         void projectRemoved(DomainEvent event, Project project);
+        void projectAdded(DomainEvent event, Project project);
     }
 
     abstract class ProjectsMixin
@@ -62,6 +63,7 @@ public interface Projects
             String id = idgen.generate(ProjectEntity.class);
 
             ProjectEntity project = projectCreated(DomainEvent.CREATE, id);
+            projectAdded(DomainEvent.CREATE, project);
             project.describe(name);
 
             return project;
@@ -71,11 +73,12 @@ public interface Projects
         {
             EntityBuilder<ProjectEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(ProjectEntity.class, id);
             builder.instance().organizationalUnit().set(ou);
-            ProjectEntity project = builder.newInstance();
+            return builder.newInstance();
+        }
 
-            projects().add(project);
-
-            return project;
+        public void projectAdded(DomainEvent event, Project project)
+        {
+            projects().add(projects().count(), project);
         }
 
         public boolean removeProject(Project project)

@@ -21,6 +21,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -47,5 +48,10 @@ public class GroupsClientResource
     public GroupClientResource group(String id)
     {
         return getSubResource(id, GroupClientResource.class);
+    }
+
+    public void createGroup(StringDTO name) throws ResourceException
+    {
+        postCommand("createGroup",name);
     }
 }
