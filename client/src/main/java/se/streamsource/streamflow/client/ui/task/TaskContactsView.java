@@ -28,8 +28,8 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusListener;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.IOException;
 
 /**
@@ -109,16 +109,13 @@ public class TaskContactsView
     public void add() throws IOException, ResourceException
     {
         model.createContact();
-        model.refresh();
         contacts.setSelectedIndex(model.getSize() - 1);
-        getContactView().requestFocus();
     }
 
     @org.jdesktop.application.Action
     public void remove() throws IOException, ResourceException
     {
         model.removeElement(getContactsList().getSelectedIndex());
-        model.refresh();
         contacts.clearSelection();
     }
 

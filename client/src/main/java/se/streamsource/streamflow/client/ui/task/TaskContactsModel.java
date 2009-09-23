@@ -16,18 +16,20 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
+import se.streamsource.streamflow.infrastructure.event.source.*;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * List of contacts for a task
@@ -42,6 +44,23 @@ public class TaskContactsModel
 
     @Uses
     private TaskContactsClientResource contactsClientResource;
+
+    private EventSourceListener subscriber;
+
+    public TaskContactsModel(@Service EventSource source)
+    {
+        subscriber = new EventSourceListener()
+        {
+            public void eventsAvailable(EventStore source, EventSpecification specification)
+            {
+                Logger.getLogger("workspace").info("Refresh task contacts");
+                refresh();
+            }
+        };
+        source.registerListener(subscriber, new EventQuery().
+                withNames("contactAdded", "contactDeleted", "contactUpdated"));
+
+    }
 
     List<ContactValue> contacts = Collections.emptyList();
 
