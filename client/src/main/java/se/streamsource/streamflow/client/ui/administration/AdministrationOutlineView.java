@@ -33,15 +33,9 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.JTree;
-import java.awt.BorderLayout;
+import javax.accessibility.AccessibleContext;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -110,7 +104,7 @@ public class AdministrationOutlineView
 
         add(BorderLayout.CENTER, tree);
 
-        ActionMap am = context.getActionMap(this);
+        final ActionMap am = context.getActionMap(this);
         JPopupMenu popup = new JPopupMenu();
         popup.add(am.get("createOrganizationalUnit"));
         popup.add(am.get("removeOrganizationalUnit"));
@@ -118,13 +112,22 @@ public class AdministrationOutlineView
         popup.add(am.get("moveOrganizationalUnit"));
         popup.add(am.get("mergeOrganizationalUnit"));
 
+        AccessibleContext a = popup.getAccessibleContext();
+
         tree.addMouseListener(new PopupMenuTrigger(popup)
         {
             @Override
             protected void showPopup(MouseEvent e)
             {
-                if (tree.getSelectionPath().getLastPathComponent() instanceof OrganizationalStructureAdministrationNode)
+
+                if (tree.getSelectionPath() != null &&
+                    tree.getSelectionPath().getLastPathComponent() instanceof OrganizationalStructureAdministrationNode)
+                {
+                    boolean enabled = (tree.getSelectionPath().getParentPath().getLastPathComponent() instanceof OrganizationalStructureAdministrationNode);
+                    am.get("moveOrganizationalUnit").setEnabled(enabled);
+                    am.get("mergeOrganizationalUnit").setEnabled(enabled);
                     super.showPopup(e);
+                }
             }
         });
 
