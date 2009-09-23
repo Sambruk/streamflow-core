@@ -24,6 +24,7 @@ import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.project.ProjectRoleEntity;
 
 /**
  * An organizational unit represents a part of an organization.
@@ -94,13 +95,13 @@ public interface OrganizationalUnit
             {
                 ProjectRole role = oue.projectRoles().get(0);
                 oue.projectRoleRemoved(DomainEvent.CREATE, role);
-                toEntity.projectRoleAdded(DomainEvent.CREATE, role);
+                toEntity.projectRoleAdded(DomainEvent.CREATE, (ProjectRoleEntity) role);
             }
             while (oue.groups().count() >0)
             {
                 Group group = oue.groups().get(0);
-                oue.groupRemoved(DomainEvent.CREATE, (GroupEntity) group);
-                toEntity.groupAdded(DomainEvent.CREATE, group);
+                oue.groupRemoved(DomainEvent.CREATE, group);
+                toEntity.groupAdded(DomainEvent.CREATE, (GroupEntity) group);
             }
             while (oue.projects().count() >0)
             {

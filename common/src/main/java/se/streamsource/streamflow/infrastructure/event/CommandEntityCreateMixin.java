@@ -60,17 +60,20 @@ public class CommandEntityCreateMixin
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
-        Method createdMethod = createdMappings.get(method);
-        Method addedMethod = null;
-        if (createdMethod == null)
-        {
+
+        //Method createdMethod = createdMappings.get(method);
+        //Method addedMethod = null;
+        Method createdMethod;
+        Method addedMethod;
+        //if (createdMethod == null)
+        //{
             // createFoo -> fooCreated
             String name = method.getName().substring("create".length());
             {
                 String createdName = Introspector.decapitalize(name) + "Created";
                 Class[] parameterTypes = new Class[]{DomainEvent.class, String.class};
                 createdMethod = composite.getClass().getMethod(createdName, parameterTypes);
-                createdMappings.put(method, createdMethod);
+                //createdMappings.put(method, createdMethod);
             }
 
             // createFoo -> fooAdded
@@ -78,12 +81,12 @@ public class CommandEntityCreateMixin
                 String addedName = Introspector.decapitalize(name) + "Added";
                 Class[] parameterTypes = new Class[]{DomainEvent.class, method.getReturnType()};
                 addedMethod = composite.getClass().getMethod(addedName, parameterTypes);
-                addedMappings.put(method, addedMethod);
+                //addedMappings.put(method, addedMethod);
             }
-        } else
+        /*} else
         {
             addedMethod = addedMappings.get(method);
-        }
+        }*/
 
         // Generate id
         String id = idGen.generate((Class<? extends Identity>) method.getReturnType());

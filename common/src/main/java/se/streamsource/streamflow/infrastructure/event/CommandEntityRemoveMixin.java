@@ -65,25 +65,27 @@ public class CommandEntityRemoveMixin
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
-        Method eventMethod = methodMappings.get(method);
-        if (eventMethod == null)
+        //Method eventMethod = methodMappings.get(method);
+        Method eventMethod;
+        //if (eventMethod == null)
         {
             // removeFoo -> fooRemoved
             String name = method.getName().substring("remove".length());
             name = Introspector.decapitalize(name) + "Removed";
             Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
             eventMethod = composite.getClass().getMethod(name, parameterTypes);
-            methodMappings.put(method, eventMethod);
+            //methodMappings.put(method, eventMethod);
         }
 
-        Method manyAssociationMethod = manyAssociationMappings.get(method);
-        if (manyAssociationMethod == null)
+        //Method manyAssociationMethod = manyAssociationMappings.get(method);
+        Method manyAssociationMethod;
+        //if (manyAssociationMethod == null)
         {
             // removeFoo -> foos
             String name = method.getName().substring("remove".length());
             name = Introspector.decapitalize(name) + "s";
             manyAssociationMethod = composite.getClass().getMethod(name);
-            manyAssociationMappings.put(method, manyAssociationMethod);
+            //manyAssociationMappings.put(method, manyAssociationMethod);
         }
 
         ManyAssociation manyAssociation = (ManyAssociation) manyAssociationMethod.invoke(proxy);

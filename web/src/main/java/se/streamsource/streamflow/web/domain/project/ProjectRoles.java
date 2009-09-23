@@ -18,14 +18,12 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
  */
 @Concerns(ProjectRoles.DescribeCreatedRoleConcern.class)
-@Mixins(ProjectRoles.ProjectRolesMixin.class)
 public interface ProjectRoles
 {
     ProjectRoleEntity createProjectRole(String name);
@@ -40,16 +38,6 @@ public interface ProjectRoles
         ProjectRoleEntity projectRoleCreated(DomainEvent event, String id);
         void projectRoleAdded(DomainEvent event, ProjectRoleEntity role);
         void projectRoleRemoved(DomainEvent event, ProjectRole role);
-        void projectRoleAdded(DomainEvent event, ProjectRole role);
-    }
-
-    abstract class ProjectRolesMixin
-        implements ProjectRolesState
-    {
-        public void projectRoleAdded(DomainEvent event, ProjectRole role)
-        {
-            projectRoles().add(projectRoles().count(), role);
-        }
     }
 
     abstract class DescribeCreatedRoleConcern

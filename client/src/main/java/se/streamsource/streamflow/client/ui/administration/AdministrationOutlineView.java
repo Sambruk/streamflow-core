@@ -121,7 +121,7 @@ public class AdministrationOutlineView
             {
 
                 if (tree.getSelectionPath() != null &&
-                    tree.getSelectionPath().getLastPathComponent() instanceof OrganizationalStructureAdministrationNode)
+                        tree.getSelectionPath().getLastPathComponent() instanceof OrganizationalStructureAdministrationNode)
                 {
                     boolean enabled = (tree.getSelectionPath().getParentPath().getLastPathComponent() instanceof OrganizationalStructureAdministrationNode);
                     am.get("moveOrganizationalUnit").setEnabled(enabled);
