@@ -14,51 +14,37 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.qi4j.api.constraint.Name;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.TransientBuilder;
+import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.entity.Entity;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.association.EntityStateHolder;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.entity.association.EntityStateHolder;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.Entity;
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.composite.TransientBuilderFactory;
-import org.qi4j.api.composite.TransientBuilder;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.entitystore.jdbm.DatabaseExport;
-import org.qi4j.entitystore.jdbm.DatabaseImport;
-import org.qi4j.index.reindexer.Reindexer;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.service.ServiceDescriptor;
-import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.entity.EntityDescriptor;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.service.ServiceDescriptor;
+import org.qi4j.spi.structure.ModuleSPI;
 
 import javax.management.*;
-import javax.management.modelmbean.*;
-import java.io.*;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import java.net.InetAddress;
 
 /**
  * JMX Management for StreamFlow. Exposes all configurable services as MBeans,
@@ -89,6 +75,9 @@ public interface ManagerService
         @Service
         Iterable<ServiceReference<Configuration>> configurableServices;
 
+        private Registry registry;
+        private JMXConnectorServer connectorServer;
+
         public ObjectName objectName;
         private List<ObjectName> configurableServiceNames = new ArrayList<ObjectName>();
         public ManagerComposite manager;
@@ -96,6 +85,21 @@ public interface ManagerService
         public void activate() throws Exception
         {
             ResourceBundle bundle = ResourceBundle.getBundle(Manager.class.getName());
+
+            // Fixate port for RMI registry and JMX Connector Server
+            // by that they can more easily be reached behind a firewall
+            System.setProperty("java.rmi.server.randomIDs", "true");
+            final int jmxAgenPort = Integer.parseInt(System.getProperty("jmx.agent.port", "3000"));
+
+            registry = LocateRegistry.createRegistry(jmxAgenPort);
+            
+            String hostName = InetAddress.getLocalHost().getHostName();
+            JMXServiceURL url = new JMXServiceURL(
+                                    "service:jmx:rmi://" + hostName +":" + jmxAgenPort
+                                            + "/jndi/rmi://"+ hostName +":" + jmxAgenPort + "/jmxrmi");
+
+            connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url, new HashMap(), server);
+            connectorServer.start();
 
             Properties version = new Properties();
             version.load(getClass().getResourceAsStream("/version.properties"));
@@ -159,6 +163,8 @@ public interface ManagerService
 
         public void passivate() throws Exception
         {
+            connectorServer.stop();
+            
             manager.passivate();
 
             server.unregisterMBean(objectName);

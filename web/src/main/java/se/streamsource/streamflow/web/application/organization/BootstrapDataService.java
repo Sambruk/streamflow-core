@@ -32,6 +32,8 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.role.Role;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
+import java.util.logging.Logger;
+
 /**
  * JAVADOC
  */
@@ -51,67 +53,74 @@ public interface BootstrapDataService
         public void activate() throws Exception
         {
             UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Bootstrap data"));
-
-            OrganizationsEntity organizations;
-            try
-            {
-                // Check if organizations entity exists
-                organizations = uow.get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
-            } catch (NoSuchEntityException e)
-            {
-                // Create bootstrap data
-                organizations = uow.newEntity(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
-            }
-
-            // Check if admin exists
-            UserEntity admin;
-            try
-            {
-                admin = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
-            } catch (NoSuchEntityException e)
-            {
-                // Create admin
-                admin = organizations.createUser(UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME);
-
-                ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
-                contactBuilder.prototype().name().set("Administrator");
-                ContactValue contact = contactBuilder.newInstance();
-                admin.updateContact(contact);
-            }
-
-
-            Query<OrganizationEntity> orgs = organizations.findAll();
-
-            if (orgs.count() == 0)
-            {
-                // Create default organization
-                Organization ou = organizations.createOrganization("Organization");
-                uow.apply();
-            }
-
-            for (OrganizationEntity org : orgs)
-            {
-                Role administrator;
-                if (org.roles().count() == 0)
+            try{
+                OrganizationsEntity organizations;
+                try
                 {
-                    // Administrator role
-                    administrator = org.createRole("Administrator");
-                } else
+                    // Check if organizations entity exists
+                    organizations = uow.get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
+                } catch (NoSuchEntityException e)
                 {
-                    administrator = org.roles().get(0);
+                    // Create bootstrap data
+                    organizations = uow.newEntity(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
                 }
 
-                // Administrator should be member of all organizations
-                if (!admin.organizations().contains(org))
+                // Check if admin exists
+                UserEntity admin;
+                try
                 {
-                    admin.join(org);
+                    admin = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
+                } catch (NoSuchEntityException e)
+                {
+                    // Create admin
+                    admin = organizations.createUser(UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME);
+
+                    ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
+                    contactBuilder.prototype().name().set("Administrator");
+                    ContactValue contact = contactBuilder.newInstance();
+                    admin.updateContact(contact);
                 }
 
-                // Assign admin role to administrator
-                org.grantRole(admin, administrator);
-            }
 
-            uow.complete();
+                Query<OrganizationEntity> orgs = organizations.findAll();
+
+                if (orgs.count() == 0)
+                {
+                    // Create default organization
+                    Organization ou = organizations.createOrganization("Organization");
+                    uow.apply();
+                }
+
+                for (OrganizationEntity org : orgs)
+                {
+                    Role administrator;
+                    if (org.roles().count() == 0)
+                    {
+                        // Administrator role
+                        administrator = org.createRole("Administrator");
+                    } else
+                    {
+                        administrator = org.roles().get(0);
+                    }
+
+                    // Administrator should be member of all organizations
+                    if (!admin.organizations().contains(org))
+                    {
+                        admin.join(org);
+                    }
+    
+                    // Assign admin role to administrator
+                    org.grantRole(admin, administrator);
+                }
+
+                uow.complete();
+
+            } catch (Exception e)
+            {
+                Logger.getLogger(this.getClass().getName()).warning("BootstrapDataService faild to start!");
+                e.printStackTrace();
+                uow.discard();
+            }
         }
 
         public void passivate() throws Exception
