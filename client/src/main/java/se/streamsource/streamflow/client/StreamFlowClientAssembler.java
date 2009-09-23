@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client;
 
 import org.qi4j.bootstrap.*;
-import org.qi4j.runtime.bootstrap.ApplicationAssemblyImpl;
 import se.streamsource.streamflow.client.domain.individual.IndividualAssembler;
 import se.streamsource.streamflow.client.infrastructure.application.RestletClientAssembler;
 import se.streamsource.streamflow.client.infrastructure.configuration.ConfigurationAssembler;
@@ -23,8 +22,8 @@ import se.streamsource.streamflow.client.infrastructure.domain.ClientEntityStore
 import se.streamsource.streamflow.client.infrastructure.ui.UIInfrastructureAssembler;
 import se.streamsource.streamflow.client.resource.ClientResourceAssembler;
 import se.streamsource.streamflow.client.ui.UIAssembler;
-import se.streamsource.streamflow.client.ui.events.ClientEventSourceAssembler;
 import se.streamsource.streamflow.client.ui.administration.AdministrationAssembler;
+import se.streamsource.streamflow.client.ui.events.ClientEventSourceAssembler;
 import se.streamsource.streamflow.client.ui.menu.MenuAssembler;
 import se.streamsource.streamflow.client.ui.overview.OverviewAssembler;
 import se.streamsource.streamflow.client.ui.search.SearchAssembler;
@@ -49,10 +48,7 @@ public class StreamFlowClientAssembler
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
         assembly.setName("StreamFlow client");
-        if (assembly instanceof ApplicationAssemblyImpl)
-        {
-            ((ApplicationAssemblyImpl) assembly).setVersion("0.1");
-        }
+        assembly.setVersion("0.1");
 
         // Create layers
         LayerAssembly clientDomainInfrastructureLayer = assembly.layerAssembly("Client domain infrastructure");

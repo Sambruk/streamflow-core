@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web;
 
 import org.qi4j.bootstrap.*;
-import org.qi4j.runtime.bootstrap.ApplicationAssemblyImpl;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.organization.OrganizationAssembler;
@@ -23,11 +22,11 @@ import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.application.statistics.StatisticsAssembler;
 import se.streamsource.streamflow.web.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.web.domain.WebDomainAssembler;
+import se.streamsource.streamflow.web.infrastructure.database.DatabaseAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EventStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.event.EventAssembler;
-import se.streamsource.streamflow.web.infrastructure.database.DatabaseAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 
@@ -48,10 +47,7 @@ public class StreamFlowWebAssembler
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
         assembly.setName("StreamFlow web");
-        if (assembly instanceof ApplicationAssemblyImpl)
-        {
-            ((ApplicationAssemblyImpl) assembly).setVersion("0.1");
-        }
+        assembly.setVersion("0.1");
         LayerAssembly configurationLayer = assembly.layerAssembly("Configuration");
         LayerAssembly domainInfrastructureLayer = assembly.layerAssembly("Domain infrastructure");
         LayerAssembly domainLayer = assembly.layerAssembly("Domain");
