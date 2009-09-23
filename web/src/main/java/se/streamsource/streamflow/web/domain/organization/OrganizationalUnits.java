@@ -75,6 +75,7 @@ public interface OrganizationalUnits
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
             OrganizationalUnitEntity ou = organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
+            organizationalUnitAdded(DomainEvent.CREATE, ou);
             ou.changeDescription(name);
 
             // Add current user as administrator
