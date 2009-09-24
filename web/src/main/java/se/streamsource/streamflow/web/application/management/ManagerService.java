@@ -37,14 +37,29 @@ import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.qi4j.spi.structure.ModuleSPI;
 
-import javax.management.*;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnectorServerFactory;
-import javax.management.remote.JMXServiceURL;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.util.*;
-import java.net.InetAddress;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.MBeanOperationInfo;
+import javax.management.MBeanParameterInfo;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 /**
  * JMX Management for StreamFlow. Exposes all configurable services as MBeans,
@@ -75,9 +90,6 @@ public interface ManagerService
         @Service
         Iterable<ServiceReference<Configuration>> configurableServices;
 
-        private Registry registry;
-        private JMXConnectorServer connectorServer;
-
         public ObjectName objectName;
         private List<ObjectName> configurableServiceNames = new ArrayList<ObjectName>();
         public ManagerComposite manager;
@@ -85,21 +97,6 @@ public interface ManagerService
         public void activate() throws Exception
         {
             ResourceBundle bundle = ResourceBundle.getBundle(Manager.class.getName());
-
-            // Fixate port for RMI registry and JMX Connector Server
-            // by that they can more easily be reached behind a firewall
-            System.setProperty("java.rmi.server.randomIDs", "true");
-            final int jmxAgenPort = Integer.parseInt(System.getProperty("jmx.agent.port", "3000"));
-
-            registry = LocateRegistry.createRegistry(jmxAgenPort);
-            
-            String hostName = InetAddress.getLocalHost().getHostName();
-            JMXServiceURL url = new JMXServiceURL(
-                                    "service:jmx:rmi://" + hostName +":" + jmxAgenPort
-                                            + "/jndi/rmi://"+ hostName +":" + jmxAgenPort + "/jmxrmi");
-
-            connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url, new HashMap(), server);
-            connectorServer.start();
 
             Properties version = new Properties();
             version.load(getClass().getResourceAsStream("/version.properties"));
@@ -130,7 +127,7 @@ public interface ManagerService
                 String serviceClass = configurableService.get().getClass().getInterfaces()[0].getName();
                 String name = configurableService.identity();
                 ServiceDescriptor serviceDescriptor = spi.getServiceDescriptor(configurableService);
-                ModuleSPI module = (ModuleSPI) configurableService.module();
+                ModuleSPI module = (ModuleSPI) spi.getModule(configurableService);
                 EntityDescriptor descriptor = module.entityDescriptor(serviceDescriptor.configurationType().getName());
                 List<MBeanAttributeInfo> attributes = new ArrayList<MBeanAttributeInfo>();
                 Map<String, QualifiedName> properties = new HashMap<String, QualifiedName>();
@@ -163,8 +160,6 @@ public interface ManagerService
 
         public void passivate() throws Exception
         {
-            connectorServer.stop();
-            
             manager.passivate();
 
             server.unregisterMBean(objectName);

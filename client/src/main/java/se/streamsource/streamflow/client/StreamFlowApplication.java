@@ -28,9 +28,9 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
+import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.value.ValueCompositeType;
 import org.restlet.Client;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
@@ -54,8 +54,10 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,7 +74,7 @@ import java.util.logging.Logger;
 public class StreamFlowApplication
         extends SingleFrameApplication
 {
-    public static ValueCompositeType DOMAIN_EVENT_TYPE;
+    public static ValueType DOMAIN_EVENT_TYPE;
 
     @Structure
     ObjectBuilderFactory obf;

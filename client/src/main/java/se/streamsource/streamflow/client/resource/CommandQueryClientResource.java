@@ -14,38 +14,35 @@
 
 package se.streamsource.streamflow.client.resource;
 
-import java.io.IOException;
-import java.io.BufferedReader;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.util.json.JSONTokener;
-import org.qi4j.spi.util.json.JSONArray;
-import org.qi4j.spi.util.json.JSONObject;
 import org.qi4j.spi.property.PropertyTypeDescriptor;
+import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.value.ValueDescriptor;
-import org.qi4j.spi.value.ValueCompositeType;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.data.Method;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+
+import java.io.IOException;
 
 /**
  * Base class for client-side Command/Query resources
@@ -65,7 +62,7 @@ public class CommandQueryClientResource
     @Service
     protected EventListener eventListener;
 
-    public static ValueCompositeType DOMAIN_EVENT_TYPE;
+    public static ValueType DOMAIN_EVENT_TYPE;
 
     public CommandQueryClientResource(@Uses org.restlet.Context context, @Uses Reference reference)
     {

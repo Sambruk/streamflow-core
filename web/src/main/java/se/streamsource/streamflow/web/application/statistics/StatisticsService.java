@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
+import org.qi4j.api.Qi4j;
+import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -22,10 +24,13 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.configuration.Configuration;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.label.LabelEntity;
@@ -39,14 +44,18 @@ import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import static java.util.Arrays.asList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.sql.*;
 
 /**
  * Generate statistics data to a JDBC database. This service
@@ -60,6 +69,9 @@ public interface StatisticsService
     class StatisticsMixin
             implements EventSourceListener, Activatable
     {
+        @Structure
+        Qi4j api;
+
         @Service
         EventSource source;
 
@@ -200,7 +212,7 @@ public interface StatisticsService
                         conn.commit();
 
                     config.configuration().lastEventDate().set(newLastDate);
-                    config.configuration().unitOfWork().apply();
+                    api.getUnitOfWork(config.configuration()).apply();
                 } catch (Exception e)
                 {
                     logger.log(Level.SEVERE, "Could not log statistics", e);

@@ -14,29 +14,24 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import jdbm.RecordManager;
-import jdbm.RecordManagerFactory;
-import jdbm.RecordManagerOptions;
-import jdbm.btree.BTree;
-import jdbm.helper.*;
-import jdbm.recman.CacheRecordManager;
-import org.qi4j.api.injection.scope.Service;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.spi.util.json.JSONArray;
-import org.qi4j.spi.util.json.JSONException;
-import org.qi4j.spi.util.json.JSONObject;
-import org.qi4j.spi.util.json.JSONTokener;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 /**

@@ -43,6 +43,7 @@ public class ManagementAssembler
             module.addServices(ReindexOnStartupService.class).instantiateOnStartup();
 
             module.addServices(EventManagerService.class).instantiateOnStartup();
+            module.addServices(ErrorLogService.class).instantiateOnStartup();
         }
     }
 }

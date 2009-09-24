@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.json.JSONException;
+import org.json.JSONWriter;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
@@ -24,16 +26,14 @@ import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.util.Annotations;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.runtime.util.Annotations;
 import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.util.json.JSONException;
-import org.qi4j.spi.util.json.JSONWriter;
-import org.qi4j.spi.value.ValueCompositeType;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -209,7 +209,7 @@ public class CommandQueryServerResource
                             public void write(Writer writer) throws IOException
                             {
                                 int count = 0;
-                                ValueCompositeType type = module.valueDescriptor(DomainEvent.class.getName()).valueType();
+                                ValueType type = module.valueDescriptor(DomainEvent.class.getName()).valueType();
                                 try
                                 {
                                     JSONWriter json = new JSONWriter(writer).array();
@@ -328,6 +328,8 @@ public class CommandQueryServerResource
             if (getRequest().getEntity().getMediaType().equals(MediaType.APPLICATION_JSON))
             {
                 String json = getRequest().getEntityAsText();
+                if (json == null)
+                    throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
 
                 Object command = vbf.newValueFromJSON(commandType, json);
 
@@ -356,7 +358,10 @@ public class CommandQueryServerResource
         if (representation != null && MediaType.APPLICATION_JSON.equals(representation.getMediaType()))
         {
             Class<?> valueType = method.getParameterTypes()[0];
-            Object requestValue = vbf.newValueFromJSON(valueType, getRequest().getEntityAsText());
+            String json = getRequest().getEntityAsText();
+            if (json == null)
+                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
+            Object requestValue = vbf.newValueFromJSON(valueType, json);
             args[0] = requestValue;
         } else
         {
@@ -400,6 +405,8 @@ public class CommandQueryServerResource
                 {
                     public Object run() throws Exception
                     {
+                        Logger.getLogger("command").log(Level.SEVERE, "Could not invoke command:"+method.getName(), new Throwable());
+
                         return method.invoke(commandObject, args);
                     }
                 });

@@ -14,19 +14,27 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.Activatable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
-import javax.management.*;
-import javax.management.modelmbean.RequiredModelMBean;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.Notification;
+import javax.management.ObjectName;
 import javax.management.modelmbean.ModelMBeanInfo;
 import javax.management.modelmbean.ModelMBeanInfoSupport;
 import javax.management.modelmbean.ModelMBeanNotificationInfo;
-
-import se.streamsource.streamflow.infrastructure.event.source.*;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import javax.management.modelmbean.RequiredModelMBean;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Service for exposing domain events through JMX. Allows all domain events to be listened to
@@ -49,6 +57,7 @@ public interface EventManagerService
 
         long seq = 0;
         public RequiredModelMBean mbean;
+        ExecutorService executor;
 
         public void activate() throws Exception
         {
@@ -63,10 +72,14 @@ public interface EventManagerService
             server.registerMBean(mbean, objectName);
 
             source.registerListener(this, AllEventsSpecification.INSTANCE);
+
+            executor = Executors.newSingleThreadExecutor();
         }
 
         public void passivate() throws Exception
         {
+            executor.shutdown();
+            
             server.unregisterMBean(objectName);
             source.unregisterListener(this);
         }
@@ -77,15 +90,22 @@ public interface EventManagerService
 
             for (DomainEvent event : events)
             {
-                Notification notification = new Notification("domainevent", objectName, seq++, event.on().get().getTime(), event.name().get());
+                final Notification notification = new Notification("domainevent", objectName, seq++, event.on().get().getTime(), event.name().get());
                 notification.setUserData(event.toJSON());
-                try
+
+                executor.submit(new Runnable()
                 {
-                    mbean.sendNotification(notification);
-                } catch (MBeanException e)
-                {
-                    e.printStackTrace();
-                }
+                    public void run()
+                    {
+                        try
+                        {
+                            mbean.sendNotification(notification);
+                        } catch (MBeanException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         }
     }

@@ -16,6 +16,7 @@
     <servlet>
         <servlet-name>StreamFlowServlet</servlet-name>
         <servlet-class>se.streamsource.streamflow.web.servlet.StreamFlowServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>

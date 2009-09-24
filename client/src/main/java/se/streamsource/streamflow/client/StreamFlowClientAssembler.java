@@ -14,7 +14,12 @@
 
 package se.streamsource.streamflow.client;
 
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.domain.individual.IndividualAssembler;
 import se.streamsource.streamflow.client.infrastructure.application.RestletClientAssembler;
 import se.streamsource.streamflow.client.infrastructure.configuration.ConfigurationAssembler;

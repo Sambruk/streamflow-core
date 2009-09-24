@@ -21,6 +21,8 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
+import org.qi4j.migration.MigrationService;
+import org.qi4j.migration.assembly.MigrationRules;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
@@ -45,6 +47,17 @@ public class ServerEntityStoreAssembler
             // JDBM storage
             module.addServices(JdbmEntityStoreService.class).identifiedBy("data").visibleIn(Visibility.application);
             module.addServices(UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
+
+            // Migration service
+            MigrationRules migrationRules = new MigrationRules();
+            migrationRules.fromVersion("0.0").
+                    toVersion("0.1.14.357").
+                        renameEntity("se.streamsource.streamflow.web.domain.project.RoleEntity",
+                                     "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity").
+                        forEntities("se.streamsource.streamflow.web.domain.project.ProjectRoleEntity").
+                            renameProperty("roles", "projectRoles");
+
+            module.addServices(MigrationService.class).setMetaInfo(migrationRules);
         }
     }
 }

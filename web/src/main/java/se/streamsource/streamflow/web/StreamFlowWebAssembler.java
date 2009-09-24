@@ -14,7 +14,12 @@
 
 package se.streamsource.streamflow.web;
 
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.organization.OrganizationAssembler;
@@ -47,7 +52,7 @@ public class StreamFlowWebAssembler
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
         assembly.setName("StreamFlow web");
-        assembly.setVersion("0.1");
+        assembly.setVersion("0.1.14.357");
         LayerAssembly configurationLayer = assembly.layerAssembly("Configuration");
         LayerAssembly domainInfrastructureLayer = assembly.layerAssembly("Domain infrastructure");
         LayerAssembly domainLayer = assembly.layerAssembly("Domain");
@@ -100,6 +105,7 @@ public class StreamFlowWebAssembler
 
     private void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
     {
+        new MigrationAssembler().assemble(appLayer.moduleAssembly("Migration"));
         new ManagementAssembler().assemble(appLayer.moduleAssembly("Management"));
         new SecurityAssembler().assemble(appLayer.moduleAssembly("Security"));
         new OrganizationAssembler().assemble(appLayer.moduleAssembly("Organization"));

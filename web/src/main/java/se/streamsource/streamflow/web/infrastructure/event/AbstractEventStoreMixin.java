@@ -14,8 +14,9 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
+import org.json.JSONException;
+import org.json.JSONStringer;
 import org.qi4j.api.entity.Identity;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.service.Activatable;
@@ -23,11 +24,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.util.json.JSONException;
-import org.qi4j.spi.util.json.JSONStringer;
-import org.qi4j.spi.value.ValueCompositeType;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
@@ -52,7 +50,7 @@ public abstract class AbstractEventStoreMixin
     protected Identity identity;
 
     protected  Logger logger;
-    protected ValueCompositeType domainEventType;
+    protected ValueType domainEventType;
 
     protected ReentrantLock lock = new ReentrantLock();
 
