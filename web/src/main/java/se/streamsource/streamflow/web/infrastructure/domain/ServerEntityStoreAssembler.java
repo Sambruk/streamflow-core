@@ -56,7 +56,7 @@ public class ServerEntityStoreAssembler
                                      "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity").
                         forEntities("se.streamsource.streamflow.web.domain.organization.OrganizationEntity",
                                     "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity").
-                            renameProperty("roles", "projectRoles");
+                            renameManyAssociation("roles", "projectRoles");
 
             module.addServices(MigrationService.class).setMetaInfo(migrationRules);
         }
