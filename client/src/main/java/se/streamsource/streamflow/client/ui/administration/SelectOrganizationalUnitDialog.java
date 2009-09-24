@@ -102,6 +102,15 @@ public class SelectOrganizationalUnitDialog
                     WindowUtils.findWindow(this),
                     new JLabel(i18n.text(AdministrationResources.nothing_selected)));
             return;
+        } else
+        {
+            if (tree.getSelectionPath().getLastPathComponent() instanceof AccountAdministrationNode)
+            {
+                dialogs.showOkCancelHelpDialog(
+                        WindowUtils.findWindow(this),
+                        new JLabel(i18n.text(AdministrationResources.selection_not_an_organizational_unit)));
+                return;
+            }
         }
         
         OrganizationalStructureAdministrationNode selected =
