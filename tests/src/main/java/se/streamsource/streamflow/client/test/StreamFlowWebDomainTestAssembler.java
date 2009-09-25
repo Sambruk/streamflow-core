@@ -14,10 +14,10 @@
 
 package se.streamsource.streamflow.client.test;
 
-import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.structure.Application;
 import org.restlet.Client;
 import se.streamsource.streamflow.web.StreamFlowWebAssembler;
 
@@ -37,10 +37,15 @@ public class StreamFlowWebDomainTestAssembler
     }
 
     @Override
+    protected void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
+    {
+        appLayer.applicationAssembly().setMode(Application.Mode.test);
+        super.assembleApplicationLayer(appLayer);
+    }
+
+    @Override
     protected void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException
     {
-        domainLayer.applicationAssembly().setMode(Application.Mode.test);
-
         super.assembleDomainLayer(domainLayer);
         ModuleAssembly moduleAssembly = domainLayer.moduleAssembly("Test");
         moduleAssembly.addObjects(testClass);

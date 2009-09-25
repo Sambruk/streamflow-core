@@ -14,14 +14,10 @@
 
 package se.streamsource.streamflow.web;
 
-import org.qi4j.bootstrap.ApplicationAssembler;
-import org.qi4j.bootstrap.ApplicationAssembly;
-import org.qi4j.bootstrap.ApplicationAssemblyFactory;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.*;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
+import se.streamsource.streamflow.web.application.migration.MigrationAssembler;
 import se.streamsource.streamflow.web.application.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.application.statistics.StatisticsAssembler;
@@ -96,14 +92,14 @@ public class StreamFlowWebAssembler
         new EventAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Events"));
     }
 
-    private void assembleWebLayer(LayerAssembly webLayer) throws AssemblyException
+    protected void assembleWebLayer(LayerAssembly webLayer) throws AssemblyException
     {
         ModuleAssembly restModule = webLayer.moduleAssembly("REST");
         new StreamFlowRestAssembler().assemble(restModule);
         new ServerResourceAssembler().assemble(restModule);
     }
 
-    private void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
+    protected void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
     {
         new MigrationAssembler().assemble(appLayer.moduleAssembly("Migration"));
         new ManagementAssembler().assemble(appLayer.moduleAssembly("Management"));

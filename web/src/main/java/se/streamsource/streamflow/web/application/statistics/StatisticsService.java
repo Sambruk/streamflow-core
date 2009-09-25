@@ -212,7 +212,7 @@ public interface StatisticsService
                         conn.commit();
 
                     config.configuration().lastEventDate().set(newLastDate);
-                    api.getUnitOfWork(config.configuration()).apply();
+                    //api.getUnitOfWork(config.configuration()).apply();
                 } catch (Exception e)
                 {
                     logger.log(Level.SEVERE, "Could not log statistics", e);
