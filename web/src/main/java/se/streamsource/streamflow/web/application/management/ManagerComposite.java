@@ -76,6 +76,9 @@ public interface ManagerComposite
 
         @Service
         EventSource source;
+
+        @Service
+        CustomJMXConnectorService jmxConnector;
                 
         private int failedLogins;
 
@@ -177,6 +180,25 @@ public interface ManagerComposite
             writer.close();
 
             return "Events exported to " + exportFile.getAbsolutePath();
+        }
+
+        public String startCustomJmxConnector(@Name("Port") String port)
+        {
+            try {
+                return "CustomJmxConnector successfully started at " + jmxConnector.start(port);
+            } catch (IOException e) {
+                return "CustomJmxConnector start failed due to " + e.getMessage();
+            }
+        }
+
+        public String stopCustomJmxConnector()
+        {
+            try {
+                jmxConnector.stop();
+            } catch (IOException e) {
+                return "CustomJmxConnector stop failed due to " + e.getMessage();
+            }
+            return "CustomJmxConnector stoped successfully." ;
         }
 
         // Attributes

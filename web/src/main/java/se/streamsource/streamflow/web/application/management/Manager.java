@@ -35,9 +35,14 @@ public interface Manager
 
     public String exportEvents(@Name("Compress") boolean compress) throws IOException;
 
+    public String startCustomJmxConnector(@Name("Port") String port);
+
+    public String stopCustomJmxConnector();
+
     @Computed
     Property<Integer> failedLogins();
 
     @Immutable
     Property<String> version();
+
 }
