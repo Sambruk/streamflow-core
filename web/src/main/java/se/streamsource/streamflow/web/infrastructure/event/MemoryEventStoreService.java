@@ -55,14 +55,14 @@ public interface MemoryEventStoreService
         {
         }
 
-        public Iterable<DomainEvent> events(EventSpecification specification, Date startDate, int maxEvents)
+        public Iterable<DomainEvent> events(EventSpecification specification, Date afterDate, int maxEvents)
         {
             // Lock datastore first
             lock.lock();
             List<DomainEvent> events = new ArrayList<DomainEvent>();
             try
             {
-                Long startTime = startDate == null ? Long.MIN_VALUE : startDate.getTime();
+                Long startTime = afterDate == null ? Long.MIN_VALUE : afterDate.getTime();
                 Collection<String> eventsAfterDate = store.tailMap(startTime).values();
 
                 for (String eventJson : eventsAfterDate)
@@ -73,7 +73,7 @@ public interface MemoryEventStoreService
                     {
                         JSONObject valueJson = (JSONObject) array.get(i);
                         DomainEvent event = (DomainEvent) domainEventType.fromJSON(valueJson, module);
-                        if (specification.accept(event))
+                        if (event.on().get().after(afterDate) && specification.accept(event))
                             events.add(event);
                     }
 

@@ -24,5 +24,17 @@ import java.util.Date;
  */
 public interface EventStore
 {
-    Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents);
+    /**
+     * Get list of events that matches the parameters. Note that events will only be included if they have occurred
+     * after the given date. If they are on the exact same date, they will not be included. Also, maxEvents specifies
+     * after how many events there will be a cutoff, but the rule is also that UnitsOfWork are provided in their
+     * entirety. As a consequence of this the returned nr of events might be slightly higher than maxEvents, in order
+     * to satisfy this rule.
+     * 
+     * @param specification
+     * @param afterDate
+     * @param maxEvents
+     * @return
+     */
+    Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date afterDate, int maxEvents);
 }

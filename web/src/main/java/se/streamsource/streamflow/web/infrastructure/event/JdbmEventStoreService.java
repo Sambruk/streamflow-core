@@ -27,7 +27,6 @@ import jdbm.helper.Tuple;
 import jdbm.helper.TupleBrowser;
 import jdbm.recman.CacheRecordManager;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.qi4j.api.injection.scope.Service;
@@ -44,9 +43,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Properties;
-import java.util.logging.Level;
 
 /**
  * JAVADOC
@@ -84,46 +83,93 @@ public interface JdbmEventStoreService
             recordManager.close();
         }
 
-        public Iterable<DomainEvent> events(EventSpecification specification, Date startDate, int maxEvents)
+        public Iterable<DomainEvent> events(final EventSpecification specification, Date afterDate, final int maxEvents)
         {
-            // Lock datastore first
-            lock.lock();
-            List<DomainEvent> events = new ArrayList<DomainEvent>();
-            try
-            {
-                Long startTime = startDate == null ? Long.MIN_VALUE : startDate.getTime();
-                TupleBrowser browser = index.browse(startTime);
+            final Long afterTime = afterDate == null ? Long.MIN_VALUE : afterDate.getTime();
+            final Date afterDateNormalized = new Date(afterTime);
 
-                Tuple tuple = new Tuple();
-                while (browser.getNext(tuple))
+            return new Iterable<DomainEvent>()
+            {
+                public Iterator<DomainEvent> iterator()
                 {
-                    byte[] eventData = (byte[]) tuple.getValue();
-                    String eventJson = new String(eventData, "UTF-8");
-                    JSONTokener tokener = new JSONTokener(eventJson);
-                    JSONArray array = (JSONArray) tokener.nextValue();
-                    for (int i = 0; i  < array.length(); i++)
+                    // Lock datastore first
+                    lock.lock();
+
+                    try
                     {
-                        JSONObject valueJson = (JSONObject) array.get(i);
-                        DomainEvent event = (DomainEvent) domainEventType.fromJSON(valueJson, module);
-                        if (specification.accept(event))
-                            events.add(event);
+                        final TupleBrowser browser = index.browse(afterTime);
+
+                        return new Iterator<DomainEvent>()
+                        {
+                            Tuple tuple = new Tuple();
+                            LinkedList<DomainEvent> events = new LinkedList<DomainEvent>();
+                            int count = 0;
+
+                            public boolean hasNext()
+                            {
+                                if (!events.isEmpty())
+                                    return true;
+
+                                try
+                                {
+                                    if (count >= maxEvents)
+                                    {
+                                        lock.unlock();
+                                        return false;
+                                    }
+
+                                    if (browser.getNext(tuple))
+                                    {
+                                        // Get next UoW
+                                        byte[] eventData = (byte[]) tuple.getValue();
+                                        String eventJson = new String(eventData, "UTF-8");
+                                        JSONTokener tokener = new JSONTokener(eventJson);
+                                        JSONArray array = (JSONArray) tokener.nextValue();
+                                        for (int i = 0; i  < array.length(); i++)
+                                        {
+                                            JSONObject valueJson = (JSONObject) array.get(i);
+                                            DomainEvent event = (DomainEvent) domainEventType.fromJSON(valueJson, module);
+                                            if (event.on().get().after(afterDateNormalized) && specification.accept(event))
+                                            {
+                                                events.add(event);
+                                                count++;
+                                            }
+                                        }
+
+                                        if (events.isEmpty())
+                                        {
+                                            lock.unlock();
+                                            return false;
+                                        } else
+                                            return true;
+                                    } else
+                                    {
+                                        lock.unlock();
+                                        return false;
+                                    }
+                                } catch (Exception e)
+                                {
+                                    lock.unlock();
+                                    return false;
+                                }
+                            }
+
+                            public DomainEvent next()
+                            {
+                                return events.removeFirst();
+                            }
+
+                            public void remove()
+                            {
+                            }
+                        };
+                    } catch (IOException e)
+                    {
+                       return new ArrayList<DomainEvent>().iterator();
                     }
 
-                    if (events.size() > maxEvents)
-                        break; // Max size has been reached
                 }
-            } catch (IOException e)
-            {
-                logger.log(Level.WARNING, "Could not load events", e);
-            } catch (JSONException e)
-            {
-                logger.log(Level.WARNING, "Could not deserialize events", e);
-            } finally
-            {
-                lock.unlock();
-            }
-
-            return events;
+            };
         }
 
         protected void rollback()
