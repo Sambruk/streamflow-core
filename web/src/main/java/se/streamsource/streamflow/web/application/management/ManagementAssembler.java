@@ -20,6 +20,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.rest.MBeanServerImporter;
+import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
 
 import javax.management.MBeanServer;
 
@@ -36,9 +37,10 @@ public class ManagementAssembler
             module.addObjects(CompositeMBean.class);
             module.addTransients(ManagerComposite.class);
 
-//            module.addServices(CustomJMXConnectorService.class);
             module.importServices(MBeanServer.class).importedBy(MBeanServerImporter.class);
             module.addServices(ManagerService.class).instantiateOnStartup();
+
+            module.addServices(JmxConnectorService.class).instantiateOnStartup();
             
             module.addServices(ReindexerService.class).identifiedBy("reindexer");
             module.addServices(ReindexOnStartupService.class).instantiateOnStartup();
