@@ -14,10 +14,11 @@
 
 package se.streamsource.streamflow.web.application.management;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.Immutable;
+import org.qi4j.api.property.Property;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -36,7 +37,7 @@ public interface Manager
 
     public String exportEvents(@Name("Compress") boolean compress) throws IOException;
 
-    public String exportEventsRange(@Name("Compress") boolean compress, @Name("From, yyyyMMdd:HHmm") String fromDate, @Name("To, yyyyMMdd:HHmm") String toDate) throws IOException, ParseException;
+    public String exportEventsRange(@Name("Compress") boolean compress, @Name("From, yyyyMMdd:HHmm") String fromDate, @Optional @Name("To, yyyyMMdd:HHmm") String toDate) throws IOException, ParseException;
 
     @Computed
     Property<Integer> failedLogins();

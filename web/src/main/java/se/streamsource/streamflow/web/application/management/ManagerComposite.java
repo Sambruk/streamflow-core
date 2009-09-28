@@ -194,8 +194,20 @@ public interface ManagerComposite
         {
             SimpleDateFormat parseFormat = new SimpleDateFormat("yyyyMMdd:HHmm");
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
+
             Date from = parseFormat.parse(fromDate);
-            Date to = parseFormat.parse(toDate);
+
+            Date to;
+            if (toDate == null)
+            {
+                // Set "to"-date to "now"
+                to = new Date();
+                toDate = format.format(to);
+            } else
+            {
+                to = parseFormat.parse(toDate);
+            }
+
             File exportFile = new File(exports, "streamflow_events_" + format.format(from)+"-"+format.format(to) + (compress ? ".json.gz" : ".json"));
             OutputStream out = new FileOutputStream(exportFile);
 
