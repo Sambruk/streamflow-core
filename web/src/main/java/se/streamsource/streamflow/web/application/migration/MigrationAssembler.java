@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.web.application.migration;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
@@ -31,7 +32,10 @@ public class MigrationAssembler
         if (mode.equals(Application.Mode.production))
         {
             // Migrate state
-            module.addServices(StartupMigrationService.class).instantiateOnStartup();
+            module.addServices(StartupMigrationService.class).
+                    visibleIn(Visibility.application).
+                    identifiedBy("startupmigration").
+                    instantiateOnStartup();
         }
     }
 }

@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  */
 @Mixins(StartupMigrationService.StartupMigrationMixin.class)
 public interface StartupMigrationService
-    extends Activatable, ServiceComposite
+    extends Activatable, Configuration, ServiceComposite
 {
     class StartupMigrationMixin
         implements Activatable
