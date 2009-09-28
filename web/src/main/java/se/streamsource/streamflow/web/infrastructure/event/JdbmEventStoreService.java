@@ -118,7 +118,7 @@ public interface JdbmEventStoreService
                                         return false;
                                     }
 
-                                    if (browser.getNext(tuple))
+                                    while (browser.getNext(tuple))
                                     {
                                         // Get next UoW
                                         byte[] eventData = (byte[]) tuple.getValue();
@@ -136,17 +136,18 @@ public interface JdbmEventStoreService
                                             }
                                         }
 
-                                        if (events.isEmpty())
+                                        if (!events.isEmpty())
                                         {
-                                            lock.unlock();
-                                            return false;
-                                        } else
                                             return true;
-                                    } else
+                                        }
+                                    }
+
+                                    if (events.isEmpty())
                                     {
                                         lock.unlock();
                                         return false;
-                                    }
+                                    } else
+                                        return true;
                                 } catch (Exception e)
                                 {
                                     lock.unlock();
