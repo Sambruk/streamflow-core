@@ -330,12 +330,12 @@
                 <version>${version.qi4j-lib}</version>
             </dependency>
             <dependency>
-                <groupId>org.restlet</groupId>
+                <groupId>org.restlet.jee</groupId>
                 <artifactId>org.restlet</artifactId>
                 <version>${version.restlet}</version>
             </dependency>
             <dependency>
-                <groupId>org.restlet</groupId>
+                <groupId>org.restlet.jee</groupId>
                 <artifactId>org.restlet.ext.xml</artifactId>
                 <version>${version.restlet}</version>
             </dependency>
@@ -361,6 +361,11 @@
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>1.2.14</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi_R4_core</artifactId>
+                <version>1.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

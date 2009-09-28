@@ -12,30 +12,24 @@
  *
  */
 
-package se.streamsource.streamflow.web.rest;
+package se.streamsource.streamflow.web.application.migration;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.resource.Finder;
-import org.restlet.resource.ServerResource;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * Configuration of the startup migration service
  */
-public class ResourceFinder extends Finder
+public interface StartupMigrationConfiguration
+    extends ConfigurationComposite
 {
-    @Structure
-    private ObjectBuilderFactory factory;
-
-    public ResourceFinder()
-    {
-    }
-
-    @Override
-    public ServerResource create(Class<? extends ServerResource> targetClass, Request request, Response response)
-    {
-        return factory.newObject(targetClass);
-    }
+    /**
+     * Keep track of the version the application had during the last startup.
+     * Only perform migration if the version was different from the current one.
+     *
+     * @return the last startup version
+     */
+    @Optional
+    Property<String> lastStartupVersion();
 }

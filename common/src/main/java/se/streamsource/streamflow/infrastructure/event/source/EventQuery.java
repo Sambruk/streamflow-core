@@ -29,6 +29,7 @@ public class EventQuery
         implements EventSpecification
 {
     private Date afterDate; // Only return events after this date
+    private Date beforeDate; // Only return events before this date
     private List<String> names; // Only return events with these names
     private List<String> entities; // Only return events on these entity
     private List<String> by; // Only return events caused by these users
@@ -40,6 +41,12 @@ public class EventQuery
     public EventQuery afterDate(Date afterDate)
     {
         this.afterDate = afterDate;
+        return this;
+    }
+
+    public EventQuery beforeDate(Date beforeDate)
+    {
+        this.beforeDate = beforeDate;
         return this;
     }
 
@@ -75,6 +82,9 @@ public class EventQuery
     {
         // Check criteria
         if (afterDate != null && event.on().get().before(afterDate))
+            return false;
+
+        if (beforeDate != null && event.on().get().after(beforeDate))
             return false;
 
         if (names != null && !names.contains(event.name().get()))

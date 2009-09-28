@@ -45,6 +45,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -77,9 +78,6 @@ public interface ManagerComposite
         @Service
         EventSource source;
 
-        @Service
-        CustomJMXConnectorService jmxConnector;
-                
         private int failedLogins;
 
         public File exports;
@@ -171,34 +169,62 @@ public interface ManagerComposite
             }
 
             Writer writer = new OutputStreamWriter(out, "UTF-8");
-            Iterable<DomainEvent> events = eventStore.events(new AllEventsSpecification(), null, Integer.MAX_VALUE);
-            for (DomainEvent event : events)
+            Date iterableFromDate = null;
+            int count;
+            do
             {
-                writer.write(event.toJSON()+"\n");
-            }
+                count = 0;
+
+                Iterable<DomainEvent> events = eventStore.events(new AllEventsSpecification(), iterableFromDate, 100);
+                for (DomainEvent event : events)
+                {
+                    writer.write(event.toJSON()+"\n");
+                    count++;
+                    iterableFromDate = event.on().get();
+                }
+
+            } while (count > 0);
 
             writer.close();
 
             return "Events exported to " + exportFile.getAbsolutePath();
         }
 
-        public String startCustomJmxConnector(@Name("Port") String port)
+        public String exportEventsRange(@Name("Compress") boolean compress, @Name("From") String fromDate, @Name("To") String toDate) throws IOException, ParseException
         {
-            try {
-                return "CustomJmxConnector successfully started at " + jmxConnector.start(port);
-            } catch (IOException e) {
-                return "CustomJmxConnector start failed due to " + e.getMessage();
-            }
-        }
+            SimpleDateFormat parseFormat = new SimpleDateFormat("yyyyMMdd:HHmm");
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
+            Date from = parseFormat.parse(fromDate);
+            Date to = parseFormat.parse(toDate);
+            File exportFile = new File(exports, "streamflow_events_" + format.format(from)+"-"+format.format(to) + (compress ? ".json.gz" : ".json"));
+            OutputStream out = new FileOutputStream(exportFile);
 
-        public String stopCustomJmxConnector()
-        {
-            try {
-                jmxConnector.stop();
-            } catch (IOException e) {
-                return "CustomJmxConnector stop failed due to " + e.getMessage();
+            if (compress)
+            {
+                out = new GZIPOutputStream(out);
             }
-            return "CustomJmxConnector stoped successfully." ;
+
+            Writer writer = new OutputStreamWriter(out, "UTF-8");
+
+            int count;
+            Date iterableFromDate = from;
+            // Write 100 events at a time. Stop when no more events are found that matches the specification.
+            do
+            {
+                count = 0;
+                Iterable<DomainEvent> events = eventStore.events(new EventQuery().beforeDate(to), iterableFromDate, 100);
+
+                for (DomainEvent event : events)
+                {
+                    writer.write(event.toJSON()+"\n");
+                    count++;
+                    iterableFromDate = event.on().get();
+                }
+            } while (count > 0);
+
+            writer.close();
+
+            return "Events exported to " + exportFile.getAbsolutePath();
         }
 
         // Attributes

@@ -98,21 +98,16 @@
             <version>${version.qi4j-ext}</version>
         </dependency>
         <dependency>
-            <groupId>org.restlet</groupId>
+            <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.restlet</groupId>
+            <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.xml</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.restlet</groupId>
+            <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.servlet</artifactId>
-            <version>${version.restlet}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.restlet</groupId>
-            <artifactId>org.restlet.ext.xml</artifactId>
             <version>${version.restlet}</version>
         </dependency>
 

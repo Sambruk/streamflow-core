@@ -43,10 +43,19 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.representation.*;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.ObjectRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
+import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
@@ -373,7 +382,7 @@ public class CompositeCommandQueryServerResource
         } catch (Exception ex)
         {
             setStatus(Status.SERVER_ERROR_INTERNAL);
-            return new ObjectRepresentation(ex, MediaType.APPLICATION_JAVA_OBJECT);
+            return new ObjectRepresentation<Exception>(ex, MediaType.APPLICATION_JAVA_OBJECT);
         } finally
         {
             source.unregisterListener(this);
@@ -583,7 +592,7 @@ public class CompositeCommandQueryServerResource
                 throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
             }
 
-            getResponse().setEntity(new ObjectRepresentation(e));
+            getResponse().setEntity(new ObjectRepresentation<InvocationTargetException>(e));
 
             throw new ResourceException(e.getTargetException());
         } catch (Throwable e)

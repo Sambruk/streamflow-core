@@ -101,11 +101,11 @@
             <artifactId>qi4j-lib-rdf</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.restlet</groupId>
+            <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.restlet</groupId>
+            <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.xml</artifactId>
         </dependency>
 

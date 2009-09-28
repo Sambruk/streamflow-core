@@ -14,11 +14,14 @@
 
 package se.streamsource.streamflow.web.application.migration;
 
+import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Application;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -39,6 +42,12 @@ public interface StartupMigrationService
     class StartupMigrationMixin
         implements Activatable
     {
+        @This
+        Configuration<StartupMigrationConfiguration> config;
+
+        @Structure
+        Application application;
+
         @Service
         EntityStore entityStore;
 
@@ -51,39 +60,46 @@ public interface StartupMigrationService
 
         public void activate() throws Exception
         {
-            // Migrate all data eagerly
-            logger = Logger.getLogger(StartupMigrationService.class.getName());
-            logger.info("Migrating data to new version");
-            final int[] count = new int[]{0};
-            final Usecase usecase = UsecaseBuilder.newUsecase("Migrate data");
-            final UnitOfWork[] uow = new UnitOfWork[]{uowf.newUnitOfWork(usecase)};
-
-            entityStore.visitEntityStates(new EntityStore.EntityStateVisitor()
+            String lsv = config.configuration().lastStartupVersion().get();
+            if (lsv != null && !lsv.equals(application.version()))
             {
+                // Migrate all data eagerly
+                logger = Logger.getLogger(StartupMigrationService.class.getName());
+                logger.info("Migrating data to new version");
+                final int[] count = new int[]{0};
+                final Usecase usecase = UsecaseBuilder.newUsecase("Migrate data");
+                final UnitOfWork[] uow = new UnitOfWork[]{uowf.newUnitOfWork(usecase)};
 
-                public void visitEntityState(EntityState entityState)
+                entityStore.visitEntityStates(new EntityStore.EntityStateVisitor()
                 {
-                    try
+
+                    public void visitEntityState(EntityState entityState)
                     {
-                        // Do nothing - the EntityStore will do the migration on load
-                        count[0]++;
-
-                        uow[0].get(module.classLoader().loadClass(entityState.entityDescriptor().entityType().type().name()), entityState.identity().identity());
-
-                        if (count[0] % 1000 == 0)
+                        try
                         {
-                            logger.info("Checked "+count[0]+" entities");
-                                uow[0].complete();
-                            uow[0] = uowf.newUnitOfWork(usecase);
+                            // Do nothing - the EntityStore will do the migration on load
+                            count[0]++;
+
+                            uow[0].get(module.classLoader().loadClass(entityState.entityDescriptor().entityType().type().name()), entityState.identity().identity());
+
+                            if (count[0] % 1000 == 0)
+                            {
+                                logger.info("Checked "+count[0]+" entities");
+                                    uow[0].complete();
+                                uow[0] = uowf.newUnitOfWork(usecase);
+                            }
+                        } catch (Exception e)
+                        {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e)
-                    {
-                        e.printStackTrace();
                     }
-                }
-            }, module);
-            uow[0].complete();
-            logger.info("Migration finished. Checked "+count[0]+" entities");
+                }, module);
+                uow[0].complete();
+                logger.info("Migration finished. Checked "+count[0]+" entities");
+            }
+
+            config.configuration().lastStartupVersion().set(application.version());
+            config.save();
         }
 
         public void passivate() throws Exception

@@ -17,11 +17,12 @@ package se.streamsource.streamflow.web.application.security;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.security.*;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.security.SecretVerifier;
+import org.restlet.security.Verifier;
 import se.streamsource.streamflow.web.domain.user.User;
 
 import java.util.Date;

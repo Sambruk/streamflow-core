@@ -36,7 +36,7 @@ public class ManagementAssembler
             module.addObjects(CompositeMBean.class);
             module.addTransients(ManagerComposite.class);
 
-            module.addServices(CustomJMXConnectorService.class);
+//            module.addServices(CustomJMXConnectorService.class);
             module.importServices(MBeanServer.class).importedBy(MBeanServerImporter.class);
             module.addServices(ManagerService.class).instantiateOnStartup();
             

@@ -13,8 +13,8 @@
  */
 package se.streamsource.streamflow.web.resource.users;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.routing.Filter;
 
 import javax.security.auth.Subject;

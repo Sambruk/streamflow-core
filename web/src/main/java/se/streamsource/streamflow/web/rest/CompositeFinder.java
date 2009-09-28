@@ -14,12 +14,11 @@
 
 package se.streamsource.streamflow.web.rest;
 
+import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.composite.TransientBuilderFactory;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 import se.streamsource.streamflow.web.resource.CompositeCommandQueryServerResource;

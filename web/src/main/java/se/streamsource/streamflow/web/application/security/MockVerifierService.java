@@ -14,9 +14,9 @@
 
 package se.streamsource.streamflow.web.application.security;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.security.Verifier;
 
 /**

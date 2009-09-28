@@ -20,6 +20,7 @@ import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.Immutable;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * Management methods for StreamFlow. These operations are available
@@ -35,9 +36,7 @@ public interface Manager
 
     public String exportEvents(@Name("Compress") boolean compress) throws IOException;
 
-    public String startCustomJmxConnector(@Name("Port") String port);
-
-    public String stopCustomJmxConnector();
+    public String exportEventsRange(@Name("Compress") boolean compress, @Name("From, yyyyMMdd:HHmm") String fromDate, @Name("To, yyyyMMdd:HHmm") String toDate) throws IOException, ParseException;
 
     @Computed
     Property<Integer> failedLogins();
