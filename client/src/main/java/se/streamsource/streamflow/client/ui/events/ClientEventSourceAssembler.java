@@ -14,12 +14,12 @@
 
 package se.streamsource.streamflow.client.ui.events;
 
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.api.common.Visibility;
-import static org.qi4j.api.common.Visibility.layer;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
  * JAVADOC
@@ -29,7 +29,7 @@ public class ClientEventSourceAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addValues(DomainEvent.class).visibleIn(Visibility.application);
+        module.addValues(TransactionEvents.class, DomainEvent.class).visibleIn(Visibility.application);
 
         module.addServices(ClientEventSourceService.class).visibleIn(Visibility.application).instantiateOnStartup();
     }

@@ -19,8 +19,8 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.bootstrap.ApplicationAssembly;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
  * JAVADOC
@@ -30,7 +30,7 @@ public class EventAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addValues(DomainEvent.class).visibleIn(Visibility.application);
+        module.addValues(TransactionEvents.class, DomainEvent.class).visibleIn(Visibility.application);
         module.addServices(EventSourceService.class).identifiedBy("eventsource").visibleIn(Visibility.application);
 
         if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)

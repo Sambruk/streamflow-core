@@ -49,7 +49,7 @@ public class EventsResource
         {
             public void write(Writer writer) throws IOException
             {
-                source.registerListener(new EventSubscriberWriter(writer), AllEventsSpecification.INSTANCE);
+                source.registerListener(new EventSubscriberWriter(writer));
 
                 try
                 {
@@ -77,9 +77,9 @@ public class EventsResource
             this.writer = writer;
         }
 
-        public void eventsAvailable(EventStore eventStore, EventSpecification specification)
+        public void eventsAvailable(EventStore eventStore)
         {
-            Iterable<DomainEvent> events = eventStore.events(specification, null, 100000);
+            Iterable<DomainEvent> events = EventFilter.ALL_EVENTS.events(eventStore.events(null, 100000));
 
             try
             {

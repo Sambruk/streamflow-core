@@ -41,7 +41,6 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
@@ -52,7 +51,6 @@ import se.streamsource.streamflow.client.ui.search.SearchWindow;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -95,9 +93,6 @@ public class StreamFlowApplication
     IndividualRepository individualRepo;
 
     @Service
-    EventListener eventListener;
-
-    @Service
     JavaHelp javaHelp;
 
     AccountsModel accountsModel;
@@ -128,7 +123,6 @@ public class StreamFlowApplication
     ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
         DOMAIN_EVENT_TYPE = module.valueDescriptor(DomainEvent.class.getName()).valueType();
-        CommandQueryClientResource.DOMAIN_EVENT_TYPE = DOMAIN_EVENT_TYPE;
 
         try
         {

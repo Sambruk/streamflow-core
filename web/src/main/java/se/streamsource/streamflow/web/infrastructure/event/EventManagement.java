@@ -14,14 +14,18 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import org.qi4j.api.configuration.ConfigurationComposite;
-import org.qi4j.api.property.Property;
+import java.util.Date;
+import java.io.Reader;
+import java.io.IOException;
 
 /**
  * JAVADOC
  */
-public interface EventRecorderConfiguration
-        extends ConfigurationComposite
+public interface EventManagement
 {
-    Property<String> file();
+    void removeAll();
+
+    void replayFrom(Date date);
+
+    void importEvents(Reader in) throws IOException;
 }

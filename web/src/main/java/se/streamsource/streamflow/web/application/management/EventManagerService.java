@@ -20,9 +20,9 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import javax.management.MBeanException;
@@ -58,6 +58,7 @@ public interface EventManagerService
         long seq = 0;
         public RequiredModelMBean mbean;
         ExecutorService executor;
+        public EventFilter filter;
 
         public void activate() throws Exception
         {
@@ -71,9 +72,11 @@ public interface EventManagerService
             objectName = new ObjectName("StreamFlow:name=domainevents");
             server.registerMBean(mbean, objectName);
 
-            source.registerListener(this, AllEventsSpecification.INSTANCE);
+            source.registerListener(this);
 
             executor = Executors.newSingleThreadExecutor();
+
+            filter = new EventFilter(AllEventsSpecification.INSTANCE);
         }
 
         public void passivate() throws Exception
@@ -84,9 +87,9 @@ public interface EventManagerService
             source.unregisterListener(this);
         }
 
-        public synchronized void eventsAvailable(EventStore source, EventSpecification specification)
+        public synchronized void eventsAvailable(EventStore source)
         {
-            Iterable<DomainEvent> events = source.events(specification, null, Integer.MAX_VALUE);
+            Iterable<DomainEvent> events = filter.events(source.events(null, Integer.MAX_VALUE));
 
             for (DomainEvent event : events)
             {

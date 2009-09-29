@@ -14,46 +14,35 @@
 
 package se.streamsource.streamflow.client.ui.events;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.common.Optional;
-import se.streamsource.streamflow.client.resource.EventsClientResource;
-import se.streamsource.streamflow.client.ui.AccountSelector;
-import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.util.Map;
-import java.util.Date;
-import java.util.Collections;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.io.Reader;
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * JAVADOC
  */
 @Mixins(ClientEventSourceService.ClientEventSourceMixin.class)
 public interface ClientEventSourceService
-        extends EventSource, EventListener, ServiceComposite
+        extends EventSource, EventSourceListener, ServiceComposite
 {
     class ClientEventSourceMixin
-            implements EventSource, EventListener, Activatable, EventStore
+            implements EventSource, EventSourceListener, Activatable, EventStore
     {
         public Reader reader;
-        public Iterable<DomainEvent> events;
+        public Iterable<TransactionEvents> events;
 
         public void activate() throws Exception
         {
@@ -63,40 +52,58 @@ public interface ClientEventSourceService
         {
         }
 
-        private Map<EventSourceListener, EventSpecification> listeners = new WeakHashMap<EventSourceListener, EventSpecification>();
+        private List<Reference<EventSourceListener>> listeners = new ArrayList<Reference<EventSourceListener>>();
 
         // EventSource implementation
 
-        public void registerListener(EventSourceListener subscriber, EventSpecification specification, boolean asynchronous)
+        public void registerListener(EventSourceListener subscriber, boolean asynchronous)
         {
             // Ignore asynch for now
-            listeners.put(subscriber, specification);
+            listeners.add(new WeakReference<EventSourceListener>(subscriber));
         }
 
-        public void registerListener(EventSourceListener listener, EventSpecification specification)
+        public void registerListener(EventSourceListener listener)
         {
-            registerListener(listener, specification, false);
+            registerListener(listener, false);
         }
 
         public void unregisterListener(EventSourceListener subscriber)
         {
-            listeners.remove(subscriber);
+            Iterator<Reference<EventSourceListener>> referenceIterator = listeners.iterator();
+            while (referenceIterator.hasNext())
+            {
+                Reference<EventSourceListener> eventSourceListenerReference = referenceIterator.next();
+                EventSourceListener lstnr = eventSourceListenerReference.get();
+                if (lstnr == null || lstnr.equals(subscriber))
+                {
+                    referenceIterator.remove();
+                    return;
+                }
+            }
         }
 
-        // EventListener implementation
-        public void notifyEvent(DomainEvent event)
+        // EventSourceListener implementation
+        public void eventsAvailable(EventStore source)
         {
-            events = Collections.singletonList(event);
+            events = source.events(null, Integer.MAX_VALUE);
 
-            for (Map.Entry<EventSourceListener, EventSpecification> listener : listeners.entrySet())
+            Iterator<Reference<EventSourceListener>> referenceIterator = listeners.iterator();
+            while (referenceIterator.hasNext())
             {
-                if (listener.getValue().accept(event))
-                    listener.getKey().eventsAvailable(this, listener.getValue());
+                Reference<EventSourceListener> eventSourceListenerReference = referenceIterator.next();
+                EventSourceListener lstnr = eventSourceListenerReference.get();
+                if (lstnr == null)
+                {
+                    referenceIterator.remove();
+                } else
+                {
+                    lstnr.eventsAvailable(this);
+                }
             }
         }
 
         // EventStore implementation
-        public Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents)
+        public Iterable<TransactionEvents> events(@Optional Date startDate, int maxEvents)
         {
             return events;
         }

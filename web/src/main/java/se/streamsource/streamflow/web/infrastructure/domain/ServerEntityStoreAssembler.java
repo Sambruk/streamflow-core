@@ -22,7 +22,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.migration.MigrationService;
-import org.qi4j.migration.assembly.MigrationRules;
+import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
 /**
@@ -49,8 +49,13 @@ public class ServerEntityStoreAssembler
             module.addServices(UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
 
             // Migration service
-            MigrationRules migrationRules = new MigrationRules();
-            migrationRules.fromVersion("0.0").
+            // Enter all migration rules here
+            // To-version should be of the form:
+            // <major-version>.<minor-version>.<sprint>.<Svn-revision>
+            // This way we can control how migrations are done from one
+            // revision to the next.
+            MigrationBuilder migrationBuilder = new MigrationBuilder("0.0");
+            migrationBuilder.
                     toVersion("0.1.14.357").
                         renameEntity("se.streamsource.streamflow.web.domain.project.RoleEntity",
                                      "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity").
@@ -58,7 +63,7 @@ public class ServerEntityStoreAssembler
                                     "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity").
                             renameManyAssociation("roles", "projectRoles");
 
-            module.addServices(MigrationService.class).setMetaInfo(migrationRules);
+            module.addServices(MigrationService.class).setMetaInfo(migrationBuilder);
         }
     }
 }

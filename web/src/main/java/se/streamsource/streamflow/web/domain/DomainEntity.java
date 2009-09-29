@@ -26,13 +26,13 @@ import se.streamsource.streamflow.infrastructure.event.EventEntityAddedMixin;
 import se.streamsource.streamflow.infrastructure.event.EventEntityCreatedMixin;
 import se.streamsource.streamflow.infrastructure.event.EventEntityRemovedMixin;
 import se.streamsource.streamflow.infrastructure.event.EventPropertyChangedMixin;
-import se.streamsource.streamflow.infrastructure.event.EventSideEffect;
+import se.streamsource.streamflow.infrastructure.event.EventNotificationSideEffect;
 
 /**
  * Base Composite for all domain entities
  */
 @Concerns(EventCreationConcern.class)
-@SideEffects(EventSideEffect.class)
+@SideEffects(EventNotificationSideEffect.class)
 @Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class,
         EventEntityCreatedMixin.class, EventEntityAddedMixin.class, EventEntityRemovedMixin.class,
         CommandEntityCreateMixin.class, CommandEntityRemoveMixin.class})

@@ -14,8 +14,7 @@
 
 package se.streamsource.streamflow.client.resource;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -26,7 +25,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyTypeDescriptor;
-import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -39,10 +37,13 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowResources;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Date;
 
 /**
  * Base class for client-side Command/Query resources
@@ -60,9 +61,7 @@ public class CommandQueryClientResource
     protected Module module;
 
     @Service
-    protected EventListener eventListener;
-
-    public static ValueType DOMAIN_EVENT_TYPE;
+    protected EventSourceListener eventListener;
 
     public CommandQueryClientResource(@Uses org.restlet.Context context, @Uses Reference reference)
     {
@@ -205,13 +204,17 @@ public class CommandQueryClientResource
             {
                 if (entity != null && !(entity instanceof EmptyRepresentation))
                 {
-                    JSONArray array = new JSONArray(entity.getText());
-                    for (int i = 0; i < array.length(); i++)
+                    String source = entity.getText();
+
+                    final TransactionEvents transactionEvents = vbf.newValueFromJSON(TransactionEvents.class,  source);
+
+                    eventListener.eventsAvailable(new EventStore()
                     {
-                        JSONObject event = array.getJSONObject(i);
-                        DomainEvent domainEvent = (DomainEvent) DOMAIN_EVENT_TYPE.fromJSON(event, module);
-                        eventListener.notifyEvent(domainEvent);
-                    }
+                        public Iterable<TransactionEvents> events(@Optional Date afterTimestamp, int maxTransactions)
+                        {
+                            return Collections.singletonList(transactionEvents);
+                        }
+                    });
                 }
             } catch (Exception e)
             {
@@ -232,7 +235,6 @@ public class CommandQueryClientResource
 
     protected void putCommand(String operation, ValueComposite command) throws ResourceException
     {
-
         Representation commandRepresentation;
         if (command != null)
             commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON);

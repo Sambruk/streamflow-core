@@ -305,7 +305,9 @@ public abstract class TaskTableView
         {
             public void run()
             {
-                detailsView.getSelectedComponent().requestFocusInWindow();
+                Component component1 = detailsView.getSelectedComponent();
+                if (component1 != null)
+                    component1.requestFocusInWindow();
             }
         });
     }

@@ -21,10 +21,10 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import javax.swing.tree.DefaultTreeModel;
@@ -56,16 +56,20 @@ public class AdministrationModel
 
         subscriber = new EventSourceListener()
         {
+            EventFilter filter = new EventFilter(new EventQuery().
+                    withNames("organizationalUnitRemoved", "organizationalUnitAdded"));
 
-            public void eventsAvailable(EventStore source, EventSpecification specification)
+            public void eventsAvailable(EventStore source)
             {
-                Logger.getLogger("administration").info("Refresh organizational overview");
-                getRoot().refresh();
-                reload(getRoot());
+                if (filter.matchesAny(source.events(null, Integer.MAX_VALUE)))
+                {
+                    Logger.getLogger("administration").info("Refresh organizational overview");
+                    getRoot().refresh();
+                    reload(getRoot());
+                }
             }
         };
-        source.registerListener(subscriber, new EventQuery().
-                withNames("organizationalUnitRemoved", "organizationalUnitAdded"));
+        source.registerListener(subscriber);
 
     }
 

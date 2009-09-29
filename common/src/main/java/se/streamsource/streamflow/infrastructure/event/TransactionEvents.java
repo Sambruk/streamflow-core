@@ -14,29 +14,24 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
-import org.qi4j.api.common.AppliesTo;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.sideeffect.GenericSideEffect;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.lang.reflect.Method;
+import java.util.List;
 
 /**
- * Notify event listeners that an event was created
+ * List of events for a single transaction. Events must always be consumed
+ * in transaction units, in order to ensure that the result is consistent
+ * with what happened in that transaction.
  */
-@AppliesTo(EventMethodFilter.class)
-public class EventSideEffect
-        extends GenericSideEffect
+public interface TransactionEvents
+    extends ValueComposite
 {
-    @Service
-    Iterable<EventListener> listeners;
+    // Timestamp when the events were stored in the EventStore
+    // Note that if events are sent from one store to another this timestamp
+    // is updated when it is re-stored
+    Property<Long> timestamp();
 
-    @Override
-    protected void invoke(Method method, Object[] args) throws Throwable
-    {
-        DomainEvent event = (DomainEvent) args[0];
-        for (EventListener listener : listeners)
-        {
-            listener.notifyEvent(event);
-        }
-    }
+    // List of events for this transaction
+    Property<List<DomainEvent>> events();
 }

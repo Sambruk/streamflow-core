@@ -96,6 +96,7 @@ public class StreamFlowRestApplication
             {
                 try
                 {
+                    System.out.println("SHUTDOWN");
                     Logger.getLogger("streamflow").info("VM shutdown; passivating StreamFlow");
                     app.passivate();
                 } catch (Exception e)

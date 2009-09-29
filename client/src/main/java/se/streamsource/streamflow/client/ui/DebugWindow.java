@@ -43,7 +43,7 @@ public class DebugWindow
     {
         super(application);
 
-        eventSource.registerListener(this, AllEventsSpecification.INSTANCE);
+        eventSource.registerListener(this);
 
         eventModel = new DefaultTableModel(new String[]{"Usecase", "Event", "Entity", "Parameters"}, 0);
 
@@ -65,9 +65,9 @@ public class DebugWindow
         javaHelp.enableHelp(this.getRootPane(),"debug");
     }
 
-    public void eventsAvailable(EventStore source, EventSpecification specification)
+    public void eventsAvailable(EventStore source)
     {
-        Iterable<DomainEvent> events = source.events(specification, null, Integer.MAX_VALUE);
+        Iterable<DomainEvent> events = EventFilter.ALL_EVENTS.events(source.events(null, Integer.MAX_VALUE));
         for (DomainEvent event : events)
         {
             eventModel.addRow(new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()});

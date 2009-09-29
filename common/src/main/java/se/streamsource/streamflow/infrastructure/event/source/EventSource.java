@@ -14,20 +14,14 @@
 
 package se.streamsource.streamflow.infrastructure.event.source;
 
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import java.util.Date;
-
-import org.qi4j.api.common.Optional;
-
 /**
  * Source of events
  */
 public interface EventSource
 {
-    void registerListener(EventSourceListener subscriber, EventSpecification specification, boolean asynchronous);
+    void registerListener(EventSourceListener subscriber, boolean asynchronous);
 
-    void registerListener(EventSourceListener subscriber, EventSpecification specification);
+    void registerListener(EventSourceListener subscriber);
 
     void unregisterListener(EventSourceListener subscriber);
 }

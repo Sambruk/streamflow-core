@@ -67,7 +67,7 @@ public class EventPropertyChangeMixinTest
     }
 
     @Concerns(EventCreationConcern.class)
-    @SideEffects(EventSideEffect.class)
+    @SideEffects(EventNotificationSideEffect.class)
     @Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class})
     interface TestEntity
             extends TestDomain, TestDomain.TestDomainState, EntityComposite

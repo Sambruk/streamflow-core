@@ -25,6 +25,7 @@ import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import org.qi4j.index.reindexer.ReindexerConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
+import org.qi4j.migration.MigrationConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
@@ -53,6 +54,7 @@ public class ConfigurationAssembler
         module.addEntities(MySQLDatabaseConfiguration.class).visibleIn(Visibility.application);
         module.addEntities(StartupMigrationConfiguration.class).visibleIn(Visibility.application);
         module.addEntities(JmxConnectorConfiguration.class).visibleIn(Visibility.application);
+        module.addEntities(MigrationConfiguration.class).visibleIn(Visibility.application);
 
         module.forMixin(ReindexerConfiguration.class).declareDefaults().loadValue().set(50);
 

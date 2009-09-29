@@ -26,25 +26,26 @@ import jdbm.helper.Serializer;
 import jdbm.helper.Tuple;
 import jdbm.helper.TupleBrowser;
 import jdbm.recman.CacheRecordManager;
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Properties;
 
 /**
@@ -52,10 +53,11 @@ import java.util.Properties;
  */
 @Mixins(JdbmEventStoreService.JdbmEventStoreMixin.class)
 public interface JdbmEventStoreService
-    extends EventStore, EventListener, Activatable, ServiceComposite
+    extends EventStore, EventListener, EventManagement, Activatable, ServiceComposite
 {
     class JdbmEventStoreMixin
         extends AbstractEventStoreMixin
+        implements EventManagement
     {
         @Service
         FileConfiguration fileConfig;
@@ -80,17 +82,51 @@ public interface JdbmEventStoreService
 
         public void passivate() throws Exception
         {
+            System.out.println("Close event db");
             recordManager.close();
         }
 
-        public Iterable<DomainEvent> events(final EventSpecification specification, Date afterDate, final int maxEvents)
+        public void removeAll()
         {
-            final Long afterTime = afterDate == null ? Long.MIN_VALUE : afterDate.getTime();
-            final Date afterDateNormalized = new Date(afterTime);
+        }
 
-            return new Iterable<DomainEvent>()
+        public void replayFrom(Date date)
+        {
+        }
+
+        public void importEvents(Reader in) throws IOException
+        {
+            try
             {
-                public Iterator<DomainEvent> iterator()
+                lock.lock();
+                String valueJson;
+                BufferedReader reader = new BufferedReader(in);
+                while ((valueJson = reader.readLine()) != null)
+                {
+                    TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON(valueJson, module);
+                    ValueBuilder<TransactionEvents> builder = transaction.buildWith();
+                    builder.prototype().timestamp().set(System.currentTimeMillis());
+                    storeEvents(transaction);
+
+                }
+                commit();
+            } catch (JSONException e)
+            {
+                rollback();
+                throw (IOException) new IOException("Could not parse events").initCause(e);
+            } finally
+            {
+                lock.unlock();
+            }
+        }
+
+        public Iterable<TransactionEvents> events(Date afterDate, final int maxEvents)
+        {
+            final Long afterTime = afterDate == null ? Long.MIN_VALUE : afterDate.getTime()+1;
+
+            return new Iterable<TransactionEvents>()
+            {
+                public Iterator<TransactionEvents> iterator()
                 {
                     // Lock datastore first
                     lock.lock();
@@ -99,17 +135,15 @@ public interface JdbmEventStoreService
                     {
                         final TupleBrowser browser = index.browse(afterTime);
 
-                        return new Iterator<DomainEvent>()
+                        return new Iterator<TransactionEvents>()
                         {
                             Tuple tuple = new Tuple();
-                            LinkedList<DomainEvent> events = new LinkedList<DomainEvent>();
                             int count = 0;
+
+                            TransactionEvents transactionEvents;
 
                             public boolean hasNext()
                             {
-                                if (!events.isEmpty())
-                                    return true;
-
                                 try
                                 {
                                     if (count >= maxEvents)
@@ -118,36 +152,20 @@ public interface JdbmEventStoreService
                                         return false;
                                     }
 
-                                    while (browser.getNext(tuple))
+                                    if (browser.getNext(tuple))
                                     {
-                                        // Get next UoW
+                                        // Get next transaction
                                         byte[] eventData = (byte[]) tuple.getValue();
                                         String eventJson = new String(eventData, "UTF-8");
                                         JSONTokener tokener = new JSONTokener(eventJson);
-                                        JSONArray array = (JSONArray) tokener.nextValue();
-                                        for (int i = 0; i  < array.length(); i++)
-                                        {
-                                            JSONObject valueJson = (JSONObject) array.get(i);
-                                            DomainEvent event = (DomainEvent) domainEventType.fromJSON(valueJson, module);
-                                            if (event.on().get().after(afterDateNormalized) && specification.accept(event))
-                                            {
-                                                events.add(event);
-                                                count++;
-                                            }
-                                        }
-
-                                        if (!events.isEmpty())
-                                        {
-                                            return true;
-                                        }
-                                    }
-
-                                    if (events.isEmpty())
+                                        JSONObject transaction = (JSONObject) tokener.nextValue();
+                                        transactionEvents = (TransactionEvents) transactionEventsType.fromJSON(transaction, module);
+                                        return true;
+                                    } else
                                     {
                                         lock.unlock();
                                         return false;
-                                    } else
-                                        return true;
+                                    }
                                 } catch (Exception e)
                                 {
                                     lock.unlock();
@@ -155,9 +173,9 @@ public interface JdbmEventStoreService
                                 }
                             }
 
-                            public DomainEvent next()
+                            public TransactionEvents next()
                             {
-                                return events.removeFirst();
+                                return transactionEvents;
                             }
 
                             public void remove()
@@ -166,7 +184,7 @@ public interface JdbmEventStoreService
                         };
                     } catch (IOException e)
                     {
-                       return new ArrayList<DomainEvent>().iterator();
+                       return new ArrayList<TransactionEvents>().iterator();
                     }
 
                 }
@@ -185,10 +203,11 @@ public interface JdbmEventStoreService
             recordManager.commit();
         }
 
-        protected void storeEvents(Long timeStamp, String jsonString)
+        protected void storeEvents(TransactionEvents transaction)
                 throws IOException
         {
-            index.insert(timeStamp, jsonString.getBytes("UTF-8"), false);
+            String jsonString = transaction.toJSON();
+            index.insert(transaction.timestamp().get(), jsonString.getBytes("UTF-8"), false);
         }
 
         private void initialize(String name, Properties properties)

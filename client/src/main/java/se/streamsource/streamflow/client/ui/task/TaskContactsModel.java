@@ -51,14 +51,19 @@ public class TaskContactsModel
     {
         subscriber = new EventSourceListener()
         {
-            public void eventsAvailable(EventStore source, EventSpecification specification)
+            EventFilter filter = new EventFilter(new EventQuery().
+                    withNames("contactAdded", "contactDeleted", "contactUpdated"));
+
+            public void eventsAvailable(EventStore source)
             {
-                Logger.getLogger("workspace").info("Refresh task contacts");
-                refresh();
+                if (filter.matchesAny(source.events(null, Integer.MAX_VALUE)))
+                {
+                    Logger.getLogger("workspace").info("Refresh task contacts");
+                    refresh();
+                }
             }
         };
-        source.registerListener(subscriber, new EventQuery().
-                withNames("contactAdded", "contactDeleted", "contactUpdated"));
+        source.registerListener(subscriber);
 
     }
 

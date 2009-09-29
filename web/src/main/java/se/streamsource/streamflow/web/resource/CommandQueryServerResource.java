@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.resource;
 
 import org.json.JSONException;
-import org.json.JSONWriter;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
@@ -31,7 +30,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.property.PropertyType;
-import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.util.Annotations;
 import org.qi4j.spi.value.ValueDescriptor;
@@ -46,11 +44,9 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
@@ -96,7 +92,7 @@ public class CommandQueryServerResource
 
     @Service
     EventSource source;
-    public Iterable<DomainEvent> events;
+    public Iterable<TransactionEvents> transactions;
 
     public CommandQueryServerResource()
     {
@@ -186,7 +182,7 @@ public class CommandQueryServerResource
     {
         String operation = getOperation();
         UnitOfWork uow = null;
-        source.registerListener(this, AllEventsSpecification.INSTANCE, false);
+        source.registerListener(this, false);
         try
         {
             Method method = getResourceMethod(operation);
@@ -202,27 +198,13 @@ public class CommandQueryServerResource
                 {
                     uow.complete();
 
-                    if (rep instanceof EmptyRepresentation && events != null)
+                    if (rep instanceof EmptyRepresentation && transactions != null)
                     {
                         rep = new WriterRepresentation(MediaType.APPLICATION_JSON)
                         {
                             public void write(Writer writer) throws IOException
                             {
-                                int count = 0;
-                                ValueType type = module.valueDescriptor(DomainEvent.class.getName()).valueType();
-                                try
-                                {
-                                    JSONWriter json = new JSONWriter(writer).array();
-                                    for (DomainEvent event : events)
-                                    {
-                                        type.toJSON(event, json);
-                                        count++;
-                                    }
-                                    json.endArray();
-                                } catch (JSONException e)
-                                {
-                                    throw (IOException) new IOException("Could not write JSON").initCause(e);
-                                }
+                                    writer.write(transactions.iterator().next().toJSON());
                             }
                         };
                     }
@@ -296,9 +278,9 @@ public class CommandQueryServerResource
         return post(representation, variant);
     }
 
-    public void eventsAvailable(EventStore source, EventSpecification specification)
+    public void eventsAvailable(EventStore source)
     {
-        events = source.events(specification, null, Integer.MAX_VALUE);
+        transactions = source.events(null, Integer.MAX_VALUE);
     }
 
     private Method getResourceMethod(String operation)

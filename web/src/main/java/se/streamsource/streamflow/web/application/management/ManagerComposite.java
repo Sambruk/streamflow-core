@@ -17,22 +17,31 @@ package se.streamsource.streamflow.web.application.management;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.ComputedPropertyInstance;
 import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.service.Activatable;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.entitystore.jdbm.DatabaseExport;
 import org.qi4j.entitystore.jdbm.DatabaseImport;
 import org.qi4j.index.reindexer.Reindexer;
+import org.qi4j.spi.entitystore.EntityStore;
+import org.qi4j.spi.entity.EntityState;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,8 +53,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -58,7 +67,7 @@ public interface ManagerComposite
     extends Manager, Activatable, TransientComposite
 {
     abstract class ManagerMixin
-        implements Manager, EventSourceListener, Activatable
+        implements Manager, Activatable
     {
         @Service
         Reindexer reindexer;
@@ -73,14 +82,28 @@ public interface ManagerComposite
         EventStore eventStore;
 
         @Service
+        EventManagement eventManagement;
+
+        @Service
         FileConfiguration fileConfig;
 
         @Service
         EventSource source;
 
+        @Service
+        EntityStore entityStore;
+
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        @Structure
+        Module module;
+
         private int failedLogins;
 
         public File exports;
+
+        public EventSourceListener failedLoginListener;
 
         public void activate() throws Exception
         {
@@ -88,25 +111,24 @@ public interface ManagerComposite
             if (!exports.exists() && !exports.mkdirs())
                 throw new IllegalStateException("Could not create directory for exports");
 
-            source.registerListener(this, new EventQuery().withNames("failedLogin"));
+            failedLoginListener = new EventSourceListener()
+            {
+                private EventFilter filter = new EventFilter(new EventQuery().withNames("failedLogin"));
+                public void eventsAvailable(EventStore source)
+                {
+                    Iterable<DomainEvent> events = filter.events(source.events(null, Integer.MAX_VALUE));
+                    for (DomainEvent event : events)
+                    {
+                        failedLogins++;
+                    }
+                }
+            };
+            source.registerListener(failedLoginListener);
         }
 
         public void passivate() throws Exception
         {
-            source.unregisterListener(this);
-        }
-
-        // EventSourceListener implementation
-        public void eventsAvailable(EventStore source, EventSpecification specification)
-        {
-            Iterable<DomainEvent> events = source.events(specification, null, Integer.MAX_VALUE);
-            for (DomainEvent event : events)
-            {
-                if (event.name().get().equals("failedLogin"))
-                {
-                    failedLogins++;
-                }
-            }
+            source.unregisterListener(failedLoginListener);
         }
 
         // Operations
@@ -157,6 +179,30 @@ public interface ManagerComposite
             return "Data imported successfully";
         }
 
+        public String importEvents(@Name("Filename") String name) throws IOException
+        {
+            File importFile = new File(exports, name);
+
+            if (!importFile.exists())
+                return "No such import file:" + importFile.getAbsolutePath();
+
+            InputStream in1 = new FileInputStream(importFile);
+            if (importFile.getName().endsWith("gz"))
+            {
+            	in1 = new GZIPInputStream(in1);
+            }
+            Reader in = new InputStreamReader(in1, "UTF-8");
+            try
+            {
+                eventManagement.importEvents(in);
+            } finally
+            {
+                in.close();
+            }
+
+            return "Data imported successfully";
+        }
+
         public String exportEvents(@Name("Compress") boolean compress) throws IOException
         {
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
@@ -175,12 +221,12 @@ public interface ManagerComposite
             {
                 count = 0;
 
-                Iterable<DomainEvent> events = eventStore.events(new AllEventsSpecification(), iterableFromDate, 100);
-                for (DomainEvent event : events)
+                Iterable<TransactionEvents> events = eventStore.events(iterableFromDate, 100);
+                for (TransactionEvents event : events)
                 {
                     writer.write(event.toJSON()+"\n");
                     count++;
-                    iterableFromDate = event.on().get();
+                    iterableFromDate = new Date(event.timestamp().get());
                 }
 
             } while (count > 0);
@@ -221,10 +267,11 @@ public interface ManagerComposite
             int count;
             Date iterableFromDate = from;
             // Write 100 events at a time. Stop when no more events are found that matches the specification.
+            EventFilter filter = new EventFilter(new EventQuery().beforeDate(to));
             do
             {
                 count = 0;
-                Iterable<DomainEvent> events = eventStore.events(new EventQuery().beforeDate(to), iterableFromDate, 100);
+                Iterable<DomainEvent> events = filter.events(eventStore.events(iterableFromDate, 100));
 
                 for (DomainEvent event : events)
                 {
@@ -238,6 +285,96 @@ public interface ManagerComposite
 
             return "Events exported to " + exportFile.getAbsolutePath();
         }
+
+        public String restoreFromBackup()
+        {
+/*
+            // Restore data from latest export in /exports
+            File latestBackup = getLatestBackup();
+            importDatabase(latestBackup.getAbsolutePath());
+
+            // Reindex state
+            reindex();
+
+            // Add events from time of lateist backup
+            eventManagement.removeAll();
+
+            File[] eventFiles = getEventFilesSince(latestBackup);
+
+            for (File eventFile : eventFiles)
+            {
+                InputStream
+                if (eventFile.getName().endsWith(".gz"))
+                {
+
+                }
+                eventManagement.importEvents(eventFile);
+            }
+
+            eventManagement.replayFrom();
+*/
+
+            return null;
+        }
+
+        public String generateTestData(@Name("Nr of tasks") int nrOfTasks) throws UnitOfWorkCompletionException
+        {
+            UnitOfWork uow = uowf.newUnitOfWork();
+
+            Inbox inbox = uow.get(Inbox.class, "administrator");
+
+            for (int i = 0; i < nrOfTasks; i++)
+            {
+                inbox.createTask().changeDescription("Task "+i);
+            }
+
+            uow.complete();
+
+            return "Created "+nrOfTasks+" in Administrators inbox";
+        }
+
+        public String databaseSize()
+        {
+            final int[] count = {0};
+            entityStore.visitEntityStates(new EntityStore.EntityStateVisitor()
+            {
+                public void visitEntityState(EntityState entityState)
+                {
+                    count[0]++;
+                }
+            }, module);
+
+            return "Database contains "+count[0]+" objects";
+        }
+
+        private File getLatestBackup() throws ParseException
+        {
+            File latest = null;
+            Date latestDate = null;
+
+            for (File file : exports.listFiles())
+            {
+                // See if backup is newer than currently found backup file
+                if (latest == null || getBackupDate(file).after(latestDate))
+                {
+                    latestDate = getBackupDate(file);
+                }
+            }
+
+            return latest;
+        }
+
+        private Date getBackupDate(File file) throws ParseException
+        {
+            String name = file.getName().substring("streamflow_data_".length());
+            name = name.substring(0, name.indexOf("."));
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
+            Date backupDate = format.parse(name);
+
+            return backupDate;
+        }
+
 
         // Attributes
         public Property<Integer> failedLogins()

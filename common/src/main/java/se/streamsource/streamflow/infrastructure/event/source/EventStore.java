@@ -15,26 +15,23 @@
 package se.streamsource.streamflow.infrastructure.event.source;
 
 import org.qi4j.api.common.Optional;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 import java.util.Date;
 
 /**
- * JAVADOC
+ * An EventStore is a store of events. Events are grouped in the transactions in which they were created.
  */
 public interface EventStore
 {
     /**
-     * Get list of events that matches the parameters. Note that events will only be included if they have occurred
-     * after the given date. If they are on the exact same date, they will not be included. Also, maxEvents specifies
-     * after how many events there will be a cutoff, but the rule is also that UnitsOfWork are provided in their
-     * entirety. As a consequence of this the returned nr of events might be slightly higher than maxEvents, in order
-     * to satisfy this rule.
+     * Get list of event transactions that matches the parameters. Note that transactions will only be included if they have occurred
+     * after the given timestamp. If they are on the exact same timestamp, they will not be included. Also, maxEvents specifies
+     * after how many transactions there will be a cutoff.
      * 
-     * @param specification
-     * @param afterDate
-     * @param maxEvents
+     * @param afterTimestamp
+     * @param maxTransactions
      * @return
      */
-    Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date afterDate, int maxEvents);
+    Iterable<TransactionEvents> events(@Optional Date afterTimestamp, int maxTransactions);
 }

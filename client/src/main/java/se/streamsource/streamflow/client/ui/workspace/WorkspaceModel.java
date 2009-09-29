@@ -14,19 +14,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Service;
-
-import javax.swing.tree.DefaultTreeModel;
-
+import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
+import javax.swing.tree.DefaultTreeModel;
 import java.util.logging.Logger;
 
 /**
@@ -44,15 +40,21 @@ public class WorkspaceModel
         // Reload project list whenever someone join or leave a project/group
         subscriber = new EventSourceListener()
         {
-            public void eventsAvailable(EventStore source, EventSpecification specification)
+            EventFilter filter = new EventFilter(new EventQuery().
+                    withNames("joinedProject","leftProject","joinedGroup","leftGroup"));
+
+            public void eventsAvailable(EventStore source)
             {
-                Logger.getLogger("workspace").info("Refresh project list");
-                getRoot().getProjectsNode().refresh();
-                reload(getRoot().getProjectsNode());
+                if (filter.matchesAny(source.events(null, Integer.MAX_VALUE)))
+                {
+                    Logger.getLogger("workspace").info("Refresh project list");
+                    getRoot().getProjectsNode().refresh();
+                    reload(getRoot().getProjectsNode());
+                }
             }
         };
-        source.registerListener(subscriber, new EventQuery().
-                withNames("joinedProject","leftProject","joinedGroup","leftGroup"));
+
+        source.registerListener(subscriber);
     }
 
     @Override

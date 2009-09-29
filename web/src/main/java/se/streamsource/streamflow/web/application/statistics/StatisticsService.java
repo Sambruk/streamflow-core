@@ -26,10 +26,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Participant;
@@ -88,6 +88,7 @@ public interface StatisticsService
         private Properties sql;
 
         private boolean initialized = false;
+        public EventFilter completedFilter;
 
         public void activate() throws Exception
         {
@@ -100,7 +101,7 @@ public interface StatisticsService
 				asStream = getClass().getResourceAsStream("statisticsdatabase.properties");
 	            sql.load(asStream);
 
-	            source.registerListener(this, new EventQuery().afterDate(config.configuration().lastEventDate().get()).withNames("completed"));
+	            source.registerListener(this);
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -109,6 +110,9 @@ public interface StatisticsService
 			{
 				asStream.close();
 			}
+
+
+            completedFilter = new EventFilter(new EventQuery().withNames("completed"));
         }
 
         public void passivate() throws Exception
@@ -116,7 +120,7 @@ public interface StatisticsService
             source.unregisterListener(this);
         }
 
-        public void eventsAvailable(EventStore eventStore, EventSpecification specification)
+        public void eventsAvailable(EventStore eventStore)
         {
             if (config.configuration().enabled().get())
             {
@@ -133,7 +137,7 @@ public interface StatisticsService
                     }
                 }
 
-                Iterable<DomainEvent> events = eventStore.events(specification, config.configuration().lastEventDate().get(), Integer.MAX_VALUE);
+                Iterable<DomainEvent> events = completedFilter.events(eventStore.events(config.configuration().lastEventDate().get(), Integer.MAX_VALUE));
 
                 Connection conn = null;
                 UnitOfWork uow = null;

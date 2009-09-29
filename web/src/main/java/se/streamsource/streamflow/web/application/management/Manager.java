@@ -19,6 +19,7 @@ import org.qi4j.api.constraint.Name;
 import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -38,6 +39,12 @@ public interface Manager
     public String exportEvents(@Name("Compress") boolean compress) throws IOException;
 
     public String exportEventsRange(@Name("Compress") boolean compress, @Name("From, yyyyMMdd:HHmm") String fromDate, @Optional @Name("To, yyyyMMdd:HHmm") String toDate) throws IOException, ParseException;
+
+    public String restoreFromBackup() throws IOException, ParseException;
+
+    public String generateTestData(@Name("Nr of tasks") int nrOfTasks) throws UnitOfWorkCompletionException;
+
+    public String databaseSize();    
 
     @Computed
     Property<Integer> failedLogins();

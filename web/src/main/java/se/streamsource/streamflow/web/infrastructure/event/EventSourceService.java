@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -24,23 +26,27 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.entity.Identity;
-import org.qi4j.api.common.Optional;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import static java.util.Collections.synchronizedList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 /**
  * This service collects indidivual events created during a UoW
@@ -67,6 +73,9 @@ public interface EventSourceService
         UnitOfWorkFactory uowf;
 
         @Structure
+        ValueBuilderFactory vbf;
+
+        @Structure
         ModuleSPI module;
 
         @This
@@ -74,7 +83,7 @@ public interface EventSourceService
 
         private Map<UnitOfWork, List<DomainEvent>> uows = new ConcurrentHashMap<UnitOfWork, List<DomainEvent>>();
 
-        private Map<EventSourceListener, EventSpecification> listeners = new ConcurrentHashMap<EventSourceListener, EventSpecification>();
+        private List<EventSourceListener> listeners = synchronizedList(new ArrayList<EventSourceListener>());
 
         private Logger logger;
         private ExecutorService eventNotifier;
@@ -93,28 +102,24 @@ public interface EventSourceService
 
         // EventSource implementation
 
-        public void registerListener(EventSourceListener listener, EventSpecification specification, boolean asynchronous)
+        public void registerListener(EventSourceListener listener, boolean asynchronous)
         {
-            if (specification == null)
-                specification = AllEventsSpecification.INSTANCE;
-
             if (asynchronous)
             {
                 listener = new AsynchronousListener(listener);
             }
 
-            listeners.put(listener, specification);
+            listeners.add(listener);
         }
 
-        public void registerListener(EventSourceListener listener, EventSpecification specification)
+        public void registerListener(EventSourceListener listener)
         {
-            registerListener(listener, specification, true);
+            registerListener(listener, true);
         }
 
         public void unregisterListener(EventSourceListener subscriber)
         {
-            EventSpecification removed = listeners.remove(subscriber);
-            if (removed == null)
+            if (!listeners.remove(subscriber))
             {
                 listeners.remove(new AsynchronousListener(subscriber));
             }
@@ -139,41 +144,26 @@ public interface EventSourceService
                         {
                             if (eventList.size() > 0)
                             {
+                                ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder(TransactionEvents.class);
+                                builder.prototype().timestamp().set(System.currentTimeMillis());
+                                builder.prototype().events().set(eventList);
+                                final TransactionEvents transaction = builder.newInstance();
+
                                 synchronized (listeners)
                                 {
-                                    for (final Map.Entry<EventSourceListener, EventSpecification> listener : listeners.entrySet())
+                                    for (final EventSourceListener listener : listeners)
                                     {
-                                        // Filter events for the source
-                                        List<DomainEvent> currentEvents = null;
-                                        for (DomainEvent domainEvent : eventList)
-                                        {
-                                            if (listener.getValue().accept(domainEvent))
-                                            {
-                                                if (currentEvents == null)
-                                                    currentEvents = new ArrayList<DomainEvent>();
 
-                                                currentEvents.add(domainEvent);
-                                            }
-                                        }
-
-                                        // There are events that match the specification for this listener
-                                        if (currentEvents != null)
-                                        {
-                                            final List<DomainEvent> listenerEvents = currentEvents;
-                                            final EventSpecification currentSpecification = listener.getValue();
-                                            final EventSourceListener esl = listener.getKey();
-
-                                            esl.eventsAvailable(new EventStore()
+                                        listener.eventsAvailable(new EventStore()
+                                                {
+                                                    public Iterable<TransactionEvents> events(@Optional Date startDate, int maxEvents)
                                                     {
-                                                        public Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents)
-                                                        {
-                                                            if (specification == currentSpecification)
-                                                                return listenerEvents;
-                                                            else // Delegate to store
-                                                                return eventStore.events(specification, startDate, maxEvents);
-                                                        }
-                                                    }, currentSpecification);
-                                        }
+                                                        if (startDate == null)
+                                                            return Collections.singletonList(transaction);
+                                                        else // Delegate to store
+                                                            return eventStore.events(startDate, maxEvents);
+                                                    }
+                                                });
                                     }
                                 }
                             }
@@ -203,9 +193,9 @@ public interface EventSourceService
                 return listener;
             }
 
-            public void eventsAvailable(EventStore source, final EventSpecification currentSpecification)
+            public void eventsAvailable(EventStore source)
             {
-                final Iterable<DomainEvent> listenerEvents = source.events(currentSpecification, null, Integer.MAX_VALUE);
+                final Iterable<TransactionEvents> listenerEvents = source.events(null, Integer.MAX_VALUE);
 
                 eventNotifier.execute(new Runnable()
                 {
@@ -213,14 +203,14 @@ public interface EventSourceService
                     {
                         listener.eventsAvailable(new EventStore()
                         {
-                            public Iterable<DomainEvent> events(@Optional EventSpecification specification, @Optional Date startDate, int maxEvents)
+                            public Iterable<TransactionEvents> events(@Optional Date startDate, int maxEvents)
                             {
-                                if (specification == currentSpecification)
+                                if (startDate == null)
                                     return listenerEvents;
                                 else // Delegate to store
-                                    return eventStore.events(specification, startDate, maxEvents);
+                                    return eventStore.events(startDate, maxEvents);
                             }
-                        }, currentSpecification);
+                        });
                     }
                 });
             }

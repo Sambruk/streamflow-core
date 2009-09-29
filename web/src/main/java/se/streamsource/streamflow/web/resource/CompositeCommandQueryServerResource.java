@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.resource;
 
 import org.json.JSONException;
-import org.json.JSONWriter;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
@@ -35,7 +34,6 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.property.PropertyDescriptor;
 import org.qi4j.spi.property.PropertyType;
-import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.util.Annotations;
 import org.qi4j.spi.value.ValueDescriptor;
@@ -51,10 +49,11 @@ import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
@@ -103,7 +102,7 @@ public class CompositeCommandQueryServerResource
 
     @Service
     EventSource source;
-    public Iterable<DomainEvent> events;
+    public Iterable<TransactionEvents> events;
 
     public CompositeCommandQueryServerResource()
     {
@@ -278,7 +277,7 @@ public class CompositeCommandQueryServerResource
     {
         String operation = getOperation();
         UnitOfWork uow = null;
-        source.registerListener(this, AllEventsSpecification.INSTANCE, false);
+        source.registerListener(this, false);
         try
         {
             Method method = getResourceMethod(operation);
@@ -301,16 +300,14 @@ public class CompositeCommandQueryServerResource
                     MediaType responseType = getRequest().getClientInfo().getPreferredMediaType(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML));
 
                     Representation rep;
+                    final EventFilter filter = new EventFilter(AllEventsSpecification.INSTANCE);
                     if (responseType == null || (responseType.equals(MediaType.TEXT_PLAIN)))
                     {
                         rep = new WriterRepresentation(MediaType.TEXT_PLAIN)
                         {
                             public void write(Writer writer) throws IOException
                             {
-                                for (DomainEvent event : events)
-                                {
-                                    writer.write(event.toJSON()+"\n");
-                                }
+                                writer.write(events.iterator().next().toJSON());
                             }
                         };
                     } else if (responseType.equals(MediaType.TEXT_HTML))
@@ -321,7 +318,7 @@ public class CompositeCommandQueryServerResource
                             {
                                 String template = TemplateUtil.getTemplate("resources/events.html", getClass());
                                 StringWriter string = new StringWriter();
-                                for (DomainEvent event : events)
+                                for (DomainEvent event : filter.events(events))
                                 {
                                     string.write("<tr>"+
                                             "<td>"+event.usecase().get()+"</td>"+
@@ -341,22 +338,7 @@ public class CompositeCommandQueryServerResource
                         {
                             public void write(Writer writer) throws IOException
                             {
-                                int count = 0;
-                                ValueType type = module.valueDescriptor(DomainEvent.class.getName()).valueType();
-                                try
-                                {
-                                    JSONWriter json = new JSONWriter(writer).array();
-                                    for (DomainEvent event : events)
-                                    {
-                                        type.toJSON(event, json);
-                                        count++;
-                                    }
-                                    json.endArray();
-                                } catch (JSONException e)
-                                {
-                                    throw (IOException) new IOException("Could not write JSON").initCause(e);
-                                }
-                                System.out.println("Returned " + count + " events");
+                                writer.write(events.iterator().next().toJSON());
                             }
                         };
                     }
@@ -440,9 +422,9 @@ public class CompositeCommandQueryServerResource
         return post(representation, variant);
     }
 
-    public void eventsAvailable(EventStore source, EventSpecification specification)
+    public void eventsAvailable(EventStore source)
     {
-        events = source.events(specification, null, Integer.MAX_VALUE);
+        events = source.events(null, Integer.MAX_VALUE);
     }
 
     private Method getResourceMethod(String operation)

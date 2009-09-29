@@ -22,5 +22,5 @@ package se.streamsource.streamflow.infrastructure.event.source;
  */
 public interface EventSourceListener
 {
-    void eventsAvailable(EventStore source, EventSpecification specification);
+    void eventsAvailable(EventStore source);
 }

@@ -14,16 +14,14 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import java.io.IOException;
@@ -55,29 +53,24 @@ public interface MemoryEventStoreService
         {
         }
 
-        public Iterable<DomainEvent> events(EventSpecification specification, Date afterDate, int maxEvents)
+        public Iterable<TransactionEvents> events(Date afterDate, int maxEvents)
         {
             // Lock datastore first
             lock.lock();
-            List<DomainEvent> events = new ArrayList<DomainEvent>();
+            List<TransactionEvents> transactions = new ArrayList<TransactionEvents>();
             try
             {
                 Long startTime = afterDate == null ? Long.MIN_VALUE : afterDate.getTime();
-                Collection<String> eventsAfterDate = store.tailMap(startTime).values();
+                Collection<String> txsAfterDate = store.tailMap(startTime+1).values();
 
-                for (String eventJson : eventsAfterDate)
+                for (String txJson : txsAfterDate)
                 {
-                    JSONTokener tokener = new JSONTokener(eventJson);
-                    JSONArray array = (JSONArray) tokener.nextValue();
-                    for (int i = 0; i  < array.length(); i++)
-                    {
-                        JSONObject valueJson = (JSONObject) array.get(i);
-                        DomainEvent event = (DomainEvent) domainEventType.fromJSON(valueJson, module);
-                        if (event.on().get().after(afterDate) && specification.accept(event))
-                            events.add(event);
-                    }
+                    JSONTokener tokener = new JSONTokener(txJson);
+                    JSONObject json = (JSONObject) tokener.nextValue();
+                    TransactionEvents tx = (TransactionEvents) transactionEventsType.fromJSON(json, module);
+                    transactions.add(tx);
 
-                    if (events.size() > maxEvents)
+                    if (transactions.size() == maxEvents)
                         break; // Max size has been reached
                 }
             } catch (JSONException e)
@@ -88,7 +81,7 @@ public interface MemoryEventStoreService
                 lock.unlock();
             }
 
-            return events;
+            return transactions;
         }
 
         protected void rollback()
@@ -101,10 +94,11 @@ public interface MemoryEventStoreService
         {
         }
 
-        protected void storeEvents(Long timeStamp, String jsonString)
+        protected void storeEvents(TransactionEvents transaction)
                 throws IOException
         {
-            store.put(timeStamp, jsonString);
+            String jsonString = transaction.toString();
+            store.put(transaction.timestamp().get(), jsonString);
         }
     }
 }

@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import org.json.JSONException;
-import org.json.JSONStringer;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -24,11 +22,13 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import java.io.IOException;
@@ -51,6 +51,7 @@ public abstract class AbstractEventStoreMixin
 
     protected  Logger logger;
     protected ValueType domainEventType;
+    protected ValueType transactionEventsType;
 
     protected ReentrantLock lock = new ReentrantLock();
 
@@ -60,6 +61,9 @@ public abstract class AbstractEventStoreMixin
     @Structure
     private UnitOfWorkFactory uowf;
 
+    @Structure
+    private ValueBuilderFactory vbf;
+
     private Map<UnitOfWork, List<DomainEvent>> uows = new ConcurrentHashMap<UnitOfWork, List<DomainEvent>>();
 
     public void activate() throws Exception
@@ -67,13 +71,14 @@ public abstract class AbstractEventStoreMixin
         logger = Logger.getLogger(identity.identity().get());
 
         domainEventType = module.valueDescriptor(DomainEvent.class.getName()).valueType();
+        transactionEventsType = module.valueDescriptor(TransactionEvents.class.getName()).valueType();
     }
 
     public void passivate() throws Exception
     {
     }
 
-    public abstract Iterable<DomainEvent> events(EventSpecification specification, Date startDate, int maxEvents);
+    public abstract Iterable<TransactionEvents> events(Date startDate, int maxEvents);
 
     public void notifyEvent(DomainEvent event)
     {
@@ -93,8 +98,13 @@ public abstract class AbstractEventStoreMixin
                             // Lock store so noone else can interrupt
                             lock.lock();
 
-                            // Store all events from this UoW as one array
-                            storeEvents(eventList);
+                            // Store all events from this UoW as one transaction
+                            ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder(TransactionEvents.class);
+                            builder.prototype().timestamp().set(System.currentTimeMillis());
+                            builder.prototype().events().set(eventList);
+                            TransactionEvents transaction = builder.newInstance();
+
+                            storeEvents(transaction);
                         } catch (Exception e)
                         {
                             lock.unlock();
@@ -141,23 +151,6 @@ public abstract class AbstractEventStoreMixin
     abstract protected void commit()
             throws IOException;
 
-    abstract protected void storeEvents(Long timeStamp, String jsonString)
+    abstract protected void storeEvents(TransactionEvents transaction)
         throws IOException;
-
-    private void storeEvents(List<DomainEvent> eventList)
-            throws JSONException, IOException
-    {
-        JSONStringer json = new JSONStringer();
-
-        json.array();
-        for (DomainEvent domainEvent : eventList)
-        {
-            domainEventType.toJSON(domainEvent, json);
-        }
-        json.endArray();
-
-        Long timeStamp = eventList.get(0).on().get().getTime();
-        String jsonString = json.toString();
-        storeEvents(timeStamp, jsonString);
-    }
 }

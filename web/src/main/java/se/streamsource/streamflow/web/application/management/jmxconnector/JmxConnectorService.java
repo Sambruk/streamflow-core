@@ -21,21 +21,24 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 import javax.management.MBeanServer;
-import javax.management.remote.*;
+import javax.management.remote.JMXAuthenticator;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXPrincipal;
+import javax.management.remote.JMXServiceURL;
 import javax.security.auth.Subject;
-import java.io.IOException;
 import java.net.InetAddress;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +48,8 @@ public interface JmxConnectorService
     extends Configuration, ServiceComposite, Activatable
 {
 
-    abstract class JmxConnectorMixin
-        implements JmxConnectorService
+    class JmxConnectorMixin
+        implements Activatable
     {
         @This
         Configuration<JmxConnectorConfiguration> config;
@@ -66,27 +69,17 @@ public interface JmxConnectorService
             {
                 // see java.rmi.server.ObjID
                 System.setProperty("java.rmi.server.randomIDs", "true");
-                if(connector != null)
-                {
-                    throw new IOException("CustomJmxConnector already started on " + connector.getAddress());
-                }
 
                 int jmxAgentPort = config.configuration().port().get();
 
-                try
-                {
-                    registry = LocateRegistry.createRegistry(jmxAgentPort);
-                } catch(RemoteException re)
-                {
-                    // Do nothing - registry on that port already exists
-                }
+                registry = LocateRegistry.createRegistry(jmxAgentPort);
 
                 String hostName = InetAddress.getLocalHost().getHostName();
                 JMXServiceURL url = new JMXServiceURL(
                                         "service:jmx:rmi://" + hostName +":" + jmxAgentPort
                                                 + "/jndi/rmi://"+ hostName +":" + jmxAgentPort + "/jmxrmi");
                 Map env = new HashMap();
-                env.put(JMXConnectorServer.AUTHENTICATOR, new StreamflowJmxAuthenticator());
+                env.put(JMXConnectorServer.AUTHENTICATOR, new StreamFlowJmxAuthenticator());
 
                 connector = JMXConnectorServerFactory.newJMXConnectorServer(url, env, server);
                 connector.start();
@@ -95,14 +88,22 @@ public interface JmxConnectorService
 
         public void passivate() throws Exception
         {
-
+            // Stop connector
             if(connector != null)
+            {
                 connector.stop();
-            connector = null;
+                connector = null;
+            }
 
+            // Remove registry
+            if (registry != null)
+            {
+                UnicastRemoteObject.unexportObject(registry, true);
+                registry = null;
+            }
         }
 
-        class StreamflowJmxAuthenticator implements JMXAuthenticator {
+        class StreamFlowJmxAuthenticator implements JMXAuthenticator {
 
             public Subject authenticate(Object credentials)
             {
@@ -128,8 +129,8 @@ public interface JmxConnectorService
                         throw new SecurityException("Credentials should have 2 elements");
                     }
 
-                    String username = (String) aCredentials[0];
-                    String password = (String) aCredentials[1];
+                    String username = aCredentials[0];
+                    String password = aCredentials[1];
 
                     User user = unitOfWork.get(User.class, username);
 
