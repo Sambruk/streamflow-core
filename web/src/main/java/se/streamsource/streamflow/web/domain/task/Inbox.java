@@ -22,6 +22,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -46,9 +47,14 @@ public interface Inbox
 
     void markAsUnread(Task task);
 
+    interface InboxState
+    {
+        Task taskCreated(DomainEvent event);
+    }
+
 
     class InboxMixin
-            implements Inbox
+            implements Inbox, InboxState
     {
         @This
         Owner owner;
@@ -61,7 +67,7 @@ public interface Inbox
 
         public Task createTask()
         {
-            TaskEntity taskEntity = uowf.currentUnitOfWork().newEntity(TaskEntity.class);
+            TaskEntity taskEntity = (TaskEntity) taskCreated(DomainEvent.CREATE);
             taskEntity.changeOwner(owner);
             taskEntity.markAsRead();
 
@@ -103,6 +109,11 @@ public interface Inbox
         public void markAsUnread(Task task)
         {
             task.markAsUnread();
+        }
+
+        public Task taskCreated(DomainEvent event)
+        {
+            return uowf.currentUnitOfWork().newEntity(TaskEntity.class);
         }
     }
 

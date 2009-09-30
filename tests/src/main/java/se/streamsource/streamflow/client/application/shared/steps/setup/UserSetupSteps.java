@@ -16,12 +16,10 @@ package se.streamsource.streamflow.client.application.shared.steps.setup;
 
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.steps.Steps;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.web.domain.organization.Organization;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
@@ -41,15 +39,11 @@ public class UserSetupSteps
     @Structure
     UnitOfWorkFactory uowf;
 
-    @Service
-    EventSource source;
-
-
     public Map<String, UserEntity> userMap = new HashMap<String, UserEntity>();
     public Organization organization;
 
     @Given("basic user setup")
-    public void setUserSetup() throws Exception
+    public void basicUserSetup() throws Exception
     {
         organization = uowf.currentUnitOfWork().get(Organization.class, "Organization");
         Organizations organizations = organizationsSteps.givenOrganizations();

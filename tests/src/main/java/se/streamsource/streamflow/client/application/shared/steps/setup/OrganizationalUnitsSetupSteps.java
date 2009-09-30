@@ -49,7 +49,7 @@ public class OrganizationalUnitsSetupSteps
     @Given("basic organizational unit setup")
     public void setupOrganizationalUnit() throws Exception
     {
-        userSetupSteps.setUserSetup();
+        userSetupSteps.basicUserSetup();
         parent = getOrganizationalUnitEntity();
         orgUnitMap.put("OU1", parent.createOrganizationalUnit("UO1"));
         OrganizationalUnit uo2 = parent.createOrganizationalUnit("UO2");

@@ -18,6 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -51,9 +52,12 @@ public interface Assignments
         @This
         Delegations delegations;
 
+        @This
+        Inbox.InboxState inbox;
+
         public Task createAssignedTask(Assignee assignee)
         {
-            Task task = uowf.currentUnitOfWork().newEntity(TaskEntity.class);
+            Task task = inbox.taskCreated(DomainEvent.CREATE);
             task.changeOwner(owner);
             task.assignTo(assignee);
             return task;

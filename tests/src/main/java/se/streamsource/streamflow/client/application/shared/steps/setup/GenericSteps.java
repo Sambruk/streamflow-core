@@ -55,8 +55,10 @@ public class GenericSteps
         Collections.addAll(expectedEvents, commaSeparatedList.split(","));
         for (DomainEvent event: events)
         {
-            ensureThat(expectedEvents.contains(event.name().get()));
-            expectedEvents.remove(event.name().get());
+            if (!expectedEvents.remove(event.name().get()))
+            {
+                ensureThat(event.name().get(), CoreMatchers.equalTo(""));
+            }
         }
         ensureThat(expectedEvents.isEmpty());
     }

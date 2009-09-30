@@ -1,0 +1,9 @@
+Scenario: assign task to user
+Given basic task setup
+When task is assigned to user named user1
+Then events assignedTo occurred
+
+Scenario: unassign task
+Given basic task setup
+When assigned task is unassigned
+Then events unassigned occurred
