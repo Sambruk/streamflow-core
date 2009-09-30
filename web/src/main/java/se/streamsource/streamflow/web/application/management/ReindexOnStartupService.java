@@ -23,7 +23,8 @@ import org.qi4j.index.reindexer.Reindexer;
 import java.util.logging.Logger;
 
 /**
- * JAVADOC
+ * Reindexer. If the system property "reindex" is set, then
+ * trigger the reindex on startup.
  */
 @Mixins(ReindexOnStartupService.ReindexOnStartupMixin.class)
 public interface ReindexOnStartupService

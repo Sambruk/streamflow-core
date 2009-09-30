@@ -28,7 +28,8 @@ import se.streamsource.streamflow.web.domain.user.User;
 import java.util.Date;
 
 /**
- * Accept login if username==password
+ * Accept login if user with the given username has the given password
+ * in the StreamFlow user database.
  */
 public class PasswordVerifierService
         extends SecretVerifier

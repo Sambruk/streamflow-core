@@ -22,7 +22,7 @@ import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.security.Verifier;
 
 /**
- * JAVADOC
+ * Assembler for security services.
  */
 public class SecurityAssembler
         implements Assembler

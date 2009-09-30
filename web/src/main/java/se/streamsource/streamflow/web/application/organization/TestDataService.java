@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
- * JAVADOC
+ * Generates test data
  */
 @Mixins(TestDataService.TestDataMixin.class)
 public interface TestDataService

@@ -18,6 +18,9 @@ import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.common.UseDefaults;
 
+/**
+ * Configuration for the JMX-Connector service.
+ */
 public interface JmxConnectorConfiguration
     extends ConfigurationComposite
 {

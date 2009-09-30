@@ -45,6 +45,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This service starts a JMX RMI connector. It also creates an RMI-registry
+ * to register the connector. The service is configured by changing the
+ * settings in the JmxConnectorConfiguration.
+ *
+ * Authentication is done using the "administrator" account in StreamFlow.
+ *
+ */
 @Mixins(JmxConnectorService.JmxConnectorMixin.class)
 public interface JmxConnectorService
     extends Configuration, ServiceComposite, Activatable

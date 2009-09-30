@@ -35,7 +35,11 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
 import java.util.logging.Logger;
 
 /**
- * JAVADOC
+ * Ensure that the most basic entities are always created. This includes:
+ * 1) an OrganizationsEntity
+ * 2) an Organization
+ * 3) an Administrator role
+ * 4) an Administrator user
  */
 @Mixins(BootstrapDataService.TestDataMixin.class)
 public interface BootstrapDataService

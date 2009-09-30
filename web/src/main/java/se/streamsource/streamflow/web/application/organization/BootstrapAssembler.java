@@ -20,9 +20,9 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
- * JAVADOC
+ * Bootstrap and testdata assembler.
  */
-public class OrganizationAssembler
+public class BootstrapAssembler
         implements Assembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException

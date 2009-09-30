@@ -60,7 +60,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * JAVADOC
+ * Implementation of Manager interface. All general JMX management methods
+ * should be put here for convenience.
  */
 @Mixins(ManagerComposite.ManagerMixin.class)
 public interface ManagerComposite

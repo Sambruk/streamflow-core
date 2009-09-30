@@ -25,7 +25,7 @@ import se.streamsource.streamflow.web.application.management.jmxconnector.JmxCon
 import javax.management.MBeanServer;
 
 /**
- * JAVADOC
+ * Set up all JMX services
  */
 public class ManagementAssembler
         implements Assembler

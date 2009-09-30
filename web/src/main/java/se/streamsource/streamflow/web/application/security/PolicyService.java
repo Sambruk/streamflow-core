@@ -30,7 +30,7 @@ import java.security.Principal;
 import java.security.ProtectionDomain;
 
 /**
- * JAVADOC
+ * Authorization policy service.
  */
 @Mixins(PolicyService.PolicyServiceMixin.class)
 public interface PolicyService
