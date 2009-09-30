@@ -1,0 +1,13 @@
+Scenario: User joins Organization
+Given basic user setup
+When user named userNotInAnOrganization joins Organization
+Then events organizationJoined occurred
+And exception is not thrown
+
+Scenario: User leaves Organization
+Given basic user setup
+When user named user1 leaves Organization
+Then events organizationLeft occurred
+And exception is not thrown
+
+

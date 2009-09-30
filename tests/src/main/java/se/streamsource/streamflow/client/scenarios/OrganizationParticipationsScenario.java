@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Mads Enevoldsen. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,25 @@
 
 package se.streamsource.streamflow.client.scenarios;
 
-import se.streamsource.streamflow.client.application.shared.steps.*;
+import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationParticipationsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
  * JAVADOC
  */
-public class TaskScenario
+public class OrganizationParticipationsScenario
         extends AbstractWebDomainApplicationScenario
 {
-    public TaskScenario()
+
+    public OrganizationParticipationsScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public TaskScenario(ClassLoader classLoader)
+    public OrganizationParticipationsScenario(ClassLoader classLoader)
     {
-        super(classLoader, new UserSteps(), new OrganizationalUnitSteps(), new InboxSteps(), new TaskSteps(), new ProjectSteps());
+        super(classLoader, new UserSetupSteps(), new OrganizationParticipationsSteps(), new OrganizationsSteps());
     }
 }

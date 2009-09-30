@@ -14,22 +14,23 @@
 
 package se.streamsource.streamflow.client.scenarios;
 
-import se.streamsource.streamflow.client.application.shared.steps.*;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
  * JAVADOC
  */
-public class TaskStateScenario
+public class OrganizationsScenario
         extends AbstractWebDomainApplicationScenario
 {
-    public TaskStateScenario()
+
+    public OrganizationsScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public TaskStateScenario(ClassLoader classLoader)
+    public OrganizationsScenario(ClassLoader classLoader)
     {
-        super(classLoader, new UserSteps(), new OrganizationalUnitSteps(), new InboxSteps(), new TaskStatusSteps(), new ProjectSteps());
+        super(classLoader, new OrganizationsSteps());
     }
 }

@@ -45,5 +45,6 @@ public class AbstractWebDomainApplicationScenario
                         classLoader);
             }
         }, new BeforeAndAfterWebDomainApplicationSteps(steps));
+
     }
 }

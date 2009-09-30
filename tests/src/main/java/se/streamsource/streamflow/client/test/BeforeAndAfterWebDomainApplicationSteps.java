@@ -29,6 +29,7 @@ import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Client;
 import org.restlet.data.Protocol;
+import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +49,11 @@ public class BeforeAndAfterWebDomainApplicationSteps
 
     public BeforeAndAfterWebDomainApplicationSteps(CandidateSteps... steps)
     {
-        this.steps = steps;
+        CandidateSteps[] theSteps = new CandidateSteps[steps.length +1];
+        System.arraycopy(steps,0,theSteps,0,steps.length);
+        this.genericSteps = new GenericSteps();
+        theSteps[steps.length] = genericSteps;
+        this.steps = theSteps;
     }
 
     @Structure
@@ -59,6 +64,8 @@ public class BeforeAndAfterWebDomainApplicationSteps
 
     protected ApplicationSPI app;
     protected UnitOfWork uow;
+
+    private GenericSteps genericSteps;
 
     @BeforeScenario
     public void activateApplication() throws Exception
@@ -76,8 +83,7 @@ public class BeforeAndAfterWebDomainApplicationSteps
             }
 
             Client restlet = new Client(Protocol.HTTP);
-            app = is.newApplication(new StreamFlowWebDomainTestAssembler(restlet, stepClasses));
-            app.activate();
+            app = is.newApplication(new StreamFlowWebDomainTestAssembler(restlet, genericSteps, stepClasses));
 
             Module module = app.findModule("Domain", "Test");
 
@@ -89,6 +95,7 @@ public class BeforeAndAfterWebDomainApplicationSteps
                 builder.injectTo(step);
             }
 
+            app.activate();
             module.objectBuilderFactory().newObjectBuilder(BeforeAndAfterWebDomainApplicationSteps.class).injectTo(this);
 
             uow = uowf.newUnitOfWork();

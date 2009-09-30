@@ -1,0 +1,28 @@
+Scenario: Create new Organization
+Gi##ven the organizations
+Wh##en a new organization named jayway2000 is created
+Th##en events organizationCreated,descriptionChanged,roleCreated occurred
+An##d exception is not thrown
+
+Scenario: Organization names cannot be more than 50 characters
+Gi##ven the organizations
+Wh##en a new organization named abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz is created
+Th##en ConstraintViolationException is thrown
+An##d no events occurred
+
+Scenario: Create new user
+Given the organizations
+When a new user named newUser is created
+Then events userCreated occurred
+And exception is not thrown
+
+Scenario: Create existing user
+Gi##ven the organizations
+Wh##en a new user named newUser is created
+An#d a new user named newUser is created
+T#hen IllegalArgumentException is thrown
+A#nd no events occurred
+
+
+
+

@@ -14,24 +14,25 @@
 
 package se.streamsource.streamflow.client.scenarios;
 
-import se.streamsource.streamflow.client.application.shared.steps.GroupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitSteps;
-import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationalUnitsSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
  * JAVADOC
  */
-public class GroupScenario
+public class OrganizationalUnitsScenario
         extends AbstractWebDomainApplicationScenario
 {
-    public GroupScenario()
+    public OrganizationalUnitsScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public GroupScenario(ClassLoader classLoader)
+    public OrganizationalUnitsScenario(ClassLoader classLoader)
     {
-        super(classLoader, new GroupSteps(), new OrganizationalUnitSteps(), new UserSteps());
+        super(classLoader, new UserSetupSteps(), new OrganizationalUnitsSetupSteps(), new OrganizationsSteps(), new OrganizationalUnitsSteps());
     }
 }

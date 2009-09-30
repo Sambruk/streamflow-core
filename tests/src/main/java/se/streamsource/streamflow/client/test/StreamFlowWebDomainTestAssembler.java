@@ -14,11 +14,14 @@
 
 package se.streamsource.streamflow.client.test;
 
+import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.api.structure.Application;
 import org.restlet.Client;
+import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.web.StreamFlowWebAssembler;
 
 /**
@@ -28,11 +31,14 @@ public class StreamFlowWebDomainTestAssembler
         extends StreamFlowWebAssembler
 {
     private Client restlet;
+    private GenericSteps genericSteps;
     private Class[] testClass;
 
-    public StreamFlowWebDomainTestAssembler(Client restlet, Class[] testClass)
+
+    public StreamFlowWebDomainTestAssembler(Client restlet, GenericSteps genericSteps, Class[] testClass)
     {
         this.restlet = restlet;
+        this.genericSteps = genericSteps;
         this.testClass = testClass;
     }
 
@@ -49,7 +55,9 @@ public class StreamFlowWebDomainTestAssembler
         super.assembleDomainLayer(domainLayer);
         ModuleAssembly moduleAssembly = domainLayer.moduleAssembly("Test");
         moduleAssembly.addObjects(testClass);
+        moduleAssembly.importServices(EventListener.class).visibleIn(Visibility.application);
 
         domainLayer.applicationAssembly().setMetaInfo(restlet);
+        domainLayer.applicationAssembly().setMetaInfo(genericSteps);
     }
 }

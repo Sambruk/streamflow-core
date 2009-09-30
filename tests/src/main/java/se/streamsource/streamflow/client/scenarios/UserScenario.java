@@ -14,8 +14,9 @@
 
 package se.streamsource.streamflow.client.scenarios;
 
-import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
@@ -24,6 +25,7 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
 public class UserScenario
         extends AbstractWebDomainApplicationScenario
 {
+
     public UserScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
@@ -31,6 +33,6 @@ public class UserScenario
 
     public UserScenario(ClassLoader classLoader)
     {
-        super(classLoader, new OrganizationalUnitSteps(), new UserSteps());
+        super(classLoader, new OrganizationsSteps(), new UserSteps(), new UserSetupSteps());
     }
 }

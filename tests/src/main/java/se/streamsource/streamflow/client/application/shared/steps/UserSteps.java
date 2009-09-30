@@ -14,16 +14,16 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
-import org.jbehave.scenario.annotations.Given;
-import org.jbehave.scenario.annotations.Then;
+import org.hamcrest.CoreMatchers;
+import static org.jbehave.Ensure.ensureThat;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
-import static org.jbehave.util.JUnit4Ensure.ensureThat;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.user.WrongPasswordException;
 
 /**
  * JAVADOC
@@ -31,43 +31,43 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
 public class UserSteps
         extends Steps
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+    @Uses
+    UserSetupSteps userSetupSteps;
 
     @Uses
-    OrganizationalUnitSteps organizationalUnitSteps;
+    GenericSteps genericSteps;
 
-    public UserEntity user;
-
-    @Given("a user named $name")
-    public void givenUserNamed(String name) throws Exception
+    @When("user named $userName changes password from $oldPassword to $newPassword")
+    public void changePassword(String userName, String oldPassword, String newPassword) throws UnitOfWorkCompletionException
     {
-        UnitOfWork uow = uowf.newUnitOfWork();
-        user = uow.get(UserEntity.class, name);
+        genericSteps.clearEvents();
+        UserEntity user = userSetupSteps.userMap.get(userName);
+        ensureThat(user, CoreMatchers.notNullValue());
+
+        try
+        {
+            user.changePassword(oldPassword, newPassword);
+        } catch (WrongPasswordException e)
+        {
+            genericSteps.setThrowable(e);
+        }
     }
 
-    @When("user is removed from the organization")
-    public void leaveFromOrganization()
+
+    @When("user named $userName tries to login with password $password")
+    public void login(String userName, String password) throws UnitOfWorkCompletionException
     {
-        user.leave(organizationalUnitSteps.ou.organization().get());
+        genericSteps.clearEvents();
+        UserEntity user = userSetupSteps.userMap.get(userName);
+        user.login(password);
     }
 
 
-    @When("user joins the organization")
-    public void joinOrganization()
+    @When("user named $userName enabled is set to $state")
+    public void setEnabled(String userName, String state) throws UnitOfWorkCompletionException
     {
-        user.join(organizationalUnitSteps.ou.organization().get());
-    }
-
-    @Then("the user is not part of the organization")
-    public void notPartOfOrganization()
-    {
-        ensureThat(!user.organizations().contains(organizationalUnitSteps.ou.organization().get()));
-    }
-
-    @Then("the user is part of the organization")
-    public void partOfOrganization()
-    {
-        ensureThat(user.organizations().contains(organizationalUnitSteps.ou.organization().get()));
+        genericSteps.clearEvents();
+        UserEntity user = userSetupSteps.userMap.get(userName);
+        user.changeEnabled(Boolean.parseBoolean(state));
     }
 }
