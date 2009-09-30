@@ -30,4 +30,7 @@ public interface ProjectSummaryDTO
     @UseDefaults
     Property<Integer> assignedCount();
 
+    @UseDefaults
+    Property<Integer> totalActive();
+
 }

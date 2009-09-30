@@ -96,13 +96,13 @@ public class OverviewSummaryModel
         switch (column)
         {
             case 0:
-                return new StringBuilder(projectOverview.project().get()).toString();
+                return projectOverview.project().get();
             case 1:
-                return new StringBuilder(projectOverview.inboxCount().get());
+                return projectOverview.inboxCount().get();
             case 2:
-                return new StringBuilder(projectOverview.assignedCount().get());
+                return projectOverview.assignedCount().get();
             case 3:
-                return new StringBuilder(total);
+                return projectOverview.totalActive().get();
 
         }
 
