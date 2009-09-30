@@ -17,14 +17,18 @@ package se.streamsource.streamflow.client.resource.users.overview;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.BaseClientResource;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
+
+import java.io.IOException;
 
 /**
  * JAVADOC
  */
 public class OverviewClientResource
-        extends BaseClientResource
+        extends CommandQueryClientResource
 {
     public OverviewClientResource(@Uses Context context, @Uses Reference reference)
     {
@@ -35,4 +39,10 @@ public class OverviewClientResource
     {
         return getSubResource("projects", OverviewProjectsClientResource.class);
     }
+
+    public ProjectSummaryListDTO overview() throws ResourceException, IOException
+    {
+        return getQuery(ProjectSummaryListDTO.class);
+    }
+
 }

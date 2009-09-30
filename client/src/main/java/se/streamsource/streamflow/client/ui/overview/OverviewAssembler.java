@@ -41,6 +41,10 @@ public class OverviewAssembler
                 OverviewModel.class,
                 OverviewView.class);
 
+        UIAssemblers.addMV(module,
+                OverviewSummaryModel.class,
+                OverviewSummaryView.class);
+
         // Project
         UIAssemblers.addMV(module,
                 OverviewProjectAssignmentsModel.class,

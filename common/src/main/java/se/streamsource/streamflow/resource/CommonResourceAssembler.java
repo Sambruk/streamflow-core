@@ -34,10 +34,12 @@ import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.organization.MergeOrganizationalUnitCommand;
+import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
-import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
-import se.streamsource.streamflow.resource.organization.MergeOrganizationalUnitCommand;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -87,7 +89,9 @@ public class CommonResourceAssembler
                 TreeValue.class,
                 TreeNodeValue.class,
                 OverviewAssignmentsTaskListDTO.class,
-                OverviewAssignedTaskDTO.class).visibleIn(Visibility.application);
+                OverviewAssignedTaskDTO.class,
+                ProjectSummaryDTO.class,
+                ProjectSummaryListDTO.class).visibleIn(Visibility.application);
 
         module.addValues(SearchTaskListDTO.class,
                 SearchTaskDTO.class).visibleIn(Visibility.application);

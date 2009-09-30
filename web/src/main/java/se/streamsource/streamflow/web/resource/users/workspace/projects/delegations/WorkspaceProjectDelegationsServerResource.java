@@ -45,12 +45,12 @@ public class WorkspaceProjectDelegationsServerResource
         // Find all Active tasks delegated to "project" that have not yet been assigned
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Association<Delegatee> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo();
+
         Association<Assignee> assigneeAssociation = templateFor(Assignable.AssignableState.class).assignedTo();
         queryBuilder.where(and(
                 eq(delegatedTo, uow.get(Delegatee.class, id)),
                 isNull(assigneeAssociation),
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
-
         Query<TaskEntity> delegationsQuery = queryBuilder.newQuery(uow);
         delegationsQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 

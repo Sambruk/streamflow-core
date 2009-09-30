@@ -27,10 +27,12 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.ui.AccountSelector;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -50,6 +52,7 @@ public class OverviewView
 
     public OverviewView(final @Service ApplicationContext context,
                         @Uses final OverviewModel model,
+                        final @Uses AccountModel accountModel,
                         final @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
@@ -130,7 +133,12 @@ public class OverviewView
         pane.setDividerLocation(200);
         pane.setResizeWeight(0);
 
-        pane.setRightComponent(new JPanel());
+        final OverviewSummaryModel overviewSummaryModel = obf.newObjectBuilder(OverviewSummaryModel.class)
+                                .use(accountModel.userResource().overview()).newInstance();
+
+        JPanel projectSummary = obf.newObjectBuilder(OverviewSummaryView.class).use(overviewSummaryModel).newInstance();
+
+        pane.setRightComponent(projectSummary);
 
         JPanel overviewOutline = new JPanel(new BorderLayout());
         overviewOutline.add(workspaceScroll, BorderLayout.CENTER);
@@ -153,7 +161,18 @@ public class OverviewView
 
                     if (node instanceof OverviewProjectsNode)
                     {
-                        view = new JPanel();
+                        final OverviewSummaryModel overviewSummaryModel = obf.newObjectBuilder(OverviewSummaryModel.class)
+                                .use(accountModel.userResource().overview()).newInstance();
+                        view = obf.newObjectBuilder(OverviewSummaryView.class).use(overviewSummaryModel).newInstance();
+                        context.getTaskService().execute(new Task(context.getApplication())
+                        {
+                            protected Object doInBackground() throws Exception
+                            {
+                                overviewSummaryModel.refresh();
+                                return null;
+                            }
+                        });
+
                     } else if (node instanceof OverviewProjectAssignmentsNode)
                     {
                         OverviewProjectAssignmentsNode projectAssignmentsNode = (OverviewProjectAssignmentsNode) node;

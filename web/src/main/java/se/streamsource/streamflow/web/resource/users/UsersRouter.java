@@ -13,49 +13,50 @@
  */
 package se.streamsource.streamflow.web.resource.users;
 
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.security.Authenticator;
-import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
-import se.streamsource.streamflow.web.rest.ResourceFinder;
+import org.restlet.security.Authenticator;
+import org.restlet.security.ChallengeAuthenticator;
+import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
+import se.streamsource.streamflow.web.resource.users.overview.OverviewServerResource;
+import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectServerResource;
+import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectsServerResource;
+import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsServerResource;
+import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.WorkspaceProjectInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.WorkspaceProjectInboxTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.WorkspaceUserServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.UserDelegationsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.UserDelegatedTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.UserAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.UserAssignedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.UserAssignmentsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.UserDelegatedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.UserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
-import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
-import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectsServerResource;
-import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectServerResource;
-import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
-import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
+import se.streamsource.streamflow.web.rest.ResourceFinder;
 
 public class UsersRouter
         extends Router
@@ -109,6 +110,7 @@ public class UsersRouter
         attach("/search/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
 
         // Overview
+        attach("/overview", createServerResourceFinder(OverviewServerResource.class));
         attach("/overview/projects", createServerResourceFinder(OverviewProjectsServerResource.class));
         attach("/overview/projects/{project}", createServerResourceFinder(OverviewProjectServerResource.class));
         attach("/overview/projects/{project}/assignments", createServerResourceFinder(OverviewProjectAssignmentsServerResource.class));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Arvid Huss. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,23 +12,17 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.overview;
+package se.streamsource.streamflow.resource.overview;
 
-/**
- * JAVADOC
- */
-public enum OverviewResources
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
+
+public interface ProjectSummaryListDTO
+    extends ValueComposite
 {
-    projects_node,
-    assignments_node,
-    window_name,
-    could_not_refresh_projects,
-    description_column_header,
-    created_column_header,
-    assigned_to_column_header,
-    waitingfor_node,
-    project_column_header,
-    inbox_column_header,
-    assigned_column_header,
-    could_not_refresh, total_column_header
+    @UseDefaults
+    Property<List<ProjectSummaryDTO>> projectOverviews();
 }
