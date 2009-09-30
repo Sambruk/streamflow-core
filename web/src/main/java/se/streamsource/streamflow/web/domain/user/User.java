@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.domain.user;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -65,6 +66,9 @@ public interface User
     abstract class UserMixin
             implements User, UserState
     {
+        @This
+        UserState state;
+
         public boolean login(String password)
         {
             if (disabled().get())
@@ -76,6 +80,14 @@ public interface User
                 failedLogin(DomainEvent.CREATE);
 
             return correct;
+        }
+
+        public void changeEnabled(boolean enabled)
+        {
+            if (enabled == disabled().get())
+            {
+                enabledChanged(DomainEvent.CREATE, !enabled);
+            }
         }
 
         public void changePassword(String currentPassword, String newPassword) throws WrongPasswordException
@@ -96,6 +108,11 @@ public interface User
 
         public void failedLogin(DomainEvent event)
         {
+        }
+
+        public void enabledChanged(DomainEvent event, boolean enabled)
+        {
+            state.disabled().set(enabled);
         }
 
         public boolean isCorrectPassword(String password)
