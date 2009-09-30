@@ -51,6 +51,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
@@ -145,30 +146,30 @@ public class CommandQueryServerResource
 
     protected Representation listOperations() throws ResourceException
     {
-		// List methods
-		StringBuilder links = new StringBuilder("");
-		Method[] methods = getClass().getMethods();
-		for (Method method : methods)
-		{
-			if (isQueryMethod(method))
-				links.append("<li><a href=\"?operation=").append(
-						method.getName()).append("\" rel=\"").append(
-						method.getName()).append("\">")
-						.append(method.getName()).append("</a></li>\n");
-		}
+        // List methods
+        StringBuilder links = new StringBuilder("");
+        Method[] methods = getClass().getMethods();
+        for (Method method : methods)
+        {
+            if (isQueryMethod(method))
+                links.append("<li><a href=\"?operation=").append(
+                        method.getName()).append("\" rel=\"").append(
+                        method.getName()).append("\">")
+                        .append(method.getName()).append("</a></li>\n");
+        }
 
-		try
-		{
-			String template = TemplateUtil.getTemplate("resources/links.html",
-					CommandQueryServerResource.class);
-			String content = TemplateUtil.eval(template, "$content", links.toString(),
-					"$title", getRequest().getResourceRef().getLastSegment()
-							+ " operations");
-			return new StringRepresentation(content, MediaType.TEXT_HTML);
-		} catch (IOException e)
-		{
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
-		}
+        try
+        {
+            String template = TemplateUtil.getTemplate("resources/links.html",
+                    CommandQueryServerResource.class);
+            String content = TemplateUtil.eval(template, "$content", links.toString(),
+                    "$title", getRequest().getResourceRef().getLastSegment()
+                            + " operations");
+            return new StringRepresentation(content, MediaType.TEXT_HTML);
+        } catch (IOException e)
+        {
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
+        }
     }
 
     @Override
@@ -204,7 +205,7 @@ public class CommandQueryServerResource
                         {
                             public void write(Writer writer) throws IOException
                             {
-                                    writer.write(transactions.iterator().next().toJSON());
+                                writer.write(transactions.iterator().next().toJSON());
                             }
                         };
                     }
@@ -229,7 +230,7 @@ public class CommandQueryServerResource
             throw ex;
         } catch (Exception ex)
         {
-            Logger.getLogger("command").log(Level.SEVERE, "Could not process command:"+operation, ex);
+            Logger.getLogger("command").log(Level.SEVERE, "Could not process command:" + operation, ex);
 
             setStatus(Status.SERVER_ERROR_INTERNAL);
             return new ObjectRepresentation(ex, MediaType.APPLICATION_JAVA_OBJECT);
@@ -311,7 +312,26 @@ public class CommandQueryServerResource
             {
                 String json = getRequest().getEntityAsText();
                 if (json == null)
-                    throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
+                {
+                    StringBuffer fileData = null;
+                    try
+                    {
+                        fileData = new StringBuffer(1000);
+                        BufferedReader reader = new BufferedReader(getRequest().getEntity().getReader());
+                        char[] buf = new char[1024];
+                        int numRead = 0;
+                        while ((numRead = reader.read(buf)) != -1)
+                        {
+                            fileData.append(buf, 0, numRead);
+                        }
+                        reader.close();
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers! available:" + getRequest().getEntity().isAvailable() + " size:" + getRequest().getEntity().getSize()+" stream:"+fileData.toString());
+                }
 
                 Object command = vbf.newValueFromJSON(commandType, json);
 
@@ -401,14 +421,13 @@ public class CommandQueryServerResource
             if (e.getTargetException() instanceof ResourceException)
             {
                 throw (ResourceException) e.getTargetException();
-            }
-            else if (e.getTargetException() instanceof AccessControlException)
+            } else if (e.getTargetException() instanceof AccessControlException)
             {
                 // Operation not allowed - return 403
                 throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
             }
 
-            Logger.getLogger("command").log(Level.SEVERE, "Could not invoke command:"+method.getName(), e.getTargetException());
+            Logger.getLogger("command").log(Level.SEVERE, "Could not invoke command:" + method.getName(), e.getTargetException());
 
             getResponse().setEntity(new ObjectRepresentation(e));
 

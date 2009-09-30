@@ -16,20 +16,21 @@ package se.streamsource.streamflow.web.infrastructure.event;
 
 import org.junit.Test;
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffects;
-import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.test.AbstractQi4jTest;
+import org.qi4j.test.EntityTestAssembler;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.EventNotificationSideEffect;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 /**
@@ -40,21 +41,15 @@ public class MemoryEventStoreTest
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
+        new EntityTestAssembler().assemble(module);
+        module.addValues(TransactionEvents.class, DomainEvent.class);
         module.addServices(MemoryEventStoreService.class);
         module.addObjects(getClass());
-    }
-
-    @Override
-    protected void initApplication(Application app) throws Exception
-    {
-        objectBuilderFactory.newObjectBuilder(MemoryEventStoreTest.class).injectTo((this));
+        module.addEntities(TestEntity.class);
     }
 
     @Service
     EventStore eventStore;
-
-    @Service
-    EventSource source;
 
     @Service
     EventListener listener;
@@ -62,6 +57,8 @@ public class MemoryEventStoreTest
     @Test
     public void testEventStore() throws UnitOfWorkCompletionException
     {
+        objectBuilderFactory.newObjectBuilder(MemoryEventStoreTest.class).injectTo((this));
+
         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
         TestEntity entity = uow.newEntity(TestEntity.class);
         entity.somethingHappened(DomainEvent.CREATE, "foo");
@@ -77,8 +74,18 @@ public class MemoryEventStoreTest
 
     @Concerns(EventCreationConcern.class)
     @SideEffects(EventNotificationSideEffect.class)
+    @Mixins(TestEntity.TestMixin.class)
     interface TestEntity
+        extends EntityComposite
     {
         void somethingHappened(DomainEvent event, String parameter1);
+
+        abstract class TestMixin
+            implements TestEntity
+        {
+            public void somethingHappened(DomainEvent event, String parameter1)
+            {
+            }
+        }
     }
 }

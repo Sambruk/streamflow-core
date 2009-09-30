@@ -42,6 +42,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Mixins(JmxConnectorService.JmxConnectorMixin.class)
 public interface JmxConnectorService
@@ -81,8 +83,14 @@ public interface JmxConnectorService
                 Map env = new HashMap();
                 env.put(JMXConnectorServer.AUTHENTICATOR, new StreamFlowJmxAuthenticator());
 
-                connector = JMXConnectorServerFactory.newJMXConnectorServer(url, env, server);
-                connector.start();
+                try
+                {
+                    connector = JMXConnectorServerFactory.newJMXConnectorServer(url, env, server);
+                    connector.start();
+                } catch (Exception e)
+                {
+                    Logger.getLogger(JmxConnectorService.class.getName()).log(Level.SEVERE, "Could not start JMX connector", e);
+                }
             }
         }
 
