@@ -59,6 +59,11 @@ public class OverviewSummaryModel
         return resource;
     }
 
+	public List<ProjectSummaryDTO> getProjectOverviews()
+	{
+		return projectOverviews;
+	}
+
     @Override
     public Class<?> getColumnClass(int column)
     {

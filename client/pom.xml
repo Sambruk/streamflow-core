@@ -89,6 +89,13 @@
             <version>0.9.7</version>
         </dependency>
 
+		<!-- Export -->
+		<dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.5-FINAL</version>
+        </dependency>
+
         <!-- REST -->
         <!--
                 <dependency>
