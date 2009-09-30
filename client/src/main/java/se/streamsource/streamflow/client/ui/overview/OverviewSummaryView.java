@@ -91,7 +91,7 @@ public class OverviewSummaryView extends JPanel
 		overviewSummaryTable.setAutoCreateColumnsFromModel(false);
 
 		JPanel toolBar = new JPanel();
-		addToolbarButton(toolBar, "Export");
+		addToolbarButton(toolBar, "export");
 
 		add(overviewSummaryScrollPane, BorderLayout.CENTER);
 		add(toolBar, BorderLayout.SOUTH);
