@@ -34,12 +34,8 @@ import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsSe
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRoleServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
-import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UserServerResource;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
@@ -50,6 +46,8 @@ import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewP
 import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectsServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectsServerResource;
@@ -158,8 +156,6 @@ public class ServerResourceAssembler
                 ProjectServerResource.class,
                 MembersServerResource.class,
                 MemberServerResource.class,
-                MemberRolesServerResource.class,
-                MemberRoleServerResource.class,
 
                 RolesServerResource.class,
                 RoleServerResource.class,

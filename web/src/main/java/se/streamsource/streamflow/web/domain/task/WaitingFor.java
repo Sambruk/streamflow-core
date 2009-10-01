@@ -14,8 +14,10 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -25,10 +27,28 @@ public interface WaitingFor
 {
     void completeWaitingForTask(Task task, Assignee assignee);
 
+    void completeFinishedTask(Task task);
+
+    void rejectFinishedTask(Task task);
+
+    void dropWaitingForTask(Task task, Assignee assignee);
+
     void markWaitingForAsRead(Task task);
 
-    class WaitingForMixin
-            implements WaitingFor
+    void markWaitingForAsUnread(Task task);
+
+    void rejectTask(Task task);
+
+    interface WaitingForState
+    {
+        ManyAssociation<Task> unreadWaitingForTasks();
+        void waitingForTaskMarkedAsUnread(DomainEvent event, Task task);
+        void waitingForTaskMarkedAsRead(DomainEvent event, Task task);
+    }
+
+
+    abstract class WaitingForMixin
+            implements WaitingFor, WaitingForState
     {
         @This
         Owner owner;
@@ -36,12 +56,58 @@ public interface WaitingFor
         public void completeWaitingForTask(Task task, Assignee assignee)
         {
             task.changeOwner(owner);
-            task.complete(assignee);
+            task.assignTo(assignee);
+            task.complete();
+        }
+
+        public void completeFinishedTask(Task task)
+        {
+            task.complete();
+        }
+
+        public void rejectFinishedTask(Task task)
+        {
+            task.activate();
+        }
+
+        public void dropWaitingForTask(Task task, Assignee assignee)
+        {
+            task.changeOwner(owner);
+            task.assignTo(assignee);
+            task.drop();
         }
 
         public void markWaitingForAsRead(Task task)
         {
-            task.markAsRead();
+            if (!unreadWaitingForTasks().contains(task))
+            {
+                return;
+            }
+            waitingForTaskMarkedAsRead(DomainEvent.CREATE, task);
+        }
+
+        public void markWaitingForAsUnread(Task task)
+        {
+            if (unreadWaitingForTasks().contains(task))
+            {
+                return;
+            }
+            waitingForTaskMarkedAsUnread(DomainEvent.CREATE, task);
+        }
+
+        public void rejectTask(Task task)
+        {
+            waitingForTaskMarkedAsUnread(DomainEvent.CREATE, task);
+        }
+
+        public void waitingForTaskMarkedAsUnread(DomainEvent event, Task task)
+        {
+            unreadWaitingForTasks().add(task);
+        }
+
+        public void waitingForTaskMarkedAsRead(DomainEvent event, Task task)
+        {
+            unreadWaitingForTasks().remove(task);
         }
     }
 }

@@ -36,6 +36,8 @@ public interface Projects
 
     boolean removeProject(Project project);
 
+    void addProject(Project project);
+
     interface ProjectsState
     {
         @Aggregated
@@ -44,6 +46,8 @@ public interface Projects
         ProjectEntity projectCreated(DomainEvent event, String id);
         void projectRemoved(DomainEvent event, Project project);
         void projectAdded(DomainEvent event, Project project);
+
+        void mergeProjects(Projects projects);
     }
 
     abstract class ProjectsMixin
@@ -76,20 +80,25 @@ public interface Projects
             return builder.newInstance();
         }
 
-        public void projectAdded(DomainEvent event, Project project)
+        public void mergeProjects(Projects projects)
         {
-            projects().add(projects().count(), project);
+            while (this.projects().count() >0)
+            {
+                Project project = this.projects().get(0);
+                removeProject(project);
+                projects.addProject(project);
+            }
+
         }
 
-        public boolean removeProject(Project project)
+        public void addProject(Project project)
         {
+
             if (projects().contains(project))
             {
-                projectRemoved(DomainEvent.CREATE, project);
-                project.removeEntity();
-                return true;
-            } else
-                return false;
+                return;
+            }
+            projectAdded(DomainEvent.CREATE, project);
         }
     }
 

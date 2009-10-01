@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.sideeffect.SideEffects;
-import se.streamsource.streamflow.domain.contact.Contacts;
+import se.streamsource.streamflow.web.domain.task.Contacts;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
@@ -37,12 +37,10 @@ public interface TaskEntity
         Delegatable.DelegatableState,
         Describable.DescribableState,
         DueOn.DueOnState,
-        IsRead.IsReadState,
         Labelable.LabelableState,
         Notable.NotableState,
         Ownable.OwnableState,
         TaskStatus.TaskStatusState,
-        TaskPath.TaskPathState,
         TaskId.TaskIdState,
         DomainEntity
 {

@@ -22,56 +22,61 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * Status for a task. Possible transitions are:
- * Active -> Completed, Dropped
+ * Active -> Completed, Dropped, Done
+ * Done -> Active, Dropped, Completed
  * Completed -> Archived
  * Dropped -> Archived
  */
 @Mixins(TaskStatus.TaskStatusMixin.class)
 public interface TaskStatus
 {
-    void complete(Assignee assignee);
-
-    void drop(Assignee assignee);
+    void complete();
+    void done();
+    void activate();
+    void drop();
 
     interface TaskStatusState
     {
         @UseDefaults
         Property<TaskStates> status();
 
-
-        void completed(DomainEvent event);
-
-
-        void dropped(DomainEvent event);
+        void statusChanged(DomainEvent event, TaskStates status);
     }
 
     abstract class TaskStatusMixin
             implements TaskStatus, TaskStatusState
     {
-        public void complete(Assignee assignee)
+
+        public void complete()
         {
-            if (status().get().equals(TaskStates.ACTIVE))
+            if (status().get().equals(TaskStates.ACTIVE) || status().get().equals(TaskStates.DONE))
             {
-                completed(DomainEvent.CREATE);
+                statusChanged(DomainEvent.CREATE, TaskStates.COMPLETED);
             }
         }
 
-        public void drop(Assignee assignee)
+        public void drop()
         {
-            if (status().get().equals(TaskStates.ACTIVE))
+            if (status().get().equals(TaskStates.ACTIVE)  || status().get().equals(TaskStates.DONE))
             {
-                dropped(DomainEvent.CREATE);
+                statusChanged(DomainEvent.CREATE, TaskStates.DROPPED);
             }
         }
 
-        public void completed(DomainEvent event)
+        public void done()
         {
-            status().set(TaskStates.COMPLETED);
+            if (status().get().equals(TaskStates.ACTIVE))
+            {
+                statusChanged(DomainEvent.CREATE, TaskStates.DONE);
+            }
         }
 
-        public void dropped(DomainEvent event)
+        public void activate()
         {
-            status().set(TaskStates.DROPPED);
+            if (status().get().equals(TaskStates.DONE) || status().get().equals(TaskStates.COMPLETED))
+            {
+                statusChanged(DomainEvent.CREATE, TaskStates.ACTIVE);
+            }
         }
     }
 

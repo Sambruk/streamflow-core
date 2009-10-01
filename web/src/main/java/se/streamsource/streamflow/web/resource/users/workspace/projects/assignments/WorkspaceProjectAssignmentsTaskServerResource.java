@@ -44,7 +44,7 @@ public class WorkspaceProjectAssignmentsTaskServerResource
         Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
         Assignments assignments = uowf.currentUnitOfWork().get(Assignments.class, projectId);
         Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
-        assignments.completeAssignedTask(task, assignee);
+        assignments.completeAssignedTask(task);
     }
 
     public void describe(StringDTO stringValue)
@@ -65,7 +65,7 @@ public class WorkspaceProjectAssignmentsTaskServerResource
         Assignments assignments = uowf.currentUnitOfWork().get(Assignments.class, projectId);
         Delegator delegator = uow.get(Delegator.class, userId);
         Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
-        assignments.delegateAssignedTaskTo(task, delegatee, delegator);
+        assignments.delegateAssignedTaskTo(task, delegatee);
     }
 
     public void forward(EntityReferenceDTO reference)

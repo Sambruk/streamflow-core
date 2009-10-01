@@ -18,17 +18,23 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
  */
 @Concerns(ProjectRoles.DescribeCreatedRoleConcern.class)
+@Mixins(ProjectRoles.ProjectRolesMixin.class)
 public interface ProjectRoles
 {
     ProjectRoleEntity createProjectRole(String name);
 
     boolean removeProjectRole(ProjectRole projectRole);
+
+    void addProjectRole(ProjectRole projectRole);
+
+    void mergeProjectRoles(ProjectRoles projectRoles);
 
     interface ProjectRolesState
     {
@@ -39,6 +45,31 @@ public interface ProjectRoles
         void projectRoleAdded(DomainEvent event, ProjectRoleEntity role);
         void projectRoleRemoved(DomainEvent event, ProjectRole role);
     }
+
+    abstract class ProjectRolesMixin
+        implements ProjectRoles, ProjectRolesState
+    {
+
+        public void mergeProjectRoles(ProjectRoles projectRoles)
+        {
+            while (this.projectRoles().count() > 0)
+            {
+                ProjectRole role = this.projectRoles().get(0);
+                removeProjectRole(role);
+                projectRoles.addProjectRole(role);
+            }
+        }
+
+        public void addProjectRole(ProjectRole projectRole)
+        {
+            if (projectRoles().contains(projectRole))
+            {
+                return;
+            }
+            projectRoleAdded(DomainEvent.CREATE, (ProjectRoleEntity) projectRole);
+        }
+    }
+
 
     abstract class DescribeCreatedRoleConcern
         extends ConcernOf<ProjectRoles>

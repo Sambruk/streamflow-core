@@ -335,4 +335,5 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     {
         return taskModels.get(id);
     }
+
 }

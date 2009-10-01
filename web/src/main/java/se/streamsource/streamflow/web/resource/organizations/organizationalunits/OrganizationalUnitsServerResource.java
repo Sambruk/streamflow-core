@@ -70,7 +70,7 @@ public class OrganizationalUnitsServerResource
         {
             checkPermission(ous);
 
-            ous.removeOrganizationalUnit(ou);
+            ou.deleteOrganizationalUnit();
 
         } catch(OpenProjectExistsException pe)
         {

@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -27,8 +25,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.library.constraints.annotation.MaxLength;
-import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
-import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.role.Roles;
@@ -36,13 +32,14 @@ import se.streamsource.streamflow.web.domain.role.Roles;
 /**
  * JAVADOC
  */
-@Concerns({OrganizationalUnits.OrganizationalUnitsConcern.class})
 @Mixins(OrganizationalUnits.OrganizationsMixin.class)
 public interface OrganizationalUnits
 {
     OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
 
-    void removeOrganizationalUnit(OrganizationalUnit ou) throws OpenProjectExistsException;
+    void addOrganizationalUnit(OrganizationalUnit ou);
+
+    void removeOrganizationalUnit(OrganizationalUnit ou);
 
     interface OrganizationalUnitsState
     {
@@ -52,6 +49,8 @@ public interface OrganizationalUnits
         OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id);
         void organizationalUnitRemoved(DomainEvent create, OrganizationalUnit ou);
         void organizationalUnitAdded(DomainEvent event, OrganizationalUnit ou);
+
+        OrganizationalUnits getParent(OrganizationalUnit ou);
     }
 
     abstract class OrganizationsMixin
@@ -75,7 +74,7 @@ public interface OrganizationalUnits
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
             OrganizationalUnitEntity ou = organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
-            organizationalUnitAdded(DomainEvent.CREATE, ou);
+            addOrganizationalUnit(ou);
             ou.changeDescription(name);
 
             // Add current user as administrator
@@ -84,13 +83,20 @@ public interface OrganizationalUnits
             return ou;
         }
 
-        public void removeOrganizationalUnit(OrganizationalUnit ou) throws OpenProjectExistsException
+        public void addOrganizationalUnit(OrganizationalUnit ou)
+        {
+            if (!organizationalUnits().contains(ou)) {
+                return;
+            }
+            organizationalUnitAdded(DomainEvent.CREATE, ou);
+        }
+
+        public void removeOrganizationalUnit(OrganizationalUnit ou)
         {
             if (!organizationalUnits().contains(ou))
                 return; // OU is not a sub-OU of this OU
 
             organizationalUnitRemoved(DomainEvent.CREATE, ou);
-            ((Removable) ou).removeEntity();
         }
 
         public OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id)
@@ -110,34 +116,26 @@ public interface OrganizationalUnits
         {
             organizationalUnits().add(organizationalUnits().count(), ou);
         }
-    }
 
-    abstract class OrganizationalUnitsConcern
-        extends ConcernOf<OrganizationalUnits>
-        implements OrganizationalUnits
-    {
-        public void removeOrganizationalUnit(OrganizationalUnit ou) throws OpenProjectExistsException
+
+        public OrganizationalUnits getParent(OrganizationalUnit ou)
         {
-            OrganizationalUnitEntity entity = (OrganizationalUnitEntity)ou;
-
-            if(entity.projects().count() > 0)
+            if (organizationalUnits().contains(ou))
             {
-                throw new OpenProjectExistsException("There are open projects");
-            }
-            else
+                return this;
+            } else
             {
-                for(OrganizationalUnit oue : entity.organizationalUnits())
+                for (OrganizationalUnit organizationalUnit : organizationalUnits())
                 {
-                    OrganizationalUnitEntity e = (OrganizationalUnitEntity)oue;
-
-                    if(e.projects().count() > 0)
-                     {
-                         throw new OpenProjectExistsException("There are open projects");
-                     }
+                    OrganizationalUnitsState state = (OrganizationalUnitsState) organizationalUnit;
+                    OrganizationalUnits parent = state.getParent(ou);
+                    if (parent != null)
+                    {
+                        return parent;
+                    }
                 }
             }
-
-            next.removeOrganizationalUnit(ou);
+            return null;
         }
     }
 }

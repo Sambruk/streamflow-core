@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.domain.contact;
+package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.Structure;
@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.List;

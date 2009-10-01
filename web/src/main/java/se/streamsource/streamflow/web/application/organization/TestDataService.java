@@ -84,16 +84,13 @@ public interface TestDataService
             project.createLabel().changeDescription("Issue chase");
             project.createLabel().changeDescription("Suggestion");
 
-            project.createMember(user);
-            project.addRole(user, agent);
+            project.addMember(user);
 
             // Create project
             Project parks = ou.createProject("City parks");
 
-            parks.createMember(cc);
-            parks.addRole(cc, agent);
-            parks.createMember(user);
-            parks.addRole(user, manager);
+            parks.addMember(cc);
+            parks.addMember(user);
 
             // Create tasks
             for (int i = 0; i < 30; i++)

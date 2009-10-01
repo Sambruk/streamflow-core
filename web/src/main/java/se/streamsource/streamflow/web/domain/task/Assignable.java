@@ -91,16 +91,14 @@ public interface Assignable
         @This
         Assignable assignable;
 
-        public void complete(Assignee assignee)
+        public void complete()
         {
-            assignable.assignTo(assignee);
-            next.complete(assignee);
+            next.complete();
         }
 
-        public void drop(Assignee assignee)
+        public void drop()
         {
-            assignable.assignTo(assignee);
-            next.drop(assignee);
+            next.drop();
         }
     }
 

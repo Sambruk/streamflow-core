@@ -21,6 +21,7 @@ public enum TaskStates
 {
     ACTIVE,
     COMPLETED,
+    DONE,
     DROPPED,
     ARCHIVED
 }

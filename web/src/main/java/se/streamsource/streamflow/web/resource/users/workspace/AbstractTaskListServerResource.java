@@ -65,7 +65,7 @@ public class AbstractTaskListServerResource
         prototype.creationDate().set(task.createdOn().get());
         prototype.description().set(task.description().get());
         prototype.status().set(task.status().get());
-        prototype.isRead().set(task.isRead().get());
+        prototype.isRead().set(true);
 
         ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder(ListValue.class);
         List<ListItemValue> labelList = labelListBuilder.prototype().items().get();

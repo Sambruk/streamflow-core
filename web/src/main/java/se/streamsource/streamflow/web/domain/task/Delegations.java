@@ -27,7 +27,7 @@ public interface Delegations
 
     void reject(Task task);
 
-    void completeDelegatedTask(Task task, Assignee assignee);
+    void finishDelegatedTask(Task task, Assignee assignee);
 
     class DelegationsMixin
             implements Delegations
@@ -46,9 +46,10 @@ public interface Delegations
             task.rejectDelegation();
         }
 
-        public void completeDelegatedTask(Task task, Assignee assignee)
+        public void finishDelegatedTask(Task task, Assignee assignee)
         {
-            task.complete(assignee);
+            accept(task, assignee);
+            task.done();
         }
     }
 }

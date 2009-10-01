@@ -14,58 +14,36 @@
 
 package se.streamsource.streamflow.web.domain.project;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.entity.Lifecycle;
-import org.qi4j.api.entity.LifecycleException;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.group.Participant;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * JAVADOC
  */
 @SideEffects(Members.RemovableSideEffect.class)
-@Concerns(Members.LifecycleConcern.class)
 @Mixins(Members.MembersMixin.class)
 public interface Members
 {
-    void createMember(Participant participant);
-
-    void addRole(Participant participant, ProjectRole projectRole);
+    void addMember(Participant participant);
 
     void removeMember(Participant participant);
-
-    void removeRole(Participant participant, ProjectRole projectRole);
 
     void removeAllMembers();
 
     interface MembersState
     {
-        Property<MembersValue> members();
+        ManyAssociation<Participant> members();
 
-        boolean isMember(Participant participant);
-
-        Iterable<ProjectRole> getRoles(Participant participant);
-
-
-        void memberCreated(DomainEvent event, Participant participant);
-
+        void memberAdded(DomainEvent event, Participant participant);
 
         void memberRemoved(DomainEvent event, Participant participant);
     }
@@ -85,136 +63,32 @@ public interface Members
         @This
         Project project;
 
-        public void createMember(Participant participant)
+        public void addMember(Participant participant)
         {
-            if (isMember(participant))
+            if (members().contains(participant))
                 return;
 
-            memberCreated(DomainEvent.CREATE, participant);
+            memberAdded(DomainEvent.CREATE, participant);
 
             participant.joinProject(project);
         }
 
-        public void addRole(Participant participant, ProjectRole projectRole)
-        {
-            EntityReference participantRef = EntityReference.getEntityReference(participant);
-            ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
-            MemberValue memberValue = membersBuilder.prototype().getMemberValue(participantRef);
-            if (memberValue != null)
-            {
-                List<EntityReference> roles = memberValue.roles().get();
-                EntityReference roleRef = EntityReference.getEntityReference(projectRole);
-                for (EntityReference entityReference : roles)
-                {
-                    if (entityReference.equals(roleRef))
-                        return;
-                }
-
-                roles.add(roleRef);
-
-                state.members().set(membersBuilder.newInstance());
-            }
-        }
-
         public void removeMember(Participant participant)
         {
-            EntityReference participantRef = EntityReference.getEntityReference(participant);
-            ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
-            MemberValue memberValue = membersBuilder.prototype().getMemberValue(participantRef);
-            if (memberValue != null)
+            if (!members().contains(participant))
             {
-                memberRemoved(DomainEvent.CREATE, participant);
-                participant.leaveProject(project);
+                return;
             }
-        }
-
-        public void removeRole(Participant participant, ProjectRole projectRole)
-        {
-            EntityReference participantRef = EntityReference.getEntityReference(participant);
-            EntityReference roleRef = EntityReference.getEntityReference(projectRole);
-            ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
-            MemberValue memberValue = membersBuilder.prototype().getMemberValue(participantRef);
-            if (memberValue != null)
-            {
-                if (memberValue.roles().get().remove(roleRef))
-                    state.members().set(membersBuilder.newInstance());
-            }
+            memberRemoved(DomainEvent.CREATE, participant);
+            participant.leaveProject(project);
         }
 
         public void removeAllMembers()
         {
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            for (MemberValue memberValue : state.members().get().members().get())
+            while (members().count() != 0)
             {
-                Participant participant = uow.get(Participant.class, memberValue.participant().get().identity());
-                removeMember(participant);
+                removeMember(members().get(0));
             }
-        }
-
-        public boolean isMember(Participant participant)
-        {
-            EntityReference participantRef = EntityReference.getEntityReference(participant);
-            MembersValue membersValue = state.members().get();
-            MemberValue memberValue = membersValue.getMemberValue(participantRef);
-            return memberValue != null;
-        }
-
-        // Events
-        public void memberCreated(DomainEvent event, Participant participant)
-        {
-            ValueBuilder<MemberValue> builder = vbf.newValueBuilder(MemberValue.class);
-            builder.prototype().participant().set(EntityReference.getEntityReference(participant));
-            ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
-            List<MemberValue> members = membersBuilder.prototype().members().get();
-            members.add(builder.newInstance());
-            state.members().set(membersBuilder.newInstance());
-        }
-
-        public void memberRemoved(DomainEvent event, Participant participant)
-        {
-            EntityReference participantRef = EntityReference.getEntityReference(participant);
-            ValueBuilder<MembersValue> membersBuilder = state.members().get().buildWith();
-            MemberValue memberValue = membersBuilder.prototype().getMemberValue(participantRef);
-            if (memberValue != null)
-            {
-                membersBuilder.prototype().members().get().remove(memberValue);
-                state.members().set(membersBuilder.newInstance());
-            }
-        }
-
-        public Iterable<ProjectRole> getRoles(Participant participant)
-        {
-            EntityReference participantRef = EntityReference.getEntityReference(participant);
-            MemberValue memberValue = state.members().get().getMemberValue(participantRef);
-            if (memberValue != null)
-            {
-                List<ProjectRole> projectRoles = new ArrayList<ProjectRole>();
-                for (EntityReference entityReference : memberValue.roles().get())
-                {
-                    projectRoles.add(uowf.currentUnitOfWork().get(ProjectRole.class, entityReference.identity()));
-                }
-                return projectRoles;
-            } else
-                return Collections.emptyList();
-        }
-    }
-
-    class LifecycleConcern
-            extends ConcernOf<Lifecycle>
-            implements Lifecycle
-    {
-        @This
-        MembersState state;
-        @Structure
-        ValueBuilderFactory vbf;
-
-        public void create() throws LifecycleException
-        {
-            state.members().set(vbf.newValue(MembersValue.class));
-        }
-
-        public void remove() throws LifecycleException
-        {
         }
     }
 

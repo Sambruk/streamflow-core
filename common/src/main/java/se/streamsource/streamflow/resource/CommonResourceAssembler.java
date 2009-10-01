@@ -34,8 +34,6 @@ import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
-import se.streamsource.streamflow.resource.organization.MergeOrganizationalUnitCommand;
-import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
@@ -65,9 +63,7 @@ public class CommonResourceAssembler
                 StringDTO.class,
                 DateDTO.class,
                 EntityReferenceDTO.class,
-                NewCommentCommand.class,
-                MoveOrganizationalUnitCommand.class,
-                MergeOrganizationalUnitCommand.class).visibleIn(Visibility.application);
+                NewCommentCommand.class).visibleIn(Visibility.application);
 
         // Queries
         module.addValues(UserSpecification.class, TasksQuery.class).visibleIn(Visibility.application);

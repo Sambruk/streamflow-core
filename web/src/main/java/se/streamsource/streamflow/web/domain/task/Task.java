@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import se.streamsource.streamflow.domain.contact.Contacts;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.web.domain.comment.Commentable;
@@ -32,7 +31,6 @@ public interface Task
         Delegatable,
         Describable,
         DueOn,
-        IsRead,
         Labelable,
         Notable,
         Ownable,

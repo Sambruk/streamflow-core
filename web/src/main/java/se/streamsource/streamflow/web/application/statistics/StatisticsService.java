@@ -184,7 +184,7 @@ public interface StatisticsService
                             for (Group group : participant.groups())
                             {
                                 Members.MembersState members = (Members.MembersState) owner;
-                                if (members.isMember(group))
+                                if (members.members().contains(group))
                                 {
                                     groupName = group.getDescription();
                                     break findgroup;

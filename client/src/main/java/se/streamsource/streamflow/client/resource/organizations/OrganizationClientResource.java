@@ -21,8 +21,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
-import se.streamsource.streamflow.resource.organization.MergeOrganizationalUnitCommand;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
@@ -69,13 +68,13 @@ public class OrganizationClientResource
         return query("findTasks", builder.newInstance(), ListValue.class);
     }
 
-    public void move(MoveOrganizationalUnitCommand moveCommand) throws ResourceException
+    public void move(EntityReferenceDTO moveCommand) throws ResourceException
     {
-        putCommand("moveOrganizationalUnit", moveCommand);
+        postCommand("move", moveCommand);
     }
 
-    public void merge(MergeOrganizationalUnitCommand mergeCommand) throws ResourceException
+    public void merge(EntityReferenceDTO mergeCommand) throws ResourceException
     {
-        putCommand("mergeOrganizationalUnit", mergeCommand);
+        postCommand("merge", mergeCommand);
     }
 }

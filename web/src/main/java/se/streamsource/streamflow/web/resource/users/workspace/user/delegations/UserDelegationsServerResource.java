@@ -64,6 +64,7 @@ public class UserDelegationsServerResource
         ((DelegatedTaskDTO) prototype).delegatedOn().set(task.delegatedOn().get());
         Owner owner = uowf.currentUnitOfWork().get(Owner.class, task.owner().get().identity().get());
         ((DelegatedTaskDTO) prototype).delegatedFrom().set(owner.getDescription());
+        prototype.isRead().set(true);
 
         super.buildTask(prototype, labelBuilder, labelPrototype, task);
     }

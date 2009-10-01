@@ -19,12 +19,11 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
-import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.project.ProjectRole;
-import se.streamsource.streamflow.web.domain.project.ProjectRoleEntity;
+import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
+import se.streamsource.streamflow.domain.roles.Removable;
+import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.project.ProjectRoles;
+import se.streamsource.streamflow.web.domain.project.Projects;
 
 /**
  * An organizational unit represents a part of an organization.
@@ -32,86 +31,97 @@ import se.streamsource.streamflow.web.domain.project.ProjectRoleEntity;
 @Mixins(OrganizationalUnit.OrganizationalUnitMixin.class)
 public interface OrganizationalUnit
 {
-    void moveOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MoveOrganizationalUnitException;
+    void moveOrganizationalUnit(OrganizationalUnits to) throws MoveOrganizationalUnitException;
 
-    void mergeOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MergeOrganizationalUnitException;
+    void mergeOrganizationalUnit(OrganizationalUnit to) throws MergeOrganizationalUnitException;
+
+    void deleteOrganizationalUnit() throws OpenProjectExistsException;
 
     interface OrganizationalUnitState
     {
         Association<Organization> organization();
+
+        OrganizationalUnits getParent();
     }
 
     abstract class OrganizationalUnitMixin
             implements OrganizationalUnit, OrganizationalUnitState
     {
         @This
-        OrganizationalUnitState state;
+        Projects.ProjectsState projects;
 
-        public void moveOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MoveOrganizationalUnitException
+        @This
+        ProjectRoles projectRoles;
+
+        @This
+        Groups groups;
+
+        @This
+        OrganizationalUnits.OrganizationalUnitsState organizationalUnits;
+
+        @This
+        Removable removable;
+
+        public void deleteOrganizationalUnit() throws OpenProjectExistsException
         {
-            OrganizationalUnitEntity oue = (OrganizationalUnitEntity) state;
-            OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
-            OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
-            if (oue.identity().get().equals(toEntity.identity().get()))
+            if(projects.projects().count() > 0)
             {
-                throw new MoveOrganizationalUnitException();
+                throw new OpenProjectExistsException("There are open projects");
             }
-
-            if (toEntity.organizationalUnits().contains(oue))
+            else
             {
-                throw new MoveOrganizationalUnitException();
-            }
+                for(OrganizationalUnit oue : organizationalUnits.organizationalUnits())
+                {
+                    OrganizationalUnitEntity e = (OrganizationalUnitEntity)oue;
 
-            if (!parentEntity.organizationalUnits().contains(oue))
-            {
-                throw new MoveOrganizationalUnitException();
+                    if(e.projects().count() > 0)
+                     {
+                         throw new OpenProjectExistsException("There are open projects");
+                     }
+                }
             }
-
-            parentEntity.organizationalUnitRemoved(DomainEvent.CREATE, oue);
-            toEntity.organizationalUnitAdded(DomainEvent.CREATE, oue);
+            OrganizationalUnits parent = getParent();
+            parent.removeOrganizationalUnit(this);
+            removable.removeEntity();
         }
 
-        public void mergeOrganizationalUnit(OrganizationalUnit parent, OrganizationalUnit to) throws MergeOrganizationalUnitException
+        public void moveOrganizationalUnit(OrganizationalUnits to) throws MoveOrganizationalUnitException
         {
-            OrganizationalUnitEntity oue = (OrganizationalUnitEntity) state;
+            OrganizationalUnits parent = getParent();
+            if (this.equals(to))
+            {
+                throw new MoveOrganizationalUnitException();
+            }
+            if (to.equals(parent))
+            {
+                return;
+            }
+
+            parent.removeOrganizationalUnit(this);
+            to.addOrganizationalUnit(this);
+        }
+
+        public void mergeOrganizationalUnit(OrganizationalUnit to) throws MergeOrganizationalUnitException
+        {
+            OrganizationalUnits parent = getParent();
             OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
-            OrganizationalUnitEntity parentEntity = (OrganizationalUnitEntity) parent;
-            if (oue.identity().get().equals(toEntity.identity().get()))
+            if (this.equals(toEntity))
             {
                 throw new MergeOrganizationalUnitException();
             }
 
-            if (!parentEntity.organizationalUnits().contains(oue))
-            {
-                throw new MergeOrganizationalUnitException();
-            }
+            projectRoles.mergeProjectRoles((ProjectRoles)to);
+            groups.mergeGroups((Groups)to);
+            projects.mergeProjects((Projects)to);
 
-            if (oue.organizationalUnits().count() != 0)
-            {
-                throw new MergeOrganizationalUnitException();
-            }
+            parent.removeOrganizationalUnit(this);
+            removable.removeEntity();
+        }
 
-            while (oue.projectRoles().count() > 0)
-            {
-                ProjectRole role = oue.projectRoles().get(0);
-                oue.projectRoleRemoved(DomainEvent.CREATE, role);
-                toEntity.projectRoleAdded(DomainEvent.CREATE, (ProjectRoleEntity) role);
-            }
-            while (oue.groups().count() >0)
-            {
-                Group group = oue.groups().get(0);
-                oue.groupRemoved(DomainEvent.CREATE, group);
-                toEntity.groupAdded(DomainEvent.CREATE, (GroupEntity) group);
-            }
-            while (oue.projects().count() >0)
-            {
-                Project project = oue.projects().get(0);
-                oue.projectRemoved(DomainEvent.CREATE, project);
-                toEntity.projectAdded(DomainEvent.CREATE, project);
-            }
-
-            parentEntity.organizationalUnitRemoved(DomainEvent.CREATE, oue);
-            oue.removeEntity();
+        public OrganizationalUnits getParent()
+        {
+            OrganizationalUnits.OrganizationalUnitsState ous = (OrganizationalUnits.OrganizationalUnitsState) organization().get();
+            return ous.getParent(this);
         }
     }
 }

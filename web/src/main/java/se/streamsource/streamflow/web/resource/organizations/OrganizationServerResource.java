@@ -31,14 +31,13 @@ import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitExce
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.organization.MergeOrganizationalUnitCommand;
-import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
@@ -163,36 +162,34 @@ public class OrganizationServerResource
         return listBuilder.newList();
     }
 
-    public void moveOrganizationalUnit(MoveOrganizationalUnitCommand moveValue) throws ResourceException
+    public void move(EntityReferenceDTO moveValue) throws ResourceException
     {
         String ouId = (String) getRequest().getAttributes().get("organization");
         OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
-        OrganizationalUnit parentEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.parent().get().identity());
-        OrganizationalUnit toEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.to().get().identity());
+        OrganizationalUnits toEntity = uowf.currentUnitOfWork().get(OrganizationalUnits.class, moveValue.entity().get().identity());
 
         checkPermission(ou);
 
         try
         {
-            ou.moveOrganizationalUnit(parentEntity, toEntity);
+            ou.moveOrganizationalUnit(toEntity);
         } catch (MoveOrganizationalUnitException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
         }
     }
 
-    public void mergeOrganizationalUnit(MergeOrganizationalUnitCommand moveValue) throws ResourceException
+    public void merge(EntityReferenceDTO moveValue) throws ResourceException
     {
         String ouId = (String) getRequest().getAttributes().get("organization");
         OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
-        OrganizationalUnit parentEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.parent().get().identity());
-        OrganizationalUnit toEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.to().get().identity());
+        OrganizationalUnit toEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.entity().get().identity());
 
         checkPermission(ou);
 
         try
         {
-            ou.mergeOrganizationalUnit(parentEntity, toEntity);
+            ou.mergeOrganizationalUnit(toEntity);
         } catch (MergeOrganizationalUnitException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);

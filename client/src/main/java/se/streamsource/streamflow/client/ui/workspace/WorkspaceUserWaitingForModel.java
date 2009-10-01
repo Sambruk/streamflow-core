@@ -14,11 +14,14 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
+import se.streamsource.streamflow.domain.task.TaskStates;
 
 import java.util.Date;
 
@@ -64,4 +67,26 @@ public class WorkspaceUserWaitingForModel
 
         return super.getValueAt(rowIndex, column);
     }
+
+    public void reject(int row) throws ResourceException
+    {
+        TaskDTO task = getTask(row);
+
+        getResource().reject(task.task().get().identity());
+    }
+
+    public void complete(int row) throws ResourceException
+    {
+        TaskDTO task = getTask(row);
+
+        if (task.status().get().equals(TaskStates.DONE))
+        {
+            getResource().completeFinishedTask(task.task().get().identity());
+        } else if (task.status().get().equals(TaskStates.ACTIVE))
+        {
+            getResource().completeWaitingForTask(task.task().get().identity());
+        }
+
+    }
+
 }

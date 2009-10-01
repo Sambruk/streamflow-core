@@ -50,7 +50,7 @@ public class MemberServerResource
             uow.discard();
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
-        project.createMember(participant);
+        project.addMember(participant);
 
         try
         {

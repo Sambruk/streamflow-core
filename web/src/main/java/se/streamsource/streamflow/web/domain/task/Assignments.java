@@ -18,6 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.entity.association.ManyAssociation;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -28,11 +29,11 @@ public interface Assignments
 {
     Task createAssignedTask(Assignee assignee);
 
-    void completeAssignedTask(Task task, Assignee assignee);
+    void completeAssignedTask(Task task);
 
-    void dropAssignedTask(Task task, Assignee assignee);
+    void dropAssignedTask(Task task);
 
-    void delegateAssignedTaskTo(Task task, Delegatee delegatee, Delegator delegator);
+    void delegateAssignedTaskTo(Task task, Delegatee delegatee);
 
     void forwardAssignedTask(Task task, Inbox receiverInbox);
 
@@ -40,8 +41,17 @@ public interface Assignments
 
     void markAssignedTaskAsUnread(Task task);
 
-    class AssignmentsMixin
-            implements Assignments
+    interface AssignmentsState
+    {
+        void assignedTaskMarkedAsRead(DomainEvent event, Task task);
+        void assignedTaskMarkedAsUnread(DomainEvent event, Task task);
+        ManyAssociation<Task> unreadAssignedTasks();
+    }
+
+
+
+    abstract class AssignmentsMixin
+            implements Assignments, AssignmentsState
     {
         @Structure
         UnitOfWorkFactory uowf;
@@ -50,33 +60,36 @@ public interface Assignments
         Owner owner;
 
         @This
-        Delegations delegations;
+        WaitingFor waitingFor;
 
         @This
-        Inbox.InboxState inbox;
+        Inbox inbox;
 
         public Task createAssignedTask(Assignee assignee)
         {
-            Task task = inbox.taskCreated(DomainEvent.CREATE);
-            task.changeOwner(owner);
+            Task task = inbox.createTask();
             task.assignTo(assignee);
             return task;
         }
 
-        public void completeAssignedTask(Task task, Assignee assignee)
+        public void completeAssignedTask(Task task)
         {
-            task.complete(assignee);
+            task.complete();
+            markAssignedTaskAsRead(task);
         }
 
-        public void dropAssignedTask(Task task, Assignee assignee)
+        public void dropAssignedTask(Task task)
         {
-            task.drop(assignee);
+            task.drop();
+            markAssignedTaskAsRead(task);
         }
 
-        public void delegateAssignedTaskTo(Task task, Delegatee delegatee, Delegator delegator)
+        public void delegateAssignedTaskTo(Task task, Delegatee delegatee)
         {
+            Assignable.AssignableState assignable = (Assignable.AssignableState) task;
+            Delegator delegator = (Delegator) assignable.assignedTo().get();
             task.unassign();
-            task.delegateTo(delegatee, delegator, delegations);
+            task.delegateTo(delegatee, delegator, waitingFor);
         }
 
         public void forwardAssignedTask(Task task, Inbox receiverInbox)
@@ -86,12 +99,30 @@ public interface Assignments
 
         public void markAssignedTaskAsRead(Task task)
         {
-            task.markAsRead();
+            if (!unreadAssignedTasks().contains(task))
+            {
+                return;
+            }
+            assignedTaskMarkedAsRead(DomainEvent.CREATE, task);
         }
 
         public void markAssignedTaskAsUnread(Task task)
         {
-            task.markAsUnread();
+            if (unreadAssignedTasks().contains(task))
+            {
+                return;
+            }
+            assignedTaskMarkedAsUnread(DomainEvent.CREATE, task);
+        }
+
+        public void assignedTaskMarkedAsRead(DomainEvent event, Task task)
+        {
+            unreadAssignedTasks().remove(task);
+        }
+
+        public void assignedTaskMarkedAsUnread(DomainEvent event, Task task)
+        {
+            unreadAssignedTasks().add(task);
         }
     }
 }

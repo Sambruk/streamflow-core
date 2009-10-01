@@ -18,17 +18,23 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
  */
 @Concerns(Groups.DescribeCreatedGroupConcern.class)
+@Mixins(Groups.GroupsMixin.class)
 public interface Groups
 {
     GroupEntity createGroup(String name);
 
+    void addGroup(GroupEntity group);
+
     boolean removeGroup(Group group);
+
+    void mergeGroups(Groups groups);
 
     interface GroupsState
     {
@@ -38,6 +44,31 @@ public interface Groups
         GroupEntity groupCreated(DomainEvent event, String id);
         void groupAdded(DomainEvent event, GroupEntity group);
         void groupRemoved(DomainEvent event, Group group);
+    }
+
+    abstract class GroupsMixin
+        implements Groups, GroupsState
+    {
+        public void mergeGroups(Groups groups)
+        {
+
+            while (this.groups().count() >0)
+            {
+                Group group = this.groups().get(0);
+                removeGroup(group);
+                groups.addGroup((GroupEntity) group);
+            }
+
+        }
+
+        public void addGroup(GroupEntity group)
+        {
+            if (groups().contains(group))
+            {
+                return;
+            }
+            groupAdded(DomainEvent.CREATE, group);
+        }
     }
 
     abstract class DescribeCreatedGroupConcern

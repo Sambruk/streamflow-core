@@ -40,7 +40,7 @@ public interface Participants
         ManyAssociation<Participant> participants();
 
 
-        void participantJoined(DomainEvent event, Participant participant);
+        void participantAdded(DomainEvent event, Participant participant);
 
 
         void participantRemoved(DomainEvent event, Participant participant);
@@ -59,7 +59,7 @@ public interface Participants
         {
             if (!participants().contains(participant))
             {
-                participantJoined(DomainEvent.CREATE, participant);
+                participantAdded(DomainEvent.CREATE, participant);
                 participant.joinGroup(group);
             }
         }
@@ -74,7 +74,7 @@ public interface Participants
         }
 
         // Events
-        public void participantJoined(DomainEvent event, Participant participant)
+        public void participantAdded(DomainEvent event, Participant participant)
         {
             participants().add(participant);
         }

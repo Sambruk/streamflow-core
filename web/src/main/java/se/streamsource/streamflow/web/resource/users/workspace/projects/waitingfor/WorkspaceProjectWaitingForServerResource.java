@@ -56,8 +56,7 @@ public class WorkspaceProjectWaitingForServerResource
                 isNotNull(delegatee),
                 or(
                         eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                        and(notEq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                                eq(templateFor(IsRead.IsReadState.class).isRead(), false)))));
+                        eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.DONE))));
 
         Query<TaskEntity> waitingForQuery = queryBuilder.newQuery(uow);
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));

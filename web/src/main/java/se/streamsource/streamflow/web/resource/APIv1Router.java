@@ -45,19 +45,12 @@ import se.streamsource.streamflow.web.resource.organizations.projects.ProjectSer
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRoleServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.members.roles.MemberRolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
-import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.rest.CompositeFinder;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
@@ -97,8 +90,6 @@ public class APIv1Router
         attach("/organizations/{organization}/projects/{project}", createServerResourceFinder(ProjectServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members", createServerResourceFinder(MembersServerResource.class));
         attach("/organizations/{organization}/projects/{project}/members/{member}", createServerResourceFinder(MemberServerResource.class));
-        attach("/organizations/{organization}/projects/{project}/members/{member}/roles", createServerResourceFinder(MemberRolesServerResource.class));
-        attach("/organizations/{organization}/projects/{project}/members/{member}/roles/{role}", createServerResourceFinder(MemberRoleServerResource.class));
         attach("/organizations/{organization}/projects/{labels}/labels", createServerResourceFinder(LabelsServerResource.class));
         attach("/organizations/{organization}/projects/{labels}/labels/{label}", createServerResourceFinder(LabelServerResource.class));
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));

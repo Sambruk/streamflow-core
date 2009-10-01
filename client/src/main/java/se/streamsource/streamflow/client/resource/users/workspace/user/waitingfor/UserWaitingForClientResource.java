@@ -15,6 +15,8 @@
 package se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.entity.EntityReference;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
@@ -22,6 +24,7 @@ import se.streamsource.streamflow.client.resource.users.workspace.TaskListClient
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import java.util.List;
 
@@ -40,4 +43,27 @@ public class UserWaitingForClientResource
     {
         return query("tasks", query, WaitingForTaskListDTO.class).<WaitingForTaskListDTO>buildWith().prototype().tasks().get();
     }
+
+    public void reject(String taskId) throws ResourceException
+    {
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+        builder.prototype().entity().set(EntityReference.parseEntityReference(taskId));
+        putCommand("reject", builder.newInstance());
+
+    }
+
+    public void completeFinishedTask(String taskId) throws ResourceException
+    {
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+        builder.prototype().entity().set(EntityReference.parseEntityReference(taskId));
+        putCommand("completeFinishedTask", builder.newInstance());
+    }
+
+    public void completeWaitingForTask(String taskId) throws ResourceException
+    {
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+        builder.prototype().entity().set(EntityReference.parseEntityReference(taskId));
+        putCommand("completeWaitingForTask", builder.newInstance());
+    }
+
 }

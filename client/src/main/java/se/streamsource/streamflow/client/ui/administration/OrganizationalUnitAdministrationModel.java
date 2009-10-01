@@ -33,12 +33,10 @@ import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
-import se.streamsource.streamflow.resource.organization.MergeOrganizationalUnitCommand;
-import se.streamsource.streamflow.resource.organization.MoveOrganizationalUnitCommand;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.JLabel;
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -153,10 +151,9 @@ public class OrganizationalUnitAdministrationModel
     public void moveOrganizationalUnit(EntityReference parentID, EntityReference toID)
     {
         try {
-            ValueBuilder<MoveOrganizationalUnitCommand> builder = vbf.newValueBuilder(MoveOrganizationalUnitCommand.class);
-            MoveOrganizationalUnitCommand dto = builder.prototype();
-            dto.parent().set(parentID);
-            dto.to().set(toID);
+            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+            EntityReferenceDTO dto = builder.prototype();
+            dto.entity().set(toID);
 
             organization.move(builder.newInstance());
         } catch (ResourceException e) {
@@ -176,10 +173,9 @@ public class OrganizationalUnitAdministrationModel
     public void mergeOrganizationalUnit(EntityReference parentID, EntityReference toID)
     {
         try {
-            ValueBuilder<MergeOrganizationalUnitCommand> builder = vbf.newValueBuilder(MergeOrganizationalUnitCommand.class);
-            MergeOrganizationalUnitCommand dto = builder.prototype();
-            dto.parent().set(parentID);
-            dto.to().set(toID);
+            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+            EntityReferenceDTO dto = builder.prototype();
+            dto.entity().set(toID);
 
             organization.merge(builder.newInstance());
         } catch (ResourceException e) {

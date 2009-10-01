@@ -37,7 +37,7 @@ public class WorkspaceProjectDelegationsTaskServerResource
         Task task = uow.get(Task.class, taskId);
         Delegations delegations = uow.get(Delegations.class, projectId);
         Assignee assignee = uow.get(Assignee.class, userId);
-        delegations.completeDelegatedTask(task, assignee);
+        delegations.finishDelegatedTask(task, assignee);
     }
 
     public void assignToMe()

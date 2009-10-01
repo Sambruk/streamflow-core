@@ -32,6 +32,6 @@ public class ProjectAssembler
                 ProjectRoleEntity.class,
                 ProjectEntity.class).visibleIn(application);
 
-        module.addValues(PermissionValue.class, MembersValue.class, MemberValue.class).visibleIn(application);
+        module.addValues(PermissionValue.class).visibleIn(application);
     }
 }

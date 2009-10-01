@@ -27,6 +27,7 @@ import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.task.*;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
@@ -41,19 +42,18 @@ public class UserWaitingForServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String userId = (String) getRequest().getAttributes().get("user");
-        Delegations delegations = uow.get(Delegations.class, userId);
+        WaitingFor delegations = uow.get(WaitingFor.class, userId);
 
 
         // Find all Active delegated tasks delegated by "me"
         // or Completed delegated tasks that are marked as unread
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Association<Delegations> delegatedFrom = templateFor(Delegatable.DelegatableState.class).delegatedFrom();
+        Association<WaitingFor> delegatedFrom = templateFor(Delegatable.DelegatableState.class).delegatedFrom();
         queryBuilder.where(and(
                 eq(delegatedFrom, delegations),
                 or(
                         eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                        and(notEq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                                eq(templateFor(IsRead.IsReadState.class).isRead(), false)))));
+                        eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.DONE))));
 
         Query<TaskEntity> waitingForQuery = queryBuilder.newQuery(uow);
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
@@ -70,6 +70,44 @@ public class UserWaitingForServerResource
             taskDTO.assignedTo().set(assignee.getDescription());
         taskDTO.delegatedTo().set(task.delegatedTo().get().getDescription());
         taskDTO.delegatedOn().set(task.delegatedOn().get());
+        prototype.isRead().set(true);
         super.buildTask(prototype, labelBuilder, labelPrototype, task);
     }
+
+
+    public void reject(EntityReferenceDTO taskRef)
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String userId = (String) getRequest().getAttributes().get("user");
+        WaitingFor delegations = uow.get(WaitingFor.class, userId);
+
+        Task task = uow.get(Task.class, taskRef.entity().get().identity());
+
+        delegations.rejectFinishedTask(task);
+    }
+
+
+    public void completeFinishedTask(EntityReferenceDTO taskRef)
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String userId = (String) getRequest().getAttributes().get("user");
+        WaitingFor delegations = uow.get(WaitingFor.class, userId);
+
+        Task task = uow.get(Task.class, taskRef.entity().get().identity());
+
+        delegations.completeFinishedTask(task);
+    }
+
+
+   public void completeWaitingForTask(EntityReferenceDTO taskRef)
+   {
+       UnitOfWork uow = uowf.currentUnitOfWork();
+       String userId = (String) getRequest().getAttributes().get("user");
+       WaitingFor delegations = uow.get(WaitingFor.class, userId);
+       Assignee assignee = uow.get(Assignee.class, userId);
+
+       Task task = uow.get(Task.class, taskRef.entity().get().identity());
+
+       delegations.completeWaitingForTask(task, assignee);
+   }
 }
