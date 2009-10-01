@@ -20,5 +20,9 @@ package se.streamsource.streamflow.client;
 public enum StreamFlowResources
 {
     startup_error,
-    could_not_process_events, operation_not_permitted
+    could_not_process_events, 
+    operation_not_permitted,
+    export_data_file_with_open_option,
+    export_completed,
+    excel_file
 }

@@ -30,5 +30,7 @@ public enum OverviewResources
     project_column_header,
     inbox_column_header,
     assigned_column_header,
-    could_not_refresh, total_column_header
+    could_not_refresh, 
+    total_column_header,
+    projects_summary
 }

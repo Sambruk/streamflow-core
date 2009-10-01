@@ -1,4 +1,7 @@
-package se.streamsource.streamflow.client.infrastructure.export;
+package se.streamsource.streamflow.client.export.overview;
+
+import se.streamsource.streamflow.client.infrastructure.export.AbstractExporterFactory;
+import se.streamsource.streamflow.client.infrastructure.export.ExcelExporter;
 
 public class ProjectSummaryExporterFactory implements AbstractExporterFactory
 {

@@ -1,4 +1,6 @@
-package se.streamsource.streamflow.client.infrastructure.export;
+package se.streamsource.streamflow.client.export.overview;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 import java.util.List;
 
@@ -10,8 +12,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import se.streamsource.streamflow.client.infrastructure.export.AbstractExcelExporter;
+import se.streamsource.streamflow.client.ui.overview.OverviewResources;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 
 public class ProjectSummaryExcelExporter extends AbstractExcelExporter
 {
@@ -21,19 +24,19 @@ public class ProjectSummaryExcelExporter extends AbstractExcelExporter
 	protected void doConversion()
 	{
 		summaryListDTO = (List<ProjectSummaryDTO>)getExportable();
-		Sheet sheet = createSheet("Project Summary");
+		Sheet sheet = createSheet(text(OverviewResources.projects_summary));
 
 		// Create header cells
 		Row headerRow = sheet.createRow((short) 0);
 		headerRow.setHeightInPoints(30);
 
-		createHeaderCell("Project", getWorkbook(), headerRow, (short) 0,
+		createHeaderCell(text(OverviewResources.project_column_header), getWorkbook(), headerRow, (short) 0,
 				HSSFCellStyle.ALIGN_CENTER, HSSFCellStyle.VERTICAL_CENTER);
-		createHeaderCell("Inbox", getWorkbook(), headerRow, (short) 1,
+		createHeaderCell(text(OverviewResources.inbox_column_header), getWorkbook(), headerRow, (short) 1,
 				HSSFCellStyle.ALIGN_CENTER, HSSFCellStyle.VERTICAL_CENTER);
-		createHeaderCell("Assigned", getWorkbook(), headerRow, (short) 2,
+		createHeaderCell(text(OverviewResources.assigned_column_header), getWorkbook(), headerRow, (short) 2,
 				HSSFCellStyle.ALIGN_CENTER, HSSFCellStyle.VERTICAL_CENTER);
-		createHeaderCell("Total", getWorkbook(), headerRow, (short) 3,
+		createHeaderCell(text(OverviewResources.total_column_header), getWorkbook(), headerRow, (short) 3,
 				HSSFCellStyle.ALIGN_CENTER, HSSFCellStyle.VERTICAL_CENTER);
 		short rowCounter = 0;
 		for (ProjectSummaryDTO summaryDTO : summaryListDTO)
