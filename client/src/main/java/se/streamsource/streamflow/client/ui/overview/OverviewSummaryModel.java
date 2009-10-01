@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -22,6 +23,7 @@ import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
 import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 
@@ -47,13 +49,13 @@ public class OverviewSummaryModel
     private String[] columnNames;
     private Class[] columnClasses;
 
-
-    public OverviewSummaryModel()
+    public OverviewSummaryModel(@Service EventSource source)
     {
         columnNames = new String[]{text(project_column_header), text(inbox_column_header),
                 text(assigned_column_header), text(total_column_header)};
         columnClasses = new Class[]{String.class, Integer.class, Integer.class, Integer.class};
     }
+
     public OverviewClientResource getResource()
     {
         return resource;

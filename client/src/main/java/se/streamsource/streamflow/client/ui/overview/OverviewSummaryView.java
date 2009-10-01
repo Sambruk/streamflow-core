@@ -14,24 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import java.awt.BorderLayout;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
@@ -40,13 +22,20 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.export.AbstractExporterFactory;
 import se.streamsource.streamflow.client.infrastructure.export.ExcelExporter;
 import se.streamsource.streamflow.client.infrastructure.export.ProjectSummaryExporterFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.io.File;
+import java.io.IOException;
 
 public class OverviewSummaryView extends JPanel
 {
@@ -124,8 +113,27 @@ public class OverviewSummaryView extends JPanel
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileChooser.setMultiSelectionEnabled(false);
-		FileFilter filter = new FileNameExtensionFilter("Excel file", "xls",
-				"ods", "sxc");
+		FileFilter filter = new FileFilter(){
+            public boolean accept(File f)
+            {
+              if(f.getName().lastIndexOf('.') != -1){
+                  String extension = f.getName().substring(f.getName().lastIndexOf('.'));
+                  if("xls".equals(extension)
+                          || "ods".equals(extension)
+                          || "sxc".equals(extension))
+                  {
+                      return true;
+                  } else
+                      return false;
+              } else
+                  return false;
+            }
+
+            public String getDescription() {
+                return "Excel file";
+            }
+        };
+
 		fileChooser.addChoosableFileFilter(filter);
 		int returnVal = fileChooser.showSaveDialog(OverviewSummaryView.this);
 		if (returnVal != JFileChooser.APPROVE_OPTION)
