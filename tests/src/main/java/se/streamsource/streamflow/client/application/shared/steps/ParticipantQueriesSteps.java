@@ -43,30 +43,29 @@ public class ParticipantQueriesSteps
     @When("a user named $name requests overview")
     public void requestOverview(String name) throws UnitOfWorkCompletionException
     {
-
         uowf.currentUnitOfWork().complete();
         summaryList = uowf.newUnitOfWork().get(UserEntity.class, name).getProjecsSummary();
     }
 
-    @Then( "summaryList contains one project")
+    @Then("summaryList contains one project")
     public void checkProjectCount()
     {
         ensureThat(1, CoreMatchers.equalTo(summaryList.projectOverviews().get().size()));
         summary = summaryList.projectOverviews().get().get(0);
     }
-    @Then("overview contains $count $column tasks")
-    public void checkResult(String count, String column)
-    {
 
+    @Then("overview contains $count $column tasks")
+    public void checkResult(int count, String column)
+    {
         if("inbox".equals(column))
         {
-            ensureThat(summary.inboxCount().get(), CoreMatchers.equalTo(Integer.parseInt(count)));
+            ensureThat(summary.inboxCount().get(), CoreMatchers.equalTo(count));
         } else if("assigned".equals(column))
         {
-            ensureThat(summary.assignedCount().get(), CoreMatchers.equalTo(Integer.parseInt(count)));
+            ensureThat(summary.assignedCount().get(), CoreMatchers.equalTo(count));
         } else
         {
-            ensureThat(summary.totalActive().get(), CoreMatchers.equalTo(Integer.parseInt(count)));    
+            ensureThat(summary.totalActive().get(), CoreMatchers.equalTo(count));    
         }
     }
 }
