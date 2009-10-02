@@ -33,6 +33,9 @@ public class TaskSetupSteps
     @Uses
     GenericSteps genericSteps;
 
+    @Uses
+    OrganizationalUnitsSetupSteps ouSteps;
+
     public Task assignedTask;
     public Task unassignedTask;
     public Assignments assignments;
@@ -40,12 +43,18 @@ public class TaskSetupSteps
     @Given("basic task setup")
     public void basicTaskSetup() throws Exception
     {
-        userSetupSteps.basicUserSetup();
+        ouSteps.setupOrganizationalUnit();
+
         UserEntity user = userSetupSteps.userMap.get("user1");
         unassignedTask = user.createTask();
         assignedTask = user.createTask();
         assignedTask.assignTo(user);
         assignments = userSetupSteps.userMap.get("user2");
+
+        ouSteps.project.addMember(user);
+        ouSteps.project.createTask();
+        ouSteps.project.createTask().assignTo(user);
+
         genericSteps.clearEvents();
     }
 

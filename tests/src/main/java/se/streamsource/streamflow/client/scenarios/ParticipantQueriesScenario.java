@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mads Enevoldsen. All Rights Reserved.
+ * Copyright (c) 2009, Arvid Huss. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,22 @@
 package se.streamsource.streamflow.client.scenarios;
 
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
-import se.streamsource.streamflow.client.application.shared.steps.AssignableSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ParticipantQueriesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationalUnitsSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
-/**
- * JAVADOC
- */
-public class AssignableScenario
-        extends AbstractWebDomainApplicationScenario
+public class ParticipantQueriesScenario
+extends AbstractWebDomainApplicationScenario
 {
-
-    public AssignableScenario()
+    public ParticipantQueriesScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public AssignableScenario(ClassLoader classLoader)
+    public ParticipantQueriesScenario(ClassLoader classLoader)
     {
-        super(classLoader, new AssignableSteps(), new TaskSetupSteps(), new OrganizationalUnitsSetupSteps(), new OrganizationsSteps(), new UserSteps(), new UserSetupSteps());
+        super(classLoader, new ParticipantQueriesSteps(), new TaskSetupSteps(), new OrganizationalUnitsSetupSteps(), new OrganizationsSteps(), new UserSetupSteps());
     }
 }

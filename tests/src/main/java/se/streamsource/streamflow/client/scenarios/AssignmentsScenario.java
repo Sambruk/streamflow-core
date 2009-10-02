@@ -19,6 +19,7 @@ import se.streamsource.streamflow.client.application.shared.steps.OrganizationsS
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationalUnitsSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
@@ -35,6 +36,6 @@ public class AssignmentsScenario
 
     public AssignmentsScenario(ClassLoader classLoader)
     {
-        super(classLoader, new AssignmentsSteps(), new TaskSetupSteps(), new OrganizationsSteps(), new UserSteps(), new UserSetupSteps());
+        super(classLoader, new AssignmentsSteps(), new TaskSetupSteps(), new OrganizationalUnitsSetupSteps(), new OrganizationsSteps(), new UserSteps(), new UserSetupSteps());
     }
 }

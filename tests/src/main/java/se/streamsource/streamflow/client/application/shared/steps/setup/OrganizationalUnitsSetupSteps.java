@@ -23,6 +23,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
+import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 import java.util.HashMap;
@@ -48,6 +49,7 @@ public class OrganizationalUnitsSetupSteps
 
     public Map<String, OrganizationalUnit> orgUnitMap = new HashMap<String, OrganizationalUnit>();
     public OrganizationalUnitEntity parent;
+    public Project project;
 
     @Given("basic organizational unit setup")
     public void setupOrganizationalUnit() throws Exception
@@ -57,7 +59,7 @@ public class OrganizationalUnitsSetupSteps
         orgUnitMap.put("OU1", parent.createOrganizationalUnit("OU1"));
         OrganizationalUnit uo2 = parent.createOrganizationalUnit("OU2");
         orgUnitMap.put("OU2", uo2);
-        ((OrganizationalUnitEntity) uo2).createProject("Project");
+        project = ((OrganizationalUnitEntity) uo2).createProject("Project");
 
         genericSteps.clearEvents();
     }
