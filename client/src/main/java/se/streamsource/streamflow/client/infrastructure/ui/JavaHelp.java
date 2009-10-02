@@ -62,6 +62,8 @@ public class JavaHelp
         {
             hb.setCurrentID("top");
             hb.setViewDisplayed(true);
+            if(!hb.isDisplayed())
+                hb.setDisplayed(true);
         }
     }
 }
