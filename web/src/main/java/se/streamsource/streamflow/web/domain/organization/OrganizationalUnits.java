@@ -85,7 +85,7 @@ public interface OrganizationalUnits
 
         public void addOrganizationalUnit(OrganizationalUnit ou)
         {
-            if (!organizationalUnits().contains(ou)) {
+            if (organizationalUnits().contains(ou)) {
                 return;
             }
             organizationalUnitAdded(DomainEvent.CREATE, ou);

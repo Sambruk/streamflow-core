@@ -18,13 +18,11 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.jbehave.Ensure.ensureThat;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.steps.Steps;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCallback;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.MemoryEventStoreService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,12 +31,12 @@ import java.util.List;
 
 public class GenericSteps
         extends Steps
-    implements EventListener
 {
-    public List<DomainEvent> events;
-
     @Structure
     UnitOfWorkFactory uowf;
+
+    @Service
+    MemoryEventStoreService eventService;
 
     public void setThrowable(Throwable throwable)
     {
@@ -50,6 +48,7 @@ public class GenericSteps
     @Then("events $commaSeparatedList occurred")
     public void eventsOccured(String commaSeparatedList)
     {
+        List<DomainEvent> events = eventService.getEvents();
         ensureThat(events != null);
         List<String> expectedEvents = new ArrayList<String>();
         Collections.addAll(expectedEvents, commaSeparatedList.split(","));
@@ -66,7 +65,7 @@ public class GenericSteps
     @Then("no events occurred")
     public void noEvents()
     {
-        ensureThat(events, CoreMatchers.nullValue());
+        ensureThat(eventService.getEvents(), CoreMatchers.nullValue());
     }
 
     @Then("$exceptionName is thrown")
@@ -84,29 +83,8 @@ public class GenericSteps
         ensureThat(throwable, CoreMatchers.nullValue());
     }
 
-    public void notifyEvent(DomainEvent event)
-    {
-        if (events == null)
-        {
-            events = new ArrayList<DomainEvent>();
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            uow.addUnitOfWorkCallback(new UnitOfWorkCallback()
-            {
-
-                public void beforeCompletion() throws UnitOfWorkCompletionException
-                {
-                    events = null;
-                }
-
-                public void afterCompletion(UnitOfWorkStatus status) { }
-            });
-        }
-
-        events.add(event);
-    }
-
     public void clearEvents()
     {
-        events = null;
+        eventService.clearEvents();
     }
 }

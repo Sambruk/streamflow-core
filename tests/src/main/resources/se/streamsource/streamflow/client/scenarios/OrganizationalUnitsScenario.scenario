@@ -13,11 +13,5 @@ And no events occurred
 Scenario: Remove organizational unit
 Given basic organizational unit setup
 When organizational unit named OU1 is removed
-Then events organizationalUnitRemoved,removedChanged occurred
+Then events organizationalUnitRemoved occurred
 And exception is not thrown
-
-Scenario: Remove organizational unit with open projects
-Given basic organizational unit setup
-When organizational unit named UO2 is removed
-Then OpenProjectExistsException is thrown
-And no events occurred

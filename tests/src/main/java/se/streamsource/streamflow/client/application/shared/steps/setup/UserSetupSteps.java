@@ -36,6 +36,9 @@ public class UserSetupSteps
     @Uses
     OrganizationsSteps organizationsSteps;
 
+    @Uses
+    GenericSteps genericSteps;
+
     @Structure
     UnitOfWorkFactory uowf;
 
@@ -54,6 +57,8 @@ public class UserSetupSteps
         user.changeEnabled(false);
         user = createUser("userNotInAnOrganization", "password");
         user.leave(organization);
+
+        genericSteps.clearEvents();
     }
 
 

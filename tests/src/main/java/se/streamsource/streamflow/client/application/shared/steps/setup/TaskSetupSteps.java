@@ -30,6 +30,9 @@ public class TaskSetupSteps
     @Uses
     UserSetupSteps userSetupSteps;
 
+    @Uses
+    GenericSteps genericSteps;
+
     public Task assignedTask;
     public Task unassignedTask;
     public Assignments assignments;
@@ -43,6 +46,7 @@ public class TaskSetupSteps
         assignedTask = user.createTask();
         assignedTask.assignTo(user);
         assignments = userSetupSteps.userMap.get("user2");
+        genericSteps.clearEvents();
     }
 
 }
