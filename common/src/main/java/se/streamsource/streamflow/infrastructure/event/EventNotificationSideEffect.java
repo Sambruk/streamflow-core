@@ -28,15 +28,13 @@ public class EventNotificationSideEffect
         extends GenericSideEffect
 {
     @Service
-    Iterable<EventListener> listeners;
+    Events events;
 
     @Override
     protected void invoke(Method method, Object[] args) throws Throwable
     {
         DomainEvent event = (DomainEvent) args[0];
-        for (EventListener listener : listeners)
-        {
-            listener.notifyEvent(event);
-        }
+
+        events.notifyEvent(event);
     }
 }

@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.web.application.management;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
@@ -23,6 +25,7 @@ import org.qi4j.api.property.ComputedPropertyInstance;
 import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
@@ -30,10 +33,11 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.entitystore.jdbm.DatabaseExport;
 import org.qi4j.entitystore.jdbm.DatabaseImport;
 import org.qi4j.index.reindexer.Reindexer;
-import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.entity.EntityState;
+import org.qi4j.spi.entitystore.EntityStore;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.Events;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
@@ -44,6 +48,7 @@ import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -53,9 +58,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -92,7 +100,10 @@ public interface ManagerComposite
         EventSource source;
 
         @Service
-        EntityStore entityStore;
+        Events events;
+
+        @Service
+        ServiceReference<EntityStore> entityStore;
 
         @Structure
         UnitOfWorkFactory uowf;
@@ -287,36 +298,55 @@ public interface ManagerComposite
             return "Events exported to " + exportFile.getAbsolutePath();
         }
 
-        public String restoreFromBackup()
+        public String restoreFromBackup() throws Exception
         {
-/*
+            ((Activatable)entityStore).passivate();
+            File latestBackup;
+
+            // Delete current database
+            if (!new File(fileConfig.dataDirectory(), "data/streamflow.data.db").delete())
+            {
+                return "Failed restore: could not remove JDBM database";
+            }
+
+            if (!new File(fileConfig.dataDirectory(), "data/streamflow.data.lg").delete())
+            {
+                return "Failed restore: could not remove JDBM database log";
+            }
+
+            ((Activatable)entityStore).activate();
+
             // Restore data from latest export in /exports
-            File latestBackup = getLatestBackup();
+            latestBackup = getLatestBackup();
+
             importDatabase(latestBackup.getAbsolutePath());
 
             // Reindex state
             reindex();
 
-            // Add events from time of lateist backup
+            // Add events from backup files
             eventManagement.removeAll();
 
-            File[] eventFiles = getEventFilesSince(latestBackup);
+            File[] eventFiles = getBackupEventFiles();
 
             for (File eventFile : eventFiles)
             {
-                InputStream
+                InputStream in = new FileInputStream(eventFile);
                 if (eventFile.getName().endsWith(".gz"))
                 {
-
+                    in = new GZIPInputStream(in);
                 }
-                eventManagement.importEvents(eventFile);
+
+                Reader reader = new InputStreamReader(in, "UTF-8");
+                eventManagement.importEvents(reader);
             }
 
-            eventManagement.replayFrom();
-*/
+            // Replay events from time of snapshot backup
+            events.replayEvents(getBackupDate( latestBackup ));
 
-            return null;
+            return "Backup restored successfully";
         }
+
 
         public String generateTestData(@Name("Nr of tasks") int nrOfTasks) throws UnitOfWorkCompletionException
         {
@@ -337,7 +367,7 @@ public interface ManagerComposite
         public String databaseSize()
         {
             final int[] count = {0};
-            entityStore.visitEntityStates(new EntityStore.EntityStateVisitor()
+            entityStore.get().visitEntityStates(new EntityStore.EntityStateVisitor()
             {
                 public void visitEntityState(EntityState entityState)
                 {
@@ -376,6 +406,16 @@ public interface ManagerComposite
             return backupDate;
         }
 
+        private File[] getBackupEventFiles()
+        {
+            return exports.listFiles( new FileFilter()
+            {
+                public boolean accept( File pathname )
+                {
+                    return pathname.getName().startsWith( "streamflow_events" );
+                }
+            });
+        }
 
         // Attributes
         public Property<Integer> failedLogins()

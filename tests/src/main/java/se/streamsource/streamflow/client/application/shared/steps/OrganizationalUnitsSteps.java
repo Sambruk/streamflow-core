@@ -16,17 +16,14 @@ package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationalUnitsSetupSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.test.ErrorHandlingConcern;
+import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationalUnitsSetupSteps;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 
 /**
  * JAVADOC
  */
-@Concerns(ErrorHandlingConcern.class)
 public class OrganizationalUnitsSteps
         extends Steps
 {
@@ -39,7 +36,6 @@ public class OrganizationalUnitsSteps
     @When("an organizational unit named $name is created")
     public void createOrganizationalUnit(String name) throws Exception
     {
-        genericSteps.clearEvents();
         try
         {
             organizationalUnitsSetupSteps.parent.createOrganizationalUnit(name);
@@ -52,7 +48,6 @@ public class OrganizationalUnitsSteps
     @When("organizational unit named $name is removed")
     public void removeOrgUnit(String name)
     {
-        genericSteps.clearEvents();
         try
         {
             OrganizationalUnitEntity ou = (OrganizationalUnitEntity) organizationalUnitsSetupSteps.orgUnitMap.get(name);

@@ -106,7 +106,7 @@ public class CompositeCommandQueryServerResource
 
     public CompositeCommandQueryServerResource()
     {
-        getVariants().put(org.restlet.data.Method.ALL, Arrays.asList(MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
+        getVariants().addAll(Arrays.asList(new Variant(MediaType.TEXT_HTML), new Variant(MediaType.APPLICATION_JSON)));
 
         setNegotiated(true);
     }

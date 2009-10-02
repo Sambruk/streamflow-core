@@ -37,6 +37,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.AbstractEventStoreMixin;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import java.io.BufferedReader;
@@ -65,12 +66,13 @@ public interface JdbmEventStoreService
         private RecordManager recordManager;
         private BTree index;
         private Serializer serializer;
+        public File dataFile;
 
-        public void activate() throws Exception
+        public void activate() throws IOException
         {
             super.activate();
 
-            File dataFile = new File(fileConfig.dataDirectory(), identity.identity() + "/events");
+            dataFile = new File(fileConfig.dataDirectory(), identity.identity() + "/events");
             File directory = dataFile.getAbsoluteFile().getParentFile();
             directory.mkdirs();
             String name = dataFile.getAbsolutePath();
@@ -80,18 +82,21 @@ public interface JdbmEventStoreService
             initialize(name, properties);
         }
 
-        public void passivate() throws Exception
+        public void passivate() throws IOException
         {
             System.out.println("Close event db");
             recordManager.close();
         }
 
-        public void removeAll()
+        public void removeAll() throws IOException
         {
-        }
+            // Delete event files
+            passivate();
 
-        public void replayFrom(Date date)
-        {
+            new File(dataFile,"events.db").delete();
+            new File(dataFile,"events.lg").delete();
+
+            activate();
         }
 
         public void importEvents(Reader in) throws IOException
@@ -101,12 +106,19 @@ public interface JdbmEventStoreService
                 lock.lock();
                 String valueJson;
                 BufferedReader reader = new BufferedReader(in);
+                int count = 0;
                 while ((valueJson = reader.readLine()) != null)
                 {
                     TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON(valueJson, module);
                     ValueBuilder<TransactionEvents> builder = transaction.buildWith();
                     builder.prototype().timestamp().set(System.currentTimeMillis());
                     storeEvents(transaction);
+
+                    count++;
+                    if (count%1000 == 0)
+                    {
+                        commit(); // Commit every 1000 transactions to avoid OutOfMemory issues
+                    }
 
                 }
                 commit();

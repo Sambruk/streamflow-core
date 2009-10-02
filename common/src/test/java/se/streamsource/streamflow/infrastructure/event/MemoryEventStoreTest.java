@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.event;
+package se.streamsource.streamflow.infrastructure.event;
 
 import org.junit.Test;
 import org.qi4j.api.concern.Concerns;
@@ -26,11 +26,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.EventNotificationSideEffect;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 /**
@@ -43,7 +38,7 @@ public class MemoryEventStoreTest
     {
         new EntityTestAssembler().assemble(module);
         module.addValues(TransactionEvents.class, DomainEvent.class);
-        module.addServices(MemoryEventStoreService.class);
+        module.addServices( MemoryEventStoreService.class, EventsService.class);
         module.addObjects(getClass());
         module.addEntities(TestEntity.class);
     }

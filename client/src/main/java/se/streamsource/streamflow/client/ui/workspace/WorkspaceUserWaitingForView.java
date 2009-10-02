@@ -72,7 +72,7 @@ public class WorkspaceUserWaitingForView
     @org.jdesktop.application.Action
     public void delegateTasks() throws ResourceException
     {
-        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
+        SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         EntityReference selected = dialog.getSelected();

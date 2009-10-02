@@ -15,7 +15,7 @@
         <version.qi4j-lib>1.0-RC2-SNAPSHOT</version.qi4j-lib>
         <version.qi4j-ext>1.0-RC2-SNAPSHOT</version.qi4j-ext>
         <version.streamflow>0.1-SNAPSHOT</version.streamflow>
-        <version.restlet>2.0-SNAPSHOT</version.restlet>
+        <version.restlet>2.0-20090930.210057-5409</version.restlet>
     </properties>
 
     <repositories>
@@ -364,9 +364,15 @@
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
-                <artifactId>osgi_R4_core</artifactId>
-                <version>1.0</version>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.0.0</version>
             </dependency>
+<!--
+
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi_R4_core</artifactId>
+            <version>1.0</version>
+-->
         </dependencies>
     </dependencyManagement>
 </project>

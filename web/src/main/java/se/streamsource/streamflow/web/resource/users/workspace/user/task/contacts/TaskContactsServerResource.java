@@ -20,7 +20,6 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -45,7 +44,7 @@ public class TaskContactsServerResource
     public TaskContactsServerResource()
     {
         setNegotiated(true);
-        getVariants().put(Method.ALL, MediaType.APPLICATION_JSON);
+        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
 

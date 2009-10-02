@@ -104,7 +104,9 @@ public interface FileConfiguration
             Logger.getLogger(getClass().getName()).info("Operating system:" + os.name());
 
             // Get bundle with application name and configured directories
-            String user = System.getProperty("user.home");
+            String user = System.getenv( "USERPROFILE" ); // On Windows we use this instead of user.home
+            if (user == null)
+                user = System.getProperty("user.home");
             ResourceBundle bundle = ResourceBundle.getBundle(FileConfiguration.class.getName(), new Locale(os.name()));
 
             // Set application name. This is taken from the bundle but can be overriden by a system property

@@ -59,7 +59,7 @@ public class WorkspaceUserAssignmentsView
     @org.jdesktop.application.Action
     public void delegateTasks() throws ResourceException
     {
-        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
+        SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         EntityReference selected = dialog.getSelected();
@@ -77,7 +77,7 @@ public class WorkspaceUserAssignmentsView
     @org.jdesktop.application.Action
     public void forwardTasks() throws ResourceException
     {
-        UserOrProjectSelectionDialog dialog = userOrProjectSelectionDialog.newInstance();
+        SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         EntityReference selected = dialog.getSelected();

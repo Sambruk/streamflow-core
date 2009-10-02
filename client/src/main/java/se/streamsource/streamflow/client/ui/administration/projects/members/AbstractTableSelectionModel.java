@@ -21,6 +21,9 @@ import javax.swing.table.AbstractTableModel;
 public abstract class AbstractTableSelectionModel<T>
         extends AbstractTableModel
 {
+    Class[] columnClasses = {Boolean.class, String.class};
+    boolean[] columnEditable = {true, false};
+    String[] columnNames;
 
     abstract public T getSelected();
 
@@ -28,8 +31,6 @@ public abstract class AbstractTableSelectionModel<T>
     {
         this.columnNames = columnNames;
     }
-
-    String[] columnNames;
 
     public AbstractTableSelectionModel()
     {
@@ -50,10 +51,6 @@ public abstract class AbstractTableSelectionModel<T>
     }
 
     abstract public void clearSelection();
-
-    Class[] columnClasses = {Boolean.class, String.class};
-    boolean[] columnEditable = {true, false};
-
 
     public Class<?> getColumnClass(int column)
     {

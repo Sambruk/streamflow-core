@@ -97,7 +97,8 @@ public class CommandQueryServerResource
 
     public CommandQueryServerResource()
     {
-        getVariants().put(org.restlet.data.Method.ALL, Arrays.asList(MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
+
+        getVariants().addAll(Arrays.asList(new Variant(MediaType.TEXT_HTML), new Variant(MediaType.APPLICATION_JSON)));
 
         setNegotiated(true);
     }
@@ -323,7 +324,7 @@ public class CommandQueryServerResource
                         while ((numRead = reader.read(buf)) != -1)
                         {
                             fileData.append(buf, 0, numRead);
-                        }
+                        } 
                         reader.close();
                     } catch (Exception e)
                     {

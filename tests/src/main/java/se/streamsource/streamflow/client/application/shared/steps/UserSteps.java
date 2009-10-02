@@ -40,7 +40,6 @@ public class UserSteps
     @When("user named $userName changes password from $oldPassword to $newPassword")
     public void changePassword(String userName, String oldPassword, String newPassword) throws UnitOfWorkCompletionException
     {
-        genericSteps.clearEvents();
         UserEntity user = userSetupSteps.userMap.get(userName);
         ensureThat(user, CoreMatchers.notNullValue());
 

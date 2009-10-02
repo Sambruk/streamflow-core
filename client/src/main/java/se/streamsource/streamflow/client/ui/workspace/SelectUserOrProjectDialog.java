@@ -39,7 +39,7 @@ import java.awt.event.KeyEvent;
 /**
  * JAVADOC
  */
-public class UserOrProjectSelectionDialog
+public class SelectUserOrProjectDialog
         extends JPanel
 {
     Dimension dialogSize = new Dimension(600, 300);
@@ -47,7 +47,7 @@ public class UserOrProjectSelectionDialog
     private TableSelectionView addProjectsView;
     public ListItemValue selected;
 
-    public UserOrProjectSelectionDialog(final @Uses WorkspaceUserNode user,
+    public SelectUserOrProjectDialog(final @Uses WorkspaceUserNode user,
                                         @Service ApplicationContext context,
                                         @Structure ObjectBuilderFactory obf)
     {

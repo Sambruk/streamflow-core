@@ -41,7 +41,6 @@ public class AssignmentsSteps
     @When("an assigned task is created for user named $name")
     public void createAssignedTask(String name)
     {
-        genericSteps.clearEvents();
         UserEntity user = userSetupSteps.userMap.get(name);
         taskSetupSteps.assignments.createAssignedTask(user);
     }

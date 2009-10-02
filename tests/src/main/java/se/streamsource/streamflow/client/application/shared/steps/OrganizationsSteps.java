@@ -59,7 +59,6 @@ public class OrganizationsSteps
     @When("a new organization named $name is created")
     public Organization createOrganization(String name) throws Exception
     {
-        genericSteps.clearEvents();
         Organization organization = null;
         try
         {
@@ -75,7 +74,6 @@ public class OrganizationsSteps
     @When("a new user named $newUser is created")
     public void createUser(String newUser) throws UnitOfWorkCompletionException
     {
-        genericSteps.clearEvents();
         try
         {
             organizations.createUser(newUser, newUser);

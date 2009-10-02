@@ -40,7 +40,6 @@ public class AssignableSteps
     @When("task is assigned to user named $name")
     public void assignTo(String name)
     {
-        genericSteps.clearEvents();
         UserEntity user = userSetupSteps.userMap.get(name);
         taskSetupSteps.unassignedTask.assignTo(user);
     }
@@ -49,7 +48,6 @@ public class AssignableSteps
     @When("assigned task is unassigned")
     public void unassign()
     {
-        genericSteps.clearEvents();
         taskSetupSteps.assignedTask.unassign();
     }
 }

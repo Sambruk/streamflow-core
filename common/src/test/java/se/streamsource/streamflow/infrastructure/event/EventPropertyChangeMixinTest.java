@@ -36,8 +36,9 @@ public class EventPropertyChangeMixinTest
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
-        module.addValues(DomainEvent.class);
+        module.addValues(DomainEvent.class, TransactionEvents.class);
         module.addEntities(TestEntity.class);
+        module.addServices( EventsService.class, MemoryEventStoreService.class );
         new EntityTestAssembler().assemble(module);
     }
 

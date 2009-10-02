@@ -37,6 +37,9 @@ public class OrganizationalUnitsSetupSteps
     @Uses
     UserSetupSteps userSetupSteps;
 
+    @Uses
+    GenericSteps genericSteps;
+
     @Structure
     UnitOfWorkFactory uowf;
 
@@ -51,10 +54,12 @@ public class OrganizationalUnitsSetupSteps
     {
         userSetupSteps.basicUserSetup();
         parent = getOrganizationalUnitEntity();
-        orgUnitMap.put("OU1", parent.createOrganizationalUnit("UO1"));
-        OrganizationalUnit uo2 = parent.createOrganizationalUnit("UO2");
-        orgUnitMap.put("UO2", uo2);
-        ((OrganizationalUnitEntity) uo2).createProject("Project");        
+        orgUnitMap.put("OU1", parent.createOrganizationalUnit("OU1"));
+        OrganizationalUnit uo2 = parent.createOrganizationalUnit("OU2");
+        orgUnitMap.put("OU2", uo2);
+        ((OrganizationalUnitEntity) uo2).createProject("Project");
+
+        genericSteps.clearEvents();
     }
 
     private OrganizationalUnitEntity getOrganizationalUnitEntity()

@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.event;
+package se.streamsource.streamflow.infrastructure.event;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,8 +20,6 @@ import org.json.JSONTokener;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import java.io.IOException;
@@ -44,7 +42,7 @@ public interface MemoryEventStoreService
     {
         private TreeMap<Long, String> store = new TreeMap<Long, String>();
 
-        public void activate() throws Exception
+        public void activate() throws IOException
         {
             super.activate();
         }

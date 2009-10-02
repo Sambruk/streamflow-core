@@ -35,14 +35,12 @@ public class OrganizationParticipationsSteps
     @When("user named $username joins Organization")
     public void joinOrganization(String username)
     {
-        genericSteps.clearEvents();
         userSetupSteps.userMap.get(username).join(userSetupSteps.organization);
     }
 
     @When("user named $username leaves Organization")
     public void leaveOrganization(String username)
     {
-        genericSteps.clearEvents();
         userSetupSteps.userMap.get(username).leave(userSetupSteps.organization);
     }
 

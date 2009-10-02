@@ -40,7 +40,7 @@ public interface Manager
 
     public String exportEventsRange(@Name("Compress") boolean compress, @Name("From, yyyyMMdd:HHmm") String fromDate, @Optional @Name("To, yyyyMMdd:HHmm") String toDate) throws IOException, ParseException;
 
-    public String restoreFromBackup() throws IOException, ParseException;
+    public String restoreFromBackup() throws Exception, ParseException;
 
     public String generateTestData(@Name("Nr of tasks") int nrOfTasks) throws UnitOfWorkCompletionException;
 

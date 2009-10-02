@@ -12,17 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.event;
+package se.streamsource.streamflow.infrastructure.event;
 
-import java.io.IOException;
-import java.io.Reader;
+import org.qi4j.api.entity.EntityComposite;
+
+import java.util.Date;
 
 /**
  * JAVADOC
  */
-public interface EventManagement
+public interface Events
 {
-    void removeAll() throws IOException;
+    DomainEvent createEvent( EntityComposite entity, String name, Object[] args );
 
-    void importEvents(Reader in) throws IOException;
+    void replayEvents( Date afterDate);
+
+    void notifyEvent( DomainEvent event );
 }

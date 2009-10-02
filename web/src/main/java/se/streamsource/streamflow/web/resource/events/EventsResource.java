@@ -22,11 +22,13 @@ import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
 
 /**
  * JAVADOC
@@ -39,7 +41,7 @@ public class EventsResource
 
     public EventsResource()
     {
-        getVariants().put(org.restlet.data.Method.ALL, Arrays.asList(MediaType.TEXT_PLAIN));
+        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
     }
 
     @Override

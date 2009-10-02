@@ -21,7 +21,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -50,7 +50,7 @@ public class TaskContactServerResource
     public TaskContactServerResource()
     {
         setNegotiated(true);
-        getVariants().put(Method.ALL, MediaType.APPLICATION_JSON);
+        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
     public void deleteOperation() throws ResourceException

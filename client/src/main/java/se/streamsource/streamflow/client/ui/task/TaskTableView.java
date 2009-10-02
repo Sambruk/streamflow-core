@@ -38,7 +38,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
-import se.streamsource.streamflow.client.ui.workspace.UserOrProjectSelectionDialog;
+import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
@@ -80,7 +80,7 @@ public abstract class TaskTableView
     protected DialogService dialogs;
 
     @Uses
-    protected ObjectBuilder<UserOrProjectSelectionDialog> userOrProjectSelectionDialog;
+    protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
     
     @Service
     protected StreamFlowApplication application;

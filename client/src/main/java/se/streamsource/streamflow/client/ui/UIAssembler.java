@@ -15,20 +15,15 @@
 package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.common.Visibility;
 import static org.qi4j.api.common.Visibility.layer;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.SelectUsersAndGroupsDialog;
+import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
-import se.streamsource.streamflow.client.ui.events.ClientEventSourceService;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import javax.swing.*;
 
 /**
  * JAVADOC

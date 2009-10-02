@@ -20,6 +20,8 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventsService;
+import se.streamsource.streamflow.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
@@ -32,10 +34,11 @@ public class EventAssembler
     {
         module.addValues(TransactionEvents.class, DomainEvent.class).visibleIn(Visibility.application);
         module.addServices(EventSourceService.class).identifiedBy("eventsource").visibleIn(Visibility.application);
+        module.addServices( EventsService.class ).visibleIn( Visibility.application );
 
         if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
             module.addServices(JdbmEventStoreService.class).identifiedBy("eventstore").visibleIn(Visibility.application);
         else
-            module.addServices(MemoryEventStoreService.class).identifiedBy("eventstore").visibleIn(Visibility.application);
+            module.addServices( MemoryEventStoreService.class).identifiedBy("eventstore").visibleIn(Visibility.application);
     }
 }

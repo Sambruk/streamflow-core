@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration;
+package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -25,6 +25,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
+import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.*;
@@ -54,7 +56,7 @@ public class SelectUsersAndGroupsDialog
         setActionMap(context.getActionMap(this));
 
         TableMultipleSelectionModel usersModel = obf.newObject(TableMultipleSelectionModel.class);
-        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, i18n.text(AdministrationResources.search_users)).newInstance();
+        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, i18n.text( AdministrationResources.search_users)).newInstance();
 
         TableMultipleSelectionModel groupsModel = obf.newObject(TableMultipleSelectionModel.class);
         this.addGroupsView = obf.newObjectBuilder(TableSelectionView.class).use(groupsModel, i18n.text(AdministrationResources.search_groups)).newInstance();
