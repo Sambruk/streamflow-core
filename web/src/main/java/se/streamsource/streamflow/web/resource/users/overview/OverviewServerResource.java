@@ -17,7 +17,6 @@ package se.streamsource.streamflow.web.resource.users.overview;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
@@ -41,7 +40,7 @@ public class OverviewServerResource
 
     public ProjectSummaryListDTO projectSummary() throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Get project summary"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
         ParticipantQueries queries = uow.get(ParticipantQueries.class, id);
 
