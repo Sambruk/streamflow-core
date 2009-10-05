@@ -14,36 +14,86 @@
 
 package se.streamsource.streamflow.web.resource.users.overview;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
-import se.streamsource.streamflow.web.domain.group.ParticipantQueries;
+import se.streamsource.streamflow.web.domain.group.OverviewQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to /user/{userid}/overview
  */
-public class OverviewServerResource
-        extends CommandQueryServerResource
+public class OverviewServerResource extends CommandQueryServerResource
 {
-    @Structure
-    protected ObjectBuilderFactory obf;
+	@Structure
+	protected ObjectBuilderFactory obf;
 
-    @Override
-    protected Representation get() throws ResourceException
-    {
-        return getHtml("resources/overview.html");
-    }
+	@Override
+	protected Representation get() throws ResourceException
+	{
+		return getHtml("resources/overview.html");
+	}
 
     public ProjectSummaryListDTO projectSummary() throws ResourceException
     {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("user");
-        ParticipantQueries queries = uow.get(ParticipantQueries.class, id);
+		UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder
+				.newUsecase("Get project summary"));
+		String id = (String) getRequest().getAttributes().get("user");
+		OverviewQueries queries = uow.get(OverviewQueries.class, id);
 
         return queries.getProjectsSummary();
+	}
+
+    public OutputRepresentation generateExcelProjectSummary() throws IOException 
+    {
+    	List<Language> languages = new ArrayList();
+    	languages.add(new Language("en-gov"));
+    	languages.add(new Language("sv-gov"));
+    	languages.add(Language.ENGLISH);
+    	languages.add(new Language("sv"));
+    	Language language = getRequest().getClientInfo().getPreferredLanguage(languages);
+    	if (language == null) 
+    	{
+    		language = new Language("sv-gov");
+    	}
+    	Locale locale = new Locale(language.getName());
+    	
+    	final Workbook workbook = new HSSFWorkbook();
+    	
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String id = (String) getRequest().getAttributes().get("user");
+        OverviewQueries queries = uow.get(OverviewQueries.class, id);
+
+        queries.generateExcelProjectSummary(locale, workbook);
+        
+        OutputRepresentation representation = new OutputRepresentation(MediaType.APPLICATION_EXCEL)
+		{
+			@Override
+			public void write(OutputStream outputStream) throws IOException
+			{
+		        workbook.write(outputStream);
+			}
+		};
+		
+		representation.write(new ByteArrayOutputStream()); 
+		return representation;
     }
 }

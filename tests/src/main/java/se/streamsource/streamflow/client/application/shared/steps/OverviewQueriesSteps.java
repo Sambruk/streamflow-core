@@ -28,7 +28,7 @@ import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
-public class ParticipantQueriesSteps
+public class OverviewQueriesSteps
     extends Steps
 {
     @Uses

@@ -132,6 +132,13 @@
             <scope>test</scope>
         </dependency>
 
+		<!-- Export -->
+		<dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.5-FINAL</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>

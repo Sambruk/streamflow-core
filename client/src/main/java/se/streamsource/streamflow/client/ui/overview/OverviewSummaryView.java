@@ -21,6 +21,9 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -41,9 +44,6 @@ import org.qi4j.api.value.ValueBuilderFactory;
 
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowResources;
-import se.streamsource.streamflow.client.export.overview.ProjectSummaryExporterFactory;
-import se.streamsource.streamflow.client.infrastructure.export.AbstractExporterFactory;
-import se.streamsource.streamflow.client.infrastructure.export.ExcelExporter;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -118,6 +118,13 @@ public class OverviewSummaryView extends JPanel
 	@org.jdesktop.application.Action
 	public void export() throws Exception
 	{
+		// Do the actual excel exporting
+//		AbstractExporterFactory factory = new ProjectSummaryExporterFactory();
+//		ExcelExporter exporter = factory.createExcelExporter();
+//		exporter.export(model.getProjectOverviews(), file);
+
+		InputStream inputStream = model.getResource().generateExcelProjectSummary();
+
 		// TODO Excel or PDF choice - do pdf export
 		// Export to excel
 		// Ask the user where to save the exported file on disk
@@ -132,13 +139,24 @@ public class OverviewSummaryView extends JPanel
 			return;
 		}
 		File file = fileChooser.getSelectedFile();
-
-		// Do the actual excel exporting
-		AbstractExporterFactory factory = new ProjectSummaryExporterFactory();
-		ExcelExporter exporter = factory.createExcelExporter();
-		exporter.export(model.getProjectOverviews(), file);
+		InputStreamReader reader = new InputStreamReader(inputStream);
+		FileWriter writer = new FileWriter(file);
+		int data = reader.read();
+		while(data != -1){
+//		    char theChar = (char) data;
+		    writer.write(data);
+		    data = reader.read();
+		}
+		writer.flush();
+		reader.close();
 
 		// Show export confirmation to user and give option to open file.
+//		JXLabel confirmLabel = new JXLabel(i18n
+//				.text(StreamFlowResources.export_data_file_with_open_option), (Icon)i18n
+//				.icon(Icons.metadata), JXLabel.LEFT);
+//		dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this),
+//				confirmLabel, text(StreamFlowResources.export_completed));
+
 		int response = JOptionPane.showConfirmDialog(OverviewSummaryView.this,
 				text(StreamFlowResources.export_data_file_with_open_option),
 				text(StreamFlowResources.export_completed),

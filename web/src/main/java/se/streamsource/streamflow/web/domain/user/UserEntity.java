@@ -24,7 +24,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.comment.Commenter;
 import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.group.ParticipantQueries;
+import se.streamsource.streamflow.web.domain.group.OverviewQueries;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.task.Assignee;
@@ -56,7 +56,7 @@ public interface UserEntity
         OrganizationParticipations,
         Owner,
         Participant,
-        ParticipantQueries,
+        OverviewQueries,
         Inbox,
         InboxQueries,
         WaitingFor,
