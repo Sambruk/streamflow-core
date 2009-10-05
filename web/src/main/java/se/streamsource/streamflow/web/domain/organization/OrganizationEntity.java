@@ -14,18 +14,17 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
 import se.streamsource.streamflow.web.domain.role.Roles;
 
 /**
  * A root organization.
  */
-@Concerns(OrganizationEntity.LifecycleConcern.class)
+@Mixins(OrganizationEntity.LifecycleConcern.class)
 public interface OrganizationEntity
         extends OrganizationalUnitEntity,
         // Roles
@@ -35,19 +34,16 @@ public interface OrganizationEntity
         IdGenerator.IdGeneratorState,
         Roles.RolesState
 {
-    class LifecycleConcern
-            extends ConcernOf<Lifecycle>
+    abstract class LifecycleConcern
+            extends OrganizationalUnitMixin
             implements Lifecycle
     {
         @This
         Organization org;
 
-        @This
-        OrganizationalUnitState state;
-
         public void create() throws LifecycleException
         {
-            state.organization().set(org);
+            organization().set(org);
         }
 
         public void remove() throws LifecycleException
