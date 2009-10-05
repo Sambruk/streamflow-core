@@ -1,6 +1,10 @@
 Scenario: get projects overview
 Given basic task setup
 When a user named user1 requests overview
-Then summaryList contains one project
+Then summaryList contains one project named project1
 And overview contains 1 inbox tasks
 And overview contains 1 assigned tasks
+When a user named user2 requests overview
+Then summaryList contains one project named project2
+And overview contains 2 inbox tasks
+And overview contains 0 assigned tasks

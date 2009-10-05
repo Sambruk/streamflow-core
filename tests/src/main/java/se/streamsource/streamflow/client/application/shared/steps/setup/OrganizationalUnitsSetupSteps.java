@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
@@ -49,7 +50,8 @@ public class OrganizationalUnitsSetupSteps
 
     public Map<String, OrganizationalUnit> orgUnitMap = new HashMap<String, OrganizationalUnit>();
     public OrganizationalUnitEntity parent;
-    public Project project;
+    public Map<String, Project> projectMap = new HashMap<String, Project>();
+    public GroupEntity group;
 
     @Given("basic organizational unit setup")
     public void setupOrganizationalUnit() throws Exception
@@ -59,7 +61,13 @@ public class OrganizationalUnitsSetupSteps
         orgUnitMap.put("OU1", parent.createOrganizationalUnit("OU1"));
         OrganizationalUnit uo2 = parent.createOrganizationalUnit("OU2");
         orgUnitMap.put("OU2", uo2);
-        project = ((OrganizationalUnitEntity) uo2).createProject("Project");
+
+        OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) uo2;
+        projectMap.put("project1", ouEntity.createProject("project1"));
+        projectMap.put("project2", ouEntity.createProject("project2"));
+
+        group = ouEntity.createGroup("Group");
+        group.addParticipant(userSetupSteps.userMap.get("user2"));
 
         genericSteps.clearEvents();
     }

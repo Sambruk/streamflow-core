@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.application.shared.steps.setup;
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
@@ -51,9 +52,15 @@ public class TaskSetupSteps
         assignedTask.assignTo(user);
         assignments = userSetupSteps.userMap.get("user2");
 
-        ouSteps.project.addMember(user);
-        ouSteps.project.createTask();
-        ouSteps.project.createTask().assignTo(user);
+        Project project = ouSteps.projectMap.get("project1");
+        project.addMember(user);
+        project.createTask();
+        project.createTask().assignTo(user);
+
+        project = ouSteps.projectMap.get("project2");
+        ouSteps.projectMap.get("project2").addMember(ouSteps.group);
+        project.createTask();
+        project.createTask();
 
         genericSteps.clearEvents();
     }

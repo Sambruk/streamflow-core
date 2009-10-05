@@ -47,11 +47,12 @@ public class ParticipantQueriesSteps
         summaryList = uowf.newUnitOfWork().get(UserEntity.class, name).getProjectsSummary();
     }
 
-    @Then("summaryList contains one project")
-    public void checkProjectCount()
+    @Then("summaryList contains one project named $projectName")
+    public void checkProjectCount(String projectName)
     {
-        ensureThat(1, CoreMatchers.equalTo(summaryList.projectOverviews().get().size()));
+        ensureThat(summaryList.projectOverviews().get().size(), CoreMatchers.equalTo(1));
         summary = summaryList.projectOverviews().get().get(0);
+        ensureThat(summary.project().get(), CoreMatchers.equalTo(projectName));
     }
 
     @Then("overview contains $count $column tasks")

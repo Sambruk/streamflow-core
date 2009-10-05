@@ -57,6 +57,7 @@ public class UserSetupSteps
         user.changeEnabled(false);
         user = createUser("userNotInAnOrganization", "password");
         user.leave(organization);
+        userMap.put(UserEntity.ADMINISTRATOR_USERNAME, uowf.currentUnitOfWork().get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME));
 
         genericSteps.clearEvents();
     }
