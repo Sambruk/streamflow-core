@@ -138,7 +138,7 @@ public class CommandQueryServerResource
     protected String getOperation()
     {
         String operation = getRequest().getResourceRef().getQueryAsForm().getFirstValue("operation");
-        if (operation == null)
+        if (operation == null && !getRequest().getMethod().getName().toCharArray().equals("get"))
         {
             operation = getRequest().getMethod().getName().toLowerCase() + "Operation";
         }
@@ -265,6 +265,9 @@ public class CommandQueryServerResource
                 {
                     return new EmptyRepresentation();
                 }
+            } else if (returnValue instanceof Representation)
+            {
+                return (Representation) returnValue;
             } else
             {
                 Logger.getLogger(getClass().getName()).warning("Unknown result type:" + returnValue.getClass().getName());
@@ -365,29 +368,33 @@ public class CommandQueryServerResource
             if (json == null)
                 throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!");
             Object requestValue = vbf.newValueFromJSON(valueType, json);
-            args[0] = requestValue;
+            args[idx++] = requestValue;
         } else
         {
             final Form asForm = getRequest().getResourceRef().getQueryAsForm();
 
-            if (args.length == 1 && ValueComposite.class.isAssignableFrom(method.getParameterTypes()[0]))
+            if (args.length > 0 && ValueComposite.class.isAssignableFrom(method.getParameterTypes()[0]))
             {
                 Class<?> valueType = method.getParameterTypes()[0];
-                args[0] = getValueFromQuery((Class<ValueComposite>) valueType);
+                args[idx++] = getValueFromQuery((Class<ValueComposite>) valueType);
             } else
             {
                 for (Annotation[] annotations : method.getParameterAnnotations())
                 {
                     Name name = Annotations.getAnnotationOfType(annotations, Name.class);
-                    Object arg = asForm.getFirstValue(name.value());
 
-                    // Parameter conversion
-                    if (method.getParameterTypes()[idx].equals(EntityReference.class))
+                    if (name != null)
                     {
-                        arg = EntityReference.parseEntityReference(arg.toString());
-                    }
+                        Object arg = asForm.getFirstValue(name.value());
 
-                    args[idx++] = arg;
+                        // Parameter conversion
+                        if (method.getParameterTypes()[idx].equals(EntityReference.class))
+                        {
+                            arg = EntityReference.parseEntityReference(arg.toString());
+                        }
+
+                        args[idx++] = arg;
+                    }
                 }
             }
         }
