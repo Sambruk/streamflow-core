@@ -14,17 +14,17 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 
 import javax.swing.*;
 import java.util.Collections;
@@ -47,7 +47,20 @@ public class TaskContactsModel
 
     private EventSourceListener subscriber;
 
-    public TaskContactsModel(@Service EventSource source)
+    @Service
+    EventSource source;
+
+    public void registerListener()
+    {
+        source.registerListener(subscriber);
+    }
+
+    public void unregisterListener()
+    {
+        source.unregisterListener(subscriber);
+    }
+
+    public TaskContactsModel()
     {
         subscriber = new EventSourceListener()
         {
@@ -63,8 +76,6 @@ public class TaskContactsModel
                 }
             }
         };
-        source.registerListener(subscriber);
-
     }
 
     List<ContactValue> contacts = Collections.emptyList();
