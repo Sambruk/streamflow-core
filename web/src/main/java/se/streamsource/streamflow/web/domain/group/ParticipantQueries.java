@@ -71,22 +71,22 @@ public interface ParticipantQueries
 
             for (Project project : participant.allProjects())
             {
-                QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
                 Association<Assignee> assigneeAssociation = templateFor(Assignable.AssignableState.class).assignedTo();
                 Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
 
-                queryBuilder.where(and(
-                     eq(ownableId, ((ProjectEntity)project).identity().get()),
+                QueryBuilder<TaskEntity> ownerQueryBuilder = qbf.newQueryBuilder(TaskEntity.class).where(
+                        eq(ownableId, ((ProjectEntity)project).identity().get()));
+
+                QueryBuilder<TaskEntity> inboxQueryBuilder = ownerQueryBuilder.where(and(
                     isNull(assigneeAssociation),
                     eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
-                Query<TaskEntity> inboxQuery = queryBuilder.newQuery(uow);
+                Query<TaskEntity> inboxQuery = inboxQueryBuilder.newQuery(uow);
 
-                queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
-                queryBuilder.where(and(
-                        eq(ownableId, ((ProjectEntity)project).identity().get()),
+                
+                QueryBuilder<TaskEntity> assignedQueryBuilder = ownerQueryBuilder.where(and(
                         isNotNull(assigneeAssociation),
                         eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
-                Query<TaskEntity> assignedQuery = queryBuilder.newQuery(uow);
+                Query<TaskEntity> assignedQuery = assignedQueryBuilder.newQuery(uow);
 
                 builderPrototype.project().set(project.getDescription());
                 builderPrototype.inboxCount().set(inboxQuery.count());
