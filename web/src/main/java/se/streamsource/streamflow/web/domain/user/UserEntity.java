@@ -14,12 +14,11 @@
 
 package se.streamsource.streamflow.web.domain.user;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
@@ -28,15 +27,22 @@ import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.group.ParticipantQueries;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
-import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Delegations;
+import se.streamsource.streamflow.web.domain.task.Delegator;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.InboxQueries;
+import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.WaitingFor;
 
 /**
  * JAVADOC
  */
-@Concerns(UserEntity.LifecycleConcern.class)
+@Mixins(UserEntity.LifecycleMixin.class)
 public interface UserEntity
         extends DomainEntity,
-        Lifecycle,
 
         // Roles
         Assignee,
@@ -67,25 +73,20 @@ public interface UserEntity
 {
     public static final String ADMINISTRATOR_USERNAME = "administrator";
 
-    class LifecycleConcern
-            extends ConcernOf<Lifecycle>
+    abstract class LifecycleMixin
+        extends DescribableMixin
             implements Lifecycle
     {
         @This
         Identity identity;
-        @This
-        Describable.DescribableState state;
 
         public void create() throws LifecycleException
         {
-            state.description().set(identity.identity().get());
-
-            next.create();
+            description().set(identity.identity().get());
         }
 
         public void remove() throws LifecycleException
         {
-            next.remove();
         }
     }
 }
