@@ -25,12 +25,8 @@ public interface ProjectSummaryDTO
     Property<String> project();
 
     @UseDefaults
-    Property<Integer> inboxCount();
+    Property<Long> inboxCount();
 
     @UseDefaults
-    Property<Integer> assignedCount();
-
-    @UseDefaults
-    Property<Integer> totalActive();
-
+    Property<Long> assignedCount();
 }

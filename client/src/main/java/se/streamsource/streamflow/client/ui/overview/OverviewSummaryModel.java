@@ -95,7 +95,6 @@ public class OverviewSummaryModel
     public Object getValueAt(int rowIndex, int column)
     {
         ProjectSummaryDTO projectOverview = projectOverviews.get(rowIndex);
-        int total = projectOverview.inboxCount().get() + projectOverview.assignedCount().get();
 
         if (projectOverview == null)
             return null;
@@ -109,7 +108,7 @@ public class OverviewSummaryModel
             case 2:
                 return projectOverview.assignedCount().get();
             case 3:
-                return projectOverview.totalActive().get();
+                return projectOverview.inboxCount().get() + projectOverview.assignedCount().get();
 
         }
 

@@ -42,7 +42,7 @@ public class OverviewClientResource
 
     public ProjectSummaryListDTO overview() throws ResourceException, IOException
     {
-        return getQuery(ProjectSummaryListDTO.class);
+        return query("projectSummary", ProjectSummaryListDTO.class);
     }
 
 }

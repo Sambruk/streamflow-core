@@ -44,7 +44,7 @@ public class ParticipantQueriesSteps
     public void requestOverview(String name) throws UnitOfWorkCompletionException
     {
         uowf.currentUnitOfWork().complete();
-        summaryList = uowf.newUnitOfWork().get(UserEntity.class, name).getProjecsSummary();
+        summaryList = uowf.newUnitOfWork().get(UserEntity.class, name).getProjectsSummary();
     }
 
     @Then("summaryList contains one project")
@@ -55,7 +55,7 @@ public class ParticipantQueriesSteps
     }
 
     @Then("overview contains $count $column tasks")
-    public void checkResult(int count, String column)
+    public void checkResult(long count, String column)
     {
         if("inbox".equals(column))
         {
@@ -63,9 +63,6 @@ public class ParticipantQueriesSteps
         } else if("assigned".equals(column))
         {
             ensureThat(summary.assignedCount().get(), CoreMatchers.equalTo(count));
-        } else
-        {
-            ensureThat(summary.totalActive().get(), CoreMatchers.equalTo(count));    
-        }
+        } 
     }
 }

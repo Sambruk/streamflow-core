@@ -39,7 +39,7 @@ import se.streamsource.streamflow.domain.task.TaskStates;
 public interface ParticipantQueries
 {
 
-    public ProjectSummaryListDTO getProjecsSummary();
+    public ProjectSummaryListDTO getProjectsSummary();
 
     class ParticipantQueriesMixin
         implements ParticipantQueries
@@ -59,7 +59,7 @@ public interface ParticipantQueries
         @This
         Participant.ParticipantState participant;
 
-        public ProjectSummaryListDTO getProjecsSummary()
+        public ProjectSummaryListDTO getProjectsSummary()
         {
             UnitOfWork uow =  uowf.currentUnitOfWork();
 
@@ -69,7 +69,7 @@ public interface ParticipantQueries
             ValueBuilder<ProjectSummaryListDTO> listBuilder = vbf.newValueBuilder(ProjectSummaryListDTO.class);
             ProjectSummaryListDTO listBuilderPrototype = listBuilder.prototype();
 
-            for (Project project : participant.projects())
+            for (Project project : participant.allProjects())
             {
                 QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
                 Association<Assignee> assigneeAssociation = templateFor(Assignable.AssignableState.class).assignedTo();
@@ -88,16 +88,9 @@ public interface ParticipantQueries
                         eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
                 Query<TaskEntity> assignedQuery = queryBuilder.newQuery(uow);
 
-                queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
-                queryBuilder.where(and(
-                        eq(ownableId, ((ProjectEntity)project).identity().get()),
-                        eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
-                Query<TaskEntity> totalQuery = queryBuilder.newQuery(uow);
-
                 builderPrototype.project().set(project.getDescription());
-                builderPrototype.inboxCount().set(new Long(inboxQuery.count()).intValue());
-                builderPrototype.assignedCount().set(new Long(assignedQuery.count()).intValue());
-                builderPrototype.totalActive().set(new Long(totalQuery.count()).intValue());
+                builderPrototype.inboxCount().set(inboxQuery.count());
+                builderPrototype.assignedCount().set(assignedQuery.count());
 
                 listBuilderPrototype.projectOverviews().get().add(builder.newInstance());
 

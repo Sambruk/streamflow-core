@@ -18,11 +18,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.web.domain.group.ParticipantQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -41,12 +39,12 @@ public class OverviewServerResource
         return getHtml("resources/overview.html");
     }
 
-    public Representation get(Variant variant) throws ResourceException
+    public ProjectSummaryListDTO projectSummary() throws ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Get project summary"));
         String id = (String) getRequest().getAttributes().get("user");
         ParticipantQueries queries = uow.get(ParticipantQueries.class, id);
 
-        return new StringRepresentation(queries.getProjecsSummary().toJSON(), MediaType.APPLICATION_JSON);
+        return queries.getProjectsSummary();
     }
 }
