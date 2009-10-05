@@ -42,6 +42,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSourceListene
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Date;
 
@@ -75,23 +76,7 @@ public class CommandQueryClientResource
 
     protected <T extends ValueComposite> T query(String operation, ValueComposite queryValue, Class<T> queryResult) throws ResourceException
     {
-        Reference ref = getReference();
-        Reference operationRef = ref.clone();
-        if (queryValue != null)
-            setQueryParameters(operationRef, queryValue);
-        operationRef.addQueryParameter("operation", operation);
-
-        operationRef = new Reference(operationRef.toUrl());
-        setReference(operationRef);
-        Representation result;
-        try
-        {
-            System.out.println(operationRef.toUrl());
-            result = get(MediaType.APPLICATION_JSON);
-        } finally
-        {
-            setReference(ref);
-        }
+        Representation result = invokeQuery( operation, queryValue );
 
         if (getResponse().getStatus().isSuccess())
         {
@@ -104,40 +89,26 @@ public class CommandQueryClientResource
             {
                 throw new ResourceException(e);
             }
-        } else if (getResponse().getStatus().equals(Status.SERVER_ERROR_INTERNAL))
-        {
-            if (getResponse().getEntity().getMediaType().equals(MediaType.APPLICATION_JAVA_OBJECT))
-            {
-                try
-                {
-                    Object exception = new ObjectRepresentation(result).getObject();
-                    throw new ResourceException((Throwable) exception);
-                } catch (IOException e)
-                {
-                    throw new ResourceException(e);
-                } catch (ClassNotFoundException e)
-                {
-                    throw new ResourceException(e);
-                }
-            }
-
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, getResponse().getEntityAsText());
         } else
         {
-            try
-            {
-                if (getResponseEntity() != null)
-                {
-                    String text = getResponseEntity().getText();
-                    throw new ResourceException(getResponse().getStatus(), text);
-                } else
-                {
-                    throw new ResourceException(getResponse().getStatus());
-                }
-            } catch (IOException e)
-            {
-                throw new ResourceException(e);
-            }
+            // This will throw an exception
+            handleError( result );
+            return null;
+        }
+    }
+
+    protected InputStream queryStream(String operation, ValueComposite queryValue) throws ResourceException, IOException
+    {
+        Representation result = invokeQuery( operation, queryValue );
+
+        if (getResponse().getStatus().isSuccess())
+        {
+            return result.getStream();
+        } else
+        {
+            // This will throw an exception
+            handleError( result );
+            return null;
         }
     }
 
@@ -195,6 +166,69 @@ public class CommandQueryClientResource
             setReference(ref);
         }
     }
+
+    private Object handleError( Representation result )
+            throws ResourceException
+    {
+        if (getResponse().getStatus().equals( Status.SERVER_ERROR_INTERNAL))
+        {
+            if (getResponse().getEntity().getMediaType().equals( MediaType.APPLICATION_JAVA_OBJECT))
+            {
+                try
+                {
+                    Object exception = new ObjectRepresentation(result).getObject();
+                    throw new ResourceException((Throwable) exception);
+                } catch (IOException e)
+                {
+                    throw new ResourceException(e);
+                } catch (ClassNotFoundException e)
+                {
+                    throw new ResourceException(e);
+                }
+            }
+
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, getResponse().getEntityAsText());
+        } else
+        {
+            try
+            {
+                if (getResponseEntity() != null)
+                {
+                    String text = getResponseEntity().getText();
+                    throw new ResourceException(getResponse().getStatus(), text);
+                } else
+                {
+                    throw new ResourceException(getResponse().getStatus());
+                }
+            } catch (IOException e)
+            {
+                throw new ResourceException(e);
+            }
+        }
+    }
+
+    private Representation invokeQuery( String operation, ValueComposite queryValue )
+            throws ResourceException
+    {
+        Reference ref = getReference();
+        Reference operationRef = ref.clone();
+        if (queryValue != null)
+            setQueryParameters(operationRef, queryValue);
+        operationRef.addQueryParameter("operation", operation);
+
+        operationRef = new Reference(operationRef.toUrl());
+        setReference(operationRef);
+        Representation result;
+        try
+        {
+            result = get( MediaType.APPLICATION_JSON);
+        } finally
+        {
+            setReference(ref);
+        }
+        return result;
+    }
+
 
     private void processEvents(Representation entity)
     {
