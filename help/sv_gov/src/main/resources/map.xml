@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE map PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN"
+                     "http://java.sun.com/products/javahelp/map_2_0.dtd">
+
+<map version="1.0">
+	<mapID target="snap00003" url="graphics/snap00003.gif"/>
+	<mapID target="document_gear1" url="icons/24x24/plain/document_gear.png"/>
+	<mapID target="nav_left_blue1" url="icons/24x24/plain/nav_left_blue.png"/>
+	<mapID target="nav_refresh_green1" url="icons/24x24/plain/nav_refresh_green.png"/>
+	<mapID target="nav_right_blue1" url="icons/24x24/plain/nav_right_blue.png"/>
+	<mapID target="printer31" url="icons/24x24/plain/printer3.png"/>
+	<mapID target="star_yellow_add1" url="icons/24x24/plain/star_yellow_add.png"/>
+	<mapID target="help2" url="icons/24x24/plain/help2.png"/>
+	<mapID target="house" url="icons/24x24/plain/house.png"/>
+	<mapID target="find" url="icons/16x16/plain/find.png"/>
+	<mapID target="folder2_green" url="icons/16x16/plain/folder2_green.png"/>
+	<mapID target="index_view" url="icons/16x16/plain/index_view.png"/>
+	<mapID target="star_yellow" url="icons/16x16/plain/star_yellow.png"/>
+	<mapID target="folder" url="icons/16x16/plain/folder.png"/>
+	<mapID target="document" url="icons/16x16/plain/document.png"/>
+	<mapID target="folder_closed" url="icons/16x16/plain/folder_closed.png"/>
+	<mapID target="snap00004" url="graphics/snap00004.gif"/>
+	<mapID target="snap00005" url="graphics/snap00005.gif"/>
+	<mapID target="snap00006" url="graphics/snap00006.gif"/>
+	<mapID target="functions" url="html/functions.html"/>
+	<mapID target="intro1" url="html/intro.html"/>
+	<mapID target="taskinfo" url="html/taskinfo.html"/>
+	<mapID target="workspace" url="html/workspace.html"/>
+	<mapID target="newtask" url="html/newtask.html"/>
+	<mapID target="contacts" url="html/contacts.html"/>
+	<mapID target="snap00007" url="graphics/snap00007.gif"/>
+	<mapID target="snap00008" url="graphics/snap00008.gif"/>
+	<mapID target="overview" url="html/overview.html"/>
+	<mapID target="search" url="html/search.html"/>
+	<mapID target="admin" url="html/admin.html"/>
+	<mapID target="snap00010" url="graphics/snap00010.gif"/>
+	<mapID target="snap00011" url="graphics/snap00011.gif"/>
+</map>

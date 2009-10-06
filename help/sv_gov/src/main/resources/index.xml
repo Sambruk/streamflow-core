@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE index PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Index Version 2.0//EN"
+                       "http://java.sun.com/products/javahelp/index_2_0.dtd">
+
+<index version="2.0">
+	<indexitem text="Administration" target="admin" />
+	<indexitem text="Ange Infromation om Ärendet" target="taskinfo" />
+	<indexitem text="Ange Kontaktuppgifter" target="contacts" />
+	<indexitem text="Arbetsytan" target="workspace" />
+	<indexitem text="Introduktion" target="intro1" />
+	<indexitem text="Lägg till Arbetsuppgift" target="newtask" />
+	<indexitem text="Sök" target="search" />
+	<indexitem text="Översikt" target="overview" />
+</index>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE toc PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN"
+                     "http://java.sun.com/products/javahelp/toc_2_0.dtd">
+
+<toc version="2.0" categoryclosedimage="folder_closed" categoryopenimage="folder" topicimage="document">
+	<tocitem text="Introduktion" target="intro1" />
+	<tocitem text="Fönster" expand="true">
+		<tocitem text="Arbetsytan" target="workspace" />
+		<tocitem text="Översikt" target="overview" />
+		<tocitem text="Sök" target="search" />
+		<tocitem text="Administration" target="admin" />
+	</tocitem>
+	<tocitem text="Funktioner">
+		<tocitem text="Lägg till Arbetsuppgift" target="newtask" />
+		<tocitem text="Ange information i ärendet" target="taskinfo" />
+		<tocitem text="Ange Kontaktuppgifter" target="contacts" />
+	</tocitem>
+</toc>
