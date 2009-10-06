@@ -1,7 +1,7 @@
 Scenario: Create assigned task
 Given basic task setup
 When an assigned task is created for user named user1
-Then events created,taskCreated,ownerChanged,contactAdded,assignedTo occurred
+Then events assignedTaskCreated,ownerChanged,contactAdded,assignedTo occurred
 
 
 

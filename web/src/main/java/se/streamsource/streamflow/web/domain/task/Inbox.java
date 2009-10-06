@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -31,7 +29,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Concerns(Inbox.CreateTaskConcern.class)
 @Mixins(Inbox.InboxMixin.class)
 public interface Inbox
 {
@@ -69,6 +66,9 @@ public interface Inbox
         WaitingFor waitingFor;
 
         @Structure
+        ValueBuilderFactory vbf;
+
+        @Structure
         UnitOfWorkFactory uowf;
 
         @Service
@@ -78,6 +78,7 @@ public interface Inbox
         {
             TaskEntity taskEntity = (TaskEntity) taskCreated(DomainEvent.CREATE, idGenerator.generate(TaskEntity.class));
             taskEntity.changeOwner(owner);
+            taskEntity.addContact(vbf.newValue(ContactValue.class));
 
             return taskEntity;
         }
@@ -146,25 +147,4 @@ public interface Inbox
             unreadInboxTasks().add(task);
         }
     }
-
-    abstract class CreateTaskConcern
-            extends ConcernOf<Inbox>
-            implements Inbox
-    {
-
-        @Structure
-        ValueBuilderFactory vbf;
-
-
-        public Task createTask()
-        {
-
-            Task task = next.createTask();
-
-            task.addContact(vbf.newValue(ContactValue.class));
-            return task;
-        }
-    }
-
-
 }

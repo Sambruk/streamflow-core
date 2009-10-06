@@ -22,7 +22,9 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 
 /**
  * JAVADOC
@@ -46,6 +48,7 @@ public interface Assignments
 
     interface AssignmentsState
     {
+        Task assignedTaskCreated(DomainEvent event, String id);
         void assignedTaskMarkedAsRead(DomainEvent event, Task task);
         void assignedTaskMarkedAsUnread(DomainEvent event, Task task);
         ManyAssociation<Task> unreadAssignedTasks();
@@ -56,6 +59,9 @@ public interface Assignments
     abstract class AssignmentsMixin
             implements Assignments, AssignmentsState
     {
+        @Structure
+        ValueBuilderFactory vbf;
+
         @Structure
         UnitOfWorkFactory uowf;
 
@@ -72,6 +78,7 @@ public interface Assignments
         {
             TaskEntity taskEntity = (TaskEntity) assignedTaskCreated(DomainEvent.CREATE, idGenerator.generate(TaskEntity.class));
             taskEntity.changeOwner(owner);
+            taskEntity.addContact(vbf.newValue( ContactValue.class));
             taskEntity.assignTo( assignee );
 
             return taskEntity;

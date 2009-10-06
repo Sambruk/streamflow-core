@@ -23,6 +23,7 @@ import org.restlet.Client;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.web.StreamFlowWebAssembler;
+import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 
 /**
  * JAVADOC
@@ -46,7 +47,13 @@ public class StreamFlowWebDomainTestAssembler
     protected void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
     {
         appLayer.applicationAssembly().setMode(Application.Mode.test);
-        super.assembleApplicationLayer(appLayer);
+//        super.assembleApplicationLayer(appLayer);
+        new BootstrapAssembler().assemble( appLayer.moduleAssembly("Bootstrap" ));
+    }
+
+    @Override
+    protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
+    {
     }
 
     @Override

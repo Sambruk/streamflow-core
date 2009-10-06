@@ -14,14 +14,6 @@
 
 package se.streamsource.streamflow.web.resource.users.overview;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.qi4j.api.injection.scope.Structure;
@@ -33,10 +25,16 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.web.domain.group.OverviewQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Mapped to /user/{userid}/overview
@@ -77,7 +75,7 @@ public class OverviewServerResource extends CommandQueryServerResource
     	Locale locale = new Locale(language.getName());
     	
     	final Workbook workbook = new HSSFWorkbook();
-    	
+
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
         OverviewQueries queries = uow.get(OverviewQueries.class, id);

@@ -14,8 +14,8 @@
 package se.streamsource.streamflow.client.application.shared.steps.setup;
 
 import org.hamcrest.CoreMatchers;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.jbehave.Ensure.ensureThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.jbehave.Ensure.*;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Service;
@@ -24,8 +24,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.MemoryEventStoreService;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -46,20 +44,18 @@ public class GenericSteps
     private Throwable throwable;
 
     @Then("events $commaSeparatedList occurred")
-    public void eventsOccured(String commaSeparatedList)
+    public void eventsOccured(String expectedEvents)
     {
         List<DomainEvent> events = eventService.getEvents();
         ensureThat(events != null);
-        List<String> expectedEvents = new ArrayList<String>();
-        Collections.addAll(expectedEvents, commaSeparatedList.split(","));
-        for (DomainEvent event: events)
+        String eventNames = "";
+        String comma = "";
+        for (DomainEvent event : events)
         {
-            if (!expectedEvents.remove(event.name().get()))
-            {
-                ensureThat(event.name().get(), CoreMatchers.equalTo(""));
-            }
+            eventNames+=comma+event.name().get();
+            comma = ",";
         }
-        ensureThat(expectedEvents.isEmpty());
+        ensureThat(eventNames, CoreMatchers.equalTo( expectedEvents ));
     }
 
     @Then("no events occurred")
