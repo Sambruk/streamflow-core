@@ -52,12 +52,11 @@ public class OverviewProjectAssignmentsServerResource
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Association<Assignee> assignedTo = templateFor(Assignable.AssignableState.class).assignedTo();
         Property<String> ownerIdProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
-        queryBuilder.where(and(
+        Query<TaskEntity> assignmentsQuery = queryBuilder.where(and(
                 eq(ownerIdProp, projectId),
                 isNotNull(assignedTo),
-                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
-
-        Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);
+                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                newQuery(uow);
         assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
         return buildTaskList(assignmentsQuery, OverviewAssignedTaskDTO.class, OverviewAssignmentsTaskListDTO.class);

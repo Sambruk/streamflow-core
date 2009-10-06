@@ -49,13 +49,12 @@ public class UserWaitingForServerResource
         // or Completed delegated tasks that are marked as unread
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Association<WaitingFor> delegatedFrom = templateFor(Delegatable.DelegatableState.class).delegatedFrom();
-        queryBuilder.where(and(
+        Query<TaskEntity> waitingForQuery = queryBuilder.where(and(
                 eq(delegatedFrom, delegations),
                 or(
                         eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                        eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.DONE))));
-
-        Query<TaskEntity> waitingForQuery = queryBuilder.newQuery(uow);
+                        eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.DONE)))).
+                newQuery(uow);
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
         return buildTaskList(waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);

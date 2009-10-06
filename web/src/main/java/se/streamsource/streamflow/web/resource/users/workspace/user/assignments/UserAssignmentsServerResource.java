@@ -44,12 +44,11 @@ public class UserAssignmentsServerResource
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Association<Assignee> assignedId = templateFor(Assignable.AssignableState.class).assignedTo();
         Property<String> ownedId = templateFor(Ownable.OwnableState.class).owner().get().identity();
-        queryBuilder.where(and(
+        Query<TaskEntity> assignmentsQuery = queryBuilder.where(and(
                 eq(assignedId, uow.get(Assignee.class, id)),
                 eq(ownedId, id),
-                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
-
-        Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);
+                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                newQuery(uow);
         assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
         return buildTaskList(assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);

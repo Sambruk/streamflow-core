@@ -102,6 +102,8 @@ public interface DomainEventPlayerService
                         args[0] = domainEvent;
 
                         // Invoke method
+                        Logger.getLogger( DomainEventPlayer.class.getName() ).info( "Replay:"+domainEvent );
+
                         eventMethod.invoke( entity, args );
                     }
                     uow.complete();
@@ -121,24 +123,28 @@ public interface DomainEventPlayerService
             if (parameterType.equals( String.class ))
             {
                 return (String) value;
-            } else if (parameterType.equals(Boolean.class))
+            } else if (parameterType.equals(Boolean.class) || parameterType.equals( Boolean.TYPE ))
             {
                 return (Boolean) value;
-            } else if (parameterType.equals(Long.class))
+            } else if (parameterType.equals(Long.class) || parameterType.equals( Long.TYPE ))
             {
                 return (Long) value;
-            } else if (parameterType.equals(Integer.class))
+            } else if (parameterType.equals(Integer.class) || parameterType.equals( Integer.TYPE ))
             {
                 return (Integer) value;
             } else if (ValueComposite.class.isAssignableFrom( parameterType ))
             {
                 return module.valueBuilderFactory().newValueFromJSON( parameterType, (String) value );
-            }else if (parameterType.isInterface())
+            } else if (parameterType.isInterface())
             {
                 return uow.get( parameterType, (String)value );
+            } else if (parameterType.isEnum())
+            {
+                return Enum.valueOf( (Class<? extends Enum>) parameterType, value.toString() );
+            } else
+            {
+                throw new IllegalArgumentException( "Unknown parameter type:"+parameterType.getName());
             }
-
-            return null;
         }
 
         private Method getEventMethod( Class<? extends Object> aClass, String eventName )
@@ -146,7 +152,11 @@ public interface DomainEventPlayerService
             for (Method method : aClass.getMethods())
             {
                 if (method.getName().equals(eventName))
-                    return method;
+                {
+                    Class[] parameterTypes = method.getParameterTypes();
+                    if (parameterTypes.length > 0 && parameterTypes[0].equals(DomainEvent.class))
+                        return method;
+                }
             }
             return null;
         }

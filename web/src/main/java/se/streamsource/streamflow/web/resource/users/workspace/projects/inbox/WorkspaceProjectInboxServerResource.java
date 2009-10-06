@@ -44,13 +44,12 @@ public class WorkspaceProjectInboxServerResource
         Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
         Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
-        queryBuilder.where(and(
+        Query<TaskEntity> inboxQuery = queryBuilder.where(and(
                 eq(ownableId, id),
                 isNull(assignee),
                 isNull(delegatee),
-                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
-
-        Query<TaskEntity> inboxQuery = queryBuilder.newQuery(uow);
+                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                newQuery(uow);
         inboxQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
         return buildTaskList(inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);

@@ -46,6 +46,9 @@ public interface ProjectEntity
         IdGenerator,
 
         // State
+        Inbox.InboxState,
+        Assignments.AssignmentsState,
+        WaitingFor.WaitingForState,
         Members.MembersState,
         Describable.DescribableState,
         ProjectStatus.ProjectStatusState,

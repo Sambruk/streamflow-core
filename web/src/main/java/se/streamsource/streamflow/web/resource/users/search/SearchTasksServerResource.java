@@ -66,7 +66,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 				if (search.startsWith("label:"))
 				{
 					search = search.substring("label:".length());
-					queryBuilder.where(eq(QueryExpressions.oneOf(
+					queryBuilder = queryBuilder.where(eq(QueryExpressions.oneOf(
 							templateFor(Labelable.LabelableState.class)
 									.labels()).description(), search));
 				} else if (search.startsWith("assigned:"))
@@ -77,14 +77,14 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 							.assignedTo().get();
 					Describable.DescribableState describable = templateFor(
 							Describable.DescribableState.class, assignee);
-					queryBuilder.where(eq(describable.description(), search));
+					queryBuilder = queryBuilder.where(eq(describable.description(), search));
 				} else if (search.startsWith("project:"))
 				{
 					search = search.substring("project:".length());
 					Owner owner = templateFor(TaskEntity.class).owner().get();
 					Describable.DescribableState describable = templateFor(
 							Describable.DescribableState.class, owner);
-					queryBuilder.where(eq(describable.description(), search));
+					queryBuilder = queryBuilder.where(eq(describable.description(), search));
 				} else if (search.startsWith("created:"))
 				{
 					search = search.substring("created:".length());
@@ -98,12 +98,12 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 					{
 						continue;
 					}
-					queryBuilder.where(and(ge(templateFor(TaskEntity.class)
+					queryBuilder = queryBuilder.where(and(ge(templateFor(TaskEntity.class)
 							.createdOn(), lowerBoundDate), le(templateFor(
 							TaskEntity.class).createdOn(), upperBoundDate)));
 				} else
 				{
-					queryBuilder.where(or(eq(templateFor(TaskEntity.class)
+					queryBuilder = queryBuilder.where(or(eq(templateFor(TaskEntity.class)
 							.taskId(), search), matches(templateFor(
 							TaskEntity.class).description(), search), matches(
 							templateFor(TaskEntity.class).note(), search)));

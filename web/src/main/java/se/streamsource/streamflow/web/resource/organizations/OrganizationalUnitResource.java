@@ -71,16 +71,10 @@ public interface OrganizationalUnitResource
                         templateFor(UserEntity.class).userName(), "^" + query.string().get()));
                 Query<UserEntity> users = queryBuilder.newQuery(uow);
 
-                try
+                for (Participant participant : users)
                 {
-                    for (Participant participant : users)
-                    {
-                        builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                        listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
-                    }
-                } catch (Exception e)
-                {
-                    //e.printStackTrace();
+                    builder.prototype().entity().set(EntityReference.getEntityReference(participant));
+                    listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
                 }
             }
             return listBuilder.newList();
@@ -97,22 +91,16 @@ public interface OrganizationalUnitResource
             if (query.string().get().length() > 0)
             {
                 QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
-                queryBuilder.where(
+                Query<GroupEntity> groups = queryBuilder.where(
                         and(
                                 eq(templateFor(GroupEntity.class).removed(), false),
-                                matches(templateFor(GroupEntity.class).description(), "^" + query.string().get())));
-                Query<GroupEntity> groups = queryBuilder.newQuery(uow);
+                                matches(templateFor(GroupEntity.class).description(), "^" + query.string().get()))).
+                        newQuery(uow);
 
-                try
+                for (Participant participant : groups)
                 {
-                    for (Participant participant : groups)
-                    {
-                        builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                        listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
-                    }
-                } catch (Exception e)
-                {
-                    //e.printStackTrace();
+                    builder.prototype().entity().set(EntityReference.getEntityReference(participant));
+                    listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
                 }
             }
             return listBuilder.newList();
@@ -128,21 +116,15 @@ public interface OrganizationalUnitResource
             if (query.string().get().length() > 0)
             {
                 QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-                queryBuilder.where(and(
+                Query<ProjectEntity> projects = queryBuilder.where(and(
                         eq(templateFor(ProjectEntity.class).removed(), false),
-                        matches(templateFor(ProjectEntity.class).description(), "^" + query.string().get())));
-                Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
+                        matches(templateFor(ProjectEntity.class).description(), "^" + query.string().get()))).
+                        newQuery(uow);
 
-                try
+                for (Project project : projects)
                 {
-                    for (Project project : projects)
-                    {
-                        builder.prototype().entity().set(EntityReference.getEntityReference(project));
-                        listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
-                    }
-                } catch (Exception e)
-                {
-                    //e.printStackTrace();
+                    builder.prototype().entity().set(EntityReference.getEntityReference(project));
+                    listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
                 }
             }
             return listBuilder.newList();

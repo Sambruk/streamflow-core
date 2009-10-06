@@ -81,9 +81,9 @@ public class OrganizationServerResource
         if (query.string().get().length() > 0)
         {
             QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
-            queryBuilder.where(matches(
-                    templateFor(UserEntity.class).userName(), "^" + query.string().get()));
-            Query<UserEntity> users = queryBuilder.newQuery(uow);
+            Query<UserEntity> users = queryBuilder.where(matches(
+                    templateFor(UserEntity.class).userName(), "^" + query.string().get())).
+                    newQuery(uow);
 
             try
             {
@@ -111,11 +111,11 @@ public class OrganizationServerResource
         if (query.string().get().length() > 0)
         {
             QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
-            queryBuilder.where(
+            Query<GroupEntity> groups = queryBuilder.where(
                     and(
                             eq(templateFor(GroupEntity.class).removed(), false),
-                            matches(templateFor(GroupEntity.class).description(), "^" + query.string().get())));
-            Query<GroupEntity> groups = queryBuilder.newQuery(uow);
+                            matches(templateFor(GroupEntity.class).description(), "^" + query.string().get()))).
+                    newQuery(uow);
 
             try
             {
@@ -142,10 +142,10 @@ public class OrganizationServerResource
         if (query.string().get().length() > 0)
         {
             QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-            queryBuilder.where(and(
+            Query<ProjectEntity> projects = queryBuilder.where(and(
                     eq(templateFor(ProjectEntity.class).removed(), false),
-                    matches(templateFor(ProjectEntity.class).description(), "^" + query.string().get())));
-            Query<ProjectEntity> projects = queryBuilder.newQuery(uow);
+                    matches(templateFor(ProjectEntity.class).description(), "^" + query.string().get()))).
+                    newQuery(uow);
 
             try
             {

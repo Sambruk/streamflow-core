@@ -47,12 +47,11 @@ public class UserDelegationsServerResource
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
         Association<Delegatee> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo();
         Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
-        queryBuilder.where(and(
+        Query<TaskEntity> delegationsQuery = queryBuilder.where(and(
                 eq(delegatedTo, uow.get(Delegatee.class, userId)),
                 isNull(assignee),
-                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
-
-        Query<TaskEntity> delegationsQuery = queryBuilder.newQuery(uow);
+                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                newQuery(uow);
         delegationsQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
         return buildTaskList(delegationsQuery, DelegatedTaskDTO.class, DelegationsTaskListDTO.class);

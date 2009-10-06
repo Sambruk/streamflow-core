@@ -64,6 +64,9 @@ public interface UserEntity
         User,
 
         // State
+        Inbox.InboxState,
+        Assignments.AssignmentsState,
+        WaitingFor.WaitingForState,
         Contactable.ContactableState,
         OrganizationParticipations.OrganizationParticipationsState,
         Describable.DescribableState,

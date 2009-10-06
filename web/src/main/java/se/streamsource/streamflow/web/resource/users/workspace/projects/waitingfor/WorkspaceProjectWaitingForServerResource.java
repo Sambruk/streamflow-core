@@ -50,15 +50,14 @@ public class WorkspaceProjectWaitingForServerResource
         Association<Delegator> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy();
         Property<String> ownedBy = templateFor(Ownable.OwnableState.class).owner().get().identity();
         Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
-        queryBuilder.where(and(
+        Query<TaskEntity> waitingForQuery = queryBuilder.where(and(
                 eq(ownedBy, projectId),
                 eq(delegatedBy, uow.get(Delegator.class, userId)),
                 isNotNull(delegatee),
                 or(
                         eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                        eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.DONE))));
-
-        Query<TaskEntity> waitingForQuery = queryBuilder.newQuery(uow);
+                        eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.DONE)))).
+                newQuery(uow);
         waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
 
         return buildTaskList(waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);

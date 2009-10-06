@@ -70,13 +70,13 @@ public interface InboxQueries
             Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
             Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
             Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
-            queryBuilder.where(and(
+            Query<TaskEntity> inboxQuery = queryBuilder.where(and(
                     eq(ownableId, id.identity().get()),
                     isNull(assignee),
                     isNull(delegatee),
-                    eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
+                    eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                    newQuery(uowf.currentUnitOfWork());
 
-            Query<TaskEntity> inboxQuery = queryBuilder.newQuery(uowf.currentUnitOfWork());
             inboxQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
             return buildTaskList(inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);
