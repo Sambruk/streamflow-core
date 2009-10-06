@@ -195,9 +195,6 @@ public class AdministrationOutlineView
     @Action
     public void moveOrganizationalUnit()
     {
-        OrganizationalStructureAdministrationNode parent =
-                        (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getParentPath().getLastPathComponent();
-
         OrganizationalStructureAdministrationNode moved =
                         (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
@@ -208,7 +205,7 @@ public class AdministrationOutlineView
         if( moveAndMergeDialog.target() != null
                 && !moved.ou().entity().get().equals(moveAndMergeDialog.target()))
         {
-            moved.model().moveOrganizationalUnit(parent.ou().entity().get(), moveAndMergeDialog.target());
+            moved.model().moveOrganizationalUnit(moveAndMergeDialog.target());
         } else
         {
             dialogs.showOkDialog(WindowUtils.findWindow(this), new JLabel(i18n.text(AdministrationResources.could_not_move_organization)));
@@ -219,9 +216,6 @@ public class AdministrationOutlineView
     @Action
     public void mergeOrganizationalUnit()
     {
-        OrganizationalStructureAdministrationNode parent =
-                        (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getParentPath().getLastPathComponent();
-
         OrganizationalStructureAdministrationNode moved =
                         (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
@@ -232,7 +226,7 @@ public class AdministrationOutlineView
         if(moveAndMergeDialog.target() != null
                 && !moved.ou().entity().get().equals(moveAndMergeDialog.target()))
         {
-            moved.model().mergeOrganizationalUnit(parent.ou().entity().get(), moveAndMergeDialog.target()); 
+            moved.model().mergeOrganizationalUnit(moveAndMergeDialog.target());
         } else
         {
             dialogs.showOkDialog(WindowUtils.findWindow(this), new JLabel(i18n.text(AdministrationResources.could_not_merge_organization)));

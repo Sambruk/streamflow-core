@@ -148,7 +148,7 @@ public class OrganizationalUnitAdministrationModel
         }
     }
 
-    public void moveOrganizationalUnit(EntityReference parentID, EntityReference toID)
+    public void moveOrganizationalUnit(EntityReference toID)
     {
         try {
             ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
@@ -170,7 +170,7 @@ public class OrganizationalUnitAdministrationModel
 
     }
 
-    public void mergeOrganizationalUnit(EntityReference parentID, EntityReference toID)
+    public void mergeOrganizationalUnit(EntityReference toID)
     {
         try {
             ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
