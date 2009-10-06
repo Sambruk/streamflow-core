@@ -14,16 +14,19 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-
-import java.awt.BorderLayout;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXTable;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -33,20 +36,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXTable;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-
-import se.streamsource.streamflow.client.StreamFlowApplication;
-import se.streamsource.streamflow.client.StreamFlowResources;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import java.awt.BorderLayout;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 public class OverviewSummaryView extends JPanel
 {
@@ -116,39 +112,43 @@ public class OverviewSummaryView extends JPanel
 	}
 
 	@org.jdesktop.application.Action
-	public void export() throws Exception
+	public void export()
+            throws Exception
 	{
-		// Do the actual excel exporting
-//		AbstractExporterFactory factory = new ProjectSummaryExporterFactory();
-//		ExcelExporter exporter = factory.createExcelExporter();
-//		exporter.export(model.getProjectOverviews(), file);
+        // TODO Excel or PDF choice - do pdf export
+        // Export to excel
+        // Ask the user where to save the exported file on disk
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(
+                text(StreamFlowResources.excel_file), "xls"));
+        int returnVal = fileChooser.showSaveDialog(OverviewSummaryView.this);
+        if (returnVal != JFileChooser.APPROVE_OPTION)
+        {
+            return;
+        }
 
+        // Generate Excel file on the server.
 		InputStream inputStream = model.getResource().generateExcelProjectSummary();
 
-		// TODO Excel or PDF choice - do pdf export
-		// Export to excel
-		// Ask the user where to save the exported file on disk
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fileChooser.setMultiSelectionEnabled(false);
-		fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(
-				text(StreamFlowResources.excel_file), "xls", "ods", "sxc"));
-		int returnVal = fileChooser.showSaveDialog(OverviewSummaryView.this);
-		if (returnVal != JFileChooser.APPROVE_OPTION)
-		{
-			return;
-		}
 		File file = fileChooser.getSelectedFile();
-		InputStreamReader reader = new InputStreamReader(inputStream);
-		FileWriter writer = new FileWriter(file);
-		int data = reader.read();
-		while(data != -1){
-//		    char theChar = (char) data;
-		    writer.write(data);
-		    data = reader.read();
-		}
-		writer.flush();
-		reader.close();
+        FileOutputStream out = null;
+        try
+        {
+            out = new FileOutputStream(file);
+            byte[] buffer = new byte[4096];
+            int count;
+            while (((count = inputStream.read( buffer ))) != -1)
+            {
+                out.write( buffer, 0, count );
+            }
+        } finally
+        {
+            inputStream.close();
+            if (out != null)
+                out.close();
+        }
 
 		// Show export confirmation to user and give option to open file.
 //		JXLabel confirmLabel = new JXLabel(i18n
