@@ -54,7 +54,6 @@ public class OverviewWindow
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
-        javaHelp.enableHelp(this.getRootPane(),"overview");
 
         accountSelector.addListSelectionListener(new ListSelectionListener()
         {
@@ -78,6 +77,7 @@ public class OverviewWindow
                 }
             }
         });
+        javaHelp.enableHelp(this.getRootPane(),"overview");
     }
 
 }

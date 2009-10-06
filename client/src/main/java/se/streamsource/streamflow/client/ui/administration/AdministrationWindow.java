@@ -28,7 +28,7 @@ import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Administration window
@@ -53,7 +53,6 @@ public class AdministrationWindow
 
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
-        javaHelp.enableHelp(this.getRootPane(), "administration");
 
         accountSelector.addListSelectionListener(new ListSelectionListener()
         {
@@ -77,6 +76,7 @@ public class AdministrationWindow
                 }
             }
         });
+        javaHelp.enableHelp(this.getRootPane(),"admin");
     }
 
 }

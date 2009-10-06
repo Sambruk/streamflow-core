@@ -27,7 +27,6 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
@@ -69,8 +68,7 @@ public class AccountsDialog
     AccountView accountView;
 
     public AccountsDialog(@Service ApplicationContext context,
-                          @Uses final AccountsModel model,
-                          @Service JavaHelp javaHelp)
+                          @Uses final AccountsModel model)
     {
         super(new BorderLayout());
 
@@ -115,8 +113,6 @@ public class AccountsDialog
                 }
             }
         });
-
-        javaHelp.enableHelp(this,"account");
     }
 
     @Action

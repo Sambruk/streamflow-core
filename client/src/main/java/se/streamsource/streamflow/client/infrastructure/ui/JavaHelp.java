@@ -28,7 +28,7 @@ public class JavaHelp
     public JavaHelp()
     {
         // Help system
-        String helpHS = "StreamFlowHelp.hs";
+        String helpHS = "helpset.hs";
         ClassLoader cl = getClass().getClassLoader();
         HelpSet hs;
         try
@@ -38,7 +38,7 @@ public class JavaHelp
 
             // Create a HelpBroker object:
             hb = hs.createHelpBroker();
-            hb.setCurrentID("top");
+            hb.setCurrentID("intro1");
 
         } catch (Exception ee)
         {
@@ -60,7 +60,7 @@ public class JavaHelp
     public void init() {
         if(hb != null)
         {
-            hb.setCurrentID("top");
+            hb.setCurrentID("intro1");
             hb.setViewDisplayed(true);
             if(!hb.isDisplayed())
                 hb.setDisplayed(true);

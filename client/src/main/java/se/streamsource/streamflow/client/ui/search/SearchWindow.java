@@ -30,7 +30,7 @@ import se.streamsource.streamflow.client.ui.menu.SearchMenuBar;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Search window

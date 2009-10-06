@@ -20,9 +20,11 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -38,8 +40,7 @@ public class DebugWindow
     public DefaultTableModel eventModel;
 
     public DebugWindow(@Service Application application,
-                       @Service EventSource eventSource,
-                       @Service JavaHelp javaHelp)
+                       @Service EventSource eventSource)
     {
         super(application);
 
@@ -62,7 +63,6 @@ public class DebugWindow
         setToolBar(toolbar);
 
         frame.setSize(400, 400);
-        javaHelp.enableHelp(this.getRootPane(),"debug");
     }
 
     public void eventsAvailable(EventStore source)
