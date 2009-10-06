@@ -19,7 +19,6 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.bootstrap.AssemblyException;
@@ -38,7 +37,7 @@ public class MemoryEventStoreTest
     {
         new EntityTestAssembler().assemble(module);
         module.addValues(TransactionEvents.class, DomainEvent.class);
-        module.addServices( MemoryEventStoreService.class, EventsService.class);
+        module.addServices( MemoryEventStoreService.class, DomainEventFactoryService.class);
         module.addObjects(getClass());
         module.addEntities(TestEntity.class);
     }
@@ -68,7 +67,6 @@ public class MemoryEventStoreTest
     }
 
     @Concerns(EventCreationConcern.class)
-    @SideEffects(EventNotificationSideEffect.class)
     @Mixins(TestEntity.TestMixin.class)
     interface TestEntity
         extends EntityComposite

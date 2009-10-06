@@ -77,12 +77,10 @@ public interface InboxQueries
                     eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
             Query<TaskEntity> inboxQuery = queryBuilder.newQuery(uowf.currentUnitOfWork());
-            inboxQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
+            inboxQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
             return buildTaskList(inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);
-
         }
-
 
         protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
                 Query<TaskEntity> inboxQuery,

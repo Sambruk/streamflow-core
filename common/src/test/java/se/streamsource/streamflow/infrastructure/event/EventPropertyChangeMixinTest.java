@@ -21,7 +21,6 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -38,7 +37,7 @@ public class EventPropertyChangeMixinTest
     {
         module.addValues(DomainEvent.class, TransactionEvents.class);
         module.addEntities(TestEntity.class);
-        module.addServices( EventsService.class, MemoryEventStoreService.class );
+        module.addServices( DomainEventFactoryService.class, MemoryEventStoreService.class );
         new EntityTestAssembler().assemble(module);
     }
 
@@ -68,7 +67,6 @@ public class EventPropertyChangeMixinTest
     }
 
     @Concerns(EventCreationConcern.class)
-    @SideEffects(EventNotificationSideEffect.class)
     @Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class})
     interface TestEntity
             extends TestDomain, TestDomain.TestDomainState, EntityComposite

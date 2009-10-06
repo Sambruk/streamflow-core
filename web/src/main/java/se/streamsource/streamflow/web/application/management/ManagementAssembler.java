@@ -21,6 +21,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.rest.MBeanServerImporter;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
+import se.streamsource.streamflow.infrastructure.event.DomainEventPlayerService;
 
 import javax.management.MBeanServer;
 
@@ -45,7 +46,7 @@ public class ManagementAssembler
             module.addServices(ReindexerService.class).identifiedBy("reindexer");
             module.addServices(ReindexOnStartupService.class).instantiateOnStartup();
 
-            module.addServices(EventManagerService.class).instantiateOnStartup();
+            module.addServices(EventManagerService.class, DomainEventPlayerService.class ).instantiateOnStartup();
             module.addServices(ErrorLogService.class).instantiateOnStartup();
         }
     }

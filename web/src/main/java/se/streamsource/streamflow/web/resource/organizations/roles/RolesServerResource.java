@@ -20,8 +20,9 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.project.ProjectRoles;
+import se.streamsource.streamflow.web.domain.role.Role;
+import se.streamsource.streamflow.web.domain.role.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -34,10 +35,10 @@ public class RolesServerResource
     public ListValue roles()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
-        ProjectRoles.ProjectRolesState roles = uowf.currentUnitOfWork().get(ProjectRoles.ProjectRolesState.class, identity);
+        Roles.RolesState roles = uowf.currentUnitOfWork().get(Roles.RolesState.class, identity);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (ProjectRole projectRole : roles.projectRoles())
+        for (Role projectRole : roles.roles())
         {
             builder.addListItem(projectRole.getDescription(), EntityReference.getEntityReference(projectRole));
         }

@@ -50,7 +50,7 @@ public class WorkspaceProjectAssignmentsServerResource
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
         Query<TaskEntity> assignmentsQuery = queryBuilder.newQuery(uow);
-        assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
+        assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
         return buildTaskList(assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
     }

@@ -20,37 +20,33 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Application;
-import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.json.JSONException;
 import se.streamsource.streamflow.infrastructure.json.JSONObject;
 import se.streamsource.streamflow.infrastructure.json.JSONStringer;
 import se.streamsource.streamflow.infrastructure.json.JSONWriter;
 
 import javax.security.auth.Subject;
-import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.Principal;
 import java.util.Date;
 import java.util.Iterator;
 
 /**
- * JAVADOC
+ * DomainEvent factory
  */
-@Mixins(EventsService.EventsMixin.class)
-public interface EventsService
-        extends Events, ServiceComposite
+@SideEffects(EventNotificationSideEffect.class)
+@Mixins(DomainEventFactoryService.DomainEventFactoryMixin.class)
+public interface DomainEventFactoryService
+        extends DomainEventFactory, ServiceComposite
 {
-    class EventsMixin
-            implements Events
+    class DomainEventFactoryMixin
+            implements DomainEventFactory
     {
-        @Service
-        Iterable<EventListener> listeners;
-
         @Structure
         UnitOfWorkFactory uowf;
 
@@ -59,12 +55,6 @@ public interface EventsService
 
         @Service
         IdentityGenerator idGenerator;
-
-        @Service
-        EventStore eventStore;
-
-        @Structure
-        Module module;
 
         String
         version;
@@ -123,68 +113,6 @@ public interface EventsService
 
             DomainEvent event = builder.newInstance();
             return event;
-        }
-
-        public void notifyEvent( DomainEvent event )
-        {
-            for (EventListener listener : listeners)
-            {
-                listener.notifyEvent(event);
-            }
-        }
-
-        public void replayEvents(Date afterDate)
-        {
-/*
-            Iterable<TransactionEvents> transactions = eventStore.events( afterDate, 100 );
-            for (TransactionEvents transaction : transactions)
-            {
-                UnitOfWork uow = uowf.newUnitOfWork();
-                for (DomainEvent domainEvent : transaction.events().get())
-                {
-                    // Get the entity
-                    Class entityType = module.classLoader().loadClass(domainEvent.entityType().get() );
-                    String id = domainEvent.entity().get();
-                    Object entity = uow.get(entityType, id);
-
-                    // Get method
-                    Method eventMethod = getEventMethod(entity.getClass(), domainEvent.name().get());
-
-                    if (eventMethod == null)
-                    {
-                        Logger.getLogger( Events.class.getName() ).warning( "Could not find event method "+domainEvent.name().get()+" in entity of type "+entityType.getName() );
-                        continue;
-                    }
-
-                    // Build parameters
-                    String jsonParameters = domainEvent.parameters().get();
-                    org.json.JSONObject parameters = new JSONTokener(jsonParameters).nextValue();
-                    for (int i = 0; i < eventMethod.getParameterTypes().length; i++)
-                    {
-                        Class<?> parameterType = eventMethod.getParameterTypes()[i];
-
-                    }
-                    Iterator keys = parameters.keys();
-                    while (keys.hasNext())
-                    {
-                        String key = (String) parameters.keys().next();
-
-
-                    }
-                }
-                uow.complete();
-            }
-*/
-        }
-
-        private Method getEventMethod( Class<? extends Object> aClass, String eventName )
-        {
-            for (Method method : aClass.getMethods())
-            {
-                if (method.getName().equals(eventName))
-                    return method;
-            }
-            return null;
         }
     }
 }

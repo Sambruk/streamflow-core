@@ -51,7 +51,7 @@ public class WorkspaceProjectInboxServerResource
                 eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
 
         Query<TaskEntity> inboxQuery = queryBuilder.newQuery(uow);
-        inboxQuery.orderBy(orderBy(templateFor(CreatedOn.CreatedOnState.class).createdOn()));
+        inboxQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
         return buildTaskList(inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);
     }

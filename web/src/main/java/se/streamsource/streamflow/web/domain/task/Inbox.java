@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
@@ -57,7 +58,6 @@ public interface Inbox
         void markedAsUnread(DomainEvent event, Task task);
         ManyAssociation<Task> unreadInboxTasks();
     }
-
 
     abstract class InboxMixin
             implements Inbox, InboxState
@@ -131,7 +131,9 @@ public interface Inbox
 
         public Task taskCreated(DomainEvent event, String id)
         {
-            return uowf.currentUnitOfWork().newEntity(TaskEntity.class, id);
+            EntityBuilder<TaskEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class, id);
+            builder.instance().createdOn().set( event.on().get() );
+            return builder.newInstance();
         }
 
         public void markedAsRead(DomainEvent event, Task task)

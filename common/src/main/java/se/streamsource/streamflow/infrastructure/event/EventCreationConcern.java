@@ -33,14 +33,14 @@ public class EventCreationConcern
     EntityComposite entity;
 
     @Service
-    Events events;
+    DomainEventFactory domainEventFactory;
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         if (args[0] == DomainEvent.CREATE)
         {
             // Create event
-            DomainEvent event = events.createEvent(entity, method.getName(), args);
+            DomainEvent event = domainEventFactory.createEvent(entity, method.getName(), args);
             args[0] = event;
         }
 

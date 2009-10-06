@@ -14,27 +14,29 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
-import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.sideeffect.GenericSideEffect;
-
-import java.lang.reflect.Method;
+import org.qi4j.api.sideeffect.SideEffectOf;
 
 /**
- * Notify event listeners that an event was created
+ * Notify event listeners that an event was created by the factory
  */
-@AppliesTo(EventMethodFilter.class)
 public class EventNotificationSideEffect
-        extends GenericSideEffect
+        extends SideEffectOf<DomainEventFactory>
+        implements DomainEventFactory
 {
     @Service
-    Events events;
+    Iterable<EventListener> listeners;
 
-    @Override
-    protected void invoke(Method method, Object[] args) throws Throwable
+    public DomainEvent createEvent( EntityComposite entity, String name, Object[] args )
     {
-        DomainEvent event = (DomainEvent) args[0];
+        DomainEvent event = result.createEvent( entity, name, args);
 
-        events.notifyEvent(event);
+        for (EventListener listener : listeners)
+        {
+            listener.notifyEvent(event);
+        }
+
+        return null;
     }
 }

@@ -109,7 +109,8 @@ public interface JdbmEventStoreService
                 int count = 0;
                 while ((valueJson = reader.readLine()) != null)
                 {
-                    TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON(valueJson, module);
+                    JSONObject json = (JSONObject) new JSONTokener(valueJson).nextValue();
+                    TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON(json, module);
                     ValueBuilder<TransactionEvents> builder = transaction.buildWith();
                     builder.prototype().timestamp().set(System.currentTimeMillis());
                     storeEvents(transaction);

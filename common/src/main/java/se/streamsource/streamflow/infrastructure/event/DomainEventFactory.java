@@ -12,19 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
+package se.streamsource.streamflow.infrastructure.event;
 
-import org.qi4j.api.property.Immutable;
-import org.qi4j.api.property.Property;
-
-import java.util.Date;
+import org.qi4j.api.entity.EntityComposite;
 
 /**
- * Role for recording the date of creation of the entity. The property should be
- * set as a part of creating the entity.
+ * Factory for DomainEvents
  */
-public interface CreatedOn
+public interface DomainEventFactory
 {
-    @Immutable
-    Property<Date> createdOn();
+    DomainEvent createEvent( EntityComposite entity, String name, Object[] args );
 }

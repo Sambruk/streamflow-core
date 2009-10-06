@@ -16,9 +16,12 @@ package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.IdentityGenerator;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -62,14 +65,23 @@ public interface Assignments
         @This
         WaitingFor waitingFor;
 
-        @This
-        Inbox inbox;
+        @Service
+        IdentityGenerator idGenerator;
 
         public Task createAssignedTask(Assignee assignee)
         {
-            Task task = inbox.createTask();
-            task.assignTo(assignee);
-            return task;
+            TaskEntity taskEntity = (TaskEntity) assignedTaskCreated(DomainEvent.CREATE, idGenerator.generate(TaskEntity.class));
+            taskEntity.changeOwner(owner);
+            taskEntity.assignTo( assignee );
+
+            return taskEntity;
+        }
+
+        public Task assignedTaskCreated(DomainEvent event, String id)
+        {
+            EntityBuilder<TaskEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class, id);
+            builder.instance().createdOn().set( event.on().get() );
+            return builder.newInstance();
         }
 
         public void completeAssignedTask(Task task)

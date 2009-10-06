@@ -14,18 +14,14 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
-import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.common.Optional;
 
 import java.util.Date;
 
 /**
- * JAVADOC
+ * Factory for DomainEvents
  */
-public interface Events
+public interface DomainEventPlayer
 {
-    DomainEvent createEvent( EntityComposite entity, String name, Object[] args );
-
-    void replayEvents( Date afterDate);
-
-    void notifyEvent( DomainEvent event );
+    void replayEvents( @Optional Date afterDate) throws EventReplayException;
 }

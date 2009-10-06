@@ -25,7 +25,6 @@ import se.streamsource.streamflow.web.domain.label.Labelable;
 public interface Task
         extends
         Assignable,
-        CreatedOn,
         Commentable,
         Contacts,
         Delegatable,

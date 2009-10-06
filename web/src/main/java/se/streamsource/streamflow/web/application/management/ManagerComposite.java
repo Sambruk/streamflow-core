@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
@@ -37,7 +35,8 @@ import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.Events;
+import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
+import se.streamsource.streamflow.infrastructure.event.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
@@ -45,6 +44,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 
 import java.io.File;
@@ -58,11 +58,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -100,7 +99,10 @@ public interface ManagerComposite
         EventSource source;
 
         @Service
-        Events events;
+        DomainEventFactory domainEventFactory;
+
+        @Service
+        DomainEventPlayer eventPlayer;
 
         @Service
         ServiceReference<EntityStore> entityStore;
@@ -300,51 +302,67 @@ public interface ManagerComposite
 
         public String restoreFromBackup() throws Exception
         {
-            ((Activatable)entityStore).passivate();
-            File latestBackup;
-
-            // Delete current database
-            if (!new File(fileConfig.dataDirectory(), "data/streamflow.data.db").delete())
+            try
             {
-                return "Failed restore: could not remove JDBM database";
-            }
+                ((Activatable)entityStore).passivate();
 
-            if (!new File(fileConfig.dataDirectory(), "data/streamflow.data.lg").delete())
-            {
-                return "Failed restore: could not remove JDBM database log";
-            }
-
-            ((Activatable)entityStore).activate();
-
-            // Restore data from latest export in /exports
-            latestBackup = getLatestBackup();
-
-            importDatabase(latestBackup.getAbsolutePath());
-
-            // Reindex state
-            reindex();
-
-            // Add events from backup files
-            eventManagement.removeAll();
-
-            File[] eventFiles = getBackupEventFiles();
-
-            for (File eventFile : eventFiles)
-            {
-                InputStream in = new FileInputStream(eventFile);
-                if (eventFile.getName().endsWith(".gz"))
+                // Delete current database
+                if (!new File(fileConfig.dataDirectory(), "data/streamflow.data.db").delete())
                 {
-                    in = new GZIPInputStream(in);
+                    return "Failed restore: could not remove JDBM database";
                 }
 
-                Reader reader = new InputStreamReader(in, "UTF-8");
-                eventManagement.importEvents(reader);
+                if (!new File(fileConfig.dataDirectory(), "data/streamflow.data.lg").delete())
+                {
+                    return "Failed restore: could not remove JDBM database log";
+                }
+
+                ((Activatable)entityStore).activate();
+
+                // Restore data from latest export in /exports
+                File latestBackup = getLatestBackup();
+
+                if (latestBackup != null)
+                    importDatabase(latestBackup.getAbsolutePath());
+                else
+                {
+                    // Ensure that at least the root OrganizationsEntity is created
+                    UnitOfWork uow = uowf.newUnitOfWork();
+                    uow.newEntity( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
+                    uow.complete();                    
+                }
+
+                // Reindex state
+                reindex();
+
+                // Add events from backup files
+                eventManagement.removeAll();
+
+                File[] eventFiles = getBackupEventFiles();
+
+                for (File eventFile : eventFiles)
+                {
+                    InputStream in = new FileInputStream(eventFile);
+                    if (eventFile.getName().endsWith(".gz"))
+                    {
+                        in = new GZIPInputStream(in);
+                    }
+
+                    Reader reader = new InputStreamReader(in, "UTF-8");
+                    eventManagement.importEvents(reader);
+                }
+
+                // Replay events from time of snapshot backup
+                Date date = latestBackup == null ? null : getBackupDate( latestBackup );
+
+                eventPlayer.replayEvents( date );
+
+                return "Backup restored successfully";
+            } catch (Exception ex)
+            {
+                Logger.getLogger( Manager.class.getName() ).log( Level.SEVERE, "Backup restore failed:", ex );
+                return "Backup restore failed:"+ex.getMessage();
             }
-
-            // Replay events from time of snapshot backup
-            events.replayEvents(getBackupDate( latestBackup ));
-
-            return "Backup restored successfully";
         }
 
 
@@ -383,12 +401,19 @@ public interface ManagerComposite
             File latest = null;
             Date latestDate = null;
 
-            for (File file : exports.listFiles())
+            for (File file : exports.listFiles(new FileFilter()
+            {
+                public boolean accept( File pathname )
+                {
+                    return pathname.getName().startsWith( "streamflow_data_" );
+                }
+            }))
             {
                 // See if backup is newer than currently found backup file
                 if (latest == null || getBackupDate(file).after(latestDate))
                 {
                     latestDate = getBackupDate(file);
+                    latest = file;
                 }
             }
 

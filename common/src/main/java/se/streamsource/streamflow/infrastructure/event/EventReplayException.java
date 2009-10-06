@@ -12,19 +12,16 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.task;
-
-import org.qi4j.api.property.Immutable;
-import org.qi4j.api.property.Property;
-
-import java.util.Date;
+package se.streamsource.streamflow.infrastructure.event;
 
 /**
- * Role for recording the date of creation of the entity. The property should be
- * set as a part of creating the entity.
+ * An event replay failed. 
  */
-public interface CreatedOn
+public class EventReplayException
+    extends Exception
 {
-    @Immutable
-    Property<Date> createdOn();
+    public EventReplayException( Throwable cause )
+    {
+        super( cause );
+    }
 }
