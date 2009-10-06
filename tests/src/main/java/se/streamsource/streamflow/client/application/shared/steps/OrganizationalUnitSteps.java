@@ -1,0 +1,79 @@
+/*
+ * Copyright (c) 2009, Mads Enevoldsen. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package se.streamsource.streamflow.client.application.shared.steps;
+
+import org.jbehave.scenario.annotations.When;
+import org.jbehave.scenario.steps.Steps;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationalUnitsSetupSteps;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
+
+/**
+ * JAVADOC
+ */
+public class OrganizationalUnitSteps
+        extends Steps
+{
+    @Uses
+    GenericSteps genericSteps;
+
+    @Uses
+    OrganizationalUnitsSetupSteps organizationalUnitsSetupSteps;
+
+    @When("organizational unit named $ou1 is moved to organizational unit named $ou2")
+    public void move(String ou1, String ou2) throws Exception
+    {
+        try
+        {
+            OrganizationalUnit orgUnit1 = organizationalUnitsSetupSteps.orgUnitMap.get(ou1);
+            OrganizationalUnits orgUnit2 = (OrganizationalUnits) organizationalUnitsSetupSteps.orgUnitMap.get(ou2);
+            orgUnit1.moveOrganizationalUnit(orgUnit2);
+        } catch(Exception e)
+        {
+            genericSteps.setThrowable(e);
+        }
+    }
+
+    @When("organizational unit named $ou1 is merged to organizational unit named $ou2")
+    public void merge(String ou1, String ou2) throws Exception
+    {
+        try
+        {
+            OrganizationalUnit orgUnit1 = organizationalUnitsSetupSteps.orgUnitMap.get(ou1);
+            OrganizationalUnit orgUnit2 = organizationalUnitsSetupSteps.orgUnitMap.get(ou2);
+            orgUnit1.mergeOrganizationalUnit(orgUnit2);
+        } catch(Exception e)
+        {
+            genericSteps.setThrowable(e);
+        }
+    }
+
+    @When("organizational unit named $ou is deleted")
+    public void delete(String ou) throws Exception
+    {
+        try
+        {
+            OrganizationalUnit orgUnit1 = organizationalUnitsSetupSteps.orgUnitMap.get(ou);
+            orgUnit1.deleteOrganizationalUnit();
+        } catch(Exception e)
+        {
+            genericSteps.setThrowable(e);
+        }
+    }
+
+
+}

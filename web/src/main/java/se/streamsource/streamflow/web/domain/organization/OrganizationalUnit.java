@@ -62,6 +62,10 @@ public interface OrganizationalUnit
         @This
         Removable removable;
 
+        @This
+        OrganizationalUnit organizationalUnit;
+
+
         public void deleteOrganizationalUnit() throws OpenProjectExistsException
         {
             if(projects.projects().count() > 0)
@@ -81,14 +85,14 @@ public interface OrganizationalUnit
                 }
             }
             OrganizationalUnits parent = getParent();
-            parent.removeOrganizationalUnit(this);
+            parent.removeOrganizationalUnit(organizationalUnit);
             removable.removeEntity();
         }
 
         public void moveOrganizationalUnit(OrganizationalUnits to) throws MoveOrganizationalUnitException
         {
             OrganizationalUnits parent = getParent();
-            if (this.equals(to))
+            if (organizationalUnit.equals(to))
             {
                 throw new MoveOrganizationalUnitException();
             }
@@ -97,15 +101,15 @@ public interface OrganizationalUnit
                 return;
             }
 
-            parent.removeOrganizationalUnit(this);
-            to.addOrganizationalUnit(this);
+            parent.removeOrganizationalUnit(organizationalUnit);
+            to.addOrganizationalUnit(organizationalUnit);
         }
 
         public void mergeOrganizationalUnit(OrganizationalUnit to) throws MergeOrganizationalUnitException
         {
             OrganizationalUnits parent = getParent();
             OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
-            if (this.equals(toEntity))
+            if (organizationalUnit.equals(toEntity))
             {
                 throw new MergeOrganizationalUnitException();
             }
@@ -114,14 +118,14 @@ public interface OrganizationalUnit
             groups.mergeGroups((Groups)to);
             projects.mergeProjects((Projects)to);
 
-            parent.removeOrganizationalUnit(this);
+            parent.removeOrganizationalUnit(organizationalUnit);
             removable.removeEntity();
         }
 
         public OrganizationalUnits getParent()
         {
             OrganizationalUnits.OrganizationalUnitsState ous = (OrganizationalUnits.OrganizationalUnitsState) organization().get();
-            return ous.getParent(this);
+            return ous.getParent(organizationalUnit);
         }
     }
 }

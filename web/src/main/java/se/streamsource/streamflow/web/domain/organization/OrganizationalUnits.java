@@ -70,6 +70,9 @@ public interface OrganizationalUnits
 
         @This
         OrganizationalUnit.OrganizationalUnitState ouState;
+
+        @This
+        OrganizationalUnits organizationalUnits;
         
         public OrganizationalUnit createOrganizationalUnit(String name)
         {
@@ -122,7 +125,7 @@ public interface OrganizationalUnits
         {
             if (organizationalUnits().contains(ou))
             {
-                return this;
+                return organizationalUnits;
             } else
             {
                 for (OrganizationalUnit organizationalUnit : organizationalUnits())

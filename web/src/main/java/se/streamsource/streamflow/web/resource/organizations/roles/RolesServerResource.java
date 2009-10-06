@@ -35,12 +35,13 @@ public class RolesServerResource
     public ListValue roles()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
+
         Roles.RolesState roles = uowf.currentUnitOfWork().get(Roles.RolesState.class, identity);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (Role projectRole : roles.roles())
+        for (Role role : roles.roles())
         {
-            builder.addListItem(projectRole.getDescription(), EntityReference.getEntityReference(projectRole));
+            builder.addListItem(role.getDescription(), EntityReference.getEntityReference(role));
         }
         return builder.newList();
     }

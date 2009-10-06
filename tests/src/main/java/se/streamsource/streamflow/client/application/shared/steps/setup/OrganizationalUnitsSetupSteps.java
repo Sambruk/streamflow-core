@@ -58,15 +58,17 @@ public class OrganizationalUnitsSetupSteps
     {
         userSetupSteps.basicUserSetup();
         parent = getOrganizationalUnitEntity();
-        orgUnitMap.put("OU1", parent.createOrganizationalUnit("OU1"));
-        OrganizationalUnit uo2 = parent.createOrganizationalUnit("OU2");
-        orgUnitMap.put("OU2", uo2);
+        OrganizationalUnitEntity ou1 = (OrganizationalUnitEntity) parent.createOrganizationalUnit("OU1");
+        orgUnitMap.put("OU1", ou1);
+        orgUnitMap.put("OU1Sub", ou1.createOrganizationalUnit("OU1Sub"));
 
-        OrganizationalUnitEntity ouEntity = (OrganizationalUnitEntity) uo2;
-        projectMap.put("project1", ouEntity.createProject("project1"));
-        projectMap.put("project2", ouEntity.createProject("project2"));
+        OrganizationalUnitEntity ou2 = (OrganizationalUnitEntity) parent.createOrganizationalUnit("OU2");
+        orgUnitMap.put("OU2", ou2);
+        orgUnitMap.put("OU2Sub",ou2.createOrganizationalUnit("OU2Sub"));
+        projectMap.put("project1", ou2.createProject("project1"));
+        projectMap.put("project2", ou2.createProject("project2"));
 
-        group = ouEntity.createGroup("Group");
+        group = ou2.createGroup("Group");
         group.addParticipant(userSetupSteps.userMap.get("user2"));
 
         genericSteps.clearEvents();
