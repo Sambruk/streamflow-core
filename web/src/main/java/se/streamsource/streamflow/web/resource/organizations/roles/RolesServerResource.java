@@ -20,7 +20,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.project.ProjectRoles;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.role.Role;
 import se.streamsource.streamflow.web.domain.role.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -35,8 +35,8 @@ public class RolesServerResource
     public ListValue roles()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
-
-        Roles.RolesState roles = uowf.currentUnitOfWork().get(Roles.RolesState.class, identity);
+        OrganizationalUnit.OrganizationalUnitState ou = uowf.currentUnitOfWork().get( OrganizationalUnit.OrganizationalUnitState.class, identity);
+        Roles.RolesState roles = (Roles.RolesState) ou.organization().get();
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (Role role : roles.roles())
@@ -52,10 +52,11 @@ public class RolesServerResource
 
         String identity = getRequest().getAttributes().get("organization").toString();
 
-        ProjectRoles projectRoles = uow.get(ProjectRoles.class, identity);
+        OrganizationalUnit.OrganizationalUnitState ou = uow.get( OrganizationalUnit.OrganizationalUnitState.class, identity);
+        checkPermission( ou );
 
-        checkPermission(projectRoles);
-        projectRoles.createProjectRole(name.string().get());
+        Roles roles = ou.organization().get();
+        roles.createRole( name.string().get() );
     }
 
 }

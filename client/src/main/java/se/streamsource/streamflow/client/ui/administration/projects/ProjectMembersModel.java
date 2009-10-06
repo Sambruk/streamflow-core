@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import org.jdesktop.swingx.tree.TreeModelSupport;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -26,21 +24,17 @@ import se.streamsource.streamflow.client.resource.organizations.projects.members
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
-import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-import java.util.Observable;
+import javax.swing.AbstractListModel;
 import java.util.Set;
 
 /**
  * JAVADOC
  */
 public class ProjectMembersModel
-    extends Observable
-        implements TreeModel, Refreshable
+    extends AbstractListModel
+        implements Refreshable
     
 {
     @Uses
@@ -51,78 +45,24 @@ public class ProjectMembersModel
     @Structure
     ObjectBuilderFactory obf;
 
-    private TreeValue root;
-    private TreeModelSupport modelSupport = new TreeModelSupport(this);
+    private ListValue memberList;
 
-    public Object getRoot()
+    public int getSize()
     {
-        return root;
+        return memberList == null ? 0 : memberList.items().get().size();
     }
 
-    public Object getChild(Object parent, int index)
+    public Object getElementAt( int index )
     {
-        if (parent instanceof TreeValue)
-        {
-            return ((TreeValue) parent).roots().get().get(index);
-        } else
-        {
-            return ((TreeNodeValue) parent).children().get().get(index);
-        }
-    }
-
-    public int getChildCount(Object parent)
-    {
-        if (parent instanceof TreeValue)
-        {
-            return ((TreeValue) parent).roots().get().size();
-        } else
-        {
-            return ((TreeNodeValue) parent).children().get().size();
-        }
-    }
-
-    public boolean isLeaf(Object node)
-    {
-        if (node instanceof TreeValue)
-        {
-            return ((TreeValue) node).roots().get().isEmpty();
-        } else
-        {
-            return ((TreeNodeValue) node).children().get().isEmpty();
-        }
-    }
-
-    public void valueForPathChanged(TreePath path, Object newValue)
-    {
-    }
-
-    public int getIndexOfChild(Object parent, Object child)
-    {
-        if (parent instanceof TreeValue)
-        {
-            return ((TreeValue) parent).roots().get().indexOf(child);
-        } else
-        {
-            return ((TreeNodeValue) parent).children().get().indexOf(child);
-        }
-    }
-
-    public void addTreeModelListener(TreeModelListener l)
-    {
-        modelSupport.addTreeModelListener(l);
-    }
-
-    public void removeTreeModelListener(TreeModelListener l)
-    {
-        modelSupport.removeTreeModelListener(l);
+        return memberList.items().get().get( index );
     }
 
     public void refresh()
     {
         try
         {
-            root = members.memberRoles();
-            modelSupport.fireNewRoot();
+            memberList = members.members();
+            fireContentsChanged( this, 0, getSize() );
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_refresh_list_of_members, e);
@@ -138,28 +78,22 @@ public class ProjectMembersModel
                 MemberClientResource member = this.members.member(value);
                 member.create();
             }
-            refresh();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_add_members, e);
         }
     }
 
-    public void removeMember(EntityReference entityReference)
+    public void removeMember(int index)
     {
         try
         {
-            members.member(entityReference.identity()).deleteCommand();
-            refresh();
+            String id = memberList.items().get().get( index ).entity().get().identity();
+
+            members.member(id).deleteCommand();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_remove_member, e);
         }
-    }
-
-    public MemberRolesModel memberRolesModel(String id)
-    {
-        return obf.newObjectBuilder(MemberRolesModel.class).use(members.member(id),
-                ouAdminModel).newInstance();
     }
 }

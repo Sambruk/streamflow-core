@@ -20,7 +20,6 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.TreeValue;
 
 /**
  * JAVADOC
@@ -41,10 +40,5 @@ public class MembersClientResource
     public ListValue members() throws ResourceException
     {
         return query("members", ListValue.class);
-    }
-
-    public TreeValue memberRoles() throws ResourceException
-    {
-        return query("memberRoles", TreeValue.class);
     }
 }

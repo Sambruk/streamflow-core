@@ -16,8 +16,9 @@ package se.streamsource.streamflow.web.resource.organizations.roles;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.domain.project.ProjectRoleEntity;
-import se.streamsource.streamflow.web.domain.project.ProjectRoles;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.role.RoleEntity;
+import se.streamsource.streamflow.web.domain.role.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -31,15 +32,15 @@ public class RoleServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String org = getRequest().getAttributes().get("organization").toString();
+        String identity = getRequest().getAttributes().get("organization").toString();
+        OrganizationalUnit.OrganizationalUnitState ou = uowf.currentUnitOfWork().get( OrganizationalUnit.OrganizationalUnitState.class, identity);
 
-        ProjectRoles projectRoles = uow.get(ProjectRoles.class, org);
+        Roles roles = ou.organization().get();
+        checkPermission( roles );
 
-        String identity = getRequest().getAttributes().get("role").toString();
-        ProjectRoleEntity projectRole = uow.get(ProjectRoleEntity.class, identity);
+        String role = getRequest().getAttributes().get("role").toString();
+        RoleEntity roleEntity = uow.get(RoleEntity.class, role);
 
-        checkPermission(projectRoles);
-
-        projectRoles.removeProjectRole(projectRole);
+        roles.removeRole( roleEntity);
     }
 }
