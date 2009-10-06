@@ -118,7 +118,7 @@ public interface Delegatable
 
         public void complete()
         {
-            if (delegatable.delegatedFrom() != null && status.status().get().equals(TaskStates.ACTIVE))
+            if (delegatable.delegatedFrom().get() != null && status.status().get().equals(TaskStates.ACTIVE))
             {
                 done();
             } else
