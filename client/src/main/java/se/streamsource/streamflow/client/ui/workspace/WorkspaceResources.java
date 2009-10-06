@@ -54,7 +54,6 @@ public enum WorkspaceResources
     comment_text_label,
     comment_public_label,
     public_comment,
-    could_not_refresh_comments,
     user_node,
     projects_node,
     inboxes_node,
@@ -72,21 +71,13 @@ public enum WorkspaceResources
     add_comment_title,
 
     window_name,
-    could_not_view_details,
     could_not_refresh_projects,
-    could_not_change_description,
-    could_not_change_note,
-    could_not_change_due_on,
     is_completed,
 
-    could_not_change_name,
-    could_not_change_company,
-    could_not_change_phone_number,
-    could_not_change_address,
-    could_not_change_email_address,
     date_format,
 
     search_project,
     search_users_projects,
-    select_account, could_not_change_contact_id, could_not_refresh, search_user
+    select_account,
+    could_not_create_label, could_not_refresh_list_of_labels, search_user
 }

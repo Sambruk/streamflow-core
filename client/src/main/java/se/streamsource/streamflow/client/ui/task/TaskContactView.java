@@ -138,7 +138,7 @@ public class TaskContactView
                 model.changeName((String) property.get());
             } catch (ResourceException e)
             {
-                throw new OperationException(WorkspaceResources.could_not_change_name, e);
+                throw new OperationException(TaskResources.could_not_change_name, e);
             }
         } else if (property.qualifiedName().name().equals("note"))
         {
@@ -147,7 +147,7 @@ public class TaskContactView
                 model.changeNote((String) property.get());
             } catch (ResourceException e)
             {
-                throw new OperationException(WorkspaceResources.could_not_change_note, e);
+                throw new OperationException(TaskResources.could_not_change_note, e);
             }
         } else if (property.qualifiedName().name().equals("company"))
         {
@@ -156,7 +156,7 @@ public class TaskContactView
                 model.changeCompany((String) property.get());
             } catch (ResourceException e)
             {
-                throw new OperationException(WorkspaceResources.could_not_change_company, e);
+                throw new OperationException(TaskResources.could_not_change_company, e);
             }
         } else if (property.qualifiedName().name().equals("phoneNumber"))
         {
@@ -165,7 +165,7 @@ public class TaskContactView
                 model.changePhoneNumber((String) property.get());
             } catch (ResourceException e)
             {
-                throw new OperationException(WorkspaceResources.could_not_change_phone_number, e);
+                throw new OperationException(TaskResources.could_not_change_phone_number, e);
             }
         } else if (property.qualifiedName().name().equals("address"))
         {
@@ -174,7 +174,7 @@ public class TaskContactView
                 model.changeAddress((String) property.get());
             } catch (ResourceException e)
             {
-                throw new OperationException(WorkspaceResources.could_not_change_address, e);
+                throw new OperationException(TaskResources.could_not_change_address, e);
             }
         } else if (property.qualifiedName().name().equals("emailAddress"))
         {
@@ -183,7 +183,7 @@ public class TaskContactView
                 model.changeEmailAddress((String) property.get());
             } catch (ResourceException e)
             {
-                throw new OperationException(WorkspaceResources.could_not_change_email_address, e);
+                throw new OperationException(TaskResources.could_not_change_email_address, e);
             }
         } else if (property.qualifiedName().name().equals("contactId"))
         {
@@ -192,7 +192,7 @@ public class TaskContactView
                 model.changeContactId((String) property.get());
             } catch (ResourceException e)
             {
-                throw new OperationException(WorkspaceResources.could_not_change_contact_id, e);
+                throw new OperationException(TaskResources.could_not_change_contact_id, e);
             }
         }
     }

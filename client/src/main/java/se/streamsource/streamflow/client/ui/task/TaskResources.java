@@ -19,6 +19,17 @@ package se.streamsource.streamflow.client.ui.task;
  */
 public enum TaskResources
 {
-    could_not_refresh, could_not_create_contact, could_not_remove_contact, could_not_add_comment
+    could_not_refresh,
+    could_not_create_contact,
+    could_not_remove_contact,
+    could_not_refresh_comments,
+    could_not_change_name,
+    could_not_change_note,
+    could_not_change_company,
+    could_not_change_phone_number,
+    could_not_change_address,
+    could_not_change_email_address,
+    could_not_change_contact_id,
+    could_not_change_due_on, could_not_change_description, could_not_view_details, could_not_add_comment
 
 }

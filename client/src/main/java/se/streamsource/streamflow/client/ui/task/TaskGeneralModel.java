@@ -47,7 +47,7 @@ public class TaskGeneralModel
             super.notifyObservers(this);
         } catch (Exception e)
         {
-            throw new OperationException(WorkspaceResources.could_not_refresh,  e);
+            throw new OperationException(TaskResources.could_not_refresh,  e);
         }
     }
 
@@ -65,7 +65,7 @@ public class TaskGeneralModel
             super.notifyObservers(this);
         } catch (ResourceException e)
         {
-            throw new OperationException(WorkspaceResources.could_not_change_description, e);
+            throw new OperationException(TaskResources.could_not_change_description, e);
         }
     }
 
@@ -76,7 +76,7 @@ public class TaskGeneralModel
             generalClientResource.changeNote(newNote);
         } catch (ResourceException e)
         {
-            throw new OperationException(WorkspaceResources.could_not_change_note, e);
+            throw new OperationException(TaskResources.could_not_change_note, e);
         }
     }
 
@@ -87,7 +87,7 @@ public class TaskGeneralModel
             generalClientResource.changeDueOn(newDueOn);
         } catch (ResourceException e)
         {
-            throw new OperationException(WorkspaceResources.could_not_change_due_on, e);
+            throw new OperationException(TaskResources.could_not_change_due_on, e);
         }
     }
 }

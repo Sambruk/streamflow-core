@@ -23,10 +23,9 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
-import se.streamsource.streamflow.client.ui.task.AddCommentDialog;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 
 import javax.swing.*;
@@ -79,7 +78,7 @@ public class TaskCommentsView
                 model.refresh();
             } catch (Exception e)
             {
-                throw new OperationException(WorkspaceResources.could_not_refresh_comments, e);
+                throw new OperationException(TaskResources.could_not_refresh_comments, e);
             }
         }
     }

@@ -21,7 +21,6 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -81,7 +80,7 @@ public class LabelsModel
             fireIntervalAdded(this, 0, list.items().get().size());
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_labels, e);
+            throw new OperationException(WorkspaceResources.could_not_refresh_list_of_labels, e);
         }
     }
 
@@ -95,7 +94,7 @@ public class LabelsModel
             refresh();
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_create_label, e);
+            throw new OperationException(WorkspaceResources.could_not_create_label, e);
         }
     }
 

@@ -39,36 +39,20 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.KeyboardFocusManager;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.*;
 import static java.util.Collections.reverseOrder;
 import static java.util.Collections.sort;
-import java.util.Date;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Base class for all views of task lists.
@@ -228,7 +212,7 @@ public abstract class TaskTableView
                         }
                     } catch (Exception e1)
                     {
-                        throw new OperationException(WorkspaceResources.could_not_view_details, e1);
+                        throw new OperationException(TaskResources.could_not_view_details, e1);
                     }
                 }
             }
