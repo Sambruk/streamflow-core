@@ -1,1 +1,24 @@
-Scenario: Mark as unread
+Scenario: Create inbox task
+Given basic task setup
+When inbox task is created
+Then events taskCreated,ownerChanged,contactAdded occurred
+
+Scenario: Mark read inbox task as unread
+Given basic task setup
+When read inbox task is marked as unread
+Then events markedAsUnread occurred
+
+Scenario: Mark read inbox task as read
+Given basic task setup
+When read inbox task is marked as read
+Then no events occurred
+
+Scenario: Mark unread inbox task as unread
+Given basic task setup
+When unread inbox task is marked as unread
+Then no events occurred
+
+Scenario: Mark unread inbox task as read
+Given basic task setup
+When unread inbox task is marked as read
+Then events markedAsRead occurred

@@ -19,6 +19,7 @@ import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
@@ -41,7 +42,11 @@ public class TaskSetupSteps
     public Task unassignedTask;
     public Task unreadAssignedTask;
     public Task readAssignedTask;
+    public Task unreadInboxTask;
+    public Task readInboxTask;
+
     public Assignments assignments;
+    public Inbox inbox;
 
     @Given("basic task setup")
     public void basicTaskSetup() throws Exception
@@ -52,6 +57,10 @@ public class TaskSetupSteps
         unassignedTask = user.createTask();
         assignedTask = user.createTask();
         assignedTask.assignTo(user);
+        inbox = user;
+        unreadInboxTask = user.createTask();
+        inbox.markAsUnread(unreadInboxTask);
+        readInboxTask = user.createTask();
 
         assignments = userSetupSteps.userMap.get("user2");
         unreadAssignedTask = assignments.createAssignedTask(user);
