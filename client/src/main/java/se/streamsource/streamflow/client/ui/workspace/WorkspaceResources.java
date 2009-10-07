@@ -25,6 +25,7 @@ public enum WorkspaceResources
 
     description_column_header,
     created_column_header,
+    project_column_header,
 
     add_task_title,
     task_separator,

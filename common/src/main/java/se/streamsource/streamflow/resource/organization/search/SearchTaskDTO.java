@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.resource.organization.search;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 
 /**
@@ -22,4 +24,9 @@ import se.streamsource.streamflow.resource.task.TaskDTO;
 public interface SearchTaskDTO
         extends TaskDTO
 {
+
+    @Optional
+    Property<String> assignedTo();
+
+    Property<String> project();
 }

@@ -18,10 +18,13 @@ import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -31,9 +34,9 @@ public class SearchResultTableModel
 {
     public SearchResultTableModel()
     {
-        columnNames = new String[]{"", text(description_column_header), text(created_column_header)};
-        columnClasses = new Class[]{Boolean.class, String.class, Date.class};
-        columnEditable = new boolean[]{false, false, false};
+        columnNames = new String[]{"", text(description_column_header), text(project_column_header), text(assigned_to_header), text(created_column_header)};
+        columnClasses = new Class[]{Boolean.class, String.class, String.class, String.class, Date.class};
+        columnEditable = new boolean[]{false, false, false, false, false};
     }
 
     @Override
@@ -58,5 +61,55 @@ public class SearchResultTableModel
     public void markAsRead(int idx) throws ResourceException
     {
         // Ignore
+    }
+
+    public int getColumnCount()
+    {
+        return 5;
+    }
+
+
+    @Override
+    public Object getValueAt(int rowIndex, int column)
+    {
+        SearchTaskDTO task = (SearchTaskDTO)tasks.get(rowIndex);
+
+        if (task == null)
+            return null;
+
+        switch (column)
+        {
+            case 0:
+                return !task.status().get().equals(TaskStates.ACTIVE);
+            case 1:
+            {
+                StringBuilder desc = new StringBuilder(task.description().get());
+                List<ListItemValue> labels = task.labels().get().items().get();
+                if (labels.size() > 0)
+                {
+                    desc.append(" (");
+                    String comma = "";
+                    for (ListItemValue label : labels)
+                    {
+                        desc.append(comma + label.description().get());
+                        comma = ",";
+                    }
+                    desc.append(")");
+                }
+                return desc.toString();
+            }
+            case 2:
+                return task.project().get();
+            case 3:
+                return task.assignedTo().get();
+            case 4:
+                return task.creationDate().get();
+            case IS_READ:
+                return task.isRead().get();
+            case IS_DROPPED:
+                return task.status().get().equals(TaskStates.DROPPED);
+        }
+
+        return null;
     }
 }

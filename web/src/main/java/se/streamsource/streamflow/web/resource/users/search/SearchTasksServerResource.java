@@ -25,6 +25,7 @@ import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Owner;
@@ -297,4 +298,17 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 		return dateFormat.parse(dateAsString);
 	}
 
+    @Override
+    protected void addAdditionalValues(TaskDTO prototype, TaskEntity task)
+    {
+        if(task.assignedTo().get() != null)
+        {
+            ((SearchTaskDTO)prototype).assignedTo().set(task.assignedTo().get().getDescription());
+        }else
+        {
+            ((SearchTaskDTO)prototype).assignedTo().set(null);
+        }
+        ((SearchTaskDTO)prototype).project().set(task.owner().get().getDescription());
+
+    }
 }

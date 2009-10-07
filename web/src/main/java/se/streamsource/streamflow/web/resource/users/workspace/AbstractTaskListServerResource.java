@@ -67,6 +67,8 @@ public class AbstractTaskListServerResource
         prototype.status().set(task.status().get());
         prototype.isRead().set(true);
 
+        addAdditionalValues(prototype,task);
+        
         ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder(ListValue.class);
         List<ListItemValue> labelList = labelListBuilder.prototype().items().get();
         for (Label label : task.labels())
@@ -76,6 +78,7 @@ public class AbstractTaskListServerResource
             labelList.add(labelBuilder.newInstance());
         }
         prototype.labels().set(labelListBuilder.newInstance());
+
     }
 
 
@@ -84,5 +87,15 @@ public class AbstractTaskListServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         Inbox inbox = uow.get(Inbox.class, inboxId);
         inbox.createTask();
+    }
+
+    /**
+     * Should be overriden by subclasses if there is a need to add more specialized properties.
+     * @param prototype
+     * @param task
+     */
+    protected void addAdditionalValues(TaskDTO prototype, TaskEntity task)
+    {
+
     }
 }
