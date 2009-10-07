@@ -34,6 +34,7 @@ import org.qi4j.entitystore.jdbm.DatabaseImport;
 import org.qi4j.index.reindexer.Reindexer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
+import org.qi4j.spi.query.EntityFinder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
@@ -92,6 +93,9 @@ public interface ManagerComposite
 
         @Service
         EventStore eventStore;
+
+        @Service
+        EntityFinder entityFinder;
 
         @Service
         EventManagement eventManagement;
@@ -406,9 +410,11 @@ public interface ManagerComposite
         private void removeRdfRepository()
                 throws Exception
         {
+            ((Activatable) entityFinder).passivate();
             ((Activatable) repository).passivate();
             removeDirectory( new File( fileConfig.dataDirectory(), "rdf-repository" ) );
             ((Activatable) repository).activate();
+            ((Activatable) entityFinder).activate();
         }
 
         private void removeApplicationDatabase()

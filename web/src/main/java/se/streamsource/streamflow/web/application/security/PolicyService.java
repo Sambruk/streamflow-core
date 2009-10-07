@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import com.sun.security.auth.UserPrincipal;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
@@ -44,7 +43,7 @@ public interface PolicyService
 
         public AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject)
         {
-            UserPrincipal userPrincipal = (UserPrincipal) subject.iterator().next();
+            Principal userPrincipal = subject.iterator().next();
             UserEntity userEntity = uowf.currentUnitOfWork().get(UserEntity.class, userPrincipal.getName());
 
             PermissionCollection permissions = null;
