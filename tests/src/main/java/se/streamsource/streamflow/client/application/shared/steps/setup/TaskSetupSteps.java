@@ -39,6 +39,8 @@ public class TaskSetupSteps
 
     public Task assignedTask;
     public Task unassignedTask;
+    public Task unreadAssignedTask;
+    public Task readAssignedTask;
     public Assignments assignments;
 
     @Given("basic task setup")
@@ -50,7 +52,11 @@ public class TaskSetupSteps
         unassignedTask = user.createTask();
         assignedTask = user.createTask();
         assignedTask.assignTo(user);
+
         assignments = userSetupSteps.userMap.get("user2");
+        unreadAssignedTask = assignments.createAssignedTask(user);
+        assignments.markAssignedTaskAsUnread(unreadAssignedTask);
+        readAssignedTask = assignments.createAssignedTask(user);
 
         Project project = ouSteps.projectMap.get("project1");
         project.addMember(user);

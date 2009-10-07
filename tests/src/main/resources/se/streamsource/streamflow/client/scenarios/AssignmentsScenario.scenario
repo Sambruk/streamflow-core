@@ -3,5 +3,42 @@ Given basic task setup
 When an assigned task is created for user named user1
 Then events assignedTaskCreated,ownerChanged,contactAdded,assignedTo occurred
 
+Scenario: Mark read assigned task as unread
+Given basic task setup
+When read assigned task is marked as unread
+Then events assignedTaskMarkedAsUnread occurred
 
+Scenario: Mark read assigned task as read
+Given basic task setup
+When read assigned task is marked as read
+Then no events occurred
 
+Scenario: Mark unread assigned task as unread
+Given basic task setup
+When unread assigned task is marked as unread
+Then no events occurred
+
+Scenario: Mark unread assigned task as read
+Given basic task setup
+When unread assigned task is marked as read
+Then events assignedTaskMarkedAsRead occurred
+
+Scenario: Complete assigned task
+Given basic task setup
+When assigned task is completed
+Then events statusChanged occurred
+
+Scenario: Drop assigned task
+Given basic task setup
+When assigned task is dropped
+Then events statusChanged occurred
+
+Scenario: Drop assigned task
+Given basic task setup
+When assigned task is forwarded
+Then events unassigned,ownerChanged,markedAsUnread occurred
+
+Scenario: Drop assigned task
+Given basic task setup
+When assigned task is delegated
+Then events unassigned,delegatedTo occurred

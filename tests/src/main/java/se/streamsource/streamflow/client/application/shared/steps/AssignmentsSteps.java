@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
+import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
@@ -45,17 +46,45 @@ public class AssignmentsSteps
         taskSetupSteps.assignments.createAssignedTask(user);
     }
 
-    /*
-    void completeAssignedTask(Task task, Assignee assignee);
+    @When("$task assigned task is marked as $mark")
+    public void markAssignedTaskAs(String task, String mark)
+    {
+        Task atask = "unread".equals(task) ? taskSetupSteps.unreadAssignedTask : taskSetupSteps.readAssignedTask;
+        if ("read".equals(mark))
+        {
+            taskSetupSteps.assignments.markAssignedTaskAsRead(atask);
+        } else
+        {
+            taskSetupSteps.assignments.markAssignedTaskAsUnread(atask);
+        }
+    }
 
-    void dropAssignedTask(Task task, Assignee assignee);
 
-    void delegateAssignedTaskTo(Task task, Delegatee delegatee, Delegator delegator);
+    @When("assigned task is completed")
+    public void complete()
+    {
+        taskSetupSteps.assignments.completeAssignedTask(taskSetupSteps.assignedTask);
+    }
 
-    void forwardAssignedTask(Task task, Inbox receiverInbox);
 
-    void markAssignedTaskAsRead(Task task);
+    @When("assigned task is dropped")
+    public void drop()
+    {
+        taskSetupSteps.assignments.dropAssignedTask(taskSetupSteps.assignedTask);
+    }
 
-    void markAssignedTaskAsUnread(Task task);
-*/
+    @When("assigned task is forwarded")
+    public void forward()
+    {
+        UserEntity user = userSetupSteps.userMap.get("user1");
+        taskSetupSteps.assignments.forwardAssignedTask(taskSetupSteps.assignedTask, user);
+    }
+
+
+    @When("assigned task is delegated")
+    public void delegate()
+    {
+        UserEntity user = userSetupSteps.userMap.get("user1");
+        taskSetupSteps.assignments.delegateAssignedTaskTo(taskSetupSteps.assignedTask, user);
+    }
 }
