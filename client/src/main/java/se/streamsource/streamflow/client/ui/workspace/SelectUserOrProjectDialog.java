@@ -53,7 +53,7 @@ public class SelectUserOrProjectDialog
     {
         super(new BorderLayout());
 
-        setName(i18n.text(WorkspaceResources.search_users_projects));
+        setName(i18n.text(WorkspaceResources.search_projects_users));
         setActionMap(context.getActionMap(this));
 
         TableSingleSelectionModel usersModel = obf.newObject(TableSingleSelectionModel.class);
@@ -95,6 +95,7 @@ public class SelectUserOrProjectDialog
                 }
             }
         });
+
         addProjectsView.getModel().addTableModelListener(new TableModelListener()
         {
 
@@ -120,9 +121,10 @@ public class SelectUserOrProjectDialog
         });
 
 
-        dialog.setLeftComponent(addUsersView);
-        dialog.setRightComponent(addProjectsView);
+        dialog.setLeftComponent(addProjectsView);
+        dialog.setRightComponent(addUsersView);
         dialog.setPreferredSize(dialogSize);
+        dialog.setDividerLocation((int)((dialogSize.getWidth() - dialog.getDividerSize()) / 2));
         setPreferredSize(dialogSize);
         add(dialog, BorderLayout.NORTH);
     }

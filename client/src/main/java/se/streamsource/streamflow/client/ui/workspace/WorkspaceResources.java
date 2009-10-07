@@ -77,7 +77,7 @@ public enum WorkspaceResources
     date_format,
 
     search_project,
-    search_users_projects,
+    search_projects_users,
     select_account,
     could_not_create_label, could_not_refresh_list_of_labels, search_user
 }
