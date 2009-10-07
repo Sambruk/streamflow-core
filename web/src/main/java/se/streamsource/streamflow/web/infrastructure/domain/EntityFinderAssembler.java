@@ -42,7 +42,7 @@ public class EntityFinderAssembler
         } else if (mode.equals(Application.Mode.production))
         {
             // Native storage
-            module.addServices(NativeRepositoryService.class).identifiedBy("rdf").visibleIn(Visibility.application).instantiateOnStartup().identifiedBy("rdf-repository");
+            module.addServices(NativeRepositoryService.class).visibleIn(Visibility.application).instantiateOnStartup().identifiedBy("rdf-repository");
         }
 
         module.addObjects(EntityStateSerializer.class, EntityTypeSerializer.class);

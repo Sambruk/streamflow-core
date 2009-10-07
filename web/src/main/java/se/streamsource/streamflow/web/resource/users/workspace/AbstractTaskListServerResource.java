@@ -79,7 +79,7 @@ public class AbstractTaskListServerResource
     }
 
 
-    protected void createTask(String inboxId)
+    public void createTask(String inboxId)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         Inbox inbox = uow.get(Inbox.class, inboxId);

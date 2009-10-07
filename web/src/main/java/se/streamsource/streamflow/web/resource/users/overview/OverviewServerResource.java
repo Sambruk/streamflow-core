@@ -22,7 +22,6 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.web.domain.group.OverviewQueries;
@@ -42,12 +41,6 @@ public class OverviewServerResource extends CommandQueryServerResource
 {
 	@Structure
 	protected ObjectBuilderFactory obf;
-
-	@Override
-	protected Representation get() throws ResourceException
-	{
-		return getHtml("resources/overview.html");
-	}
 
     public ProjectSummaryListDTO projectSummary() throws ResourceException
     {

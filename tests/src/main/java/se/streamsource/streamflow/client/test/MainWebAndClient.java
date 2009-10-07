@@ -27,27 +27,35 @@ public class MainWebAndClient
 
     public static void main(String[] args) throws Exception
     {
-        new MainWebAndClient().start();
+        MainWebAndClient mainWebAndClient = new MainWebAndClient();
+        try
+        {
+            mainWebAndClient.start();
+        } catch (Exception e)
+        {
+            e.printStackTrace(  );
+            mainWebAndClient.stop();
+        }
     }
 
     public void start() throws Exception
     {
-        // Start web server_label
         web = new MainWeb();
+        mainClient = new MainClient();
+
+        // Start web server_label
         web.start();
 
-
         // Start client
-        mainClient = new MainClient();
         mainClient.start();
     }
 
     public void stop() throws Exception
     {
-        // Stop client
-        mainClient.stop();
-
         // Stop web
         web.stop();
+
+        // Stop client
+        mainClient.stop();
     }
 }

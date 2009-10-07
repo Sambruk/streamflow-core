@@ -57,6 +57,7 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.security.AccessControlException;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -106,7 +107,7 @@ public class CommandQueryServerResource
     @Override
     protected Representation get(Variant variant) throws ResourceException
     {
-        String operation = getOperation();
+        String operation = getQueryOperation();
         if (operation == null)
         {
             return listOperations();
@@ -135,44 +136,6 @@ public class CommandQueryServerResource
         }
     }
 
-    protected String getOperation()
-    {
-        String operation = getRequest().getResourceRef().getQueryAsForm().getFirstValue("operation");
-        if (operation == null && !getRequest().getMethod().getName().toCharArray().equals("get"))
-        {
-            operation = getRequest().getMethod().getName().toLowerCase() + "Operation";
-        }
-        return operation;
-    }
-
-    protected Representation listOperations() throws ResourceException
-    {
-        // List methods
-        StringBuilder links = new StringBuilder("");
-        Method[] methods = getClass().getMethods();
-        for (Method method : methods)
-        {
-            if (isQueryMethod(method))
-                links.append("<li><a href=\"?operation=").append(
-                        method.getName()).append("\" rel=\"").append(
-                        method.getName()).append("\">")
-                        .append(method.getName()).append("</a></li>\n");
-        }
-
-        try
-        {
-            String template = TemplateUtil.getTemplate("resources/links.html",
-                    CommandQueryServerResource.class);
-            String content = TemplateUtil.eval(template, "$content", links.toString(),
-                    "$title", getRequest().getResourceRef().getLastSegment()
-                            + " operations");
-            return new StringRepresentation(content, MediaType.TEXT_HTML);
-        } catch (IOException e)
-        {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
-        }
-    }
-
     @Override
     final protected Representation delete(Variant variant) throws ResourceException
     {
@@ -182,7 +145,7 @@ public class CommandQueryServerResource
     @Override
     final protected Representation post(Representation entity, Variant variant) throws ResourceException
     {
-        String operation = getOperation();
+        String operation = getCommandOperation();
         UnitOfWork uow = null;
         source.registerListener(this, false);
         try
@@ -238,6 +201,71 @@ public class CommandQueryServerResource
         } finally
         {
             source.unregisterListener(this);
+        }
+    }
+
+    protected String getQueryOperation()
+    {
+        String operation = getRequest().getResourceRef().getQueryAsForm().getFirstValue("query");
+        if (operation == null && !getRequest().getMethod().getName().equals("GET"))
+        {
+            operation = getRequest().getMethod().getName().toLowerCase() + "Operation";
+        }
+        return operation;
+    }
+
+    protected String getCommandOperation()
+    {
+        String operation = getRequest().getResourceRef().getQueryAsForm().getFirstValue("query");
+        if (operation == null)
+        {
+            operation = getRequest().getMethod().getName().toLowerCase() + "Operation";
+        }
+        return operation;
+    }
+
+    protected Representation listOperations() throws ResourceException
+    {
+        // List methods
+        Method[] methods = getClass().getDeclaredMethods();
+        StringBuilder queries = new StringBuilder("");
+        for (Method method : methods)
+        {
+            if (!Modifier.isPublic( method.getModifiers() ))
+                continue;
+
+            if (isQueryMethod(method))
+                queries.append("<li><a href=\"?query=").append(
+                        method.getName()).append("\" rel=\"").append(
+                        method.getName()).append("\">")
+                        .append(method.getName()).append("</a></li>\n");
+        }
+
+        StringBuilder commands = new StringBuilder("");
+        for (Method method : methods)
+        {
+            if (!Modifier.isPublic( method.getModifiers() ))
+                continue;
+
+            if (isCommandMethod(method))
+                commands.append("<li><a href=\"?command=").append(
+                        method.getName()).append("\" rel=\"").append(
+                        method.getName()).append("\">")
+                        .append(method.getName()).append("</a></li>\n");
+        }
+
+        try
+        {
+            String template = TemplateUtil.getTemplate("resources/links.html",
+                    CompositeCommandQueryServerResource.class);
+            String content = TemplateUtil.eval(template,
+                    "$queries", queries.toString(),
+                    "$commands", commands.toString(),
+                    "$title", getRequest().getResourceRef().getLastSegment());
+            return new StringRepresentation(content, MediaType.TEXT_HTML);
+        } catch (IOException e)
+        {
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
         }
     }
 
@@ -299,11 +327,6 @@ public class CommandQueryServerResource
             }
         }
         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-    }
-
-    private boolean isQueryMethod(Method method)
-    {
-        return Value.class.isAssignableFrom(method.getReturnType());
     }
 
     private Object[] getCommandArguments(Method method) throws ResourceException
@@ -486,5 +509,30 @@ public class CommandQueryServerResource
             }
         });
         return builder.newInstance();
+    }
+
+    /**
+     * A query method has the following attributes
+     * - Does not return void
+     *
+     * @param method
+     * @return
+     */
+    private boolean isQueryMethod(Method method)
+    {
+        return !Void.TYPE.equals(method.getReturnType());
+    }
+
+    /**
+     * A command method has the following attributes:
+     * - Returns void
+     * - Has a Value as the first parameter
+     *
+     * @param method
+     * @return
+     */
+    private boolean isCommandMethod(Method method)
+    {
+        return method.getReturnType().equals(Void.TYPE) && method.getParameterTypes().length > 0 && Value.class.isAssignableFrom(method.getParameterTypes()[0]);
     }
 }

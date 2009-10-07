@@ -16,14 +16,14 @@ package se.streamsource.streamflow.web.resource.users.workspace.user;
 
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.web.resource.BaseServerResource;
 
 /**
  * Mapped to:
  * /users/{id}/workspace/{user}
  */
 public class WorkspaceUserServerResource
-        extends CommandQueryServerResource
+        extends BaseServerResource
 {
     @Override
     protected Representation get() throws ResourceException

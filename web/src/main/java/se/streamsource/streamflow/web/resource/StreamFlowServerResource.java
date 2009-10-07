@@ -21,7 +21,7 @@ import org.restlet.resource.ResourceException;
  * Mapped to /.
  */
 public class StreamFlowServerResource
-        extends CommandQueryServerResource
+        extends BaseServerResource
 {
     @Override
     protected Representation get() throws ResourceException

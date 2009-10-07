@@ -44,6 +44,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -67,12 +68,16 @@ public interface JdbmEventStoreService
         private BTree index;
         private Serializer serializer;
         public File dataFile;
+        public File databaseFile;
+        public File logFile;
 
         public void activate() throws IOException
         {
             super.activate();
 
             dataFile = new File(fileConfig.dataDirectory(), identity.identity() + "/events");
+            databaseFile = new File(fileConfig.dataDirectory(), identity.identity() + "/events.db");
+            logFile = new File(fileConfig.dataDirectory(), identity.identity() + "/events.lg");
             File directory = dataFile.getAbsoluteFile().getParentFile();
             directory.mkdirs();
             String name = dataFile.getAbsolutePath();
@@ -93,10 +98,38 @@ public interface JdbmEventStoreService
             // Delete event files
             passivate();
 
-            new File(dataFile,"events.db").delete();
-            new File(dataFile,"events.lg").delete();
+            if (!databaseFile.delete())
+                throw new IOException("Could not delete event database");
+            if (!logFile.delete())
+                throw new IOException("Could not delete event log");
 
             activate();
+        }
+
+        public void removeTo( Date date ) throws IOException
+        {
+            lock.lock();
+
+            try
+            {
+                final TupleBrowser browser = index.browse();
+                Tuple tuple = new Tuple();
+                while (browser.getNext( tuple ))
+                {
+                    Long key = (Long) tuple.getKey();
+                    if (key <= date.getTime())
+                    {
+                        index.remove( key );
+                    }
+                }
+                recordManager.commit();
+            } catch (IOException ex)
+            {
+                recordManager.rollback();
+            } finally
+            {
+                lock.unlock();
+            }
         }
 
         public void importEvents(Reader in) throws IOException
@@ -168,11 +201,7 @@ public interface JdbmEventStoreService
                                     if (browser.getNext(tuple))
                                     {
                                         // Get next transaction
-                                        byte[] eventData = (byte[]) tuple.getValue();
-                                        String eventJson = new String(eventData, "UTF-8");
-                                        JSONTokener tokener = new JSONTokener(eventJson);
-                                        JSONObject transaction = (JSONObject) tokener.nextValue();
-                                        transactionEvents = (TransactionEvents) transactionEventsType.fromJSON(transaction, module);
+                                        transactionEvents = readTransactionEvents(tuple);
                                         return true;
                                     } else
                                     {
@@ -240,6 +269,16 @@ public interface JdbmEventStoreService
                 recordManager.setNamedObject("index", index.getRecid());
             }
             commit();
+        }
+
+        private TransactionEvents readTransactionEvents(Tuple tuple)
+                throws UnsupportedEncodingException, JSONException
+        {
+            byte[] eventData = (byte[]) tuple.getValue();
+            String eventJson = new String(eventData, "UTF-8");
+            JSONTokener tokener = new JSONTokener(eventJson);
+            JSONObject transaction = (JSONObject) tokener.nextValue();
+            return (TransactionEvents) transactionEventsType.fromJSON(transaction, module);
         }
     }
 }

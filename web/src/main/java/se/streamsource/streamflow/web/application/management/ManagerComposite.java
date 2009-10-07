@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.web.application.management;
 
+import org.openrdf.repository.Repository;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
@@ -43,8 +44,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 
 import java.io.File;
@@ -107,6 +108,9 @@ public interface ManagerComposite
         @Service
         ServiceReference<EntityStore> entityStore;
 
+        @Service
+        ServiceReference<Repository> repository;
+
         @Structure
         UnitOfWorkFactory uowf;
 
@@ -116,6 +120,7 @@ public interface ManagerComposite
         private int failedLogins;
 
         public File exports;
+        public File backup;
 
         public EventSourceListener failedLoginListener;
 
@@ -124,6 +129,10 @@ public interface ManagerComposite
             exports = new File(fileConfig.dataDirectory(), "exports");
             if (!exports.exists() && !exports.mkdirs())
                 throw new IllegalStateException("Could not create directory for exports");
+
+            backup = new File(fileConfig.dataDirectory(), "backup");
+            if (!backup.exists() && !backup.mkdirs())
+                throw new IllegalStateException("Could not create directory for backups");
 
             failedLoginListener = new EventSourceListener()
             {
@@ -171,7 +180,9 @@ public interface ManagerComposite
 
         public String importDatabase(@Name("Filename") String name) throws IOException
         {
-            File importFile = new File(exports, name);
+            File importFile = new File(name);
+            if (!importFile.isAbsolute())
+                importFile = new File(exports, name);
 
             if (!importFile.exists())
                 return "No such import file:" + importFile.getAbsolutePath();
@@ -300,26 +311,38 @@ public interface ManagerComposite
             return "Events exported to " + exportFile.getAbsolutePath();
         }
 
-        public String restoreFromBackup() throws Exception
+        // Backup management operations
+        public String backup() throws IOException
+        {
+            String result = exportDatabase( true );
+
+            String fileName = result.substring( "Database exported to ".length() );
+            File file = new File(fileName);
+            File backupFile = new File(backup, file.getName());
+            file.renameTo( backupFile );
+
+            return "Backup created:"+file.getAbsolutePath();
+        }
+
+        public String restore() throws Exception
         {
             try
             {
-                ((Activatable)entityStore).passivate();
-
                 // Delete current database
-                if (!new File(fileConfig.dataDirectory(), "data/streamflow.data.db").delete())
                 {
-                    return "Failed restore: could not remove JDBM database";
+                    ((Activatable)entityStore).passivate();
+                    removeDirectory( new File(fileConfig.dataDirectory(), "data" ));
+                    ((Activatable)entityStore).activate();
                 }
 
-                if (!new File(fileConfig.dataDirectory(), "data/streamflow.data.lg").delete())
+                // Delete current index
                 {
-                    return "Failed restore: could not remove JDBM database log";
+                    ((Activatable)repository).passivate();
+                    removeDirectory( new File(fileConfig.dataDirectory(), "rdf-repository" ));
+                    ((Activatable)repository).activate();
                 }
 
-                ((Activatable)entityStore).activate();
-
-                // Restore data from latest export in /exports
+                // Restore data from latest backup in /backup
                 File latestBackup = getLatestBackup();
 
                 if (latestBackup != null)
@@ -354,7 +377,7 @@ public interface ManagerComposite
 
                 // Replay events from time of snapshot backup
                 Date date = latestBackup == null ? null : getBackupDate( latestBackup );
-
+                
                 eventPlayer.replayEvents( date );
 
                 return "Backup restored successfully";
@@ -401,7 +424,7 @@ public interface ManagerComposite
             File latest = null;
             Date latestDate = null;
 
-            for (File file : exports.listFiles(new FileFilter()
+            for (File file : backup.listFiles(new FileFilter()
             {
                 public boolean accept( File pathname )
                 {
@@ -433,13 +456,35 @@ public interface ManagerComposite
 
         private File[] getBackupEventFiles()
         {
-            return exports.listFiles( new FileFilter()
+            return backup.listFiles( new FileFilter()
             {
                 public boolean accept( File pathname )
                 {
                     return pathname.getName().startsWith( "streamflow_events" );
                 }
             });
+        }
+
+        private void removeDirectory(File dir)
+                throws IOException
+        {
+            if (dir == null || !dir.exists())
+                return;
+
+            for (File file : dir.listFiles())
+            {
+                if (file.isDirectory())
+                {
+                    removeDirectory(file);
+                } else
+                {
+                    if (!file.delete())
+                        throw new IOException("Could not delete file:"+file.getAbsolutePath());
+                }
+            }
+
+            if (!dir.delete())
+                throw new IOException("Could not delete directory:"+dir.getAbsolutePath());
         }
 
         // Attributes

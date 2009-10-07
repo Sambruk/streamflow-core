@@ -149,7 +149,7 @@ public class CommandQueryClientResource
             commandRepresentation = new EmptyRepresentation();
 
         Reference ref = getReference();
-        Reference operationRef = ref.clone().addQueryParameter("operation", operation);
+        Reference operationRef = ref.clone().addQueryParameter("command", operation);
         setReference(operationRef);
         try
         {
@@ -214,7 +214,7 @@ public class CommandQueryClientResource
         Reference operationRef = ref.clone();
         if (queryValue != null)
             setQueryParameters(operationRef, queryValue);
-        operationRef.addQueryParameter("operation", operation);
+        operationRef.addQueryParameter("query", operation);
 
         operationRef = new Reference(operationRef.toUrl());
         setReference(operationRef);
@@ -278,7 +278,7 @@ public class CommandQueryClientResource
         Reference ref = getReference();
         if (operation != null)
         {
-            Reference operationRef = ref.clone().addQueryParameter("operation", operation);
+            Reference operationRef = ref.clone().addQueryParameter("command", operation);
             setReference(operationRef);
         }
         try

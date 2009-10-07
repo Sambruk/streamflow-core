@@ -219,7 +219,7 @@ public class CompositeCommandQueryServerResource
         for (Method method : methods)
         {
             if (isQueryMethod(method))
-                queries.append("<li><a href=\"?operation=").append(
+                queries.append("<li><a href=\"?query=").append(
                         method.getName()).append("\" rel=\"").append(
                         method.getName()).append("\">")
                         .append(method.getName()).append("</a></li>\n");
@@ -229,7 +229,7 @@ public class CompositeCommandQueryServerResource
         for (Method method : methods)
         {
             if (isCommandMethod(method))
-                commands.append("<li><a href=\"?operation=").append(
+                commands.append("<li><a href=\"?command=").append(
                         method.getName()).append("\" rel=\"").append(
                         method.getName()).append("\">")
                         .append(method.getName()).append("</a></li>\n");
