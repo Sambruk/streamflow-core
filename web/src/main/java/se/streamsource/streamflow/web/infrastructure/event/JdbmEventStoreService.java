@@ -149,6 +149,7 @@ public interface JdbmEventStoreService
                     TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON(json, module);
                     ValueBuilder<TransactionEvents> builder = transaction.buildWith();
                     builder.prototype().timestamp().set(System.currentTimeMillis());
+                    transaction = builder.newInstance();
                     storeEvents(transaction);
 
                     count++;

@@ -62,6 +62,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -170,7 +172,7 @@ public interface ManagerComposite
 
         public String exportDatabase( boolean compress ) throws IOException
         {
-            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
             File exportFile = new File( exports, "streamflow_data_" + format.format( new Date() ) + (compress ? ".json.gz" : ".json") );
             OutputStream out = new FileOutputStream( exportFile );
 
@@ -245,7 +247,7 @@ public interface ManagerComposite
 
         public String exportEventsRange( @Name("Compress") boolean compress, @Name("From") String fromDate, @Name("To") String toDate ) throws IOException, ParseException
         {
-            SimpleDateFormat parseFormat = new SimpleDateFormat( "yyyyMMdd:HHmm" );
+            SimpleDateFormat parseFormat = new SimpleDateFormat( "yyyyMMdd:HHmmss" );
 
             Date from = parseFormat.parse( fromDate );
 
@@ -269,24 +271,12 @@ public interface ManagerComposite
         {
             String backupResult = "";
 
-            if (shouldBackupDatabase())
-            {
-                String result = exportDatabase( true );
-
-                String fileName = result.substring( result.indexOf( ':' ) + 1 );
-                File backupFile = moveToBackup( new File( fileName ) );
-
-                backupResult += "Backup created:" + backupFile.getAbsolutePath();
-            }
-
             File[] eventBackups = getBackupEventFiles();
             if (eventBackups.length == 0)
             {
                 // Make complete event export
                 File backupFile = moveToBackup( exportEvents0( true ));
 
-                if (!backupResult.equals(""))
-                    backupResult+=", ";
                 backupResult += "Event backup created:"+backupFile.getAbsolutePath();
             } else
             {
@@ -294,9 +284,19 @@ public interface ManagerComposite
                 Date lastBackup = getEventBackupDate(eventBackups[eventBackups.length-1]);
                 File exportFile = moveToBackup(exportEventsRange( true,  lastBackup, new Date() ));
 
+                backupResult += "Event diff backup created:" + exportFile.getAbsolutePath();
+            }
+
+            if (shouldBackupDatabase())
+            {
+                String result = exportDatabase( true );
+
+                String fileName = result.substring( result.indexOf( ':' ) + 1 );
+                File backupFile = moveToBackup( new File( fileName ) );
+
                 if (!backupResult.equals(""))
                     backupResult+=", ";
-                backupResult += "Event diff backup created:" + exportFile.getAbsolutePath();
+                backupResult += "Backup created:" + backupFile.getAbsolutePath();
             }
 
             return backupResult;
@@ -315,14 +315,14 @@ public interface ManagerComposite
             if (name.contains( "-" ))
             {
                 // Range
-                name = name.substring( name.indexOf( "-"+1 ), name.indexOf( "." ) );
+                name = name.substring( name.indexOf( "-")+1, name.indexOf( "." ) );
             } else
             {
                 // Complete backup
                 name = name.substring( 0, name.indexOf( "." ) );
             }
 
-            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
             Date backupDate = format.parse( name );
 
             return backupDate;
@@ -382,8 +382,17 @@ public interface ManagerComposite
 
                 File[] eventFiles = getBackupEventFiles();
 
+                // Replay events from time of snapshot backup
+                Date latestBackupDate = latestBackup == null ? new Date(0) : getBackupDate( latestBackup );
+                Date eventReplayDate = null;
+
                 for (File eventFile : eventFiles)
                 {
+                    // Check if this file contains events after backup was made
+                    Date eventBackupDate = getEventBackupDate( eventFile );
+                    if (eventBackupDate.after( latestBackupDate ) && eventReplayDate == null)
+                        eventReplayDate = new Date(); // Only replay events from here on
+
                     InputStream in = new FileInputStream( eventFile );
                     if (eventFile.getName().endsWith( ".gz" ))
                     {
@@ -394,10 +403,10 @@ public interface ManagerComposite
                     eventManagement.importEvents( reader );
                 }
 
-                // Replay events from time of snapshot backup
-                Date date = latestBackup == null ? null : getBackupDate( latestBackup );
+                if (eventReplayDate == null)
+                    eventReplayDate = new Date(0);
 
-                eventPlayer.replayEvents( date );
+                eventPlayer.replayEvents( eventReplayDate );
 
                 return "Backup restored successfully";
             } catch (Exception ex)
@@ -485,7 +494,7 @@ public interface ManagerComposite
             String name = file.getName().substring( "streamflow_data_".length() );
             name = name.substring( 0, name.indexOf( "." ) );
 
-            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
             Date backupDate = format.parse( name );
 
             return backupDate;
@@ -493,13 +502,23 @@ public interface ManagerComposite
 
         private File[] getBackupEventFiles()
         {
-            return backup.listFiles( new FileFilter()
+            File[] files = backup.listFiles( new FileFilter()
             {
                 public boolean accept( File pathname )
                 {
                     return pathname.getName().startsWith( "streamflow_events" );
                 }
             } );
+
+            Arrays.sort( files, new Comparator<File>()
+            {
+                public int compare( File o1, File o2 )
+                {
+                    return o2.getName().compareTo( o1.getName() );
+                }
+            });
+
+            return files;
         }
 
         private void removeDirectory( File dir )
@@ -527,7 +546,7 @@ public interface ManagerComposite
         private File exportEvents0( boolean compress )
                 throws IOException
         {
-            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
             File exportFile = new File( exports, "streamflow_events_" + format.format( new Date() ) + (compress ? ".json.gz" : ".json") );
 
             OutputStream out = new FileOutputStream( exportFile );
@@ -561,7 +580,7 @@ public interface ManagerComposite
         private File exportEventsRange( boolean compress, Date from, Date to )
                 throws IOException
         {
-            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
             File exportFile = new File( exports, "streamflow_events_" + format.format( from ) + "-" + format.format( to ) + (compress ? ".json.gz" : ".json") );
             OutputStream out = new FileOutputStream( exportFile );
 
@@ -574,18 +593,16 @@ public interface ManagerComposite
 
             int count;
             Date iterableFromDate = from;
-            // Write 100 events at a time. Stop when no more events are found that matches the specification.
-            EventFilter filter = new EventFilter( new EventQuery().beforeDate( to ) );
+            // Write 100 transactions at a time. Stop when no more transactions are found
             do
             {
                 count = 0;
-                Iterable<DomainEvent> events = filter.events( eventStore.events( iterableFromDate, 100 ) );
-
-                for (DomainEvent event : events)
+                Iterable<TransactionEvents> iterable = eventStore.events( iterableFromDate, 100 );
+                for (TransactionEvents transactionEvents : iterable)
                 {
-                    writer.write( event.toJSON() + "\n" );
+                    writer.write( transactionEvents.toJSON() + "\n" );
                     count++;
-                    iterableFromDate = event.on().get();
+                    iterableFromDate = new Date(transactionEvents.timestamp().get());
                 }
             } while (count > 0);
 
