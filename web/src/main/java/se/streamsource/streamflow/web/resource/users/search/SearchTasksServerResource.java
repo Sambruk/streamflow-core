@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
-import javax.security.auth.Subject;
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -157,12 +157,12 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 	{
 		if (UserSearchKeyword.ME.toString().equalsIgnoreCase(search))
 		{
-			Subject subject = getRequest().getClientInfo().getSubject();
-			if (subject == null)
+			List<Principal> principals = getRequest().getClientInfo().getPrincipals();
+			if (principals.isEmpty())
 				return "administrator";
 			else
 			{
-				return subject.getPrincipals().iterator().next().getName();
+				return principals.iterator().next().getName();
 			}
 		} else
 		{

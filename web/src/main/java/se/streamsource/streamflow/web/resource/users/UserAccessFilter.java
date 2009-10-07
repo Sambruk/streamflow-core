@@ -17,8 +17,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.routing.Filter;
 
-import javax.security.auth.Subject;
-
 public class UserAccessFilter
         extends Filter
 {
@@ -26,8 +24,7 @@ public class UserAccessFilter
     @Override
     protected int beforeHandle(Request request, Response response)
     {
-        String userId = request.getAttributes().get("user").toString();
-        Subject subject = request.getClientInfo().getSubject();
+        // TODO Fix this, what is it supposed to do??
 
         //UserPrincipal userPrincipal = subject.getPrincipals(UserPrincipal.class).iterator().next();
         //if (!userId.equals(userPrincipal.getName()))

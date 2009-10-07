@@ -14,15 +14,23 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import java.security.AccessControlContext;
-import java.security.Principal;
-import java.util.List;
+import org.restlet.data.ClientInfo;
+import org.restlet.security.Enroler;
+import org.restlet.security.User;
 
 /**
- * Used to check if a particular user has
- * a particular permission on a particular object
+ * Accept login if user with the given username has the given password
+ * in the StreamFlow user database.
  */
-public interface AccessPolicy
+public class DefaultEnroler
+        extends Enroler
 {
-    AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject);
+    public void enrole( ClientInfo clientInfo )
+    {
+        User user = clientInfo.getUser();
+        if (user != null)
+        {
+            clientInfo.getPrincipals().add( new StreamFlowPrincipal(user.getIdentifier()) );
+        }
+    }
 }

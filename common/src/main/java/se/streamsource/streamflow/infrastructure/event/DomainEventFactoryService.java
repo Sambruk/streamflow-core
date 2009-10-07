@@ -81,7 +81,10 @@ public interface DomainEventFactoryService
             {
                 Iterator<Principal> iterator = subject.getPrincipals().iterator();
                 if (iterator.hasNext())
-                    prototype.by().set( iterator.next().getName() );
+                {
+                    String userName = iterator.next().getName();
+                    prototype.by().set( userName );
+                }
                 else
                     prototype.by().set( "unknown" );
             }

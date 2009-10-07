@@ -73,11 +73,14 @@ import java.util.zip.GZIPOutputStream;
  */
 @Mixins(ManagerComposite.ManagerMixin.class)
 public interface ManagerComposite
-    extends Manager, Activatable, TransientComposite
+        extends Manager, Activatable, TransientComposite
 {
     abstract class ManagerMixin
-        implements Manager, Activatable
+            implements Manager, Activatable
     {
+//        private static final long ONE_DAY = 1000 * 3600 * 24;
+        private static final long ONE_DAY = 1000 * 60*10; // Ten minutes
+
         @Service
         Reindexer reindexer;
 
@@ -126,32 +129,33 @@ public interface ManagerComposite
 
         public void activate() throws Exception
         {
-            exports = new File(fileConfig.dataDirectory(), "exports");
+            exports = new File( fileConfig.dataDirectory(), "exports" );
             if (!exports.exists() && !exports.mkdirs())
-                throw new IllegalStateException("Could not create directory for exports");
+                throw new IllegalStateException( "Could not create directory for exports" );
 
-            backup = new File(fileConfig.dataDirectory(), "backup");
+            backup = new File( fileConfig.dataDirectory(), "backup" );
             if (!backup.exists() && !backup.mkdirs())
-                throw new IllegalStateException("Could not create directory for backups");
+                throw new IllegalStateException( "Could not create directory for backups" );
 
             failedLoginListener = new EventSourceListener()
             {
-                private EventFilter filter = new EventFilter(new EventQuery().withNames("failedLogin"));
-                public void eventsAvailable(EventStore source)
+                private EventFilter filter = new EventFilter( new EventQuery().withNames( "failedLogin" ) );
+
+                public void eventsAvailable( EventStore source )
                 {
-                    Iterable<DomainEvent> events = filter.events(source.events(null, Integer.MAX_VALUE));
+                    Iterable<DomainEvent> events = filter.events( source.events( null, Integer.MAX_VALUE ) );
                     for (DomainEvent event : events)
                     {
                         failedLogins++;
                     }
                 }
             };
-            source.registerListener(failedLoginListener);
+            source.registerListener( failedLoginListener );
         }
 
         public void passivate() throws Exception
         {
-            source.unregisterListener(failedLoginListener);
+            source.unregisterListener( failedLoginListener );
         }
 
         // Operations
@@ -160,42 +164,42 @@ public interface ManagerComposite
             reindexer.reindex();
         }
 
-        public String exportDatabase(boolean compress) throws IOException
+        public String exportDatabase( boolean compress ) throws IOException
         {
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
-            File exportFile = new File(exports, "streamflow_data_" + format.format(new Date()) + (compress ? ".json.gz" : ".json"));
-            OutputStream out = new FileOutputStream(exportFile);
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            File exportFile = new File( exports, "streamflow_data_" + format.format( new Date() ) + (compress ? ".json.gz" : ".json") );
+            OutputStream out = new FileOutputStream( exportFile );
 
             if (compress)
             {
-                out = new GZIPOutputStream(out);
+                out = new GZIPOutputStream( out );
             }
 
-            Writer writer = new OutputStreamWriter(out, "UTF-8");
-            exportDatabase.exportTo(writer);
+            Writer writer = new OutputStreamWriter( out, "UTF-8" );
+            exportDatabase.exportTo( writer );
             writer.close();
 
-            return "Database exported to " + exportFile.getAbsolutePath();
+            return "Database exported to:" + exportFile.getAbsolutePath();
         }
 
-        public String importDatabase(@Name("Filename") String name) throws IOException
+        public String importDatabase( @Name("Filename") String name ) throws IOException
         {
-            File importFile = new File(name);
+            File importFile = new File( name );
             if (!importFile.isAbsolute())
-                importFile = new File(exports, name);
+                importFile = new File( exports, name );
 
             if (!importFile.exists())
                 return "No such import file:" + importFile.getAbsolutePath();
 
-            InputStream in1 = new FileInputStream(importFile);
-            if (importFile.getName().endsWith("gz"))
+            InputStream in1 = new FileInputStream( importFile );
+            if (importFile.getName().endsWith( "gz" ))
             {
-            	in1 = new GZIPInputStream(in1);
+                in1 = new GZIPInputStream( in1 );
             }
-            Reader in = new InputStreamReader(in1, "UTF-8");
+            Reader in = new InputStreamReader( in1, "UTF-8" );
             try
             {
-                importDatabase.importFrom(in);
+                importDatabase.importFrom( in );
             } finally
             {
                 in.close();
@@ -204,22 +208,22 @@ public interface ManagerComposite
             return "Data imported successfully";
         }
 
-        public String importEvents(@Name("Filename") String name) throws IOException
+        public String importEvents( @Name("Filename") String name ) throws IOException
         {
-            File importFile = new File(exports, name);
+            File importFile = new File( exports, name );
 
             if (!importFile.exists())
                 return "No such import file:" + importFile.getAbsolutePath();
 
-            InputStream in1 = new FileInputStream(importFile);
-            if (importFile.getName().endsWith("gz"))
+            InputStream in1 = new FileInputStream( importFile );
+            if (importFile.getName().endsWith( "gz" ))
             {
-            	in1 = new GZIPInputStream(in1);
+                in1 = new GZIPInputStream( in1 );
             }
-            Reader in = new InputStreamReader(in1, "UTF-8");
+            Reader in = new InputStreamReader( in1, "UTF-8" );
             try
             {
-                eventManagement.importEvents(in);
+                eventManagement.importEvents( in );
             } finally
             {
                 in.close();
@@ -228,100 +232,119 @@ public interface ManagerComposite
             return "Data imported successfully";
         }
 
-        public String exportEvents(@Name("Compress") boolean compress) throws IOException
+        public String exportEvents( @Name("Compress") boolean compress ) throws IOException
         {
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
-            File exportFile = new File(exports, "streamflow_events_" + format.format(new Date()) + (compress ? ".json.gz" : ".json"));
-            OutputStream out = new FileOutputStream(exportFile);
+            File exportFile = exportEvents0( compress );
 
-            if (compress)
-            {
-                out = new GZIPOutputStream(out);
-            }
-
-            Writer writer = new OutputStreamWriter(out, "UTF-8");
-            Date iterableFromDate = null;
-            int count;
-            do
-            {
-                count = 0;
-
-                Iterable<TransactionEvents> events = eventStore.events(iterableFromDate, 100);
-                for (TransactionEvents event : events)
-                {
-                    writer.write(event.toJSON()+"\n");
-                    count++;
-                    iterableFromDate = new Date(event.timestamp().get());
-                }
-
-            } while (count > 0);
-
-            writer.close();
-
-            return "Events exported to " + exportFile.getAbsolutePath();
+            return "Events exported to:" + exportFile.getAbsolutePath();
         }
 
-        public String exportEventsRange(@Name("Compress") boolean compress, @Name("From") String fromDate, @Name("To") String toDate) throws IOException, ParseException
+        public String exportEventsRange( @Name("Compress") boolean compress, @Name("From") String fromDate, @Name("To") String toDate ) throws IOException, ParseException
         {
-            SimpleDateFormat parseFormat = new SimpleDateFormat("yyyyMMdd:HHmm");
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
+            SimpleDateFormat parseFormat = new SimpleDateFormat( "yyyyMMdd:HHmm" );
 
-            Date from = parseFormat.parse(fromDate);
+            Date from = parseFormat.parse( fromDate );
 
             Date to;
             if (toDate == null)
             {
                 // Set "to"-date to "now"
                 to = new Date();
-                toDate = format.format(to);
             } else
             {
-                to = parseFormat.parse(toDate);
+                to = parseFormat.parse( toDate );
             }
 
-            File exportFile = new File(exports, "streamflow_events_" + format.format(from)+"-"+format.format(to) + (compress ? ".json.gz" : ".json"));
-            OutputStream out = new FileOutputStream(exportFile);
+            File exportFile = exportEventsRange( compress, from, to );
 
-            if (compress)
-            {
-                out = new GZIPOutputStream(out);
-            }
-
-            Writer writer = new OutputStreamWriter(out, "UTF-8");
-
-            int count;
-            Date iterableFromDate = from;
-            // Write 100 events at a time. Stop when no more events are found that matches the specification.
-            EventFilter filter = new EventFilter(new EventQuery().beforeDate(to));
-            do
-            {
-                count = 0;
-                Iterable<DomainEvent> events = filter.events(eventStore.events(iterableFromDate, 100));
-
-                for (DomainEvent event : events)
-                {
-                    writer.write(event.toJSON()+"\n");
-                    count++;
-                    iterableFromDate = event.on().get();
-                }
-            } while (count > 0);
-
-            writer.close();
-
-            return "Events exported to " + exportFile.getAbsolutePath();
+            return "Events exported to:" + exportFile.getAbsolutePath();
         }
 
         // Backup management operations
-        public String backup() throws IOException
+        public String backup() throws IOException, ParseException
         {
-            String result = exportDatabase( true );
+            String backupResult = "";
 
-            String fileName = result.substring( "Database exported to ".length() );
-            File file = new File(fileName);
-            File backupFile = new File(backup, file.getName());
+            if (shouldBackupDatabase())
+            {
+                String result = exportDatabase( true );
+
+                String fileName = result.substring( result.indexOf( ':' ) + 1 );
+                File backupFile = moveToBackup( new File( fileName ) );
+
+                backupResult += "Backup created:" + backupFile.getAbsolutePath();
+            }
+
+            File[] eventBackups = getBackupEventFiles();
+            if (eventBackups.length == 0)
+            {
+                // Make complete event export
+                File backupFile = moveToBackup( exportEvents0( true ));
+
+                if (!backupResult.equals(""))
+                    backupResult+=", ";
+                backupResult += "Event backup created:"+backupFile.getAbsolutePath();
+            } else
+            {
+                // Export events since last backup
+                Date lastBackup = getEventBackupDate(eventBackups[eventBackups.length-1]);
+                File exportFile = moveToBackup(exportEventsRange( true,  lastBackup, new Date() ));
+
+                if (!backupResult.equals(""))
+                    backupResult+=", ";
+                backupResult += "Event diff backup created:" + exportFile.getAbsolutePath();
+            }
+
+            return backupResult;
+        }
+
+        private File moveToBackup( File file )
+        {
+            File backupFile = new File( backup, file.getName() );
             file.renameTo( backupFile );
+            return backupFile;
+        }
 
-            return "Backup created:"+file.getAbsolutePath();
+        private Date getEventBackupDate( File eventBackup ) throws ParseException
+        {
+            String name = eventBackup.getName().substring( "streamflow_events_".length() );
+            if (name.contains( "-" ))
+            {
+                // Range
+                name = name.substring( name.indexOf( "-"+1 ), name.indexOf( "." ) );
+            } else
+            {
+                // Complete backup
+                name = name.substring( 0, name.indexOf( "." ) );
+            }
+
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            Date backupDate = format.parse( name );
+
+            return backupDate;
+        }
+
+        // Backup the database if no backups exist yet,
+        // or if the existing one is older than 24h
+        private boolean shouldBackupDatabase()
+                throws ParseException
+        {
+            boolean exportDatabase = false;
+
+            File lastBackup = getLatestBackup();
+            Date twentyFourHoursAgo = new Date( System.currentTimeMillis() - ONE_DAY );
+            if (lastBackup != null)
+            {
+                Date lastDate = getBackupDate( lastBackup );
+                if (lastDate.before( twentyFourHoursAgo ))
+                {
+                    exportDatabase = true;
+                }
+            } else
+            {
+                exportDatabase = true;
+            }
+            return exportDatabase;
         }
 
         public String restore() throws Exception
@@ -329,30 +352,22 @@ public interface ManagerComposite
             try
             {
                 // Delete current database
-                {
-                    ((Activatable)entityStore).passivate();
-                    removeDirectory( new File(fileConfig.dataDirectory(), "data" ));
-                    ((Activatable)entityStore).activate();
-                }
+                removeApplicationDatabase();
 
                 // Delete current index
-                {
-                    ((Activatable)repository).passivate();
-                    removeDirectory( new File(fileConfig.dataDirectory(), "rdf-repository" ));
-                    ((Activatable)repository).activate();
-                }
+                removeRdfRepository();
 
                 // Restore data from latest backup in /backup
                 File latestBackup = getLatestBackup();
 
                 if (latestBackup != null)
-                    importDatabase(latestBackup.getAbsolutePath());
+                    importDatabase( latestBackup.getAbsolutePath() );
                 else
                 {
                     // Ensure that at least the root OrganizationsEntity is created
                     UnitOfWork uow = uowf.newUnitOfWork();
-                    uow.newEntity( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
-                    uow.complete();                    
+                    uow.newEntity( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+                    uow.complete();
                 }
 
                 // Reindex state
@@ -365,58 +380,74 @@ public interface ManagerComposite
 
                 for (File eventFile : eventFiles)
                 {
-                    InputStream in = new FileInputStream(eventFile);
-                    if (eventFile.getName().endsWith(".gz"))
+                    InputStream in = new FileInputStream( eventFile );
+                    if (eventFile.getName().endsWith( ".gz" ))
                     {
-                        in = new GZIPInputStream(in);
+                        in = new GZIPInputStream( in );
                     }
 
-                    Reader reader = new InputStreamReader(in, "UTF-8");
-                    eventManagement.importEvents(reader);
+                    Reader reader = new InputStreamReader( in, "UTF-8" );
+                    eventManagement.importEvents( reader );
                 }
 
                 // Replay events from time of snapshot backup
                 Date date = latestBackup == null ? null : getBackupDate( latestBackup );
-                
+
                 eventPlayer.replayEvents( date );
 
                 return "Backup restored successfully";
             } catch (Exception ex)
             {
                 Logger.getLogger( Manager.class.getName() ).log( Level.SEVERE, "Backup restore failed:", ex );
-                return "Backup restore failed:"+ex.getMessage();
+                return "Backup restore failed:" + ex.getMessage();
             }
         }
 
+        private void removeRdfRepository()
+                throws Exception
+        {
+            ((Activatable) repository).passivate();
+            removeDirectory( new File( fileConfig.dataDirectory(), "rdf-repository" ) );
+            ((Activatable) repository).activate();
+        }
 
-        public String generateTestData(@Name("Nr of tasks") int nrOfTasks) throws UnitOfWorkCompletionException
+        private void removeApplicationDatabase()
+                throws Exception
+        {
+            ((Activatable) entityStore).passivate();
+            removeDirectory( new File( fileConfig.dataDirectory(), "data" ) );
+            ((Activatable) entityStore).activate();
+        }
+
+
+        public String generateTestData( @Name("Nr of tasks") int nrOfTasks ) throws UnitOfWorkCompletionException
         {
             UnitOfWork uow = uowf.newUnitOfWork();
 
-            Inbox inbox = uow.get(Inbox.class, "administrator");
+            Inbox inbox = uow.get( Inbox.class, "administrator" );
 
             for (int i = 0; i < nrOfTasks; i++)
             {
-                inbox.createTask().changeDescription("Task "+i);
+                inbox.createTask().changeDescription( "Task " + i );
             }
 
             uow.complete();
 
-            return "Created "+nrOfTasks+" in Administrators inbox";
+            return "Created " + nrOfTasks + " in Administrators inbox";
         }
 
         public String databaseSize()
         {
             final int[] count = {0};
-            entityStore.get().visitEntityStates(new EntityStore.EntityStateVisitor()
+            entityStore.get().visitEntityStates( new EntityStore.EntityStateVisitor()
             {
-                public void visitEntityState(EntityState entityState)
+                public void visitEntityState( EntityState entityState )
                 {
                     count[0]++;
                 }
-            }, module);
+            }, module );
 
-            return "Database contains "+count[0]+" objects";
+            return "Database contains " + count[0] + " objects";
         }
 
         private File getLatestBackup() throws ParseException
@@ -424,18 +455,18 @@ public interface ManagerComposite
             File latest = null;
             Date latestDate = null;
 
-            for (File file : backup.listFiles(new FileFilter()
+            for (File file : backup.listFiles( new FileFilter()
             {
                 public boolean accept( File pathname )
                 {
                     return pathname.getName().startsWith( "streamflow_data_" );
                 }
-            }))
+            } ))
             {
                 // See if backup is newer than currently found backup file
-                if (latest == null || getBackupDate(file).after(latestDate))
+                if (latest == null || getBackupDate( file ).after( latestDate ))
                 {
-                    latestDate = getBackupDate(file);
+                    latestDate = getBackupDate( file );
                     latest = file;
                 }
             }
@@ -443,13 +474,13 @@ public interface ManagerComposite
             return latest;
         }
 
-        private Date getBackupDate(File file) throws ParseException
+        private Date getBackupDate( File file ) throws ParseException
         {
-            String name = file.getName().substring("streamflow_data_".length());
-            name = name.substring(0, name.indexOf("."));
+            String name = file.getName().substring( "streamflow_data_".length() );
+            name = name.substring( 0, name.indexOf( "." ) );
 
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmm");
-            Date backupDate = format.parse(name);
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            Date backupDate = format.parse( name );
 
             return backupDate;
         }
@@ -462,10 +493,10 @@ public interface ManagerComposite
                 {
                     return pathname.getName().startsWith( "streamflow_events" );
                 }
-            });
+            } );
         }
 
-        private void removeDirectory(File dir)
+        private void removeDirectory( File dir )
                 throws IOException
         {
             if (dir == null || !dir.exists())
@@ -475,22 +506,92 @@ public interface ManagerComposite
             {
                 if (file.isDirectory())
                 {
-                    removeDirectory(file);
+                    removeDirectory( file );
                 } else
                 {
                     if (!file.delete())
-                        throw new IOException("Could not delete file:"+file.getAbsolutePath());
+                        throw new IOException( "Could not delete file:" + file.getAbsolutePath() );
                 }
             }
 
             if (!dir.delete())
-                throw new IOException("Could not delete directory:"+dir.getAbsolutePath());
+                throw new IOException( "Could not delete directory:" + dir.getAbsolutePath() );
         }
+
+        private File exportEvents0( boolean compress )
+                throws IOException
+        {
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            File exportFile = new File( exports, "streamflow_events_" + format.format( new Date() ) + (compress ? ".json.gz" : ".json") );
+
+            OutputStream out = new FileOutputStream( exportFile );
+
+            if (compress)
+            {
+                out = new GZIPOutputStream( out );
+            }
+
+            Writer writer = new OutputStreamWriter( out, "UTF-8" );
+            Date iterableFromDate = null;
+            int count;
+            do
+            {
+                count = 0;
+
+                Iterable<TransactionEvents> events = eventStore.events( iterableFromDate, 100 );
+                for (TransactionEvents event : events)
+                {
+                    writer.write( event.toJSON() + "\n" );
+                    count++;
+                    iterableFromDate = new Date( event.timestamp().get() );
+                }
+
+            } while (count > 0);
+
+            writer.close();
+            return exportFile;
+        }
+
+        private File exportEventsRange( boolean compress, Date from, Date to )
+                throws IOException
+        {
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmm" );
+            File exportFile = new File( exports, "streamflow_events_" + format.format( from ) + "-" + format.format( to ) + (compress ? ".json.gz" : ".json") );
+            OutputStream out = new FileOutputStream( exportFile );
+
+            if (compress)
+            {
+                out = new GZIPOutputStream( out );
+            }
+
+            Writer writer = new OutputStreamWriter( out, "UTF-8" );
+
+            int count;
+            Date iterableFromDate = from;
+            // Write 100 events at a time. Stop when no more events are found that matches the specification.
+            EventFilter filter = new EventFilter( new EventQuery().beforeDate( to ) );
+            do
+            {
+                count = 0;
+                Iterable<DomainEvent> events = filter.events( eventStore.events( iterableFromDate, 100 ) );
+
+                for (DomainEvent event : events)
+                {
+                    writer.write( event.toJSON() + "\n" );
+                    count++;
+                    iterableFromDate = event.on().get();
+                }
+            } while (count > 0);
+
+            writer.close();
+            return exportFile;
+        }
+
 
         // Attributes
         public Property<Integer> failedLogins()
         {
-            return new ComputedPropertyInstance<Integer>(new GenericPropertyInfo(Manager.class, "failedLogins"))
+            return new ComputedPropertyInstance<Integer>( new GenericPropertyInfo( Manager.class, "failedLogins" ) )
             {
                 public Integer get()
                 {

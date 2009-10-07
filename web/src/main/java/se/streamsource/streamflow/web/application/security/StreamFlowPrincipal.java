@@ -14,15 +14,23 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import java.security.AccessControlContext;
 import java.security.Principal;
-import java.util.List;
 
 /**
- * Used to check if a particular user has
- * a particular permission on a particular object
+ * JAVADOC
  */
-public interface AccessPolicy
+public class StreamFlowPrincipal
+    implements Principal
 {
-    AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject);
+    private String name;
+
+    public StreamFlowPrincipal( String name )
+    {
+        this.name = name;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
 }

@@ -547,7 +547,8 @@ public class CompositeCommandQueryServerResource
     {
         try
         {
-            Subject subject = getRequest().getClientInfo().getSubject();
+            Subject subject = new Subject();
+            subject.getPrincipals().addAll( getRequest().getClientInfo().getPrincipals() );
             try
             {
                 Object returnValue = Subject.doAs(subject, new PrivilegedExceptionAction()

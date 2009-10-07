@@ -22,10 +22,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.security.SecretVerifier;
-import org.restlet.security.Verifier;
 import se.streamsource.streamflow.web.domain.user.User;
-
-import java.util.Date;
 
 /**
  * Accept login if user with the given username has the given password
@@ -41,11 +38,6 @@ public class PasswordVerifierService
     public int verify(Request request, Response response)
     {
         int result =  super.verify(request, response);
-        if (result == Verifier.RESULT_VALID)
-        {
-            LoginContext loginContext = new LoginContext("BASIC", new Date());
-            request.getClientInfo().getSubject().getPublicCredentials().add(loginContext);
-        }
 
         return result;
     }
@@ -60,23 +52,24 @@ public class PasswordVerifierService
 
             if (user.login(new String(password)))
             {
+                unitOfWork.discard();
                 return true;
             } else
             {
+                try
+                {
+                    // Save failed login count
+                    unitOfWork.complete();
+                } catch (UnitOfWorkCompletionException e)
+                {
+                    e.printStackTrace();
+                }
+
                 return false;
             }
         } catch (NoSuchEntityException e)
         {
             return false;
-        } finally
-        {
-            try
-            {
-                unitOfWork.complete();
-            } catch (UnitOfWorkCompletionException e)
-            {
-                unitOfWork.discard();
-            }
         }
     }
 }

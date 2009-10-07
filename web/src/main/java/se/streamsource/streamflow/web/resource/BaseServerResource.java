@@ -15,14 +15,13 @@
 package se.streamsource.streamflow.web.resource;
 
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.structure.ModuleSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
@@ -32,12 +31,11 @@ import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import se.streamsource.streamflow.web.application.security.AccessPolicy;
+import se.streamsource.streamflow.web.application.security.OperationPermission;
 
 import java.io.InputStream;
 import java.security.AccessControlContext;
-
-import se.streamsource.streamflow.web.application.security.OperationPermission;
-import se.streamsource.streamflow.web.application.security.AccessPolicy;
 
 /**
  * Base class for server-side resources.
@@ -111,7 +109,7 @@ public class BaseServerResource
         String context = getRequest().getResourceRef().getLastSegment();
         OperationPermission operationPermission = new OperationPermission(context, operation);
 
-        AccessControlContext accessControlContext = policy.getAccessControlContext(getRequest().getClientInfo().getSubject(), securedObject);
+        AccessControlContext accessControlContext = policy.getAccessControlContext(getRequest().getClientInfo().getPrincipals(), securedObject);
         accessControlContext.checkPermission(operationPermission);
     }
 }

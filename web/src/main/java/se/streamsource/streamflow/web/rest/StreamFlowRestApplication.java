@@ -27,8 +27,10 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.routing.Router;
+import org.restlet.security.Enroler;
 import org.restlet.security.Verifier;
 import se.streamsource.streamflow.web.StreamFlowWebAssembler;
+import se.streamsource.streamflow.web.application.security.DefaultEnroler;
 import se.streamsource.streamflow.web.resource.APIv1Router;
 
 import java.util.logging.Logger;
@@ -50,6 +52,8 @@ public class StreamFlowRestApplication
     @Service
     Verifier verifier;
 
+    Enroler enroler = new DefaultEnroler();
+
     @Structure
     ApplicationSPI app;
 
@@ -68,6 +72,7 @@ public class StreamFlowRestApplication
     public synchronized Restlet createRoot()
     {
         getContext().setVerifier(verifier);
+        getContext().setEnroler( enroler );
 
         Router api = factory.newObjectBuilder(APIv1Router.class).use(getContext()).newInstance();
 

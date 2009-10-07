@@ -120,6 +120,9 @@ public interface JdbmEventStoreService
                     if (key <= date.getTime())
                     {
                         index.remove( key );
+                    } else
+                    {
+                        break; // We're done
                     }
                 }
                 recordManager.commit();

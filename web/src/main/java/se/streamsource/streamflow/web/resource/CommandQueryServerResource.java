@@ -216,7 +216,7 @@ public class CommandQueryServerResource
 
     protected String getCommandOperation()
     {
-        String operation = getRequest().getResourceRef().getQueryAsForm().getFirstValue("query");
+        String operation = getRequest().getResourceRef().getQueryAsForm().getFirstValue("command");
         if (operation == null)
         {
             operation = getRequest().getMethod().getName().toLowerCase() + "Operation";
@@ -430,7 +430,8 @@ public class CommandQueryServerResource
     {
         try
         {
-            Subject subject = getRequest().getClientInfo().getSubject();
+            Subject subject = new Subject();
+            subject.getPrincipals().addAll( getRequest().getClientInfo().getPrincipals() );
             final Object commandObject = this;
             try
             {

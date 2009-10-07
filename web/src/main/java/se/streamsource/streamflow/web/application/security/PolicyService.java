@@ -14,20 +14,20 @@
 
 package se.streamsource.streamflow.web.application.security;
 
+import com.sun.security.auth.UserPrincipal;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.restlet.security.UserPrincipal;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
 
-import javax.security.auth.Subject;
 import java.security.AccessControlContext;
 import java.security.AllPermission;
 import java.security.PermissionCollection;
 import java.security.Principal;
 import java.security.ProtectionDomain;
+import java.util.List;
 
 /**
  * Authorization policy service.
@@ -42,12 +42,9 @@ public interface PolicyService
         @Structure
         UnitOfWorkFactory uowf;
 
-        public AccessControlContext getAccessControlContext(Subject subject, Object securedObject)
+        public AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject)
         {
-            // TODO Actually use the context for policy decisions
-            LoginContext loginContext = subject.getPublicCredentials(LoginContext.class).iterator().next();
-
-            UserPrincipal userPrincipal = subject.getPrincipals(UserPrincipal.class).iterator().next();
+            UserPrincipal userPrincipal = (UserPrincipal) subject.iterator().next();
             UserEntity userEntity = uowf.currentUnitOfWork().get(UserEntity.class, userPrincipal.getName());
 
             PermissionCollection permissions = null;
