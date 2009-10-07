@@ -1,1 +1,19 @@
-Scenario: Mark as unread
+Scenario: Mark read waitingFor task as unread
+Given basic task setup
+When read waitingFor task is marked as unread
+Then events waitingForTaskMarkedAsUnread occurred
+
+Scenario: Mark read waitingFor task as read
+Given basic task setup
+When read waitingFor task is marked as read
+Then no events occurred
+
+Scenario: Mark unread waitingFor task as unread
+Given basic task setup
+When unread waitingFor task is marked as unread
+Then no events occurred
+
+Scenario: Mark unread waitingFor task as read
+Given basic task setup
+When unread waitingFor task is marked as read
+Then events waitingForTaskMarkedAsRead occurred

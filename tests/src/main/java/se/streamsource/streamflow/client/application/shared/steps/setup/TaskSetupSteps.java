@@ -21,6 +21,7 @@ import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
@@ -44,9 +45,12 @@ public class TaskSetupSteps
     public Task readAssignedTask;
     public Task unreadInboxTask;
     public Task readInboxTask;
+    public Task readWaitingForTask;
+    public Task unreadWaitingForTask;
 
     public Assignments assignments;
     public Inbox inbox;
+    public WaitingFor waitingFor;
 
     @Given("basic task setup")
     public void basicTaskSetup() throws Exception
@@ -76,6 +80,15 @@ public class TaskSetupSteps
         ouSteps.projectMap.get("project2").addMember(ouSteps.group);
         project.createTask();
         project.createTask();
+
+        waitingFor = userSetupSteps.userMap.get("user2");
+        UserEntity user2 = userSetupSteps.userMap.get("user2");
+        unreadWaitingForTask = user2.createTask();
+        unreadWaitingForTask.delegateTo(user,user2, waitingFor);
+        waitingFor.markWaitingForAsUnread(unreadWaitingForTask);
+
+        readWaitingForTask = user2.createTask();
+        readWaitingForTask.delegateTo(user, user2, waitingFor);
 
         genericSteps.clearEvents();
     }
