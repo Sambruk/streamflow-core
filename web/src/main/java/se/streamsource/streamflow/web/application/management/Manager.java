@@ -30,7 +30,7 @@ import java.text.ParseException;
  */
 public interface Manager
 {
-    public void reindex();
+    public void reindex() throws Exception;
 
     public String exportDatabase(@Name("Compress") boolean compress) throws IOException;
 

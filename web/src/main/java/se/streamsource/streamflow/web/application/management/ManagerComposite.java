@@ -165,8 +165,12 @@ public interface ManagerComposite
         }
 
         // Operations
-        public void reindex()
+        public void reindex() throws Exception
         {
+            // Delete current index
+            removeRdfRepository();
+
+            // Reindex state
             reindexer.reindex();
         }
 
@@ -269,86 +273,11 @@ public interface ManagerComposite
         // Backup management operations
         public String backup() throws IOException, ParseException
         {
-            String backupResult = "";
+            String backupResult = backupEvents();
 
-            File[] eventBackups = getBackupEventFiles();
-            if (eventBackups.length == 0)
-            {
-                // Make complete event export
-                File backupFile = moveToBackup( exportEvents0( true ));
-
-                backupResult += "Event backup created:"+backupFile.getAbsolutePath();
-            } else
-            {
-                // Export events since last backup
-                Date lastBackup = getEventBackupDate(eventBackups[eventBackups.length-1]);
-                File exportFile = moveToBackup(exportEventsRange( true,  lastBackup, new Date() ));
-
-                backupResult += "Event diff backup created:" + exportFile.getAbsolutePath();
-            }
-
-            if (shouldBackupDatabase())
-            {
-                String result = exportDatabase( true );
-
-                String fileName = result.substring( result.indexOf( ':' ) + 1 );
-                File backupFile = moveToBackup( new File( fileName ) );
-
-                if (!backupResult.equals(""))
-                    backupResult+=", ";
-                backupResult += "Backup created:" + backupFile.getAbsolutePath();
-            }
+            backupResult += backupDatabase();
 
             return backupResult;
-        }
-
-        private File moveToBackup( File file )
-        {
-            File backupFile = new File( backup, file.getName() );
-            file.renameTo( backupFile );
-            return backupFile;
-        }
-
-        private Date getEventBackupDate( File eventBackup ) throws ParseException
-        {
-            String name = eventBackup.getName().substring( "streamflow_events_".length() );
-            if (name.contains( "-" ))
-            {
-                // Range
-                name = name.substring( name.indexOf( "-")+1, name.indexOf( "." ) );
-            } else
-            {
-                // Complete backup
-                name = name.substring( 0, name.indexOf( "." ) );
-            }
-
-            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
-            Date backupDate = format.parse( name );
-
-            return backupDate;
-        }
-
-        // Backup the database if no backups exist yet,
-        // or if the existing one is older than 24h
-        private boolean shouldBackupDatabase()
-                throws ParseException
-        {
-            boolean exportDatabase = false;
-
-            File lastBackup = getLatestBackup();
-            Date twentyFourHoursAgo = new Date( System.currentTimeMillis() - ONE_DAY );
-            if (lastBackup != null)
-            {
-                Date lastDate = getBackupDate( lastBackup );
-                if (lastDate.before( twentyFourHoursAgo ))
-                {
-                    exportDatabase = true;
-                }
-            } else
-            {
-                exportDatabase = true;
-            }
-            return exportDatabase;
         }
 
         public String restore() throws Exception
@@ -357,9 +286,6 @@ public interface ManagerComposite
             {
                 // Delete current database
                 removeApplicationDatabase();
-
-                // Delete current index
-                removeRdfRepository();
 
                 // Restore data from latest backup in /backup
                 File latestBackup = getLatestBackup();
@@ -414,6 +340,90 @@ public interface ManagerComposite
                 Logger.getLogger( Manager.class.getName() ).log( Level.SEVERE, "Backup restore failed:", ex );
                 return "Backup restore failed:" + ex.getMessage();
             }
+        }
+
+        private String backupDatabase()
+                throws ParseException, IOException
+        {
+            if (shouldBackupDatabase())
+            {
+                String result = exportDatabase( true );
+
+                String fileName = result.substring( result.indexOf( ':' ) + 1 );
+                File backupFile = moveToBackup( new File( fileName ) );
+
+                return ", Backup created:" + backupFile.getAbsolutePath();
+            } else
+                return "";
+        }
+
+        private String backupEvents()
+                throws IOException, ParseException
+        {
+            File[] eventBackups = getBackupEventFiles();
+            if (eventBackups.length == 0)
+            {
+                // Make complete event export
+                File backupFile = moveToBackup( exportEvents0( true ));
+
+                return "Event backup created:"+backupFile.getAbsolutePath();
+            } else
+            {
+                // Export events since last backup
+                Date lastBackup = getEventBackupDate(eventBackups[eventBackups.length-1]);
+                File exportFile = moveToBackup(exportEventsRange( true,  lastBackup, new Date() ));
+
+                return "Event diff backup created:" + exportFile.getAbsolutePath();
+            }
+        }
+
+        private File moveToBackup( File file )
+        {
+            File backupFile = new File( backup, file.getName() );
+            file.renameTo( backupFile );
+            return backupFile;
+        }
+
+        private Date getEventBackupDate( File eventBackup ) throws ParseException
+        {
+            String name = eventBackup.getName().substring( "streamflow_events_".length() );
+            if (name.contains( "-" ))
+            {
+                // Range
+                name = name.substring( name.indexOf( "-")+1, name.indexOf( "." ) );
+            } else
+            {
+                // Complete backup
+                name = name.substring( 0, name.indexOf( "." ) );
+            }
+
+            SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
+            Date backupDate = format.parse( name );
+
+            return backupDate;
+        }
+
+        // Backup the database if no backups exist yet,
+        // or if the existing one is older than 24h
+        private boolean shouldBackupDatabase()
+                throws ParseException
+        {
+            boolean exportDatabase = false;
+
+            File lastBackup = getLatestBackup();
+            Date twentyFourHoursAgo = new Date( System.currentTimeMillis() - ONE_DAY );
+            if (lastBackup != null)
+            {
+                Date lastDate = getBackupDate( lastBackup );
+                if (lastDate.before( twentyFourHoursAgo ))
+                {
+                    exportDatabase = true;
+                }
+            } else
+            {
+                exportDatabase = true;
+            }
+            return exportDatabase;
         }
 
         private void removeRdfRepository()
