@@ -4,7 +4,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>StreamFlow (Build POM)</name>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
