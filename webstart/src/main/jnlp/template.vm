@@ -33,7 +33,7 @@
     #set($end = '.jar\"/>')
 
     $dependencies.replaceAll( "$start$middle$end", "")
-    <jar href="streamflow-help-sv_gov-0.1.jar" locale="sv_gov"/>
+    <jar href="streamflow-help-sv_gov-${project.version}.jar" locale="sv_gov"/>
 
 
   </resources>
