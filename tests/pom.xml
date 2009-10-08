@@ -47,12 +47,12 @@
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-client</artifactId>
-            <version>${version.streamflow}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-web</artifactId>
-            <version>${version.streamflow}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Qi4j -->

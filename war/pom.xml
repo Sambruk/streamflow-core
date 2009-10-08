@@ -15,9 +15,6 @@
     <packaging>war</packaging>
     <name>StreamFlow war</name>
     <description>StreamFlow WAR packaging</description>
-    <properties>
-        <version.streamflow>0.1-SNAPSHOT</version.streamflow>
-    </properties>
     <build>
         <plugins>
             <!-- War -->
@@ -184,7 +181,7 @@
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-web</artifactId>
-            <version>${version.streamflow}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Web -->

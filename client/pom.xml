@@ -13,9 +13,6 @@
     <packaging>jar</packaging>
     <name>StreamFlow client</name>
     <description>StreamFlow client</description>
-    <properties>
-        <version.streamflow>0.1-SNAPSHOT</version.streamflow>
-    </properties>
 
     <dependencies>
         <!-- Domain -->
@@ -28,7 +25,7 @@
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-help-sv_gov</artifactId>
-            <version>${version.streamflow}</version>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -66,7 +63,6 @@
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-jdbm</artifactId>
-            <version>${version.qi4j-ext}</version>
         </dependency>
 
         <!-- UI -->
@@ -133,7 +129,6 @@
         <dependency>
             <groupId>org.qi4j.swing</groupId>
             <artifactId>qi4j-swing-envisage</artifactId>
-            <version>${version.qi4j-tools}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

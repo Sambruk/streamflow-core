@@ -56,31 +56,21 @@
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-jdbm</artifactId>
-            <version>${version.qi4j-ext}</version>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-migration</artifactId>
-            <version>1.0-RC2-20091008.010012-13</version>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-preferences</artifactId>
-            <version>${version.qi4j-ext}</version>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-reindexer</artifactId>
-            <version>${version.qi4j-ext}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-entitystore-preferences</artifactId>
-            <version>1.0-RC2-20091008.010012-36</version>
         </dependency>
 
         <!-- REST -->

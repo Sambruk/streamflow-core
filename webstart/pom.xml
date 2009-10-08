@@ -69,12 +69,12 @@
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-client</artifactId>
-            <version>${version.streamflow}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-help-sv_gov</artifactId>
-            <version>${version.streamflow}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
