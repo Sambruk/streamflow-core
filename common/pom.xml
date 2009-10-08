@@ -17,6 +17,7 @@
         <dependency>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-api</artifactId>
+            <version>1.0-RC2-20091008.011211-40</version>
         </dependency>
         <dependency>
             <groupId>org.qi4j.core</groupId>
