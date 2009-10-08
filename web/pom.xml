@@ -14,9 +14,6 @@
     <name>StreamFlow web</name>
     <description>StreamFlow web application</description>
     <properties>
-        <version.qi4j-core>1.0-RC2-SNAPSHOT</version.qi4j-core>
-        <version.qi4j-lib>1.0-RC2-SNAPSHOT</version.qi4j-lib>
-        <version.qi4j-ext>1.0-RC2-SNAPSHOT</version.qi4j-ext>
     </properties>
 
     <dependencies>
@@ -65,7 +62,7 @@
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-migration</artifactId>
-            <version>${version.qi4j-ext}</version>
+            <version>1.0-RC2-20091008.010012-13</version>
         </dependency>
 
         <dependency>
@@ -83,7 +80,7 @@
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-preferences</artifactId>
-            <version>${version.qi4j-ext}</version>
+            <version>1.0-RC2-20091008.010012-36</version>
         </dependency>
 
         <!-- REST -->
@@ -128,7 +125,7 @@
         <dependency>
             <groupId>org.qi4j.swing</groupId>
             <artifactId>qi4j-swing-envisage</artifactId>
-            <version>${version.qi4j-lib}</version>
+            <version>${version.qi4j-tools}</version>
             <scope>test</scope>
         </dependency>
 
