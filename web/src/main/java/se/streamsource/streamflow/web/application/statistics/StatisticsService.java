@@ -49,7 +49,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import static java.util.Arrays.asList;
+import static java.util.Arrays.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
@@ -112,7 +112,21 @@ public interface StatisticsService
 			}
 
 
-            completedFilter = new EventFilter(new EventQuery().withNames("completed"));
+            completedFilter = new EventFilter(new EventQuery()
+            {
+                @Override
+                public boolean accept( DomainEvent event )
+                {
+                    boolean accept =  super.accept( event );
+                    if (accept)
+                    {
+                        if (event.parameters().get().indexOf( "COMPLETED" ) != -1)
+                            return true;
+                    }
+
+                    return false;
+                }
+            }.withNames("statusChanged"));
         }
 
         public void passivate() throws Exception
@@ -120,7 +134,7 @@ public interface StatisticsService
             source.unregisterListener(this);
         }
 
-        public void eventsAvailable(EventStore eventStore)
+        public synchronized void eventsAvailable(EventStore eventStore)
         {
             if (config.configuration().enabled().get())
             {
@@ -137,11 +151,10 @@ public interface StatisticsService
                     }
                 }
 
-                Iterable<DomainEvent> events = completedFilter.events(eventStore.events(config.configuration().lastEventDate().get(), Integer.MAX_VALUE));
+                Iterable<DomainEvent> events = completedFilter.events(eventStore.events(new Date(config.configuration().lastEventDate().get()), Integer.MAX_VALUE));
 
                 Connection conn = null;
                 UnitOfWork uow = null;
-                Date newLastDate = null;
                 try
                 {
                     for (DomainEvent event : events)
@@ -207,16 +220,14 @@ public interface StatisticsService
                                 stmt.executeUpdate();
                                 stmt.close();
                             }
-
-                            newLastDate = event.on().get();
                         }
                     }
 
                     if (conn != null)
                         conn.commit();
 
-                    config.configuration().lastEventDate().set(newLastDate);
-                    //api.getUnitOfWork(config.configuration()).apply();
+                    config.configuration().lastEventDate().set(completedFilter.lastTimestamp());
+                    config.save();
                 } catch (Exception e)
                 {
                     logger.log(Level.SEVERE, "Could not log statistics", e);

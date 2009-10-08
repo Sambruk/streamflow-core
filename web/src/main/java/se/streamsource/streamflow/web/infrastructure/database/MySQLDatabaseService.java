@@ -23,6 +23,7 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.This;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * DataSource for MySQL database.

@@ -17,8 +17,9 @@ package se.streamsource.streamflow.infrastructure.event.source;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Takes a list of TransactionEvents and filters them according to a given event specification.
@@ -28,6 +29,7 @@ public class EventFilter
     public static final EventFilter ALL_EVENTS = new EventFilter(AllEventsSpecification.INSTANCE);
 
     private EventSpecification eventSpecification;
+    private long lastTimestamp;
 
     public EventFilter()
     {
@@ -47,16 +49,62 @@ public class EventFilter
             for (DomainEvent domainEvent : transaction.events().get())
             {
                 if (eventSpecification.accept(domainEvent))
+                {
                     events.add(domainEvent);
+                }
             }
+            lastTimestamp = transaction.timestamp().get();
         }
 
         return events;
     }
 
+    public Iterable<TransactionEvents> transactions(Iterable<TransactionEvents> transactions)
+    {
+        List<TransactionEvents> matchedTransactions = new ArrayList<TransactionEvents>();
+        for (TransactionEvents transaction : transactions)
+        {
+            for (DomainEvent domainEvent : transaction.events().get())
+            {
+                if (eventSpecification.accept(domainEvent))
+                {
+                    // Found an event that matches - add tx and continue with next
+                    matchedTransactions.add(transaction);
+                    break;
+                }
+            }
+            lastTimestamp = transaction.timestamp().get();
+        }
+
+        return matchedTransactions;
+    }
+
     public boolean matchesAny(Iterable<TransactionEvents> transactions)
     {
-        Iterable<DomainEvent> events = events(transactions);
-        return events.iterator().hasNext();
+        boolean matches = false;
+        for (TransactionEvents transaction : transactions)
+        {
+            for (DomainEvent domainEvent : transaction.events().get())
+            {
+                if (eventSpecification.accept(domainEvent))
+                {
+                    matches = true;
+                }
+            }
+            lastTimestamp = transaction.timestamp().get();
+        }
+
+        return matches;
+    }
+
+    /**
+     * Timestamp of the last evalutated transaction. This can be used as input
+     * to the next call to {@link EventStore#events(java.util.Date, int)}.
+     *
+     * @return
+     */
+    public long lastTimestamp()
+    {
+        return lastTimestamp;
     }
 }

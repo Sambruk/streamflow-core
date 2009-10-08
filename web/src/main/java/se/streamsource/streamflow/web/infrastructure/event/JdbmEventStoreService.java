@@ -67,9 +67,9 @@ public interface JdbmEventStoreService
         private RecordManager recordManager;
         private BTree index;
         private Serializer serializer;
-        public File dataFile;
-        public File databaseFile;
-        public File logFile;
+        private File dataFile;
+        private File databaseFile;
+        private File logFile;
 
         public void activate() throws IOException
         {
@@ -148,7 +148,7 @@ public interface JdbmEventStoreService
                     JSONObject json = (JSONObject) new JSONTokener(valueJson).nextValue();
                     TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON(json, module);
                     ValueBuilder<TransactionEvents> builder = transaction.buildWith();
-                    builder.prototype().timestamp().set(System.currentTimeMillis());
+                    builder.prototype().timestamp().set(getCurrentTimestamp());
                     transaction = builder.newInstance();
                     storeEvents(transaction);
 

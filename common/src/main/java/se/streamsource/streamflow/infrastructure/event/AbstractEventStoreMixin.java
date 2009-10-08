@@ -63,6 +63,8 @@ public abstract class AbstractEventStoreMixin
 
     private Map<UnitOfWork, List<DomainEvent>> uows = new ConcurrentHashMap<UnitOfWork, List<DomainEvent>>();
 
+    private long lastTimestamp = 0;
+
     public void activate() throws IOException
     {
         logger = Logger.getLogger(identity.identity().get());
@@ -97,7 +99,7 @@ public abstract class AbstractEventStoreMixin
 
                             // Store all events from this UoW as one transaction
                             ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder(TransactionEvents.class);
-                            builder.prototype().timestamp().set(System.currentTimeMillis());
+                            builder.prototype().timestamp().set(getCurrentTimestamp());
                             builder.prototype().events().set(eventList);
                             TransactionEvents transaction = builder.newInstance();
 
@@ -150,4 +152,15 @@ public abstract class AbstractEventStoreMixin
 
     abstract protected void storeEvents(TransactionEvents transaction)
         throws IOException;
+
+
+    protected long getCurrentTimestamp()
+    {
+        long timestamp = System.currentTimeMillis();
+        if (timestamp == lastTimestamp)
+            timestamp++; // Increase by one to ensure uniqueness
+        lastTimestamp = timestamp;
+        return timestamp;
+    }
+
 }
