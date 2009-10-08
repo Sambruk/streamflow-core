@@ -68,4 +68,24 @@ public class UserDelegatedTaskServerResource
         Task task = uow.get(Task.class, taskId);
         uow.remove(task);
     }
+
+    public void markAsRead()
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        Delegations delegations = uow.get(Delegations.class, userId);
+        delegations.markDelegatedTaskAsRead(task);
+    }
+
+    public void markAsUnread()
+    {
+        String taskId = (String) getRequest().getAttributes().get("task");
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        Task task = uow.get(Task.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        Delegations delegations = uow.get(Delegations.class, userId);
+        delegations.markDelegateddTaskAsUnread(task);
+    }
 }

@@ -16,6 +16,8 @@ package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.entity.association.ManyAssociation;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * Delegations of tasks
@@ -29,8 +31,18 @@ public interface Delegations
 
     void finishDelegatedTask(Task task, Assignee assignee);
 
-    class DelegationsMixin
-            implements Delegations
+    void markDelegatedTaskAsRead(Task task);
+     void markDelegateddTaskAsUnread(Task task);
+
+    interface DelegationsState
+    {
+        void delegatedTaskMarkedAsRead(DomainEvent event, Task task);
+        void delegatedTaskMarkedAsUnread(DomainEvent event, Task task);
+        ManyAssociation<Task> unreadDelegatedTasks();
+    }
+
+    abstract class DelegationsMixin
+            implements Delegations, DelegationsState
     {
         @This
         Owner owner;
@@ -50,6 +62,34 @@ public interface Delegations
         {
             accept(task, assignee);
             task.done();
+        }
+
+        public void markDelegatedTaskAsRead(Task task)
+        {
+            if (!unreadDelegatedTasks().contains(task))
+            {
+                return;
+            }
+            delegatedTaskMarkedAsRead( DomainEvent.CREATE, task);
+        }
+
+        public void markDelegateddTaskAsUnread(Task task)
+        {
+            if (unreadDelegatedTasks().contains(task))
+            {
+                return;
+            }
+            delegatedTaskMarkedAsUnread(DomainEvent.CREATE, task);
+        }
+
+        public void delegatedTaskMarkedAsRead(DomainEvent event, Task task)
+        {
+            unreadDelegatedTasks().remove(task);
+        }
+
+        public void delegatedTaskMarkedAsUnread(DomainEvent event, Task task)
+        {
+            unreadDelegatedTasks().add(task);
         }
     }
 }
