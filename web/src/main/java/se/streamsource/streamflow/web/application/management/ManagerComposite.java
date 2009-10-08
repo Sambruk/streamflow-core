@@ -81,8 +81,8 @@ public interface ManagerComposite
     abstract class ManagerMixin
             implements Manager, Activatable
     {
-//        private static final long ONE_DAY = 1000 * 3600 * 24;
-        private static final long ONE_DAY = 1000 * 60*10; // Ten minutes
+        private static final long ONE_DAY = 1000 * 3600 * 24;
+//        private static final long ONE_DAY = 1000 * 60*10; // Ten minutes
 
         @Service
         Reindexer reindexer;
