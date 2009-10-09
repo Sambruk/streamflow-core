@@ -1,0 +1,21 @@
+Scenario: Create group
+Given basic groups setup
+When a new group with name newGroup is created
+Then events groupCreated,groupAdded,descriptionChanged occurred
+
+Scenario: addGroup
+Given basic groups setup
+When group named group2 is added
+Then events groupAdded occurred
+
+Scenario: removeGroup
+Given basic groups setup
+When group named group1 is removed
+Then events groupRemoved,removedChanged,participantRemoved,leftGroup occurred
+
+Scenario: mergeGroup
+Given basic groups setup
+When groups are merged
+Then events groupRemoved,removedChanged,participantRemoved,leftGroup,groupAdded occurred
+
+
