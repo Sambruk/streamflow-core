@@ -1,0 +1,5 @@
+Scenario: Add comment to a task
+Given basic task setup
+When comment with text mycomment is added
+Then events commentAdded occurred
+
