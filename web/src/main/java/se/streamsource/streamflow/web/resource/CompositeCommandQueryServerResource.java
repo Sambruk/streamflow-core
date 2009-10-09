@@ -55,6 +55,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionCollector;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
@@ -102,7 +103,7 @@ public class CompositeCommandQueryServerResource
 
     @Service
     EventSource source;
-    public Iterable<TransactionEvents> events;
+    public Iterable<TransactionEvents> transactions;
 
     public CompositeCommandQueryServerResource()
     {
@@ -307,7 +308,7 @@ public class CompositeCommandQueryServerResource
                         {
                             public void write(Writer writer) throws IOException
                             {
-                                writer.write(events.iterator().next().toJSON());
+                                writer.write( transactions.iterator().next().toJSON());
                             }
                         };
                     } else if (responseType.equals(MediaType.TEXT_HTML))
@@ -318,7 +319,7 @@ public class CompositeCommandQueryServerResource
                             {
                                 String template = TemplateUtil.getTemplate("resources/events.html", getClass());
                                 StringWriter string = new StringWriter();
-                                for (DomainEvent event : filter.events(events))
+                                for (DomainEvent event : filter.events( transactions ))
                                 {
                                     string.write("<tr>"+
                                             "<td>"+event.usecase().get()+"</td>"+
@@ -338,7 +339,7 @@ public class CompositeCommandQueryServerResource
                         {
                             public void write(Writer writer) throws IOException
                             {
-                                writer.write(events.iterator().next().toJSON());
+                                writer.write( transactions.iterator().next().toJSON());
                             }
                         };
                     }
@@ -424,7 +425,9 @@ public class CompositeCommandQueryServerResource
 
     public void eventsAvailable(EventStore source)
     {
-        events = source.events(null, Integer.MAX_VALUE);
+        TransactionCollector collector = new TransactionCollector();
+        source.transactions(null, collector);
+        transactions = collector.transactions();
     }
 
     private Method getResourceMethod(String operation)

@@ -21,11 +21,11 @@ import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -81,25 +81,29 @@ public class EventsResource
 
         public void eventsAvailable(EventStore eventStore)
         {
-            Iterable<DomainEvent> events = EventFilter.ALL_EVENTS.events(eventStore.events(null, 100000));
-
-            try
+            eventStore.transactions( null, new TransactionHandler()
             {
+                public boolean handleTransaction( TransactionEvents transaction )
+                {
+                    try
+                    {
+                        writer.write(transaction.toJSON());
+                        writer.write('\n');
+                        writer.flush();
 
-                for (DomainEvent event : events)
-                {
-                    writer.write(event.toJSON());
-                    writer.write('\n');
-                    writer.flush();
+                        return true;
+                    } catch (IOException e)
+                    {
+                        synchronized (writer)
+                        {
+                            writer.notify();
+                        }
+
+                        source.unregisterListener( EventSubscriberWriter.this );
+                        return false;
+                    }
                 }
-            } catch (IOException e)
-            {
-                source.unregisterListener(this);
-                synchronized (writer)
-                {
-                    writer.notify();
-                }
-            }
+            });
         }
     }
 }

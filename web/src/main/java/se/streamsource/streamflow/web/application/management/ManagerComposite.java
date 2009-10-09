@@ -36,15 +36,14 @@ import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
@@ -143,17 +142,11 @@ public interface ManagerComposite
             if (!backup.exists() && !backup.mkdirs())
                 throw new IllegalStateException( "Could not create directory for backups" );
 
-            failedLoginListener = new EventSourceListener()
+            failedLoginListener = new OnEvents("failedLogin")
             {
-                private EventFilter filter = new EventFilter( new EventQuery().withNames( "failedLogin" ) );
-
-                public void eventsAvailable( EventStore source )
+                public void run()
                 {
-                    Iterable<DomainEvent> events = filter.events( source.events( null, Integer.MAX_VALUE ) );
-                    for (DomainEvent event : events)
-                    {
-                        failedLogins++;
-                    }
+                    failedLogins++;
                 }
             };
             source.registerListener( failedLoginListener );
@@ -566,28 +559,39 @@ public interface ManagerComposite
                 out = new GZIPOutputStream( out );
             }
 
-            Writer writer = new OutputStreamWriter( out, "UTF-8" );
-            Date iterableFromDate = null;
-            int count;
-            do
-            {
-                count = 0;
+            final Writer writer = new OutputStreamWriter( out, "UTF-8" );
+            
+            final IOException[] ex = new IOException[0];
 
-                Iterable<TransactionEvents> events = eventStore.events( iterableFromDate, 100 );
-                for (TransactionEvents event : events)
+            eventStore.transactions( null, new TransactionHandler()
                 {
-                    writer.write( event.toJSON() + "\n" );
-                    count++;
-                    iterableFromDate = new Date( event.timestamp().get() );
-                }
+                    public boolean handleTransaction( TransactionEvents transaction )
+                    {
+                        try
+                        {
+                            writer.write( transaction.toJSON() + "\n" );
+                        } catch (IOException e)
+                        {
+                            ex[0] = e;
+                            return false;
+                        }
 
-            } while (count > 0);
+                        return true;
+                    }
+                });
 
             writer.close();
+
+            if (ex[0] != null)
+            {
+                exportFile.delete();
+                throw ex[0];
+            }
+
             return exportFile;
         }
 
-        private File exportEventsRange( boolean compress, Date from, Date to )
+        private File exportEventsRange( boolean compress, Date from, final Date to )
                 throws IOException
         {
             SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
@@ -599,24 +603,38 @@ public interface ManagerComposite
                 out = new GZIPOutputStream( out );
             }
 
-            Writer writer = new OutputStreamWriter( out, "UTF-8" );
+            final Writer writer = new OutputStreamWriter( out, "UTF-8" );
 
-            int count;
-            Date iterableFromDate = from;
-            // Write 100 transactions at a time. Stop when no more transactions are found
-            do
+            final IOException[] ex = new IOException[0];
+
+            eventStore.transactions( from , new TransactionHandler()
             {
-                count = 0;
-                Iterable<TransactionEvents> iterable = eventStore.events( iterableFromDate, 100 );
-                for (TransactionEvents transactionEvents : iterable)
+                public boolean handleTransaction( TransactionEvents transaction )
                 {
-                    writer.write( transactionEvents.toJSON() + "\n" );
-                    count++;
-                    iterableFromDate = new Date(transactionEvents.timestamp().get());
+                    if (transaction.timestamp().get() > to.getTime())
+                        return false;
+
+                    try
+                    {
+                        writer.write( transaction.toJSON() + "\n" );
+                    } catch (IOException e)
+                    {
+                        ex[0] = e;
+                        return false;
+                    }
+
+                    return true;
                 }
-            } while (count > 0);
+            });
 
             writer.close();
+
+            if (ex[0] != null)
+            {
+                exportFile.delete();
+                throw ex[0];
+            }
+
             return exportFile;
         }
 

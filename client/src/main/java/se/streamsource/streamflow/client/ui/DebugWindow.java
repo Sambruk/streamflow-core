@@ -21,12 +21,16 @@ import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -34,10 +38,11 @@ import javax.swing.table.DefaultTableModel;
  */
 public class DebugWindow
     extends FrameView
-    implements EventSourceListener
+    implements EventSourceListener, EventHandler
 {
     public JXTable eventTable;
     public DefaultTableModel eventModel;
+    public TransactionHandler handler;
 
     public DebugWindow(@Service Application application,
                        @Service EventSource eventSource)
@@ -63,15 +68,19 @@ public class DebugWindow
         setToolBar(toolbar);
 
         frame.setSize(400, 400);
+
+        handler = new TransactionEventAdapter(this);
     }
 
     public void eventsAvailable(EventStore source)
     {
-        Iterable<DomainEvent> events = EventFilter.ALL_EVENTS.events(source.events(null, Integer.MAX_VALUE));
-        for (DomainEvent event : events)
-        {
-            eventModel.addRow(new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()});
-        }
+        source.transactions( null, handler);
+    }
+
+    public boolean handleEvent( DomainEvent event )
+    {
+        eventModel.addRow(new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()});
+        return true;
     }
 
     @Action

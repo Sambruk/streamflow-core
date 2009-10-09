@@ -18,9 +18,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
+import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
 
 import javax.swing.tree.DefaultTreeModel;
 import java.util.logging.Logger;
@@ -38,19 +36,13 @@ public class WorkspaceModel
         super(node);
 
         // Reload project list whenever someone join or leave a project/group
-        subscriber = new EventSourceListener()
+        subscriber = new OnEvents("joinedProject","leftProject","joinedGroup","leftGroup")
         {
-            EventFilter filter = new EventFilter(new EventQuery().
-                    withNames("joinedProject","leftProject","joinedGroup","leftGroup"));
-
-            public void eventsAvailable(EventStore source)
+            public void run()
             {
-                if (filter.matchesAny(source.events(null, Integer.MAX_VALUE)))
-                {
-                    Logger.getLogger("workspace").info("Refresh project list");
-                    getRoot().getProjectsNode().refresh();
-                    reload(getRoot().getProjectsNode());
-                }
+                Logger.getLogger("workspace").info("Refresh project list");
+                getRoot().getProjectsNode().refresh();
+                reload(getRoot().getProjectsNode());
             }
         };
 

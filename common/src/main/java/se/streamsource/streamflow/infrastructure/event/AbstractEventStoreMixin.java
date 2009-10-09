@@ -24,9 +24,11 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.common.Optional;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,7 +79,7 @@ public abstract class AbstractEventStoreMixin
     {
     }
 
-    public abstract Iterable<TransactionEvents> events(Date startDate, int maxEvents);
+    public abstract void transactions( @Optional Date afterTimestamp, TransactionHandler handler );
 
     public void notifyEvent(DomainEvent event)
     {

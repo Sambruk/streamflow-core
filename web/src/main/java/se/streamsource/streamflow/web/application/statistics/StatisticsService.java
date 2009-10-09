@@ -26,11 +26,15 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.label.LabelEntity;
@@ -88,36 +92,36 @@ public interface StatisticsService
         private Properties sql;
 
         private boolean initialized = false;
-        public EventFilter completedFilter;
+        public EventSpecification completedFilter;
 
         public void activate() throws Exception
         {
-            logger = Logger.getLogger(StatisticsService.class.getName());
+            logger = Logger.getLogger( StatisticsService.class.getName() );
 
             sql = new Properties();
             InputStream asStream = null;
-			try
-			{
-				asStream = getClass().getResourceAsStream("statisticsdatabase.properties");
-	            sql.load(asStream);
+            try
+            {
+                asStream = getClass().getResourceAsStream( "statisticsdatabase.properties" );
+                sql.load( asStream );
 
-	            source.registerListener(this);
-			} catch (Exception e)
-			{
-				e.printStackTrace();
-				throw e;
-			} finally 
-			{
-				asStream.close();
-			}
+                source.registerListener( this );
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+                throw e;
+            } finally
+            {
+                asStream.close();
+            }
 
 
-            completedFilter = new EventFilter(new EventQuery()
+            completedFilter = new EventQuery()
             {
                 @Override
                 public boolean accept( DomainEvent event )
                 {
-                    boolean accept =  super.accept( event );
+                    boolean accept = super.accept( event );
                     if (accept)
                     {
                         if (event.parameters().get().indexOf( "COMPLETED" ) != -1)
@@ -126,15 +130,15 @@ public interface StatisticsService
 
                     return false;
                 }
-            }.withNames("statusChanged"));
+            }.withNames( "statusChanged" );
         }
 
         public void passivate() throws Exception
         {
-            source.unregisterListener(this);
+            source.unregisterListener( this );
         }
 
-        public synchronized void eventsAvailable(EventStore eventStore)
+        public synchronized void eventsAvailable( EventStore eventStore )
         {
             if (config.configuration().enabled().get())
             {
@@ -146,121 +150,126 @@ public interface StatisticsService
                         initialized = true;
                     } catch (SQLException e)
                     {
-                        logger.log(Level.SEVERE, "Could not create statistics tables", e);
+                        logger.log( Level.SEVERE, "Could not create statistics tables", e );
                         return;
                     }
                 }
 
-                Iterable<DomainEvent> events = completedFilter.events(eventStore.events(new Date(config.configuration().lastEventDate().get()), Integer.MAX_VALUE));
+                TransactionTimestampFilter timestamp;
+                EventCollector eventCollector;
+                eventStore.transactions( new Date( config.configuration().lastEventDate().get() ),
+                        timestamp = new TransactionTimestampFilter(
+                                new TransactionEventAdapter(
+                                        new EventHandlerFilter( completedFilter, eventCollector = new EventCollector() ))));
 
-                Connection conn = null;
-                UnitOfWork uow = null;
-                try
+                // Handle all stateChanged(COMPLETED) events
+                if (!eventCollector.events().isEmpty())
                 {
-                    for (DomainEvent event : events)
+                    UnitOfWork uow = null;
+                    Connection conn = null;
+                    try
                     {
-                        if (uow == null)
-                            uow = uowf.newUnitOfWork();
 
-                        TaskEntity task = uow.get(TaskEntity.class, event.entity().get());
+                        uow = uowf.newUnitOfWork();
+                        conn = dataSource.getConnection();
+                        conn.setAutoCommit( false );
 
-                        // Only save statistics for tasks in projects
-                        if (task.owner().get() instanceof Project)
+                        for (DomainEvent domainEvent : eventCollector.events())
                         {
+                            TaskEntity task = uow.get( TaskEntity.class, domainEvent.entity().get() );
 
-                            if (conn == null)
+                            // Only save statistics for tasks in projects
+                            if (task.owner().get() instanceof Project)
                             {
-                                conn = dataSource.getConnection();
-                                conn.setAutoCommit(false);
-                            }
+                                PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "completed.insert" ) );
+                                int idx = 1;
+                                String id = task.identity().get();
+                                stmt.setString( idx++, id );
+                                stmt.setString( idx++, task.taskId().get() );
+                                stmt.setString( idx++, task.description().get() );
+                                stmt.setTimestamp( idx++, new java.sql.Timestamp( task.createdOn().get().getTime() ) );
+                                stmt.setTimestamp( idx++, new java.sql.Timestamp( domainEvent.on().get().getTime() ) );
+                                stmt.setLong( idx++, domainEvent.on().get().getTime() - task.createdOn().get().getTime() );
+                                Assignee assignee = task.assignedTo().get();
+                                stmt.setString( idx++, assignee.getDescription() );
+                                stmt.setString( idx++, task.owner().get().getDescription() );
+                                Owner owner = task.owner().get();
+                                ProjectOrganization.ProjectOrganizationState po = (ProjectOrganization.ProjectOrganizationState) owner;
+                                Describable.DescribableState organizationalUnit = (Describable.DescribableState) po.organizationalUnit().get();
 
-                            PreparedStatement stmt = conn.prepareStatement(sql.getProperty("completed.insert"));
-                            int idx = 1;
-                            String id = task.identity().get();
-                            stmt.setString(idx++, id);
-                            stmt.setString(idx++, task.taskId().get());
-                            stmt.setString(idx++, task.description().get());
-                            stmt.setTimestamp(idx++, new java.sql.Timestamp(task.createdOn().get().getTime()));
-                            stmt.setTimestamp(idx++, new java.sql.Timestamp(event.on().get().getTime()));
-                            stmt.setLong(idx++, event.on().get().getTime() - task.createdOn().get().getTime());
-                            Assignee assignee = task.assignedTo().get();
-                            stmt.setString(idx++, assignee.getDescription());
-                            stmt.setString(idx++, task.owner().get().getDescription());
-                            Owner owner = task.owner().get();
-                            ProjectOrganization.ProjectOrganizationState po = (ProjectOrganization.ProjectOrganizationState) owner;
-                            Describable.DescribableState organizationalUnit = (Describable.DescribableState) po.organizationalUnit().get();
-
-                            // Figure out which group the user belongs to
-                            Participant.ParticipantState participant = (Participant.ParticipantState) assignee;
-                            String groupName = null;
-                            findgroup:
-                            for (Group group : participant.groups())
-                            {
-                                Members.MembersState members = (Members.MembersState) owner;
-                                if (members.members().contains(group))
+                                // Figure out which group the user belongs to
+                                Participant.ParticipantState participant = (Participant.ParticipantState) assignee;
+                                String groupName = null;
+                                findgroup:
+                                for (Group group : participant.groups())
                                 {
-                                    groupName = group.getDescription();
-                                    break findgroup;
+                                    Members.MembersState members = (Members.MembersState) owner;
+                                    if (members.members().contains( group ))
+                                    {
+                                        groupName = group.getDescription();
+                                        break findgroup;
+                                    }
                                 }
-                            }
 
-                            stmt.setString(idx++, groupName);
-                            stmt.setString(idx, organizationalUnit.description().get());
+                                stmt.setString( idx++, groupName );
+                                stmt.setString( idx, organizationalUnit.description().get() );
 
-                            stmt.executeUpdate();
-                            stmt.close();
-
-                            // Add Label information
-                            Labelable.LabelableState labelable = task;
-                            for (LabelEntity labelEntity : labelable.labels())
-                            {
-                                stmt = conn.prepareStatement(sql.getProperty("labels.insert"));
-                                stmt.setString(1, id);
-                                stmt.setString(2, labelEntity.description().get());
                                 stmt.executeUpdate();
                                 stmt.close();
+
+                                // Add Label information
+                                Labelable.LabelableState labelable = task;
+                                for (LabelEntity labelEntity : labelable.labels())
+                                {
+                                    stmt = conn.prepareStatement( sql.getProperty( "labels.insert" ) );
+                                    stmt.setString( 1, id );
+                                    stmt.setString( 2, labelEntity.description().get() );
+                                    stmt.executeUpdate();
+                                    stmt.close();
+                                }
+                            }
+                        }
+
+                        conn.commit();
+
+                        config.configuration().lastEventDate().set( timestamp.lastTimestamp() );
+                        config.save();
+                    } catch (Exception e)
+                    {
+                        logger.log( Level.SEVERE, "Could not log statistics", e );
+                        if (conn != null)
+                        {
+                            try
+                            {
+                                conn.rollback();
+                            } catch (SQLException e1)
+                            {
+                                logger.log( Level.SEVERE, "Could not rollback", e );
+                            }
+                        }
+                    } finally
+                    {
+                        if (uow != null)
+                        {
+                            uow.discard();
+                        }
+
+                        if (conn != null)
+                        {
+                            try
+                            {
+                                conn.close();
+                            } catch (SQLException e)
+                            {
+                                // Ignore
                             }
                         }
                     }
 
-                    if (conn != null)
-                        conn.commit();
-
-                    config.configuration().lastEventDate().set(completedFilter.lastTimestamp());
-                    config.save();
-                } catch (Exception e)
-                {
-                    logger.log(Level.SEVERE, "Could not log statistics", e);
-                    if (conn != null)
-                    {
-                        try
-                        {
-                            conn.rollback();
-                        } catch (SQLException e1)
-                        {
-                            logger.log(Level.SEVERE, "Could not rollback", e);
-                        }
-                    }
-                } finally
-                {
-                    if (uow != null)
-                    {
-                        uow.discard();
-                    }
-
-                    if (conn != null)
-                    {
-                        try
-                        {
-                            conn.close();
-                        } catch (SQLException e)
-                        {
-                            // Ignore
-                        }
-                    }
                 }
             }
         }
+
 
         private void createTables()
                 throws SQLException
@@ -273,22 +282,22 @@ public interface StatisticsService
                 DatabaseMetaData dmd = conn.getMetaData();
 
                 Set<String> createTables = new HashSet<String>();
-                createTables.addAll(asList("completed", "labels"));
+                createTables.addAll( asList( "completed", "labels" ) );
 
-                ResultSet tables = dmd.getTables(null, null, "%", null);
+                ResultSet tables = dmd.getTables( null, null, "%", null );
                 while (tables.next())
                 {
-                    String tableName = tables.getString("TABLE_NAME").toLowerCase();
-                    createTables.remove(tableName);
+                    String tableName = tables.getString( "TABLE_NAME" ).toLowerCase();
+                    createTables.remove( tableName );
                 }
                 tables.close();
 
                 for (String createTable : createTables)
                 {
-                    String create = sql.getProperty(createTable + ".create");
+                    String create = sql.getProperty( createTable + ".create" );
                     try
                     {
-                        boolean ok = conn.createStatement().execute(create);
+                        boolean ok = conn.createStatement().execute( create );
                     } catch (SQLException e)
                     {
                         throw e;

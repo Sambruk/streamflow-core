@@ -40,10 +40,10 @@ import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -244,9 +244,9 @@ public class CommandQueryClientResource
 
                     eventListener.eventsAvailable(new EventStore()
                     {
-                        public Iterable<TransactionEvents> events(@Optional Date afterTimestamp, int maxTransactions)
+                        public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
                         {
-                            return Collections.singletonList(transactionEvents);
+                            handler.handleTransaction( transactionEvents );
                         }
                     });
                 }

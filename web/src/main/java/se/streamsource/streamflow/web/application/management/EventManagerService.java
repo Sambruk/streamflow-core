@@ -21,9 +21,11 @@ import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
@@ -89,27 +91,29 @@ public interface EventManagerService
 
         public synchronized void eventsAvailable(EventStore source)
         {
-            Iterable<DomainEvent> events = filter.events(source.events(null, Integer.MAX_VALUE));
-
-            for (DomainEvent event : events)
+            source.transactions(null, new TransactionEventAdapter(new EventHandler()
             {
-                final Notification notification = new Notification("domainevent", objectName, seq++, event.on().get().getTime(), event.name().get());
-                notification.setUserData(event.toJSON());
-
-                executor.submit(new Runnable()
+                public boolean handleEvent( DomainEvent event )
                 {
-                    public void run()
+                    final Notification notification = new Notification("domainevent", objectName, seq++, event.on().get().getTime(), event.name().get());
+                    notification.setUserData(event.toJSON());
+
+                    executor.submit(new Runnable()
                     {
-                        try
+                        public void run()
                         {
-                            mbean.sendNotification(notification);
-                        } catch (MBeanException e)
-                        {
-                            e.printStackTrace();
+                            try
+                            {
+                                mbean.sendNotification(notification);
+                            } catch (MBeanException e)
+                            {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                });
-            }
+                    });
+                    return true;
+                }
+            }));
         }
     }
 

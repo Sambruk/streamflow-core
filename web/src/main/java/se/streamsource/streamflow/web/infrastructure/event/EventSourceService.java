@@ -36,10 +36,11 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionCollector;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import static java.util.Collections.synchronizedList;
+import static java.util.Collections.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -156,14 +157,14 @@ public interface EventSourceService
 
                                         listener.eventsAvailable(new EventStore()
                                                 {
-                                                    public Iterable<TransactionEvents> events(@Optional Date startDate, int maxEvents)
+                                                    public void transactions(@Optional Date startDate, TransactionHandler handler)
                                                     {
                                                         if (startDate == null)
-                                                            return Collections.singletonList(transaction);
+                                                            handler.handleTransaction( transaction );
                                                         else // Delegate to store
-                                                            return eventStore.events(startDate, maxEvents);
+                                                            eventStore.transactions( startDate, handler );
                                                     }
-                                                });
+                                        });
                                     }
                                 }
                             }
@@ -193,22 +194,29 @@ public interface EventSourceService
                 return listener;
             }
 
-            public void eventsAvailable(EventStore source)
+            public void eventsAvailable( final EventStore source)
             {
-                final Iterable<TransactionEvents> listenerEvents = source.events(null, Integer.MAX_VALUE);
+                final TransactionCollector transactionCollector = new TransactionCollector();
+                source.transactions( null, transactionCollector );
 
                 eventNotifier.execute(new Runnable()
                 {
                     public void run()
                     {
-                        listener.eventsAvailable(new EventStore()
+                        listener.eventsAvailable( new EventStore()
                         {
-                            public Iterable<TransactionEvents> events(@Optional Date startDate, int maxEvents)
+                            public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
                             {
-                                if (startDate == null)
-                                    return listenerEvents;
-                                else // Delegate to store
-                                    return eventStore.events(startDate, maxEvents);
+                                if (afterTimestamp == null)
+                                {
+                                    for (TransactionEvents transactionEvents : transactionCollector.transactions())
+                                    {
+                                        if (!handler.handleTransaction( transactionEvents ))
+                                            break;
+
+                                    }
+                                } else // Delegate to store
+                                    eventStore.transactions(afterTimestamp, handler);
                             }
                         });
                     }

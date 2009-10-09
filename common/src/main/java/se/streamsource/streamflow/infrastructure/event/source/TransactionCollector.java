@@ -14,23 +14,27 @@
 
 package se.streamsource.streamflow.infrastructure.event.source;
 
-import org.qi4j.api.common.Optional;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * An EventStore is a store of events. Events are grouped in the transactions in which they were created.
+ * JAVADOC
  */
-public interface EventStore
+public class TransactionCollector
+    implements TransactionHandler
 {
-    /**
-     * Get list of event transactions after the given timestamp. If they are on the exact same timestamp, they will not be included.
-     *
-     * The method uses double-dispatch, so a handler is sent in which is given each transaction, one at a time.
-     *
-     * @param afterTimestamp
-     * @param handler
-     * @return
-     */
-    void transactions(@Optional Date afterTimestamp, TransactionHandler handler);
+    List<TransactionEvents> transactions = new ArrayList<TransactionEvents>( );
+
+    public boolean handleTransaction( TransactionEvents transaction )
+    {
+        transactions.add( transaction );
+        return true;
+    }
+
+    public Iterable<TransactionEvents> transactions()
+    {
+        return transactions;
+    }
 }

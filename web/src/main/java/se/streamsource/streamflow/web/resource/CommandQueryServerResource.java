@@ -48,6 +48,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionCollector;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
@@ -313,7 +314,9 @@ public class CommandQueryServerResource
 
     public void eventsAvailable(EventStore source)
     {
-        transactions = source.events(null, Integer.MAX_VALUE);
+        TransactionCollector collector = new TransactionCollector();
+        source.transactions(null, collector);
+        transactions = collector.transactions();
     }
 
     private Method getResourceMethod(String operation)

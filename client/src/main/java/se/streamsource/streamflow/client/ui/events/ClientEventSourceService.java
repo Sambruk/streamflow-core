@@ -22,6 +22,8 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionCollector;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.io.Reader;
 import java.lang.ref.Reference;
@@ -43,6 +45,7 @@ public interface ClientEventSourceService
     {
         public Reader reader;
         public Iterable<TransactionEvents> events;
+        public TransactionCollector transactionCollector;
 
         public void activate() throws Exception
         {
@@ -85,7 +88,8 @@ public interface ClientEventSourceService
         // EventSourceListener implementation
         public void eventsAvailable(EventStore source)
         {
-            events = source.events(null, Integer.MAX_VALUE);
+            transactionCollector = new TransactionCollector();
+            source.transactions(null, transactionCollector );
 
             Iterator<Reference<EventSourceListener>> referenceIterator = listeners.iterator();
             while (referenceIterator.hasNext())
@@ -103,9 +107,12 @@ public interface ClientEventSourceService
         }
 
         // EventStore implementation
-        public Iterable<TransactionEvents> events(@Optional Date startDate, int maxEvents)
+        public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
         {
-            return events;
+            for (TransactionEvents transactionEvents : transactionCollector.transactions())
+            {
+                handler.handleTransaction( transactionEvents );
+            }
         }
     }
 }

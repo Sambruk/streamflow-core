@@ -25,7 +25,9 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.common.Optional;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.io.IOException;
 import java.util.*;
@@ -57,25 +59,25 @@ public interface MemoryEventStoreService
         {
         }
 
-        public Iterable<TransactionEvents> events(Date afterDate, int maxEvents)
+        public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
         {
             // Lock datastore first
             lock.lock();
-            List<TransactionEvents> transactions = new ArrayList<TransactionEvents>();
             try
             {
-                Long startTime = afterDate == null ? Long.MIN_VALUE : afterDate.getTime();
-                Collection<String> txsAfterDate = store.tailMap(startTime+1).values();
+                Long startTime = afterTimestamp == null ? Long.MIN_VALUE : afterTimestamp.getTime()+1;
+                Collection<String> txsAfterDate = store.tailMap(startTime).values();
 
                 for (String txJson : txsAfterDate)
                 {
                     JSONTokener tokener = new JSONTokener(txJson);
                     JSONObject json = (JSONObject) tokener.nextValue();
                     TransactionEvents tx = (TransactionEvents) transactionEventsType.fromJSON(json, module);
-                    transactions.add(tx);
 
-                    if (transactions.size() == maxEvents)
-                        break; // Max size has been reached
+                    if (!handler.handleTransaction( tx ))
+                    {
+                        return;
+                    }
                 }
             } catch (JSONException e)
             {
@@ -84,8 +86,6 @@ public interface MemoryEventStoreService
             {
                 lock.unlock();
             }
-
-            return transactions;
         }
 
         protected void rollback()

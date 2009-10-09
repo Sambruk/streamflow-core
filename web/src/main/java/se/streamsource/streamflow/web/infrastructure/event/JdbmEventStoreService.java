@@ -29,26 +29,27 @@ import jdbm.recman.CacheRecordManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.infrastructure.event.AbstractEventStoreMixin;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.AbstractEventStoreMixin;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Properties;
+import java.util.logging.Level;
 
 /**
  * JAVADOC
@@ -170,71 +171,36 @@ public interface JdbmEventStoreService
             }
         }
 
-        public Iterable<TransactionEvents> events(Date afterDate, final int maxEvents)
+        public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
         {
-            final Long afterTime = afterDate == null ? Long.MIN_VALUE : afterDate.getTime()+1;
+            // Lock datastore first
+            lock.lock();
 
-            return new Iterable<TransactionEvents>()
+            final Long afterTime = afterTimestamp == null ? Long.MIN_VALUE : afterTimestamp.getTime()+1;
+
+            try
             {
-                public Iterator<TransactionEvents> iterator()
+                final TupleBrowser browser = index.browse(afterTime);
+
+                Tuple tuple = new Tuple();
+
+                while (browser.getNext( tuple ))
                 {
-                    // Lock datastore first
-                    lock.lock();
+                    // Get next transaction
+                    TransactionEvents events  = readTransactionEvents(tuple);
 
-                    try
+                    if (!handler.handleTransaction( events ))
                     {
-                        final TupleBrowser browser = index.browse(afterTime);
-
-                        return new Iterator<TransactionEvents>()
-                        {
-                            Tuple tuple = new Tuple();
-                            int count = 0;
-
-                            TransactionEvents transactionEvents;
-
-                            public boolean hasNext()
-                            {
-                                try
-                                {
-                                    if (count >= maxEvents)
-                                    {
-                                        lock.unlock();
-                                        return false;
-                                    }
-
-                                    if (browser.getNext(tuple))
-                                    {
-                                        // Get next transaction
-                                        transactionEvents = readTransactionEvents(tuple);
-                                        return true;
-                                    } else
-                                    {
-                                        lock.unlock();
-                                        return false;
-                                    }
-                                } catch (Exception e)
-                                {
-                                    lock.unlock();
-                                    return false;
-                                }
-                            }
-
-                            public TransactionEvents next()
-                            {
-                                return transactionEvents;
-                            }
-
-                            public void remove()
-                            {
-                            }
-                        };
-                    } catch (IOException e)
-                    {
-                       return new ArrayList<TransactionEvents>().iterator();
+                        return;
                     }
-
                 }
-            };
+            } catch (Exception e)
+            {
+                logger.log( Level.WARNING, "Could not iterate transactions", e );
+            } finally
+            {
+                lock.unlock();
+            }
         }
 
         protected void rollback()

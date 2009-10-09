@@ -26,6 +26,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 /**
  * JAVADOC
@@ -58,12 +59,15 @@ public class MemoryEventStoreTest
         entity.somethingHappened(DomainEvent.CREATE, "foo");
         uow.complete();
 
-        Iterable<TransactionEvents> transactions = eventStore.events(null, Integer.MAX_VALUE);
-
-        for (TransactionEvents transaction : transactions)
+        eventStore.transactions(null, new TransactionHandler()
         {
-            System.out.println(transaction.toJSON());
-        }
+            public boolean handleTransaction( TransactionEvents transaction )
+            {
+                System.out.println(transaction.toJSON());
+
+                return true;
+            }
+        });
     }
 
     @Concerns(EventCreationConcern.class)
