@@ -7,8 +7,10 @@
 	<indexitem text="Ange Infromation om Ärendet" target="taskinfo" />
 	<indexitem text="Ange Kontaktuppgifter" target="contacts" />
 	<indexitem text="Arbetsytan" target="workspace" />
+	<indexitem text="Delegera &amp; Skicka till" target="delegate" />
 	<indexitem text="Introduktion" target="intro1" />
 	<indexitem text="Lägg till Arbetsuppgift" target="newtask" />
 	<indexitem text="Sök" target="search" />
+	<indexitem text="Tilldela mig &amp; Avsluta" target="tilldela" />
 	<indexitem text="Översikt" target="overview" />
 </index>

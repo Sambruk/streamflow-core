@@ -14,5 +14,7 @@
 		<tocitem text="Lägg till Arbetsuppgift" target="newtask" />
 		<tocitem text="Ange information i ärendet" target="taskinfo" />
 		<tocitem text="Ange Kontaktuppgifter" target="contacts" />
+		<tocitem text="Delegera &amp; Skicka till" target="delegate" />
+		<tocitem text="Tilldela mig &amp; Avsluta" target="tilldela" />
 	</tocitem>
 </toc>

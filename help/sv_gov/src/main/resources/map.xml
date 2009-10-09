@@ -35,4 +35,16 @@
 	<mapID target="admin" url="html/admin.html"/>
 	<mapID target="snap00010" url="graphics/snap00010.gif"/>
 	<mapID target="snap00011" url="graphics/snap00011.gif"/>
+	<mapID target="delegate" url="html/delegate.html"/>
+	<mapID target="snap00012" url="graphics/snap00012.gif"/>
+	<mapID target="snap00013" url="graphics/snap00013.gif"/>
+	<mapID target="snap00014" url="graphics/snap00014.gif"/>
+	<mapID target="snap00015" url="graphics/snap00015.gif"/>
+	<mapID target="snap00016" url="graphics/snap00016.gif"/>
+	<mapID target="snap00017" url="graphics/snap00017.gif"/>
+	<mapID target="snap00018" url="graphics/snap00018.gif"/>
+	<mapID target="snap00019" url="graphics/snap00019.gif"/>
+	<mapID target="tilldela" url="html/assign.html"/>
+	<mapID target="snap00020" url="graphics/snap00020.gif"/>
+	<mapID target="snap00021" url="graphics/snap00021.gif"/>
 </map>

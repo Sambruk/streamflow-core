@@ -36,7 +36,7 @@
 	</view>
 	<presentation default="true" displayviews="true" displayviewimages="true">
 		<name>StreamFlow</name>
-		<size width="800" height="600" />
+		<size width="700" height="600" />
 		<location x="10" y="10" />
 		<title>StreamFlow Help Beta</title>
 		<image>help2</image>
