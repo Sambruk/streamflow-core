@@ -69,7 +69,10 @@ public class BindingFormBuilder
                 {
                     public Component newField()
                     {
-                        return new JScrollPane(new JTextArea(10, 30));
+                        JTextArea text = new JTextArea(10,30);
+                        text.setLineWrap(true);
+                        text.setWrapStyleWord(true);
+                        return new JScrollPane(text);
                     }
                 },
         CHECKBOX

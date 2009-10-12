@@ -52,7 +52,7 @@ public class TaskGeneralView
 
     public ValueBuilder<TaskGeneralDTO> valueBuilder;
     public JTextField descriptionField;
-    public JTextArea noteField;
+    private JScrollPane notePane;
     public JXDatePicker dueOnField;
     private JToggleButton editButton;
     private JLabel issueLabel;
@@ -73,14 +73,14 @@ public class TaskGeneralView
         taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
         TaskGeneralDTO template = taskBinder.bindingTemplate(TaskGeneralDTO.class);
 
-        noteField = new JTextArea(10, 50);
-        noteField.setLineWrap(true);
+        notePane = (JScrollPane)TEXTAREA.newField();
+        notePane.setSize(10,50);
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
         bb.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
 
         bb.appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
-                .appendLine(WorkspaceResources.note_label, new JScrollPane(noteField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), template.note())
+                .appendLine(WorkspaceResources.note_label, notePane, template.note())
                 .appendLine(WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn());
 
         setViewportView(form);
