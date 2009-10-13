@@ -1,0 +1,20 @@
+Scenario: Join project
+Given basic participant setup
+When a participant joins a project
+Then events joinedProject occurred
+
+Scenario: Leave project
+Given basic participant setup
+When a participant leaves a project
+Then events leftProject occurred
+
+Scenario: Join group
+Given basic participant setup
+When a participant joins a group
+Then events joinedGroup occurred
+
+Scenario: leave group
+Given basic participant setup
+When a participant leaves a group
+Then events leftGroup occurred
+

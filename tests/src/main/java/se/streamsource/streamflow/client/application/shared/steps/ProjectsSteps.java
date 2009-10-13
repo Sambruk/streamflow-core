@@ -17,42 +17,35 @@ package se.streamsource.streamflow.client.application.shared.steps;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.application.shared.steps.setup.GroupsSetupSteps;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
+import se.streamsource.streamflow.client.application.shared.steps.setup.ProjectsSetupSteps;
+import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 
 /**
  * JAVADOC
  */
-public class GroupsSteps
+public class ProjectsSteps
         extends Steps
 {
     @Uses
-    GroupsSetupSteps groupsSetup;
+    ProjectsSetupSteps projectsSetup;
 
-    @When("a new group with name $name is created")
-    public void createGroup(String name)
+    @When("a new project with name $name is created")
+    public void createProject(String name)
     {
-        groupsSetup.groups.createGroup(name);
+        projectsSetup.projects.createProject(name);
     }
 
-    @When("group named $name is added")
-    public void addGroup(String name)
+    @When("project named $name is added")
+    public void addProject(String name)
     {
-        GroupEntity group = groupsSetup.groupMap.get(name);
-        groupsSetup.groups.addGroup(group);
+        ProjectEntity project = projectsSetup.projectMap.get(name);
+        projectsSetup.projects.addProject(project);
     }
 
-    @When("group named $name is removed")
-    public void removeGroup(String name)
+    @When("project named $name is removed")
+    public void removeProject(String name)
     {
-        GroupEntity group = groupsSetup.groupMap.get(name);
-        groupsSetup.groups.removeGroup(group);
+        ProjectEntity project = projectsSetup.projectMap.get(name);
+        projectsSetup.projects.removeProject(project);
     }
-
-    @When("groups are merged")
-    public void mergeGroups()
-    {
-        groupsSetup.groups.mergeGroups(groupsSetup.toBeMerged); 
-    }
-
 }

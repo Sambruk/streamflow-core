@@ -54,7 +54,7 @@ public class OrganizationalUnitsSetupSteps
     public GroupEntity group;
 
     @Given("basic organizational unit setup")
-    public void setupOrganizationalUnit() throws Exception
+    public void setupOrganizationalUnit()
     {
         userSetupSteps.basicUserSetup();
         parent = getOrganizationalUnitEntity();

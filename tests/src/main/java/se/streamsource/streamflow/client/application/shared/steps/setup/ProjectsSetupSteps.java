@@ -17,8 +17,8 @@ package se.streamsource.streamflow.client.application.shared.steps.setup;
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
-import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.project.Projects;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * JAVADOC
  */
-public class GroupsSetupSteps
+public class ProjectsSetupSteps
         extends Steps
 {
     @Uses
@@ -38,22 +38,23 @@ public class GroupsSetupSteps
     @Uses
     GenericSteps genericSteps;
 
-    public Groups groups;
-    public Groups toBeMerged;
-    public Map<String, GroupEntity> groupMap = new HashMap<String, GroupEntity>();
 
-    @Given("basic groups setup")
-    public void setupGroups() throws Exception
+    public Projects projects;
+    public Map<String, ProjectEntity> projectMap = new HashMap<String, ProjectEntity>();
+
+    @Given("basic projects setup")
+    public void setupProjects() throws Exception
     {
         orgSetup.setupOrganizationalUnit();
 
-        groups = (Groups) orgSetup.orgUnitMap.get("OU1");
-        toBeMerged = (Groups) orgSetup.orgUnitMap.get("OU2");
+        projects = (Projects) orgSetup.orgUnitMap.get("OU1");
+        Projects projects2 = (Projects) orgSetup.orgUnitMap.get("OU2");
 
-        GroupEntity group = groups.createGroup("group1");
-        groupMap.put("group1", group);
-        groupMap.put("group2", toBeMerged.createGroup("group2"));
-        group.addParticipant(userSetup.userMap.get("user2"));
+        ProjectEntity project = projects.createProject("project1");
+        projectMap.put("project1", project);
+        projectMap.put("project2", projects2.createProject("project2") );
+
+        project.addMember(userSetup.userMap.get("user2"));
 
         genericSteps.clearEvents();
     }

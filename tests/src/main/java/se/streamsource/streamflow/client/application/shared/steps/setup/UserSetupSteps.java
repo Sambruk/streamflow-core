@@ -21,7 +21,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.web.domain.organization.Organization;
-import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 import java.util.HashMap;
@@ -46,19 +45,24 @@ public class UserSetupSteps
     public Organization organization;
 
     @Given("basic user setup")
-    public void basicUserSetup() throws Exception
+    public void basicUserSetup()
     {
-        organization = uowf.currentUnitOfWork().get(Organization.class, "Organization");
-        Organizations organizations = organizationsSteps.givenOrganizations();
-        //organization = organizations.createOrganization("BasicUserSetupOrganization");
-        createUser("user1", "password1");
-        createUser("user2", "password2");
-        UserEntity user = createUser("disabledUser", "password3");
-        user.changeEnabled(false);
-        user = createUser("userNotInAnOrganization", "password");
-        user.leave(organization);
-        userMap.put(UserEntity.ADMINISTRATOR_USERNAME, uowf.currentUnitOfWork().get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME));
-
+        try
+        {
+            organization = uowf.currentUnitOfWork().get(Organization.class, "Organization");
+            organizationsSteps.givenOrganizations();
+            //organization = organizations.createOrganization("BasicUserSetupOrganization");
+            createUser("user1", "password1");
+            createUser("user2", "password2");
+            UserEntity user = createUser("disabledUser", "password3");
+            user.changeEnabled(false);
+            user = createUser("userNotInAnOrganization", "password");
+            user.leave(organization);
+            userMap.put(UserEntity.ADMINISTRATOR_USERNAME, uowf.currentUnitOfWork().get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME));
+        } catch(Exception e)
+        {
+            // always ignore in setup methods
+        }
         genericSteps.clearEvents();
     }
 

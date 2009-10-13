@@ -17,43 +17,37 @@ package se.streamsource.streamflow.client.application.shared.steps.setup;
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
-import se.streamsource.streamflow.web.domain.group.Groups;
-
-import java.util.HashMap;
-import java.util.Map;
+import se.streamsource.streamflow.web.domain.group.Participant;
 
 /**
  * JAVADOC
  */
-public class GroupsSetupSteps
+public class ParticipantSetupSteps
         extends Steps
 {
-    @Uses
-    OrganizationalUnitsSetupSteps orgSetup;
-
     @Uses
     UserSetupSteps userSetup;
 
     @Uses
+    ProjectsSetupSteps projectSetup;
+
+    @Uses
+    GroupsSetupSteps groupSetup;
+
+    @Uses
     GenericSteps genericSteps;
 
-    public Groups groups;
-    public Groups toBeMerged;
-    public Map<String, GroupEntity> groupMap = new HashMap<String, GroupEntity>();
+    public Participant participant;
+    public Participant nonParticipant;
 
-    @Given("basic groups setup")
+    @Given("basic participant setup")
     public void setupGroups() throws Exception
     {
-        orgSetup.setupOrganizationalUnit();
+        projectSetup.setupProjects();
+        groupSetup.setupGroups();
 
-        groups = (Groups) orgSetup.orgUnitMap.get("OU1");
-        toBeMerged = (Groups) orgSetup.orgUnitMap.get("OU2");
-
-        GroupEntity group = groups.createGroup("group1");
-        groupMap.put("group1", group);
-        groupMap.put("group2", toBeMerged.createGroup("group2"));
-        group.addParticipant(userSetup.userMap.get("user2"));
+        nonParticipant = userSetup.userMap.get("user1");
+        participant = userSetup.userMap.get("user2");
 
         genericSteps.clearEvents();
     }
