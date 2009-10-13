@@ -25,10 +25,10 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.CheckBoxProvider;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
@@ -38,7 +38,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
-import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
@@ -63,8 +62,8 @@ public abstract class TaskTableView
     @Service
     protected DialogService dialogs;
 
-    @Uses
-    protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+    //@Uses
+    //protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
     
     @Service
     protected StreamFlowApplication application;
@@ -72,6 +71,7 @@ public abstract class TaskTableView
     protected JXTable taskTable;
     protected TaskTableModel model;
     private TaskDetailView detailsView;
+    protected EntityReference dialogSelection;
 
     public void init(@Service ApplicationContext context,
                      @Uses final TaskTableModel model,
@@ -375,4 +375,41 @@ public abstract class TaskTableView
         sort(list, reverseOrder());
         return list;
     }
+
+    @org.jdesktop.application.Action
+    public void assignTasksToMe() throws ResourceException
+    {
+        for (int row : getReverseSelectedTasks())
+        {
+            model.assignToMe(row);
+        }
+        model.refresh();
+    }
+
+    @org.jdesktop.application.Action
+    public void delegateTasks() throws ResourceException
+    {
+        if (dialogSelection != null)
+        {
+            for (int row : getReverseSelectedTasks())
+            {
+                model.delegate(row, dialogSelection.identity());
+            }
+            model.refresh();
+        }
+    }
+
+    @org.jdesktop.application.Action
+    public void forwardTasks() throws ResourceException
+    {
+        if (dialogSelection != null)
+        {
+            for (int row : getReverseSelectedTasks())
+            {
+                model.forward(row, dialogSelection.identity());
+            }
+            model.refresh();
+        }
+    }
+
 }

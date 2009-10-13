@@ -52,22 +52,10 @@ public class WorkspaceProjectDelegationsView
     }
 
     @org.jdesktop.application.Action
-    public void assignTasksToMe() throws ResourceException
-    {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
-        {
-            model.assignToMe(row);
-        }
-        model.refresh();
-    }
-
-    @org.jdesktop.application.Action
     public void reject() throws ResourceException
     {
-        int[] rows = taskTable.getSelectedRows();
         WorkspaceProjectDelegationsModel delegationsModel = (WorkspaceProjectDelegationsModel) model;
-        for (int row : rows)
+        for (int row : getReverseSelectedTasks())
         {
             delegationsModel.reject(row);
         }

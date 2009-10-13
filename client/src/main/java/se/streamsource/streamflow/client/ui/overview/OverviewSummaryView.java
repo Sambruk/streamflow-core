@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.overview;
 
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -26,20 +27,16 @@ import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.KeyboardFocusManager;
+import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -99,8 +96,40 @@ public class OverviewSummaryView extends JPanel
 				overviewSummaryTable.requestFocusInWindow();
 			}
 		});
+
+        addAncestorListener(new OverviewSummaryAncestorListener());
 	}
 
+    class OverviewSummaryAncestorListener
+        implements AncestorListener
+    {
+
+        public void ancestorAdded(AncestorEvent e)
+        {
+            if(e.getAncestor() instanceof JXFrame)
+            {
+                SwingUtilities.getWindowAncestor(OverviewSummaryView.this).addWindowListener(new WindowAdapter()
+                {
+                    @Override
+                    public void windowActivated(WindowEvent e)
+                    {
+                        super.windowActivated(e);
+                        OverviewSummaryView.this.model.refresh();
+                    }
+                });
+            }
+        }
+
+        public void ancestorRemoved(AncestorEvent e)
+        {
+
+        }
+
+        public void ancestorMoved(AncestorEvent e)
+        {
+
+        }
+    }
 	protected Action addToolbarButton(JPanel toolbar, String name)
 	{
 		ActionMap am = getActionMap();

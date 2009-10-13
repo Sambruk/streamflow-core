@@ -14,8 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
@@ -28,6 +28,9 @@ import javax.swing.*;
 public class WorkspaceUserWaitingForView
         extends TaskTableView
 {
+    @Uses
+    protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+
     @Uses
     LabelMenu labelMenu;
 
@@ -58,40 +61,21 @@ public class WorkspaceUserWaitingForView
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox, acceptAction));
     }
 
-    @org.jdesktop.application.Action
-    public void assignTasksToMe() throws ResourceException
-    {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
-        {
-            model.assignToMe(row);
-        }
-        model.refresh();
-    }
-
+    @Override
     @org.jdesktop.application.Action
     public void delegateTasks() throws ResourceException
     {
         SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
-        EntityReference selected = dialog.getSelected();
-        if (selected != null)
-        {
-            int[] rows = taskTable.getSelectedRows();
-            for (int row : rows)
-            {
-                model.delegate(row, selected.identity());
-            }
-            model.refresh();
-        }
+        dialogSelection = dialog.getSelected();
+        super.delegateTasks();
     }
 
     @org.jdesktop.application.Action
     public void rejectFinished() throws ResourceException
     {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
+        for (int row : getReverseSelectedTasks())
         {
             ((WorkspaceUserWaitingForModel)model).reject(row);
         }
@@ -102,8 +86,7 @@ public class WorkspaceUserWaitingForView
     @org.jdesktop.application.Action
     public void completeTask() throws ResourceException
     {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
+        for (int row : getReverseSelectedTasks())
         {
             ((WorkspaceUserWaitingForModel)model).complete(row);
         }

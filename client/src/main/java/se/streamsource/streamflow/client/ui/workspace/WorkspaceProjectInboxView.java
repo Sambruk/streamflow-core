@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
@@ -61,50 +60,25 @@ public class WorkspaceProjectInboxView
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, forwardTasksFromInbox, delegateTasksFromInbox));
     }
 
-    @org.jdesktop.application.Action
-    public void assignTasksToMe() throws ResourceException
-    {
-        int[] rows = taskTable.getSelectedRows();
-        for (int row : rows)
-        {
-            model.assignToMe(row);
-        }
-        model.refresh();
-    }
-
+    @Override
     @org.jdesktop.application.Action
     public void delegateTasks() throws ResourceException
     {
         ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
-        EntityReference selected = dialog.getSelected();
-        if (selected != null)
-        {
-            int[] rows = taskTable.getSelectedRows();
-            for (int row : rows)
-            {
-                model.delegate(row, selected.identity());
-            }
-            model.refresh();
-        }
+        dialogSelection = dialog.getSelected();
+        super.delegateTasks();
     }
 
+    @Override
     @org.jdesktop.application.Action
     public void forwardTasks() throws ResourceException
     {
         ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
 
-        EntityReference selected = dialog.getSelected();
-        if (selected != null)
-        {
-            int[] rows = taskTable.getSelectedRows();
-            for (int row : rows)
-            {
-                model.forward(row, selected.identity());
-            }
-            model.refresh();
-        }
+        dialogSelection = dialog.getSelected();
+        super.forwardTasks();
     }
 }
