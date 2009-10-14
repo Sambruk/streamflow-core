@@ -17,20 +17,29 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Restlet;
-import org.restlet.Client;
 import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
+import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
+import se.streamsource.streamflow.client.ui.overview.OverviewModel;
+import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
+import se.streamsource.streamflow.client.ui.task.TasksModel;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
@@ -43,6 +52,8 @@ import java.util.Observable;
 public class AccountModel
         extends Observable
 {
+    @Structure ObjectBuilderFactory obf;
+
     @Structure
     UnitOfWorkFactory uowf;
 
@@ -57,6 +68,12 @@ public class AccountModel
 
     @Uses
     Account account;
+
+    private WorkspaceModel workspaceModel;
+    private OverviewModel overviewModel;
+    private AdministrationModel administrationModel;
+    private SearchResultTableModel searchResults;
+    private TasksModel tasksModel;
 
     public AccountSettingsValue settings()
     {
@@ -188,5 +205,64 @@ public class AccountModel
             uow.discard();
             throw ex;
         }
+    }
+
+    public TasksModel tasks()
+    {
+        if (tasksModel == null)
+            tasksModel = obf.newObjectBuilder( TasksModel.class ).use( this, serverResource().tasks() ).newInstance();
+
+        return tasksModel;
+    }
+
+    public WorkspaceModel workspace()
+    {
+        if (workspaceModel == null)
+        {
+            UserClientResource resource = userResource();
+            UserInboxClientResource userInboxResource = resource.workspace().user().inbox();
+            UserAssignmentsClientResource userAssignmentsResource = resource.workspace().user().assignments();
+            UserDelegationsClientResource userDelegationsResource = resource.workspace().user().delegations();
+            UserWaitingForClientResource userWaitingForResource = resource.workspace().user().waitingFor();
+            LabelsClientResource labelsResource = resource.workspace().user().labels();
+
+            workspaceModel = obf.newObjectBuilder( WorkspaceModel.class ).use( this,
+                    resource,
+                    userInboxResource,
+                    userAssignmentsResource,
+                    userDelegationsResource,
+                    userWaitingForResource,
+                    labelsResource,
+                    tasks() ).newInstance();
+        }
+
+        return workspaceModel;
+    }
+
+    public OverviewModel overview()
+    {
+        if (overviewModel == null)
+            overviewModel = obf.newObjectBuilder( OverviewModel.class ).use( this, tasks(), userResource().overview() ).newInstance();
+
+        return overviewModel;
+    }
+
+    public SearchResultTableModel search()
+    {
+        if (searchResults == null)
+        {
+            SearchClientResource search = userResource().search();
+            searchResults = obf.newObjectBuilder(SearchResultTableModel.class).use(search, tasks()).newInstance();
+        }
+
+        return searchResults;
+    }
+
+    public AdministrationModel administration()
+    {
+        if (administrationModel == null)
+            administrationModel = obf.newObjectBuilder( AdministrationModel.class ).use( this, tasks() ).newInstance();
+
+        return administrationModel;
     }
 }

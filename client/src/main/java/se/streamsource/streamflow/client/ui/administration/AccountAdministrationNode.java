@@ -47,7 +47,7 @@ public class AccountAdministrationNode
         {
             try
             {
-                return obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(AccountAdministrationNode.this, accountModel.userResource(), accountModel.serverResource().organizations(), key).newInstance();
+                return obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(AccountAdministrationNode.this, accountModel.serverResource().organizations(), key).newInstance();
             } catch (ResourceException e)
             {
                 throw new OperationException(AdministrationResources.could_not_refresh_list_of_organizations, e);

@@ -18,13 +18,13 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
 
 /**
  * JAVADOC
  */
 public class ProjectDelegationsTaskClientResource
-        extends TaskClientResource
+        extends AbstractTaskClientResource
 {
     public ProjectDelegationsTaskClientResource(@Uses Context context, @Uses Reference reference)
     {

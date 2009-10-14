@@ -14,13 +14,11 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.api.common.Visibility;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
-import se.streamsource.streamflow.client.ui.task.*;
 
 /**
  * JAVADOC
@@ -30,6 +28,7 @@ public class WorkspaceAssembler
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
+        UIAssemblers.addViews( module, AccountSelectionView.class );
         module.addObjects(WorkspaceWindow.class).visibleIn(Visibility.layer);
 
         module.addObjects(
@@ -46,8 +45,6 @@ public class WorkspaceAssembler
                 WorkspaceProjectDelegationsNode.class,
                 WorkspaceProjectWaitingForNode.class,
                 LabelMenu.class);
-
-        UIAssemblers.addViews(module, TableSelectionView.class, TaskContactsAdminView.class);
 
         UIAssemblers.addModels(module, LabelsModel.class);
 
@@ -90,28 +87,6 @@ public class WorkspaceAssembler
                 WorkspaceProjectWaitingForView.class);
 
         UIAssemblers.addDialogs(module, SelectUserOrProjectDialog.class, ProjectSelectionDialog.class);
-
-        UIAssemblers.addDialogs(module, AddCommentDialog.class);
-
-        UIAssemblers.addMV(module,
-                TaskDetailModel.class,
-                TaskDetailView.class);
-
-        UIAssemblers.addMV(module,
-                TaskCommentsModel.class,
-                TaskCommentsView.class);
-
-        UIAssemblers.addMV(module,
-                TaskContactsModel.class,
-                TaskContactsView.class);
-
-        UIAssemblers.addMV(module,
-                TaskContactModel.class,
-                TaskContactView.class);
-
-        UIAssemblers.addMV(module,
-                TaskGeneralModel.class,
-                TaskGeneralView.class);
 
     }
 }

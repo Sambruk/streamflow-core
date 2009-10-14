@@ -19,7 +19,6 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsTaskClientResource;
 import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.OverviewAssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
@@ -30,11 +29,11 @@ import java.util.List;
  * JAVADOC
  */
 public class OverviewProjectAssignmentsClientResource
-        extends TaskListClientResource
+        extends TaskListClientResource<OverviewProjectAssignmentsTaskClientResource>
 {
     public OverviewProjectAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
     {
-        super(context, reference, ProjectAssignmentsTaskClientResource.class);
+        super(context, reference, OverviewProjectAssignmentsTaskClientResource.class);
     }
 
     public List<OverviewAssignedTaskDTO> tasks(TasksQuery query) throws ResourceException

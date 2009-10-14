@@ -14,14 +14,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
-import se.streamsource.streamflow.domain.task.TaskStates;
 
 import java.util.Date;
 
@@ -32,8 +33,9 @@ import java.util.Date;
 public class WorkspaceUserWaitingForModel
         extends TaskTableModel
 {
-    public WorkspaceUserWaitingForModel()
+    public WorkspaceUserWaitingForModel(@Uses UserWaitingForClientResource resource)
     {
+        super(resource);
         columnNames = new String[]{"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
         columnClasses = new Class[]{Boolean.class, String.class, String.class, String.class, Date.class};
         columnEditable = new boolean[]{true, false, false, false, false};

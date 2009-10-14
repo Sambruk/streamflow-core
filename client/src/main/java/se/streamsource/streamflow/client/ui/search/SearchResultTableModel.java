@@ -14,8 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
@@ -32,8 +33,9 @@ import java.util.List;
 public class SearchResultTableModel
         extends TaskTableModel
 {
-    public SearchResultTableModel()
+    public SearchResultTableModel(@Uses SearchClientResource resource)
     {
+        super(resource);
         columnNames = new String[]{"", text(description_column_header), text(project_column_header), text(assigned_to_header), text(created_column_header)};
         columnClasses = new Class[]{Boolean.class, String.class, String.class, String.class, Date.class};
         columnEditable = new boolean[]{false, false, false, false, false};

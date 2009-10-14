@@ -14,15 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -39,23 +33,20 @@ public class WorkspaceProjectNode
     String projectName;
 
     public WorkspaceProjectNode(@Uses WorkspaceProjectClientResource workspaceProjectClientResource,
-                                @Structure ObjectBuilderFactory obf)
+                                @Uses WorkspaceProjectInboxNode inbox,
+                                @Uses WorkspaceProjectAssignmentsNode assignments,
+                                @Uses WorkspaceProjectDelegationsNode delegations,
+                                @Uses WorkspaceProjectWaitingForNode waitingFor,
+                                @Uses LabelsModel labels)
     {
         super(workspaceProjectClientResource);
 
-        ProjectInboxClientResource projectInboxClientResource = workspaceProjectClientResource.inbox();
-        add(obf.newObjectBuilder(WorkspaceProjectInboxNode.class).use(projectInboxClientResource).newInstance());
+        add(inbox);
+        add(assignments);
+        add(delegations);
+        add(waitingFor);
 
-        ProjectAssignmentsClientResource projectAssignmentsClientResource = workspaceProjectClientResource.assignments();
-        add(obf.newObjectBuilder(WorkspaceProjectAssignmentsNode.class).use(projectAssignmentsClientResource).newInstance());
-
-        ProjectDelegationsClientResource projectDelegationsClientResource = workspaceProjectClientResource.delegations();
-        add(obf.newObjectBuilder(WorkspaceProjectDelegationsNode.class).use(projectDelegationsClientResource).newInstance());
-
-        ProjectWaitingforClientResource projectWaitingforClientResource = workspaceProjectClientResource.waitingFor();
-        add(obf.newObjectBuilder(WorkspaceProjectWaitingForNode.class).use(projectWaitingforClientResource).newInstance());
-
-        labelsModel = obf.newObjectBuilder(LabelsModel.class).use(workspaceProjectClientResource.labels()).newInstance();
+        labelsModel = labels;
     }
 
     public String projectName()

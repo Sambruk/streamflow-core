@@ -14,17 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.Restlet;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -37,29 +29,26 @@ public class WorkspaceUserNode
         extends DefaultMutableTreeNode
 {
     private LabelsModel labelsModel;
-    public UserClientResource user;
+    @Uses private UserClientResource user;
 
     public WorkspaceUserNode(@Uses AccountModel account,
-                             @Service Restlet client,
-                             @Structure ObjectBuilderFactory obf) throws ResourceException
+                             @Uses WorkspaceUserInboxNode inbox,
+                             @Uses WorkspaceUserAssignmentsNode assignments,
+                             @Uses WorkspaceUserDelegationsNode delegations,
+                             @Uses WorkspaceUserWaitingForNode waitingFor,
+                             @Uses LabelsModel labels) throws ResourceException
     {
         super(account);
 
-        user = account.userResource();
+        add(inbox);
 
-        UserInboxClientResource userInboxResource = user.workspace().user().inbox();
-        add(obf.newObjectBuilder(WorkspaceUserInboxNode.class).use(userInboxResource).newInstance());
+        add(assignments);
 
-        UserAssignmentsClientResource userAssignmentsResource = user.workspace().user().assignments();
-        add(obf.newObjectBuilder(WorkspaceUserAssignmentsNode.class).use(userAssignmentsResource).newInstance());
+        add(delegations);
 
-        UserDelegationsClientResource userDelegationsResource = user.workspace().user().delegations();
-        add(obf.newObjectBuilder(WorkspaceUserDelegationsNode.class).use(userDelegationsResource).newInstance());
+        add(waitingFor);
 
-        UserWaitingForClientResource userWaitingForResource = user.workspace().user().waitingFor();
-        add(obf.newObjectBuilder(WorkspaceUserWaitingForNode.class).use(userWaitingForResource).newInstance());
-
-        labelsModel = obf.newObjectBuilder(LabelsModel.class).use(user.workspace().user().labels()).newInstance();
+        labelsModel = labels;
     }
 
     public LabelsModel labelsModel()

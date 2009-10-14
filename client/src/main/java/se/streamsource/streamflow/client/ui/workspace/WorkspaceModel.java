@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 public class WorkspaceModel
         extends DefaultTreeModel
 {
-    public EventSourceListener subscriber;
+    private EventSourceListener subscriber;
 
     public WorkspaceModel(@Uses WorkspaceNode node, @Service EventSource source)
     {

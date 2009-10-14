@@ -33,7 +33,7 @@ import java.util.List;
  * JAVADOC
  */
 public class SearchClientResource
-        extends TaskListClientResource
+        extends TaskListClientResource<SearchTaskClientResource>
 {
     public List<SearchTaskDTO> tasks;
 

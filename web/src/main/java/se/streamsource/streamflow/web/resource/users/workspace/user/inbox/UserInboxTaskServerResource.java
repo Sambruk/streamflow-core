@@ -16,10 +16,7 @@ package se.streamsource.streamflow.web.resource.users.workspace.user.inbox;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegator;
@@ -53,13 +50,6 @@ public class UserInboxTaskServerResource
         Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
         Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
         inbox.dropTask(task, assignee);
-    }
-
-    public void describe(StringDTO stringValue)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
-        describable.changeDescription(stringValue.string().get());
     }
 
     public void assignToMe()
@@ -114,6 +104,7 @@ public class UserInboxTaskServerResource
         inbox.markAsUnread(task);
     }
 
+/*
     public void addLabel(EntityReferenceDTO reference)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
@@ -132,6 +123,7 @@ public class UserInboxTaskServerResource
         task.removeLabel(label);
     }
 
+*/
     public void deleteOperation() throws ResourceException
     {
         String taskId = (String) getRequest().getAttributes().get("task");

@@ -12,8 +12,9 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.workspace.user.task.general;
+package se.streamsource.streamflow.web.resource.task.general;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -27,6 +28,8 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
@@ -37,7 +40,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/workspace/user/{view}/{task}/general
+ * /task/{task}/general
  */
 public class TaskGeneralServerResource
         extends CommandQueryServerResource
@@ -62,15 +65,16 @@ public class TaskGeneralServerResource
         TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
         builder.prototype().description().set(task.description().get());
 
-		StringBuilder labels = new StringBuilder("");
-		String comma = "";
+        ValueBuilder<ListValue> labelsBuilder = vbf.newValueBuilder( ListValue.class);
+        ValueBuilder<ListItemValue> labelsItemBuilder = vbf.newValueBuilder( ListItemValue.class);
 		for (Label label : task.labels())
 		{
-			labels.append(comma).append(label.getDescription());
-			comma = ",";
+            labelsItemBuilder.prototype().entity().set( EntityReference.getEntityReference(label ));
+            labelsItemBuilder.prototype().description().set( label.getDescription());
+            labelsBuilder.prototype().items().get().add( labelsItemBuilder.newInstance() );
 		}
 
-		builder.prototype().labels().set(labels.toString());
+		builder.prototype().labels().set(labelsBuilder.newInstance());
         builder.prototype().note().set(task.note().get());
         builder.prototype().creationDate().set(task.createdOn().get());
         builder.prototype().taskId().set(task.taskId().get());

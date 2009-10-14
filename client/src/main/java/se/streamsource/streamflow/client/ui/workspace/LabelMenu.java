@@ -15,13 +15,15 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MenuEvent;
@@ -95,6 +97,7 @@ public class LabelMenu
                     {
                         if (selectionModel.isSelectedIndex(idx))
                         {
+/*
                             if (checkBoxMenuItem.isSelected())
                             {
                                 try
@@ -114,6 +117,7 @@ public class LabelMenu
                                     e1.printStackTrace();
                                 }
                             }
+*/
                         }
                     }
                 }

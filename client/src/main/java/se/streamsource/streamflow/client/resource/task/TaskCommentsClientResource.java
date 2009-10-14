@@ -12,45 +12,36 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.user.task;
+package se.streamsource.streamflow.client.resource.task;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.task.TaskContactsDTO;
+import se.streamsource.streamflow.resource.comment.CommentsDTO;
+import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
 import java.io.IOException;
 
-
 /**
- * JAVADOC
+ * Mapped to /task/{id}/comments
  */
-public class TaskContactsClientResource
+public class TaskCommentsClientResource
         extends CommandQueryClientResource
 {
-    public TaskContactsClientResource(@Uses Context context, @Uses Reference reference)
+    public TaskCommentsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public TaskContactsDTO contacts() throws ResourceException, IOException
+    public CommentsDTO comments() throws IOException, ResourceException
     {
-        return getQuery(TaskContactsDTO.class);
+        return getQuery(CommentsDTO.class);
     }
 
-    public void add() throws ResourceException
+    public void addComment(NewCommentCommand value) throws ResourceException
     {
-        postCommand("add", vbf.newValue(ContactValue.class));
+        postCommand("addComment", value);
     }
-
-    public TaskContactClientResource taskContact(int index)
-    {
-        TaskContactClientResource contact = getSubResource("" + index, TaskContactClientResource.class);
-        contact.setRoot(getRoot());
-        return contact;
-    }
-
 }

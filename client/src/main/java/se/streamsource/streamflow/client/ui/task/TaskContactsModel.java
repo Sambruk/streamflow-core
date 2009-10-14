@@ -21,7 +21,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskContactsClientResource;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.source.*;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;

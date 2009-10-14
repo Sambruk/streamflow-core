@@ -29,6 +29,7 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -47,18 +48,20 @@ public class EventsResource
     @Override
     protected Representation get(Variant variant) throws ResourceException
     {
+        String after = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "after" );
+
+        final Date afterDate = after == null ? null : new Date(Long.parseLong(after ));
+
         return new WriterRepresentation(MediaType.TEXT_PLAIN, 1000)
         {
             public void write(Writer writer) throws IOException
             {
-                source.registerListener(new EventSubscriberWriter(writer));
+                source.registerListener(new EventSubscriberWriter(writer, afterDate));
 
                 try
                 {
                     synchronized (writer)
                     {
-                        writer.write("Event start");
-                        writer.flush();
                         writer.wait();
                     }
                 } catch (InterruptedException e)
@@ -73,15 +76,17 @@ public class EventsResource
             implements EventSourceListener
     {
         Writer writer;
+        private Date afterDate;
 
-        EventSubscriberWriter(Writer writer)
+        EventSubscriberWriter( Writer writer, Date afterDate )
         {
             this.writer = writer;
+            this.afterDate = afterDate;
         }
 
         public void eventsAvailable(EventStore eventStore)
         {
-            eventStore.transactions( null, new TransactionHandler()
+            eventStore.transactions( afterDate, new TransactionHandler()
             {
                 public boolean handleTransaction( TransactionEvents transaction )
                 {

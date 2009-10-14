@@ -19,7 +19,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.users.overview.projects.waitingfor.OverviewProjectWaitingForClientResource;
 
 /**
  * JAVADOC
@@ -37,8 +37,8 @@ public class OverviewProjectClientResource
         return getSubResource("assignments", OverviewProjectAssignmentsClientResource.class);
     }
 
-    public ProjectWaitingforClientResource waitingFor()
+    public OverviewProjectWaitingForClientResource waitingFor()
     {
-        return getSubResource("waitingfor", ProjectWaitingforClientResource.class);
+        return getSubResource("waitingfor", OverviewProjectWaitingForClientResource.class);
     }
 }

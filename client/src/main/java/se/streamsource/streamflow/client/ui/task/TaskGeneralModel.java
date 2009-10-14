@@ -18,8 +18,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.util.Date;

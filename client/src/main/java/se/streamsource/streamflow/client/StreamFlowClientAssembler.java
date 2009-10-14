@@ -32,6 +32,7 @@ import se.streamsource.streamflow.client.ui.events.ClientEventSourceAssembler;
 import se.streamsource.streamflow.client.ui.menu.MenuAssembler;
 import se.streamsource.streamflow.client.ui.overview.OverviewAssembler;
 import se.streamsource.streamflow.client.ui.search.SearchAssembler;
+import se.streamsource.streamflow.client.ui.task.TaskAssembler;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceAssembler;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
@@ -83,6 +84,7 @@ public class StreamFlowClientAssembler
         new AdministrationAssembler().assemble(uiLayer.moduleAssembly("Administration"));
         new MenuAssembler().assemble(uiLayer.moduleAssembly("Menu"));
         new WorkspaceAssembler().assemble(uiLayer.moduleAssembly("Workspace"));
+        new TaskAssembler().assemble(uiLayer.moduleAssembly("Tasks"));
         new OverviewAssembler().assemble(uiLayer.moduleAssembly("Overview"));
         new UIAssembler().assemble(uiLayer.moduleAssembly("UI View"));
         new UIInfrastructureAssembler().assemble(uiLayer.moduleAssembly("View infrastructure"));

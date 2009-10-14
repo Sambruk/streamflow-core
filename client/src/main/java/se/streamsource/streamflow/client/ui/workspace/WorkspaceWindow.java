@@ -19,13 +19,20 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXStatusBar;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.AccountSelector;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 
-import java.awt.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 
 /**
  * Workspace window
@@ -33,16 +40,25 @@ import java.awt.*;
 public class WorkspaceWindow
     extends FrameView
 {
+    public CardLayout cardLayout;
+
     public WorkspaceWindow(@Service Application application,
                            @Service JavaHelp javaHelp,
                            @Uses WorkspaceMenuBar menu,
-                           @Uses WorkspaceView view)
+                           @Uses final WorkspaceView workspaceView,
+                           @Uses AccountSelectionView view,
+                           @Uses final AccountSelector accountSelector,
+                           @Structure final ObjectBuilderFactory obf)
     {
         super(application);
 
-        JXFrame frame = new JXFrame(i18n.text(WorkspaceResources.window_name));
+        final JXFrame frame = new JXFrame(i18n.text(WorkspaceResources.window_name));
         frame.setLocationByPlatform(true);
-        frame.getContentPane().add(view);
+
+        cardLayout = new CardLayout();
+        frame.getContentPane().setLayout( cardLayout );
+        frame.getContentPane().add(view, "selector");
+        frame.getContentPane().add(workspaceView, "workspace");
         frame.getRootPane().setOpaque(true);
         setFrame(frame);
         setMenuBar(menu);
@@ -53,6 +69,30 @@ public class WorkspaceWindow
         frame.setPreferredSize(new Dimension(1000, 600));
         frame.pack();
         javaHelp.enableHelp(this.getRootPane(),"workspace");
+
+        ListSelectionListener workspaceListener = new ListSelectionListener()
+        {
+            public void valueChanged( ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    if (accountSelector.isSelectionEmpty())
+                    {
+                        cardLayout.show(frame.getContentPane(), "selector");
+                    }
+                    else
+                    {
+                        AccountModel accountModel = accountSelector.getSelectedAccount();
+
+                        workspaceView.setModel( accountModel.workspace() );
+
+                        cardLayout.show(frame.getContentPane(), "workspace");
+                    }
+                }
+            }
+        };
+
+        accountSelector.addListSelectionListener(workspaceListener);
     }
 
     

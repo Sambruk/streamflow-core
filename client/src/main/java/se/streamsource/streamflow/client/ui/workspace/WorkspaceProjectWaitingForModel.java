@@ -14,10 +14,11 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import org.qi4j.api.injection.scope.Uses;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 import java.util.Date;
@@ -28,8 +29,9 @@ import java.util.Date;
 public class WorkspaceProjectWaitingForModel
         extends TaskTableModel
 {
-    public WorkspaceProjectWaitingForModel()
+    public WorkspaceProjectWaitingForModel(@Uses ProjectWaitingforClientResource resource)
     {
+        super(resource);
         columnNames = new String[]{"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
         columnClasses = new Class[]{Boolean.class, String.class, String.class, String.class, Date.class};
         columnEditable = new boolean[]{true, false, false, false, false};

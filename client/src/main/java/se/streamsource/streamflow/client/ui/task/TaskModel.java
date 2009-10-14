@@ -15,17 +15,18 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-
-import java.io.IOException;
+import se.streamsource.streamflow.client.resource.task.TaskClientResource;
 
 /**
  * Model for task details.
  */
-public class TaskDetailModel
+public class TaskModel
         implements Refreshable
 {
+    @Uses
+    TaskClientResource resource;
+
     @Uses
     TaskCommentsModel comments;
 
@@ -34,6 +35,11 @@ public class TaskDetailModel
 
     @Uses
     TaskContactsModel contacts;
+
+    TaskClientResource resource()
+    {
+        return resource;
+    }
 
     public TaskCommentsModel comments()
     {

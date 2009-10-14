@@ -20,8 +20,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -42,6 +41,8 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     public static final int IS_DROPPED = 11;
 
     @Uses
+    TasksModel tasksModel;
+
     TaskListClientResource resource;
 
     @Structure
@@ -58,19 +59,10 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     protected Class[] columnClasses;
     protected boolean[] columnEditable;
 
-    WeakModelMap<String, TaskDetailModel> taskModels = new WeakModelMap<String, TaskDetailModel>()
+    protected TaskTableModel( TaskListClientResource resource )
     {
-        @Override
-        protected TaskDetailModel newModel(String key)
-        {
-            TaskClientResource taskClientResource = getResource().task(key);
-            TaskDetailModel model = obf.newObjectBuilder(TaskDetailModel.class)
-                    .use(taskClientResource.general(), taskClientResource.comments(), taskClientResource.contacts()).newInstance();
-            return model;
-        }
-
-
-    };
+        this.resource = resource;
+    }
 
     public TaskListClientResource getResource()
     {
@@ -297,6 +289,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         fireTableRowsDeleted(idx, idx);
     }
 
+/*
     public void addLabel(int idx, ListItemValue label) throws ResourceException
     {
         TaskDTO task = getTask(idx);
@@ -320,20 +313,20 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         task.labels().get().items().get().remove(label);
         fireTableCellUpdated(idx, 1);
     }
+*/
 
     public void dropTask(int idx) throws ResourceException
     {
         TaskDTO task = getTask(idx);
 
-        TaskClientResource taskClientResource = getResource().task(task.task().get().identity());
+        AbstractTaskClientResource taskClientResource = getResource().task(task.task().get().identity());
         taskClientResource.drop();
         tasks.remove(idx);
         fireTableRowsDeleted(idx, idx);
     }
 
-    public TaskDetailModel taskDetailModel(String id)
+    public TaskModel task(String id)
     {
-        return taskModels.get(id);
+        return tasksModel.task( id );
     }
-
 }

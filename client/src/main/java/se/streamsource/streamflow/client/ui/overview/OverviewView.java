@@ -17,18 +17,28 @@ package se.streamsource.streamflow.client.ui.overview;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTree;
-import org.jdesktop.swingx.renderer.*;
+import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
+import org.jdesktop.swingx.renderer.IconValue;
+import org.jdesktop.swingx.renderer.StringValue;
+import org.jdesktop.swingx.renderer.WrappingIconPanel;
+import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -36,7 +46,10 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -51,14 +64,11 @@ public class OverviewView
     private OverviewModel model;
 
     public OverviewView(final @Service ApplicationContext context,
-                        @Uses final OverviewModel model,
-                        final @Uses AccountModel accountModel,
                         final @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
-        this.model = model;
 
-        overviewTree = new JXTree(model);
+        overviewTree = new JXTree();
         overviewTree.expandAll();
         overviewTree.setRootVisible(false);
         overviewTree.setShowsRootHandles(false);
@@ -133,13 +143,6 @@ public class OverviewView
         pane.setDividerLocation(200);
         pane.setResizeWeight(0);
 
-        final OverviewSummaryModel overviewSummaryModel = obf.newObjectBuilder(OverviewSummaryModel.class)
-                                .use(accountModel.userResource().overview()).newInstance();
-
-        JPanel projectSummary = obf.newObjectBuilder(OverviewSummaryView.class).use(overviewSummaryModel).newInstance();
-
-        pane.setRightComponent(projectSummary);
-
         JPanel overviewOutline = new JPanel(new BorderLayout());
         overviewOutline.add(workspaceScroll, BorderLayout.CENTER);
         overviewOutline.setMinimumSize(new Dimension(150, 300));
@@ -161,8 +164,8 @@ public class OverviewView
 
                     if (node instanceof OverviewProjectsNode)
                     {
-                        final OverviewSummaryModel overviewSummaryModel = obf.newObjectBuilder(OverviewSummaryModel.class)
-                                .use(accountModel.userResource().overview()).newInstance();
+                        final OverviewSummaryModel overviewSummaryModel = model.summary();
+
                         view = obf.newObjectBuilder(OverviewSummaryView.class).use(overviewSummaryModel).newInstance();
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -254,6 +257,13 @@ public class OverviewView
             }
         });
 
+    }
+
+    public void setModel( OverviewModel model)
+    {
+        this.model = model;
+        overviewTree.setModel(model);
+        refreshTree();
     }
 
     public String getSelectedUser()

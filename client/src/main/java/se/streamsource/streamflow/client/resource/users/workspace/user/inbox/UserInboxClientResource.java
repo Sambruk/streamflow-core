@@ -29,7 +29,7 @@ import java.util.List;
  * JAVADOC
  */
 public class UserInboxClientResource
-        extends TaskListClientResource
+        extends TaskListClientResource<UserInboxTaskClientResource>
 {
     public UserInboxClientResource(@Uses Context context, @Uses Reference reference)
     {

@@ -24,6 +24,8 @@ import javax.swing.tree.DefaultTreeModel;
 public class OverviewModel
         extends DefaultTreeModel
 {
+    @Uses OverviewSummaryModel summary;
+
     public OverviewModel(@Uses OverviewNode node)
     {
         super(node);
@@ -33,5 +35,10 @@ public class OverviewModel
     public OverviewNode getRoot()
     {
         return (OverviewNode) super.getRoot();
+    }
+
+    public OverviewSummaryModel summary()
+    {
+        return summary;
     }
 }

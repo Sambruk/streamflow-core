@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace;
+package se.streamsource.streamflow.client.resource.task;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
@@ -21,14 +21,10 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskContactsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
- * JAVADOC
+ * Mapped to /task/<id>
  */
 public class TaskClientResource
         extends CommandQueryClientResource
@@ -55,6 +51,7 @@ public class TaskClientResource
         return contacts;
     }
 
+/*
     public void complete() throws ResourceException
     {
         putCommand("complete");
@@ -64,12 +61,16 @@ public class TaskClientResource
     {
         putCommand("drop");
     }
+*/
 
+/*
     public void describe(StringDTO stringValue) throws ResourceException
     {
         putCommand("describe", stringValue);
     }
+*/
 
+/*
     public void assignToMe() throws ResourceException
     {
         putCommand("assignToMe");
@@ -98,6 +99,7 @@ public class TaskClientResource
         builder.prototype().entity().set(EntityReference.parseEntityReference(receiverId));
         putCommand("forward", builder.newInstance());
     }
+*/
 
     public void addLabel(String labelId) throws ResourceException
     {

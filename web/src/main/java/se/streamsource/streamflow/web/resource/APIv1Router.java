@@ -51,6 +51,10 @@ import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
+import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
+import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
+import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
+import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
 import se.streamsource.streamflow.web.rest.CompositeFinder;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
@@ -97,6 +101,12 @@ public class APIv1Router
         attach("/organizations/{organization}/administrators", createServerResourceFinder(AdministratorsServerResource.class));
         attach("/organizations/{organization}/administrators/{administrator}", createServerResourceFinder(AdministratorServerResource.class));
         attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));
+
+        // Tasks
+        attach("/tasks/{task}/general", createServerResourceFinder( TaskGeneralServerResource.class));
+        attach("/tasks/{task}/comments", createServerResourceFinder( TaskCommentsServerResource.class));
+        attach("/tasks/{task}/contacts", createServerResourceFinder( TaskContactsServerResource.class));
+        attach("/tasks/{task}/contacts/{index}", createServerResourceFinder( TaskContactServerResource.class));
 
         // Events
         attach("/events", createServerResourceFinder(EventsResource.class));

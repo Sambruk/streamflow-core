@@ -18,26 +18,42 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTree;
-import org.jdesktop.swingx.renderer.*;
+import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
+import org.jdesktop.swingx.renderer.IconValue;
+import org.jdesktop.swingx.renderer.StringValue;
+import org.jdesktop.swingx.renderer.WrappingIconPanel;
+import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.jdesktop.swingx.search.SearchFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -50,27 +66,13 @@ public class WorkspaceView
     private JXTree workspaceTree;
     private JSplitPane pane;
     private WorkspaceModel model;
-    private CardLayout cardLayout;
     public String accountName = "";
 
     public WorkspaceView(final @Service ApplicationContext context,
-                         @Uses final AccountSelector accountSelector,
                          final @Structure ObjectBuilderFactory obf)
     {
-        setLayout(cardLayout = new CardLayout());
+        setLayout(new BorderLayout());
 
-        JPanel accountSelection = new JPanel(new BorderLayout());
-        accountSelection.add(accountSelector, BorderLayout.CENTER);
-        accountSelection.setMinimumSize(new Dimension(300, 200));
-        accountSelection.setPreferredSize(new Dimension(300, 200));
-        accountSelection.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), i18n.text(WorkspaceResources.select_account)));
-        accountSelection.getInsets();
-        JPanel accountSelectionView = new JPanel();
-        accountSelectionView.add(accountSelection);
-        add(accountSelectionView, "selector");
-
-        JPanel workspace = new JPanel(new BorderLayout());
-        add(workspace, "workspace");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK+Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTree");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK+Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectTable");
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK+Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "selectDetails");
@@ -179,7 +181,7 @@ public class WorkspaceView
 
         pane.setLeftComponent(workspaceOutline);
 
-        workspace.add(pane, BorderLayout.CENTER);
+        add(pane, BorderLayout.CENTER);
 
         workspaceTree.addTreeSelectionListener(new TreeSelectionListener()
         {
@@ -414,30 +416,6 @@ public class WorkspaceView
             {
             }
         });
-
-
-        ListSelectionListener workspaceListener = new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    if (accountSelector.isSelectionEmpty())
-                    {
-                        cardLayout.show(WorkspaceView.this, "selector");
-                    }
-                    else
-                    {
-                        AccountModel accountModel = accountSelector.getSelectedAccount();
-                        accountName = accountModel.settings().name().get();
-                        setModel(obf.newObjectBuilder(WorkspaceModel.class).use(accountModel).newInstance());
-                        cardLayout.show(WorkspaceView.this, "workspace");
-                    }
-                }
-            }
-        };
-
-        accountSelector.addListSelectionListener(workspaceListener);
     }
 
     public String getSelectedUser()
@@ -454,6 +432,7 @@ public class WorkspaceView
     {
         this.model = model;
         workspaceTree.setModel(model);
+        accountName = model.getRoot().getUserObject().settings().name().get();
         refreshTree();
     }
 
@@ -502,7 +481,7 @@ public class WorkspaceView
             if (right instanceof TaskTableView)
             {
                 TaskTableView ttv = (TaskTableView) right;
-                ttv.getTaskDetail().requestFocusInWindow();
+                ttv.getTaskDetails().requestFocusInWindow();
             } else
                 right.requestFocusInWindow();
         }

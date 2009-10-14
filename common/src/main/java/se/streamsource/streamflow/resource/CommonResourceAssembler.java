@@ -46,6 +46,8 @@ import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
+import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskListDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 
@@ -82,6 +84,8 @@ public class CommonResourceAssembler
                 DelegatedTaskDTO.class,
                 WaitingForTaskListDTO.class,
                 WaitingForTaskDTO.class,
+                OverviewWaitingForTaskListDTO.class,
+                OverviewWaitingForTaskDTO.class,
                 TreeValue.class,
                 TreeNodeValue.class,
                 OverviewAssignmentsTaskListDTO.class,

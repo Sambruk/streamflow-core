@@ -17,13 +17,13 @@ package se.streamsource.streamflow.client.resource.users.workspace.user.inbox;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
 
 /**
  * JAVADOC
  */
 public class UserInboxTaskClientResource
-        extends TaskClientResource
+        extends AbstractTaskClientResource
 {
     public UserInboxTaskClientResource(@Uses Context context, @Uses Reference reference)
     {

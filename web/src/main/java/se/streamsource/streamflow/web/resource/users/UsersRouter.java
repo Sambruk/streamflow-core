@@ -29,7 +29,6 @@ import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewP
 import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectsServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectServerResource;
@@ -50,10 +49,6 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
@@ -92,22 +87,9 @@ public class UsersRouter
         attach("/workspace/user/delegations/{task}", createServerResourceFinder(UserDelegatedTaskServerResource.class));
         attach("/workspace/user/waitingfor", createServerResourceFinder(UserWaitingForServerResource.class));
         attach("/workspace/user/waitingfor/{task}", createServerResourceFinder(UserWaitingForTaskServerResource.class));
-        attach("/workspace/user/{view}/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
-        attach("/workspace/user/{view}/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
-        attach("/workspace/user/{view}/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
-        attach("/workspace/user/{view}/{task}/contacts/{index}", createServerResourceFinder(TaskContactServerResource.class));
-        attach("/workspace/projects/{project}/{view}/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
-        attach("/workspace/projects/{project}/{view}/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
-        attach("/workspace/projects/{project}/{view}/{task}/contacts/{index}", createServerResourceFinder(TaskContactServerResource.class));
-        attach("/workspace/projects/{project}/{view}/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
         attach("/administration", createServerResourceFinder(UserAdministrationServerResource.class));
 
         attach("/search", createServerResourceFinder(SearchTasksServerResource.class));
-        attach("/search/{task}", createServerResourceFinder(SearchTaskServerResource.class));
-        attach("/search/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
-        attach("/search/{task}/contacts", createServerResourceFinder(TaskContactsServerResource.class));
-        attach("/search/{task}/contacts/{index}", createServerResourceFinder(TaskContactServerResource.class));
-        attach("/search/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
 
         // Overview
         attach("/overview", createServerResourceFinder(OverviewServerResource.class));
@@ -119,8 +101,6 @@ public class UsersRouter
         attach("/overview/projects/{project}/waitingfor", createServerResourceFinder(OverviewProjectWaitingForServerResource.class));
         attach("/overview/projects/{project}/waitingfor/{task}", createServerResourceFinder(OverviewProjectWaitingForTaskServerResource.class));
 */
-        attach("/overview/projects/{project}/{view}/{task}/general", createServerResourceFinder(TaskGeneralServerResource.class));
-        attach("/overview/projects/{project}/{view}/{task}/comments", createServerResourceFinder(TaskCommentsServerResource.class));
     }
 
     private Restlet createServerResourceFinder(Class<? extends ServerResource> resource)

@@ -17,13 +17,13 @@ package se.streamsource.streamflow.client.resource.users.workspace.projects.wait
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.users.workspace.TaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
 
 /**
  * JAVADOC
  */
 public class ProjectWaitingforTaskClientResource
-        extends TaskClientResource
+        extends AbstractTaskClientResource
 {
     public ProjectWaitingforTaskClientResource(@Uses Context context, @Uses Reference reference)
     {

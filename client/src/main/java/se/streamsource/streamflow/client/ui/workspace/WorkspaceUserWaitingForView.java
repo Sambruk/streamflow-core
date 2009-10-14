@@ -56,8 +56,8 @@ public class WorkspaceUserWaitingForView
     {
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
-        addToolbarButton(toolbar, "refresh");
         Action acceptAction = addToolbarButton(toolbar, "completeTask");
+        addToolbarButton(toolbar, "refresh");
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox, acceptAction));
     }
 

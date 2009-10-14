@@ -27,12 +27,12 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public abstract class TaskListClientResource
+public abstract class TaskListClientResource<T extends AbstractTaskClientResource>
         extends CommandQueryClientResource
 {
-    Class<? extends TaskClientResource> taskClass;
+    Class<T> taskClass;
 
-    public TaskListClientResource(@Uses Context context, @Uses Reference reference, Class<? extends TaskClientResource> taskClass)
+    public TaskListClientResource(@Uses Context context, @Uses Reference reference, Class<T> taskClass)
     {
         super(context, reference);
         this.taskClass = taskClass;
@@ -45,7 +45,7 @@ public abstract class TaskListClientResource
         postCommand("createtask");
     }
 
-    public TaskClientResource task(String id)
+    public T task(String id)
     {
         return getSubResource(id, taskClass);
     }

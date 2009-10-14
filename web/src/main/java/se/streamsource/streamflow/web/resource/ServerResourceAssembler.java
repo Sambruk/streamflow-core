@@ -67,10 +67,10 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.comments.TaskCommentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.contacts.TaskContactsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.task.general.TaskGeneralServerResource;
+import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
+import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
+import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
+import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
 

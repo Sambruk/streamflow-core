@@ -16,16 +16,19 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.resource.LabelsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -76,8 +79,21 @@ public class WorkspaceProjectsNode
 
             for (ListItemValue project : projects.items().get())
             {
-                WorkspaceProjectClientResource workspaceProjectResource = user.workspace().projects().project(project.entity().get().identity());
-                add(obf.newObjectBuilder(WorkspaceProjectNode.class).use(workspaceProjectResource, project.description().get()).newInstance());
+                WorkspaceProjectClientResource workspaceProjectClientResource = user.workspace().projects().project(project.entity().get().identity());
+                ProjectInboxClientResource projectInboxClientResource = workspaceProjectClientResource.inbox();
+                ProjectAssignmentsClientResource projectAssignmentsClientResource = workspaceProjectClientResource.assignments();
+                ProjectDelegationsClientResource projectDelegationsClientResource = workspaceProjectClientResource.delegations();
+                ProjectWaitingforClientResource projectWaitingforClientResource = workspaceProjectClientResource.waitingFor();
+                LabelsClientResource labels = workspaceProjectClientResource.labels();
+
+                add(obf.newObjectBuilder(WorkspaceProjectNode.class).use(workspaceProjectClientResource,
+                        projectInboxClientResource,
+                        projectAssignmentsClientResource,
+                        projectDelegationsClientResource,
+                        projectWaitingforClientResource,
+                        labels,
+                        account.tasks(),
+                        project.description().get()).newInstance());
             }
         } catch (ResourceException e)
         {

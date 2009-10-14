@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.user.task;
+package se.streamsource.streamflow.client.resource.task;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -26,7 +26,7 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 
 
 /**
- * JAVADOC
+ * Mapped to /task/{id}/contacts/{index}
  */
 public class TaskContactClientResource
         extends CommandQueryClientResource

@@ -33,15 +33,15 @@ public class OverviewProjectNode
     String projectName;
 
     public OverviewProjectNode(@Uses OverviewProjectClientResource projectClientResource,
+                               @Uses OverviewProjectAssignmentsNode assignmentsNode,
+                               @Uses OverviewProjectWaitingForNode waitingForNode,
                                @Structure ObjectBuilderFactory obf)
     {
         super(projectClientResource);
 
-        OverviewProjectAssignmentsClientResource projectAssignmentsClientResource = projectClientResource.assignments();
-        add(obf.newObjectBuilder(OverviewProjectAssignmentsNode.class).use(projectAssignmentsClientResource).newInstance());
+        add(assignmentsNode);
 
-        ProjectWaitingforClientResource projectWaitingforClientResource = projectClientResource.waitingFor();
-        add(obf.newObjectBuilder(OverviewProjectWaitingForNode.class).use(projectWaitingforClientResource).newInstance());
+        add(waitingForNode);
     }
 
     public String projectName()

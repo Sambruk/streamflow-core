@@ -17,6 +17,7 @@ package se.streamsource.streamflow.resource.task;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import java.util.Date;
 
@@ -29,7 +30,7 @@ public interface TaskGeneralDTO
     @Optional
     Property<String> taskId();
 
-    Property<String> labels();
+    Property<ListValue> labels();
 
     Property<String> description();
 
@@ -39,5 +40,4 @@ public interface TaskGeneralDTO
 
     @Optional
     Property<Date> dueOn();
-
 }

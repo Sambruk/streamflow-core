@@ -14,10 +14,10 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import org.qi4j.api.injection.scope.Uses;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.created_column_header;
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.description_column_header;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
 
@@ -29,8 +29,9 @@ import java.util.Date;
 public class OverviewProjectAssignmentsModel
         extends TaskTableModel
 {
-    public OverviewProjectAssignmentsModel()
+    public OverviewProjectAssignmentsModel(@Uses OverviewProjectAssignmentsClientResource resource)
     {
+        super(resource);
         columnNames = new String[]{"", text(description_column_header), text(created_column_header), text(OverviewResources.assigned_to_column_header)};
         columnClasses = new Class[]{Boolean.class, String.class, Date.class, String.class};
         columnEditable = new boolean[]{false, false, false, false};

@@ -20,14 +20,12 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JTabbedPane;
 import java.awt.event.KeyEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.FocusEvent;
-import java.awt.KeyboardFocusManager;
 
 /**
  * JAVADOC
@@ -38,7 +36,7 @@ public class TaskDetailView
     private TaskCommentsView commentsView;
     private TaskGeneralView generalView;
     private TaskContactsAdminView contactsView;
-    private TaskDetailModel model;
+    private TaskModel model;
 
     public TaskDetailView(@Service ApplicationContext appContext,
                           @Uses TaskGeneralView generalView,
@@ -86,7 +84,7 @@ public class TaskDetailView
 */
     }
 
-    public void setTaskModel(TaskDetailModel model)
+    public void setTaskModel( TaskModel model)
     {
         this.model = model;
         if (model == null)
@@ -120,7 +118,7 @@ public class TaskDetailView
         }
     }
 
-    public TaskDetailModel getTaskModel()
+    public TaskModel getTaskModel()
     {
         return model;
     }

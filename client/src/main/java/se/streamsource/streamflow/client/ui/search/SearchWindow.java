@@ -23,14 +23,13 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.SearchMenuBar;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.Dimension;
 
 /**
  * Search window
@@ -63,8 +62,7 @@ public class SearchWindow
                         frame.getContentPane().removeAll();
 
                         AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                        SearchClientResource search = selectedAccount.userResource().search();
-                        SearchResultTableModel model = obf.newObjectBuilder(SearchResultTableModel.class).use(search).newInstance();
+                        SearchResultTableModel model = selectedAccount.search();
                         SearchView searchView = obf.newObjectBuilder(SearchView.class).use(model).newInstance();
 
                         frame.getContentPane().add(searchView);

@@ -187,6 +187,7 @@ public interface StatisticsService
                                 stmt.setString( idx++, id );
                                 stmt.setString( idx++, task.taskId().get() );
                                 stmt.setString( idx++, task.description().get() );
+                                stmt.setString( idx++, task.note().get() );
                                 stmt.setTimestamp( idx++, new java.sql.Timestamp( task.createdOn().get().getTime() ) );
                                 stmt.setTimestamp( idx++, new java.sql.Timestamp( domainEvent.on().get().getTime() ) );
                                 stmt.setLong( idx++, domainEvent.on().get().getTime() - task.createdOn().get().getTime() );

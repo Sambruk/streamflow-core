@@ -16,13 +16,12 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.workspace.user.task.TaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskCommentsClientResource;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
