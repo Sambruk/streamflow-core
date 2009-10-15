@@ -15,12 +15,14 @@
 package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.form.FormDefinition;
 
 /**
  * JAVADOC
  */
+@Mixins(ProjectFormDefinitions.ProjectFormDefinitionsMixin.class)
 public interface ProjectFormDefinitions
 {
     void addFormDefinition( FormDefinition formDefinition);
