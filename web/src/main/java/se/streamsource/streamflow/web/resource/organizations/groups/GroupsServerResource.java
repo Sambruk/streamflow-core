@@ -14,13 +14,11 @@
 
 package se.streamsource.streamflow.web.resource.organizations.groups;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -37,6 +35,7 @@ public class GroupsServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
         Groups.GroupsState groups = uowf.currentUnitOfWork().get(Groups.GroupsState.class, identity);
 
+        return new ListValueBuilder(vbf).addDescribableItems( groups.groups() ).newList();
     }
 
     public void createGroup(StringDTO name) throws ResourceException
