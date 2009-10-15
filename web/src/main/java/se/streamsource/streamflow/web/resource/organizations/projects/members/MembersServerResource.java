@@ -14,11 +14,9 @@
 
 package se.streamsource.streamflow.web.resource.organizations.projects.members;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Members;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -35,11 +33,6 @@ public class MembersServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
         Members.MembersState members = uow.get(Members.MembersState.class, identity);
 
-        ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (Participant participant : members.members())
-        {
-            builder.addListItem(participant.getDescription(), EntityReference.getEntityReference(participant));
-        }
-        return builder.newList();
+        return new ListValueBuilder(vbf).addDescribableItems( members.members() ).newList();
     }
 }

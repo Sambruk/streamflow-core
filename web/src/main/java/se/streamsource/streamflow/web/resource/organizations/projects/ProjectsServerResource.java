@@ -14,13 +14,11 @@
 
 package se.streamsource.streamflow.web.resource.organizations.projects;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -36,12 +34,7 @@ public class ProjectsServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
         Projects.ProjectsState projectsState = uowf.currentUnitOfWork().get(Projects.ProjectsState.class, identity);
 
-        ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (Project project : projectsState.projects())
-        {
-            builder.addListItem(project.getDescription(), EntityReference.getEntityReference(project));
-        }
-        return builder.newList();
+        return new ListValueBuilder(vbf).addDescribableItems( projectsState.projects() ).newList();
     }
 
     public void createProject(StringDTO name) throws ResourceException

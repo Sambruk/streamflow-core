@@ -14,14 +14,12 @@
 
 package se.streamsource.streamflow.web.resource.organizations.roles;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.role.Role;
 import se.streamsource.streamflow.web.domain.role.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -38,12 +36,7 @@ public class RolesServerResource
         OrganizationalUnit.OrganizationalUnitState ou = uowf.currentUnitOfWork().get( OrganizationalUnit.OrganizationalUnitState.class, identity);
         Roles.RolesState roles = (Roles.RolesState) ou.organization().get();
 
-        ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (Role role : roles.roles())
-        {
-            builder.addListItem(role.getDescription(), EntityReference.getEntityReference(role));
-        }
-        return builder.newList();
+        return new ListValueBuilder(vbf).addDescribableItems( roles.roles() ).newList();
     }
 
     public void createRole(StringDTO name) throws ResourceException

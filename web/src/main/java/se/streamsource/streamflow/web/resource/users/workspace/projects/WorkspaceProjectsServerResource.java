@@ -14,16 +14,13 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.projects;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.domain.roles.Removable;
 
 /**
  * Mapped to:
@@ -42,15 +39,7 @@ public class WorkspaceProjectsServerResource
         String id = (String) getRequest().getAttributes().get("user");
         Participant.ParticipantState participant = uow.get(Participant.ParticipantState.class, id);
 
-        for (Project project : participant.allProjects())
-        {
-            if (!((Removable.RemovableState)project).removed().get())
-            {
-                builder.prototype().entity().set(EntityReference.getEntityReference(project));
-                listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
-            }
-        }
-        return listBuilder.newList();
+        return listBuilder.addDescribableItems( participant.allProjects() ).newList();
     }
 
 }
