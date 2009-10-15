@@ -46,6 +46,8 @@ import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
+import se.streamsource.streamflow.resource.user.UserEntityDTO;
+import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskListDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
@@ -91,7 +93,9 @@ public class CommonResourceAssembler
                 OverviewAssignmentsTaskListDTO.class,
                 OverviewAssignedTaskDTO.class,
                 ProjectSummaryDTO.class,
-                ProjectSummaryListDTO.class).visibleIn(Visibility.application);
+                ProjectSummaryListDTO.class,
+                UserEntityListDTO.class,
+                UserEntityDTO.class).visibleIn(Visibility.application);
 
         module.addValues(SearchTaskListDTO.class,
                 SearchTaskDTO.class).visibleIn(Visibility.application);

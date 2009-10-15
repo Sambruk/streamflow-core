@@ -12,33 +12,37 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.organizations;
+package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.Context;
-import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.user.UserEntityListDTO;
+import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
+import se.streamsource.streamflow.resource.user.UserEntityDTO;
+
+import javax.swing.*;
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public class OrganizationsClientResource
-        extends CommandQueryClientResource
+public class OrganizationsUsersModel
+        extends AbstractListModel
 {
-    public OrganizationsClientResource(@Uses Context context, @Uses Reference reference)
+
+    private List<UserEntityDTO> users;
+
+    public OrganizationsUsersModel(@Uses OrganizationsClientResource organization) throws ResourceException
     {
-        super(context, reference);
+        users = organization.users().users().get();
     }
 
-    public OrganizationClientResource organization(String orgid) throws ResourceException
+    public int getSize()
     {
-        return getSubResource(orgid, OrganizationClientResource.class);
+        return users==null ? 0 : users.size();
     }
 
-    public UserEntityListDTO users() throws ResourceException
+    public Object getElementAt(int index)
     {
-        return query("users", UserEntityListDTO.class);
+        return users==null ? 0 : users.get(index);
     }
 }

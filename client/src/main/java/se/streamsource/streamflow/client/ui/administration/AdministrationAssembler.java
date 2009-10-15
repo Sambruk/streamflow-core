@@ -47,6 +47,9 @@ public class AdministrationAssembler
         UIAssemblers.addMV(module,
                 AdministrationModel.class,
                 AdministrationOutlineView.class);
+        UIAssemblers.addMV(module,
+                OrganizationsUsersModel.class,
+                OrganizationsUsersView.class);
 
         UIAssemblers.addMV(module,
                 AccountModel.class,

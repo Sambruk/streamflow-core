@@ -19,12 +19,11 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.AncestorEvent;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 
@@ -64,6 +63,17 @@ public class AdministrationView
 
                     if (node instanceof AccountAdministrationNode)
                     {
+                        AccountAdministrationNode accountAdminNode = (AccountAdministrationNode) node;
+
+                        try
+                        {
+                            view = obf.newObjectBuilder(OrganizationsUsersView.class).use(accountAdminNode.accountModel().serverResource().organizations())
+                                    .newInstance();
+                        } catch (ResourceException e1)
+                        {
+                            throw new OperationException(AdministrationResources.could_not_refresh_list_of_organizations, e1);
+                        }
+
                     } else if (node instanceof OrganizationalStructureAdministrationNode)
                     {
                         OrganizationalStructureAdministrationNode ouNode = (OrganizationalStructureAdministrationNode) node;
