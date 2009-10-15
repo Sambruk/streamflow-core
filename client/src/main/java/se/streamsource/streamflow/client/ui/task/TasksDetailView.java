@@ -144,7 +144,7 @@ public class TasksDetailView
         {
             for (int i = 0; i < getTabCount(); i++)
             {
-                if (getTabComponentAt( i ) == current)
+                if (getComponentAt( i ) == current)
                 {
                     removeTabAt( i );
                     tasks.remove( current.getTaskModel().resource());
