@@ -41,6 +41,7 @@ public interface Project
         ProjectOrganization,
         Labels,
         IdGenerator,
+        ProjectFormDefinitions,
         Removable
 {
 }

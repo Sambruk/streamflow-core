@@ -45,6 +45,8 @@ public interface ProjectEntity
         ProjectStatus.ProjectStatusState,
         ProjectOrganization.ProjectOrganizationState,
         Labels.LabelsState,
+        ProjectFormDefinitions.ProjectFormDefinitionsState,
+        ProjectFormDefinitionsQueries,
         Removable.RemovableState
 {
     class ProjectIdGeneratorMixin
