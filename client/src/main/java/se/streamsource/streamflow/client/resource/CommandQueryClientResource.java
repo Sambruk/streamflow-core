@@ -137,17 +137,20 @@ public class CommandQueryClientResource
 
     protected void postCommand(String operation) throws ResourceException
     {
-        postCommand(operation, null);
+        postCommand(operation, new EmptyRepresentation());
     }
 
     protected void postCommand(String operation, ValueComposite command) throws ResourceException
     {
         Representation commandRepresentation;
-        if (command != null)
-            commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON);
-        else
-            commandRepresentation = new EmptyRepresentation();
+        commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON);
 
+        postCommand( operation, commandRepresentation );
+    }
+
+    protected void postCommand( String operation, Representation commandRepresentation )
+            throws ResourceException
+    {
         Reference ref = getReference();
         Reference operationRef = ref.clone().addQueryParameter("command", operation);
         setReference(operationRef);

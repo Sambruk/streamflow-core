@@ -338,7 +338,10 @@ public class CommandQueryServerResource
         {
             Class<? extends Value> commandType = (Class<? extends Value>) method.getParameterTypes()[0];
 
-            if (getRequest().getEntity().getMediaType().equals(MediaType.APPLICATION_JSON))
+            if (Representation.class.isAssignableFrom( commandType))
+            {
+                return new Object[]{getRequest().getEntity()};
+            } else if (getRequest().getEntity().getMediaType().equals(MediaType.APPLICATION_JSON))
             {
                 String json = getRequest().getEntityAsText();
                 if (json == null)
