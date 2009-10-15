@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Mads Enevoldsen. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@ import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
+import se.streamsource.streamflow.web.domain.form.ValueDefinition;
+import se.streamsource.streamflow.web.domain.form.ValueDefinitionEntity;
+import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
 
 /**
  * JAVADOC
  */
-public class OrganizationalUnitsSteps
+public class ValueDefinitionsSteps
         extends Steps
 {
     @Uses
@@ -33,28 +35,38 @@ public class OrganizationalUnitsSteps
     @Uses
     OrganizationSetupSteps organizationSetupSteps;
 
-    @When("an organizational unit named $name is created")
-    public void createOrganizationalUnit(String name) throws Exception
+    public ValueDefinitionEntity valueDefinition;
+
+    @When("value definition named $name is created")
+    public void createValue(String name) throws Exception
     {
         try
         {
-            organizationSetupSteps.organization.createOrganizationalUnit(name);
+            ValueDefinitions values = organizationSetupSteps.organization;
+
+            valueDefinition = values.createValueDefinition( name );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("organizational unit named $name is removed")
-    public void removeOrgUnit(String name)
+    @When("value definition named $name is removed")
+    public void removed(String name) throws Exception
     {
         try
         {
-            OrganizationalUnitEntity ou = (OrganizationalUnitEntity) organizationSetupSteps.orgUnitMap.get(name);
-            organizationSetupSteps.organization.removeOrganizationalUnit(ou);
+            ValueDefinitions.ValueDefinitionsState valuesState = organizationSetupSteps.organization;
+            ValueDefinitions values = organizationSetupSteps.organization;
+
+            ValueDefinition valueDef = valuesState.getValueDefinitionByName( name );
+
+            values.removeValueDefinition( valueDef );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
+
+
 }

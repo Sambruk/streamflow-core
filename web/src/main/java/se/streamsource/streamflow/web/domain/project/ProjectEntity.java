@@ -21,7 +21,11 @@ import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.InboxQueries;
+import se.streamsource.streamflow.web.domain.task.TaskId;
+import se.streamsource.streamflow.web.domain.task.WaitingFor;
 
 /**
  * JAVADOC
@@ -29,23 +33,10 @@ import se.streamsource.streamflow.web.domain.task.*;
 @Mixins(ProjectEntity.ProjectIdGeneratorMixin.class)
 public interface ProjectEntity
         extends DomainEntity,
-        // Roles
         Project,
-        Describable,
-        Delegatee,
-        Members,
-        ProjectStatus,
-        Inbox,
-        InboxQueries,
-        Assignments,
-        Delegations,
-        WaitingFor,
-        Owner,
-        ProjectOrganization,
-        Labels,
-        IdGenerator,
 
         // State
+        InboxQueries,
         Inbox.InboxState,
         Assignments.AssignmentsState,
         WaitingFor.WaitingForState,
@@ -60,7 +51,7 @@ public interface ProjectEntity
             implements IdGenerator
     {
         @This
-        ProjectOrganizationState state;
+        ProjectOrganization.ProjectOrganizationState state;
 
         public void assignId(TaskId task)
         {

@@ -18,7 +18,7 @@ import se.streamsource.streamflow.client.application.shared.steps.OrganizationsS
 import se.streamsource.streamflow.client.application.shared.steps.OverviewQueriesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationalUnitsSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 public class OverviewQueriesScenario
@@ -31,6 +31,6 @@ extends AbstractWebDomainApplicationScenario
 
     public OverviewQueriesScenario(ClassLoader classLoader)
     {
-        super(classLoader, new OverviewQueriesSteps(), new TaskSetupSteps(), new OrganizationalUnitsSetupSteps(), new OrganizationsSteps(), new UserSetupSteps());
+        super(classLoader, new OverviewQueriesSteps(), new TaskSetupSteps(), new OrganizationSetupSteps(), new OrganizationsSteps(), new UserSetupSteps());
     }
 }

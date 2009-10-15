@@ -18,6 +18,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
 import se.streamsource.streamflow.web.domain.comment.CommentAssembler;
+import se.streamsource.streamflow.web.domain.form.FormAssembler;
 import se.streamsource.streamflow.web.domain.group.GroupAssembler;
 import se.streamsource.streamflow.web.domain.label.LabelAssembler;
 import se.streamsource.streamflow.web.domain.organization.OrganizationAssembler;
@@ -35,12 +36,13 @@ public class WebDomainAssembler
     {
         new CommentAssembler().assemble(domainLayer.moduleAssembly("Comments"));
         new CommonResourceAssembler().assemble(domainLayer.moduleAssembly("Common"));
-        new GroupAssembler().assemble(domainLayer.moduleAssembly("Group"));
-        new LabelAssembler().assemble(domainLayer.moduleAssembly("Label"));
-        new OrganizationAssembler().assemble(domainLayer.moduleAssembly("Organization"));
-        new ProjectAssembler().assemble(domainLayer.moduleAssembly("Project"));
-        new RoleAssembler().assemble(domainLayer.moduleAssembly("Role"));
-        new TaskAssembler().assemble(domainLayer.moduleAssembly("Task"));
-        new UserAssembler().assemble(domainLayer.moduleAssembly("User"));
+        new FormAssembler().assemble(domainLayer.moduleAssembly("Forms"));
+        new GroupAssembler().assemble(domainLayer.moduleAssembly("Groups"));
+        new LabelAssembler().assemble(domainLayer.moduleAssembly("Labels"));
+        new OrganizationAssembler().assemble(domainLayer.moduleAssembly("Organizations"));
+        new ProjectAssembler().assemble(domainLayer.moduleAssembly("Projects"));
+        new RoleAssembler().assemble(domainLayer.moduleAssembly("Roles"));
+        new TaskAssembler().assemble(domainLayer.moduleAssembly("Tasks"));
+        new UserAssembler().assemble(domainLayer.moduleAssembly("Users"));
     }
 }

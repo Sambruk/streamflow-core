@@ -19,13 +19,16 @@ import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.form.FieldDefinition;
+import se.streamsource.streamflow.web.domain.form.FieldDefinitionEntity;
+import se.streamsource.streamflow.web.domain.form.FieldDefinitions;
+import se.streamsource.streamflow.web.domain.form.ValueDefinition;
+import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
 
 /**
  * JAVADOC
  */
-public class OrganizationalUnitSteps
+public class FieldDefinitionsSteps
         extends Steps
 {
     @Uses
@@ -34,41 +37,37 @@ public class OrganizationalUnitSteps
     @Uses
     OrganizationSetupSteps organizationSetupSteps;
 
-    @When("organizational unit named $ou1 is moved to organizational unit named $ou2")
-    public void move(String ou1, String ou2) throws Exception
+    public FieldDefinitionEntity fieldDefinition;
+
+    @When("field definition named $name of type $type is created")
+    public void createField(String name, String type) throws Exception
     {
         try
         {
-            OrganizationalUnit orgUnit1 = organizationSetupSteps.orgUnitMap.get(ou1);
-            OrganizationalUnits orgUnit2 = (OrganizationalUnits) organizationSetupSteps.orgUnitMap.get(ou2);
-            orgUnit1.moveOrganizationalUnit(orgUnit2);
+            FieldDefinitions fields = organizationSetupSteps.organization;
+
+            ValueDefinitions.ValueDefinitionsState values = organizationSetupSteps.organization;
+
+            ValueDefinition valueDefinition = values.getValueDefinitionByName( type );
+
+            this.fieldDefinition = fields.createFieldDefinition( name, valueDefinition );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("organizational unit named $ou1 is merged to organizational unit named $ou2")
-    public void merge(String ou1, String ou2) throws Exception
+    @When("field definition named $name is removed")
+    public void removed(String name) throws Exception
     {
         try
         {
-            OrganizationalUnit orgUnit1 = organizationSetupSteps.orgUnitMap.get(ou1);
-            OrganizationalUnit orgUnit2 = organizationSetupSteps.orgUnitMap.get(ou2);
-            orgUnit1.mergeOrganizationalUnit(orgUnit2);
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+            FieldDefinitions.FieldDefinitionsState fieldsState = organizationSetupSteps.organization;
+            FieldDefinitions fields = organizationSetupSteps.organization;
 
-    @When("organizational unit named $ou is deleted")
-    public void delete(String ou) throws Exception
-    {
-        try
-        {
-            OrganizationalUnit orgUnit1 = organizationSetupSteps.orgUnitMap.get(ou);
-            orgUnit1.deleteOrganizationalUnit();
+            FieldDefinition fieldDefinition = fieldsState.getFieldDefinitionByName( name );
+
+            fields.removeFieldDefinition( fieldDefinition );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

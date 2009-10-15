@@ -17,6 +17,7 @@ import org.hamcrest.CoreMatchers;
 import static org.hamcrest.CoreMatchers.*;
 import static org.jbehave.Ensure.*;
 import org.jbehave.scenario.annotations.Then;
+import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -46,6 +47,8 @@ public class GenericSteps
     @Then("events $commaSeparatedList occurred")
     public void eventsOccured(String expectedEvents)
     {
+        ensureThat( throwable, CoreMatchers.nullValue() );
+        
         List<DomainEvent> events = eventService.getEvents();
         ensureThat(events != null);
         String eventNames = "";
@@ -56,6 +59,8 @@ public class GenericSteps
             comma = ",";
         }
         ensureThat(eventNames, CoreMatchers.equalTo( expectedEvents ));
+
+        clearEvents();
     }
 
     @Then("no events occurred")
@@ -79,6 +84,7 @@ public class GenericSteps
         ensureThat(throwable, CoreMatchers.nullValue());
     }
 
+    @When("events are cleared")
     public void clearEvents()
     {
         eventService.clearEvents();

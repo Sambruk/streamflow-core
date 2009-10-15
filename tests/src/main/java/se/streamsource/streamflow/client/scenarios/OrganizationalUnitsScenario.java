@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.scenarios;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationalUnitsSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
@@ -33,6 +33,6 @@ public class OrganizationalUnitsScenario
 
     public OrganizationalUnitsScenario(ClassLoader classLoader)
     {
-        super(classLoader, new UserSetupSteps(), new OrganizationalUnitsSetupSteps(), new OrganizationsSteps(), new OrganizationalUnitsSteps());
+        super(classLoader, new UserSetupSteps(), new OrganizationSetupSteps(), new OrganizationsSteps(), new OrganizationalUnitsSteps());
     }
 }

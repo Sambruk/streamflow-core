@@ -30,7 +30,7 @@ public class ProjectsSetupSteps
         extends Steps
 {
     @Uses
-    OrganizationalUnitsSetupSteps orgSetup;
+    OrganizationSetupSteps orgSetup;
 
     @Uses
     UserSetupSteps userSetup;

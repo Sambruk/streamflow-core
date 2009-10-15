@@ -14,8 +14,11 @@
 
 package se.streamsource.streamflow.client.scenarios;
 
-import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
@@ -23,16 +26,18 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
 /**
  * JAVADOC
  */
-public class OrganizationalUnitScenario
+public class FormDefinitionsScenario
         extends AbstractWebDomainApplicationScenario
 {
-    public OrganizationalUnitScenario()
+    public FormDefinitionsScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public OrganizationalUnitScenario(ClassLoader classLoader)
+    public FormDefinitionsScenario(ClassLoader classLoader)
     {
-        super(classLoader, new UserSetupSteps(), new OrganizationSetupSteps(), new OrganizationsSteps(), new OrganizationalUnitSteps());
+        super(classLoader, new UserSetupSteps(), new OrganizationSetupSteps(), new OrganizationsSteps(),
+                new ValueDefinitionsSteps(), new FieldDefinitionsSteps(), new FormDefinitionsSteps(),
+                new FormDefinitionSteps());
     }
 }

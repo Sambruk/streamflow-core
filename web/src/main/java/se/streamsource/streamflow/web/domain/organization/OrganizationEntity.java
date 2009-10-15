@@ -18,6 +18,12 @@ import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.web.domain.form.FieldDefinitions;
+import se.streamsource.streamflow.web.domain.form.FieldDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.form.FormDefinitions;
+import se.streamsource.streamflow.web.domain.form.FormDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
+import se.streamsource.streamflow.web.domain.form.ValueDefinitionsQueries;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
 import se.streamsource.streamflow.web.domain.role.Roles;
 
@@ -32,10 +38,16 @@ public interface OrganizationEntity
 
         // State
         IdGenerator.IdGeneratorState,
-        Roles.RolesState
+        Roles.RolesState,
+        FormDefinitions.FormDefinitionsState,
+        FormDefinitionsQueries,
+        FieldDefinitions.FieldDefinitionsState,
+        FieldDefinitionsQueries,
+        ValueDefinitions.ValueDefinitionsState,
+        ValueDefinitionsQueries
 {
     abstract class LifecycleConcern
-            extends OrganizationalUnitMixin
+            extends OrganizationalUnit.OrganizationalUnitMixin
             implements Lifecycle
     {
         @This

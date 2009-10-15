@@ -37,13 +37,6 @@ public class GroupsServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
         Groups.GroupsState groups = uowf.currentUnitOfWork().get(Groups.GroupsState.class, identity);
 
-        ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (Group group : groups.groups())
-        {
-            builder.addListItem(group.getDescription(), EntityReference.getEntityReference(group));
-        }
-
-        return builder.newList();
     }
 
     public void createGroup(StringDTO name) throws ResourceException

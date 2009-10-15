@@ -18,6 +18,11 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.Delegations;
+import se.streamsource.streamflow.web.domain.task.WaitingFor;
+import se.streamsource.streamflow.web.domain.task.Owner;
 
 /**
  * JAVADOC
@@ -25,10 +30,17 @@ import se.streamsource.streamflow.web.domain.task.Inbox;
 public interface Project
         extends
         Describable,
+        Delegatee,
         Members,
         ProjectStatus,
         Inbox,
+        Assignments,
+        Delegations,
+        WaitingFor,
+        Owner,
+        ProjectOrganization,
         Labels,
+        IdGenerator,
         Removable
 {
 }

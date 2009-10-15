@@ -37,7 +37,7 @@ public class TaskSetupSteps
     GenericSteps genericSteps;
 
     @Uses
-    OrganizationalUnitsSetupSteps ouSteps;
+    OrganizationSetupSteps ouSteps;
 
     public Task assignedTask;
     public Task unassignedTask;

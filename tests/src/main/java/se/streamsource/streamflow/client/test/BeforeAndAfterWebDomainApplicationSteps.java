@@ -27,8 +27,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
-import org.restlet.Client;
-import org.restlet.data.Protocol;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 
 import java.util.ArrayList;
@@ -82,8 +80,8 @@ public class BeforeAndAfterWebDomainApplicationSteps
                 stepClasses[i + 1] = step.getClass();
             }
 
-            Client restlet = new Client(Protocol.HTTP);
-            app = is.newApplication(new StreamFlowWebDomainTestAssembler(restlet, genericSteps, stepClasses));
+//            Client restlet = new Client(Protocol.HTTP);
+            app = is.newApplication(new StreamFlowWebDomainTestAssembler(stepClasses, genericSteps));
 
             Module module = app.findModule("Domain", "Test");
 

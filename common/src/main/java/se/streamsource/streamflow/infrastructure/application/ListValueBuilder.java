@@ -17,6 +17,7 @@ package se.streamsource.streamflow.infrastructure.application;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * Builder for making it easier to create ListValue/ListItemValue
@@ -32,12 +33,24 @@ public class ListValueBuilder
         itemBuilder = vbf.newValueBuilder(ListItemValue.class);
     }
 
-    public void addListItem(String description, EntityReference ref)
+    public ListValueBuilder addListItem(String description, EntityReference ref)
     {
         itemBuilder.prototype().description().set(description);
         itemBuilder.prototype().entity().set(ref);
 
         listBuilder.prototype().items().get().add(itemBuilder.newInstance());
+
+        return this;
+    }
+
+    public ListValueBuilder addDescribableItems(Iterable<? extends Describable> items)
+    {
+        for (Describable item : items)
+        {
+            addListItem( item.getDescription(), EntityReference.getEntityReference(item ));
+        }
+
+        return this;
     }
 
     public ListValue newList()

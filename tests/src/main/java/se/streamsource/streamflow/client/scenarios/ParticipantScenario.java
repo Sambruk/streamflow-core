@@ -34,6 +34,6 @@ public class ParticipantScenario
 
     public ParticipantScenario(ClassLoader classLoader)
     {
-        super(classLoader, new ParticipantSteps(), new ParticipantSetupSteps(), new GroupsSetupSteps(), new ProjectsSetupSteps(), new TaskSetupSteps(), new OrganizationalUnitsSetupSteps(), new OrganizationsSteps(), new UserSteps(), new UserSetupSteps());
+        super(classLoader, new ParticipantSteps(), new ParticipantSetupSteps(), new GroupsSetupSteps(), new ProjectsSetupSteps(), new TaskSetupSteps(), new OrganizationSetupSteps(), new OrganizationsSteps(), new UserSteps(), new UserSetupSteps());
     }
 }

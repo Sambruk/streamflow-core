@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
+import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
@@ -33,7 +34,7 @@ import java.util.Map;
 /**
  * JAVADOC
  */
-public class OrganizationalUnitsSetupSteps
+public class OrganizationSetupSteps
         extends Steps
 {
     @Uses
@@ -49,7 +50,7 @@ public class OrganizationalUnitsSetupSteps
     EventSource source;
 
     public Map<String, OrganizationalUnit> orgUnitMap = new HashMap<String, OrganizationalUnit>();
-    public OrganizationalUnitEntity parent;
+    public OrganizationEntity organization;
     public Map<String, Project> projectMap = new HashMap<String, Project>();
     public GroupEntity group;
 
@@ -57,12 +58,13 @@ public class OrganizationalUnitsSetupSteps
     public void setupOrganizationalUnit()
     {
         userSetupSteps.basicUserSetup();
-        parent = getOrganizationalUnitEntity();
-        OrganizationalUnitEntity ou1 = (OrganizationalUnitEntity) parent.createOrganizationalUnit("OU1");
+        organization = getOrganization();
+
+        OrganizationalUnitEntity ou1 = (OrganizationalUnitEntity) organization.createOrganizationalUnit("OU1");
         orgUnitMap.put("OU1", ou1);
         orgUnitMap.put("OU1Sub", ou1.createOrganizationalUnit("OU1Sub"));
 
-        OrganizationalUnitEntity ou2 = (OrganizationalUnitEntity) parent.createOrganizationalUnit("OU2");
+        OrganizationalUnitEntity ou2 = (OrganizationalUnitEntity) organization.createOrganizationalUnit("OU2");
         orgUnitMap.put("OU2", ou2);
         orgUnitMap.put("OU2Sub",ou2.createOrganizationalUnit("OU2Sub"));
         projectMap.put("project1", ou2.createProject("project1"));
@@ -74,10 +76,10 @@ public class OrganizationalUnitsSetupSteps
         genericSteps.clearEvents();
     }
 
-    private OrganizationalUnitEntity getOrganizationalUnitEntity()
+    private OrganizationEntity getOrganization()
     {
         UserEntity user = userSetupSteps.userMap.get("user1");
-        return (OrganizationalUnitEntity) user.organizations().iterator().next();
+        return (OrganizationEntity) user.organizations().iterator().next();
     }
 
 }

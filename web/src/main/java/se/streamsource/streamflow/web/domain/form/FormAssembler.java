@@ -12,23 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.organization;
+package se.streamsource.streamflow.web.domain.form;
 
-import se.streamsource.streamflow.web.domain.form.FieldDefinitions;
-import se.streamsource.streamflow.web.domain.form.FormDefinitions;
-import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
-import se.streamsource.streamflow.web.domain.project.IdGenerator;
-import se.streamsource.streamflow.web.domain.role.Roles;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * JAVADOC
  */
-public interface Organization
-        extends OrganizationalUnit,
-        Roles,
-        FormDefinitions,
-        FieldDefinitions,
-        ValueDefinitions,
-        IdGenerator
+public class FormAssembler
+    implements Assembler
 {
+    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
+    {
+        moduleAssembly.addEntities( FormDefinitionEntity.class, FieldDefinitionEntity.class, ValueDefinitionEntity.class ).visibleIn( Visibility.application );
+    }
 }
