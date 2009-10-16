@@ -14,15 +14,20 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * JAVADOC
@@ -38,14 +43,28 @@ public class OrganizationsUsersModel
     private Class[] columnClasses;
     private boolean[] columnEditable;
 
+    EventSourceListener subscriber;
+    EventSource source;
 
-    public OrganizationsUsersModel(@Uses OrganizationsClientResource organizations) throws ResourceException
+    public OrganizationsUsersModel(@Uses OrganizationsClientResource organizations, @Service EventSource source) throws ResourceException
     {
         this.organizations = organizations;
         columnNames = new String[]{ text(AdministrationResources.user_enabled_label), text(AdministrationResources.username_label)};
         columnClasses = new Class[]{Boolean.class, String.class};
         columnEditable = new boolean[]{true, false};
         refresh();
+
+        subscriber = new OnEvents("userCreated", "enabledChanged")
+        {
+            public void run()
+            {
+                Logger.getLogger("administration").info("Refresh organizations users");
+                refresh();
+            }
+        };
+
+        this.source = source;
+        this.source.registerListener(subscriber);
     }
 
     private void refresh()
@@ -118,6 +137,7 @@ public class OrganizationsUsersModel
         {
             throw new OperationException(AdministrationResources.could_not_create_user, e);
         }
+        // change to listen for events
         refresh();
     }
 
