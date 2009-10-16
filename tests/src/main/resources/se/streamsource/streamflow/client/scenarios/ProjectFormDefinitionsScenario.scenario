@@ -1,0 +1,5 @@
+#TODO Fix this
+Scenario: Form added to project
+Given basic project setup
+When events are cleared
+Then no events are fired
