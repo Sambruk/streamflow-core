@@ -22,6 +22,7 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import static org.qi4j.api.query.QueryExpressions.isNotNull;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
@@ -92,6 +93,8 @@ public class OrganizationsServerResource
         Query<UserEntity> usersQuery = queryBuilder.where(
                 isNotNull(username)).
                 newQuery(uowf.currentUnitOfWork());
+
+        usersQuery.orderBy(orderBy(templateFor(User.UserState.class).userName()));
 
         ValueBuilder<UserEntityListDTO> listBuilder = vbf.newValueBuilder(UserEntityListDTO.class);
         List<UserEntityDTO> userlist = listBuilder.prototype().users().get();
