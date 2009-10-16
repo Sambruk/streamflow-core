@@ -33,9 +33,11 @@ import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -100,10 +102,25 @@ public class OrganizationsServerResource
         {
             builder.prototype().entity().set(EntityReference.getEntityReference(entity));
             builder.prototype().username().set(entity.userName().get());
+            builder.prototype().disabled().set(entity.disabled().get());
 
             userlist.add(builder.newInstance());
         }
 
         return listBuilder.newInstance();
+    }
+
+    public void createUser(NewUserCommand userCommand)
+    {
+        OrganizationsEntity organizations = uowf.currentUnitOfWork().get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
+
+        organizations.createUser(userCommand.username().get(), userCommand.password().get());
+    }
+
+    public void changeDisabled(UserEntityDTO user)
+    {
+        UserEntity userEntity = uowf.currentUnitOfWork().get(UserEntity.class, user.entity().get().identity());
+
+        userEntity.changeEnabled(userEntity.disabled().get());
     }
 }

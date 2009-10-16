@@ -15,11 +15,14 @@
 package se.streamsource.streamflow.client.resource.organizations;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
+import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
 /**
  * JAVADOC
@@ -40,5 +43,19 @@ public class OrganizationsClientResource
     public UserEntityListDTO users() throws ResourceException
     {
         return query("users", UserEntityListDTO.class);
+    }
+
+    public void createUser(String username, String password) throws ResourceException
+    {
+        ValueBuilder<NewUserCommand> builder = vbf.newValueBuilder(NewUserCommand.class);
+        builder.prototype().username().set(username);
+        builder.prototype().password().set(password);
+
+        postCommand("createUser",builder.newInstance());
+    }
+
+    public void changeDisabled(UserEntityDTO user) throws ResourceException
+    {
+        postCommand("changeDisabled", user);
     }
 }

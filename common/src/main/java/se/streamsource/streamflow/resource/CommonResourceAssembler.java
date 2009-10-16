@@ -44,10 +44,7 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
-import se.streamsource.streamflow.resource.user.RegisterUserCommand;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
-import se.streamsource.streamflow.resource.user.UserEntityListDTO;
+import se.streamsource.streamflow.resource.user.*;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskListDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
@@ -67,7 +64,8 @@ public class CommonResourceAssembler
                 StringDTO.class,
                 DateDTO.class,
                 EntityReferenceDTO.class,
-                NewCommentCommand.class).visibleIn(Visibility.application);
+                NewCommentCommand.class,
+                NewUserCommand.class).visibleIn(Visibility.application);
 
         // Queries
         module.addValues(UserSpecification.class, TasksQuery.class).visibleIn(Visibility.application);

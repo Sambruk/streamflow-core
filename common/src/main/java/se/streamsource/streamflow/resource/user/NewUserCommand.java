@@ -14,19 +14,19 @@
 
 package se.streamsource.streamflow.resource.user;
 
-import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 /**
- * DTO which only has an optional reference to an entity
+ * Command for changing password
  */
-public interface UserEntityDTO
+public interface NewUserCommand
         extends ValueComposite
 {
-    Property<EntityReference> entity();
-
+    @UseDefaults
     Property<String> username();
 
-    Property<Boolean> disabled();
+    @UseDefaults
+    Property<String> password();
 }

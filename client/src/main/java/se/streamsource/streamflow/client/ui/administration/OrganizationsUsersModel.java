@@ -16,33 +16,122 @@ package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
-import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 /**
  * JAVADOC
  */
 public class OrganizationsUsersModel
-        extends AbstractListModel
+        extends AbstractTableModel
 {
 
     private List<UserEntityDTO> users;
+    private OrganizationsClientResource organizations;
 
-    public OrganizationsUsersModel(@Uses OrganizationsClientResource organization) throws ResourceException
+    private String[] columnNames;
+    private Class[] columnClasses;
+    private boolean[] columnEditable;
+
+
+    public OrganizationsUsersModel(@Uses OrganizationsClientResource organizations) throws ResourceException
     {
-        users = organization.users().users().get();
+        this.organizations = organizations;
+        columnNames = new String[]{ text(AdministrationResources.user_enabled_label), text(AdministrationResources.username_label)};
+        columnClasses = new Class[]{Boolean.class, String.class};
+        columnEditable = new boolean[]{true, false};
+        refresh();
     }
 
-    public int getSize()
+    private void refresh()
+    {
+        try
+        {
+            users = organizations.users().users().get();
+            fireTableDataChanged();
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_refresh_list_of_organizations, e);
+        }
+    }
+
+    public int getRowCount()
     {
         return users==null ? 0 : users.size();
     }
 
-    public Object getElementAt(int index)
+    public int getColumnCount()
     {
-        return users==null ? 0 : users.get(index);
+        return 2;
+    }
+
+    public Object getValueAt(int row, int column)
+    {
+        switch (column)
+        {
+            case 0: return users != null && !users.get(row).disabled().get();
+            default:
+                return users==null ? "" : users.get(row).username().get();
+        }
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int column)
+    {
+        switch (column)
+        {
+            case 0:
+                UserEntityDTO user = users.get(rowIndex);
+                changeDisabled(user);
+        }
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex)
+    {
+        return columnEditable[columnIndex];
+    }
+
+    @Override
+    public Class<?> getColumnClass(int column)
+    {
+        return columnClasses[column];
+    }
+
+    @Override
+    public String getColumnName(int column)
+    {
+        return columnNames[column];
+    }
+
+    public void createUser(String username, String password)
+    {
+        try
+        {
+            organizations.createUser(username, password);
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_create_user, e);
+        }
+        refresh();
+    }
+
+
+    public void changeDisabled(UserEntityDTO user)
+    {
+        try
+        {
+            organizations.changeDisabled(user);
+            // change to listen for events
+            refresh();
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_change_user_disabled,e);
+        }
     }
 }

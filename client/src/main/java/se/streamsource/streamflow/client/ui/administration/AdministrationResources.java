@@ -33,6 +33,8 @@ public enum AdministrationResources
     could_not_refresh_list_of_participants,
     could_not_create_group,
     could_not_create_group_name_already_exists,
+    could_not_create_user,
+    could_not_change_user_disabled,
     could_not_remove_group,
     could_not_refresh_list_of_groups,
     could_not_refresh_list_of_members,
@@ -70,5 +72,7 @@ public enum AdministrationResources
     could_not_switch_account,
     nothing_selected,
     move_to,
-    administrators_tab, could_not_add_administrator, could_not_remove_administrator, selection_not_an_organizational_unit, merge_to
+    administrators_tab, could_not_add_administrator, could_not_remove_administrator, selection_not_an_organizational_unit, merge_to,
+    username_label, password_label,
+    user_enabled_label
 }

@@ -16,9 +16,13 @@ package se.streamsource.streamflow.client.ui.administration;
 
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.renderer.CheckBoxProvider;
+import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.ui.CreateUserDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,23 +33,54 @@ import java.awt.*;
 public class OrganizationsUsersView
         extends JScrollPane
 {
+    private OrganizationsUsersModel model;
+
+    @Uses
+    Iterable<CreateUserDialog> userDialogs;
+
+
+    @Service
+    DialogService dialogs;
+
     public OrganizationsUsersView(@Service ApplicationContext context, @Uses OrganizationsUsersModel model)
     {
         ApplicationActionMap am = context.getActionMap(this);
         setActionMap(am);
 
-        JList users = new JList(model);
+        this.model = model;
+        JXTable usersTable = new JXTable(model);
+        usersTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
+        usersTable.getColumn(0).setMaxWidth(30);
+        usersTable.getColumn(0).setResizable(false);
 
-        users.setCellRenderer( new DefaultListCellRenderer()
-        {
-            @Override
-            public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)
-            {
-                UserEntityDTO item = (UserEntityDTO) o;
-                return super.getListCellRendererComponent(jList, item.username().get(), i, b, b1);
-            }
-        });
+        JPanel usersPanel = new JPanel(new BorderLayout());
+        usersPanel.add(usersTable, BorderLayout.CENTER);
 
-        setViewportView(users);
+        JPanel toolbar = new JPanel();
+        toolbar.add(new JButton(am.get("createUser")));
+        toolbar.add(new JButton(am.get("importUserList")));
+        usersPanel.add(toolbar, BorderLayout.NORTH);
+
+        setViewportView(usersPanel);
     }
+
+
+    @org.jdesktop.application.Action
+    public void createUser()
+    {
+        CreateUserDialog dialog = userDialogs.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        if (dialog.username() != null && dialog.password() != null)
+        {
+            model.createUser(dialog.username(), dialog.password());
+        }
+    }
+
+    @org.jdesktop.application.Action
+    public void importUserList()
+    {
+
+    }
+
 }
