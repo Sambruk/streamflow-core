@@ -35,6 +35,8 @@ public interface User
 
     void changePassword(String currentPassword, String newPassword) throws WrongPasswordException;
 
+    void resetPassword(String password);
+
     void changeEnabled(boolean enabled);
 
     interface UserState
@@ -56,6 +58,7 @@ public interface User
 
         void passwordChanged(DomainEvent event, String hashedPassword);
 
+        void passwordReseted(DomainEvent event, String hashedPassword);
 
         void failedLogin(DomainEvent event);
 
@@ -101,6 +104,11 @@ public interface User
             passwordChanged(DomainEvent.CREATE, hashPassword(newPassword));
         }
 
+        public void resetPassword(String password)
+        {
+            passwordReseted(DomainEvent.CREATE,  hashPassword(password));
+        }
+
         public void passwordChanged(DomainEvent event, String hashedPassword)
         {
             hashedPassword().set(hashedPassword);
@@ -113,6 +121,11 @@ public interface User
         public void enabledChanged(DomainEvent event, boolean enabled)
         {
             state.disabled().set(enabled);
+        }
+
+        public void passwordReseted(DomainEvent event, String hashedPassword)
+        {
+            state.hashedPassword().set(hashedPassword);
         }
 
         public boolean isCorrectPassword(String password)

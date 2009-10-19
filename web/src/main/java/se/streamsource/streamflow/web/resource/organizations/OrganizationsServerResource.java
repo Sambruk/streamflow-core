@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.web.resource.organizations;
 
+import org.apache.poi.hssf.extractor.ExcelExtractor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
@@ -26,6 +28,7 @@ import static org.qi4j.api.query.QueryExpressions.orderBy;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -38,11 +41,17 @@ import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -125,5 +134,74 @@ public class OrganizationsServerResource
         UserEntity userEntity = uowf.currentUnitOfWork().get(UserEntity.class, user.entity().get().identity());
 
         userEntity.changeEnabled(userEntity.disabled().get());
+    }
+
+    public void importUsers(Representation representation) throws ResourceException
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        try
+        {   Iterable<String> users = new ArrayList<String>();
+            if(representation.getMediaType().equals(MediaType.APPLICATION_EXCEL))
+            {
+              // TODO: Exel conversion to CSV - this is not working due to POI gets IOException wrong header
+
+                HSSFWorkbook workbook = new HSSFWorkbook(new ByteArrayInputStream(representation.getText().getBytes()));
+                ExcelExtractor extractor = new ExcelExtractor(workbook);
+
+                extractor.setFormulasNotResults(true);
+                extractor.setIncludeSheetNames(false);
+                String text = extractor.getText();
+
+                
+
+            } else if(representation.getMediaType().equals(MediaType.TEXT_ALL))
+            {
+                users = Arrays.asList(representation.getText().split(System.getProperty("line.separator")));
+
+            } else
+            {
+                throw new ResourceException(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+            }
+
+            for(Iterator<String> iter = users.iterator();iter.hasNext();)
+            {
+                String userNamePwd = iter.next();
+                String[] tmp = userNamePwd.split("\t");
+                String name = tmp[0].trim();
+                String pwd = tmp[1].trim();
+
+                try
+                {   // Check if user already exists
+                    UserEntity existingUser = uow.get(UserEntity.class, name);
+                    if(existingUser.isCorrectPassword(pwd))
+                    {
+                        //nothing to do here
+                        continue;
+                    } else
+                    {
+                        existingUser.resetPassword(pwd);
+                        continue;
+                    }
+
+                } catch (NoSuchEntityException e)
+                {
+                    //Ok user doesnt exist
+                }
+
+                try
+                {
+                    uow.get(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID).createUser(name, pwd);
+
+                } catch (ConstraintViolationException e)
+                {
+                    //TODO build a representation of Violation errors for return to the client
+                    e.printStackTrace();
+                }
+             }
+        } catch(IOException ioe)
+        {
+            throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+        }
+
     }
 }

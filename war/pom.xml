@@ -36,7 +36,7 @@
                         <artifactItem>
                             <groupId>se.streamsource.streamflow</groupId>
                             <artifactId>streamflow-webstart</artifactId>
-                            <version>0.1-SNAPSHOT</version>
+                            <version>${project.version}</version>
                             <type>zip</type>
                         </artifactItem>
                     </artifactItems>

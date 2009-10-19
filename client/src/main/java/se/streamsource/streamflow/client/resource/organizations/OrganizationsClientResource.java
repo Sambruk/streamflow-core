@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.resource.organizations;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
+import org.restlet.representation.Representation;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
@@ -58,4 +59,10 @@ public class OrganizationsClientResource
     {
         postCommand("changeDisabled", user);
     }
+
+
+    public void importUsers(Representation representation) throws ResourceException
+    {
+        postCommand("importUsers", representation);
+    }    
 }

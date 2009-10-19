@@ -16,6 +16,9 @@ package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.data.MediaType;
+import org.restlet.representation.FileRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
@@ -26,6 +29,7 @@ import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
 import javax.swing.table.AbstractTableModel;
+import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -152,6 +156,28 @@ public class OrganizationsUsersModel
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_change_user_disabled,e);
+        }
+    }
+
+    public void importUsers(File f)
+    {
+        try
+        {
+            MediaType type = f.getName().endsWith(".xls")
+                    ? MediaType.APPLICATION_EXCEL
+                    : MediaType.TEXT_ALL;
+
+            Representation representation = new FileRepresentation(f, type);
+            //EncodeRepresentation encodedRep = new  EncodeRepresentation(Encoding.GZIP, representation);
+
+            organizations.importUsers(representation);
+
+            refresh();
+
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_import_users, e);
+
         }
     }
 }

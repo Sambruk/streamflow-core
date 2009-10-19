@@ -21,7 +21,10 @@ import org.jdesktop.swingx.renderer.CheckBoxProvider;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.CreateUserDialog;
 
 import javax.swing.*;
@@ -81,6 +84,22 @@ public class OrganizationsUsersView
     public void importUserList()
     {
 
+        // Ask the user for a file to import user/pwd pairs from
+        // Can be either Excels or CVS format
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(
+                text(StreamFlowResources.all_files), "xls", "csv", "txt"));
+        fileChooser.setDialogTitle(text(StreamFlowResources.import_users));
+        int returnVal = fileChooser.showOpenDialog((OrganizationsUsersView.this));
+        if (returnVal != JFileChooser.APPROVE_OPTION)
+        {
+            return;
+        }
+
+        model.importUsers(fileChooser.getSelectedFile().getAbsoluteFile());
+           
     }
 
 }
