@@ -141,8 +141,6 @@ public class OrganizationsUsersModel
         {
             throw new OperationException(AdministrationResources.could_not_create_user, e);
         }
-        // change to listen for events
-        refresh();
     }
 
 
@@ -151,8 +149,6 @@ public class OrganizationsUsersModel
         try
         {
             organizations.changeDisabled(user);
-            // change to listen for events
-            refresh();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_change_user_disabled,e);
