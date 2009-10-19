@@ -21,6 +21,7 @@ import se.streamsource.streamflow.client.application.shared.steps.setup.GenericS
 import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
 import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
 /**
  * JAVADOC
@@ -37,10 +38,12 @@ public class InboxSteps
     @Uses
     GenericSteps genericSteps;
 
+    public TaskEntity task;
+
     @When("inbox task is created")
     public void createInboxTask()
     {
-        taskSetupSteps.inbox.createTask();
+        task = (TaskEntity) taskSetupSteps.inbox.createTask();
     }
 
     @When("$task inbox task is marked as $mark")

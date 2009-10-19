@@ -204,7 +204,10 @@ public class WorkspaceView
                         WorkspaceUserInboxNode userInboxNode = (WorkspaceUserInboxNode) node;
                         final WorkspaceUserInboxModel inboxModel = userInboxNode.inboxModel();
                         final LabelsModel labelsModel = userInboxNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(WorkspaceUserInboxView.class).use(inboxModel, userInboxNode.getParent(), labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceUserInboxView.class).use(inboxModel,
+                                userInboxNode.getParent(),
+                                labelsModel,
+                                model.getRoot().getUserObject().tasks()).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {
@@ -296,7 +299,10 @@ public class WorkspaceView
                         WorkspaceProjectInboxNode projectInboxNode = (WorkspaceProjectInboxNode) node;
                         final WorkspaceProjectInboxModel inboxModel = projectInboxNode.inboxModel();
                         final LabelsModel labelsModel = projectInboxNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(WorkspaceProjectInboxView.class).use(inboxModel, projectInboxNode.getParent(), labelsModel).newInstance();
+                        view = obf.newObjectBuilder(WorkspaceProjectInboxView.class).use(inboxModel,
+                                projectInboxNode.getParent(),
+                                labelsModel,
+                                model.getRoot().getUserObject().tasks()).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
                         {

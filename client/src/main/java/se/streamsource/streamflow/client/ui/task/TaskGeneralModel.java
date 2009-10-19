@@ -22,13 +22,11 @@ import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.util.Date;
-import java.util.Observable;
 
 /**
  * Model for the general info about a task.
  */
 public class TaskGeneralModel
-        extends Observable
         implements Refreshable
 
 {
@@ -42,8 +40,6 @@ public class TaskGeneralModel
         try
         {
             general = (TaskGeneralDTO) generalClientResource.general().buildWith().prototype();
-            setChanged();
-            super.notifyObservers(this);
         } catch (Exception e)
         {
             throw new OperationException(TaskResources.could_not_refresh,  e);
@@ -52,6 +48,9 @@ public class TaskGeneralModel
 
     public TaskGeneralDTO getGeneral()
     {
+        if (general == null)
+            refresh();
+
         return general;
     }
 
@@ -60,8 +59,6 @@ public class TaskGeneralModel
         try
         {
             generalClientResource.describe(newDescription);
-            setChanged();
-            super.notifyObservers(this);
         } catch (ResourceException e)
         {
             throw new OperationException(TaskResources.could_not_change_description, e);
@@ -88,5 +85,30 @@ public class TaskGeneralModel
         {
             throw new OperationException(TaskResources.could_not_change_due_on, e);
         }
+    }
+
+    public void addLabel(String label) throws ResourceException
+    {
+/*
+        for (ListItemValue labelDTO : task.labels().get().items().get())
+        {
+            if (labelDTO.entity().get().identity().equals(labelId))
+                return;
+        }
+*/
+
+        generalClientResource.addLabel(label);
+    }
+
+    public void removeLabel(String label) throws ResourceException
+    {
+        generalClientResource.removeLabel(label);
+/*
+        TaskDTO task = getTask(idx);
+        String labelId = label.entity().get().identity();
+        getResource().task(task.task().get().identity()).removeLabel(labelId);
+        task.labels().get().items().get().remove(label);
+        fireTableCellUpdated(idx, 1);
+*/
     }
 }

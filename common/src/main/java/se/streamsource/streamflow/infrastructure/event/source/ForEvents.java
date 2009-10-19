@@ -12,17 +12,23 @@
  *
  */
 
-package se.streamsource.streamflow.resource.user;
-
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+package se.streamsource.streamflow.infrastructure.event.source;
 
 /**
- * Command for changing password
+ * JAVADOC
  */
-public interface NewUserCommand
-        extends ValueComposite
+public class ForEvents
+        implements EventSourceListener
 {
-    Property<String> username();
-    Property<String> password();
+    private EventHandlerFilter filter;
+
+    public ForEvents( EventSpecification specification, EventHandler handler )
+    {
+        filter = new EventHandlerFilter(specification, handler);
+    }
+
+    public void eventsAvailable( EventStore source )
+    {
+        source.transactions( null, new TransactionEventAdapter( filter ) );
+    }
 }

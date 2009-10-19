@@ -18,6 +18,7 @@ import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitio
 import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ProjectFormDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.SubmittedFormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.ProjectsSetupSteps;
@@ -27,18 +28,18 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
 /**
  * JAVADOC
  */
-public class ProjectFormDefinitionsScenario
+public class SubmittedFormsScenario
         extends AbstractWebDomainApplicationScenario
 {
-    public ProjectFormDefinitionsScenario()
+    public SubmittedFormsScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public ProjectFormDefinitionsScenario(ClassLoader classLoader)
+    public SubmittedFormsScenario(ClassLoader classLoader)
     {
         super(classLoader, new UserSetupSteps(), new OrganizationSetupSteps(), new ProjectsSetupSteps(), new OrganizationsSteps(),
                 new ValueDefinitionsSteps(), new FieldDefinitionsSteps(), new FormDefinitionsSteps(),
-                new ProjectFormDefinitionsSteps());
+                new ProjectFormDefinitionsSteps(), new SubmittedFormsSteps());
     }
 }

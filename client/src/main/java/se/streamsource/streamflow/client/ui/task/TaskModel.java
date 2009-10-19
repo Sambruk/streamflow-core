@@ -25,18 +25,18 @@ public class TaskModel
         implements Refreshable
 {
     @Uses
-    TaskClientResource resource;
+    private TaskClientResource resource;
 
     @Uses
-    TaskCommentsModel comments;
+    private TaskCommentsModel comments;
 
     @Uses
-    TaskGeneralModel general;
+    private TaskGeneralModel general;
 
     @Uses
-    TaskContactsModel contacts;
+    private TaskContactsModel contacts;
 
-    TaskClientResource resource()
+    public TaskClientResource resource()
     {
         return resource;
     }

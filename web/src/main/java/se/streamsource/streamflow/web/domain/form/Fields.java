@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.domain.form;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.library.constraints.annotation.GreaterThan;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -36,6 +37,8 @@ public interface Fields
         void fieldAdded( DomainEvent event, FieldDefinition field);
         void fieldRemoved(DomainEvent event, FieldDefinition field);
         void fieldMoved(DomainEvent event, FieldDefinition field, int toIdx);
+
+        FieldDefinitionEntity getFieldByName(String name);
     }
 
     abstract class FieldsMixin
@@ -70,6 +73,16 @@ public interface Fields
             fields().remove( field );
 
             fields().add( toIdx, field );
+        }
+
+        public FieldDefinitionEntity getFieldByName( String name )
+        {
+            for (FieldDefinition fieldDefinition : fields())
+            {
+                if (((Describable.DescribableState)fieldDefinition).description().get().equals(name))
+                    return (FieldDefinitionEntity) fieldDefinition;
+            }
+            return null;
         }
     }
 }

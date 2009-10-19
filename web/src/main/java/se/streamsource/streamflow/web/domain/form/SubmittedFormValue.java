@@ -12,17 +12,24 @@
  *
  */
 
-package se.streamsource.streamflow.resource.user;
+package se.streamsource.streamflow.web.domain.form;
 
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+
+import java.util.Date;
+import java.util.List;
 
 /**
- * Command for changing password
+ * JAVADOC
  */
-public interface NewUserCommand
-        extends ValueComposite
+public interface SubmittedFormValue
 {
-    Property<String> username();
-    Property<String> password();
+    Property<Date> submissionDate();
+    Property<EntityReference> submitter();
+    Property<EntityReference> form();
+
+    @UseDefaults
+    Property<List<FieldValue>> values();
 }

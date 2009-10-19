@@ -19,7 +19,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 /**
- * DTO which only has an optional reference to an entity
+ * DTO for User information
  */
 public interface UserEntityDTO
         extends ValueComposite

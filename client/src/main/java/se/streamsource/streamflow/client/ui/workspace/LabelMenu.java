@@ -15,8 +15,11 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.task.TasksModel;
+import se.streamsource.streamflow.client.ui.task.TaskModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 
@@ -44,8 +47,12 @@ public class LabelMenu
 
     @Uses
     LabelsModel labelsModel;
+
     @Uses
-    TaskTableModel taskModel;
+    TasksModel tasksModel;
+
+    @Uses
+    TaskTableModel taskTableModel;
 
     public LabelMenu()
     {
@@ -78,7 +85,7 @@ public class LabelMenu
         if (selectionModel.isSelectionEmpty())
             return;
 
-        TaskDTO task = taskModel.getTask(selectionModel.getMinSelectionIndex());
+        final TaskDTO taskDTO = taskTableModel.getTask(selectionModel.getMinSelectionIndex());
 
         if (task == null)
             return;
@@ -97,12 +104,13 @@ public class LabelMenu
                     {
                         if (selectionModel.isSelectedIndex(idx))
                         {
-/*
+                            TaskModel taskModel = tasksModel.task( taskDTO.task().get().identity() );
+                            String labelId = label.entity().get().identity();
                             if (checkBoxMenuItem.isSelected())
                             {
                                 try
                                 {
-                                    taskModel.addLabel(idx, label);
+                                    taskModel.general().addLabel(labelId);
                                 } catch (ResourceException e1)
                                 {
                                     e1.printStackTrace();
@@ -111,13 +119,12 @@ public class LabelMenu
                             {
                                 try
                                 {
-                                    taskModel.removeLabel(idx, label);
+                                    taskModel.general().removeLabel(labelId);
                                 } catch (ResourceException e1)
                                 {
                                     e1.printStackTrace();
                                 }
                             }
-*/
                         }
                     }
                 }

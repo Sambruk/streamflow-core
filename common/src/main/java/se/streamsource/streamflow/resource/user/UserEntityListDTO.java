@@ -21,7 +21,7 @@ import org.qi4j.api.value.ValueComposite;
 import java.util.List;
 
 /**
- * DTO which only has an optional reference to an entity
+ * List of users
  */
 public interface UserEntityListDTO
         extends ValueComposite

@@ -12,17 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.resource.user;
+package se.streamsource.streamflow.web.domain.form;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
+import java.util.List;
+
 /**
- * Command for changing password
+ * JAVADOC
  */
-public interface NewUserCommand
-        extends ValueComposite
+public interface EffectiveFormFieldsValue
+    extends ValueComposite
 {
-    Property<String> username();
-    Property<String> password();
+    @UseDefaults
+    Property<List<EffectiveFieldValue>> fields();
 }

@@ -163,7 +163,6 @@ public class AdministrationOutlineView
 
                 model.createOrganizationalUnit(orgNode, dialog.name());
 
-                model.refresh();
                 for (Integer expandedRow : expandedRows)
                 {
                     tree.expandRow(expandedRow);

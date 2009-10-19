@@ -1,5 +1,15 @@
-#TODO Fix this
-Scenario: Form added to project
-Given basic project setup
-When events are cleared
-Then no events are fired
+Scenario: Form added and removed to/from project
+Given basic projects setup
+When form definition named SomeForm is created
+And events are cleared
+And form definition SomeForm is added to project project1
+Then events projectFormDefinitionAdded occurred
+
+When form definition SomeForm is added to project project1
+Then no events occurred
+
+When form definition SomeForm is removed from project project1
+Then events projectFormDefinitionRemoved occurred
+
+When form definition SomeForm is removed from project project1
+Then no events occurred

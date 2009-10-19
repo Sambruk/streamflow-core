@@ -16,8 +16,10 @@ package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.form.FormDefinition;
+import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
 
 /**
  * JAVADOC
@@ -32,8 +34,10 @@ public interface ProjectFormDefinitions
     {
         ManyAssociation<FormDefinition> formDefinitions();
 
-        void formDefinitionAdded( DomainEvent event, FormDefinition addedForm);
-        void formDefinitionRemoved( DomainEvent event, FormDefinition removedForm);
+        void projectFormDefinitionAdded( DomainEvent event, FormDefinition addedForm);
+        void projectFormDefinitionRemoved( DomainEvent event, FormDefinition removedForm);
+
+        FormDefinitionEntity getFormDefinitionByName(String name);
     }
 
     abstract class ProjectFormDefinitionsMixin
@@ -44,7 +48,7 @@ public interface ProjectFormDefinitions
             if (formDefinitions().contains( formDefinition ))
                 return;
 
-            formDefinitionAdded( DomainEvent.CREATE, formDefinition );
+            projectFormDefinitionAdded( DomainEvent.CREATE, formDefinition );
         }
 
         public void removeFormDefinition( FormDefinition formDefinition )
@@ -52,17 +56,27 @@ public interface ProjectFormDefinitions
             if (!formDefinitions().contains( formDefinition ))
                 return;
 
-            formDefinitionRemoved( DomainEvent.CREATE, formDefinition );
+            projectFormDefinitionRemoved( DomainEvent.CREATE, formDefinition );
         }
 
-        public void formDefinitionAdded( DomainEvent event, FormDefinition addedForm )
+        public void projectFormDefinitionAdded( DomainEvent event, FormDefinition addedForm )
         {
             formDefinitions().add( addedForm );
         }
 
-        public void formDefinitionRemoved( DomainEvent event, FormDefinition removedForm )
+        public void projectFormDefinitionRemoved( DomainEvent event, FormDefinition removedForm )
         {
             formDefinitions().remove( removedForm );
+        }
+
+        public FormDefinitionEntity getFormDefinitionByName( String name )
+        {
+            for (FormDefinition formDefinition : formDefinitions())
+            {
+                if (((Describable.DescribableState)formDefinition).description().get().equals(name))
+                    return (FormDefinitionEntity) formDefinition;
+            }
+            return null;
         }
     }
 }

@@ -38,9 +38,10 @@ public class ProjectsSetupSteps
     @Uses
     GenericSteps genericSteps;
 
-
     public Projects projects;
     public Map<String, ProjectEntity> projectMap = new HashMap<String, ProjectEntity>();
+
+    public ProjectEntity givenProject;
 
     @Given("basic projects setup")
     public void setupProjects() throws Exception
@@ -57,5 +58,11 @@ public class ProjectsSetupSteps
         project.addMember(userSetup.userMap.get("user2"));
 
         genericSteps.clearEvents();
+    }
+
+    @Given("project $project")
+    public void givenProject(String name)
+    {
+        givenProject = projectMap.get( name );
     }
 }

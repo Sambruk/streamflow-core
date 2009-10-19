@@ -12,17 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.resource.user;
+package se.streamsource.streamflow.infrastructure.event.source;
 
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+import org.json.JSONException;
+import org.json.JSONObject;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
- * Command for changing password
+ * Utility class to pick out parameters as strings from a DomainEvent
  */
-public interface NewUserCommand
-        extends ValueComposite
+public class EventParameters
 {
-    Property<String> username();
-    Property<String> password();
+    public static String getParameter( DomainEvent event, String name) throws JSONException
+    {
+        String parametersJson = event.parameters().get();
+        JSONObject jsonObject = new JSONObject(parametersJson);
+        return jsonObject.get( name ).toString();
+    }
 }

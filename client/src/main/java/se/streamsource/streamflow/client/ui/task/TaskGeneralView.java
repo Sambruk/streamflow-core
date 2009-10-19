@@ -28,8 +28,13 @@ import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHand
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.LayoutFocusTraversalPolicy;
+import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Date;
@@ -110,69 +115,30 @@ public class TaskGeneralView
 
     public void setModel(TaskGeneralModel taskGeneralModel)
     {
-        if (model != null)
-        {
-            model.deleteObserver(this);
-        }
-
         model = taskGeneralModel;
 
-        if (model != null)
-        {
-            model.addObserver(this);
+        TaskGeneralDTO general = model.getGeneral();
+        valueBuilder = general.buildWith();
+        taskBinder.updateWith(general);
 
-            if (isVisible())
-            {
-                setVisible(true);
-            }
-        }
+        // Check if issue id should be visible
+        boolean issueVisible = model.getGeneral().taskId().get() != null;
+        issueLabel.setVisible(issueVisible);
+        ((JLabel) issueLabel.getClientProperty("labeledBy")).setVisible(issueVisible);
     }
 
-    public void update(Observable o, Object arg)
+    public void update( Observable o, Object arg)
     {
-        if (o == taskBinder)
+        Property property = (Property) arg;
+        if (property.qualifiedName().name().equals("description"))
         {
-            Property property = (Property) arg;
-            if (property.qualifiedName().name().equals("description"))
-            {
-                model.describe((String) property.get());
-            } else if (property.qualifiedName().name().equals("note"))
-            {
-                model.changeNote((String) property.get());
-            } else if (property.qualifiedName().name().equals("dueOn"))
-            {
-                model.changeDueOn((Date) property.get());
-            }
-        } else
+            model.describe((String) property.get());
+        } else if (property.qualifiedName().name().equals("note"))
         {
-            TaskGeneralDTO general = model.getGeneral();
-            valueBuilder = general.buildWith();
-            taskBinder.updateWith(general);
+            model.changeNote((String) property.get());
+        } else if (property.qualifiedName().name().equals("dueOn"))
+        {
+            model.changeDueOn((Date) property.get());
         }
-    }
-
-    @Override
-    public void setVisible(boolean aFlag)
-    {
-        super.setVisible(aFlag);
-
-        if (aFlag)
-        {
-            model.refresh();
-            update(model, null);
-
-            // Check if issue id should be visible
-            boolean issueVisible = model.getGeneral().taskId().get() != null;
-            issueLabel.setVisible(issueVisible);
-            ((JLabel) issueLabel.getClientProperty("labeledBy")).setVisible(issueVisible);
-
-//            descriptionField.grabFocus();
-        }
-    }
-
-    @Override
-    public void addNotify()
-    {
-        super.addNotify();
     }
 }

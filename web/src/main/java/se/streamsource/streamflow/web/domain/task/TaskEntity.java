@@ -19,6 +19,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.comment.Commentable;
+import se.streamsource.streamflow.web.domain.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 import se.streamsource.streamflow.web.domain.project.AssignTaskIdSideEffect;
 
@@ -39,6 +40,7 @@ public interface TaskEntity
         Labelable.LabelableState,
         Notable.NotableState,
         Ownable.OwnableState,
+        SubmittedForms.SubmittedFormsState,
         TaskStatus.TaskStatusState,
         TaskId.TaskIdState,
         DomainEntity

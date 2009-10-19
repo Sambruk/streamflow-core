@@ -20,13 +20,14 @@ import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.organization.Organization;
+import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
-import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 
 import java.util.Map;
 
@@ -47,6 +48,14 @@ public class OrganizationsSteps
 
     public Organizations organizations;
     public Map<String, Organization> organizationsCreated;
+
+    public OrganizationEntity givenOrganization;
+
+    @Given("the organization $org")
+    public void givenOrganization(String name)
+    {
+        givenOrganization = (OrganizationEntity) organizationsCreated.get( name );
+    }
 
     @Given("the organizations")
     public Organizations givenOrganizations()

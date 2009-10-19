@@ -64,8 +64,6 @@ import java.util.ArrayList;
 import static java.util.Collections.*;
 import java.util.Date;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Base class for all views of task lists.
@@ -176,19 +174,10 @@ public abstract class TaskTableView
         taskTable.addMouseListener(new PopupMenuTrigger(popup, taskTable.getSelectionModel()));
         buildToolbar(toolbar);
 
-        // Update description of task when updated
-        final Observer descriptionUpdater = new Observer()
-        {
-            public void update(Observable o, Object arg)
-            {
-                TaskGeneralModel generalModel = (TaskGeneralModel) arg;
-                String newValue = generalModel.getGeneral().description().get();
-                model.setValueAt(newValue, taskTable.convertRowIndexToModel(taskTable.getSelectedRow()), 1);
-            }
-        };
-
         taskTable.getSelectionModel().addListSelectionListener(new ListSelectionListener()
         {
+            TaskDTO selectedTask;
+
             public void valueChanged(ListSelectionEvent e)
             {
                 if (!e.getValueIsAdjusting())
@@ -209,8 +198,13 @@ public abstract class TaskTableView
                                 // Ignore
                                 return;
                             }
+
+                            if (dto == selectedTask)
+                                return;
+
+                            selectedTask = dto;
+
                             TaskModel taskModel = model.task(dto.task().get().identity());
-                            taskModel.general().addObserver(descriptionUpdater);
 
                             detailsView.show( taskModel );
 
@@ -291,7 +285,8 @@ public abstract class TaskTableView
         table.getSelectionModel().setSelectionInterval(index, index);
         table.scrollRowToVisible(index);
 
-        detailsView.setSelectedIndex(0);
+        TaskDetailView taskDetail = (TaskDetailView) detailsView.getComponentAt( 0 );
+        taskDetail.setSelectedIndex(0);
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()

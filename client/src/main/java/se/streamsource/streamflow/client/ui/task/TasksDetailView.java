@@ -14,8 +14,15 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.Icon;
@@ -39,8 +46,6 @@ import java.awt.event.MouseMotionListener;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * JAVADOC
@@ -79,12 +84,36 @@ public class TasksDetailView
 
     @Structure
     ObjectBuilderFactory obf;
+    private EventSourceListener subscriber;
 
-    public TasksDetailView()
+    public TasksDetailView(@Service EventSource events)
     {
         init( SwingUtilities.LEFT );
 
         setPreferredSize(new Dimension(getWidth(), 500));
+
+        subscriber = new ForEvents(new EventQuery().withNames( "descriptionChanged" ), new EventHandler()
+        {
+            public boolean handleEvent( DomainEvent event )
+            {
+                String id = event.entity().get();
+                for (int i = 0; i < getComponentCount(); i++)
+                {
+                    TaskDetailView detailView = (TaskDetailView) getComponentAt( i );
+                    TaskModel taskModel = detailView.getTaskModel();
+
+                    if (taskModel.resource().getReference().getLastSegment().equals(id))
+                    {
+                        setTitleAt( i, getTaskDescription( taskModel));
+                        break;
+                    }
+                }
+
+                return false;
+            }
+        });
+
+        events.registerListener( subscriber );
     }
 
     public void show( final TaskModel task )
@@ -96,21 +125,6 @@ public class TasksDetailView
         }
 
         final TaskDetailView detailView = getDetailView();
-
-        task.general().addObserver( new Observer()
-        {
-            public void update( Observable o, Object arg )
-            {
-                for (int i = 0; i < getTabCount(); i++)
-                {
-                    TaskDetailView detail = (TaskDetailView) getComponentAt( i );
-                    if (detail == detailView)
-                    {
-                        setTitleAt( i, getTaskDescription( task ));
-                    }
-                }
-            }
-        });
 
         detailView.setTaskModel( task );
 
@@ -447,12 +461,6 @@ public class TasksDetailView
                     break;
                 }
             }
-        }
-
-        if (closeit)
-        {
-            TaskDetailView detail = (TaskDetailView) getComponentAt( tabIndexToClose );
-            detail.getTaskModel().general.deleteObservers();
         }
 
         return closeit;

@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -24,6 +25,13 @@ import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskCl
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
@@ -58,10 +66,41 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     protected String[] columnNames;
     protected Class[] columnClasses;
     protected boolean[] columnEditable;
+    private EventSourceListener subscriber;
 
     protected TaskTableModel( TaskListClientResource resource )
     {
         this.resource = resource;
+    }
+
+    public void setEventSource( @Service EventSource eventSource)
+    {
+        subscriber = new ForEvents(new EventQuery().withNames( "labelAdded", "labelRemoved", "descriptionChanged" ), new EventHandler()
+        {
+            public boolean handleEvent( DomainEvent event )
+            {
+                int idx = getTaskIndex( event );
+
+                if (idx != -1)
+                {
+                    TaskDTO updatedTask = getTask( idx );
+                    if (event.name().get().equals( "descriptionChanged" ))
+                    {
+                        try
+                        {
+                            String newDesc = EventParameters.getParameter( event, "param1" );
+                            updatedTask.description().set(newDesc);
+                            fireTableCellUpdated( idx, 1 );
+                        } catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                return true;
+            }
+        });
+        eventSource.registerListener(subscriber);
     }
 
     public TaskListClientResource getResource()
@@ -328,5 +367,23 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     public TaskModel task(String id)
     {
         return tasksModel.task( id );
+    }
+
+    private int getTaskIndex( DomainEvent event )
+    {
+        if (tasks == null)
+            return -1;
+
+        TaskDTO updatedTask = null;
+        for (int i = 0; i < tasks.size(); i++)
+        {
+            TaskDTO taskDTO = tasks.get( i );
+            if (taskDTO.task().get().identity().equals(event.entity().get()))
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 }
