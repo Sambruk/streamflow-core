@@ -42,9 +42,6 @@ public class EventMatcher
 
     public boolean matches()
     {
-        if (match)
-            run();
-
         return match;
     }
 

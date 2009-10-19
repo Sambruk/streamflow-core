@@ -29,13 +29,16 @@ public abstract class OnEvents
 
     public void eventsAvailable( EventStore source )
     {
-        source.transactions( null, new TransactionEventAdapter( new EventMatcher( specification )
+        EventMatcher handler = new EventMatcher( specification )
         {
             @Override
             public void run()
             {
                 OnEvents.this.run();
             }
-        } ) );
+        };
+        source.transactions( null, new TransactionEventAdapter( handler ) );
+        if (handler.matches())
+            handler.run();
     }
 }
