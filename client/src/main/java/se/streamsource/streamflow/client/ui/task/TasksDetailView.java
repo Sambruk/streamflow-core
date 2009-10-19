@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -128,7 +129,9 @@ public class TasksDetailView
 
     private String getTaskDescription(TaskModel model)
     {
-        String desc = model.general().getGeneral().taskId().get();
+        TaskGeneralModel generalModel = model.general();
+        TaskGeneralDTO dto = generalModel.getGeneral();
+        String desc = dto.taskId().get();
         if (desc == null)
             desc = model.general().getGeneral().description().get();
         if (desc.length() > 10)
