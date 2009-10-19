@@ -70,11 +70,14 @@ public class ProjectAdminView
                         ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt(idx);
                         ProjectMembersModel projectMembersModel = projectsModel.getProjectMembersModel(projectValue.entity().get().identity());
                         LabelsModel projectLabelsModel = projectsModel.getLabelsModel(projectValue.entity().get().identity());
+                        FormsModel formsModel = projectsModel.getFormsModel(projectValue.entity().get().identity());
                         projectMembersModel.refresh();
                         projectLabelsModel.refresh();
+                        formsModel.refresh();
                         ProjectView view = obf.newObjectBuilder(ProjectView.class).use(
                                 projectMembersModel,
                                 projectLabelsModel,
+                                formsModel,
                                 organizationModel).newInstance();
                         setRightComponent(view);
                     } else

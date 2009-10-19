@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.resource.organizations.policy.Administr
 import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.FormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRoleClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRolesClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RoleClientResource;
@@ -122,6 +123,7 @@ public class ClientResourceAssembler
 
                 LabelsClientResource.class,
                 LabelClientResource.class,
+                FormDefinitionsClientResource.class,
 
                 OverviewClientResource.class,
                 OverviewProjectsClientResource.class,

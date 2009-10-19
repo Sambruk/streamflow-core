@@ -31,6 +31,7 @@ import se.streamsource.streamflow.web.resource.organizations.policy.Administrato
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
@@ -156,6 +157,7 @@ public class ServerResourceAssembler
                 ProjectServerResource.class,
                 MembersServerResource.class,
                 MemberServerResource.class,
+                FormDefinitionsServerResource.class,
 
                 RolesServerResource.class,
                 RoleServerResource.class,

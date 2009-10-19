@@ -74,6 +74,14 @@ public class ProjectsModel
         }
     };
 
+    WeakModelMap<String, FormsModel> projectFormsModels = new WeakModelMap<String, FormsModel>()
+    {
+        protected FormsModel newModel(String key)
+        {
+            return obf.newObjectBuilder(FormsModel.class).use(projects.project(key).forms()).newInstance();
+        }
+    };
+
     public ProjectsModel(@Uses ProjectsClientResource projects)
     {
         this.projects = projects;
@@ -123,6 +131,11 @@ public class ProjectsModel
     public LabelsModel getLabelsModel(String id)
     {
         return projectLabelsModels.get(id);
+    }
+
+    public FormsModel getFormsModel(String id)
+    {
+        return projectFormsModels.get(id);
     }
 
     public void newProject(String projectName)

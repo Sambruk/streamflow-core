@@ -12,34 +12,28 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.resource.organizations.projects.forms;
 
-import org.jdesktop.swingx.JXTree;
 import org.qi4j.api.injection.scope.Uses;
-
-import javax.swing.*;
+import org.restlet.Context;
+import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * JAVADOC
  */
-public class ProjectView
-        extends JTabbedPane
+public class FormDefinitionsClientResource
+        extends CommandQueryClientResource
 {
-    public JXTree memberRoleTree;
-
-    public ProjectView(@Uses ProjectMembersView membersView,
-                       @Uses LabelsView labelsView,
-                       @Uses FormsView formsView)
+    public FormDefinitionsClientResource(@Uses Context context, @Uses Reference reference)
     {
-        super();
-
-        addTab("Members", membersView);
-        addTab("Labels", labelsView);
-        addTab("Forms", formsView);
+        super(context, reference);
     }
 
-    public JXTree getMembers()
+    public ListValue forms() throws ResourceException
     {
-        return memberRoleTree;
+        return query("forms", ListValue.class);
     }
 }
