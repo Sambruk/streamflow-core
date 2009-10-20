@@ -21,7 +21,6 @@ import org.jdesktop.swingx.renderer.CheckBoxProvider;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
@@ -90,8 +89,8 @@ public class OrganizationsUsersView
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(
-                text(StreamFlowResources.all_files), "xls", "csv", "txt"));
-        fileChooser.setDialogTitle(text(StreamFlowResources.import_users));
+                text(AdministrationResources.import_files), "xls", "csv", "txt"));
+        fileChooser.setDialogTitle(text(AdministrationResources.import_users));
         int returnVal = fileChooser.showOpenDialog((OrganizationsUsersView.this));
         if (returnVal != JFileChooser.APPROVE_OPTION)
         {

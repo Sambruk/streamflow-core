@@ -41,7 +41,6 @@ public interface User
 
     interface UserState
     {
-        //        @Immutable
         Property<String> userName();
 
         Property<String> hashedPassword();
@@ -58,10 +57,7 @@ public interface User
 
         void passwordChanged(DomainEvent event, String hashedPassword);
 
-        void passwordReseted(DomainEvent event, String hashedPassword);
-
         void failedLogin(DomainEvent event);
-
 
         void enabledChanged(DomainEvent event, boolean enabled);
     }
@@ -106,7 +102,7 @@ public interface User
 
         public void resetPassword(String password)
         {
-            passwordReseted(DomainEvent.CREATE,  hashPassword(password));
+            passwordChanged(DomainEvent.CREATE,  hashPassword(password));
         }
 
         public void passwordChanged(DomainEvent event, String hashedPassword)
@@ -121,11 +117,6 @@ public interface User
         public void enabledChanged(DomainEvent event, boolean enabled)
         {
             state.disabled().set(enabled);
-        }
-
-        public void passwordReseted(DomainEvent event, String hashedPassword)
-        {
-            state.hashedPassword().set(hashedPassword);
         }
 
         public boolean isCorrectPassword(String password)

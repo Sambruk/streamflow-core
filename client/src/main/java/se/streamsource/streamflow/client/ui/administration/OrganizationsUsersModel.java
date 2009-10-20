@@ -161,14 +161,11 @@ public class OrganizationsUsersModel
         {
             MediaType type = f.getName().endsWith(".xls")
                     ? MediaType.APPLICATION_EXCEL
-                    : MediaType.TEXT_ALL;
+                    : MediaType.TEXT_CSV;
 
             Representation representation = new FileRepresentation(f, type);
-            //EncodeRepresentation encodedRep = new  EncodeRepresentation(Encoding.GZIP, representation);
 
             organizations.importUsers(representation);
-
-            refresh();
 
         } catch (ResourceException e)
         {

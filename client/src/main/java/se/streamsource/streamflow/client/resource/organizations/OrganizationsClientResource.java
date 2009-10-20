@@ -17,13 +17,13 @@ package se.streamsource.streamflow.client.resource.organizations;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
-import org.restlet.representation.Representation;
 import org.restlet.data.Reference;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
-import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
+import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 
 /**
  * JAVADOC

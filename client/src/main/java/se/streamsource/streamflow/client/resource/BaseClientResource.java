@@ -34,6 +34,7 @@ import javax.xml.xpath.XPathConstants;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Base class for client-side resources.
@@ -52,6 +53,14 @@ public class BaseClientResource
     public BaseClientResource(Context context, Reference reference)
     {
         super(context, reference);
+
+        List<Preference<Language>> preferences = new ArrayList<Preference<Language>>();
+        Preference<Language> preference = new Preference<Language>();
+        Language language = new Language(Locale.getDefault().toString());
+        preference.setMetadata(language);
+        preferences.add(preference);
+
+        this.getClientInfo().setAcceptedLanguages(preferences);
     }
 
     public void setRoot(BaseClientResource root)
@@ -94,12 +103,13 @@ public class BaseClientResource
         {
             getConditions().getMatch().add(getTag());
         }
+        
         Representation rep = super.post(entity);
         setTag(null);
 
         if (!getResponse().getStatus().isSuccess())
         {
-            throw new ResourceException(getResponse().getStatus());
+            throw new ResourceException(getResponse().getStatus(), getResponse().getEntityAsText());
         }
 
         return rep;

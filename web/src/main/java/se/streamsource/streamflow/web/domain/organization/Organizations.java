@@ -26,6 +26,7 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.library.constraints.annotation.Matches;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -42,14 +43,15 @@ public interface Organizations
     OrganizationEntity createOrganization(String name);
 
     /**
-     * Create user with the given password.
+     * Create user with the given password. Username has a constraint that allows the
+     * username only to be a whole word, because it will be used as part of the REST url.
      *
      * @param username of the new user
      * @param password of the new user
      * @return the created user
      * @throws IllegalArgumentException if user with given name already exists
      */
-    UserEntity createUser(String username, String password)
+    UserEntity createUser(@Matches("\\w*")String username, String password)
             throws IllegalArgumentException;
 
     @Mixins(OrganisationsStateMixin.class)

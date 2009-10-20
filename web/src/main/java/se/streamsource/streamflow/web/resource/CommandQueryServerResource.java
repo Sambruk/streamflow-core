@@ -192,7 +192,14 @@ public class CommandQueryServerResource
             if (uow != null)
                 uow.discard();
 
-            throw ex;
+            if (ex.getMessage().startsWith( "<html>" ))
+            {
+                getResponse().setStatus( ex.getStatus() );
+                return new StringRepresentation( ex.getMessage());
+            } else
+            {
+                throw ex;
+            }
         } catch (Exception ex)
         {
             Logger.getLogger("command").log(Level.SEVERE, "Could not process command:" + operation, ex);

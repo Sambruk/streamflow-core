@@ -24,6 +24,5 @@ public enum StreamFlowResources
     operation_not_permitted,
     export_data_file_with_open_option,
     export_completed,
-    excel_file,
-    import_users, all_files
+    excel_file
 }

@@ -14,25 +14,21 @@
 
 package se.streamsource.streamflow.web.resource.organizations;
 
-import org.apache.poi.hssf.extractor.ExcelExtractor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
-import static org.qi4j.api.query.QueryExpressions.isNotNull;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -40,19 +36,15 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Mapped to /organizations/{id}.
@@ -75,7 +67,6 @@ public class OrganizationsServerResource
             UnitOfWork uow = uowf.newUnitOfWork();
             try
             {
-                OrganizationalUnits org = uow.get(OrganizationalUnits.class, id);
                 Reference orgRef = getRequest().getResourceRef().clone().addSegment(id).addSegment("");
                 orgRef.setQuery("");
                 getResponse().redirectPermanent(orgRef);
@@ -138,23 +129,36 @@ public class OrganizationsServerResource
 
     public void importUsers(Representation representation) throws ResourceException
     {
+        boolean badRequest = false;
+        String errors = "<html>";
+        Locale locale = resolveRequestLocale();
+
+        ResourceBundle bundle = ResourceBundle.getBundle(
+					OrganizationsServerResource.class.getName(), locale);
+
         UnitOfWork uow = uowf.currentUnitOfWork();
+
         try
-        {   Iterable<String> users = new ArrayList<String>();
+        {
+            Iterable<String> users = new ArrayList<String>();
+
             if(representation.getMediaType().equals(MediaType.APPLICATION_EXCEL))
             {
-              // TODO: Exel conversion to CSV - this is not working due to POI gets IOException wrong header
+                HSSFWorkbook workbook = new HSSFWorkbook(representation.getStream());
 
-                HSSFWorkbook workbook = new HSSFWorkbook(new ByteArrayInputStream(representation.getText().getBytes()));
-                ExcelExtractor extractor = new ExcelExtractor(workbook);
+                //extract a user list
+                Sheet sheet1 = workbook.getSheetAt(0);
+                StringBuilder builder;
+                for (Row row : sheet1)
+                {   builder = new StringBuilder();
+                    builder.append(row.getCell(0).getStringCellValue());
+                    builder.append(",");
+                    builder.append(row.getCell(1).getStringCellValue());
 
-                extractor.setFormulasNotResults(true);
-                extractor.setIncludeSheetNames(false);
-                String text = extractor.getText();
+                    ((List<String>)users).add(builder.toString());
+                }
 
-                
-
-            } else if(representation.getMediaType().equals(MediaType.TEXT_ALL))
+            } else if(representation.getMediaType().equals(MediaType.TEXT_CSV))
             {
                 users = Arrays.asList(representation.getText().split(System.getProperty("line.separator")));
 
@@ -163,12 +167,31 @@ public class OrganizationsServerResource
                 throw new ResourceException(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
             }
 
-            for(Iterator<String> iter = users.iterator();iter.hasNext();)
+            for(String userNamePwd : users)
             {
-                String userNamePwd = iter.next();
-                String[] tmp = userNamePwd.split("\t");
-                String name = tmp[0].trim();
-                String pwd = tmp[1].trim();
+                if(userNamePwd.startsWith("#"))
+                {
+                    continue;
+                }
+                Pattern pattern = Pattern.compile("\\t|,");
+                String[] usrPwdPair = userNamePwd.split(pattern.pattern());
+
+                if(usrPwdPair.length < 2)
+                {
+                    badRequest = true;
+                    errors += userNamePwd + " - " + bundle.getString("missing_user_password") + "<br></br>";
+                    continue;
+                }
+
+                String name = usrPwdPair[0].trim();
+                String pwd = usrPwdPair[1].trim();
+
+                // Check for empty pwd!!! and logg an error for that
+                if(pwd == null || "".equals(pwd.trim()))
+                {
+                    badRequest = true;
+                    errors += name + " - " + bundle.getString("missing_password") + "<br></br>";
+                }
 
                 try
                 {   // Check if user already exists
@@ -194,8 +217,9 @@ public class OrganizationsServerResource
 
                 } catch (ConstraintViolationException e)
                 {
-                    //TODO build a representation of Violation errors for return to the client
-                    e.printStackTrace();
+                    // catch constraint violation and collect errors for the entire transaction
+                    badRequest = true;
+                    errors += name + " - " + bundle.getString("user_name_not_valid") + "<br></br>";
                 }
              }
         } catch(IOException ioe)
@@ -203,5 +227,36 @@ public class OrganizationsServerResource
             throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
         }
 
+        // Check for errors and rollback
+        if(badRequest)
+        {
+            errors += "</html>";
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, errors);
+        }
+
+    }
+
+    private Locale resolveRequestLocale()
+    {
+        Language language = getRequest().getClientInfo().getAcceptedLanguages()
+                .get(0).getMetadata();
+        String[] localeStr = language.getName().split("_");
+
+        Locale locale;
+        switch(localeStr.length)
+        {
+            case 1:
+                locale = new Locale(localeStr[0]);
+                break;
+            case 2:
+                locale = new Locale(localeStr[0], localeStr[1]);
+                break;
+            case 3:
+                locale = new Locale(localeStr[0], localeStr[1], localeStr[2]);
+                break;
+            default:
+                locale = Locale.getDefault();
+        }
+        return locale;
     }
 }
