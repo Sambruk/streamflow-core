@@ -20,6 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
@@ -35,5 +36,15 @@ public class FormDefinitionsClientResource
     public ListValue forms() throws ResourceException
     {
         return query("forms", ListValue.class);
+    }
+
+    public void addForm(EntityReferenceDTO formDTO) throws ResourceException
+    {
+        putCommand("addForm", formDTO);
+    }
+
+    public void removeForm(EntityReferenceDTO formDTO) throws ResourceException
+    {
+        putCommand("removeForm", formDTO);
     }
 }

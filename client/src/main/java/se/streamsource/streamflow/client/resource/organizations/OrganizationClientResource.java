@@ -77,4 +77,9 @@ public class OrganizationClientResource
     {
         postCommand("merge", mergeCommand);
     }
+
+    public ListValue formDefinitions() throws ResourceException
+    {
+        return query("formDefinitions", ListValue.class);
+    }
 }

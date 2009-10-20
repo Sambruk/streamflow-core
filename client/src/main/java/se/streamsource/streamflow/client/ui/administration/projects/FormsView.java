@@ -18,8 +18,10 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +34,12 @@ public class FormsView
 {
     public JList formList;
     private FormsModel model;
+
+    @Service
+    DialogService dialogs;
+
+    @Uses
+    Iterable<FormsSelectionDialog> formsSelection;
 
     public FormsView(@Service ApplicationContext context, @Uses FormsModel model)
     {
@@ -56,11 +64,25 @@ public class FormsView
     @Action
     public void add()
     {
+        FormsSelectionDialog dialog = formsSelection.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog);
+
+        ListItemValue selected = dialog.getSelectedForm();
+        if (selected != null)
+        {
+            model.addForm(selected.entity().get());
+        }
     }
 
     @Action
     public void remove()
     {
+        ListItemValue selected = (ListItemValue) formList.getSelectedValue();
+        if (selected != null)
+        {
+            model.removeForm(selected.entity().get());
+            formList.clearSelection();
+        }
     }
 
     public JList getFormList()

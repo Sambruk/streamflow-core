@@ -39,5 +39,9 @@ public class ProjectAdministrationAssembler
                 ProjectMembersView.class);
 
         UIAssemblers.addMV(module, FormsModel.class, FormsView.class);
+
+        UIAssemblers.addModels(module, FormsSelectionModel.class);
+
+        UIAssemblers.addDialogs(module, FormsSelectionDialog.class);
     }
 }

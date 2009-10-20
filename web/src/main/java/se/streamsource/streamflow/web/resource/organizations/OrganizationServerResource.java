@@ -33,6 +33,7 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.domain.form.FormDefinitionsQueries;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
@@ -194,6 +195,16 @@ public class OrganizationServerResource
         {
             throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
         }
+    }
+
+
+    public ListValue formDefinitions()
+    {
+        String ouId = (String) getRequest().getAttributes().get("organization");
+
+        FormDefinitionsQueries forms = uowf.currentUnitOfWork().get(FormDefinitionsQueries.class, ouId);
+        
+        return forms.formDefinitionList();
     }
 
 }

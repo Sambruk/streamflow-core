@@ -14,8 +14,14 @@
 
 package se.streamsource.streamflow.web.resource.organizations.projects.forms;
 
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.web.domain.form.FormDefinition;
+import se.streamsource.streamflow.web.domain.project.ProjectFormDefinitions;
 import se.streamsource.streamflow.web.domain.project.ProjectFormDefinitionsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -36,4 +42,45 @@ public class FormDefinitionsServerResource
 
         return forms.formDefinitionList();
     }
+
+    public void addForm(EntityReferenceDTO formReference) throws ResourceException
+    {
+        String identity = getRequest().getAttributes().get("project").toString();
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        FormDefinition formDefinition;
+        try
+        {
+            formDefinition = uow.get(FormDefinition.class, formReference.entity().get().identity());
+        } catch(NoSuchEntityException e)
+        {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
+        }
+
+        ProjectFormDefinitions forms = uow.get(ProjectFormDefinitions.class, identity);
+
+        forms.addFormDefinition(formDefinition);
+    }
+
+    public void removeForm(EntityReferenceDTO formReference) throws ResourceException
+    {
+        String identity = getRequest().getAttributes().get("project").toString();
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        FormDefinition formDefinition;
+        try
+        {
+            formDefinition = uow.get(FormDefinition.class, formReference.entity().get().identity());
+        } catch(NoSuchEntityException e)
+        {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
+        }
+
+        ProjectFormDefinitions forms = uow.get(ProjectFormDefinitions.class, identity);
+
+        forms.removeFormDefinition(formDefinition);
+    }
+
 }

@@ -23,6 +23,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.web.domain.form.FormDefinitions;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
@@ -68,6 +69,12 @@ public interface TestDataService
             ou.createGroup("Park management");
 
             cc.addParticipant(user);
+
+            // Create form definitions
+
+            FormDefinitions forms = (FormDefinitions) ou;
+            forms.createFormDefinition("Status");
+            forms.createFormDefinition("Application");
 
             ProjectRole agent = ou.createProjectRole("Agent");
             ProjectRole manager = ou.createProjectRole("Manager");
