@@ -43,6 +43,12 @@ Given basic user setup
 When user named disabledUser enabled is set to false
 Then no events occurred
 
+Scenario: User reset password
+Given basic user setup
+When user named user1 resets password with newPassword
+Then events passwordChanged occurred
+
+
 
 
 

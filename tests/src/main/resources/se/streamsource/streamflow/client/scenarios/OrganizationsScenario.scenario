@@ -5,5 +5,11 @@ When a new user named newUser is created
 Then events userCreated occurred
 And exception is not thrown
 
+Scenario: Create new user with invalid user name
+Given the organizations
+When a new user named first second is created
+Then no events occurred
+And ConstraintViolationException is thrown
+
 
 

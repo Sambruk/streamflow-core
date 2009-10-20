@@ -69,4 +69,14 @@ public class UserSteps
         UserEntity user = userSetupSteps.userMap.get(userName);
         user.changeEnabled(Boolean.parseBoolean(state));
     }
+
+    @When("user named $userName resets password with $newPassword")
+    public void resetPassword(String userName, String newPassword) throws UnitOfWorkCompletionException
+    {
+        UserEntity user = userSetupSteps.userMap.get(userName);
+        ensureThat(user, CoreMatchers.notNullValue());
+
+        user.resetPassword(newPassword);
+    }
+
 }
