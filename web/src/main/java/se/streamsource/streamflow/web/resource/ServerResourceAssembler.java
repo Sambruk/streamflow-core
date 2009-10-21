@@ -37,6 +37,12 @@ import se.streamsource.streamflow.web.resource.organizations.projects.members.Me
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
+import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
+import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
+import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormsServerResource;
+import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UserServerResource;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
@@ -68,10 +74,6 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
-import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
-import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
-import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
-import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
 
@@ -118,6 +120,8 @@ public class ServerResourceAssembler
                 TaskCommentsServerResource.class,
                 TaskContactsServerResource.class,
                 TaskContactServerResource.class,
+                TaskSubmittedFormsServerResource.class,
+                TaskSubmittedFormServerResource.class,
 
                 WorkspaceProjectsServerResource.class,
                 WorkspaceProjectServerResource.class,

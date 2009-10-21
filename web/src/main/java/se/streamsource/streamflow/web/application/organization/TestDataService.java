@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
@@ -22,14 +23,21 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.web.domain.form.FormDefinitions;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.domain.form.*;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Generates test data
@@ -71,10 +79,20 @@ public interface TestDataService
             cc.addParticipant(user);
 
             // Create form definitions
-
             FormDefinitions forms = (FormDefinitions) ou;
-            forms.createFormDefinition("Status");
-            forms.createFormDefinition("Application");
+            FormDefinition commentForm = forms.createFormDefinition("CommentForm");
+
+            ValueDefinitions values = (ValueDefinitions) ou;
+            ValueDefinitionEntity stringValue = values.createValueDefinition("String");
+
+            FieldDefinitions fields = (FieldDefinitions) ou;
+            FieldDefinitionEntity commentField = fields.createFieldDefinition("Comment", stringValue);
+
+            commentForm.addField(commentField);
+
+            FormDefinition statusForm = forms.createFormDefinition("StatusForm");
+            FieldDefinitionEntity statusField = fields.createFieldDefinition("Status", stringValue);
+            statusForm.addField(statusField);
 
             ProjectRole agent = ou.createProjectRole("Agent");
             ProjectRole manager = ou.createProjectRole("Manager");
@@ -85,6 +103,8 @@ public interface TestDataService
 
             // Create project
             Project project = ou.createProject("Information query");
+
+            project.addFormDefinition(statusForm);
 
             // Create labels
             project.createLabel().changeDescription("Question");
@@ -100,7 +120,19 @@ public interface TestDataService
             parks.addMember(user);
 
             // Create tasks
-            for (int i = 0; i < 30; i++)
+            Task task = project.createTask();
+            task.changeDescription("Arbetsuppgift 0");
+
+            SubmittedFormValue submitted = createSubmittedForm(user, commentForm, commentField, "Remember that this Task is important" );
+            task.submitForm(submitted);
+
+            submitted = createSubmittedForm(user, statusForm, statusField, "Progress is slow");
+            task.submitForm(submitted);
+
+            submitted = createSubmittedForm(user, statusForm, statusField, "Progress is getting better");
+            task.submitForm(submitted);
+
+            for (int i = 1; i < 30; i++)
                 project.createTask().changeDescription("Arbetsuppgift " + i);
 
             // Create labels
@@ -110,6 +142,24 @@ public interface TestDataService
 
             uow.complete();
         }
+
+        private SubmittedFormValue createSubmittedForm(UserEntity user, FormDefinition form, FieldDefinition field, String value)
+        {
+            ValueBuilder<SubmittedFormValue> builder = vbf.newValueBuilder(SubmittedFormValue.class);
+            builder.prototype().submissionDate().set(new Date());
+            builder.prototype().submitter().set(EntityReference.getEntityReference(user));
+            builder.prototype().form().set(EntityReference.getEntityReference(form));
+
+            List<FieldValue> list = builder.prototype().values().get();
+
+            ValueBuilder<FieldValue> fieldBuilder = vbf.newValueBuilder(FieldValue.class);
+            fieldBuilder.prototype().field().set(EntityReference.getEntityReference(field));
+            fieldBuilder.prototype().value().set(value);
+            list.add(fieldBuilder.newInstance());
+
+            return builder.newInstance();
+        }
+
 
         public void passivate() throws Exception
         {

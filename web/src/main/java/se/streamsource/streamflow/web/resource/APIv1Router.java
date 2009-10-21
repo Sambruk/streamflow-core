@@ -48,14 +48,16 @@ import se.streamsource.streamflow.web.resource.organizations.projects.members.Me
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
+import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
+import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
+import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormsServerResource;
+import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
-import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
-import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
-import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
-import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
 import se.streamsource.streamflow.web.rest.CompositeFinder;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
@@ -109,6 +111,8 @@ public class APIv1Router
         attach("/tasks/{task}/comments", createServerResourceFinder( TaskCommentsServerResource.class));
         attach("/tasks/{task}/contacts", createServerResourceFinder( TaskContactsServerResource.class));
         attach("/tasks/{task}/contacts/{index}", createServerResourceFinder( TaskContactServerResource.class));
+        attach("/tasks/{task}/forms", createServerResourceFinder( TaskSubmittedFormsServerResource.class));
+        attach("/tasks/{task}/forms/{index}", createServerResourceFinder( TaskSubmittedFormServerResource.class));
 
         // Events
         attach("/events", createServerResourceFinder(EventsResource.class));

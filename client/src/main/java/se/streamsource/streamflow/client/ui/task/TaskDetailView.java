@@ -36,12 +36,14 @@ public class TaskDetailView
     private TaskCommentsView commentsView;
     private TaskGeneralView generalView;
     private TaskContactsAdminView contactsView;
+    private TaskSubmittedFormsAdminView formsView;
     private TaskModel model;
 
     public TaskDetailView(@Service ApplicationContext appContext,
                           @Uses TaskGeneralView generalView,
                           @Uses TaskCommentsView commentsView,
                           @Uses TaskContactsAdminView contactsView,
+                          @Uses TaskFormsAdminView formsAdminView,
                           @Structure ObjectBuilderFactory obf)
     {
         super(JTabbedPane.BOTTOM);
@@ -51,11 +53,12 @@ public class TaskDetailView
         this.commentsView = commentsView;
         this.generalView = generalView;
         this.contactsView = contactsView;
+        this.formsView = formsAdminView.getSubmittedFormsView();
 
         addTab(i18n.text(WorkspaceResources.general_tab), i18n.icon(Icons.general), generalView, i18n.text(WorkspaceResources.general_tab));
         addTab(i18n.text(WorkspaceResources.contacts_tab), i18n.icon(Icons.projects), contactsView, i18n.text(WorkspaceResources.contacts_tab));
         addTab(i18n.text(WorkspaceResources.comments_tab), i18n.icon(Icons.comments), commentsView, i18n.text(WorkspaceResources.comments_tab));
-        addTab(i18n.text(WorkspaceResources.metadata_tab), i18n.icon(Icons.metadata), new JLabel("Metadata"), i18n.text(WorkspaceResources.metadata_tab));
+        addTab(i18n.text(WorkspaceResources.metadata_tab), i18n.icon(Icons.metadata), formsAdminView, i18n.text(WorkspaceResources.metadata_tab));
         addTab(i18n.text(WorkspaceResources.attachments_tab), i18n.icon(Icons.attachments), new JLabel("Attachments"), i18n.text(WorkspaceResources.attachments_tab));
 
         setMnemonicAt(0, KeyEvent.VK_1);
@@ -104,6 +107,7 @@ public class TaskDetailView
             generalView.setModel(model.general());
             commentsView.setModel(model.comments());
             contactsView.setModel(model.contacts());
+            formsView.setModel(model.forms());
 
 /*
             setPreferredSize(new Dimension(getWidth(), 500));

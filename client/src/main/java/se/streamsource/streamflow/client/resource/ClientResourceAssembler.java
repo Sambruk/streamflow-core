@@ -35,12 +35,7 @@ import se.streamsource.streamflow.client.resource.organizations.projects.members
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRolesClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RoleClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
-import se.streamsource.streamflow.client.resource.task.TaskClientResource;
-import se.streamsource.streamflow.client.resource.task.TaskCommentsClientResource;
-import se.streamsource.streamflow.client.resource.task.TaskContactClientResource;
-import se.streamsource.streamflow.client.resource.task.TaskContactsClientResource;
-import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
-import se.streamsource.streamflow.client.resource.task.TasksClientResource;
+import se.streamsource.streamflow.client.resource.task.*;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
@@ -95,6 +90,8 @@ public class ClientResourceAssembler
                 TaskCommentsClientResource.class,
                 TaskContactsClientResource.class,
                 TaskContactClientResource.class,
+                TaskSubmittedFormsClientResource.class,
+                TaskSubmittedFormClientResource.class,
 
                 WorkspaceClientResource.class,
                 WorkspaceUserClientResource.class,

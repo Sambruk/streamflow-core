@@ -41,9 +41,7 @@ import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.task.TaskContactsDTO;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
-import se.streamsource.streamflow.resource.task.TasksQuery;
+import se.streamsource.streamflow.resource.task.*;
 import se.streamsource.streamflow.resource.user.*;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskListDTO;
@@ -92,6 +90,10 @@ public class CommonResourceAssembler
                 OverviewAssignedTaskDTO.class,
                 ProjectSummaryDTO.class,
                 ProjectSummaryListDTO.class,
+                FieldDTO.class,
+                SubmittedFormDTO.class,
+                SubmittedFormListDTO.class,
+                SubmittedFormsListDTO.class,
                 UserEntityListDTO.class,
                 UserEntityDTO.class).visibleIn(Visibility.application);
 

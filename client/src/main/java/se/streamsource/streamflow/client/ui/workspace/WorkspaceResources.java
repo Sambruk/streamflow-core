@@ -80,5 +80,5 @@ public enum WorkspaceResources
     search_project,
     search_projects_users,
     select_account,
-    could_not_create_label, could_not_refresh_list_of_labels, search_user
+    could_not_create_label, could_not_refresh_list_of_labels, submitted_forms_tab, effective_fields_tab, could_not_get_submitted_form, field_name, field_value, search_user
 }

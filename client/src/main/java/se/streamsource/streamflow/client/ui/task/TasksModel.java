@@ -41,7 +41,8 @@ public class TasksModel
                     use( taskResource,
                             taskResource.general(),
                             taskResource.comments(),
-                            taskResource.contacts()).newInstance();
+                            taskResource.contacts(),
+                            taskResource.forms()).newInstance();
         }
     };
 

@@ -36,6 +36,9 @@ public class TaskModel
     @Uses
     private TaskContactsModel contacts;
 
+    @Uses
+    private TaskSubmittedFormsModel forms;
+
     public TaskClientResource resource()
     {
         return resource;
@@ -56,10 +59,17 @@ public class TaskModel
         return contacts;
     }
 
+    public TaskSubmittedFormsModel forms()
+    {
+        return forms;
+    }
+
+
     public void refresh()
     {
         general.refresh();
         comments.refresh();
         contacts.refresh();
+        forms.refresh();
     }
 }

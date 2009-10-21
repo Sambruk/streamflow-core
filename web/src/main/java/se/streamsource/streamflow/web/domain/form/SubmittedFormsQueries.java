@@ -32,7 +32,7 @@ import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 /**
  * JAVADOC
  */
-@Mixins(SubmittedFormsQueries.class)
+@Mixins(SubmittedFormsQueries.SubmittedFormsQueriesMixin.class)
 public interface SubmittedFormsQueries
 {
     SubmittedFormsListDTO getSubmittedForms();

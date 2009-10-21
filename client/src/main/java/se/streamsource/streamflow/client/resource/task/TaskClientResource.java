@@ -51,6 +51,13 @@ public class TaskClientResource
         return contacts;
     }
 
+    public TaskSubmittedFormsClientResource forms()
+    {
+        TaskSubmittedFormsClientResource forms = getSubResource("forms", TaskSubmittedFormsClientResource.class);
+        forms.setRoot(this);
+        return forms;
+    }
+
 /*
     public void complete() throws ResourceException
     {
