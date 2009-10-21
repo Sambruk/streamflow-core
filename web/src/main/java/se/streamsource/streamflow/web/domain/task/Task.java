@@ -18,6 +18,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.web.domain.comment.Commentable;
 import se.streamsource.streamflow.web.domain.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 
 /**
@@ -35,6 +36,7 @@ public interface Task
         Notable,
         Ownable,
         SubmittedForms,
+        SubmittedFormsQueries,
         TaskId,
         TaskStatus
 {
