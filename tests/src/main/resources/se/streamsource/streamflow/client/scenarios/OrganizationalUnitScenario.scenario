@@ -1,42 +1,58 @@
 Scenario: Move organizational unit
 Given basic organizational unit setup
-When organizational unit named OU1Sub is moved to organizational unit named OU2
+Given the organization
+Given organizational unit named OU1
+Given organizational unit named OU1Sub
+When organizational unit is moved to organizational unit named OU2
 Then events organizationalUnitRemoved,organizationalUnitAdded occurred
 And exception is not thrown
 
 Scenario: Failed move organizational unit
 Given basic organizational unit setup
-When organizational unit named OU1 is moved to organizational unit named OU1
+Given the organization
+Given organizational unit named OU1
+When organizational unit is moved to organizational unit named OU1
 Then MoveOrganizationalUnitException is thrown
 And no events occurred
 
 Scenario: Move organizational unit with no events
 Given basic organizational unit setup
-When organizational unit named OU1Sub is moved to organizational unit named OU1
+Given the organization
+Given organizational unit named OU1
+Given organizational unit named OU1Sub
+When organizational unit is moved to organizational unit named OU1
 Then no events occurred
 And exception is not thrown
 
 Scenario: Merge organizational unit
 Given basic organizational unit setup
-When organizational unit named OU1Sub is merged to organizational unit named OU1
+Given the organization
+Given organizational unit named OU1
+Given organizational unit named OU1Sub
+When organizational unit is merged to organizational unit named OU1
 Then events organizationalUnitRemoved,removedChanged occurred
 And exception is not thrown
 
 Scenario: Failed merge organizational unit
 Given basic organizational unit setup
-When organizational unit named OU1 is merged to organizational unit named OU1
+Given the organization
+Given organizational unit named OU1
+When organizational unit is merged to organizational unit named OU1
 Then MergeOrganizationalUnitException is thrown
 And no events occurred
 
 Scenario: Delete organizational unit
 Given basic organizational unit setup
-When organizational unit named OU1Sub is deleted
+Given the organization
+Given organizational unit named OU1
+When organizational unit is deleted
 Then events organizationalUnitRemoved,removedChanged occurred
-And exception is not thrown
 
 Scenario: Failed delete organizational unit
 Given basic organizational unit setup
-When organizational unit named OU2 is deleted
+Given the organization
+Given organizational unit named OU2
+When a project named Test is created
+And organizational unit is deleted
 Then OpenProjectExistsException is thrown
-And no events occurred
 

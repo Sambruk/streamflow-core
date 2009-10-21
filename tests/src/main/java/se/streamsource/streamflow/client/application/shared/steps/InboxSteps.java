@@ -18,9 +18,6 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
-import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
 /**
@@ -30,32 +27,28 @@ public class InboxSteps
         extends Steps
 {
     @Uses
-    TaskSetupSteps taskSetupSteps;
-
-    @Uses
-    UserSetupSteps userSetupSteps;
+    ProjectsSteps projectsSteps;
 
     @Uses
     GenericSteps genericSteps;
 
-    public TaskEntity task;
+    public TaskEntity givenTask;
 
     @When("inbox task is created")
-    public void createInboxTask()
+    public void createTask()
     {
-        task = (TaskEntity) taskSetupSteps.inbox.createTask();
+        givenTask = (TaskEntity) projectsSteps.givenProject.createTask();
     }
 
-    @When("$task inbox task is marked as $mark")
-    public void markAssignedTaskAs(String task, String mark)
+    @When("task is marked as $mark")
+    public void markTaskAs(String mark)
     {
-        Task atask = "unread".equals(task) ? taskSetupSteps.unreadInboxTask : taskSetupSteps.readInboxTask;
         if ("read".equals(mark))
         {
-            taskSetupSteps.inbox.markAsRead(atask);
+            projectsSteps.givenProject.markAsRead( givenTask );
         } else
         {
-            taskSetupSteps.inbox.markAsUnread(atask);
+            projectsSteps.givenProject.markAsUnread(givenTask);
         }
     }
 

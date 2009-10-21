@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.hamcrest.CoreMatchers;
-import static org.jbehave.Ensure.ensureThat;
+import static org.jbehave.Ensure.*;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
@@ -23,16 +23,14 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 public class OverviewQueriesSteps
     extends Steps
 {
     @Uses
-    UserSetupSteps userSteps;
+    OrganizationsSteps orgsSteps;
 
     @Structure
     UnitOfWorkFactory uowf;
@@ -40,11 +38,11 @@ public class OverviewQueriesSteps
     private ProjectSummaryListDTO summaryList;
     private ProjectSummaryDTO summary;
 
-    @When("a user named $name requests overview")
-    public void requestOverview(String name) throws UnitOfWorkCompletionException
+    @When("overview is requested")
+    public void requestOverview() throws UnitOfWorkCompletionException
     {
-        uowf.currentUnitOfWork().complete();
-        summaryList = uowf.newUnitOfWork().get(UserEntity.class, name).getProjectsSummary();
+        uowf.currentUnitOfWork().apply();
+        summaryList = orgsSteps.givenUser.getProjectsSummary();
     }
 
     @Then("summaryList contains one project named $projectName")

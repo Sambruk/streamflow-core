@@ -1,20 +1,23 @@
-Scenario: Join project
-Given basic participant setup
+Scenario: Join/leave project
+Given basic setup 1
+Given the organization
+Given organizational unit named OU1
+Given project named project1
+Given user named user2
 When a participant joins a project
 Then events joinedProject occurred
 
-Scenario: Leave project
-Given basic participant setup
 When a participant leaves a project
 Then events leftProject occurred
 
-Scenario: Join group
-Given basic participant setup
+Scenario: Join/leave group
+Given basic setup 1
+Given the organization
+Given organizational unit named OU1
+Given group named group1
+Given user named user2
 When a participant joins a group
-Then events joinedGroup occurred
+Then events participantAdded,joinedGroup occurred
 
-Scenario: leave group
-Given basic participant setup
 When a participant leaves a group
-Then events leftGroup occurred
-
+Then events participantRemoved,leftGroup occurred

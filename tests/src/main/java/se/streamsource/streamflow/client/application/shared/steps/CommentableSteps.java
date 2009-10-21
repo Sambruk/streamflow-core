@@ -16,13 +16,11 @@ package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.entity.EntityReference;
-import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
 import se.streamsource.streamflow.web.domain.comment.CommentValue;
 
 import java.util.Date;
@@ -34,10 +32,10 @@ public class CommentableSteps
         extends Steps
 {
     @Uses
-    TaskSetupSteps taskSetupSteps;
+    InboxSteps inboxSteps;
 
     @Uses
-    UserSetupSteps userSetupSetps;
+    OrganizationsSteps orgsSteps;
 
     @Structure
     ValueBuilderFactory vbf;
@@ -48,8 +46,8 @@ public class CommentableSteps
         ValueBuilder<CommentValue> builder = vbf.newValueBuilder(CommentValue.class);
         builder.prototype().text().set(comment);
         builder.prototype().creationDate().set(new Date());
-        builder.prototype().commenter().set(EntityReference.getEntityReference(userSetupSetps.userMap.get("user1")));
+        builder.prototype().commenter().set(EntityReference.getEntityReference(orgsSteps.givenUser));
 
-        taskSetupSteps.assignedTask.addComment(builder.newInstance()); 
+        inboxSteps.givenTask.addComment(builder.newInstance()); 
     }
 }

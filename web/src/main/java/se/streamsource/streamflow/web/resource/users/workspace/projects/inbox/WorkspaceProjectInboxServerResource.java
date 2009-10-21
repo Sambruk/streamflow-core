@@ -14,17 +14,10 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.projects.inbox;
 
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.task.InboxQueries;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -38,27 +31,14 @@ public class WorkspaceProjectInboxServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("project");
+        InboxQueries inbox = uow.get(InboxQueries.class, id);
 
-        // Find all Active tasks with specific owner which have not yet been assigned
-        QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
-        Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
-        Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
-        Query<TaskEntity> inboxQuery = queryBuilder.where(and(
-                eq(ownableId, id),
-                isNull(assignee),
-                isNull(delegatee),
-                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
-                newQuery(uow);
-        inboxQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
-
-        return buildTaskList(inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);
+        return inbox.inboxTasks();
     }
 
     public void createtask()
     {
         String projectId = (String) getRequest().getAttributes().get("project");
-        String userId = (String) getRequest().getAttributes().get("user");
 
         createTask(projectId);
     }

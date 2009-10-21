@@ -18,11 +18,7 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.web.domain.form.FieldDefinitionEntity;
-import se.streamsource.streamflow.web.domain.form.FieldDefinitions;
 import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
-import se.streamsource.streamflow.web.domain.form.FormDefinitions;
 
 /**
  * JAVADOC
@@ -34,54 +30,36 @@ public class FormDefinitionSteps
     GenericSteps genericSteps;
 
     @Uses
-    OrganizationSetupSteps organizationSetupSteps;
+    OrganizationsSteps orgsSteps;
 
-    public FormDefinitionEntity formDefinition;
+    @Uses
+    FormDefinitionsSteps formDefinitionsSteps;
 
-    @When("form definition named $name is created")
-    public void createForm(String name) throws Exception
+    @Uses
+    FieldDefinitionsSteps fieldDefinitionsSteps;
+
+    @When("a field definition is added to form")
+    public void addFieldToForm() throws Exception
     {
         try
         {
-            FormDefinitions forms = organizationSetupSteps.organization;
+            FormDefinitionEntity formDefinition = formDefinitionsSteps.givenForm;
 
-            formDefinition = forms.createFormDefinition( name );
+            formDefinition.addField( fieldDefinitionsSteps.givenFieldDefinition );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("field definition $field is added to form $form")
-    public void addFieldToForm(String field, String form) throws Exception
+    @When("a field definition is removed from form")
+    public void removeFieldFromForm() throws Exception
     {
         try
         {
-            FieldDefinitions.FieldDefinitionsState fields = organizationSetupSteps.organization;
-            FieldDefinitionEntity fieldDefinition = fields.getFieldDefinitionByName( field );
+            FormDefinitionEntity formDefinition = formDefinitionsSteps.givenForm;
 
-            FormDefinitions.FormDefinitionsState forms = organizationSetupSteps.organization;
-            FormDefinitionEntity formDefinition = forms.getFormByName(form);
-
-            formDefinition.addField( fieldDefinition );
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
-
-    @When("field definition $name is removed from form $form")
-    public void removeFieldFromForm(String field, String form) throws Exception
-    {
-        try
-        {
-            FieldDefinitions.FieldDefinitionsState fields = organizationSetupSteps.organization;
-            FieldDefinitionEntity fieldDefinition = fields.getFieldDefinitionByName( field );
-
-            FormDefinitions.FormDefinitionsState forms = organizationSetupSteps.organization;
-            FormDefinitionEntity formDefinition = forms.getFormByName(form);
-
-            formDefinition.removeField( fieldDefinition );
+            formDefinition.removeField( fieldDefinitionsSteps.givenFieldDefinition );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

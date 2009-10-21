@@ -19,6 +19,7 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -44,6 +45,8 @@ public interface Groups
         GroupEntity groupCreated(DomainEvent event, String id);
         void groupAdded(DomainEvent event, GroupEntity group);
         void groupRemoved(DomainEvent event, Group group);
+
+        GroupEntity getGroupByName(String name);
     }
 
     abstract class GroupsMixin
@@ -55,7 +58,7 @@ public interface Groups
             while (this.groups().count() >0)
             {
                 Group group = this.groups().get(0);
-                removeGroup(group);
+                groupRemoved(DomainEvent.CREATE, group);
                 groups.addGroup((GroupEntity) group);
             }
 
@@ -68,6 +71,11 @@ public interface Groups
                 return;
             }
             groupAdded(DomainEvent.CREATE, group);
+        }
+
+        public GroupEntity getGroupByName( String name )
+        {
+            return (GroupEntity) Describable.DescribableMixin.getDescribable( groups(), name );
         }
     }
 

@@ -15,12 +15,11 @@
 package se.streamsource.streamflow.client.scenarios;
 
 import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.GroupsSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
@@ -37,6 +36,11 @@ public class GroupsScenario
 
     public GroupsScenario(ClassLoader classLoader)
     {
-        super(classLoader, new GroupsSteps(), new GroupsSetupSteps(), new TaskSetupSteps(), new OrganizationSetupSteps(), new OrganizationsSteps(), new UserSteps(), new UserSetupSteps());
+        super(classLoader, new TestSetupSteps(),
+                new GroupsSteps(),
+                new ParticipantsSteps(),
+                new OrganizationalUnitsSteps(),
+                new OrganizationsSteps(),
+                new UserSteps());
     }
 }

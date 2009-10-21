@@ -15,14 +15,20 @@
 package se.streamsource.streamflow.client.scenarios;
 
 import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.InboxSteps;
+import se.streamsource.streamflow.client.application.shared.steps.MembersSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ProjectFormDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.SubmittedFormsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.ProjectsSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
@@ -38,8 +44,20 @@ public class SubmittedFormsScenario
 
     public SubmittedFormsScenario(ClassLoader classLoader)
     {
-        super(classLoader, new UserSetupSteps(), new OrganizationSetupSteps(), new ProjectsSetupSteps(), new OrganizationsSteps(),
-                new ValueDefinitionsSteps(), new FieldDefinitionsSteps(), new FormDefinitionsSteps(),
-                new ProjectFormDefinitionsSteps(), new SubmittedFormsSteps());
+        super(classLoader, new TestSetupSteps(),
+                new ValueDefinitionsSteps(),
+                new FieldDefinitionsSteps(),
+                new FormDefinitionSteps(),
+                new FormDefinitionsSteps(),
+                new ProjectFormDefinitionsSteps(),
+                new OrganizationsSteps(),
+                new OrganizationalUnitsSteps(),
+                new MembersSteps(),
+                new ProjectsSteps(),
+                new ParticipantsSteps(),
+                new GroupsSteps(),
+                new UserSteps(),
+                new InboxSteps(),
+                new SubmittedFormsSteps());
     }
 }

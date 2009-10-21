@@ -25,6 +25,7 @@ import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.data.Language;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.RepresentationInfo;
@@ -36,6 +37,7 @@ import se.streamsource.streamflow.web.application.security.OperationPermission;
 
 import java.io.InputStream;
 import java.security.AccessControlContext;
+import java.util.Locale;
 
 /**
  * Base class for server-side resources.
@@ -111,5 +113,30 @@ public class BaseServerResource
 
         AccessControlContext accessControlContext = policy.getAccessControlContext(getRequest().getClientInfo().getPrincipals(), securedObject);
         accessControlContext.checkPermission(operationPermission);
+    }
+
+
+    protected Locale resolveRequestLocale()
+    {
+        Language language = getRequest().getClientInfo().getAcceptedLanguages()
+                .get(0).getMetadata();
+        String[] localeStr = language.getName().split("_");
+
+        Locale locale;
+        switch(localeStr.length)
+        {
+            case 1:
+                locale = new Locale(localeStr[0]);
+                break;
+            case 2:
+                locale = new Locale(localeStr[0], localeStr[1]);
+                break;
+            case 3:
+                locale = new Locale(localeStr[0], localeStr[1], localeStr[2]);
+                break;
+            default:
+                locale = Locale.getDefault();
+        }
+        return locale;
     }
 }

@@ -14,11 +14,10 @@
 
 package se.streamsource.streamflow.domain;
 
-import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import se.streamsource.streamflow.domain.contact.ContactAssembler;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.domain.form.FormAssembler;
 
 /**
  * JAVADOC
@@ -28,5 +27,6 @@ public class CommonDomainAssembler
     public void assemble(LayerAssembly domainLayer) throws AssemblyException
     {
         new ContactAssembler().assemble(domainLayer.moduleAssembly("Contact"));
+        new FormAssembler().assemble(domainLayer.moduleAssembly("Form"));
     }
 }

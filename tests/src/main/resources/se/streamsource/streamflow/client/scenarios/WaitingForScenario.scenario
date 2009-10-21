@@ -1,19 +1,20 @@
-Scenario: Mark read waitingFor task as unread
-Given basic task setup
-When read waitingFor task is marked as unread
+Scenario: Mark waitingFor task as read/unread
+Given basic setup 1
+Given the organization
+Given user named user2
+Given organizational unit named OU2
+Given project named project2
+Given first waitingFor task
+
+When waitingFor task is marked as read
+Then events waitingForTaskMarkedAsRead occurred
+
+When waitingFor task is marked as read
+Then no events occurred
+
+When waitingFor task is marked as unread
 Then events waitingForTaskMarkedAsUnread occurred
 
-Scenario: Mark read waitingFor task as read
-Given basic task setup
-When read waitingFor task is marked as read
+When waitingFor task is marked as unread
 Then no events occurred
 
-Scenario: Mark unread waitingFor task as unread
-Given basic task setup
-When unread waitingFor task is marked as unread
-Then no events occurred
-
-Scenario: Mark unread waitingFor task as read
-Given basic task setup
-When unread waitingFor task is marked as read
-Then events waitingForTaskMarkedAsRead occurred

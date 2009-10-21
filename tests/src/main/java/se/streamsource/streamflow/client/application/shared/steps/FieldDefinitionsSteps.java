@@ -14,12 +14,11 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.web.domain.form.FieldDefinition;
 import se.streamsource.streamflow.web.domain.form.FieldDefinitionEntity;
 import se.streamsource.streamflow.web.domain.form.FieldDefinitions;
 import se.streamsource.streamflow.web.domain.form.ValueDefinition;
@@ -35,39 +34,43 @@ public class FieldDefinitionsSteps
     GenericSteps genericSteps;
 
     @Uses
-    OrganizationSetupSteps organizationSetupSteps;
+    OrganizationsSteps orgsSteps;
 
-    public FieldDefinitionEntity fieldDefinition;
+    public FieldDefinitionEntity givenFieldDefinition;
 
-    @When("field definition named $name of type $type is created")
+    @Given("field definition named $name")
+    public void givenFieldDefinition(String name)
+    {
+        givenFieldDefinition = orgsSteps.givenOrganization.getFieldDefinitionByName( name );
+    }
+
+    @When("a field definition named $name of type $type is created")
     public void createField(String name, String type) throws Exception
     {
         try
         {
-            FieldDefinitions fields = organizationSetupSteps.organization;
+            FieldDefinitions fields = orgsSteps.givenOrganization;
 
-            ValueDefinitions.ValueDefinitionsState values = organizationSetupSteps.organization;
+            ValueDefinitions.ValueDefinitionsState values = orgsSteps.givenOrganization;
 
             ValueDefinition valueDefinition = values.getValueDefinitionByName( type );
 
-            this.fieldDefinition = fields.createFieldDefinition( name, valueDefinition );
+            this.givenFieldDefinition = fields.createFieldDefinition( name, valueDefinition );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("field definition named $name is removed")
-    public void removed(String name) throws Exception
+    @When("a field definition namedis removed")
+    public void removed() throws Exception
     {
         try
         {
-            FieldDefinitions.FieldDefinitionsState fieldsState = organizationSetupSteps.organization;
-            FieldDefinitions fields = organizationSetupSteps.organization;
+            FieldDefinitions.FieldDefinitionsState fieldsState = orgsSteps.givenOrganization;
+            FieldDefinitions fields = orgsSteps.givenOrganization;
 
-            FieldDefinition fieldDefinition = fieldsState.getFieldDefinitionByName( name );
-
-            fields.removeFieldDefinition( fieldDefinition );
+            fields.removeFieldDefinition( givenFieldDefinition );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

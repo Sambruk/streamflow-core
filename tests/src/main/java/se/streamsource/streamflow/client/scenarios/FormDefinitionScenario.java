@@ -14,28 +14,34 @@
 
 package se.streamsource.streamflow.client.scenarios;
 
+import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
-import se.streamsource.streamflow.client.application.shared.steps.AssignableSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
  * JAVADOC
  */
-public class AssignableScenario
+public class FormDefinitionScenario
         extends AbstractWebDomainApplicationScenario
 {
-
-    public AssignableScenario()
+    public FormDefinitionScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public AssignableScenario(ClassLoader classLoader)
+    public FormDefinitionScenario(ClassLoader classLoader)
     {
-        super(classLoader, new AssignableSteps(), new TaskSetupSteps(), new OrganizationSetupSteps(), new OrganizationsSteps(), new UserSteps(), new UserSetupSteps());
+        super(classLoader, new TestSetupSteps(),
+                new OrganizationsSteps(),
+                new OrganizationalUnitsSteps(),
+                new ValueDefinitionsSteps(),
+                new FieldDefinitionsSteps(),
+                new FormDefinitionsSteps(),
+                new FormDefinitionSteps());
     }
 }

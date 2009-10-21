@@ -14,11 +14,12 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.application.shared.steps.setup.GroupsSetupSteps;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
+import se.streamsource.streamflow.web.domain.group.Groups;
 
 /**
  * JAVADOC
@@ -27,32 +28,41 @@ public class GroupsSteps
         extends Steps
 {
     @Uses
-    GroupsSetupSteps groupsSetup;
+    OrganizationalUnitsSteps ouSteps;
 
-    @When("a new group with name $name is created")
+    @Uses
+    OrganizationsSteps organizationsSteps;
+
+    public GroupEntity givenGroup;
+
+    @Given("group named $name")
+    public void givenGroup(String name)
+    {
+        givenGroup = ouSteps.givenOu.getGroupByName(name);
+    }
+
+    @When("a group named $name is created")
     public void createGroup(String name)
     {
-        groupsSetup.groups.createGroup(name);
+        givenGroup = ouSteps.givenOu.createGroup(name);
     }
 
-    @When("group named $name is added")
-    public void addGroup(String name)
+    @When("group is added")
+    public void addGroup()
     {
-        GroupEntity group = groupsSetup.groupMap.get(name);
-        groupsSetup.groups.addGroup(group);
+        ouSteps.givenOu.addGroup( givenGroup );
     }
 
-    @When("group named $name is removed")
-    public void removeGroup(String name)
+    @When("group is removed")
+    public void removeGroup()
     {
-        GroupEntity group = groupsSetup.groupMap.get(name);
-        groupsSetup.groups.removeGroup(group);
+        ouSteps.givenOu.removeGroup(givenGroup);
     }
 
-    @When("groups are merged")
-    public void mergeGroups()
+    @When("groups are merged with $name")
+    public void mergeGroups(String ouName)
     {
-        groupsSetup.groups.mergeGroups(groupsSetup.toBeMerged); 
+        Groups mergeToGroups = (Groups) organizationsSteps.givenOrganization.getOrganizationalUnitByName(ouName);
+        ouSteps.givenOu.mergeGroups( mergeToGroups );
     }
-
 }

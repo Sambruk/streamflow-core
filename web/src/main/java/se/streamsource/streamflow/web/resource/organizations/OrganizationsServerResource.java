@@ -28,7 +28,10 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.data.*;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -42,8 +45,13 @@ import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.*;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 /**
@@ -140,7 +148,7 @@ public class OrganizationsServerResource
 
         try
         {
-            Iterable<String> users = new ArrayList<String>();
+            List<String> users = new ArrayList<String>();
 
             if(representation.getMediaType().equals(MediaType.APPLICATION_EXCEL))
             {
@@ -160,13 +168,19 @@ public class OrganizationsServerResource
 
             } else if(representation.getMediaType().equals(MediaType.TEXT_CSV))
             {
-                users = Arrays.asList(representation.getText().split(System.getProperty("line.separator")));
-
+                StringReader reader = new StringReader(representation.getText());
+                BufferedReader bufReader = new BufferedReader( reader);
+                String line = null;
+                while ((line = bufReader.readLine()) != null)
+                {
+                    users.add( line );
+                }
             } else
             {
                 throw new ResourceException(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
             }
 
+            Organizations organizations = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
             for(String userNamePwd : users)
             {
                 if(userNamePwd.startsWith("#"))
@@ -186,8 +200,8 @@ public class OrganizationsServerResource
                 String name = usrPwdPair[0].trim();
                 String pwd = usrPwdPair[1].trim();
 
-                // Check for empty pwd!!! and logg an error for that
-                if(pwd == null || "".equals(pwd.trim()))
+                // Check for empty pwd!!! and log an error for that
+                if("".equals(pwd.trim()))
                 {
                     badRequest = true;
                     errors += name + " - " + bundle.getString("missing_password") + "<br></br>";
@@ -213,7 +227,7 @@ public class OrganizationsServerResource
 
                 try
                 {
-                    uow.get(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID).createUser(name, pwd);
+                    organizations.createUser(name, pwd);
 
                 } catch (ConstraintViolationException e)
                 {
@@ -234,29 +248,5 @@ public class OrganizationsServerResource
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, errors);
         }
 
-    }
-
-    private Locale resolveRequestLocale()
-    {
-        Language language = getRequest().getClientInfo().getAcceptedLanguages()
-                .get(0).getMetadata();
-        String[] localeStr = language.getName().split("_");
-
-        Locale locale;
-        switch(localeStr.length)
-        {
-            case 1:
-                locale = new Locale(localeStr[0]);
-                break;
-            case 2:
-                locale = new Locale(localeStr[0], localeStr[1]);
-                break;
-            case 3:
-                locale = new Locale(localeStr[0], localeStr[1], localeStr[2]);
-                break;
-            default:
-                locale = Locale.getDefault();
-        }
-        return locale;
     }
 }

@@ -14,11 +14,11 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
 import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
 import se.streamsource.streamflow.web.domain.form.FormDefinitions;
 
@@ -32,32 +32,39 @@ public class FormDefinitionsSteps
     GenericSteps genericSteps;
 
     @Uses
-    OrganizationSetupSteps organizationSetupSteps;
+    OrganizationsSteps orgsSteps;
 
-    public FormDefinitionEntity formDefinition;
+    public FormDefinitionEntity givenForm;
 
-    @When("form definition named $name is created")
+    @Given("form definition named $form")
+    public void givenForm(String name)
+    {
+        FormDefinitions.FormDefinitionsState forms = orgsSteps.givenOrganization;
+        givenForm = forms.getFormByName( name );
+    }
+
+    @When("a form definition named $name is created")
     public void createForm(String name) throws Exception
     {
         try
         {
-            FormDefinitions forms = organizationSetupSteps.organization;
+            FormDefinitions forms = orgsSteps.givenOrganization;
 
-            formDefinition = forms.createFormDefinition( name );
+            givenForm = forms.createFormDefinition( name );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("form definition is removed")
+    @When("a form definition is removed")
     public void removed() throws Exception
     {
         try
         {
-            FormDefinitions forms = organizationSetupSteps.organization;
+            FormDefinitions forms = orgsSteps.givenOrganization;
 
-            forms.removeFormDefinition( formDefinition );
+            forms.removeFormDefinition( givenForm );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

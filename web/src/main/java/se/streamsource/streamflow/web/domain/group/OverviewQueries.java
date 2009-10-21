@@ -45,6 +45,8 @@ import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Delegatable;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -91,8 +93,12 @@ public interface OverviewQueries
                 QueryBuilder<TaskEntity> ownerQueryBuilder = qbf.newQueryBuilder(TaskEntity.class).where(
                         eq(ownableId, ((ProjectEntity)project).identity().get()));
 
+                Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
+                Association<Delegatee> delegatee = templateFor( Delegatable.DelegatableState.class).delegatedTo();
+
                 QueryBuilder<TaskEntity> inboxQueryBuilder = ownerQueryBuilder.where(and(
                     isNull(assigneeAssociation),
+                    isNull(delegatee),
                     eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
                 Query<TaskEntity> inboxQuery = inboxQueryBuilder.newQuery(uow);
 

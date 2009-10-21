@@ -71,12 +71,7 @@ public interface ProjectFormDefinitions
 
         public FormDefinitionEntity getFormDefinitionByName( String name )
         {
-            for (FormDefinition formDefinition : formDefinitions())
-            {
-                if (((Describable.DescribableState)formDefinition).description().get().equals(name))
-                    return (FormDefinitionEntity) formDefinition;
-            }
-            return null;
+            return (FormDefinitionEntity) Describable.DescribableMixin.getDescribable( formDefinitions(), name );
         }
     }
 }

@@ -18,9 +18,7 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
-import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
@@ -30,32 +28,32 @@ public class AssignmentsSteps
         extends Steps
 {
     @Uses
-    TaskSetupSteps taskSetupSteps;
+    OrganizationsSteps orgsSteps;
 
     @Uses
-    UserSetupSteps userSetupSteps;
+    ProjectsSteps projectsSteps;
 
     @Uses
     GenericSteps genericSteps;
 
+    public TaskEntity givenTask;
 
-    @When("an assigned task is created for user named $name")
-    public void createAssignedTask(String name)
+    @When("an assigned task is created")
+    public void createAssignedTask()
     {
-        UserEntity user = userSetupSteps.userMap.get(name);
-        taskSetupSteps.assignments.createAssignedTask(user);
+        UserEntity user = orgsSteps.givenUser;
+        givenTask = (TaskEntity) projectsSteps.givenProject.createAssignedTask(user);
     }
 
-    @When("$task assigned task is marked as $mark")
-    public void markAssignedTaskAs(String task, String mark)
+    @When("an assigned task is marked as $mark")
+    public void markAssignedTaskAs(String mark)
     {
-        Task atask = "unread".equals(task) ? taskSetupSteps.unreadAssignedTask : taskSetupSteps.readAssignedTask;
         if ("read".equals(mark))
         {
-            taskSetupSteps.assignments.markAssignedTaskAsRead(atask);
+            projectsSteps.givenProject.markAssignedTaskAsRead(givenTask);
         } else
         {
-            taskSetupSteps.assignments.markAssignedTaskAsUnread(atask);
+            projectsSteps.givenProject.markAssignedTaskAsUnread(givenTask);
         }
     }
 
@@ -63,28 +61,28 @@ public class AssignmentsSteps
     @When("assigned task is completed")
     public void complete()
     {
-        taskSetupSteps.assignments.completeAssignedTask(taskSetupSteps.assignedTask);
+        projectsSteps.givenProject.completeAssignedTask(givenTask);
     }
 
 
     @When("assigned task is dropped")
     public void drop()
     {
-        taskSetupSteps.assignments.dropAssignedTask(taskSetupSteps.assignedTask);
+        projectsSteps.givenProject.dropAssignedTask(givenTask);
     }
 
-    @When("assigned task is forwarded")
-    public void forward()
+    @When("assigned task is forwarded to user $name")
+    public void forward(String name)
     {
-        UserEntity user = userSetupSteps.userMap.get("user1");
-        taskSetupSteps.assignments.forwardAssignedTask(taskSetupSteps.assignedTask, user);
+        UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
+        projectsSteps.givenProject.forwardAssignedTask(givenTask, user);
     }
 
 
-    @When("assigned task is delegated")
-    public void delegate()
+    @When("assigned task is delegated to user $name")
+    public void delegate(String name)
     {
-        UserEntity user = userSetupSteps.userMap.get("user1");
-        taskSetupSteps.assignments.delegateAssignedTaskTo(taskSetupSteps.assignedTask, user);
+        UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
+        projectsSteps.givenProject.delegateAssignedTaskTo(givenTask, user);
     }
 }

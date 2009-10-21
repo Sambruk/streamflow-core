@@ -18,7 +18,6 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
 
 /**
  * JAVADOC
@@ -30,18 +29,18 @@ public class OrganizationParticipationsSteps
     GenericSteps genericSteps;
 
     @Uses
-    UserSetupSteps userSetupSteps;
+    OrganizationsSteps orgsSteps;
 
-    @When("user named $username joins Organization")
-    public void joinOrganization(String username)
+    @When("a user joins organization")
+    public void joinOrganization()
     {
-        userSetupSteps.userMap.get(username).join(userSetupSteps.organization);
+        orgsSteps.givenUser.join( orgsSteps.givenOrganization);
     }
 
-    @When("user named $username leaves Organization")
-    public void leaveOrganization(String username)
+    @When("a user leaves organization")
+    public void leaveOrganization()
     {
-        userSetupSteps.userMap.get(username).leave(userSetupSteps.organization);
+        orgsSteps.givenUser.leave( orgsSteps.givenOrganization);
     }
 
 }

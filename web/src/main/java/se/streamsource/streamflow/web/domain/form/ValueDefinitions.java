@@ -18,6 +18,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -56,13 +57,7 @@ public interface ValueDefinitions
 
         public ValueDefinitionEntity getValueDefinitionByName( String name )
         {
-            for (ValueDefinitionEntity valueDefinition : valueDefinitions())
-            {
-                if (valueDefinition.description().get().equals(name))
-                    return valueDefinition;
-            }
-
-            return null;
+            return Describable.DescribableMixin.getDescribable( valueDefinitions(), name );
         }
     }
 }

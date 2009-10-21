@@ -18,7 +18,6 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 
@@ -32,15 +31,18 @@ public class OrganizationalUnitSteps
     GenericSteps genericSteps;
 
     @Uses
-    OrganizationSetupSteps organizationSetupSteps;
+    OrganizationalUnitsSteps ouSteps;
 
-    @When("organizational unit named $ou1 is moved to organizational unit named $ou2")
-    public void move(String ou1, String ou2) throws Exception
+    @Uses
+    OrganizationsSteps orgsSteps;
+
+    @When("organizational unit is moved to organizational unit named $ou2")
+    public void move(String ou2) throws Exception
     {
         try
         {
-            OrganizationalUnit orgUnit1 = organizationSetupSteps.orgUnitMap.get(ou1);
-            OrganizationalUnits orgUnit2 = (OrganizationalUnits) organizationSetupSteps.orgUnitMap.get(ou2);
+            OrganizationalUnit orgUnit1 = ouSteps.givenOu;
+            OrganizationalUnits orgUnit2 = (OrganizationalUnits) orgsSteps.givenOrganization.getOrganizationalUnitByName(ou2);
             orgUnit1.moveOrganizationalUnit(orgUnit2);
         } catch(Exception e)
         {
@@ -48,13 +50,13 @@ public class OrganizationalUnitSteps
         }
     }
 
-    @When("organizational unit named $ou1 is merged to organizational unit named $ou2")
-    public void merge(String ou1, String ou2) throws Exception
+    @When("organizational unit is merged to organizational unit named $ou2")
+    public void merge(String ou2) throws Exception
     {
         try
         {
-            OrganizationalUnit orgUnit1 = organizationSetupSteps.orgUnitMap.get(ou1);
-            OrganizationalUnit orgUnit2 = organizationSetupSteps.orgUnitMap.get(ou2);
+            OrganizationalUnit orgUnit1 = ouSteps.givenOu;
+            OrganizationalUnit orgUnit2 = orgsSteps.givenOrganization.getOrganizationalUnitByName(ou2);
             orgUnit1.mergeOrganizationalUnit(orgUnit2);
         } catch(Exception e)
         {
@@ -62,12 +64,12 @@ public class OrganizationalUnitSteps
         }
     }
 
-    @When("organizational unit named $ou is deleted")
-    public void delete(String ou) throws Exception
+    @When("organizational unit is deleted")
+    public void delete() throws Exception
     {
         try
         {
-            OrganizationalUnit orgUnit1 = organizationSetupSteps.orgUnitMap.get(ou);
+            OrganizationalUnit orgUnit1 = ouSteps.givenOu;
             orgUnit1.deleteOrganizationalUnit();
         } catch(Exception e)
         {

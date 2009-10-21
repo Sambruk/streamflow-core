@@ -17,37 +17,31 @@ package se.streamsource.streamflow.client.application.shared.steps;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.project.Project;
 
 /**
  * JAVADOC
  */
-public class AssignableSteps
+public class MembersSteps
         extends Steps
 {
     @Uses
-    TaskSetupSteps taskSetupSteps;
+    ProjectsSteps projectsSetup;
 
     @Uses
-    UserSetupSteps userSetupSteps;
+    OrganizationsSteps orgsSteps;
 
-    @Uses
-    GenericSteps genericSteps;
-
-    @When("task is assigned to user named $name")
-    public void assignTo(String name)
+    @When("a member is added to project")
+    public void addMember()
     {
-        UserEntity user = userSetupSteps.userMap.get(name);
-        taskSetupSteps.unassignedTask.assignTo(user);
+        Project project = projectsSetup.givenProject;
+        project.addMember( orgsSteps.givenUser );
     }
 
-
-    @When("assigned task is unassigned")
-    public void unassign()
+    @When("a member is removed from project")
+    public void leaveProject()
     {
-        taskSetupSteps.assignedTask.unassign();
+        Project project = projectsSetup.givenProject;
+        project.removeMember( orgsSteps.givenUser );
     }
 }

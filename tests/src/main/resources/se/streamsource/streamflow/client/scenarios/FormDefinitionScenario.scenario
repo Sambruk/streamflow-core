@@ -1,0 +1,15 @@
+Scenario: create form and add fields
+Given basic organizational unit setup
+
+When a value definition named SomeType is created
+And a field definition named SomeField of type SomeType is created
+And a form definition named SomeForm is created
+And events are cleared
+When a field definition is added to form
+Then events fieldAdded occurred
+
+When a field definition is removed from form
+Then events fieldRemoved occurred
+
+When a field definition is removed from form
+Then no events occurred

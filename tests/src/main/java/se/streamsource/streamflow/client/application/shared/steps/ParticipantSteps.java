@@ -17,9 +17,6 @@ package se.streamsource.streamflow.client.application.shared.steps;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.application.shared.steps.setup.GroupsSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.ParticipantSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.ProjectsSetupSteps;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.project.Project;
 
@@ -30,39 +27,39 @@ public class ParticipantSteps
         extends Steps
 {
     @Uses
-    ProjectsSetupSteps projectsSetup;
+    ProjectsSteps projectsSteps;
 
     @Uses
-    GroupsSetupSteps groupsSetup;
+    GroupsSteps groupsSteps;
 
     @Uses
-    ParticipantSetupSteps participantSetup;
+    OrganizationsSteps orgsSteps;
 
     @When("a participant joins a project")
     public void joinProject()
     {
-        Project project = projectsSetup.projectMap.get("project1");
-        participantSetup.nonParticipant.joinProject(project);
+        Project project = projectsSteps.givenProject;
+        orgsSteps.givenUser.joinProject(project);
     }
 
     @When("a participant leaves a project")
     public void leaveProject()
     {
-        Project project = projectsSetup.projectMap.get("project1");
-        participantSetup.participant.leaveProject(project);
+        Project project = projectsSteps.givenProject;
+        orgsSteps.givenUser.leaveProject(project);
     }
 
     @When("a participant joins a group")
     public void joinGroup()
     {
-        Group group = groupsSetup.groupMap.get("group1");
-        participantSetup.nonParticipant.joinGroup(group);
+        Group group = groupsSteps.givenGroup;
+        orgsSteps.givenUser.joinGroup(group);
     }
 
     @When("a participant leaves a group")
     public void leaveGroup()
     {
-        Group group = groupsSetup.groupMap.get("group1");
-        participantSetup.participant.leaveGroup(group);
+        Group group = groupsSteps.givenGroup;
+        orgsSteps.givenUser.leaveGroup(group);
     }
 }

@@ -18,6 +18,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -56,12 +57,7 @@ public interface FormDefinitions
 
         public FormDefinitionEntity getFormByName( String name )
         {
-            for (FormDefinitionEntity formDefinitionEntity : formDefinitions())
-            {
-                if (formDefinitionEntity.description().get().equals(name))
-                    return formDefinitionEntity;
-            }
-            return null;
+            return Describable.DescribableMixin.getDescribable( formDefinitions(), name );
         }
     }
 }

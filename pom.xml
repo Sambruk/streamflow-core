@@ -9,7 +9,7 @@
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
-        <version.qi4j-core>1.0-RC2-20091008.011211</version.qi4j-core>
+        <version.qi4j-core>1.0-RC2-20091008.011211-40</version.qi4j-core>
         <version.qi4j-lib>1.0-RC2-20091008.010531</version.qi4j-lib>
         <version.qi4j-ext>1.0-RC2-20091008.010012</version.qi4j-ext>
         <version.qi4j-tools>1.0-RC2-20091008.010339</version.qi4j-tools>

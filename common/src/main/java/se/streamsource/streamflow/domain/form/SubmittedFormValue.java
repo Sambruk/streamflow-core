@@ -12,11 +12,12 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.form;
+package se.streamsource.streamflow.domain.form;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
  * JAVADOC
  */
 public interface SubmittedFormValue
+    extends ValueComposite
 {
     Property<Date> submissionDate();
     Property<EntityReference> submitter();

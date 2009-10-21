@@ -14,10 +14,10 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.application.shared.steps.setup.ProjectsSetupSteps;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 
 /**
@@ -27,25 +27,32 @@ public class ProjectsSteps
         extends Steps
 {
     @Uses
-    ProjectsSetupSteps projectsSetup;
+    OrganizationalUnitsSteps ouSteps;
 
-    @When("a new project with name $name is created")
+    public ProjectEntity givenProject;
+
+
+    @Given("project named $project")
+    public void givenProject(String name)
+    {
+        givenProject = ouSteps.givenOu.getProjectByName( name );
+    }
+
+    @When("a project named $name is created")
     public void createProject(String name)
     {
-        projectsSetup.projects.createProject(name);
+        givenProject = ouSteps.givenOu.createProject(name);
     }
 
-    @When("project named $name is added")
-    public void addProject(String name)
+    @When("project is added")
+    public void addProject()
     {
-        ProjectEntity project = projectsSetup.projectMap.get(name);
-        projectsSetup.projects.addProject(project);
+        ouSteps.givenOu.addProject(givenProject);
     }
 
-    @When("project named $name is removed")
-    public void removeProject(String name)
+    @When("project is removed")
+    public void removeProject()
     {
-        ProjectEntity project = projectsSetup.projectMap.get(name);
-        projectsSetup.projects.removeProject(project);
+        ouSteps.givenOu.removeProject(givenProject);
     }
 }

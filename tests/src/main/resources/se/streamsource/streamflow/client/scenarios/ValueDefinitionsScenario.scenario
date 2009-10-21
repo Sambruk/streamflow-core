@@ -1,7 +1,7 @@
 Scenario: create and remove value definition
 Given basic organizational unit setup
-When value definition named SomeValue is created
+When a value definition named SomeValue is created
 Then events valueDefinitionCreated,valueDefinitionAdded,descriptionChanged occurred
 
-When value definition named SomeValue is removed
+When a value definition is removed
 Then events valueDefinitionRemoved occurred

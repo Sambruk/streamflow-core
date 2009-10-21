@@ -18,7 +18,6 @@ import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
@@ -30,7 +29,7 @@ import org.qi4j.library.constraints.annotation.Matches;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
@@ -54,20 +53,21 @@ public interface Organizations
     UserEntity createUser(@Matches("\\w*")String username, String password)
             throws IllegalArgumentException;
 
-    @Mixins(OrganisationsStateMixin.class)
     interface OrganizationsState
     {
         OrganizationEntity organizationCreated(DomainEvent event, String id);
 
         UserEntity userCreated(DomainEvent event, String username, String password);
 
-        OrganizationEntity findByName(String name);
+        OrganizationEntity getOrganizationByName(String name);
 
-        Query<OrganizationEntity> findAll();
+        Query<OrganizationEntity> getAllOrganizations();
+
+        UserEntity getUserByName(String name);
     }
 
-    class OrganizationsMixin
-            implements Organizations
+    abstract class OrganizationsMixin
+            implements Organizations, OrganizationsState
     {
         @Structure
         UnitOfWorkFactory uowf;
@@ -75,13 +75,16 @@ public interface Organizations
         @Service
         IdentityGenerator idGen;
 
-        @This
-        OrganizationsState state;
+        @Structure
+        QueryBuilderFactory qbf;
+
+        @Structure
+        ValueBuilderFactory vbf;
 
         public OrganizationEntity createOrganization(String name)
         {
 //            OrganizationEntity ou = state.organizationCreated(CREATE, idGen.generate(OrganizationEntity.class));
-            OrganizationEntity ou = state.organizationCreated(CREATE, "Organization");
+            OrganizationEntity ou = organizationCreated(CREATE, "Organization");
 
             // Change name
             ou.changeDescription(name);
@@ -106,22 +109,9 @@ public interface Organizations
                 // Ok!
             }
 
-            UserEntity user = state.userCreated(CREATE, username, password);
+            UserEntity user = userCreated(CREATE, username, password);
             return user;
         }
-    }
-
-    class OrganisationsStateMixin
-            implements OrganizationsState
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
-
-        @Structure
-        QueryBuilderFactory qbf;
-
-        @Structure
-        ValueBuilderFactory vbf;
 
         public OrganizationEntity organizationCreated(DomainEvent event, String id)
         {
@@ -139,7 +129,7 @@ public interface Organizations
         }
 
 
-        public OrganizationEntity findByName(String name)
+        public OrganizationEntity getOrganizationByName(String name)
         {
             Describable.DescribableState template = QueryExpressions.templateFor(Describable.DescribableState.class);
             return qbf.newQueryBuilder(OrganizationEntity.class).
@@ -147,10 +137,15 @@ public interface Organizations
                     newQuery(uowf.currentUnitOfWork()).find();
         }
 
-        public Query<OrganizationEntity> findAll()
+        public Query<OrganizationEntity> getAllOrganizations()
         {
             return qbf.newQueryBuilder(OrganizationEntity.class).
                     newQuery(uowf.currentUnitOfWork());
+        }
+
+        public UserEntity getUserByName(String name)
+        {
+            return uowf.currentUnitOfWork().get( UserEntity.class, name );
         }
     }
 }

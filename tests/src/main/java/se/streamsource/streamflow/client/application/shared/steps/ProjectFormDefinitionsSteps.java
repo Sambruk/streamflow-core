@@ -14,16 +14,12 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
-import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.annotations.Given;
+import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.ProjectsSetupSteps;
-import se.streamsource.streamflow.web.domain.form.FormDefinition;
 import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
-import se.streamsource.streamflow.web.domain.form.FormDefinitions;
 import se.streamsource.streamflow.web.domain.project.ProjectFormDefinitions;
 
 /**
@@ -36,49 +32,44 @@ public class ProjectFormDefinitionsSteps
     GenericSteps genericSteps;
 
     @Uses
-    OrganizationSetupSteps organizationSetupSteps;
+    OrganizationsSteps orgsSteps;
 
     @Uses
-    ProjectsSetupSteps projectSetupSteps;
+    FormDefinitionsSteps formDefinitionsSteps;
+
+    @Uses
+    ProjectsSteps projectSetupSteps;
 
     public FormDefinitionEntity givenForm;
 
-    @Given("project form definition $form")
+    @Given("form named $form")
     public void givenForm(String form)
     {
         givenForm = projectSetupSteps.givenProject.getFormDefinitionByName( form );
     }
 
-    @When("form definition $name is added")
-    public void addForm(String form) throws Exception
+    @When("a form definition is added to project")
+    public void addForm() throws Exception
     {
         try
         {
-            FormDefinitions.FormDefinitionsState forms = organizationSetupSteps.organization;
-
             ProjectFormDefinitions projectForms = projectSetupSteps.givenProject;
 
-            FormDefinition formDefinition = forms.getFormByName( form );
-
-            projectForms.addFormDefinition( formDefinition );
+            projectForms.addFormDefinition( formDefinitionsSteps.givenForm );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("form definition $form is removed")
-    public void removed(String form) throws Exception
+    @When("a form definition is removed from project")
+    public void removeForm() throws Exception
     {
         try
         {
-            FormDefinitions.FormDefinitionsState forms = organizationSetupSteps.organization;
-
             ProjectFormDefinitions projectForms = projectSetupSteps.givenProject;
 
-            FormDefinition formDefinition = forms.getFormByName( form );
-
-            projectForms.removeFormDefinition( formDefinition );
+            projectForms.removeFormDefinition( formDefinitionsSteps.givenForm );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

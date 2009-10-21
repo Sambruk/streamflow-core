@@ -25,12 +25,9 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.organization.Organization;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
-
-import java.util.Map;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
  * JAVADOC
@@ -47,37 +44,41 @@ public class OrganizationsSteps
     @Uses
     GenericSteps genericSteps;
 
-    public Organizations organizations;
-    public Map<String, Organization> organizationsCreated;
+    public OrganizationsEntity organizations;
 
     public OrganizationEntity givenOrganization;
+    public UserEntity givenUser;
 
-    @Given("the organization $org")
+    @Given("organization named $org")
     public void givenOrganization(String name)
     {
-        givenOrganization = (OrganizationEntity) organizationsCreated.get( name );
+        givenOrganization = organizations.getOrganizationByName( name );
+    }
+
+    @Given("user named $user")
+    public void givenUser(String name)
+    {
+        givenUser = organizations.getUserByName( name );
     }
 
     @Given("the organizations")
-    public Organizations givenOrganizations()
+    public OrganizationsEntity givenOrganizations()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        organizations = uow.get(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+        organizations = uow.get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
         return organizations;
     }
 
     @When("a new organization named $name is created")
-    public Organization createOrganization(String name) throws Exception
+    public void createOrganization(String name) throws Exception
     {
-        Organization organization = null;
         try
         {
-            organization = organizations.createOrganization(name);
+            givenOrganization = organizations.createOrganization(name);
         } catch (Exception e)
         {
             genericSteps.setThrowable(e);
         }
-        return organization;
     }
 
 
@@ -86,7 +87,7 @@ public class OrganizationsSteps
     {
         try
         {
-            organizations.createUser(newUser, newUser);
+            givenUser = organizations.createUser(newUser, newUser);
         } catch(IllegalArgumentException e)
         {
             genericSteps.setThrowable(e);

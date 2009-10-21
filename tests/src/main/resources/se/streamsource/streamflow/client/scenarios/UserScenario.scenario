@@ -1,51 +1,60 @@
 Scenario: User changes password
 Given basic user setup
-When user named user1 changes password from password1 to newPassword
+Given user named user1
+When user changes password from password1 to newPassword
 Then events passwordChanged occurred
 And exception is not thrown
 
 Scenario: User tries to change password but get exception
 Given basic user setup
-When user named user2 changes password from wrongPassword to newPassword
+Given user named user2
+When user changes password from wrongPassword to newPassword
 Then WrongPasswordException is thrown
 Then no events occurred
 
 Scenario: User logs in
 Given basic user setup
-When user named user1 tries to login with password password1
+Given user named user1
+When user tries to login with password password1
 Then no events occurred
 
 Scenario: User logs in with wrong password
 Given basic user setup
-When user named user1 tries to login with password wrongPassword
+Given user named user1
+When user tries to login with password wrongPassword
 Then events failedLogin occurred
 And exception is not thrown
 
 Scenario: User is disabled
 Given basic user setup
-When user named user1 enabled is set to false
+Given user named user1
+When user enabled is set to false
 Then events enabledChanged occurred
 And exception is not thrown
 
 Scenario: Enabled user is enabled
 Given basic user setup
-When user named user1 enabled is set to true
+Given user named user1
+When user enabled is set to true
 Then no events occurred
 
 Scenario: Disabled user is enabled
 Given basic user setup
-When user named disabledUser enabled is set to true
+Given user named disabledUser
+When user enabled is set to true
 Then events enabledChanged occurred
 And exception is not thrown
 
 Scenario: Disabled user is disabled
 Given basic user setup
-When user named disabledUser enabled is set to false
+Given user named disabledUser
+When user enabled is set to false
 Then no events occurred
 
 Scenario: User reset password
 Given basic user setup
-When user named user1 resets password with newPassword
+Given user named user1
+When user resets password with newPassword
 Then events passwordChanged occurred
 
 

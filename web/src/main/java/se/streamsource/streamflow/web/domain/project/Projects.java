@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 
@@ -48,6 +49,8 @@ public interface Projects
         void projectAdded(DomainEvent event, Project project);
 
         void mergeProjects(Projects projects);
+
+        ProjectEntity getProjectByName(String name);
     }
 
     abstract class ProjectsMixin
@@ -99,6 +102,11 @@ public interface Projects
                 return;
             }
             projectAdded(DomainEvent.CREATE, project);
+        }
+
+        public ProjectEntity getProjectByName( String name )
+        {
+            return (ProjectEntity) Describable.DescribableMixin.getDescribable( projects(), name );
         }
     }
 

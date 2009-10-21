@@ -1,17 +1,15 @@
-Scenario: Create new Organization Unit
+Scenario: Create/remove new Organization Unit
 Given basic organizational unit setup
+Given the organization
 When an organizational unit named jayway2000 is created
 Then events organizationalUnitCreated,organizationalUnitAdded,descriptionChanged occurred
-And exception is not thrown
+
+When organizational unit is removed
+Then events organizationalUnitRemoved occurred
 
 Scenario: Organizational Unit names cannot be more than 50 characters
 Given basic organizational unit setup
+Given the organization
 When an organizational unit named abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz is created
 Then ConstraintViolationException is thrown
 And no events occurred
-
-Scenario: Remove organizational unit
-Given basic organizational unit setup
-When organizational unit named OU1 is removed
-Then events organizationalUnitRemoved occurred
-And exception is not thrown

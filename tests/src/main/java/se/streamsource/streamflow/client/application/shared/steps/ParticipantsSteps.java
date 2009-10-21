@@ -17,11 +17,7 @@ package se.streamsource.streamflow.client.application.shared.steps;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.application.shared.steps.setup.GroupsSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.ParticipantSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.ProjectsSetupSteps;
 import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.project.Project;
 
 /**
  * JAVADOC
@@ -30,39 +26,22 @@ public class ParticipantsSteps
         extends Steps
 {
     @Uses
-    ProjectsSetupSteps projectsSetup;
+    GroupsSteps groupsSteps;
 
     @Uses
-    GroupsSetupSteps groupsSetup;
-
-    @Uses
-    ParticipantSetupSteps participantSetup;
-
-    @When("a participant joins a project")
-    public void joinProject()
-    {
-        Project project = projectsSetup.projectMap.get("project1");
-        participantSetup.nonParticipant.joinProject(project);
-    }
-
-    @When("a participant leaves a project")
-    public void leaveProject()
-    {
-        Project project = projectsSetup.projectMap.get("project1");
-        participantSetup.participant.leaveProject(project);
-    }
+    OrganizationsSteps orgsSteps;
 
     @When("a participant joins a group")
     public void joinGroup()
     {
-        Group group = groupsSetup.groupMap.get("group1");
-        participantSetup.nonParticipant.joinGroup(group);
+        Group group = groupsSteps.givenGroup;
+        group.addParticipant( orgsSteps.givenUser );
     }
 
     @When("a participant leaves a group")
     public void leaveGroup()
     {
-        Group group = groupsSetup.groupMap.get("group1");
-        participantSetup.participant.leaveGroup(group);
+        Group group = groupsSteps.givenGroup;
+        group.removeParticipant( orgsSteps.givenUser );
     }
 }

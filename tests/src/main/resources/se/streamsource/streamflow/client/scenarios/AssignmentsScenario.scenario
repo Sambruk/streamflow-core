@@ -1,44 +1,72 @@
 Scenario: Create assigned task
-Given basic task setup
-When an assigned task is created for user named user1
-Then events assignedTaskCreated,ownerChanged,contactAdded,assignedTo occurred
+Given basic setup 1
+Given the organization
+Given organizational unit named OU1
+Given project named project1
+Given user named user1
+When an assigned task is created
+Then events assignedTaskCreated,ownerChanged,dateChanged,counterSet,taskIdAssigned,contactAdded,assignedTo occurred
 
-Scenario: Mark read assigned task as unread
-Given basic task setup
-When read assigned task is marked as unread
+Scenario: Mark assigned task as unread and read
+Given basic setup 1
+Given the organization
+Given organizational unit named OU1
+Given project named project1
+Given user named user1
+When an assigned task is created
+And events are cleared
+And an assigned task is marked as unread
 Then events assignedTaskMarkedAsUnread occurred
 
-Scenario: Mark read assigned task as read
-Given basic task setup
-When read assigned task is marked as read
+When an assigned task is marked as unread
 Then no events occurred
 
-Scenario: Mark unread assigned task as unread
-Given basic task setup
-When unread assigned task is marked as unread
-Then no events occurred
-
-Scenario: Mark unread assigned task as read
-Given basic task setup
-When unread assigned task is marked as read
+When an assigned task is marked as read
 Then events assignedTaskMarkedAsRead occurred
 
+When an assigned task is marked as read
+Then no events occurred
+
 Scenario: Complete assigned task
-Given basic task setup
-When assigned task is completed
+Given basic setup 1
+Given the organization
+Given organizational unit named OU1
+Given project named project1
+Given user named user1
+When an assigned task is created
+And events are cleared
+And assigned task is completed
 Then events statusChanged occurred
 
 Scenario: Drop assigned task
-Given basic task setup
-When assigned task is dropped
+Given basic setup 1
+Given the organization
+Given organizational unit named OU1
+Given project named project1
+Given user named user1
+When an assigned task is created
+And events are cleared
+And assigned task is dropped
 Then events statusChanged occurred
 
-Scenario: Drop assigned task
-Given basic task setup
-When assigned task is forwarded
+Scenario: Forward assigned task
+Given basic setup 1
+Given the organization
+Given organizational unit named OU1
+Given project named project1
+Given user named user1
+When an assigned task is created
+And events are cleared
+And assigned task is forwarded to user user2
 Then events unassigned,ownerChanged,markedAsUnread occurred
 
-Scenario: Drop assigned task
-Given basic task setup
-When assigned task is delegated
+Scenario: Delegate assigned task
+Given basic setup 1
+Given the organization
+Given organizational unit named OU1
+Given project named project1
+Given user named user1
+When an assigned task is created
+And events are cleared
+And assigned task is delegated to user user2
 Then events unassigned,delegatedTo occurred

@@ -26,6 +26,7 @@ import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.InboxQueries;
 import se.streamsource.streamflow.web.domain.task.TaskId;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
+import se.streamsource.streamflow.web.domain.task.WaitingForQueries;
 
 /**
  * JAVADOC
@@ -39,6 +40,7 @@ public interface ProjectEntity
         InboxQueries,
         Inbox.InboxState,
         Assignments.AssignmentsState,
+        WaitingForQueries,
         WaitingFor.WaitingForState,
         Members.MembersState,
         Describable.DescribableState,

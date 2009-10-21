@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.form;
+package se.streamsource.streamflow.domain.form;
 
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
@@ -27,9 +27,9 @@ public class FormAssembler
 {
     public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
     {
-        moduleAssembly.addEntities(
-                FormDefinitionEntity.class, 
-                FieldDefinitionEntity.class,
-                ValueDefinitionEntity.class ).visibleIn( Visibility.application );
+        moduleAssembly.addValues( EffectiveFieldValue.class,
+                EffectiveFormFieldsValue.class,
+                FieldValue.class,
+                SubmittedFormValue.class).visibleIn( Visibility.application );
     }
 }

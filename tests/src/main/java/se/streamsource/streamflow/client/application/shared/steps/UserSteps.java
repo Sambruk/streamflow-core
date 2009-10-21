@@ -15,12 +15,11 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.hamcrest.CoreMatchers;
-import static org.jbehave.Ensure.ensureThat;
+import static org.jbehave.Ensure.*;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.domain.user.WrongPasswordException;
@@ -32,15 +31,15 @@ public class UserSteps
         extends Steps
 {
     @Uses
-    UserSetupSteps userSetupSteps;
+    OrganizationsSteps organizationsSteps;
 
     @Uses
     GenericSteps genericSteps;
 
-    @When("user named $userName changes password from $oldPassword to $newPassword")
-    public void changePassword(String userName, String oldPassword, String newPassword) throws UnitOfWorkCompletionException
+    @When("user changes password from $oldPassword to $newPassword")
+    public void changePassword(String oldPassword, String newPassword) throws UnitOfWorkCompletionException
     {
-        UserEntity user = userSetupSteps.userMap.get(userName);
+        UserEntity user = organizationsSteps.givenUser;
         ensureThat(user, CoreMatchers.notNullValue());
 
         try
@@ -53,27 +52,23 @@ public class UserSteps
     }
 
 
-    @When("user named $userName tries to login with password $password")
-    public void login(String userName, String password) throws UnitOfWorkCompletionException
+    @When("user tries to login with password $password")
+    public void login(String password) throws UnitOfWorkCompletionException
     {
-        genericSteps.clearEvents();
-        UserEntity user = userSetupSteps.userMap.get(userName);
-        user.login(password);
+        organizationsSteps.givenUser.login(password);
     }
 
 
-    @When("user named $userName enabled is set to $state")
-    public void setEnabled(String userName, String state) throws UnitOfWorkCompletionException
+    @When("user enabled is set to $state")
+    public void setEnabled(String state) throws UnitOfWorkCompletionException
     {
-        genericSteps.clearEvents();
-        UserEntity user = userSetupSteps.userMap.get(userName);
-        user.changeEnabled(Boolean.parseBoolean(state));
+        organizationsSteps.givenUser.changeEnabled(Boolean.parseBoolean(state));
     }
 
-    @When("user named $userName resets password with $newPassword")
-    public void resetPassword(String userName, String newPassword) throws UnitOfWorkCompletionException
+    @When("user resets password with $newPassword")
+    public void resetPassword(String newPassword) throws UnitOfWorkCompletionException
     {
-        UserEntity user = userSetupSteps.userMap.get(userName);
+        UserEntity user = organizationsSteps.givenUser;
         ensureThat(user, CoreMatchers.notNullValue());
 
         user.resetPassword(newPassword);

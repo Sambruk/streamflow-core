@@ -31,7 +31,6 @@ public interface Describable
 
     String getDescription();
 
-    @Mixins(DescribableMixin.class)
     interface DescribableState
     {
         @UseDefaults
@@ -43,6 +42,17 @@ public interface Describable
     public abstract class DescribableMixin
             implements Describable, DescribableState
     {
+        public static <T extends Describable> T getDescribable(Iterable<T> collection, String desc)
+        {
+            for (T describable : collection)
+            {
+                if (((DescribableState)describable).description().get().equals( desc ))
+                    return describable;
+            }
+
+            throw new IllegalArgumentException(desc);
+        }
+
         public void changeDescription(String newDescription)
         {
             descriptionChanged(CREATE, newDescription);

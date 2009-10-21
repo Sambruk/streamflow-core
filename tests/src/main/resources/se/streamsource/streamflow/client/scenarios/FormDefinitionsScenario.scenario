@@ -1,23 +1,7 @@
 Scenario: create and remove form definition
 Given basic organizational unit setup
-When form definition named SomeForm is created
+When a form definition named SomeForm is created
 Then events formDefinitionCreated,formDefinitionAdded,descriptionChanged occurred
 
-When form definition is removed
+When a form definition is removed
 Then events formDefinitionRemoved occurred
-
-Scenario: create form and add fields
-Given basic organizational unit setup
-
-When value definition named SomeType is created
-And field definition named SomeField of type SomeType is created
-And form definition named SomeForm is created
-And events are cleared
-And field definition SomeField is added to form SomeForm
-Then events fieldAdded occurred
-
-When field definition SomeField is removed from form SomeForm
-Then events fieldRemoved occurred
-
-When field definition SomeField is removed from form SomeForm
-Then no events occurred

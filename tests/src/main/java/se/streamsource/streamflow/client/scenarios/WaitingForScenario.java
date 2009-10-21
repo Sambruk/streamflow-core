@@ -17,9 +17,17 @@ package se.streamsource.streamflow.client.scenarios;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
 import se.streamsource.streamflow.client.application.shared.steps.WaitingForSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ProjectFormDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.MembersSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
@@ -36,6 +44,20 @@ public class WaitingForScenario
 
     public WaitingForScenario(ClassLoader classLoader)
     {
-        super(classLoader, new WaitingForSteps(), new TaskSetupSteps(), new OrganizationSetupSteps(), new OrganizationsSteps(), new UserSteps(), new UserSetupSteps());
+        super(classLoader, new TestSetupSteps(),
+                new ValueDefinitionsSteps(),
+                new FieldDefinitionsSteps(),
+                new FormDefinitionSteps(),
+                new FormDefinitionsSteps(),
+                new ProjectFormDefinitionsSteps(),
+                new OrganizationsSteps(),
+                new OrganizationalUnitsSteps(),
+                new MembersSteps(),
+                new ProjectsSteps(),
+                new ParticipantsSteps(),
+                new GroupsSteps(),
+                new UserSteps(),
+                new WaitingForSteps()
+        );
     }
 }

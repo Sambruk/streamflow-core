@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -74,13 +75,7 @@ public interface FieldDefinitions
 
         public FieldDefinitionEntity getFieldDefinitionByName( String name )
         {
-            for (FieldDefinitionEntity fieldDefinitionEntity : fieldDefinitions())
-            {
-                if (fieldDefinitionEntity.description().get().equals(name))
-                    return fieldDefinitionEntity;
-            }
-            
-            return null;
+            return Describable.DescribableMixin.getDescribable( fieldDefinitions(), name );
         }
     }
 }

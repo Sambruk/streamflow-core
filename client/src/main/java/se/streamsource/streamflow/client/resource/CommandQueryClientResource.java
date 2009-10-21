@@ -157,13 +157,7 @@ public class CommandQueryClientResource
         try
         {
             Representation events = post(commandRepresentation);
-            if (!getStatus().isSuccess())
-            {
-                throw new ResourceException(getStatus());
-            } else
-            {
-                processEvents(events);
-            }
+            processEvents(events);
         } finally
         {
             setReference(ref);

@@ -1,5 +1,11 @@
 Scenario: Add comment to a task
-Given basic task setup
-When comment with text mycomment is added
+Given basic setup 1
+Given the organization
+Given organizational unit named OU1
+Given project named project1
+Given user named user1
+When inbox task is created
+And events are cleared
+And comment with text mycomment is added
 Then events commentAdded occurred
 

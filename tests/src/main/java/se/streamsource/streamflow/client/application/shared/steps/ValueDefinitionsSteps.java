@@ -14,12 +14,11 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.web.domain.form.ValueDefinition;
 import se.streamsource.streamflow.web.domain.form.ValueDefinitionEntity;
 import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
 
@@ -33,35 +32,39 @@ public class ValueDefinitionsSteps
     GenericSteps genericSteps;
 
     @Uses
-    OrganizationSetupSteps organizationSetupSteps;
+    OrganizationsSteps orgsSteps;
 
-    public ValueDefinitionEntity valueDefinition;
+    public ValueDefinitionEntity givenValue;
 
-    @When("value definition named $name is created")
+    @Given("value definition named $name")
+    public void givenValue(String name)
+    {
+        ValueDefinitions.ValueDefinitionsState values = orgsSteps.givenOrganization;
+        givenValue = values.getValueDefinitionByName( name );
+    }
+
+    @When("a value definition named $name is created")
     public void createValue(String name) throws Exception
     {
         try
         {
-            ValueDefinitions values = organizationSetupSteps.organization;
+            ValueDefinitions values = orgsSteps.givenOrganization;
 
-            valueDefinition = values.createValueDefinition( name );
+            givenValue = values.createValueDefinition( name );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("value definition named $name is removed")
-    public void removed(String name) throws Exception
+    @When("a value definition is removed")
+    public void removed() throws Exception
     {
         try
         {
-            ValueDefinitions.ValueDefinitionsState valuesState = organizationSetupSteps.organization;
-            ValueDefinitions values = organizationSetupSteps.organization;
+            ValueDefinitions values = orgsSteps.givenOrganization;
 
-            ValueDefinition valueDef = valuesState.getValueDefinitionByName( name );
-
-            values.removeValueDefinition( valueDef );
+            values.removeValueDefinition( givenValue );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

@@ -25,6 +25,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.role.Roles;
@@ -51,6 +52,8 @@ public interface OrganizationalUnits
         void organizationalUnitAdded(DomainEvent event, OrganizationalUnit ou);
 
         OrganizationalUnits getParent(OrganizationalUnit ou);
+
+        OrganizationalUnit getOrganizationalUnitByName(String name);
     }
 
     abstract class OrganizationsMixin
@@ -139,6 +142,16 @@ public interface OrganizationalUnits
                 }
             }
             return null;
+        }
+
+        public OrganizationalUnit getOrganizationalUnitByName( String name )
+        {
+            for (OrganizationalUnit organizationalUnit : organizationalUnits())
+            {
+                if (((Describable.DescribableState)organizationalUnit).description().get().equals(name))
+                    return organizationalUnit;
+            }
+            throw new IllegalArgumentException(name);
         }
     }
 }

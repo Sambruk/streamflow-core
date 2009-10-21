@@ -86,7 +86,7 @@ public interface BootstrapDataService
                 }
 
 
-                Query<OrganizationEntity> orgs = organizations.findAll();
+                Query<OrganizationEntity> orgs = organizations.getAllOrganizations();
 
                 if (orgs.count() == 0)
                 {

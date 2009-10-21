@@ -1,4 +1,3 @@
-
 Scenario: Create new user
 Given the organizations
 When a new user named newUser is created

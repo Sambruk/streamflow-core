@@ -23,10 +23,12 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.form.FieldDefinitionEntity;
-import se.streamsource.streamflow.web.domain.form.FieldValue;
-import se.streamsource.streamflow.web.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.form.SubmittedForms;
+
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -50,11 +52,14 @@ public class SubmittedFormsSteps
     ValueBuilderFactory vbf;
 
     public SubmittedFormValue form;
+    public ValueBuilder<SubmittedFormValue> formBuilder;
 
     @When("form submission is created")
     public void createForm()
     {
-        form = vbf.newValueBuilder( SubmittedFormValue.class ).prototype();
+        formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
+        form = formBuilder.prototype();
+        form.form().set( EntityReference.getEntityReference(projectFormDefinitionsSteps.givenForm ));
     }
 
     @When("field $name with value $value is added to form")
@@ -69,12 +74,27 @@ public class SubmittedFormsSteps
         form.values().get().add( builder.newInstance() );
     }
 
+    @When("submission date is now")
+    public void submissionDateIsNow()
+    {
+        form.submissionDate().set( new Date() );
+    }
+
+    @When("submitter is set")
+    public void submitterIsSet()
+    {
+        form.submitter().set( EntityReference.getEntityReference(organizationsSteps.givenUser ));
+    }
+
     @When("form is submitted")
     public void submitForm() throws Exception
     {
+
+        form.submissionDate().set( new Date() );
+
         try
         {
-            inboxSteps.task.submitForm( form );
+            inboxSteps.givenTask.submitForm( formBuilder.newInstance() );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
@@ -84,7 +104,7 @@ public class SubmittedFormsSteps
     @Then("effective field value for field $field is $value")
     public void removed(String form, String value) throws Exception
     {
-        SubmittedForms.SubmittedFormsState submittedFormsState = inboxSteps.task;
+        SubmittedForms.SubmittedFormsState submittedFormsState = (SubmittedForms.SubmittedFormsState) inboxSteps.givenTask;
 
 /*
 

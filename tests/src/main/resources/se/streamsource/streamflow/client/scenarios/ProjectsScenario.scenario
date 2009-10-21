@@ -1,17 +1,21 @@
 Scenario: Create project
-Given basic projects setup
-When a new project with name newProject is created
+Given basic organizational unit setup
+When a project named newProject is created
 Then events projectCreated,projectAdded,descriptionChanged occurred
 
 Scenario: addProject
-Given basic projects setup
-When project named project2 is added
+Given basic organizational unit setup
+Given basic user setup
+Given basic project setup
+Given the organization
+Given organizational unit named OU2
+Given project named project2
+Given the organization
+Given organizational unit named OU1
+When project is added
 Then events projectAdded occurred
-
-Scenario: removeProject
-Given basic projects setup
-When project named project1 is removed
-Then events projectRemoved,removedChanged,memberRemoved,leftProject occurred
+When project is removed
+Then events projectRemoved,removedChanged occurred
 
 
 

@@ -14,11 +14,12 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 
 /**
@@ -31,27 +32,41 @@ public class OrganizationalUnitsSteps
     GenericSteps genericSteps;
 
     @Uses
-    OrganizationSetupSteps organizationSetupSteps;
+    OrganizationsSteps organizationsSteps;
+
+    public OrganizationalUnitEntity givenOu;
+
+    @Given("the organization")
+    public void givenOrganization()
+    {
+        givenOu = organizationsSteps.givenOrganization;
+    }
+
+    @Given("organizational unit named $name")
+    public void givenOU(String name)
+    {
+        givenOu = (OrganizationalUnitEntity) givenOu.getOrganizationalUnitByName(name);
+    }
 
     @When("an organizational unit named $name is created")
-    public void createOrganizationalUnit(String name) throws Exception
+    public void createOrganizationalUnit(String name)
     {
         try
         {
-            organizationSetupSteps.organization.createOrganizationalUnit(name);
+            givenOu = (OrganizationalUnitEntity) givenOu.createOrganizationalUnit(name);
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("organizational unit named $name is removed")
+    @When("an organizational unit named $name is removed")
     public void removeOrgUnit(String name)
     {
         try
         {
-            OrganizationalUnitEntity ou = (OrganizationalUnitEntity) organizationSetupSteps.orgUnitMap.get(name);
-            organizationSetupSteps.organization.removeOrganizationalUnit(ou);
+            OrganizationalUnit removeOu = givenOu.getOrganizationalUnitByName( name );
+            givenOu.removeOrganizationalUnit(removeOu);
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

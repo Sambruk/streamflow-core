@@ -1,0 +1,13 @@
+Scenario: Submit a form project
+Given basic setup 1
+Given form named SomeForm
+Given user named user1
+When inbox task is created
+And form submission is created
+And field SomeField with value somevalue is added to form
+And submission date is now
+And submitter is set
+And events are cleared
+And form is submitted
+
+Then events formSubmitted occurred

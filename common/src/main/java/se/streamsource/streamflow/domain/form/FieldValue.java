@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.form;
+package se.streamsource.streamflow.domain.form;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;

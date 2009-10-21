@@ -14,13 +14,17 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.TaskSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
-import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
 /**
  * JAVADOC
@@ -28,31 +32,63 @@ import se.streamsource.streamflow.web.domain.task.Task;
 public class WaitingForSteps
         extends Steps
 {
-    @Uses
-    TaskSetupSteps taskSetupSteps;
+    @Structure
+    UnitOfWorkFactory uowf;
 
     @Uses
-    UserSetupSteps userSetupSteps;
+    ProjectsSteps projectsSteps;
+
+    @Uses
+    OrganizationsSteps orgsSteps;
 
     @Uses
     GenericSteps genericSteps;
 
-    @When("inbox task is created")
-    public void createInboxTask()
+    public TaskEntity givenTask;
+
+    @Given("first waitingFor task")
+    public void givenWaitingForTask() throws UnitOfWorkCompletionException
     {
-        taskSetupSteps.inbox.createTask();
+        uowf.currentUnitOfWork().apply();
+        WaitingForTaskListDTO list = projectsSteps.givenProject.waitingForTasks( orgsSteps.givenUser );
+        TaskDTO task = list.tasks().get().get( 0 );
+        givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
     }
 
-    @When("$task waitingFor task is marked as $mark")
-    public void markAssignedTaskAs(String task, String mark)
+    @When("waitingFor task is marked as $mark")
+    public void markAssignedTaskAs(String mark)
     {
-        Task atask = "unread".equals(task) ? taskSetupSteps.unreadWaitingForTask : taskSetupSteps.readWaitingForTask;
         if ("read".equals(mark))
         {
-            taskSetupSteps.waitingFor.markWaitingForAsRead(atask);
+            projectsSteps.givenProject.markWaitingForAsRead(givenTask);
         } else
         {
-            taskSetupSteps.waitingFor.markWaitingForAsUnread(atask);
+            projectsSteps.givenProject.markWaitingForAsUnread(givenTask);
         }
     }
+
+    @When("waitingFor task is completed")
+    public void completeWaitingForTask()
+    {
+        projectsSteps.givenProject.completeWaitingForTask( givenTask, orgsSteps.givenUser );
+    }
+
+    @When("waitingFor task is finished")
+            public void completeFinishedTask()
+    {
+        projectsSteps.givenProject.completeFinishedTask( givenTask );
+    }
+
+/*
+    void rejectFinishedTask(Task task);
+
+    void dropWaitingForTask(Task task, Assignee assignee);
+
+    void markWaitingForAsRead(Task task);
+
+    void markWaitingForAsUnread(Task task);
+
+    void rejectTask(Task task);
+*/
+
 }

@@ -19,8 +19,8 @@ import se.streamsource.streamflow.client.application.shared.steps.FormDefinition
 import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.OrganizationSetupSteps;
-import se.streamsource.streamflow.client.application.shared.steps.setup.UserSetupSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
@@ -36,8 +36,12 @@ public class FormDefinitionsScenario
 
     public FormDefinitionsScenario(ClassLoader classLoader)
     {
-        super(classLoader, new UserSetupSteps(), new OrganizationSetupSteps(), new OrganizationsSteps(),
-                new ValueDefinitionsSteps(), new FieldDefinitionsSteps(), new FormDefinitionsSteps(),
+        super(classLoader, new TestSetupSteps(),
+                new OrganizationsSteps(),
+                new OrganizationalUnitsSteps(),
+                new ValueDefinitionsSteps(),
+                new FieldDefinitionsSteps(),
+                new FormDefinitionsSteps(),
                 new FormDefinitionSteps());
     }
 }
