@@ -18,6 +18,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -26,6 +28,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceProjectNode
         extends DefaultMutableTreeNode
+    implements EventListener
 {
     private LabelsModel labelsModel;
 
@@ -73,5 +76,14 @@ public class WorkspaceProjectNode
     public ListValue findProjects(String name) throws ResourceException
     {
         return ((WorkspaceProjectClientResource) getUserObject()).findProjects(name);
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (Object child : children)
+        {
+            EventListener listener = (EventListener) child;
+            listener.notifyEvent( event );
+        }
     }
 }

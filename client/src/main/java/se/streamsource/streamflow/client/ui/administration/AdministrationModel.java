@@ -14,16 +14,17 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
 
 import javax.swing.tree.DefaultTreeModel;
 import java.util.logging.Logger;
@@ -33,7 +34,7 @@ import java.util.logging.Logger;
  */
 public class AdministrationModel
         extends DefaultTreeModel
-        implements Refreshable
+        implements Refreshable, EventListener, EventHandler
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -48,20 +49,11 @@ public class AdministrationModel
         }
     };
 
-    public AdministrationModel(@Uses AdministrationNode root, @Service EventSource source)
+    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "organizationalUnitRemoved", "organizationalUnitAdded");;
+
+    public AdministrationModel(@Uses AdministrationNode root)
     {
         super(root);
-        subscriber = new OnEvents("organizationalUnitRemoved", "organizationalUnitAdded")
-        {
-            public void run()
-            {
-                Logger.getLogger("administration").info("Refresh organizational overview");
-                getRoot().refresh();
-                reload(getRoot());
-            }
-        };
-        source.registerListener(subscriber);
-
     }
 
     @Override
@@ -79,5 +71,21 @@ public class AdministrationModel
     public void createOrganizationalUnit(OrganizationalStructureAdministrationNode orgNode, String name)
     {
         orgNode.model().createOrganizationalUnit(name);
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        getRoot().notifyEvent(event);
+
+        eventFilter.handleEvent( event );
+    }
+
+    public boolean handleEvent( DomainEvent event )
+    {
+        Logger.getLogger("administration").info("Refresh organizational overview");
+        getRoot().refresh();
+        reload(getRoot());
+
+        return false;
     }
 }

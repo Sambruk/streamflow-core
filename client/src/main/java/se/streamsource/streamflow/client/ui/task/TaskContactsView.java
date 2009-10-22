@@ -145,12 +145,7 @@ public class TaskContactsView
 
     public void setModel(TaskContactsModel model)
     {
-        if (this.model != null)
-        {
-            this.model.unregisterListener();
-        }
         this.model = model;
-        model.registerListener();
         contacts.setModel(model);
         if (model.getSize() > 0 && isVisible())
         {

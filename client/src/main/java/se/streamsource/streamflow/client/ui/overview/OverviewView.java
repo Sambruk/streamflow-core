@@ -25,7 +25,6 @@ import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -186,13 +185,7 @@ public class OverviewView
                         {
                             protected Object doInBackground() throws Exception
                             {
-                                try
-                                {
-                                    assignmentsModel.refresh();
-                                } catch (ResourceException e)
-                                {
-                                    e.printStackTrace();
-                                }
+                                assignmentsModel.refresh();
 
                                 return null;
                             }

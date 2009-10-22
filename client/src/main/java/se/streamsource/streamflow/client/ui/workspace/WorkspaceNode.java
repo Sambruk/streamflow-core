@@ -16,6 +16,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -24,6 +26,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceNode
         extends DefaultMutableTreeNode
+    implements EventListener
 {
     private WorkspaceUserNode userNode;
     private WorkspaceProjectsNode projectsNode;
@@ -54,5 +57,11 @@ public class WorkspaceNode
     public WorkspaceProjectsNode getProjectsNode()
     {
         return projectsNode;
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        userNode.notifyEvent(event);
+        projectsNode.notifyEvent(event);
     }
 }

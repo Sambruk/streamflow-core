@@ -20,11 +20,14 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.task.TaskClientResource;
 import se.streamsource.streamflow.client.resource.task.TasksClientResource;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 /**
  * Model that keeps track of all task models
  */
 public class TasksModel
+    implements EventListener
 {
     @Uses
     TasksClientResource tasksResource;
@@ -50,5 +53,13 @@ public class TasksModel
     public TaskModel task(String id)
     {
         return models.get( id );
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (TaskModel model : models)
+        {
+            model.notifyEvent(event);
+        }
     }
 }

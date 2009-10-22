@@ -14,11 +14,11 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 
 import javax.swing.tree.DefaultTreeModel;
 import java.util.logging.Logger;
@@ -28,30 +28,36 @@ import java.util.logging.Logger;
  */
 public class WorkspaceModel
         extends DefaultTreeModel
+    implements EventListener, EventHandler
 {
-    private EventSourceListener subscriber;
+    public EventHandlerFilter eventHandlerFilter;
 
-    public WorkspaceModel(@Uses WorkspaceNode node, @Service EventSource source)
+    public WorkspaceModel(@Uses WorkspaceNode node)
     {
         super(node);
 
-        // Reload project list whenever someone join or leave a project/group
-        subscriber = new OnEvents("joinedProject","leftProject","joinedGroup","leftGroup")
-        {
-            public void run()
-            {
-                Logger.getLogger("workspace").info("Refresh project list");
-                getRoot().getProjectsNode().refresh();
-                reload(getRoot().getProjectsNode());
-            }
-        };
-
-        source.registerListener(subscriber);
+        eventHandlerFilter = new EventHandlerFilter(this, "joinedProject","leftProject","joinedGroup","leftGroup");
     }
 
     @Override
     public WorkspaceNode getRoot()
     {
         return (WorkspaceNode) super.getRoot();
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        getRoot().notifyEvent(event);
+
+        eventHandlerFilter.handleEvent( event );
+    }
+
+    public boolean handleEvent( DomainEvent event )
+    {
+        Logger.getLogger("workspace").info("Refresh project list");
+        getRoot().getProjectsNode().refresh();
+        reload(getRoot().getProjectsNode());
+
+        return true;
     }
 }

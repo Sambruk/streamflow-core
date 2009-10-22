@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -23,10 +22,13 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskContactsClientResource;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,7 +38,7 @@ import java.util.logging.Logger;
  */
 public class TaskContactsModel
         extends AbstractListModel
-        implements Refreshable
+        implements Refreshable, EventListener, EventHandler
 
 {
     @Structure
@@ -45,31 +47,10 @@ public class TaskContactsModel
     @Uses
     private TaskContactsClientResource contactsClientResource;
 
-    private EventSourceListener subscriber;
-
-    @Service
-    EventSource source;
-
-    public void registerListener()
-    {
-        source.registerListener(subscriber);
-    }
-
-    public void unregisterListener()
-    {
-        source.unregisterListener(subscriber);
-    }
+    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "contactAdded", "contactDeleted", "contactUpdated");
 
     public TaskContactsModel()
     {
-        subscriber = new OnEvents("contactAdded", "contactDeleted", "contactUpdated")
-        {
-            public void run()
-            {
-                Logger.getLogger("workspace").info("Refresh task contacts");
-                refresh();
-            }
-        };
     }
 
     List<ContactValue> contacts = Collections.emptyList();
@@ -127,5 +108,18 @@ public class TaskContactsModel
         {
             throw new OperationException(TaskResources.could_not_remove_contact, e);
         }
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        eventFilter.handleEvent( event );
+    }
+
+    public boolean handleEvent( DomainEvent event )
+    {
+        Logger.getLogger("workspace").info("Refresh task contacts");
+        refresh();
+
+        return false;
     }
 }

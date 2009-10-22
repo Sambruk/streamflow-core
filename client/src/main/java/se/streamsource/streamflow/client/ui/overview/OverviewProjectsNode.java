@@ -28,6 +28,8 @@ import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -36,7 +38,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class OverviewProjectsNode
         extends DefaultMutableTreeNode
-        implements Refreshable
+        implements Refreshable, EventListener
 {
     private AccountModel account;
     private ObjectBuilderFactory obf;
@@ -91,6 +93,15 @@ public class OverviewProjectsNode
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_refresh,  e);
+        }
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (Object child : children)
+        {
+            EventListener listener = (EventListener) child;
+            listener.notifyEvent( event );
         }
     }
 }

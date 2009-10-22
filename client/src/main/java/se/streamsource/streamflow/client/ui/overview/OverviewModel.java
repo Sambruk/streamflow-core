@@ -15,6 +15,8 @@
 package se.streamsource.streamflow.client.ui.overview;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.tree.DefaultTreeModel;
 
@@ -23,6 +25,7 @@ import javax.swing.tree.DefaultTreeModel;
  */
 public class OverviewModel
         extends DefaultTreeModel
+    implements EventListener
 {
     @Uses OverviewSummaryModel summary;
 
@@ -40,5 +43,10 @@ public class OverviewModel
     public OverviewSummaryModel summary()
     {
         return summary;
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        getRoot().notifyEvent(event);
     }
 }

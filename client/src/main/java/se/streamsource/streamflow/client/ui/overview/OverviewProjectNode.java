@@ -18,8 +18,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -28,6 +28,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class OverviewProjectNode
         extends DefaultMutableTreeNode
+    implements EventListener
 {
     @Uses
     String projectName;
@@ -53,5 +54,14 @@ public class OverviewProjectNode
     public OverviewProjectsNode getParent()
     {
         return (OverviewProjectsNode) super.getParent();
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (Object child : children)
+        {
+            EventListener listener = (EventListener) child;
+            listener.notifyEvent( event );
+        }
     }
 }

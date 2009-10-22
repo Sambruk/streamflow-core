@@ -23,16 +23,19 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
 
 /**
  * JAVADOC
  */
 public class LabelsModel
         extends AbstractListModel
-        implements ComboBoxModel
+        implements ComboBoxModel, EventListener
 {
     @Structure
     ValueBuilderFactory vbf;
@@ -106,5 +109,9 @@ public class LabelsModel
         labels.label(list.items().get().get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
 
         refresh();
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
     }
 }

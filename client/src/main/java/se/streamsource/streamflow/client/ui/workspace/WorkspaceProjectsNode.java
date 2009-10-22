@@ -29,6 +29,8 @@ import se.streamsource.streamflow.client.resource.users.workspace.projects.waiti
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -37,7 +39,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceProjectsNode
         extends DefaultMutableTreeNode
-        implements Refreshable
+        implements Refreshable, EventListener
 {
     private AccountModel account;
     private ObjectBuilderFactory obf;
@@ -98,6 +100,15 @@ public class WorkspaceProjectsNode
         } catch (ResourceException e)
         {
             throw new OperationException(WorkspaceResources.could_not_refresh_projects, e);
+        }
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (Object child : children)
+        {
+            EventListener listener = (EventListener) child;
+            listener.notifyEvent( event );
         }
     }
 }

@@ -41,6 +41,8 @@ import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.task.TasksModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
 import java.io.IOException;
@@ -51,6 +53,7 @@ import java.util.Observable;
  */
 public class AccountModel
         extends Observable
+    implements EventListener
 {
     @Structure ObjectBuilderFactory obf;
 
@@ -71,8 +74,8 @@ public class AccountModel
 
     private WorkspaceModel workspaceModel;
     private OverviewModel overviewModel;
-    private AdministrationModel administrationModel;
     private SearchResultTableModel searchResults;
+    private AdministrationModel administrationModel;
     private TasksModel tasksModel;
 
     public AccountSettingsValue settings()
@@ -264,5 +267,23 @@ public class AccountModel
             administrationModel = obf.newObjectBuilder( AdministrationModel.class ).use( this, tasks() ).newInstance();
 
         return administrationModel;
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        if (workspaceModel != null)
+            workspaceModel.notifyEvent(event);
+
+        if (overviewModel != null)
+            overviewModel.notifyEvent(event);
+
+        if (searchResults != null)
+            searchResults.notifyEvent(event);
+
+        if (administrationModel != null)
+            administrationModel.notifyEvent(event);
+
+        if (tasksModel != null)
+            tasksModel.notifyEvent(event);
     }
 }

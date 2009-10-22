@@ -27,9 +27,11 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 
 /**
@@ -37,7 +39,7 @@ import java.util.List;
  */
 public class GroupsModel
         extends AbstractListModel
-        implements Refreshable
+        implements Refreshable, EventListener
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -135,5 +137,13 @@ public class GroupsModel
             throw new OperationException(AdministrationResources.could_not_rename_group, e);
         }
         refresh();
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (GroupModel groupModel : groupModels)
+        {
+            groupModel.notifyEvent(event);
+        }
     }
 }

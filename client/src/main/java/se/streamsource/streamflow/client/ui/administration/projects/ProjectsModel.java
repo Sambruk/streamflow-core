@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.*;
@@ -173,5 +174,23 @@ public class ProjectsModel
             throw new OperationException(AdministrationResources.could_not_rename_project,e);
         }
         refresh();
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (FormsModel projectFormsModel : projectFormsModels)
+        {
+            projectFormsModel.notifyEvent(event);
+        }
+
+        for (LabelsModel projectLabelsModel : projectLabelsModels)
+        {
+            projectLabelsModel.notifyEvent(event);
+        }
+
+        for (ProjectMembersModel projectMembersModel : projectMembersModels)
+        {
+            projectMembersModel.notifyEvent(event);
+        }
     }
 }

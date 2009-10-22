@@ -39,7 +39,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -97,15 +96,6 @@ public abstract class TaskTableView
 
         ActionMap am = context.getActionMap(TaskTableView.class, this);
         setActionMap(am);
-
-        TasksQuery query = vbf.newValue(TasksQuery.class);
-        try
-        {
-            model.setQuery(query);
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
 
         // Toolbar
         JPanel toolbar = new JPanel();

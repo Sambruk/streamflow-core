@@ -16,6 +16,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -24,6 +26,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceProjectDelegationsNode
         extends DefaultMutableTreeNode
+    implements EventListener
 {
     @Uses
     WorkspaceProjectDelegationsModel model;
@@ -53,5 +56,10 @@ public class WorkspaceProjectDelegationsNode
     WorkspaceProjectDelegationsModel delegationsModel()
     {
         return model;
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        model.notifyEvent( event );
     }
 }

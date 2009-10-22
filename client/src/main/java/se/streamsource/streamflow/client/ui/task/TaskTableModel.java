@@ -15,23 +15,23 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
@@ -44,6 +44,7 @@ import java.util.List;
  */
 public abstract class TaskTableModel<T extends TaskListDTO>
         extends AbstractTableModel
+    implements EventListener, EventHandler, Refreshable
 {
     public static final int IS_READ = 10;
     public static final int IS_DROPPED = 11;
@@ -59,58 +60,50 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     @Structure
     ObjectBuilderFactory obf;
 
-    TasksQuery query;
-
     protected List<? extends TaskDTO> tasks;
 
     protected String[] columnNames;
     protected Class[] columnClasses;
     protected boolean[] columnEditable;
-    private EventSourceListener subscriber;
+    private EventHandlerFilter eventFilter;
 
     protected TaskTableModel( TaskListClientResource resource )
     {
         this.resource = resource;
+        eventFilter = new EventHandlerFilter(this, "labelAdded", "labelRemoved", "descriptionChanged");
     }
 
-    public void setEventSource( @Service EventSource eventSource)
+    public void notifyEvent( DomainEvent event )
     {
-        subscriber = new ForEvents(new EventQuery().withNames( "labelAdded", "labelRemoved", "descriptionChanged" ), new EventHandler()
-        {
-            public boolean handleEvent( DomainEvent event )
-            {
-                int idx = getTaskIndex( event );
-
-                if (idx != -1)
-                {
-                    TaskDTO updatedTask = getTask( idx );
-                    if (event.name().get().equals( "descriptionChanged" ))
-                    {
-                        try
-                        {
-                            String newDesc = EventParameters.getParameter( event, "param1" );
-                            updatedTask.description().set(newDesc);
-                            fireTableCellUpdated( idx, 1 );
-                        } catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                return true;
-            }
-        });
-        eventSource.registerListener(subscriber);
+        eventFilter.handleEvent( event );
     }
 
-    public TaskListClientResource getResource()
+    public boolean handleEvent( DomainEvent event )
+    {
+        int idx = getTaskIndex( event );
+
+        if (idx != -1)
+        {
+            TaskDTO updatedTask = getTask( idx );
+            if (event.name().get().equals( "descriptionChanged" ))
+            {
+                try
+                {
+                    String newDesc = EventParameters.getParameter( event, "param1" );
+                    updatedTask.description().set(newDesc);
+                    fireTableCellUpdated( idx, 1 );
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return true;
+    }
+
+    protected TaskListClientResource getResource()
     {
         return resource;
-    }
-
-    public void setQuery(TasksQuery query) throws ResourceException
-    {
-        this.query = query;
     }
 
     public TaskDTO getTask(int row)
@@ -234,14 +227,20 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         return; // Skip if don't know what is going on
     }
 
-    public void refresh() throws ResourceException
+    public void refresh()
     {
-        List<? extends TaskDTO> newRoot = getResource().tasks(query);
-        boolean same = newRoot.equals(tasks);
-        if (!same)
+        try
         {
-            tasks = newRoot;
-            fireTableDataChanged();
+            List<? extends TaskDTO> newRoot = getResource().tasks(vbf.newValue( TasksQuery.class ));
+            boolean same = newRoot.equals(tasks);
+            if (!same)
+            {
+                tasks = newRoot;
+                fireTableDataChanged();
+            }
+        } catch (ResourceException e)
+        {
+            throw new OperationException( WorkspaceResources.could_not_perform_operation, e);
         }
     }
 

@@ -39,7 +39,7 @@ public class OverviewProjectWaitingForModel
     }
 
     @Override
-    public ProjectWaitingforClientResource getResource()
+    protected ProjectWaitingforClientResource getResource()
     {
         return (ProjectWaitingforClientResource) super.getResource();
     }

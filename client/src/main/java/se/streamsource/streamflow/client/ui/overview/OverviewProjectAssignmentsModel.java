@@ -57,7 +57,7 @@ public class OverviewProjectAssignmentsModel
     }
 
     @Override
-    public OverviewProjectAssignmentsClientResource getResource()
+    protected OverviewProjectAssignmentsClientResource getResource()
     {
         return (OverviewProjectAssignmentsClientResource) super.getResource();
     }

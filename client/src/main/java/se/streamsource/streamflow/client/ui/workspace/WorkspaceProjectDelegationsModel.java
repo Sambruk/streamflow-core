@@ -41,7 +41,7 @@ public class WorkspaceProjectDelegationsModel
     }
 
     @Override
-    public ProjectDelegationsClientResource getResource()
+    protected ProjectDelegationsClientResource getResource()
     {
         return (ProjectDelegationsClientResource) super.getResource();
     }

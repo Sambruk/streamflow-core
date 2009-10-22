@@ -33,16 +33,18 @@ import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.*;
+import javax.swing.JLabel;
 
 /**
  * JAVADOC
  */
 public class OrganizationalUnitAdministrationModel
-        implements Refreshable
+        implements Refreshable, EventListener
 {
     @Structure
     ValueBuilderFactory vbf;
@@ -189,6 +191,15 @@ public class OrganizationalUnitAdministrationModel
                 throw new OperationException(AdministrationResources.could_not_merge_organization, e);
             }
         }
+
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        groupsModel.notifyEvent(event);
+        projectsModel.notifyEvent(event);
+        rolesModel.notifyEvent(event);
+        administratorsModel.notifyEvent(event);
 
     }
 }

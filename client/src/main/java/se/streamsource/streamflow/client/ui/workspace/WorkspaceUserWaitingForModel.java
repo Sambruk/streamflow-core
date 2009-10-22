@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
@@ -77,18 +78,23 @@ public class WorkspaceUserWaitingForModel
         getResource().reject(task.task().get().identity());
     }
 
-    public void complete(int row) throws ResourceException
+    public void complete(int row)
     {
-        TaskDTO task = getTask(row);
+        try
+        {
+            TaskDTO task = getTask(row);
 
-        if (task.status().get().equals(TaskStates.DONE))
+            if (task.status().get().equals(TaskStates.DONE))
+            {
+                getResource().completeFinishedTask(task.task().get().identity());
+            } else if (task.status().get().equals(TaskStates.ACTIVE))
+            {
+                getResource().completeWaitingForTask(task.task().get().identity());
+            }
+        } catch (ResourceException e)
         {
-            getResource().completeFinishedTask(task.task().get().identity());
-        } else if (task.status().get().equals(TaskStates.ACTIVE))
-        {
-            getResource().completeWaitingForTask(task.task().get().identity());
+            throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
         }
-
     }
 
 }

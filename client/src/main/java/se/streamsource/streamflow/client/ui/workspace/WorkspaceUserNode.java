@@ -19,6 +19,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -27,6 +29,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceUserNode
         extends DefaultMutableTreeNode
+    implements EventListener
 {
     private LabelsModel labelsModel;
     @Uses private UserClientResource user;
@@ -64,5 +67,14 @@ public class WorkspaceUserNode
     public ListValue findProjects(String name) throws ResourceException
     {
         return user.findProjects(name);
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (Object child : children)
+        {
+            EventListener listener = (EventListener) child;
+            listener.notifyEvent( event );
+        }
     }
 }

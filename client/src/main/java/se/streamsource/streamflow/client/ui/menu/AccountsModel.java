@@ -23,8 +23,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Restlet;
-import org.restlet.Client;
 import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.Account;
@@ -34,18 +32,21 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
 import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
  */
 public class AccountsModel
         extends AbstractListModel
+        implements EventListener
 {
     @Structure
     ValueBuilderFactory vbf;
@@ -124,6 +125,14 @@ public class AccountsModel
         accountModel(index).remove();
         accounts.remove(index);
         fireContentsChanged(this, 0, accounts.size());
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (AccountModel model : models)
+        {
+            model.notifyEvent(event);
+        }
     }
 
     private void refresh()

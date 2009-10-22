@@ -24,9 +24,11 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 
 /**
@@ -34,7 +36,7 @@ import java.util.List;
  */
 public class AdministratorsModel
         extends AbstractListModel
-    implements Refreshable
+    implements Refreshable, EventListener
 {
     @Structure
     ValueBuilderFactory vbf;
@@ -94,4 +96,7 @@ public class AdministratorsModel
         }
     }
 
+    public void notifyEvent( DomainEvent event )
+    {
+    }
 }

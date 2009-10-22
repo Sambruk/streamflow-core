@@ -51,6 +51,10 @@ import se.streamsource.streamflow.client.ui.search.SearchWindow;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -109,6 +113,7 @@ public class StreamFlowApplication
     DebugWindow debugWindow;
 
     AdministrationWindow administrationWindow;
+    public ForEvents subscriber;
 
     public StreamFlowApplication()
     {
@@ -119,7 +124,8 @@ public class StreamFlowApplication
 
     public void init(@Uses final AccountsModel accountsModel,
                      @Structure final ObjectBuilderFactory obf,
-                     @Uses AccountSelector accountSelector
+                     @Uses AccountSelector accountSelector,
+                     @Service EventSource source
     ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
         DOMAIN_EVENT_TYPE = module.valueDescriptor(DomainEvent.class.getName()).valueType();
@@ -145,6 +151,19 @@ public class StreamFlowApplication
         setMainFrame(workspaceWindow.getFrame());
 
         this.accountsModel = accountsModel;
+
+        subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventHandler()
+        {
+            public boolean handleEvent( DomainEvent event )
+            {
+                accountsModel.notifyEvent( event );
+
+
+
+                return true;
+            }
+        });
+        source.registerListener( subscriber );
 
         showWorkspaceWindow();
 

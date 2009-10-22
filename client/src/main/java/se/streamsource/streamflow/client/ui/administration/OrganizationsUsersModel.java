@@ -14,18 +14,18 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.MediaType;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
 import javax.swing.table.AbstractTableModel;
@@ -38,6 +38,7 @@ import java.util.logging.Logger;
  */
 public class OrganizationsUsersModel
         extends AbstractTableModel
+    implements EventListener, EventHandler
 {
 
     private List<UserEntityDTO> users;
@@ -46,29 +47,16 @@ public class OrganizationsUsersModel
     private String[] columnNames;
     private Class[] columnClasses;
     private boolean[] columnEditable;
+    
+    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "userCreated", "enabledChanged");
 
-    EventSourceListener subscriber;
-    EventSource source;
-
-    public OrganizationsUsersModel(@Uses OrganizationsClientResource organizations, @Service EventSource source) throws ResourceException
+    public OrganizationsUsersModel(@Uses OrganizationsClientResource organizations) throws ResourceException
     {
         this.organizations = organizations;
         columnNames = new String[]{ text(AdministrationResources.user_enabled_label), text(AdministrationResources.username_label)};
         columnClasses = new Class[]{Boolean.class, String.class};
         columnEditable = new boolean[]{true, false};
         refresh();
-
-        subscriber = new OnEvents("userCreated", "enabledChanged")
-        {
-            public void run()
-            {
-                Logger.getLogger("administration").info("Refresh organizations users");
-                refresh();
-            }
-        };
-
-        this.source = source;
-        this.source.registerListener(subscriber);
     }
 
     private void refresh()
@@ -172,5 +160,18 @@ public class OrganizationsUsersModel
             throw new OperationException(AdministrationResources.could_not_import_users, e);
 
         }
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        eventFilter.handleEvent( event );
+    }
+
+    public boolean handleEvent( DomainEvent event )
+    {
+        Logger.getLogger("administration").info("Refresh organizations users");
+        refresh();
+
+        return false;
     }
 }

@@ -16,12 +16,14 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.task.TaskCommentsClientResource;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.resource.task.TaskCommentsClientResource;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import java.util.List;
  */
 public class TaskCommentsModel
         extends AbstractListModel
+    implements EventListener
 {
     @Uses
     TaskCommentsClientResource commentsClientResource;
@@ -67,5 +70,10 @@ public class TaskCommentsModel
         {
             throw new OperationException(TaskResources.could_not_add_comment, e);
         }
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+
     }
 }

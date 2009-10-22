@@ -17,12 +17,14 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskClientResource;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 /**
  * Model for task details.
  */
 public class TaskModel
-        implements Refreshable
+        implements Refreshable, EventListener
 {
     @Uses
     private TaskClientResource resource;
@@ -71,5 +73,13 @@ public class TaskModel
         comments.refresh();
         contacts.refresh();
         forms.refresh();
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        comments.notifyEvent(event);
+        general.notifyEvent(event);
+        contacts.notifyEvent( event );
+        forms.notifyEvent(event);
     }
 }

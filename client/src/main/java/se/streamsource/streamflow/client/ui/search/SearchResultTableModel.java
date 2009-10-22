@@ -42,7 +42,7 @@ public class SearchResultTableModel
     }
 
     @Override
-    public SearchClientResource getResource()
+    protected SearchClientResource getResource()
     {
         return (SearchClientResource) super.getResource();
     }

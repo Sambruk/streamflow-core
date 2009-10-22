@@ -21,14 +21,17 @@ import se.streamsource.streamflow.client.resource.organizations.groups.GroupClie
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 
 /**
  * JAVADOC
  */
 public class GroupModel
         extends AbstractListModel
+    implements EventListener
 {
     public ListValue list;
 
@@ -82,5 +85,10 @@ public class GroupModel
     {
         list = group.participants().participants();
         fireContentsChanged(this, 0, getSize());
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+
     }
 }

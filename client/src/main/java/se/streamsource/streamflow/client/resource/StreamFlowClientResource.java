@@ -47,7 +47,7 @@ public class StreamFlowClientResource
         return getSubResource("users", UsersClientResource.class);
     }
 
-    public OrganizationsClientResource organizations() throws ResourceException
+    public OrganizationsClientResource organizations()
     {
         return getSubResource("organizations", OrganizationsClientResource.class);
     }

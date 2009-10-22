@@ -16,6 +16,8 @@ package se.streamsource.streamflow.client.ui.overview;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -24,6 +26,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class OverviewNode
         extends DefaultMutableTreeNode
+    implements EventListener
 {
     private OverviewProjectsNode projectsNode;
 
@@ -45,5 +48,10 @@ public class OverviewNode
     public OverviewProjectsNode getProjectsNode()
     {
         return projectsNode;
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        projectsNode.notifyEvent(event);
     }
 }

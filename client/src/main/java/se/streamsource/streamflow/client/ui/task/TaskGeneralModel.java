@@ -19,6 +19,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.util.Date;
@@ -27,7 +29,7 @@ import java.util.Date;
  * Model for the general info about a task.
  */
 public class TaskGeneralModel
-        implements Refreshable
+        implements Refreshable, EventListener
 
 {
     @Uses
@@ -110,5 +112,10 @@ public class TaskGeneralModel
         task.labels().get().items().get().remove(label);
         fireTableCellUpdated(idx, 1);
 */
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+
     }
 }

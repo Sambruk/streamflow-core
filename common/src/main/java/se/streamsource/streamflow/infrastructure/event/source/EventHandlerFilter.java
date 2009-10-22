@@ -25,6 +25,16 @@ public class EventHandlerFilter
     private EventHandler handler;
     private EventSpecification eventSpecification;
 
+    public EventHandlerFilter(EventHandler handler, String... name)
+    {
+        this(new EventQuery().withNames( name ), handler);
+    }
+
+    public EventHandlerFilter(String entityId, EventHandler handler, String... name)
+    {
+        this(new EventQuery().onEntities( entityId ).withNames( name ), handler);
+    }
+
     public EventHandlerFilter( EventSpecification eventSpecification, EventHandler handler )
     {
         this.handler = handler;

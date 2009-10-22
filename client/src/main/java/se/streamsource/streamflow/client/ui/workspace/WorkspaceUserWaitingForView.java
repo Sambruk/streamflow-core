@@ -54,9 +54,9 @@ public class WorkspaceUserWaitingForView
     @Override
     protected void buildToolbar(JPanel toolbar)
     {
+        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
-        Action acceptAction = addToolbarButton(toolbar, "completeTask");
         addToolbarButton(toolbar, "refresh");
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox, acceptAction));
     }
@@ -84,7 +84,7 @@ public class WorkspaceUserWaitingForView
 
 
     @org.jdesktop.application.Action
-    public void completeTask() throws ResourceException
+    public void completeTasks()
     {
         for (int row : getReverseSelectedTasks())
         {

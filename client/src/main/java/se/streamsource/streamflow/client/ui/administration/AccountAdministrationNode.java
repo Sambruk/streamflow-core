@@ -23,6 +23,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.TreeNode;
 import java.util.Collections;
@@ -34,24 +36,20 @@ import java.util.Observer;
  * JAVADOC
  */
 public class AccountAdministrationNode
-        implements TreeNode, Refreshable, Observer
+        implements TreeNode, Refreshable, Observer, EventListener
 {
     @Structure
     private ObjectBuilderFactory obf;
 
     private AccountModel accountModel;
 
+    private OrganizationsUsersModel usersModel;
+
     WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode>()
     {
         protected OrganizationalStructureAdministrationNode newModel(TreeNodeValue key)
         {
-            try
-            {
-                return obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(AccountAdministrationNode.this, accountModel.serverResource().organizations(), key).newInstance();
-            } catch (ResourceException e)
-            {
-                throw new OperationException(AdministrationResources.could_not_refresh_list_of_organizations, e);
-            }
+            return obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(AccountAdministrationNode.this, accountModel.serverResource().organizations(), key).newInstance();
         }
     };
 
@@ -89,6 +87,16 @@ public class AccountAdministrationNode
     public AccountModel accountModel()
     {
         return accountModel;
+    }
+
+    public OrganizationsUsersModel usersModel()
+    {
+        if (usersModel == null)
+        {
+            usersModel = obf.newObjectBuilder( OrganizationsUsersModel.class ).use( accountModel.serverResource().organizations() ).newInstance();
+        }
+
+        return usersModel;
     }
 
     public Enumeration children()
@@ -140,6 +148,17 @@ public class AccountAdministrationNode
         } catch (Exception e)
         {
             throw new OperationException(AdministrationResources.could_not_refresh, e);
+        }
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        if (usersModel != null)
+            usersModel.notifyEvent( event );
+
+        for (OrganizationalStructureAdministrationNode model : models)
+        {
+            model.notifyEvent(event);
         }
     }
 }

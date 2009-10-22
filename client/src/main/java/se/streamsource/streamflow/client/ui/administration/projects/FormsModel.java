@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -26,12 +25,15 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.FormDefinitionsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class FormsModel
     extends AbstractListModel
-        implements Refreshable
+        implements Refreshable, EventListener, EventHandler
 
 {
     @Uses
@@ -54,19 +56,11 @@ public class FormsModel
 
     private List<ListItemValue> formsList;
 
-    public FormsModel(@Service EventSource source)
-    {
-        subscriber = new OnEvents("projectFormDefinitionAdded", "projectFormDefinitionRemoved")
-        {
-            public void run()
-            {
-                Logger.getLogger("administration").info("Refresh project form definitions");
-                refresh();
-            }
-        };
+    private EventHandlerFilter eventFilter;
 
-        this.source = source;
-        source.registerListener(subscriber);
+    public FormsModel()
+    {
+        eventFilter = new EventHandlerFilter( this, "projectFormDefinitionAdded", "projectFormDefinitionRemoved");
     }
 
     public int getSize()
@@ -115,5 +109,18 @@ public class FormsModel
         {
             throw new OperationException(AdministrationResources.could_not_remove_form_definition, e);
         }
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        eventFilter.handleEvent( event );
+    }
+
+    public boolean handleEvent( DomainEvent event )
+    {
+        Logger.getLogger("administration").info("Refresh project form definitions");
+        refresh();
+
+        return false;
     }
 }

@@ -18,14 +18,14 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.Dimension;
 
 /**
  * JAVADOC
@@ -65,14 +65,8 @@ public class AdministrationView
                     {
                         AccountAdministrationNode accountAdminNode = (AccountAdministrationNode) node;
 
-                        try
-                        {
-                            view = obf.newObjectBuilder(OrganizationsUsersView.class).use(accountAdminNode.accountModel().serverResource().organizations())
-                                    .newInstance();
-                        } catch (ResourceException e1)
-                        {
-                            throw new OperationException(AdministrationResources.could_not_refresh_list_of_organizations, e1);
-                        }
+                        view = obf.newObjectBuilder(OrganizationsUsersView.class).use(accountAdminNode.usersModel())
+                                .newInstance();
 
                     } else if (node instanceof OrganizationalStructureAdministrationNode)
                     {

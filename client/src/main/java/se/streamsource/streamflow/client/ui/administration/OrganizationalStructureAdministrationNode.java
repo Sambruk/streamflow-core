@@ -22,11 +22,13 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
-import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
@@ -34,7 +36,7 @@ import java.io.IOException;
  * JAVADOC
  */
 public class OrganizationalStructureAdministrationNode
-        extends DefaultMutableTreeNode implements Transferable
+        extends DefaultMutableTreeNode implements Transferable, EventListener
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -102,5 +104,15 @@ public class OrganizationalStructureAdministrationNode
     public Object getTransferData(DataFlavor dataFlavor) throws UnsupportedFlavorException, IOException {
 
         return ((OrganizationalStructureAdministrationNode)parent).ou().entity().get();
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        model.notifyEvent(event);
+
+        for (OrganizationalStructureAdministrationNode organizationalStructureAdministrationNode : models)
+        {
+            organizationalStructureAdministrationNode.notifyEvent( event );
+        }
     }
 }

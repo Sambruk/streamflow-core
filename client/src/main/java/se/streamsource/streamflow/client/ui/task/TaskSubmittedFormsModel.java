@@ -20,9 +20,11 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,7 +33,7 @@ import java.util.List;
  */
 public class TaskSubmittedFormsModel
         extends AbstractListModel
-        implements Refreshable
+        implements Refreshable, EventListener
 
 {
     @Structure
@@ -69,4 +71,8 @@ public class TaskSubmittedFormsModel
         return submittedForms.get(i);
     }
 
+    public void notifyEvent( DomainEvent event )
+    {
+        
+    }
 }

@@ -19,7 +19,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.ui.menu.AccountsModel;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.TreeNode;
 import java.util.Enumeration;
@@ -29,7 +30,7 @@ import java.util.Iterator;
  * JAVADOC
  */
 public class AdministrationNode
-        implements TreeNode, Refreshable
+        implements TreeNode, Refreshable, EventListener
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -98,6 +99,14 @@ public class AdministrationNode
         for (AccountAdministrationNode model : models)
         {
             model.refresh();
+        }
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        for (AccountAdministrationNode model : models)
+        {
+            model.notifyEvent(event);
         }
     }
 }

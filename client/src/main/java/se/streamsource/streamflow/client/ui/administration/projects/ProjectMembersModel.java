@@ -25,6 +25,8 @@ import se.streamsource.streamflow.client.resource.organizations.projects.members
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.AbstractListModel;
 import java.util.Set;
@@ -34,7 +36,7 @@ import java.util.Set;
  */
 public class ProjectMembersModel
     extends AbstractListModel
-        implements Refreshable
+        implements Refreshable, EventListener
     
 {
     @Uses
@@ -95,5 +97,9 @@ public class ProjectMembersModel
         {
             throw new OperationException(AdministrationResources.could_not_remove_member, e);
         }
+    }
+
+    public void notifyEvent( DomainEvent event )
+    {
     }
 }
