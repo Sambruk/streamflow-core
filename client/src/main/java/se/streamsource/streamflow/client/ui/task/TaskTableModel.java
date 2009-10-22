@@ -289,14 +289,20 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         fireTableRowsDeleted(idx, idx);
     }
 
-    public void markAsRead(int idx) throws ResourceException
+    public void markAsRead(int idx)
     {
-        TaskDTO task = tasks.get(idx);
-        if (!task.isRead().get())
+        try
         {
-            getResource().task(task.task().get().identity()).markAsRead();
-            task.isRead().set(true);
-            fireTableCellUpdated(idx, 1);
+            TaskDTO task = tasks.get(idx);
+            if (!task.isRead().get())
+            {
+                getResource().task(task.task().get().identity()).markAsRead();
+                task.isRead().set(true);
+                fireTableCellUpdated(idx, 1);
+            }
+        } catch (ResourceException e)
+        {
+            throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
         }
     }
 

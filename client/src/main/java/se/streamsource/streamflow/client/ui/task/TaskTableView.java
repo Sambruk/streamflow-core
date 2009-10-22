@@ -198,8 +198,13 @@ public abstract class TaskTableView
 
                             detailsView.show( taskModel );
 
-                            if (detailsView.getSelectedIndex() != -1)
-                                model.markAsRead(taskTable.convertRowIndexToModel(taskTable.getSelectedRow()));
+                            SwingUtilities.invokeLater( new Runnable()
+                            {
+                                public void run()
+                                {
+                                    model.markAsRead(taskTable.convertRowIndexToModel(taskTable.getSelectedRow()));
+                                }
+                            });
                         }
                     } catch (Exception e1)
                     {

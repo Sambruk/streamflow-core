@@ -60,7 +60,7 @@ public class SearchResultTableModel
     }
 
     @Override
-    public void markAsRead(int idx) throws ResourceException
+    public void markAsRead(int idx)
     {
         // Ignore
     }
