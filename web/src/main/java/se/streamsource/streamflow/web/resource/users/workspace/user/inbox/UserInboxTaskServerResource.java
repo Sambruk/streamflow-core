@@ -104,26 +104,6 @@ public class UserInboxTaskServerResource
         inbox.markAsUnread(task);
     }
 
-/*
-    public void addLabel(EntityReferenceDTO reference)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        TaskEntity task = uow.get(TaskEntity.class, taskId);
-        Label label = uow.get(Label.class, reference.entity().get().identity());
-        task.addLabel(label);
-    }
-
-    public void removeLabel(EntityReferenceDTO reference)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        TaskEntity task = uow.get(TaskEntity.class, taskId);
-        Label label = uow.get(Label.class, reference.entity().get().identity());
-        task.removeLabel(label);
-    }
-
-*/
     public void deleteOperation() throws ResourceException
     {
         String taskId = (String) getRequest().getAttributes().get("task");

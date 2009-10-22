@@ -14,14 +14,10 @@
 
 package se.streamsource.streamflow.client.resource.task;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * Mapped to /task/<id>
@@ -107,18 +103,4 @@ public class TaskClientResource
         putCommand("forward", builder.newInstance());
     }
 */
-
-    public void addLabel(String labelId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(EntityReference.parseEntityReference(labelId));
-        postCommand("addLabel", builder.newInstance());
-    }
-
-    public void removeLabel(String labelId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(EntityReference.parseEntityReference(labelId));
-        putCommand("removeLabel", builder.newInstance());
-    }
 }

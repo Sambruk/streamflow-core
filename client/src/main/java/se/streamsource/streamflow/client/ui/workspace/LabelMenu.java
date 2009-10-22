@@ -42,7 +42,6 @@ public class LabelMenu
         extends JMenu
         implements MenuListener, ListSelectionListener
 {
-    TaskDTO task;
     ListSelectionModel selectionModel;
 
     @Uses
@@ -87,10 +86,10 @@ public class LabelMenu
 
         final TaskDTO taskDTO = taskTableModel.getTask(selectionModel.getMinSelectionIndex());
 
-        if (task == null)
+        if (taskDTO == null)
             return;
 
-        List<ListItemValue> labels = task.labels().get().items().get();
+        List<ListItemValue> labels = taskDTO.labels().get().items().get();
         int size = labelsModel.getSize();
         for (int i = 0; i < size; i++)
         {

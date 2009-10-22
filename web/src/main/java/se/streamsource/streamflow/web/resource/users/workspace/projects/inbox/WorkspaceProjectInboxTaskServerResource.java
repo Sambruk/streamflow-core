@@ -19,7 +19,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegator;
@@ -106,25 +105,6 @@ public class WorkspaceProjectInboxTaskServerResource
         Inbox inbox = uow.get(Inbox.class, userId);
         inbox.markAsUnread(task);
     }
-
-    public void addLabel(EntityReferenceDTO reference)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        TaskEntity task = uow.get(TaskEntity.class, taskId);
-        Label label = uow.get(Label.class, reference.entity().get().identity());
-        task.addLabel(label);
-    }
-
-    public void removeLabel(EntityReferenceDTO reference)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        TaskEntity task = uow.get(TaskEntity.class, taskId);
-        Label label = uow.get(Label.class, reference.entity().get().identity());
-        task.removeLabel(label);
-    }
-
 
     public void deleteOperation() throws ResourceException
     {

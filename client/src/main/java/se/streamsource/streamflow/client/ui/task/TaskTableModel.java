@@ -333,32 +333,6 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         fireTableRowsDeleted(idx, idx);
     }
 
-/*
-    public void addLabel(int idx, ListItemValue label) throws ResourceException
-    {
-        TaskDTO task = getTask(idx);
-        String labelId = label.entity().get().identity();
-        for (ListItemValue labelDTO : task.labels().get().items().get())
-        {
-            if (labelDTO.entity().get().identity().equals(labelId))
-                return;
-        }
-
-        getResource().task(task.task().get().identity()).addLabel(labelId);
-        task.labels().get().items().get().add(label);
-        fireTableCellUpdated(idx, 1);
-    }
-
-    public void removeLabel(int idx, ListItemValue label) throws ResourceException
-    {
-        TaskDTO task = getTask(idx);
-        String labelId = label.entity().get().identity();
-        getResource().task(task.task().get().identity()).removeLabel(labelId);
-        task.labels().get().items().get().remove(label);
-        fireTableCellUpdated(idx, 1);
-    }
-*/
-
     public void dropTask(int idx) throws ResourceException
     {
         TaskDTO task = getTask(idx);

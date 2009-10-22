@@ -31,6 +31,7 @@ import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.DateDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
@@ -103,5 +104,27 @@ public class TaskGeneralServerResource
         String taskId = (String) getRequest().getAttributes().get("task");
         DueOn dueOn = uowf.currentUnitOfWork().get(DueOn.class, taskId);
         dueOn.dueOn(dueOnValue.date().get());
+    }
+
+    public void addLabel( EntityReferenceDTO reference)
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String taskId = (String) getRequest().getAttributes().get("task");
+
+        TaskEntity task = uow.get(TaskEntity.class, taskId);
+        Label label = uow.get(Label.class, reference.entity().get().identity());
+
+        task.addLabel(label);
+    }
+
+    public void removeLabel(EntityReferenceDTO reference)
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String taskId = (String) getRequest().getAttributes().get("task");
+
+        TaskEntity task = uow.get(TaskEntity.class, taskId);
+        Label label = uow.get(Label.class, reference.entity().get().identity());
+
+        task.removeLabel(label);
     }
 }
