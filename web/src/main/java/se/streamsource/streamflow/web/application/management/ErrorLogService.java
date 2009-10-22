@@ -89,6 +89,7 @@ public interface ErrorLogService
         {
             Logger.getLogger("").removeHandler(this);
             executor.shutdown();
+            server.unregisterMBean( objectName );
         }
 
         public void publish(LogRecord record)

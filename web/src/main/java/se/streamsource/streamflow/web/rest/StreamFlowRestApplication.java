@@ -85,33 +85,39 @@ public class StreamFlowRestApplication
     @Override
     public void start() throws Exception
     {
-
-        // Start Qi4j
-        Energy4Java is = new Energy4Java();
-        app = is.newApplication(new StreamFlowWebAssembler(this));
-
-        app.activate();
-
-        app.findModule("Web", "REST").objectBuilderFactory().newObjectBuilder(StreamFlowRestApplication.class).injectTo(this);
-
-        Runtime.getRuntime().addShutdownHook(new Thread()
+        try
         {
-            @Override
-            public void run()
-            {
-                try
-                {
-                    System.out.println("SHUTDOWN");
-                    Logger.getLogger("streamflow").info("VM shutdown; passivating StreamFlow");
-                    app.passivate();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
+// Start Qi4j
+            Energy4Java is = new Energy4Java();
+            app = is.newApplication(new StreamFlowWebAssembler(this));
 
-        super.start();
+            app.activate();
+
+            app.findModule("Web", "REST").objectBuilderFactory().newObjectBuilder(StreamFlowRestApplication.class).injectTo(this);
+
+            Runtime.getRuntime().addShutdownHook(new Thread()
+            {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        System.out.println("SHUTDOWN");
+                        Logger.getLogger("streamflow").info("VM shutdown; passivating StreamFlow");
+                        app.passivate();
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            super.start();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Override
