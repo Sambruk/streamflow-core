@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.FieldDTO;
@@ -31,11 +30,8 @@ public class TaskSubmittedFormModel
 
     private SubmittedFormDTO form;
 
-    private String[] columnNames;
-
     public TaskSubmittedFormModel(@Uses TaskSubmittedFormClientResource resource)
     {
-        columnNames = new String[]{ text(WorkspaceResources.field_name), text(WorkspaceResources.field_value)};
         try
         {
             form = resource.form();
@@ -72,11 +68,6 @@ public class TaskSubmittedFormModel
     {
         return false;
     }
-
-    @Override
-    public String getColumnName(int column)
-    {
-        return columnNames[column];
-    }
+    
 
 }

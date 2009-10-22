@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -34,7 +35,7 @@ public class TaskSubmittedFormsView
         extends JPanel
 {
     private TaskSubmittedFormsModel model;
-    private JList submittedForms;
+    private JXList submittedForms;
 
     public TaskSubmittedFormsView(@Service ApplicationContext context)
     {
@@ -44,7 +45,7 @@ public class TaskSubmittedFormsView
         setActionMap(am);
         setMinimumSize(new Dimension(150, 0));
 
-        submittedForms = new JList();
+        submittedForms = new JXList();
         submittedForms.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)

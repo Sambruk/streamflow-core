@@ -52,11 +52,13 @@ public class OrganizationsUsersView
         this.model = model;
         JXTable usersTable = new JXTable(model);
         usersTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
-        usersTable.getColumn(0).setMaxWidth(30);
+        usersTable.getColumn(0).setMaxWidth(50);
         usersTable.getColumn(0).setResizable(false);
 
         JPanel usersPanel = new JPanel(new BorderLayout());
-        usersPanel.add(usersTable, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(usersTable);
+        usersPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("createUser")));

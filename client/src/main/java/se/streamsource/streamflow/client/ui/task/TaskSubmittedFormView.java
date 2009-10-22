@@ -14,6 +14,10 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import org.jdesktop.swingx.JXTable;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -23,29 +27,28 @@ import java.awt.*;
 public class TaskSubmittedFormView
         extends JPanel
 {
-    private JPanel form;
-    private JTable fieldValues;
+    private JXTable fieldValues;
     private CardLayout layout = new CardLayout();
 
     public TaskSubmittedFormView()
     {
         setLayout(layout);
 
-        form = new JPanel(new BorderLayout());
-        fieldValues = new JTable();
-        form.add(fieldValues, BorderLayout.CENTER);
-        JScrollPane scrollPane = new JScrollPane(form);
+        JScrollPane scroll = new JScrollPane();
+
+        fieldValues = new JXTable(new Object[][]{}, new String[]{
+                i18n.text(WorkspaceResources.field_name), i18n.text(WorkspaceResources.field_value)
+        });
+        scroll.setViewportView(fieldValues);
 
         add(new JPanel(), "EMPTY");
-        add(scrollPane, "FORM");
+        add(scroll, "FORM");
     }
 
     public void setModel(TaskSubmittedFormModel model)
     {
         if (model != null)
         {
-            //form.removeAll();
-            // write header information
             fieldValues.setModel(model);
 
             layout.show(this, "FORM");
