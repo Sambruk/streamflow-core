@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -24,28 +25,27 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import static org.qi4j.api.query.QueryExpressions.*;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
 
 import java.util.List;
 
-@Mixins(WaitingForQueries.WaitingForQueriesMixin.class)
-public interface WaitingForQueries
+@Mixins(AssignmentsQueries.AssignmentsQueriesMixin.class)
+public interface AssignmentsQueries
 {
-    WaitingForTaskListDTO waitingForTasks(Delegator delegator);
+    AssignmentsTaskListDTO assignmentsTasks(Assignee assignee);
 
-    class WaitingForQueriesMixin
-        implements WaitingForQueries
+    class AssignmentsQueriesMixin
+        implements AssignmentsQueries
     {
 
         @Structure
@@ -58,36 +58,29 @@ public interface WaitingForQueries
         UnitOfWorkFactory uowf;
 
         @This
-        WaitingFor waitingFor;
+        Identity id;
 
         @This
-        WaitingFor.WaitingForState waitingForState;
+        Assignments.AssignmentsState assignments;
 
-        public WaitingForTaskListDTO waitingForTasks(Delegator delegator)
+        public AssignmentsTaskListDTO assignmentsTasks(Assignee assignee)
         {
-            UnitOfWork uow = uowf.currentUnitOfWork();
-
-            // Find all Active delegated tasks owned by this Entity and delegated by "delegator"
-            // or Completed delegated tasks that are marked as unread
+            // Find all my Active tasks assigned to "me"
             QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
-            Association<Delegator> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy();
-            Association<WaitingFor> waitingFor = templateFor(Delegatable.DelegatableState.class).delegatedFrom();
-            Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
-            Query<TaskEntity> waitingForQuery = queryBuilder.where(and(
-                    eq(waitingFor, this.waitingFor),
-                    eq(delegatedBy, delegator),
-                    isNotNull(delegatee),
-                    or(
-                            eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                            eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.DONE)))).
-                    newQuery(uow);
-            waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
+            Association<Assignee> assignedId = templateFor(Assignable.AssignableState.class).assignedTo();
+            Property<String> ownedId = templateFor(Ownable.OwnableState.class).owner().get().identity();
+            Query<TaskEntity> assignmentsQuery = queryBuilder.where(and(
+                    eq(assignedId, assignee),
+                    eq(ownedId, id.identity().get()),
+                    eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                    newQuery(uowf.currentUnitOfWork());
+            assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
-            return buildTaskList(waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
+            return buildTaskList(assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
         }
 
         protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
-                Query<TaskEntity> inboxQuery,
+                Query<TaskEntity> assignmentsQuery,
                 Class<V> taskClass,
                 Class<T> taskListClass)
         {
@@ -99,7 +92,7 @@ public interface WaitingForQueries
             List<V> list = property.get();
             ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder(ListItemValue.class);
             ListItemValue labelPrototype = labelBuilder.prototype();
-            for (TaskEntity task : inboxQuery)
+            for (TaskEntity task : assignmentsQuery)
             {
                 buildTask(prototype, labelBuilder, labelPrototype, task);
 
@@ -114,7 +107,7 @@ public interface WaitingForQueries
             prototype.creationDate().set(task.createdOn().get());
             prototype.description().set(task.description().get());
             prototype.status().set(task.status().get());
-            prototype.isRead().set(!waitingForState.unreadWaitingForTasks().contains(task));
+            prototype.isRead().set(!assignments.unreadAssignedTasks().contains(task));
 
             ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder(ListValue.class);
             List<ListItemValue> labelList = labelListBuilder.prototype().items().get();
@@ -125,15 +118,6 @@ public interface WaitingForQueries
                 labelList.add(labelBuilder.newInstance());
             }
             prototype.labels().set(labelListBuilder.newInstance());
-
-            WaitingForTaskDTO taskDTO = (WaitingForTaskDTO) prototype;
-            Assignee assignee = task.assignedTo().get();
-            if (assignee != null)
-                taskDTO.assignedTo().set(assignee.getDescription());
-            else
-                taskDTO.assignedTo().set( "" );
-            taskDTO.delegatedTo().set(task.delegatedTo().get().getDescription());
-            taskDTO.delegatedOn().set(task.delegatedOn().get());
         }
     }
 }

@@ -14,17 +14,12 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.projects.assignments;
 
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -40,18 +35,10 @@ public class WorkspaceProjectAssignmentsServerResource
         String projectId = (String) getRequest().getAttributes().get("project");
         String userId = (String) getRequest().getAttributes().get("user");
 
-        // Find all Active tasks owned by "project" and assigned to "user"
-        QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Association<Assignee> assignedTo = templateFor(Assignable.AssignableState.class).assignedTo();
-        Property<String> ownerIdProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
-        Query<TaskEntity> assignmentsQuery = queryBuilder.where(and(
-                eq(ownerIdProp, projectId),
-                eq(assignedTo, uow.get(Assignee.class, userId)),
-                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
-                newQuery(uow);
-        assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
+        AssignmentsQueries queries = uow.get( AssignmentsQueries.class, projectId );
+        Assignee assignee = uow.get( Assignee.class, userId );
 
-        return buildTaskList(assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
+        return queries.assignmentsTasks( assignee );
     }
 
     public void createtask()

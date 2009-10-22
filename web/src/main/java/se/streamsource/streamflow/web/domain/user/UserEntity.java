@@ -29,6 +29,7 @@ import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.Delegator;
@@ -37,6 +38,7 @@ import se.streamsource.streamflow.web.domain.task.InboxQueries;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.domain.task.WaitingForQueries;
+import se.streamsource.streamflow.web.domain.task.DelegationsQueries;
 
 /**
  * JAVADOC
@@ -48,11 +50,13 @@ public interface UserEntity
         // Roles
         Assignee,
         Assignments,
+        AssignmentsQueries,
         Commenter,
         Contactable,
         Delegatee,
         Delegator,
         Delegations,
+        DelegationsQueries,
         Describable,
         OrganizationParticipations,
         Owner,
@@ -68,6 +72,7 @@ public interface UserEntity
         // State
         Inbox.InboxState,
         Assignments.AssignmentsState,
+        Delegations.DelegationsState,
         WaitingFor.WaitingForState,
         Contactable.ContactableState,
         OrganizationParticipations.OrganizationParticipationsState,

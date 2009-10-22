@@ -14,15 +14,14 @@
 
 package se.streamsource.streamflow.client.resource.users.workspace;
 
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.task.TaskClientResource;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.entity.EntityReference;
-import org.restlet.data.Reference;
 import org.restlet.Context;
+import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
@@ -33,11 +32,6 @@ public class AbstractTaskClientResource
     public AbstractTaskClientResource( @Uses Context context, @Uses Reference reference )
     {
         super( context, reference );
-    }
-
-    public TaskClientResource task()
-    {
-        return getResource(getReference().getParentRef().getParentRef().getParentRef().clone().addSegment("task").addSegment( getReference().getLastSegment() ), TaskClientResource.class);
     }
 
     public void complete() throws ResourceException

@@ -22,6 +22,9 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
+import se.streamsource.streamflow.web.domain.task.Delegations;
+import se.streamsource.streamflow.web.domain.task.DelegationsQueries;
 import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.InboxQueries;
 import se.streamsource.streamflow.web.domain.task.TaskId;
@@ -39,7 +42,10 @@ public interface ProjectEntity
         // State
         InboxQueries,
         Inbox.InboxState,
+        AssignmentsQueries,
         Assignments.AssignmentsState,
+        DelegationsQueries,
+        Delegations.DelegationsState,
         WaitingForQueries,
         WaitingFor.WaitingForState,
         Members.MembersState,

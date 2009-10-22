@@ -14,17 +14,13 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.user.assignments;
 
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
+import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -38,20 +34,10 @@ public class UserAssignmentsServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("user");
-        Assignments assignments = uow.get(Assignments.class, id);
+        AssignmentsQueries assignments = uow.get(AssignmentsQueries.class, id);
+        Assignee assignee = uow.get(Assignee.class, id);
 
-        // Find all my Active tasks assigned to "me"
-        QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Association<Assignee> assignedId = templateFor(Assignable.AssignableState.class).assignedTo();
-        Property<String> ownedId = templateFor(Ownable.OwnableState.class).owner().get().identity();
-        Query<TaskEntity> assignmentsQuery = queryBuilder.where(and(
-                eq(assignedId, uow.get(Assignee.class, id)),
-                eq(ownedId, id),
-                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
-                newQuery(uow);
-        assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
-
-        return buildTaskList(assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
+        return assignments.assignmentsTasks( assignee );
     }
 
     public void createtask()

@@ -31,8 +31,19 @@ public class UserWaitingForTaskClientResource
         super(context, reference);
     }
 
-    public void active() throws ResourceException
+    public void reject() throws ResourceException
     {
-        putCommand("active");
+        postCommand("reject");
     }
+
+    public void completeFinishedTask() throws ResourceException
+    {
+        postCommand("completeFinishedTask");
+    }
+
+    public void completeWaitingForTask() throws ResourceException
+    {
+        postCommand("completeWaitingForTask");
+    }
+
 }

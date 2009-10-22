@@ -29,7 +29,7 @@ import java.util.List;
  * JAVADOC
  */
 public class ProjectWaitingforClientResource
-        extends TaskListClientResource
+        extends TaskListClientResource<ProjectWaitingforTaskClientResource>
 {
     public ProjectWaitingforClientResource(@Uses Context context, @Uses Reference reference)
     {

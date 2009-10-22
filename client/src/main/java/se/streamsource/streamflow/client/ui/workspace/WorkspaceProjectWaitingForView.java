@@ -52,10 +52,11 @@ public class WorkspaceProjectWaitingForView
     @Override
     protected void buildToolbar(JPanel toolbar)
     {
+        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
-        Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
+        Action delegateTasksFromWaitingFor = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(acceptAction, assignAction, delegateTasksFromWaitingFor));
     }
 
     @Override
@@ -67,5 +68,15 @@ public class WorkspaceProjectWaitingForView
 
         dialogSelection = dialog.getSelected();
         super.delegateTasks();
+    }
+
+    @org.jdesktop.application.Action
+    public void completeTasks()
+    {
+        for (int row : getReverseSelectedTasks())
+        {
+            ((WorkspaceProjectWaitingForModel)model).complete(row);
+        }
+        model.refresh();
     }
 }

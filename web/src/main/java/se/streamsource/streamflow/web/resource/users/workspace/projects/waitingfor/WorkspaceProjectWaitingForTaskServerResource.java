@@ -17,7 +17,6 @@ package se.streamsource.streamflow.web.resource.users.workspace.projects.waiting
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -29,27 +28,70 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class WorkspaceProjectWaitingForTaskServerResource
         extends CommandQueryServerResource
 {
-
-    public void complete()
+    public void assignToMe()
     {
-        String id = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
+        String taskId = (String) getRequest().getAttributes().get("task");
+        String userId = (String) getRequest().getAttributes().get("user");
+        String projectId = (String) getRequest().getAttributes().get("project");
+
+        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
+        Assignee assignee = uow.get(Assignee.class, userId);
         Task task = uow.get(Task.class, taskId);
-        WaitingFor waitingFor = uow.get(WaitingFor.class, id);
-        Assignee assignee = uow.get(Assignee.class, id);
-        waitingFor.completeWaitingForTask(task, assignee);
+
+        waitingFor.assignWaitingForTask( task, assignee );
     }
 
     public void markAsRead()
     {
-        String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
+        String taskId = (String) getRequest().getAttributes().get("task");
+        String projectId = (String) getRequest().getAttributes().get("project");
+
         Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        inbox.markAsRead(task);
+        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
+
+        waitingFor.markWaitingForAsRead( task );
     }
+
+    public void reject()
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String taskId = (String) getRequest().getAttributes().get("task");
+        String projectId = (String) getRequest().getAttributes().get("project");
+
+        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
+        Task task = uow.get(Task.class, taskId);
+
+        waitingFor.rejectFinishedTask(task);
+    }
+
+    public void completeFinishedTask()
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String taskId = (String) getRequest().getAttributes().get("task");
+        String projectId = (String) getRequest().getAttributes().get("project");
+
+        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
+        Task task = uow.get(Task.class, taskId);
+
+        waitingFor.completeFinishedTask(task);
+    }
+
+
+   public void completeWaitingForTask()
+   {
+       UnitOfWork uow = uowf.currentUnitOfWork();
+       String taskId = (String) getRequest().getAttributes().get("task");
+       String userId = (String) getRequest().getAttributes().get("user");
+       String projectId = (String) getRequest().getAttributes().get("project");
+
+       WaitingFor delegations = uow.get(WaitingFor.class, projectId);
+       Assignee assignee = uow.get(Assignee.class, userId);
+       Task task = uow.get(Task.class, taskId);
+
+       delegations.completeWaitingForTask(task, assignee);
+   }
 
     public void deleteOperation() throws ResourceException
     {

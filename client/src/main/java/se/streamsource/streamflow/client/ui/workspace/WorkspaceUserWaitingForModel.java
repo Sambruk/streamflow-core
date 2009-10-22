@@ -19,6 +19,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForTaskClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
@@ -75,7 +76,7 @@ public class WorkspaceUserWaitingForModel
     {
         TaskDTO task = getTask(row);
 
-        getResource().reject(task.task().get().identity());
+        getResource().task( task.task().get().identity() ).reject();
     }
 
     public void complete(int row)
@@ -84,17 +85,17 @@ public class WorkspaceUserWaitingForModel
         {
             TaskDTO task = getTask(row);
 
+            UserWaitingForTaskClientResource waitingForTaskClientResource = getResource().task( task.task().get().identity() );
             if (task.status().get().equals(TaskStates.DONE))
             {
-                getResource().completeFinishedTask(task.task().get().identity());
+                waitingForTaskClientResource.completeFinishedTask();
             } else if (task.status().get().equals(TaskStates.ACTIVE))
             {
-                getResource().completeWaitingForTask(task.task().get().identity());
+                waitingForTaskClientResource.completeWaitingForTask();
             }
         } catch (ResourceException e)
         {
             throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
         }
     }
-
 }

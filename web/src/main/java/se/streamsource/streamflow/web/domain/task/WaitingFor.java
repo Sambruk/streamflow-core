@@ -33,6 +33,8 @@ public interface WaitingFor
 
     void dropWaitingForTask(Task task, Assignee assignee);
 
+    void assignWaitingForTask(Task task, Assignee assignee);
+
     void markWaitingForAsRead(Task task);
 
     void markWaitingForAsUnread(Task task);
@@ -75,6 +77,14 @@ public interface WaitingFor
             task.changeOwner(owner);
             task.assignTo(assignee);
             task.drop();
+        }
+
+        public void assignWaitingForTask( Task task, Assignee assignee )
+        {
+            task.unassign();
+            task.rejectDelegation();
+            task.changeOwner(owner);
+             task.assignTo( assignee );
         }
 
         public void markWaitingForAsRead(Task task)

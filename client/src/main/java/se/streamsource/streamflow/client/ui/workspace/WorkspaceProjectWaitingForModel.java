@@ -15,11 +15,16 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforTaskClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.domain.task.TaskStates;
 
 import java.util.Date;
 
@@ -64,5 +69,25 @@ public class WorkspaceProjectWaitingForModel
         }
 
         return super.getValueAt(rowIndex, column);
+    }
+
+    public void complete(int row)
+    {
+        try
+        {
+            TaskDTO task = getTask(row);
+
+            ProjectWaitingforTaskClientResource taskClientResource = getResource().task( task.task().get().identity() );
+            if (task.status().get().equals( TaskStates.DONE))
+            {
+                taskClientResource.completeFinishedTask();
+            } else if (task.status().get().equals(TaskStates.ACTIVE))
+            {
+                taskClientResource.completeWaitingForTask();
+            }
+        } catch (ResourceException e)
+        {
+            throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+        }
     }
 }

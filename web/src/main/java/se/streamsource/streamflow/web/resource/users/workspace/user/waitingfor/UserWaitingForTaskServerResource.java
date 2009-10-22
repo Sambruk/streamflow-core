@@ -28,18 +28,6 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class UserWaitingForTaskServerResource
         extends CommandQueryServerResource
 {
-
-    public void complete()
-    {
-        String id = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        WaitingFor waitingFor = uow.get(WaitingFor.class, id);
-        Assignee assignee = uow.get(Assignee.class, id);
-        waitingFor.completeWaitingForTask(task, assignee);
-    }
-
     public void markAsRead()
     {
         String taskId = (String) getRequest().getAttributes().get("task");
@@ -49,6 +37,46 @@ public class UserWaitingForTaskServerResource
         WaitingFor waitingFor = uow.get(WaitingFor.class, userId);
         waitingFor.markWaitingForAsRead(task);
     }
+
+    public void reject()
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String taskId = (String) getRequest().getAttributes().get("task");
+        String userId = (String) getRequest().getAttributes().get("user");
+        WaitingFor delegations = uow.get(WaitingFor.class, userId);
+
+        Task task = uow.get(Task.class, taskId);
+
+        delegations.rejectFinishedTask(task);
+    }
+
+
+    public void completeFinishedTask()
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String taskId = (String) getRequest().getAttributes().get("task");
+        String userId = (String) getRequest().getAttributes().get("user");
+        WaitingFor waitingFor = uow.get(WaitingFor.class, userId);
+
+        Task task = uow.get(Task.class, taskId);
+
+        waitingFor.completeFinishedTask(task);
+    }
+
+
+   public void completeWaitingForTask()
+   {
+       UnitOfWork uow = uowf.currentUnitOfWork();
+       String taskId = (String) getRequest().getAttributes().get("task");
+       String userId = (String) getRequest().getAttributes().get("user");
+       WaitingFor delegations = uow.get(WaitingFor.class, userId);
+       Assignee assignee = uow.get(Assignee.class, userId);
+
+       Task task = uow.get(Task.class, taskId);
+
+       delegations.completeWaitingForTask(task, assignee);
+   }
+
 
     public void deleteOperation() throws ResourceException
     {
