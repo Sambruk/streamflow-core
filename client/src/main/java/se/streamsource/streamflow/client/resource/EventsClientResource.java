@@ -15,9 +15,14 @@
 package se.streamsource.streamflow.client.resource;
 
 import org.restlet.Context;
+import org.restlet.representation.InputRepresentation;
 import org.restlet.data.Reference;
+import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 import org.qi4j.api.injection.scope.Uses;
+
+import java.io.InputStream;
 
 /**
  * JAVADOC
@@ -28,5 +33,10 @@ public class EventsClientResource
     public EventsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
+    }
+
+    public void registerClient( InputStream in ) throws ResourceException
+    {
+        post( new InputRepresentation(in, MediaType.APPLICATION_JAVA_OBJECT) );
     }
 }

@@ -16,13 +16,16 @@ package se.streamsource.streamflow.client.resource;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.representation.InputRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.resource.task.TasksClientResource;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * StreamFlow server resource.

@@ -23,6 +23,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.migration.MigrationAssembler;
+import se.streamsource.streamflow.web.application.notification.NotificationAssembler;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.application.statistics.StatisticsAssembler;
@@ -106,6 +107,7 @@ public class StreamFlowWebAssembler
     {
         new MigrationAssembler().assemble(appLayer.moduleAssembly("Migration"));
         new ManagementAssembler().assemble(appLayer.moduleAssembly("Management"));
+        new NotificationAssembler().assemble(appLayer.moduleAssembly("Notification"));
         new SecurityAssembler().assemble(appLayer.moduleAssembly("Security"));
         new BootstrapAssembler().assemble(appLayer.moduleAssembly("Organization"));
         new StatisticsAssembler().assemble(appLayer.moduleAssembly("Statistics"));

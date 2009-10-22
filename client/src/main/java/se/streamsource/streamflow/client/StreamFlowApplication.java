@@ -36,6 +36,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
+import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -51,6 +52,7 @@ import se.streamsource.streamflow.client.ui.search.SearchWindow;
 import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.RemoteEventNotification;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
@@ -59,8 +61,18 @@ import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
@@ -113,7 +125,9 @@ public class StreamFlowApplication
     DebugWindow debugWindow;
 
     AdministrationWindow administrationWindow;
-    public ForEvents subscriber;
+    private ForEvents subscriber;
+    private Remote stub;
+    public RemoteEventNotification remoteNotification;
 
     public StreamFlowApplication()
     {
@@ -124,7 +138,7 @@ public class StreamFlowApplication
 
     public void init(@Uses final AccountsModel accountsModel,
                      @Structure final ObjectBuilderFactory obf,
-                     @Uses AccountSelector accountSelector,
+                     @Uses final AccountSelector accountSelector,
                      @Service EventSource source
     ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
     {
@@ -172,6 +186,8 @@ public class StreamFlowApplication
         {
             accountSelector.setSelectedIndex(0);
         }
+
+// TODO Add this later        clientRegistration( accountSelector );
     }
 
     @Override
@@ -349,5 +365,42 @@ public class StreamFlowApplication
     protected void show(JComponent jComponent)
     {
         super.show(jComponent);
+    }
+
+    private void clientRegistration( final AccountSelector accountSelector )
+    {
+        remoteNotification = new RemoteEventNotificationImpl();
+        try
+        {
+            stub = UnicastRemoteObject.exportObject( remoteNotification, 0 );
+
+            accountSelector.addListSelectionListener( new ListSelectionListener()
+            {
+                public void valueChanged( ListSelectionEvent e )
+                {
+                    if (!e.getValueIsAdjusting())
+                    {
+                        try
+                        {
+                            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                            ObjectOutputStream oout = new ObjectOutputStream( bytes);
+                            oout.writeObject( stub );
+                            oout.close();
+                            InputStream in = new ByteArrayInputStream(bytes.toByteArray());
+                            accountSelector.getSelectedAccount().serverResource().events().registerClient(in);
+                        } catch (IOException e1)
+                        {
+                            e1.printStackTrace();
+                        } catch (ResourceException e1)
+                        {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } catch (RemoteException e)
+        {
+            e.printStackTrace();
+        }
     }
 }
