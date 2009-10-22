@@ -57,6 +57,23 @@ public class StreamFlowRestApplication
     @Structure
     ApplicationSPI app;
 
+    Thread shutdownHook = new Thread()
+    {
+        @Override
+        public void run()
+        {
+            try
+            {
+                System.out.println( "SHUTDOWN" );
+                Logger.getLogger( "streamflow" ).info( "VM shutdown; passivating StreamFlow" );
+                app.passivate();
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    };
+
     public StreamFlowRestApplication(@Uses Context parentContext) throws Exception
     {
         super(parentContext);
@@ -95,22 +112,7 @@ public class StreamFlowRestApplication
 
             app.findModule("Web", "REST").objectBuilderFactory().newObjectBuilder(StreamFlowRestApplication.class).injectTo(this);
 
-            Runtime.getRuntime().addShutdownHook(new Thread()
-            {
-                @Override
-                public void run()
-                {
-                    try
-                    {
-                        System.out.println("SHUTDOWN");
-                        Logger.getLogger("streamflow").info("VM shutdown; passivating StreamFlow");
-                        app.passivate();
-                    } catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            Runtime.getRuntime().addShutdownHook( shutdownHook );
 
             super.start();
         } catch (Exception e)
@@ -127,5 +129,7 @@ public class StreamFlowRestApplication
 
         Logger.getLogger("streamflow").info("Passivating StreamFlow");
         app.passivate();
+
+        Runtime.getRuntime().removeShutdownHook( shutdownHook );
     }
 }
