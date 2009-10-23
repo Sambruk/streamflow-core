@@ -44,7 +44,11 @@ public interface OrganizationEntity
         FieldDefinitions.FieldDefinitionsState,
         FieldDefinitionsQueries,
         ValueDefinitions.ValueDefinitionsState,
-        ValueDefinitionsQueries
+        ValueDefinitionsQueries,
+
+        //Queries
+        OrganizationParticipationsQueries
+    
 {
     abstract class LifecycleConcern
             extends OrganizationalUnit.OrganizationalUnitMixin

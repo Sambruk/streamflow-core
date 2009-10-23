@@ -75,5 +75,5 @@ public enum AdministrationResources
     administrators_tab, could_not_add_administrator, could_not_remove_administrator, selection_not_an_organizational_unit, merge_to,
     username_label, password_label,
     could_not_import_users, could_not_list_form_definitions, no_form_definitions_available, could_not_add_form_definition, could_not_remove_form_definition, user_enabled_label,
-    import_users, import_files
+    import_users, users_tab, organizations_tab, could_not_find_organization, could_not_get_users, join_organization, import_files
 }

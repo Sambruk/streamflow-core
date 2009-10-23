@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Arvid Huss. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration;
+package se.streamsource.streamflow.client.ui.administration.users;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.MediaType;
@@ -20,8 +20,9 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -33,12 +34,9 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
-/**
- * JAVADOC
- */
-public class OrganizationsUsersModel
+public class UsersAdministrationModel
         extends AbstractTableModel
-    implements EventListener, EventHandler
+        implements EventListener, EventHandler
 {
 
     private List<UserEntityDTO> users;
@@ -47,10 +45,11 @@ public class OrganizationsUsersModel
     private String[] columnNames;
     private Class[] columnClasses;
     private boolean[] columnEditable;
-    
+
     private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "userCreated", "enabledChanged");
 
-    public OrganizationsUsersModel(@Uses OrganizationsClientResource organizations) throws ResourceException
+
+    public UsersAdministrationModel(@Uses OrganizationsClientResource organizations) throws ResourceException
     {
         this.organizations = organizations;
         columnNames = new String[]{ text(AdministrationResources.user_enabled_label), text(AdministrationResources.username_label)};

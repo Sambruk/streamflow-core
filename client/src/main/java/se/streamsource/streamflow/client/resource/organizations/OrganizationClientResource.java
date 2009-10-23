@@ -82,4 +82,19 @@ public class OrganizationClientResource
     {
         return query("formDefinitions", ListValue.class);
     }
+
+    public ListValue participatingUsers() throws ResourceException
+    {
+        return query("participatingUsers", ListValue.class);
+    }
+
+    public void join(ListValue users) throws ResourceException
+    {
+        postCommand("join", users);
+    }
+
+    public void leave(ListValue users) throws ResourceException
+    {
+        postCommand("leave", users);
+    }
 }

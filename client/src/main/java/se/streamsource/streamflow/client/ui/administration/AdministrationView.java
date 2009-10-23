@@ -18,14 +18,13 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsTabbedView;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -65,7 +64,8 @@ public class AdministrationView
                     {
                         AccountAdministrationNode accountAdminNode = (AccountAdministrationNode) node;
 
-                        view = obf.newObjectBuilder(OrganizationsUsersView.class).use(accountAdminNode.usersModel())
+                        view = obf.newObjectBuilder(OrganizationsTabbedView.class).use(
+                                accountAdminNode.organizationsModel(), accountAdminNode.usersModel())
                                 .newInstance();
 
                     } else if (node instanceof OrganizationalStructureAdministrationNode)

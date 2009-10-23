@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
  */
 @Mixins(Organizations.OrganizationsMixin.class)
 public interface Organizations
+    extends OrganizationsQueries
 {
     OrganizationEntity createOrganization(String name);
 

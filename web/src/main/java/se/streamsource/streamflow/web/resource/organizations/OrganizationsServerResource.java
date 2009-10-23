@@ -28,6 +28,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -36,11 +37,13 @@ import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.organization.OrganizationsQueries;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -55,13 +58,16 @@ import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 /**
- * Mapped to /organizations/{id}.
+ * Mapped to /organizations.
  */
 public class OrganizationsServerResource
         extends CommandQueryServerResource
 {
     @Structure
     QueryBuilderFactory qbf;
+
+    @Structure
+    ValueBuilderFactory vbf;
 
 
     @Override
@@ -248,5 +254,13 @@ public class OrganizationsServerResource
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, errors);
         }
 
+    }
+
+    public ListValue organizations() throws ResourceException
+    {
+        OrganizationsQueries organizations = uowf.currentUnitOfWork()
+                .get(OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID);
+
+        return organizations.organizations();
     }
 }

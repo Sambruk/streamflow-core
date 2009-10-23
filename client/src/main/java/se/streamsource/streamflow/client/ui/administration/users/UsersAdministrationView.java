@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Mads Enevoldsen. All Rights Reserved.
+ * Copyright (c) 2009, Arvid Huss. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration;
+package se.streamsource.streamflow.client.ui.administration.users;
 
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
@@ -25,17 +25,15 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.CreateUserDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * JAVADOC
- */
-public class OrganizationsUsersView
-        extends JScrollPane
+public class UsersAdministrationView
+      extends JScrollPane
 {
-    private OrganizationsUsersModel model;
+    private UsersAdministrationModel model;
 
     @Uses
     Iterable<CreateUserDialog> userDialogs;
@@ -44,7 +42,7 @@ public class OrganizationsUsersView
     @Service
     DialogService dialogs;
 
-    public OrganizationsUsersView(@Service ApplicationContext context, @Uses OrganizationsUsersModel model)
+    public UsersAdministrationView(@Service ApplicationContext context, @Uses UsersAdministrationModel model)
     {
         ApplicationActionMap am = context.getActionMap(this);
         setActionMap(am);
@@ -52,13 +50,11 @@ public class OrganizationsUsersView
         this.model = model;
         JXTable usersTable = new JXTable(model);
         usersTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
-        usersTable.getColumn(0).setMaxWidth(50);
+        usersTable.getColumn(0).setMaxWidth(30);
         usersTable.getColumn(0).setResizable(false);
 
         JPanel usersPanel = new JPanel(new BorderLayout());
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(usersTable);
-        usersPanel.add(scrollPane, BorderLayout.CENTER);
+        usersPanel.add(usersTable, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("createUser")));
@@ -93,14 +89,13 @@ public class OrganizationsUsersView
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(
                 text(AdministrationResources.import_files), "xls", "csv", "txt"));
         fileChooser.setDialogTitle(text(AdministrationResources.import_users));
-        int returnVal = fileChooser.showOpenDialog((OrganizationsUsersView.this));
+        int returnVal = fileChooser.showOpenDialog((UsersAdministrationView.this));
         if (returnVal != JFileChooser.APPROVE_OPTION)
         {
             return;
         }
 
         model.importUsers(fileChooser.getSelectedFile().getAbsoluteFile());
-           
-    }
 
+    }
 }

@@ -29,6 +29,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -36,9 +37,7 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.form.FormDefinitionsQueries;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.organization.*;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
@@ -206,5 +205,43 @@ public class OrganizationServerResource
         
         return forms.formDefinitionList();
     }
+
+    public ListValue participatingUsers()
+    {
+        String orgId = (String) getRequest().getAttributes().get("organization");
+
+        OrganizationParticipationsQueries participants = uowf.currentUnitOfWork().get(OrganizationParticipationsQueries.class, orgId);
+
+        return participants.participatingUsers();
+    }
+
+    public void join(ListValue users)
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        String id = (String) getRequest().getAttributes().get("organization");
+        Organization org = uowf.currentUnitOfWork().get(Organization.class, id);
+
+        for(ListItemValue value : users.items().get())
+        {
+            OrganizationParticipations user = uow.get(OrganizationParticipations.class, value.entity().get().identity());
+            user.join(org);
+        }
+    }
+
+    public void leave(ListValue users)
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        String id = (String) getRequest().getAttributes().get("organization");
+        Organization org = uowf.currentUnitOfWork().get(Organization.class, id);
+
+        for(ListItemValue value : users.items().get())
+        {
+            OrganizationParticipations user = uow.get(OrganizationParticipations.class, value.entity().get().identity());
+            user.leave(org);
+        }
+    }
+
 
 }

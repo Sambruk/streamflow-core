@@ -21,6 +21,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsModel;
+import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -43,7 +45,8 @@ public class AccountAdministrationNode
 
     private AccountModel accountModel;
 
-    private OrganizationsUsersModel usersModel;
+    private UsersAdministrationModel usersModel;
+    private OrganizationsModel organizationsModel;
 
     WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode>()
     {
@@ -89,14 +92,24 @@ public class AccountAdministrationNode
         return accountModel;
     }
 
-    public OrganizationsUsersModel usersModel()
+    public UsersAdministrationModel usersModel()
     {
         if (usersModel == null)
         {
-            usersModel = obf.newObjectBuilder( OrganizationsUsersModel.class ).use( accountModel.serverResource().organizations() ).newInstance();
+            usersModel = obf.newObjectBuilder( UsersAdministrationModel.class ).use( accountModel.serverResource().organizations() ).newInstance();
         }
 
         return usersModel;
+    }
+
+    public OrganizationsModel organizationsModel()
+    {
+        if(organizationsModel == null)
+        {
+            organizationsModel = obf.newObjectBuilder(OrganizationsModel.class).use(accountModel.serverResource().organizations()).newInstance();
+        }
+
+        return organizationsModel;
     }
 
     public Enumeration children()
@@ -155,6 +168,9 @@ public class AccountAdministrationNode
     {
         if (usersModel != null)
             usersModel.notifyEvent( event );
+
+        if(organizationsModel != null)
+            organizationsModel.notifyEvent(event);
 
         for (OrganizationalStructureAdministrationNode model : models)
         {

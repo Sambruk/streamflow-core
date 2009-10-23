@@ -20,9 +20,11 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.roles.RoleAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 
 /**
@@ -47,17 +49,21 @@ public class AdministrationAssembler
         UIAssemblers.addMV(module,
                 AdministrationModel.class,
                 AdministrationOutlineView.class);
-        UIAssemblers.addMV(module,
-                OrganizationsUsersModel.class,
-                OrganizationsUsersView.class);
 
         UIAssemblers.addMV(module,
                 AccountModel.class,
                 AccountView.class);
-        UIAssemblers.addDialogs(module, ChangePasswordDialog.class, SelectOrganizationalUnitDialog.class);
+        UIAssemblers.addDialogs(module,
+                ChangePasswordDialog.class,
+                SelectOrganizationalUnitDialog.class,
+                SelectUsersDialog.class);
         UIAssemblers.addTasks(module, TestConnectionTask.class);
 
+        UIAssemblers.addModels(module, SelectUsersDialogModel.class);
+
         // Other administration modules
+        new UserAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Users"));
+        new OrganizationsAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Organizations"));
         new GroupAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Groups"));
         new ProjectAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Projects"));
         new RoleAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Roles"));

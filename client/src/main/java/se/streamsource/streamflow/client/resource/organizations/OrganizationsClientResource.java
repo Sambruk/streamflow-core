@@ -21,6 +21,7 @@ import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
@@ -64,5 +65,10 @@ public class OrganizationsClientResource
     public void importUsers(Representation representation) throws ResourceException
     {
         postCommand("importUsers", representation);
-    }    
+    }
+
+    public ListValue organizations() throws ResourceException
+    {
+        return query("organizations", ListValue.class);
+    }
 }
