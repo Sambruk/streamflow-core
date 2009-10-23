@@ -120,18 +120,25 @@ public class TasksDetailView
     {
         if (tasks.containsKey( task ))
         {
-            // TODO Select task
+            TaskDetailView view = tasks.get( task );
+            setSelectedComponent( view );
             return;
         }
 
-        final TaskDetailView detailView = getDetailView();
+        final TaskDetailView detailView = getCurrentDetailView();
+
+        TaskModel key = detailView.getTaskModel();
+        if (key != null)
+            tasks.remove( key );
 
         detailView.setTaskModel( task );
+
+        tasks.put( task, detailView );
 
         addTab( getTaskDescription( task ), detailView );
     }
 
-    private TaskDetailView getDetailView()
+    private TaskDetailView getCurrentDetailView()
     {
         if (current == null)
         {
@@ -164,7 +171,7 @@ public class TasksDetailView
                 if (getComponentAt( i ) == current)
                 {
                     removeTabAt( i );
-                    tasks.remove( current.getTaskModel().resource());
+                    tasks.remove( current.getTaskModel());
                 }
             }
             current = null;
@@ -448,6 +455,14 @@ public class TasksDetailView
      */
     protected boolean fireCloseTab( int tabIndexToClose )
     {
+        JComponent component = (JComponent) getComponentAt( tabIndexToClose );
+        if (component.getClientProperty( "isClosable" ) == null)
+        {
+            component.putClientProperty( "isClosable", Boolean.TRUE );
+            current = null;
+            return false;
+        }
+
         boolean closeit = true;
         // Guaranteed to return a non-null array
         Object[] listeners = listenerList.getListenerList();
@@ -462,6 +477,9 @@ public class TasksDetailView
                 }
             }
         }
+
+        TaskDetailView detailView = (TaskDetailView) component;
+        tasks.remove( detailView.getTaskModel() );
 
         return closeit;
     }
@@ -532,7 +550,7 @@ public class TasksDetailView
          */
         public void paintIcon( Component c, Graphics g, int x, int y )
         {
-            boolean doPaintCloseIcon = true;
+            boolean doPaintCloseIcon = false;
             try
             {
                 // JComponent.putClientProperty("isClosable", new Boolean(false));
@@ -546,51 +564,60 @@ public class TasksDetailView
                 }
             } catch (Exception ignored)
             {/*Could probably be a ClassCastException*/}
-            if (doPaintCloseIcon)
+
+            x_pos = x;
+            y_pos = y;
+            int y_p = y + 1;
+
+            if (normalCloseIcon != null && !mouseover)
             {
-                x_pos = x;
-                y_pos = y;
-                int y_p = y + 1;
+                normalCloseIcon.paintIcon( c, g, x, y_p );
+            } else if (hooverCloseIcon != null && mouseover && !mousepressed)
+            {
+                hooverCloseIcon.paintIcon( c, g, x, y_p );
+            } else if (pressedCloseIcon != null && mousepressed)
+            {
+                pressedCloseIcon.paintIcon( c, g, x, y_p );
+            } else
+            {
+                y_p++;
 
-                if (normalCloseIcon != null && !mouseover)
-                {
-                    normalCloseIcon.paintIcon( c, g, x, y_p );
-                } else if (hooverCloseIcon != null && mouseover && !mousepressed)
-                {
-                    hooverCloseIcon.paintIcon( c, g, x, y_p );
-                } else if (pressedCloseIcon != null && mousepressed)
-                {
-                    pressedCloseIcon.paintIcon( c, g, x, y_p );
-                } else
-                {
-                    y_p++;
+                Color col = g.getColor();
 
-                    Color col = g.getColor();
+                if (mousepressed && mouseover)
+                {
+                    g.setColor( Color.WHITE );
+                    g.fillRect( x + 1, y_p, 12, 13 );
+                }
 
-                    if (mousepressed && mouseover)
-                    {
-                        g.setColor( Color.WHITE );
-                        g.fillRect( x + 1, y_p, 12, 13 );
-                    }
+                g.setColor( Color.black );
+                g.drawLine( x + 1, y_p, x + 12, y_p );
+                g.drawLine( x + 1, y_p + 13, x + 12, y_p + 13 );
+                g.drawLine( x, y_p + 1, x, y_p + 12 );
+                g.drawLine( x + 13, y_p + 1, x + 13, y_p + 12 );
 
-                    g.setColor( Color.black );
-                    g.drawLine( x + 1, y_p, x + 12, y_p );
-                    g.drawLine( x + 1, y_p + 13, x + 12, y_p + 13 );
-                    g.drawLine( x, y_p + 1, x, y_p + 12 );
-                    g.drawLine( x + 13, y_p + 1, x + 13, y_p + 12 );
-                    g.drawLine( x + 3, y_p + 3, x + 10, y_p + 10 );
-                    if (mouseover)
-                        g.setColor( Color.GRAY );
+                if (mouseover)
+                    g.setColor( Color.GRAY );
+
+                if (doPaintCloseIcon)
+                {
                     g.drawLine( x + 3, y_p + 4, x + 9, y_p + 10 );
                     g.drawLine( x + 4, y_p + 3, x + 10, y_p + 9 );
                     g.drawLine( x + 10, y_p + 3, x + 3, y_p + 10 );
                     g.drawLine( x + 10, y_p + 4, x + 4, y_p + 10 );
                     g.drawLine( x + 9, y_p + 3, x + 3, y_p + 9 );
-                    g.setColor( col );
-                    if (fileIcon != null)
-                    {
-                        fileIcon.paintIcon( c, g, x + width, y_p );
-                    }
+                    g.drawLine( x + 3, y_p + 3, x + 10, y_p + 10 );
+                } else
+                {
+                    g.drawLine( x + 6, y_p + 3, x + 6, y_p + 10 );
+                    g.drawLine( x + 7, y_p + 3, x + 7, y_p + 10 );
+                    g.drawLine( x + 3, y_p + 6, x + 10, y_p + 6 );
+                    g.drawLine( x + 3, y_p + 7, x + 10, y_p + 7 );
+                }
+                g.setColor( col );
+                if (fileIcon != null)
+                {
+                    fileIcon.paintIcon( c, g, x + width, y_p );
                 }
             }
         }
