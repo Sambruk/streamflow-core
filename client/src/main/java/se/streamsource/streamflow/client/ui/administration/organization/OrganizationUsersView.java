@@ -63,7 +63,8 @@ public class OrganizationUsersView
 
         participantList.setCellRenderer(new ListItemCellRenderer());
 
-        add(participantList, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(participantList);
+        add(scrollPane, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("add")));

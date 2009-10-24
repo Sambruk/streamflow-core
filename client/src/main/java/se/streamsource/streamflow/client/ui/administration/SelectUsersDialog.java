@@ -25,7 +25,6 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 
 public class SelectUsersDialog
@@ -36,6 +35,7 @@ public class SelectUsersDialog
 
     private ListValue selectedUsers;
     private SelectUsersDialogModel model;
+
     private JList list;
 
     public SelectUsersDialog(@Service ApplicationContext context,
@@ -43,7 +43,6 @@ public class SelectUsersDialog
                              @Structure ValueBuilderFactory vbf)
     {
         super(new BorderLayout());
-        this.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         this.model = model;
         this.vbf = vbf;
 
@@ -59,7 +58,8 @@ public class SelectUsersDialog
             }
         });
 
-        add(list, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(list);
+        add(scrollPane, BorderLayout.CENTER);
         setPreferredSize(new Dimension(200,300));
     }
 

@@ -42,7 +42,8 @@ public class OrganizationsView
 
         organizationsList.setCellRenderer(new ListItemCellRenderer());
 
-        add(organizationsList, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(organizationsList);
+        add(scrollPane, BorderLayout.CENTER);
         setPreferredSize(new Dimension(250,600));
     }
 
