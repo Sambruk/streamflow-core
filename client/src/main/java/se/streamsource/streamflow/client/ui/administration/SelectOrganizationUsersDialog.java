@@ -20,26 +20,27 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class SelectUsersDialog
+public class SelectOrganizationUsersDialog
     extends JPanel
 {
 
     private ValueBuilderFactory vbf;
 
     private ListValue selectedUsers;
-    private SelectUsersDialogModel model;
+    private SelectOrganizationUsersDialogModel model;
 
     private JList list;
 
-    public SelectUsersDialog(@Service ApplicationContext context,
-                             @Uses SelectUsersDialogModel model,
+    public SelectOrganizationUsersDialog(@Service ApplicationContext context,
+                             @Uses SelectOrganizationUsersDialogModel model,
                              @Structure ValueBuilderFactory vbf)
     {
         super(new BorderLayout());
@@ -49,14 +50,7 @@ public class SelectUsersDialog
         setActionMap(context.getActionMap(this));
 
         list = new JList(model);
-        list.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
-            {
-                UserEntityDTO user = (UserEntityDTO) value;
-                return super.getListCellRendererComponent(list, user.username().get(), index, isSelected, cellHasFocus);    //To change body of overridden methods use File | Settings | File Templates.
-            }
-        });
+        list.setCellRenderer(new ListItemCellRenderer());
 
         JScrollPane scrollPane = new JScrollPane(list);
         add(scrollPane, BorderLayout.CENTER);
@@ -71,8 +65,8 @@ public class SelectUsersDialog
 
         for(Object value : list.getSelectedValues())
         {
-            UserEntityDTO user = (UserEntityDTO) value;
-            listBuilder.addListItem(user.username().get(), user.entity().get());
+            ListItemValue user = (ListItemValue) value;
+            listBuilder.addListItem(user.description().get(), user.entity().get());
         }
         selectedUsers = listBuilder.newList();
         

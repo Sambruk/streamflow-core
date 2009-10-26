@@ -17,22 +17,22 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
+import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.util.List;
 
-public class SelectUsersDialogModel
+public class SelectOrganizationUsersDialogModel
         extends AbstractListModel
 {
-    private List<UserEntityDTO> users;
+    private List<ListItemValue> users;
 
-    public SelectUsersDialogModel(@Uses OrganizationsClientResource resource)
+    public SelectOrganizationUsersDialogModel(@Uses OrganizationClientResource resource)
     {
         try
         {
-            users = resource.users().users().get();
+            users = resource.nonParticipatingUsers().items().get();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_get_users, e);

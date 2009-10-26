@@ -127,16 +127,26 @@ public class OrganizationsServerResource
         return listBuilder.newInstance();
     }
 
-    public void createUser(NewUserCommand userCommand)
+    public void createUser(NewUserCommand userCommand) throws ResourceException
     {
-        OrganizationsEntity organizations = uowf.currentUnitOfWork().get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
+        Organizations organizations = uowf.currentUnitOfWork().get(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
 
-        organizations.createUser(userCommand.username().get(), userCommand.password().get());
+        checkPermission(organizations);
+
+        try
+        {
+            organizations.createUser(userCommand.username().get(), userCommand.password().get());
+        } catch (IllegalArgumentException iae)
+        {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Username or password may not be empty or contain whitespace charcters");
+        }
     }
 
     public void changeDisabled(UserEntityDTO user)
     {
         UserEntity userEntity = uowf.currentUnitOfWork().get(UserEntity.class, user.entity().get().identity());
+
+        checkPermission(userEntity);
 
         userEntity.changeEnabled(userEntity.disabled().get());
     }
@@ -151,6 +161,10 @@ public class OrganizationsServerResource
 					OrganizationsServerResource.class.getName(), locale);
 
         UnitOfWork uow = uowf.currentUnitOfWork();
+
+        Organizations organizations = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+
+        checkPermission(organizations);
 
         try
         {
@@ -186,7 +200,6 @@ public class OrganizationsServerResource
                 throw new ResourceException(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
             }
 
-            Organizations organizations = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
             for(String userNamePwd : users)
             {
                 if(userNamePwd.startsWith("#"))
@@ -261,6 +274,8 @@ public class OrganizationsServerResource
         OrganizationsQueries organizations = uowf.currentUnitOfWork()
                 .get(OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID);
 
+        checkPermission(organizations);
+        
         return organizations.organizations();
     }
 }

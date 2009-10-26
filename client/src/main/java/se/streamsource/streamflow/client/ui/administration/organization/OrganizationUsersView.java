@@ -27,8 +27,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.SelectUsersDialog;
-import se.streamsource.streamflow.client.ui.administration.SelectUsersDialogModel;
+import se.streamsource.streamflow.client.ui.administration.SelectOrganizationUsersDialog;
+import se.streamsource.streamflow.client.ui.administration.SelectOrganizationUsersDialogModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 
@@ -77,9 +77,9 @@ public class OrganizationUsersView
     @org.jdesktop.application.Action
     public void add() throws ResourceException
     {
-        SelectUsersDialogModel dialogModel = obf.newObjectBuilder(SelectUsersDialogModel.class)
-                .use(model.getParentResource()).newInstance();
-        SelectUsersDialog dialog = obf.newObjectBuilder(SelectUsersDialog.class)
+        SelectOrganizationUsersDialogModel dialogModel = obf.newObjectBuilder(SelectOrganizationUsersDialogModel.class)
+                .use(model.getResource()).newInstance();
+        SelectOrganizationUsersDialog dialog = obf.newObjectBuilder(SelectOrganizationUsersDialog.class)
                 .use(dialogModel).newInstance();
         dialogs.showOkCancelHelpDialog(
                 WindowUtils.findWindow(this),
@@ -89,6 +89,7 @@ public class OrganizationUsersView
         if(dialog.getSelectedUsers() != null)
         {
             model.getResource().join(dialog.getSelectedUsers());
+            model.refresh();
         }
     }
 
@@ -103,6 +104,7 @@ public class OrganizationUsersView
         }
 
         model.getResource().leave(userList.newList());
+        model.refresh();
 
         participantList.clearSelection();
     }

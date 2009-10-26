@@ -32,6 +32,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
 
 /**
  * JAVADOC
@@ -51,7 +52,7 @@ public interface Organizations
      * @return the created user
      * @throws IllegalArgumentException if user with given name already exists
      */
-    UserEntity createUser(@Matches("\\w*")String username, String password)
+    UserEntity createUser(@Matches("\\w+")String username, @Matches("\\w+")String password)
             throws IllegalArgumentException;
 
     interface OrganizationsState

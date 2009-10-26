@@ -88,6 +88,11 @@ public class OrganizationClientResource
         return query("participatingUsers", ListValue.class);
     }
 
+    public ListValue nonParticipatingUsers() throws ResourceException
+    {
+        return query("nonParticipatingUsers", ListValue.class);
+    }
+
     public void join(ListValue users) throws ResourceException
     {
         postCommand("join", users);

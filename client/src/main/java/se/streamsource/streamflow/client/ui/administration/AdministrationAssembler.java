@@ -56,10 +56,10 @@ public class AdministrationAssembler
         UIAssemblers.addDialogs(module,
                 ChangePasswordDialog.class,
                 SelectOrganizationalUnitDialog.class,
-                SelectUsersDialog.class);
+                SelectOrganizationUsersDialog.class);
         UIAssemblers.addTasks(module, TestConnectionTask.class);
 
-        UIAssemblers.addModels(module, SelectUsersDialogModel.class);
+        UIAssemblers.addModels(module, SelectOrganizationUsersDialogModel.class);
 
         // Other administration modules
         new UserAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Users"));

@@ -212,7 +212,20 @@ public class OrganizationServerResource
 
         OrganizationParticipationsQueries participants = uowf.currentUnitOfWork().get(OrganizationParticipationsQueries.class, orgId);
 
+        checkPermission(participants);
+
         return participants.participatingUsers();
+    }
+
+    public ListValue nonParticipatingUsers()
+    {
+         String orgId = (String) getRequest().getAttributes().get("organization");
+
+        OrganizationParticipationsQueries participants = uowf.currentUnitOfWork().get(OrganizationParticipationsQueries.class, orgId);
+
+        checkPermission(participants);
+
+        return participants.nonParticipatingUsers();       
     }
 
     public void join(ListValue users)
@@ -221,6 +234,8 @@ public class OrganizationServerResource
 
         String id = (String) getRequest().getAttributes().get("organization");
         Organization org = uowf.currentUnitOfWork().get(Organization.class, id);
+
+        checkPermission(org);
 
         for(ListItemValue value : users.items().get())
         {
@@ -235,6 +250,8 @@ public class OrganizationServerResource
 
         String id = (String) getRequest().getAttributes().get("organization");
         Organization org = uowf.currentUnitOfWork().get(Organization.class, id);
+
+        checkPermission(org);
 
         for(ListItemValue value : users.items().get())
         {

@@ -34,6 +34,8 @@ public interface OrganizationParticipationsQueries
 {
     public ListValue participatingUsers();
 
+    public ListValue nonParticipatingUsers();
+
     class OrganizationParticipationsQueriesMixin
         implements OrganizationParticipationsQueries
     {
@@ -51,6 +53,16 @@ public interface OrganizationParticipationsQueries
 
         public ListValue participatingUsers()
         {
+            return users(true);
+        }
+
+        public ListValue nonParticipatingUsers()
+        {
+            return users(false);
+        }
+
+        private ListValue users(boolean participating)
+        {
             Query<UserEntity> usersQuery = qbf.newQueryBuilder(UserEntity.class).
                     newQuery(uowf.currentUnitOfWork());
 
@@ -60,7 +72,9 @@ public interface OrganizationParticipationsQueries
 
             for (UserEntity entity : usersQuery)
             {
-                if(entity.organizations().contains(organization))
+                if((participating
+                        ? entity.organizations().contains(organization)
+                        : !entity.organizations().contains(organization)))
                 {
                     userList.addListItem(entity.getDescription(), EntityReference.getEntityReference(entity));
                 }

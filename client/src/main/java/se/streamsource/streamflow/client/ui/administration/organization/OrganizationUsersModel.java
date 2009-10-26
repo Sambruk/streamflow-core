@@ -22,26 +22,21 @@ import se.streamsource.streamflow.client.resource.organizations.OrganizationClie
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.*;
 import java.util.List;
 
 public class OrganizationUsersModel
     extends AbstractListModel
-    implements Refreshable,EventListener,EventHandler
+    implements Refreshable, EventListener
 {
-    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "organizationJoined", "organizationLeft");
-
     private OrganizationClientResource organizationResource;
     private OrganizationsClientResource parentResource;
     private List<ListItemValue> users;
 
-    public OrganizationUsersModel(@Uses OrganizationClientResource organizationResource,
-                                  @Uses OrganizationsClientResource parentResource)
+    public OrganizationUsersModel(@Uses OrganizationClientResource organizationResource)
     {
         this.organizationResource = organizationResource;
         this.parentResource = parentResource;
@@ -72,24 +67,13 @@ public class OrganizationUsersModel
         }
     }
 
-    public void notifyEvent(DomainEvent event)
-    {
-        eventFilter.handleEvent(event);
-    }
-
-    public boolean handleEvent(DomainEvent event)
-    {
-        refresh();
-        return false;
-    }
-
     public OrganizationClientResource getResource()
     {
         return organizationResource;
     }
 
-    public OrganizationsClientResource getParentResource() throws ResourceException
+    public void notifyEvent(DomainEvent event)
     {
-        return parentResource;
+       //Do nothing
     }
 }
