@@ -55,6 +55,11 @@ public class TasksModel
         return models.get( id );
     }
 
+    public void remove(String id)
+    {
+        models.remove(id);
+    }
+
     public void notifyEvent( DomainEvent event )
     {
         for (TaskModel model : models)

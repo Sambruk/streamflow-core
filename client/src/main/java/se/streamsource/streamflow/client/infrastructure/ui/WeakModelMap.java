@@ -68,4 +68,9 @@ public abstract class WeakModelMap<K, V>
         }
         return list.iterator();
     }
+
+    public void remove(K key)
+    {
+        models.remove(key);
+    }
 }
