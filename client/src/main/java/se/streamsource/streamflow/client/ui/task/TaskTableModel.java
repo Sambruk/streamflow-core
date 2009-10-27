@@ -278,7 +278,6 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         TaskDTO task = tasks.get(idx);
         getResource().task(task.task().get().identity()).deleteCommand();
         tasks.remove(idx);
-        tasksModel.remove(task.task().get().identity());
         fireTableRowsDeleted(idx, idx);
     }
 
