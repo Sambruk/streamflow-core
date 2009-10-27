@@ -117,8 +117,11 @@ public class TaskContactsModel
 
     public boolean handleEvent( DomainEvent event )
     {
-        Logger.getLogger("workspace").info("Refresh task contacts");
-        refresh();
+        if (contactsClientResource.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get()))
+        {
+            Logger.getLogger("workspace").info("Refresh task contacts");
+            refresh();
+        }
 
         return false;
     }

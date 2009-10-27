@@ -17,17 +17,21 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.json.JSONException;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.task.TaskClientResource;
 import se.streamsource.streamflow.client.resource.task.TasksClientResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
 
 /**
  * Model that keeps track of all task models
  */
 public class TasksModel
-    implements EventListener
+    implements EventListener, EventHandler
 {
     @Uses
     TasksClientResource tasksResource;
@@ -49,6 +53,8 @@ public class TasksModel
         }
     };
 
+    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "deletedTask", "deletedAssignedTask", "deletedWaitingForTask");
+
 
     public TaskModel task(String id)
     {
@@ -62,9 +68,25 @@ public class TasksModel
 
     public void notifyEvent( DomainEvent event )
     {
+        eventFilter.handleEvent( event );
+
         for (TaskModel model : models)
         {
             model.notifyEvent(event);
         }
+    }
+
+    public boolean handleEvent( DomainEvent event )
+    {
+        try
+        {
+            String key = EventParameters.getParameter( event, "param1" );
+            models.remove( key );
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
