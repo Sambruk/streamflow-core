@@ -14,15 +14,42 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.domain.DomainEntity;
+import se.streamsource.streamflow.web.domain.role.UserPermissions;
+import se.streamsource.streamflow.web.domain.user.User;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
+
+import java.security.AllPermission;
+import java.security.PermissionCollection;
 
 /**
  * JAVADOC
  */
+@Mixins(OrganizationsEntity.UserPermissionsMixin.class)
 public interface OrganizationsEntity
         extends Organizations, 
         Organizations.OrganizationsState,
+        UserPermissions,
         DomainEntity
 {
     public static final String ORGANIZATIONS_ID = "organizations";
+
+    class UserPermissionsMixin
+        implements UserPermissions
+    {
+        public PermissionCollection getPermissions( User user)
+        {
+            PermissionCollection permissions = null;
+
+            // If user is administrator
+            if (((UserEntity)user).isAdministrator())
+            {
+                permissions = new AllPermission().newPermissionCollection();
+                permissions.add(new AllPermission());
+            }
+
+            return permissions;
+        }
+    }
 }

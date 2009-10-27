@@ -18,6 +18,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.library.constraints.annotation.Matches;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import sun.misc.BASE64Encoder;
 
@@ -33,7 +34,7 @@ public interface User
 {
     boolean login(String password);
 
-    void changePassword(String currentPassword, String newPassword) throws WrongPasswordException;
+    void changePassword(String currentPassword, @Matches("\\w+{6,30}")String newPassword) throws WrongPasswordException;
 
     void resetPassword(String password);
 

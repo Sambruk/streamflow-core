@@ -18,16 +18,10 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -44,7 +38,6 @@ import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsQueries;
-import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -101,30 +94,11 @@ public class OrganizationsServerResource
 
     public UserEntityListDTO users()
     {
-        QueryBuilder<UserEntity> queryBuilder = qbf.newQueryBuilder(UserEntity.class);
+        OrganizationsQueries orgs = uowf.currentUnitOfWork().get(OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID);
 
-        Property<String> username = templateFor(User.UserState.class).userName();
-        Query<UserEntity> usersQuery = queryBuilder.where(
-                isNotNull(username)).
-                newQuery(uowf.currentUnitOfWork());
-
-        usersQuery.orderBy(orderBy(templateFor(User.UserState.class).userName()));
-
-        ValueBuilder<UserEntityListDTO> listBuilder = vbf.newValueBuilder(UserEntityListDTO.class);
-        List<UserEntityDTO> userlist = listBuilder.prototype().users().get();
-
-        ValueBuilder<UserEntityDTO> builder = vbf.newValueBuilder(UserEntityDTO.class);
-
-        for (UserEntity entity : usersQuery)
-        {
-            builder.prototype().entity().set(EntityReference.getEntityReference(entity));
-            builder.prototype().username().set(entity.userName().get());
-            builder.prototype().disabled().set(entity.disabled().get());
-
-            userlist.add(builder.newInstance());
-        }
-
-        return listBuilder.newInstance();
+        checkPermission(orgs);
+        
+        return orgs.users();
     }
 
     public void createUser(NewUserCommand userCommand) throws ResourceException

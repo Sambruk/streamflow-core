@@ -18,6 +18,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsTabbedView;
 
 import javax.swing.*;
@@ -63,10 +65,26 @@ public class AdministrationView
                     if (node instanceof AccountAdministrationNode)
                     {
                         AccountAdministrationNode accountAdminNode = (AccountAdministrationNode) node;
+                        boolean load = true;
 
-                        view = obf.newObjectBuilder(OrganizationsTabbedView.class).use(
-                                accountAdminNode.organizationsModel(), accountAdminNode.usersModel())
-                                .newInstance();
+                        try
+                        {
+                            // check if permissions are sufficient
+                            accountAdminNode.accountModel().serverResource().organizations().users();
+                        } catch(ResourceException re)
+                        {
+                            if(Status.CLIENT_ERROR_FORBIDDEN.equals(re.getStatus()))
+                                load = false;
+                        }                   
+
+                        if(load)
+                        {
+                            view = obf.newObjectBuilder(OrganizationsTabbedView.class).use(
+                                    accountAdminNode.organizationsModel(), accountAdminNode.usersModel())
+                                    .newInstance();
+                        }
+
+
 
                     } else if (node instanceof OrganizationalStructureAdministrationNode)
                     {

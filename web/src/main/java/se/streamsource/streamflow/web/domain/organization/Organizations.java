@@ -29,10 +29,9 @@ import org.qi4j.library.constraints.annotation.Matches;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
-import se.streamsource.streamflow.web.domain.role.RolePolicy;
 
 /**
  * JAVADOC
@@ -52,7 +51,7 @@ public interface Organizations
      * @return the created user
      * @throws IllegalArgumentException if user with given name already exists
      */
-    UserEntity createUser(@Matches("\\w+")String username, @Matches("\\w+")String password)
+    UserEntity createUser(@Matches("\\w+")String username, @Matches("\\w+{6,30}")String password)
             throws IllegalArgumentException;
 
     interface OrganizationsState
