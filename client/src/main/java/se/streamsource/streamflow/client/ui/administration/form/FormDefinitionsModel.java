@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.administration.form;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionsClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -36,7 +36,7 @@ public class FormDefinitionsModel
     ValueBuilderFactory vbf;
 
     @Uses
-    private ProjectFormsClientResource roles;
+    private ProjectFormDefinitionsClientResource roles;
 
     private List<ListItemValue> list;
 

@@ -21,6 +21,7 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxClientResource;
@@ -62,6 +63,11 @@ public class WorkspaceProjectClientResource
     public LabelsClientResource labels()
     {
         return getSubResource("labels", LabelsClientResource.class);
+    }
+
+    public WorkspaceProjectFormDefinitionsClientResource forms()
+    {
+        return getSubResource("forms", WorkspaceProjectFormDefinitionsClientResource.class);
     }
 
     public ListValue findUsers(String participantName) throws ResourceException

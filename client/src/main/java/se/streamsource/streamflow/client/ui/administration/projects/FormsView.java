@@ -17,7 +17,9 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
@@ -38,8 +40,8 @@ public class FormsView
     @Service
     DialogService dialogs;
 
-    @Uses
-    Iterable<FormsSelectionDialog> formsSelection;
+    @Structure
+    ObjectBuilderFactory obf;
 
     public FormsView(@Service ApplicationContext context, @Uses FormsModel model)
     {
@@ -64,7 +66,8 @@ public class FormsView
     @Action
     public void add()
     {
-        FormsSelectionDialog dialog = formsSelection.iterator().next();
+        FormsSelectionDialog dialog = obf.newObjectBuilder(FormsSelectionDialog.class).use(model.getFormsResource()).newInstance();
+
         dialogs.showOkCancelHelpDialog(this, dialog);
 
         ListItemValue selected = dialog.getSelectedForm();

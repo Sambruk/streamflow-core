@@ -17,7 +17,9 @@ package se.streamsource.streamflow.client.ui.task;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -36,6 +38,13 @@ public class TaskSubmittedFormsView
 {
     private TaskSubmittedFormsModel model;
     private JXList submittedForms;
+
+    @Service
+    DialogService dialogs;
+
+    @Uses
+    Iterable<FormSubmissionDialog> formSubmissionDialog;
+
 
     public TaskSubmittedFormsView(@Service ApplicationContext context)
     {
@@ -69,7 +78,8 @@ public class TaskSubmittedFormsView
     @org.jdesktop.application.Action
     public void add() throws IOException, ResourceException
     {
-
+        FormSubmissionDialog dialog = formSubmissionDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog);
     }
 
     public void setModel(TaskSubmittedFormsModel model)

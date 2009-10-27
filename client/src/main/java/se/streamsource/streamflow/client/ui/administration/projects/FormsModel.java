@@ -22,7 +22,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -33,7 +33,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -46,7 +46,7 @@ public class FormsModel
 
 {
     @Uses
-    ProjectFormsClientResource forms;
+    ProjectFormDefinitionsClientResource forms;
 
     @Structure
     ValueBuilderFactory vbf;
@@ -122,5 +122,15 @@ public class FormsModel
         refresh();
 
         return false;
+    }
+
+    public List<ListItemValue> getProjectFormsList()
+    {
+        return formsList;
+    }
+
+    public ProjectFormDefinitionsClientResource getFormsResource()
+    {
+        return forms;
     }
 }

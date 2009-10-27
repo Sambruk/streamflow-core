@@ -14,7 +14,10 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import org.jdesktop.swingx.JXTable;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,36 +25,25 @@ import java.awt.*;
 /**
  * JAVADOC
  */
-public class TaskSubmittedFormView
-        extends JPanel
+public class FormsListView
+        extends JScrollPane
 {
-    private JXTable fieldValues;
-    private CardLayout layout = new CardLayout();
-
-    public TaskSubmittedFormView()
+    public JList getFormList()
     {
-        setLayout(layout);
-
-        JScrollPane scroll = new JScrollPane();
-
-        fieldValues = new JXTable();
-        scroll.setViewportView(fieldValues);
-
-        add(new JPanel(), "EMPTY");
-        add(scroll, "FORM");
+        return formList;
     }
 
-    public void setModel(TaskSubmittedFormModel model)
+    private JList formList;
+
+    public FormsListView(@Service ApplicationContext context,
+                         @Uses FormsListModel model)
     {
-        if (model != null)
-        {
-            fieldValues.setModel(model);
+        ActionMap am = context.getActionMap(this);
+        setActionMap(am);
+        setMinimumSize(new Dimension(150, 0));
 
-            layout.show(this, "FORM");
-        } else
-        {
-            layout.show(this, "EMPTY");
-        }
+        formList = new JList(model);
+        formList.setCellRenderer(new ListItemCellRenderer());
+        setViewportView(formList);
     }
-
 }

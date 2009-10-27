@@ -12,44 +12,34 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionsClientResource;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
 import java.util.List;
 
-public class FormsSelectionModel
-        extends AbstractListModel
+/**
+ * Model for a FormDefinition
+ */
+public class FormSubmitModel
 {
-    List<ListItemValue> forms;
+    @Uses
+    WorkspaceProjectFormDefinitionClientResource form;
 
-    public FormsSelectionModel(
-            //@Uses OrganizationalUnitAdministrationModel organizationModel
-            @Uses ProjectFormDefinitionsClientResource formsResource
-    )
+    public List<ListItemValue> getFields()
     {
         try
         {
-            forms = formsResource.nonApplicableForms().items().get();
+            return form.fields().items().get();
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_list_form_definitions, e);
+            throw new OperationException(WorkspaceResources.could_not_get_form, e);
         }
     }
 
-    public int getSize()
-    {
-        return forms==null ? 0 : forms.size();
-    }
-
-    public Object getElementAt(int i)
-    {
-        return forms==null ? "" : forms.get(i);
-    }
 }

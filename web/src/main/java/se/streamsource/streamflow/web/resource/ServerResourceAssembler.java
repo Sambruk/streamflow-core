@@ -32,7 +32,7 @@ import se.streamsource.streamflow.web.resource.organizations.policy.Administrato
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
@@ -63,6 +63,8 @@ import se.streamsource.streamflow.web.resource.users.workspace.projects.assignme
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.WorkspaceProjectInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.WorkspaceProjectInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForServerResource;
@@ -134,6 +136,8 @@ public class ServerResourceAssembler
                 WorkspaceProjectDelegationsTaskServerResource.class,
                 WorkspaceProjectWaitingForServerResource.class,
                 WorkspaceProjectWaitingForTaskServerResource.class,
+                WorkspaceProjectFormDefinitionsServerResource.class,
+                WorkspaceProjectFormDefinitionServerResource.class,
                 LabelsServerResource.class,
                 LabelServerResource.class,
 
@@ -164,7 +168,7 @@ public class ServerResourceAssembler
                 ProjectServerResource.class,
                 MembersServerResource.class,
                 MemberServerResource.class,
-                ProjectFormsServerResource.class,
+                ProjectFormDefinitionsServerResource.class,
 
                 RolesServerResource.class,
                 RoleServerResource.class,

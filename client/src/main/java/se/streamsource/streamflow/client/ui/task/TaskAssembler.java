@@ -31,7 +31,7 @@ public class TaskAssembler
         UIAssemblers.addViews(module, TasksDetailView.class, TableSelectionView.class, TaskContactsAdminView.class,
                 TaskFormsAdminView.class, TaskSubmittedFormsAdminView.class, TaskEffectiveFieldsValueView.class);
 
-        UIAssemblers.addDialogs(module, AddCommentDialog.class);
+        UIAssemblers.addDialogs(module, AddCommentDialog.class, FormSubmissionDialog.class);
 
         UIAssemblers.addModels( module, TasksModel.class );
 
@@ -62,5 +62,13 @@ public class TaskAssembler
         UIAssemblers.addMV(module,
                 TaskSubmittedFormModel.class,
                 TaskSubmittedFormView.class);
+
+        UIAssemblers.addMV(module,
+                FormSubmitModel.class,
+                FormSubmitView.class);
+
+        UIAssemblers.addMV(module,
+                FormsListModel.class,
+                FormsListView.class);
     }
 }

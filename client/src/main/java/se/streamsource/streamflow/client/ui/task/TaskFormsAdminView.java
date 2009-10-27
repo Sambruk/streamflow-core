@@ -34,8 +34,8 @@ public class TaskFormsAdminView
                               @Uses TaskEffectiveFieldsValueView effectiveFieldsValueView)
     {
         this.submittedFormsView = submittedFormsView;
-        addTab(i18n.text(WorkspaceResources.submitted_forms_tab), submittedFormsView);
         addTab(i18n.text(WorkspaceResources.effective_fields_tab), effectiveFieldsValueView);
+        addTab(i18n.text(WorkspaceResources.submitted_forms_tab), submittedFormsView);
     }
 
     public TaskSubmittedFormsAdminView getSubmittedFormsView()
