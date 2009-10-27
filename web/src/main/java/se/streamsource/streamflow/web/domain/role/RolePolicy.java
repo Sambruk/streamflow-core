@@ -16,7 +16,7 @@ package se.streamsource.streamflow.web.domain.role;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
-import static org.qi4j.api.entity.EntityReference.getEntityReference;
+import static org.qi4j.api.entity.EntityReference.*;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -28,12 +28,13 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.user.User;
 
 import javax.security.auth.Subject;
 import java.security.AccessController;
+import java.security.AllPermission;
 import java.security.PermissionCollection;
 import java.security.Principal;
-import java.security.AllPermission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,12 +65,10 @@ public interface RolePolicy
         List<EntityReference> participantsWithRole(Role role);
 
         boolean hasRoles(Participant participant);
-
-        PermissionCollection getPermissions(Participant participant);
     }
 
     abstract class RolePolicyMixin
-            implements RolePolicy, RolePolicyState
+            implements RolePolicy, RolePolicyState, UserPermissions
     {
         @Structure
         ValueBuilderFactory vbf;
@@ -214,12 +213,12 @@ public interface RolePolicy
             return value != null && !value.roles().get().isEmpty();
         }
 
-        public PermissionCollection getPermissions(Participant participant)
+        public PermissionCollection getPermissions( User user)
         {
             PermissionCollection permissions = null;
 
             // If participant has any role, it's the Admin role -> AllPermissions
-            if (hasRoles(participant))
+            if (hasRoles((Participant) user))
             {
                 permissions = new AllPermission().newPermissionCollection();
                 permissions.add(new AllPermission());

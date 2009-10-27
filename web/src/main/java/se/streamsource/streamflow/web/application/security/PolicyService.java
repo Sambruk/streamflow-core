@@ -18,7 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.web.domain.role.RolePolicy;
+import se.streamsource.streamflow.web.domain.role.UserPermissions;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 import java.security.AccessControlContext;
@@ -53,11 +53,11 @@ public interface PolicyService
                 permissions.add(new AllPermission());
             } else
             {
-                if (securedObject instanceof RolePolicy)
+                if (securedObject instanceof UserPermissions)
                 {
-                    RolePolicy.RolePolicyState policy = (RolePolicy.RolePolicyState) securedObject;
+                    UserPermissions userPermissions = (UserPermissions) securedObject;
 
-                    permissions = policy.getPermissions(userEntity);
+                    permissions = userPermissions.getPermissions(userEntity);
                 } else
                 {
                     // By default we allow all

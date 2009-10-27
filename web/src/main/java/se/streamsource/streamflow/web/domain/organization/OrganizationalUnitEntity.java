@@ -17,11 +17,12 @@ package se.streamsource.streamflow.web.domain.organization;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
-import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
 import se.streamsource.streamflow.web.domain.project.ProjectRoles;
 import se.streamsource.streamflow.web.domain.project.Projects;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
+import se.streamsource.streamflow.web.domain.role.UserPermissions;
 
 /**
  * JAVADOC
@@ -46,6 +47,7 @@ public interface OrganizationalUnitEntity
         Projects.ProjectsState,
         Removable.RemovableState,
         RolePolicy.RolePolicyState,
+        UserPermissions,
         ProjectRoles.ProjectRolesState,
         IdGenerator.IdGeneratorState
 {

@@ -58,7 +58,7 @@ Given user named user1
 When an assigned task is created
 And events are cleared
 And assigned task is forwarded to user user2
-Then events unassigned,ownerChanged,markedAsUnread occurred
+Then events unassigned,changedOwner,markedAsUnread occurred
 
 Scenario: Delegate assigned task
 Given basic setup 1
