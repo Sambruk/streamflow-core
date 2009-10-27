@@ -5,7 +5,7 @@ Given organizational unit named OU1
 Given project named project1
 Given user named user1
 When an assigned task is created
-Then events assignedTaskCreated,ownerChanged,dateChanged,counterSet,taskIdAssigned,contactAdded,assignedTo occurred
+Then events assignedTaskCreated,changedOwner,dateChanged,counterSet,taskIdAssigned,contactAdded,assignedTo occurred
 
 Scenario: Mark assigned task as unread and read
 Given basic setup 1

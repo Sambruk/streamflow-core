@@ -2,7 +2,7 @@ Scenario: Create inbox task
 Given basic setup 1
 Given user named user1
 When inbox task is created
-Then events taskCreated,ownerChanged,dateChanged,counterSet,taskIdAssigned,contactAdded occurred
+Then events taskCreated,changedOwner,dateChanged,counterSet,taskIdAssigned,contactAdded occurred
 
 Scenario: Mark inbox task as read/unread
 Given basic setup 1
