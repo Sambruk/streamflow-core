@@ -48,9 +48,12 @@ public interface Inbox
 
     void markAsUnread(Task task);
 
+    void deleteTask( Task task );
+
     interface InboxState
     {
         Task taskCreated(DomainEvent event, String id);
+        void deletedTask(DomainEvent event, Task task);
         void markedAsRead(DomainEvent event, Task task);
         void markedAsUnread(DomainEvent event, Task task);
         ManyAssociation<Task> unreadInboxTasks();
@@ -135,6 +138,17 @@ public interface Inbox
             EntityBuilder<TaskEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class, id);
             builder.instance().createdOn().set( event.on().get() );
             return builder.newInstance();
+        }
+
+        public void deleteTask( Task task )
+        {
+            markAsRead( task );
+            deletedTask( DomainEvent.CREATE, task );
+        }
+
+        public void deletedTask( DomainEvent event, Task task )
+        {
+            uowf.currentUnitOfWork().remove( task );
         }
 
         public void markedAsRead(DomainEvent event, Task task)

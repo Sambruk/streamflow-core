@@ -17,27 +17,16 @@ package se.streamsource.streamflow.client.resource.users.workspace.user.inbox;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
-import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
-import se.streamsource.streamflow.resource.task.TasksQuery;
-
-import java.util.List;
+import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
 
 /**
  * JAVADOC
  */
-public class UserInboxClientResource
-        extends TaskListClientResource<UserInboxTaskClientResource>
+public class WorkspaceUserInboxTaskClientResource
+        extends AbstractTaskClientResource
 {
-    public UserInboxClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceUserInboxTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
-        super(context, reference, UserInboxTaskClientResource.class);
-    }
-
-    public List<InboxTaskDTO> tasks(TasksQuery query) throws ResourceException
-    {
-        return query("tasks", query, InboxTaskListDTO.class).<InboxTaskListDTO>buildWith().prototype().tasks().get();
+        super(context, reference);
     }
 }

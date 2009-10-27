@@ -21,7 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.FormDefinitionsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormsClientResource;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
@@ -45,9 +45,9 @@ public class ProjectClientResource
         return getSubResource("labels", LabelsClientResource.class);
     }
 
-    public FormDefinitionsClientResource forms()
+    public ProjectFormsClientResource forms()
     {
-        return getSubResource("forms", FormDefinitionsClientResource.class);
+        return getSubResource("forms", ProjectFormsClientResource.class);
     }
 
     public void describe(StringDTO stringValue) throws ResourceException

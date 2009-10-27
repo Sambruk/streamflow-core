@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.projects.assignments;
+package se.streamsource.streamflow.client.resource.users.workspace.user.assignments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -28,12 +28,12 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public class ProjectAssignmentsClientResource
+public class WorkspaceUserAssignmentsClientResource
         extends TaskListClientResource
 {
-    public ProjectAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceUserAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
     {
-        super(context, reference, ProjectAssignmentsTaskClientResource.class);
+        super(context, reference, WorkspaceUserAssignedTaskClientResource.class);
     }
 
     public List<AssignedTaskDTO> tasks(TasksQuery query) throws ResourceException

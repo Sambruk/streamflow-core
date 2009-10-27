@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdminView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdminView;
@@ -33,6 +33,7 @@ public class OrganizationalUnitAdministrationView
     public OrganizationalUnitAdministrationView(@Uses ProjectAdminView projectAdmin,
                                                 @Uses GroupAdminView groupAdmin,
                                                 @Uses RolesView rolesAdmin,
+//                                                @Uses FormDefinitionsView formsAdmin,
                                                 @Uses AdministratorsView administratorsAdmin)
     {
         addTab(text(AdministrationResources.projects_tab), projectAdmin);

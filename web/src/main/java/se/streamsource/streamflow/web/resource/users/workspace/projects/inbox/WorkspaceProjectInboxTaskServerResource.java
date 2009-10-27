@@ -108,9 +108,12 @@ public class WorkspaceProjectInboxTaskServerResource
 
     public void deleteOperation() throws ResourceException
     {
-        String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        uow.remove(task);
+        String projectId = (String) getRequest().getAttributes().get("project");
+        String taskId = (String) getRequest().getAttributes().get("task");
+        Inbox inbox = uow.get(Inbox.class, projectId);
+        TaskEntity task = uow.get(TaskEntity.class, taskId);
+
+        inbox.deleteTask(task);
     }
 }

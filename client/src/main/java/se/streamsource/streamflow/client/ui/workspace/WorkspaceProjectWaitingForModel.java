@@ -16,15 +16,15 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingforTaskClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
-import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 import java.util.Date;
 
@@ -34,7 +34,7 @@ import java.util.Date;
 public class WorkspaceProjectWaitingForModel
         extends TaskTableModel
 {
-    public WorkspaceProjectWaitingForModel(@Uses ProjectWaitingforClientResource resource)
+    public WorkspaceProjectWaitingForModel(@Uses WorkspaceProjectWaitingforClientResource resource)
     {
         super(resource);
         columnNames = new String[]{"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
@@ -43,9 +43,9 @@ public class WorkspaceProjectWaitingForModel
     }
 
     @Override
-    public ProjectWaitingforClientResource getResource()
+    public WorkspaceProjectWaitingforClientResource getResource()
     {
-        return (ProjectWaitingforClientResource) super.getResource();
+        return (WorkspaceProjectWaitingforClientResource) super.getResource();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class WorkspaceProjectWaitingForModel
         {
             TaskDTO task = getTask(row);
 
-            ProjectWaitingforTaskClientResource taskClientResource = getResource().task( task.task().get().identity() );
+            WorkspaceProjectWaitingforTaskClientResource taskClientResource = getResource().task( task.task().get().identity() );
             if (task.status().get().equals( TaskStates.DONE))
             {
                 taskClientResource.completeFinishedTask();

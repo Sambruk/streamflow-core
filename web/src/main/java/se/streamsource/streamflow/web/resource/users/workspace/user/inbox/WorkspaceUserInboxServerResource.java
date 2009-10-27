@@ -24,7 +24,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * Mapped to:
  * /users/{user}/workspace/user/inbox
  */
-public class UserInboxServerResource
+public class WorkspaceUserInboxServerResource
         extends AbstractTaskListServerResource
 {
     public InboxTaskListDTO tasks(TasksQuery query)

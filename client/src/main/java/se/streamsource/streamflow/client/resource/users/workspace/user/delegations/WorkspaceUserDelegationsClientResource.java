@@ -12,15 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.user.assignments;
+package se.streamsource.streamflow.client.resource.users.workspace.user.delegations;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
-import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
+import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
+import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import java.util.List;
@@ -28,16 +28,16 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public class UserAssignmentsClientResource
+public class WorkspaceUserDelegationsClientResource
         extends TaskListClientResource
 {
-    public UserAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceUserDelegationsClientResource(@Uses Context context, @Uses Reference reference)
     {
-        super(context, reference, UserAssignedTaskClientResource.class);
+        super(context, reference, WorkspaceUserDelegatedTaskClientResource.class);
     }
 
-    public List<AssignedTaskDTO> tasks(TasksQuery query) throws ResourceException
+    public List<DelegatedTaskDTO> tasks(TasksQuery query) throws ResourceException
     {
-        return query("tasks", query, AssignmentsTaskListDTO.class).<AssignmentsTaskListDTO>buildWith().prototype().tasks().get();
+        return query("tasks", query, DelegationsTaskListDTO.class).<DelegationsTaskListDTO>buildWith().prototype().tasks().get();
     }
 }

@@ -18,8 +18,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
@@ -35,7 +35,7 @@ import java.util.Date;
 public class WorkspaceUserWaitingForModel
         extends TaskTableModel
 {
-    public WorkspaceUserWaitingForModel(@Uses UserWaitingForClientResource resource)
+    public WorkspaceUserWaitingForModel(@Uses WorkspaceUserWaitingForClientResource resource)
     {
         super(resource);
         columnNames = new String[]{"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
@@ -44,9 +44,9 @@ public class WorkspaceUserWaitingForModel
     }
 
     @Override
-    public UserWaitingForClientResource getResource()
+    public WorkspaceUserWaitingForClientResource getResource()
     {
-        return (UserWaitingForClientResource) super.getResource();
+        return (WorkspaceUserWaitingForClientResource) super.getResource();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class WorkspaceUserWaitingForModel
         {
             TaskDTO task = getTask(row);
 
-            UserWaitingForTaskClientResource waitingForTaskClientResource = getResource().task( task.task().get().identity() );
+            WorkspaceUserWaitingForTaskClientResource waitingForTaskClientResource = getResource().task( task.task().get().identity() );
             if (task.status().get().equals(TaskStates.DONE))
             {
                 waitingForTaskClientResource.completeFinishedTask();

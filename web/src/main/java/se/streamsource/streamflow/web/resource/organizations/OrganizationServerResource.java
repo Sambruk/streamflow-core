@@ -201,8 +201,10 @@ public class OrganizationServerResource
     {
         String ouId = (String) getRequest().getAttributes().get("organization");
 
-        FormDefinitionsQueries forms = uowf.currentUnitOfWork().get(FormDefinitionsQueries.class, ouId);
-        
+        OrganizationalUnit.OrganizationalUnitState ou = uowf.currentUnitOfWork().get( OrganizationalUnit.OrganizationalUnitState.class, ouId);
+
+        FormDefinitionsQueries forms = (FormDefinitionsQueries) ou.organization().get();
+
         return forms.formDefinitionList();
     }
 

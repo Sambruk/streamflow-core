@@ -19,10 +19,10 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.WorkspaceUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.WorkspaceUserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.WorkspaceUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForClientResource;
 
 /**
  * JAVADOC
@@ -35,24 +35,24 @@ public class WorkspaceUserClientResource
         super(context, reference);
     }
 
-    public UserInboxClientResource inbox()
+    public WorkspaceUserInboxClientResource inbox()
     {
-        return getSubResource("inbox", UserInboxClientResource.class);
+        return getSubResource("inbox", WorkspaceUserInboxClientResource.class);
     }
 
-    public UserAssignmentsClientResource assignments()
+    public WorkspaceUserAssignmentsClientResource assignments()
     {
-        return getSubResource("assignments", UserAssignmentsClientResource.class);
+        return getSubResource("assignments", WorkspaceUserAssignmentsClientResource.class);
     }
 
-    public UserDelegationsClientResource delegations()
+    public WorkspaceUserDelegationsClientResource delegations()
     {
-        return getSubResource("delegations", UserDelegationsClientResource.class);
+        return getSubResource("delegations", WorkspaceUserDelegationsClientResource.class);
     }
 
-    public UserWaitingForClientResource waitingFor()
+    public WorkspaceUserWaitingForClientResource waitingFor()
     {
-        return getSubResource("waitingfor", UserWaitingForClientResource.class);
+        return getSubResource("waitingfor", WorkspaceUserWaitingForClientResource.class);
     }
 
     public LabelsClientResource labels()

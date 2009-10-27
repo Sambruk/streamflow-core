@@ -17,16 +17,15 @@ package se.streamsource.streamflow.web.resource.users.workspace.projects.assignm
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
-import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.task.Delegator;
+import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.task.Delegator;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -107,15 +106,11 @@ public class WorkspaceProjectAssignmentsTaskServerResource
     public void deleteOperation() throws ResourceException
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String userId = (String) getRequest().getAttributes().get("user");
+        String projectId = (String) getRequest().getAttributes().get("project");
         String taskId = (String) getRequest().getAttributes().get("task");
-        Owner owner = uow.get(Owner.class, userId);
+        Assignments assignments = uow.get(Assignments.class, projectId);
         TaskEntity task = uow.get(TaskEntity.class, taskId);
 
-        if (task.owner().get().equals(owner))
-        {
-            // Only delete task if user owns it
-            uow.remove(task);
-        }
+        assignments.deleteAssignedTask(task);
     }
 }

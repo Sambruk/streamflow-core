@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * Mapped to:
  * /users/{user}/workspace/user/delegations
  */
-public class UserDelegationsServerResource
+public class WorkspaceUserDelegationsServerResource
         extends AbstractTaskListServerResource
 {
     public DelegationsTaskListDTO tasks(TasksQuery query)

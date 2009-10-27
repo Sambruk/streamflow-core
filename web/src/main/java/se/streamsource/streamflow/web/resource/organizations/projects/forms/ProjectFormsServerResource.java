@@ -29,7 +29,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * Mapped to:
  * /organizations/{organization}/projects/{project}/forms
  */
-public class FormDefinitionsServerResource
+public class ProjectFormsServerResource
         extends CommandQueryServerResource
 {
     public ListValue forms()

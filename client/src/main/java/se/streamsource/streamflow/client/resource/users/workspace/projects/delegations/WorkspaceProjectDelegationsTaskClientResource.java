@@ -12,21 +12,27 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.projects.assignments;
+package se.streamsource.streamflow.client.resource.users.workspace.projects.delegations;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
 
 /**
  * JAVADOC
  */
-public class ProjectAssignmentsTaskClientResource
+public class WorkspaceProjectDelegationsTaskClientResource
         extends AbstractTaskClientResource
 {
-    public ProjectAssignmentsTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceProjectDelegationsTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
+    }
+
+    public void reject() throws ResourceException
+    {
+        putCommand("reject");
     }
 }

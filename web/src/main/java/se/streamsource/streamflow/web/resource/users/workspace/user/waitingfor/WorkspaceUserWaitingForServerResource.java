@@ -29,7 +29,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * Mapped to:
  * /users/{user}/workspace/user/waitingfor
  */
-public class UserWaitingForServerResource
+public class WorkspaceUserWaitingForServerResource
         extends AbstractTaskListServerResource
 {
     public WaitingForTaskListDTO tasks(TasksQuery query)

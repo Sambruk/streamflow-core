@@ -12,32 +12,32 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor;
+package se.streamsource.streamflow.client.resource.users.workspace.projects.assignments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
+import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
+import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 
 import java.util.List;
 
 /**
  * JAVADOC
  */
-public class UserWaitingForClientResource
-        extends TaskListClientResource<UserWaitingForTaskClientResource>
+public class WorkspaceProjectAssignmentsClientResource
+        extends TaskListClientResource
 {
-    public UserWaitingForClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceProjectAssignmentsClientResource(@Uses Context context, @Uses Reference reference)
     {
-        super(context, reference, UserWaitingForTaskClientResource.class);
+        super(context, reference, WorkspaceProjectAssignmentsTaskClientResource.class);
     }
 
-    public List<WaitingForTaskDTO> tasks(TasksQuery query) throws ResourceException
+    public List<AssignedTaskDTO> tasks(TasksQuery query) throws ResourceException
     {
-        return query("tasks", query, WaitingForTaskListDTO.class).<WaitingForTaskListDTO>buildWith().prototype().tasks().get();
+        return query("tasks", query, AssignmentsTaskListDTO.class).<AssignmentsTaskListDTO>buildWith().prototype().tasks().get();
     }
 }

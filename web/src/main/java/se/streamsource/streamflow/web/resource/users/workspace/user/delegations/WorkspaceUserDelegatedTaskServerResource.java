@@ -25,7 +25,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * Mapped to:
  * /users/{user}/workspace/user/delegations/{task}
  */
-public class UserDelegatedTaskServerResource
+public class WorkspaceUserDelegatedTaskServerResource
         extends CommandQueryServerResource
 {
 

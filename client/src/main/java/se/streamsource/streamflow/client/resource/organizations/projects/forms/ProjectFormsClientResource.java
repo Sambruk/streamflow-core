@@ -12,28 +12,39 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.user.assignments;
+package se.streamsource.streamflow.client.resource.organizations.projects.forms;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
  */
-public class UserAssignedTaskClientResource
-        extends AbstractTaskClientResource
+public class ProjectFormsClientResource
+        extends CommandQueryClientResource
 {
-    public UserAssignedTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public ProjectFormsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public void unassign() throws ResourceException
+    public ListValue forms() throws ResourceException
     {
-        putCommand("unassign");
+        return query("forms", ListValue.class);
     }
 
+    public void addForm(EntityReferenceDTO formDTO) throws ResourceException
+    {
+        putCommand("addForm", formDTO);
+    }
+
+    public void removeForm(EntityReferenceDTO formDTO) throws ResourceException
+    {
+        putCommand("removeForm", formDTO);
+    }
 }

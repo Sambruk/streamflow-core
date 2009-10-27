@@ -23,10 +23,10 @@ import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskCl
 /**
  * JAVADOC
  */
-public class ProjectWaitingforTaskClientResource
+public class WorkspaceProjectWaitingforTaskClientResource
         extends AbstractTaskClientResource
 {
-    public ProjectWaitingforTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceProjectWaitingforTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }

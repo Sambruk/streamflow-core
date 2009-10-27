@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.user.delegations;
+package se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
@@ -23,21 +23,27 @@ import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskCl
 /**
  * JAVADOC
  */
-public class UserDelegatedTaskClientResource
+public class WorkspaceUserWaitingForTaskClientResource
         extends AbstractTaskClientResource
 {
-    public UserDelegatedTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceUserWaitingForTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public void done() throws ResourceException
-    {
-        putCommand("done");
-    }
-
     public void reject() throws ResourceException
     {
-        putCommand("reject");
+        postCommand("reject");
     }
+
+    public void completeFinishedTask() throws ResourceException
+    {
+        postCommand("completeFinishedTask");
+    }
+
+    public void completeWaitingForTask() throws ResourceException
+    {
+        postCommand("completeWaitingForTask");
+    }
+
 }

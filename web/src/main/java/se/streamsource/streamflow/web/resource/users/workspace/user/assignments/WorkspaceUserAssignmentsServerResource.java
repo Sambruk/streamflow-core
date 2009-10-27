@@ -27,7 +27,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * Mapped to:
  * /users/{user}/workspace/user/assignments
  */
-public class UserAssignmentsServerResource
+public class WorkspaceUserAssignmentsServerResource
         extends AbstractTaskListServerResource
 {
     public AssignmentsTaskListDTO tasks(TasksQuery query)

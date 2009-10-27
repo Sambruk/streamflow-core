@@ -18,6 +18,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -93,11 +94,25 @@ public class WorkspaceProjectWaitingForTaskServerResource
        delegations.completeWaitingForTask(task, assignee);
    }
 
+    public void drop()
+    {
+        String userId = (String) getRequest().getAttributes().get("user");
+        String projectId = (String) getRequest().getAttributes().get("project");
+        String taskId = (String) getRequest().getAttributes().get("task");
+        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
+        WaitingFor waitingFor = uowf.currentUnitOfWork().get(WaitingFor.class, projectId);
+        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
+        waitingFor.dropWaitingForTask( task, assignee);
+    }
+
     public void deleteOperation() throws ResourceException
     {
-        String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        uow.remove(task);
+        String projectId = (String) getRequest().getAttributes().get("project");
+        String taskId = (String) getRequest().getAttributes().get("task");
+        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
+        TaskEntity task = uow.get(TaskEntity.class, taskId);
+
+        waitingFor.deleteWaitingForTask(task);
     }
 }

@@ -33,8 +33,7 @@ public interface Ownable
         @Optional
         Association<Owner> owner();
 
-
-        void ownerChanged(DomainEvent event, Owner newOwner);
+        void changedOwner(DomainEvent event, Owner newOwner);
     }
 
     abstract class OwnableMixin
@@ -45,10 +44,10 @@ public interface Ownable
 
         public void changeOwner(Owner owner)
         {
-            ownerChanged(DomainEvent.CREATE, owner);
+            changedOwner(DomainEvent.CREATE, owner);
         }
 
-        public void ownerChanged(DomainEvent event, Owner newOwner)
+        public void changedOwner(DomainEvent event, Owner newOwner)
         {
             state.owner().set(newOwner);
         }

@@ -15,8 +15,10 @@
 package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -41,17 +43,23 @@ public interface WaitingFor
 
     void rejectTask(Task task);
 
+    void deleteWaitingForTask( Task task );
+
     interface WaitingForState
     {
         ManyAssociation<Task> unreadWaitingForTasks();
         void waitingForTaskMarkedAsUnread(DomainEvent event, Task task);
         void waitingForTaskMarkedAsRead(DomainEvent event, Task task);
+        void deletedWaitingForTask(DomainEvent event, Task task);
     }
 
 
     abstract class WaitingForMixin
             implements WaitingFor, WaitingForState
     {
+        @Structure
+        UnitOfWorkFactory uowf;
+
         @This
         Owner owner;
 
@@ -108,6 +116,17 @@ public interface WaitingFor
         public void rejectTask(Task task)
         {
             waitingForTaskMarkedAsUnread(DomainEvent.CREATE, task);
+        }
+
+        public void deleteWaitingForTask( Task task )
+        {
+            markWaitingForAsRead( task );
+            deletedWaitingForTask( DomainEvent.CREATE, task );
+        }
+
+        public void deletedWaitingForTask( DomainEvent event, Task task )
+        {
+            uowf.currentUnitOfWork().remove( task );
         }
 
         public void waitingForTaskMarkedAsUnread(DomainEvent event, Task task)

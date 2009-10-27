@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.WorkspaceUserInboxClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
@@ -28,7 +28,7 @@ import java.util.Date;
 public class WorkspaceUserInboxModel
         extends TaskTableModel
 {
-    public WorkspaceUserInboxModel(@Uses UserInboxClientResource resource)
+    public WorkspaceUserInboxModel(@Uses WorkspaceUserInboxClientResource resource)
     {
         super(resource);
         columnNames = new String[]{"", text(description_column_header), text(created_column_header)};
@@ -37,8 +37,8 @@ public class WorkspaceUserInboxModel
     }
 
     @Override
-    public UserInboxClientResource getResource()
+    public WorkspaceUserInboxClientResource getResource()
     {
-        return (UserInboxClientResource) super.getResource();
+        return (WorkspaceUserInboxClientResource) super.getResource();
     }
 }

@@ -17,8 +17,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
@@ -32,7 +32,7 @@ import java.util.Date;
 public class WorkspaceProjectDelegationsModel
         extends TaskTableModel
 {
-    public WorkspaceProjectDelegationsModel(@Uses ProjectDelegationsClientResource resource)
+    public WorkspaceProjectDelegationsModel(@Uses WorkspaceProjectDelegationsClientResource resource)
     {
         super(resource);
         columnNames = new String[]{"", text(description_column_header), text(delegated_from_header), text(delegated_on_header)};
@@ -41,9 +41,9 @@ public class WorkspaceProjectDelegationsModel
     }
 
     @Override
-    protected ProjectDelegationsClientResource getResource()
+    protected WorkspaceProjectDelegationsClientResource getResource()
     {
-        return (ProjectDelegationsClientResource) super.getResource();
+        return (WorkspaceProjectDelegationsClientResource) super.getResource();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class WorkspaceProjectDelegationsModel
     public void reject(int idx) throws ResourceException
     {
         TaskDTO task = getTask(idx);
-        ProjectDelegationsTaskClientResource resource = (ProjectDelegationsTaskClientResource) getResource().task(task.task().get().identity());
+        WorkspaceProjectDelegationsTaskClientResource resource = (WorkspaceProjectDelegationsTaskClientResource) getResource().task(task.task().get().identity());
         resource.reject();
     }
 }

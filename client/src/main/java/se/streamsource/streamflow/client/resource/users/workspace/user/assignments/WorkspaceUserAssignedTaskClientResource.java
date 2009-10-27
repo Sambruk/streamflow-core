@@ -12,21 +12,28 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.workspace.user.inbox;
+package se.streamsource.streamflow.client.resource.users.workspace.user.assignments;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
 
 /**
  * JAVADOC
  */
-public class UserInboxTaskClientResource
+public class WorkspaceUserAssignedTaskClientResource
         extends AbstractTaskClientResource
 {
-    public UserInboxTaskClientResource(@Uses Context context, @Uses Reference reference)
+    public WorkspaceUserAssignedTaskClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
+
+    public void unassign() throws ResourceException
+    {
+        putCommand("unassign");
+    }
+
 }

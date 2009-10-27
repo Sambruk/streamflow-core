@@ -32,17 +32,17 @@ import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.WorkspaceUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.WorkspaceUserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.WorkspaceUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForClientResource;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.task.TasksModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
 import java.io.IOException;
@@ -223,10 +223,10 @@ public class AccountModel
         if (workspaceModel == null)
         {
             UserClientResource resource = userResource();
-            UserInboxClientResource userInboxResource = resource.workspace().user().inbox();
-            UserAssignmentsClientResource userAssignmentsResource = resource.workspace().user().assignments();
-            UserDelegationsClientResource userDelegationsResource = resource.workspace().user().delegations();
-            UserWaitingForClientResource userWaitingForResource = resource.workspace().user().waitingFor();
+            WorkspaceUserInboxClientResource userInboxResource = resource.workspace().user().inbox();
+            WorkspaceUserAssignmentsClientResource userAssignmentsResource = resource.workspace().user().assignments();
+            WorkspaceUserDelegationsClientResource userDelegationsResource = resource.workspace().user().delegations();
+            WorkspaceUserWaitingForClientResource userWaitingForResource = resource.workspace().user().waitingFor();
             LabelsClientResource labelsResource = resource.workspace().user().labels();
 
             workspaceModel = obf.newObjectBuilder( WorkspaceModel.class ).use( this,

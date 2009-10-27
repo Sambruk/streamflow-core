@@ -46,11 +46,14 @@ public interface Assignments
 
     void markAssignedTaskAsUnread(Task task);
 
+    void deleteAssignedTask( Task task );
+
     interface AssignmentsState
     {
         Task assignedTaskCreated(DomainEvent event, String id);
         void assignedTaskMarkedAsRead(DomainEvent event, Task task);
         void assignedTaskMarkedAsUnread(DomainEvent event, Task task);
+        void deletedAssignedTask(DomainEvent event, Task task);
         ManyAssociation<Task> unreadAssignedTasks();
     }
 
@@ -132,6 +135,17 @@ public interface Assignments
                 return;
             }
             assignedTaskMarkedAsUnread(DomainEvent.CREATE, task);
+        }
+
+        public void deleteAssignedTask( Task task )
+        {
+            markAssignedTaskAsRead( task );
+            deletedAssignedTask( DomainEvent.CREATE, task );
+        }
+
+        public void deletedAssignedTask( DomainEvent event, Task task )
+        {
+            uowf.currentUnitOfWork().remove( task );
         }
 
         public void assignedTaskMarkedAsRead(DomainEvent event, Task task)

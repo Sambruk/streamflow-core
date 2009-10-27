@@ -22,15 +22,15 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingforClientResource;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -82,10 +82,10 @@ public class WorkspaceProjectsNode
             for (ListItemValue project : projects.items().get())
             {
                 WorkspaceProjectClientResource workspaceProjectClientResource = user.workspace().projects().project(project.entity().get().identity());
-                ProjectInboxClientResource projectInboxClientResource = workspaceProjectClientResource.inbox();
-                ProjectAssignmentsClientResource projectAssignmentsClientResource = workspaceProjectClientResource.assignments();
-                ProjectDelegationsClientResource projectDelegationsClientResource = workspaceProjectClientResource.delegations();
-                ProjectWaitingforClientResource projectWaitingforClientResource = workspaceProjectClientResource.waitingFor();
+                WorkspaceProjectInboxClientResource projectInboxClientResource = workspaceProjectClientResource.inbox();
+                WorkspaceProjectAssignmentsClientResource projectAssignmentsClientResource = workspaceProjectClientResource.assignments();
+                WorkspaceProjectDelegationsClientResource projectDelegationsClientResource = workspaceProjectClientResource.delegations();
+                WorkspaceProjectWaitingforClientResource projectWaitingforClientResource = workspaceProjectClientResource.waitingFor();
                 LabelsClientResource labels = workspaceProjectClientResource.labels();
 
                 add(obf.newObjectBuilder(WorkspaceProjectNode.class).use(workspaceProjectClientResource,

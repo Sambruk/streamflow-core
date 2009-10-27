@@ -42,15 +42,15 @@ import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.Wo
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.WorkspaceUserServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.UserAssignedTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.UserAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.UserDelegatedTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.UserDelegationsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.UserInboxTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.WorkspaceUserAssignedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.WorkspaceUserAssignmentsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegatedTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegationsServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.UserWaitingForTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
+import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
 public class UsersRouter
@@ -79,14 +79,14 @@ public class UsersRouter
         attach("/workspace/projects/{project}/waitingfor", createServerResourceFinder(WorkspaceProjectWaitingForServerResource.class));
         attach("/workspace/projects/{project}/waitingfor/{task}", createServerResourceFinder(WorkspaceProjectWaitingForTaskServerResource.class));
         attach("/workspace/projects/{labels}/labels", createServerResourceFinder(LabelsServerResource.class));
-        attach("/workspace/user/inbox", createServerResourceFinder(UserInboxServerResource.class));
-        attach("/workspace/user/inbox/{task}", createServerResourceFinder(UserInboxTaskServerResource.class));
-        attach("/workspace/user/assignments", createServerResourceFinder(UserAssignmentsServerResource.class));
-        attach("/workspace/user/assignments/{task}", createServerResourceFinder(UserAssignedTaskServerResource.class));
-        attach("/workspace/user/delegations", createServerResourceFinder(UserDelegationsServerResource.class));
-        attach("/workspace/user/delegations/{task}", createServerResourceFinder(UserDelegatedTaskServerResource.class));
-        attach("/workspace/user/waitingfor", createServerResourceFinder(UserWaitingForServerResource.class));
-        attach("/workspace/user/waitingfor/{task}", createServerResourceFinder(UserWaitingForTaskServerResource.class));
+        attach("/workspace/user/inbox", createServerResourceFinder( WorkspaceUserInboxServerResource.class));
+        attach("/workspace/user/inbox/{task}", createServerResourceFinder( WorkspaceUserInboxTaskServerResource.class));
+        attach("/workspace/user/assignments", createServerResourceFinder( WorkspaceUserAssignmentsServerResource.class));
+        attach("/workspace/user/assignments/{task}", createServerResourceFinder( WorkspaceUserAssignedTaskServerResource.class));
+        attach("/workspace/user/delegations", createServerResourceFinder( WorkspaceUserDelegationsServerResource.class));
+        attach("/workspace/user/delegations/{task}", createServerResourceFinder( WorkspaceUserDelegatedTaskServerResource.class));
+        attach("/workspace/user/waitingfor", createServerResourceFinder( WorkspaceUserWaitingForServerResource.class));
+        attach("/workspace/user/waitingfor/{task}", createServerResourceFinder( WorkspaceUserWaitingForTaskServerResource.class));
         attach("/administration", createServerResourceFinder(UserAdministrationServerResource.class));
 
         attach("/search", createServerResourceFinder(SearchTasksServerResource.class));

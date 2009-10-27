@@ -20,6 +20,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
@@ -28,14 +29,21 @@ import se.streamsource.streamflow.client.resource.organizations.organizationalun
 import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorClientResource;
 import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.FormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRoleClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRolesClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RoleClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
-import se.streamsource.streamflow.client.resource.task.*;
+import se.streamsource.streamflow.client.resource.task.TaskClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskContactClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskContactsClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.client.resource.task.TasksClientResource;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
@@ -50,23 +58,23 @@ import se.streamsource.streamflow.client.resource.users.search.SearchTaskClientR
 import se.streamsource.streamflow.client.resource.users.workspace.WorkspaceClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingforTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.WorkspaceUserClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignedTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.UserAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegatedTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.UserInboxTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.UserWaitingForTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.WorkspaceUserAssignedTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.WorkspaceUserAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.WorkspaceUserDelegatedTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.WorkspaceUserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.WorkspaceUserInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.WorkspaceUserInboxTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskClientResource;
 
 /**
  * JAVADOC
@@ -95,32 +103,32 @@ public class ClientResourceAssembler
 
                 WorkspaceClientResource.class,
                 WorkspaceUserClientResource.class,
-                UserInboxClientResource.class,
-                UserInboxTaskClientResource.class,
+                WorkspaceUserInboxClientResource.class,
+                WorkspaceUserInboxTaskClientResource.class,
                 
-                UserAssignmentsClientResource.class,
-                UserAssignedTaskClientResource.class,
+                WorkspaceUserAssignmentsClientResource.class,
+                WorkspaceUserAssignedTaskClientResource.class,
 
-                UserDelegationsClientResource.class,
-                UserDelegatedTaskClientResource.class,
+                WorkspaceUserDelegationsClientResource.class,
+                WorkspaceUserDelegatedTaskClientResource.class,
 
-                UserWaitingForClientResource.class,
-                UserWaitingForTaskClientResource.class,
+                WorkspaceUserWaitingForClientResource.class,
+                WorkspaceUserWaitingForTaskClientResource.class,
 
                 WorkspaceProjectClientResource.class,
                 WorkspaceProjectsClientResource.class,
-                ProjectInboxClientResource.class,
-                ProjectInboxTaskClientResource.class,
-                ProjectAssignmentsClientResource.class,
-                ProjectAssignmentsTaskClientResource.class,
-                ProjectDelegationsClientResource.class,
-                ProjectDelegationsTaskClientResource.class,
-                ProjectWaitingforClientResource.class,
-                ProjectWaitingforTaskClientResource.class,
+                WorkspaceProjectInboxClientResource.class,
+                WorkspaceProjectInboxTaskClientResource.class,
+                WorkspaceProjectAssignmentsClientResource.class,
+                WorkspaceProjectAssignmentsTaskClientResource.class,
+                WorkspaceProjectDelegationsClientResource.class,
+                WorkspaceProjectDelegationsTaskClientResource.class,
+                WorkspaceProjectWaitingforClientResource.class,
+                WorkspaceProjectWaitingforTaskClientResource.class,
 
                 LabelsClientResource.class,
                 LabelClientResource.class,
-                FormDefinitionsClientResource.class,
+                ProjectFormsClientResource.class,
 
                 OverviewClientResource.class,
                 OverviewProjectsClientResource.class,
@@ -137,6 +145,8 @@ public class ClientResourceAssembler
                 OrganizationalUnitsClientResource.class,
                 OrganizationalUnitClientResource.class,
                 OrganizationsClientResource.class,
+
+                FormDefinitionsClientResource.class,
 
                 GroupsClientResource.class,
                 GroupClientResource.class,

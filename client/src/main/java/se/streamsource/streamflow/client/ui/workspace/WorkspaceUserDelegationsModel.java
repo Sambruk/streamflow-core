@@ -17,8 +17,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegatedTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.UserDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.WorkspaceUserDelegatedTaskClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.WorkspaceUserDelegationsClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
@@ -32,7 +32,7 @@ import java.util.Date;
 public class WorkspaceUserDelegationsModel
         extends TaskTableModel
 {
-    public WorkspaceUserDelegationsModel(@Uses UserDelegationsClientResource resource)
+    public WorkspaceUserDelegationsModel(@Uses WorkspaceUserDelegationsClientResource resource)
     {
         super(resource);
         columnNames = new String[]{"", text(description_column_header), text(delegated_from_header), text(delegated_on_header)};
@@ -41,9 +41,9 @@ public class WorkspaceUserDelegationsModel
     }
 
     @Override
-    public UserDelegationsClientResource getResource()
+    public WorkspaceUserDelegationsClientResource getResource()
     {
-        return (UserDelegationsClientResource) super.getResource();
+        return (WorkspaceUserDelegationsClientResource) super.getResource();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class WorkspaceUserDelegationsModel
     public void reject(int idx) throws ResourceException
     {
         TaskDTO task = getTask(idx);
-        UserDelegatedTaskClientResource resource = (UserDelegatedTaskClientResource) getResource().task(task.task().get().identity());
+        WorkspaceUserDelegatedTaskClientResource resource = (WorkspaceUserDelegatedTaskClientResource) getResource().task(task.task().get().identity());
         resource.reject();
     }
 }

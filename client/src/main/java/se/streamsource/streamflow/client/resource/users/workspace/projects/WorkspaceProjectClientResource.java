@@ -21,10 +21,10 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.ProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.ProjectDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.ProjectInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxClientResource;
+import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingforClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
@@ -39,24 +39,24 @@ public class WorkspaceProjectClientResource
         super(context, reference);
     }
 
-    public ProjectInboxClientResource inbox()
+    public WorkspaceProjectInboxClientResource inbox()
     {
-        return getSubResource("inbox", ProjectInboxClientResource.class);
+        return getSubResource("inbox", WorkspaceProjectInboxClientResource.class);
     }
 
-    public ProjectAssignmentsClientResource assignments()
+    public WorkspaceProjectAssignmentsClientResource assignments()
     {
-        return getSubResource("assignments", ProjectAssignmentsClientResource.class);
+        return getSubResource("assignments", WorkspaceProjectAssignmentsClientResource.class);
     }
 
-    public ProjectDelegationsClientResource delegations()
+    public WorkspaceProjectDelegationsClientResource delegations()
     {
-        return getSubResource("delegations", ProjectDelegationsClientResource.class);
+        return getSubResource("delegations", WorkspaceProjectDelegationsClientResource.class);
     }
 
-    public ProjectWaitingforClientResource waitingFor()
+    public WorkspaceProjectWaitingforClientResource waitingFor()
     {
-        return getSubResource("waitingfor", ProjectWaitingforClientResource.class);
+        return getSubResource("waitingfor", WorkspaceProjectWaitingforClientResource.class);
     }
 
     public LabelsClientResource labels()
