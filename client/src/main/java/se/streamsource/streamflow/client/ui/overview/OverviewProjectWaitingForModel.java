@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.ui.overview;
 import org.qi4j.api.injection.scope.Uses;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.overview.projects.waitingfor.OverviewProjectWaitingForClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.ProjectWaitingforClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
@@ -39,9 +38,9 @@ public class OverviewProjectWaitingForModel
     }
 
     @Override
-    protected ProjectWaitingforClientResource getResource()
+    protected OverviewProjectWaitingForClientResource getResource()
     {
-        return (ProjectWaitingforClientResource) super.getResource();
+        return (OverviewProjectWaitingForClientResource) super.getResource();
     }
 
     @Override
