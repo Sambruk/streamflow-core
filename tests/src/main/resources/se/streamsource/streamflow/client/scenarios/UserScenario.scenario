@@ -5,12 +5,33 @@ When user changes password from password1 to newPassword
 Then events passwordChanged occurred
 And exception is not thrown
 
+Scenario: User changes password with too short password
+Given basic user setup
+Given user named user1
+When user changes password from password1 to new
+Then ConstraintViolationException is thrown
+And no events occurred
+
+Scenario: User changes password with too long password
+Given basic user setup
+Given user named user1
+When user changes password from password1 to ThisPasswordIsAwfullyLongAndContains
+Then ConstraintViolationException is thrown
+And no events occurred
+
+Scenario: User changes password with specialCharacters
+Given basic user setup
+Given user named user1
+When user changes password from password1 to ÅÄÖåäö9999?!_-
+Then exception is not thrown
+And events passwordChanged occurred
+
 Scenario: User tries to change password but get exception
 Given basic user setup
 Given user named user2
 When user changes password from wrongPassword to newPassword
 Then WrongPasswordException is thrown
-Then no events occurred
+And no events occurred
 
 Scenario: User logs in
 Given basic user setup

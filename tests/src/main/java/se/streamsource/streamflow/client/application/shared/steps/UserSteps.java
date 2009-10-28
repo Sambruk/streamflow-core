@@ -15,14 +15,13 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.hamcrest.CoreMatchers;
-import static org.jbehave.Ensure.*;
+import static org.jbehave.Ensure.ensureThat;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
-import se.streamsource.streamflow.web.domain.user.WrongPasswordException;
 
 /**
  * JAVADOC
@@ -45,7 +44,7 @@ public class UserSteps
         try
         {
             user.changePassword(oldPassword, newPassword);
-        } catch (WrongPasswordException e)
+        } catch (Exception e)
         {
             genericSteps.setThrowable(e);
         }

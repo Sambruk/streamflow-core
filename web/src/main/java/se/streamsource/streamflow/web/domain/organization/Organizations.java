@@ -51,7 +51,7 @@ public interface Organizations
      * @return the created user
      * @throws IllegalArgumentException if user with given name already exists
      */
-    UserEntity createUser(@Matches("\\w+")String username, @Matches("\\w+{6,30}")String password)
+    UserEntity createUser(@Matches("\\w+")String username, @Matches(".{6,30}")String password)
             throws IllegalArgumentException;
 
     interface OrganizationsState

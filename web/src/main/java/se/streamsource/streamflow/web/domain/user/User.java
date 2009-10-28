@@ -34,7 +34,7 @@ public interface User
 {
     boolean login(String password);
 
-    void changePassword(String currentPassword, @Matches("\\w+{6,30}")String newPassword) throws WrongPasswordException;
+    void changePassword(String currentPassword, @Matches(".{6,30}") String newPassword) throws WrongPasswordException;
 
     void resetPassword(String password);
 

@@ -65,6 +65,7 @@ public class OrganizationalUnitsSteps
     {
         try
         {
+            givenOu = (OrganizationalUnitEntity) givenOu.getParent();
             OrganizationalUnit removeOu = givenOu.getOrganizationalUnitByName( name );
             givenOu.removeOrganizationalUnit(removeOu);
         } catch(Exception e)

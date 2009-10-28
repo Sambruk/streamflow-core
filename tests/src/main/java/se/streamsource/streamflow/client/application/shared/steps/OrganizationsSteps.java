@@ -23,7 +23,6 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.constraint.ConstraintViolationException;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
@@ -88,19 +87,19 @@ public class OrganizationsSteps
         try
         {
             givenUser = organizations.createUser(newUser, newUser);
-        } catch(IllegalArgumentException e)
+        } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("a new user named $first $second is created")
+    @When("a faulty user named $first $second is created")
     public void createUser(String first, String second) throws UnitOfWorkCompletionException
     {
         try
         {
             organizations.createUser(first + " " + second, "pwd");
-        } catch(ConstraintViolationException e)
+        } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
