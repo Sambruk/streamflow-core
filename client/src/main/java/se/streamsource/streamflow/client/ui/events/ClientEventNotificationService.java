@@ -33,6 +33,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSourceListene
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.io.BufferedReader;
@@ -212,7 +213,13 @@ public interface ClientEventNotificationService
 
             public void notifyEvents() throws RemoteException
             {
-                pollEvents();
+                SwingUtilities.invokeLater( new Runnable()
+                {
+                    public void run()
+                    {
+                        pollEvents();
+                    }
+                });
             }
         }
     }
