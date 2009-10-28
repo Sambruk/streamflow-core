@@ -37,8 +37,6 @@ import se.streamsource.streamflow.web.resource.users.workspace.projects.assignme
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.WorkspaceProjectInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.WorkspaceProjectInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForServerResource;
@@ -81,8 +79,6 @@ public class UsersRouter
         attach("/workspace/projects/{project}/waitingfor", createServerResourceFinder(WorkspaceProjectWaitingForServerResource.class));
         attach("/workspace/projects/{project}/waitingfor/{task}", createServerResourceFinder(WorkspaceProjectWaitingForTaskServerResource.class));
         attach("/workspace/projects/{labels}/labels", createServerResourceFinder(LabelsServerResource.class));
-        attach("/workspace/projects/{project}/forms", createServerResourceFinder(WorkspaceProjectFormDefinitionsServerResource.class));
-        attach("/workspace/projects/{project}/forms/{form}", createServerResourceFinder(WorkspaceProjectFormDefinitionServerResource.class));
         attach("/workspace/user/inbox", createServerResourceFinder( WorkspaceUserInboxServerResource.class));
         attach("/workspace/user/inbox/{task}", createServerResourceFinder( WorkspaceUserInboxTaskServerResource.class));
         attach("/workspace/user/assignments", createServerResourceFinder( WorkspaceUserAssignmentsServerResource.class));

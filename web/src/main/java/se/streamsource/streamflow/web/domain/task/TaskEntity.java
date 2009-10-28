@@ -45,6 +45,7 @@ public interface TaskEntity
         SubmittedFormsQueries,
         TaskStatus.TaskStatusState,
         TaskId.TaskIdState,
+        TaskQueries,
         DomainEntity
 {
 }

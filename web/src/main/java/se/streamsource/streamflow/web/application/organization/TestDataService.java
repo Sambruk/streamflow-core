@@ -94,6 +94,15 @@ public interface TestDataService
             FieldDefinitionEntity statusField = fields.createFieldDefinition("Status", stringValue);
             statusForm.addField(statusField);
 
+            FormDefinition addressForm = forms.createFormDefinition("AddressForm");
+            FieldDefinitionEntity streetField = fields.createFieldDefinition("Street", stringValue);
+            FieldDefinitionEntity zipCodeField = fields.createFieldDefinition("ZipCode", stringValue);
+            FieldDefinitionEntity townField = fields.createFieldDefinition("Town", stringValue);
+
+            addressForm.addField(streetField);
+            addressForm.addField(zipCodeField);
+            addressForm.addField(townField);
+
             ProjectRole agent = ou.createProjectRole("Agent");
             ProjectRole manager = ou.createProjectRole("Manager");
 
@@ -131,6 +140,8 @@ public interface TestDataService
 
             submitted = createSubmittedForm(user, statusForm, statusField, "Progress is getting better");
             task.submitForm(submitted);
+
+
 
             for (int i = 1; i < 30; i++)
                 project.createTask().changeDescription("Arbetsuppgift " + i);

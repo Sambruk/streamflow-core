@@ -54,6 +54,13 @@ public class TaskClientResource
         return forms;
     }
 
+    public TaskFormDefinitionsClientResource formDefinitions()
+    {
+        TaskFormDefinitionsClientResource formDefinitions = getSubResource("formDefinitions", TaskFormDefinitionsClientResource.class);
+        formDefinitions.setRoot(this);
+        return formDefinitions;
+    }
+
 /*
     public void complete() throws ResourceException
     {

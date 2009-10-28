@@ -15,10 +15,10 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.util.List;
@@ -27,9 +27,11 @@ public class FormsListModel
     extends AbstractListModel
 {
     List<ListItemValue> forms;
+    private TaskFormDefinitionsClientResource resource;
 
-    public FormsListModel(@Uses WorkspaceProjectFormDefinitionsClientResource resource)
+    public FormsListModel(@Uses TaskFormDefinitionsClientResource resource)
     {
+        this.resource = resource;
         try
         {
             forms = resource.applicableFormDefinitionList().items().get();
@@ -47,5 +49,10 @@ public class FormsListModel
     public Object getElementAt(int i)
     {
         return forms.get(i);
+    }
+
+    public TaskFormDefinitionsClientResource getResource()
+    {
+        return resource;
     }
 }

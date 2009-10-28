@@ -18,7 +18,11 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -33,17 +37,21 @@ public class FormSubmissionDialog
 {
     Dimension dialogSize = new Dimension(600, 300);
 
-    private FormSubmitView formSubmitView;
-
+    @Structure
+    ObjectBuilderFactory obf;
 
     public FormSubmissionDialog(@Service ApplicationContext context,
-                                @Uses FormsListView formsListView)
+                                @Uses final FormsListView formsListView,
+                                @Uses final FormSubmitView formSubmitView)
     {
         super(new BorderLayout());
 
         setActionMap(context.getActionMap(this));
 
         setPreferredSize(dialogSize);
+
+        add(formsListView, BorderLayout.WEST);
+        add(formSubmitView, BorderLayout.CENTER);
 
         final JList formList = formsListView.getFormList();
 
@@ -53,16 +61,24 @@ public class FormSubmissionDialog
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    int idx = formList.getSelectedIndex();
-                    if (idx != -1)
+                    ListItemValue value = (ListItemValue) formList.getSelectedValue();
+                    if (value != null)
                     {
+                        TaskFormDefinitionsClientResource resource = formsListView.getResource();
+                        FormSubmitModel model =
+                                obf.newObjectBuilder(FormSubmitModel.class).
+                                        use(resource.formDefinition(value.entity().get().identity())).newInstance();
+                        formSubmitView.setModel(model);
                     } else
                     {
+                        formSubmitView.setModel(null);
                     }
                 }
 
             }
         });
+
+
     }
 
     @Action

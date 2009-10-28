@@ -43,6 +43,8 @@ import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerRe
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
+import se.streamsource.streamflow.web.resource.task.formdefinitions.TaskFormDefinitionServerResource;
+import se.streamsource.streamflow.web.resource.task.formdefinitions.TaskFormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormServerResource;
 import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormsServerResource;
 import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
@@ -127,6 +129,8 @@ public class ServerResourceAssembler
                 TaskContactServerResource.class,
                 TaskSubmittedFormsServerResource.class,
                 TaskSubmittedFormServerResource.class,
+                TaskFormDefinitionsServerResource.class,
+                TaskFormDefinitionServerResource.class,
 
                 WorkspaceProjectsServerResource.class,
                 WorkspaceProjectServerResource.class,

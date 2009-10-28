@@ -12,44 +12,33 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.task.forms;
+package se.streamsource.streamflow.web.resource.task.formdefinitions;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
-import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.task.TaskQueries;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.project.ProjectFormDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.task.TaskQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * Mapped to:
- * /tasks/{task}/forms/
+ * /tasks/{task}/formDefinitions/
  */
-public class TaskSubmittedFormsServerResource
+public class TaskFormDefinitionsServerResource
         extends CommandQueryServerResource
 {
     @Structure
     ValueBuilderFactory vbf;
 
-    public TaskSubmittedFormsServerResource()
+    public TaskFormDefinitionsServerResource()
     {
         setNegotiated(true);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-    }
-
-    public SubmittedFormsListDTO taskSubmittedForms()
-    {
-        String formsQueryId = getRequest().getAttributes().get("task").toString();
-        SubmittedFormsQueries forms = uowf.currentUnitOfWork().get(SubmittedFormsQueries.class, formsQueryId);
-
-        return forms.getSubmittedForms();
     }
 
     public ListValue applicableFormDefinitionList()
@@ -72,11 +61,6 @@ public class TaskSubmittedFormsServerResource
             formsList = vbf.newValue(ListValue.class);
         }
         return formsList;
-    }
-    
-
-    public void add(ContactValue newContact)
-    {
     }
 
     @Override

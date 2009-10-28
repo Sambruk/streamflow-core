@@ -96,6 +96,8 @@ public class ClientResourceAssembler
                 TaskContactClientResource.class,
                 TaskSubmittedFormsClientResource.class,
                 TaskSubmittedFormClientResource.class,
+                TaskFormDefinitionsClientResource.class,
+                TaskFormDefinitionClientResource.class,
 
                 WorkspaceClientResource.class,
                 WorkspaceUserClientResource.class,

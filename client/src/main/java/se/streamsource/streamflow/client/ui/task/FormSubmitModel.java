@@ -17,8 +17,8 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
 public class FormSubmitModel
 {
     @Uses
-    WorkspaceProjectFormDefinitionClientResource form;
+    TaskFormDefinitionClientResource form;
 
     public List<ListItemValue> getFields()
     {

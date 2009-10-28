@@ -12,45 +12,43 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.organizations.forms;
+package se.streamsource.streamflow.web.resource.task.formdefinitions;
 
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.restlet.resource.ResourceException;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.spi.Qi4jSPI;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
-import se.streamsource.streamflow.web.domain.form.FormDefinitions;
-import se.streamsource.streamflow.web.domain.form.FormDefinition;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import org.restlet.representation.Variant;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.web.domain.form.FormDefinition;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 
 /**
  * Mapped to:
- * /organizations/{organization}/forms/{form}
- *
- * AND
- *
  * /tasks/{task}/formDefinitions/{form}
  */
-public class FormDefinitionServerResource
+public class TaskFormDefinitionServerResource
         extends CommandQueryServerResource
 {
-    public void deleteOperation() throws ResourceException
+    @Structure
+    UnitOfWorkFactory uowf;
+
+    @Structure
+    ValueBuilderFactory vbf;
+
+    @Structure
+    Qi4jSPI spi;
+
+    public TaskFormDefinitionServerResource()
     {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-
-        String identity = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnit.OrganizationalUnitState ou = uowf.currentUnitOfWork().get( OrganizationalUnit.OrganizationalUnitState.class, identity);
-
-        FormDefinitions forms = ou.organization().get();
-        checkPermission( forms );
-
-        String formId = getRequest().getAttributes().get("form").toString();
-        FormDefinitionEntity formDefinitionEntity = uow.get(FormDefinitionEntity.class, formId);
-
-        forms.removeFormDefinition( formDefinitionEntity);
+        setNegotiated(true);
+        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
     public ListValue fields() throws ResourceException
@@ -70,6 +68,9 @@ public class FormDefinitionServerResource
         return new ListValueBuilder(vbf).addDescribableItems( fields.fields()).newList();
     }
 
-
-
+    @Override
+    protected String getConditionalIdentityAttribute()
+    {
+        return "task";
+    }
 }

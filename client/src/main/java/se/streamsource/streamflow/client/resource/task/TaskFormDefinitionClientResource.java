@@ -19,22 +19,22 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 
 /**
- * Mapped to /task/{id}/forms/{index}
+ * Mapped to /task/{id}/formDefinitions/{form}
  */
-public class TaskSubmittedFormClientResource
+public class TaskFormDefinitionClientResource
         extends CommandQueryClientResource
 {
-    public TaskSubmittedFormClientResource(@Uses Context context, @Uses Reference reference)
+    public TaskFormDefinitionClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public SubmittedFormDTO form() throws ResourceException
+    public ListValue fields() throws ResourceException
     {
-        return query("form", SubmittedFormDTO.class);
+        return query("fields", ListValue.class);
     }
 }

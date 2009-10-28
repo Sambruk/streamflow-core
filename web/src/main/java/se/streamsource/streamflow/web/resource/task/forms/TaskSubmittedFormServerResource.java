@@ -21,9 +21,9 @@ import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
+import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:

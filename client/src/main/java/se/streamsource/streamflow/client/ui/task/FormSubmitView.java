@@ -71,6 +71,7 @@ public class FormSubmitView
                 formBuilder.append(new JLabel(value.description().get()));
                 formBuilder.append(new TextField(30));
                 formBuilder.nextLine();
+                form.doLayout();
             }
 
             layout.show(this, "CONTACT");
