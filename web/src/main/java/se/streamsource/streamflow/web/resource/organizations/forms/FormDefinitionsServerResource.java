@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.resource.organizations.forms;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.form.FormDefinition;
@@ -37,9 +38,20 @@ public class FormDefinitionsServerResource
 
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormDefinitionsQueries forms = uow.get(FormDefinitionsQueries.class, identity);
+        //TODO: Quick and dirty fix for ClassCastExcepion to be able to deploy to test server - must be removed
+        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+        ListValue resp = listBuilder.newList();
 
-        return forms.formDefinitionList();
+        try
+        {
+            FormDefinitionsQueries forms = uow.get(FormDefinitionsQueries.class, identity);
+
+            resp = forms.formDefinitionList();
+        } catch(ClassCastException cce)
+        {
+        }  
+
+        return resp;
     }
 
     public void createForm( StringDTO name) throws ResourceException
