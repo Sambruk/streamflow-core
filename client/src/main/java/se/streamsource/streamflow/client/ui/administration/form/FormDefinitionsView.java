@@ -21,11 +21,12 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.ui.NameDialog;
-import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 /**
  * JAVADOC
@@ -33,7 +34,7 @@ import java.awt.*;
 public class FormDefinitionsView
         extends JPanel
 {
-    RolesModel model;
+    FormDefinitionsModel model;
 
     @Service
     DialogService dialogs;
@@ -41,24 +42,29 @@ public class FormDefinitionsView
     @Uses
     Iterable<NameDialog> nameDialogs;
 
-    public JList roleList;
+    public JList formList;
 
-    public FormDefinitionsView(@Service ApplicationContext context, @Uses final RolesModel model)
+    public FormDefinitionsView(@Service ApplicationContext context, @Uses final FormDefinitionsModel model)
     {
         super(new BorderLayout());
         this.model = model;
 
         setActionMap(context.getActionMap(this));
 
-        roleList = new JList(model);
+        formList = new JList(model);
 
-        roleList.setCellRenderer(new ListItemCellRenderer());
-        add(roleList, BorderLayout.CENTER);
+        formList.setCellRenderer(new ListItemCellRenderer());
+        add( formList, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(getActionMap().get("add")));
         toolbar.add(new JButton(getActionMap().get("remove")));
         add(toolbar, BorderLayout.SOUTH);
+    }
+
+    public JList getFormList()
+    {
+        return formList;
     }
 
     @Action
@@ -69,7 +75,7 @@ public class FormDefinitionsView
         String name = dialog.name();
         if (name != null)
         {
-            model.createRole(name);
+            model.createForm(name);
             model.refresh();
         }
     }
@@ -77,8 +83,8 @@ public class FormDefinitionsView
     @Action
     public void remove()
     {
-        ListItemValue selected = (ListItemValue) roleList.getSelectedValue();
-        model.removeRole(selected.entity().get().identity());
+        ListItemValue selected = (ListItemValue) formList.getSelectedValue();
+        model.removeForm(selected.entity().get().identity());
         model.refresh();
     }
 

@@ -19,32 +19,28 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 /**
  * JAVADOC
  */
-public class FormDefinitionsClientResource
+public class FormDefinitionClientResource
         extends CommandQueryClientResource
 {
-    public FormDefinitionsClientResource(@Uses Context context, @Uses Reference reference)
+    public FormDefinitionClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public ListValue forms() throws ResourceException
+    public void createField( ListItemValue fieldvalue) throws ResourceException
     {
-        return query("forms", ListValue.class);
+        postCommand( "createfield", fieldvalue );
     }
 
-    public void createForm( StringDTO nameDTO) throws ResourceException
+    public FieldDefinitionClientResource field(int index)
     {
-        postCommand("createForm", nameDTO);
-    }
-
-    public FormDefinitionClientResource form(String id)
-    {
-        return getSubResource(id, FormDefinitionClientResource.class);
+        FieldDefinitionClientResource field = getSubResource("" + index, FieldDefinitionClientResource.class);
+        field.setRoot(getRoot());
+        return field;
     }
 }

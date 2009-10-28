@@ -20,6 +20,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionClientResource;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
@@ -143,6 +144,7 @@ public class ClientResourceAssembler
                 OrganizationalUnitClientResource.class,
                 OrganizationsClientResource.class,
 
+                FormDefinitionClientResource.class,
                 FormDefinitionsClientResource.class,
 
                 GroupsClientResource.class,

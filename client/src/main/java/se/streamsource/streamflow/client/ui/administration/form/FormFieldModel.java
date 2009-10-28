@@ -14,25 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.administration.form;
 
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-
 /**
  * JAVADOC
  */
-public class FormDefinitionsAdministrationAssembler
-        implements Assembler
+public class FormFieldModel
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        UIAssemblers.addMV(module, FormDefinitionsModel.class,
-                FormDefinitionsView.class);
-
-        UIAssemblers.addMV(module, FormDefinitionModel.class,
-                FormDefinitionView.class);
-
-        UIAssemblers.addViews( module, FormDefinitionsAdminView.class );
-    }
 }

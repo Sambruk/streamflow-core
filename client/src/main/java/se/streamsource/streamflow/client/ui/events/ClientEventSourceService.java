@@ -24,6 +24,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSourceListene
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionCollector;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 
 import java.io.Reader;
 import java.lang.ref.Reference;
@@ -43,6 +44,8 @@ public interface ClientEventSourceService
     class ClientEventSourceMixin
             implements EventSource, EventSourceListener, Activatable, EventStore
     {
+        Date after = new Date();
+
         public Reader reader;
         public Iterable<TransactionEvents> events;
         public TransactionCollector transactionCollector;
@@ -89,7 +92,10 @@ public interface ClientEventSourceService
         public void eventsAvailable(EventStore source)
         {
             transactionCollector = new TransactionCollector();
-            source.transactions(null, transactionCollector );
+            TransactionTimestampFilter transactionTimestampFilter = new TransactionTimestampFilter( after.getTime(), transactionCollector);
+            source.transactions(after, transactionTimestampFilter );
+
+            after = new Date(transactionTimestampFilter.lastTimestamp());
 
             Iterator<Reference<EventSourceListener>> referenceIterator = listeners.iterator();
             while (referenceIterator.hasNext())

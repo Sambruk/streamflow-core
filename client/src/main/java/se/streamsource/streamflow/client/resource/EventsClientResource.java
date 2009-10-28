@@ -14,15 +14,18 @@
 
 package se.streamsource.streamflow.client.resource;
 
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.data.Reference;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.qi4j.api.injection.scope.Uses;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -35,8 +38,46 @@ public class EventsClientResource
         super(context, reference);
     }
 
-    public void registerClient( InputStream in ) throws ResourceException
+    public void registerClient( String id, InputStream in ) throws ResourceException
     {
-        post( new InputRepresentation(in, MediaType.APPLICATION_JAVA_OBJECT) );
+        Reference ref = getRequest().getResourceRef();
+
+        setResourceRef( ref.clone().addSegment(id ));
+        try
+        {
+            put( new InputRepresentation(in, MediaType.APPLICATION_JAVA_OBJECT) );
+        } finally
+        {
+            setResourceRef( ref );
+        }
+    }
+
+    public void deregisterClient( String id ) throws ResourceException
+    {
+        Reference ref = getRequest().getResourceRef();
+
+        setResourceRef( ref.clone().addSegment(id ));
+        try
+        {
+            delete();
+        } finally
+        {
+            setResourceRef( ref );
+        }
+    }
+
+    public Representation getEvents( Date afterTimestamp ) throws ResourceException, IOException
+    {
+        Reference originalRef = getRequest().getResourceRef();
+        Reference ref = originalRef.clone();
+        ref.addQueryParameter(  "after", afterTimestamp.getTime()+"");
+        setReference( ref );
+        try
+        {
+            return get();
+        } finally
+        {
+            setReference( originalRef );
+        }
     }
 }

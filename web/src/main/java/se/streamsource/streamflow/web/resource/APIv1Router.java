@@ -31,9 +31,12 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
-import se.streamsource.streamflow.web.resource.events.EventsResource;
+import se.streamsource.streamflow.web.resource.events.EventNotificationServerResource;
+import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormDefinitionServerResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
@@ -102,6 +105,8 @@ public class APIv1Router
         attach("/organizations/{organization}/projects/{project}/forms", createServerResourceFinder( ProjectFormDefinitionsServerResource.class));
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RoleServerResource.class));
+        attach("/organizations/{organization}/forms", createServerResourceFinder( FormDefinitionsServerResource.class));
+        attach("/organizations/{organization}/forms/{form}", createServerResourceFinder( FormDefinitionServerResource.class));
         attach("/organizations/{organization}/administrators", createServerResourceFinder(AdministratorsServerResource.class));
         attach("/organizations/{organization}/administrators/{administrator}", createServerResourceFinder(AdministratorServerResource.class));
         attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));
@@ -115,7 +120,8 @@ public class APIv1Router
         attach("/tasks/{task}/forms/{index}", createServerResourceFinder( TaskSubmittedFormServerResource.class));
 
         // Events
-        attach("/events", createServerResourceFinder(EventsResource.class));
+        attach("/events", createServerResourceFinder( EventsServerResource.class));
+        attach("/events/{id}", createServerResourceFinder( EventNotificationServerResource.class));
 
         // Qi4j
         Router qi4jRouter = new Router(getContext());

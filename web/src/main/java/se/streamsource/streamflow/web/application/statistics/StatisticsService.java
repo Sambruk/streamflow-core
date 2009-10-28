@@ -158,7 +158,7 @@ public interface StatisticsService
                 TransactionTimestampFilter timestamp;
                 EventCollector eventCollector;
                 eventStore.transactions( new Date( config.configuration().lastEventDate().get() ),
-                        timestamp = new TransactionTimestampFilter(
+                        timestamp = new TransactionTimestampFilter(config.configuration().lastEventDate().get(), 
                                 new TransactionEventAdapter(
                                         new EventHandlerFilter( completedFilter, eventCollector = new EventCollector() ))));
 

@@ -43,7 +43,7 @@ public class AccountSelector
 
     public AccountModel getSelectedAccount()
     {
-        return dataModel.accountModel(getSelectedIndex());
+        return getSelectedIndex() == -1 ? null : dataModel.accountModel(getSelectedIndex());
     }
 
     public void intervalAdded(ListDataEvent e)

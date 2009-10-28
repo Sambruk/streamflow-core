@@ -29,6 +29,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
+import se.streamsource.streamflow.client.ui.administration.form.FormDefinitionsModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
@@ -58,6 +59,7 @@ public class OrganizationalUnitAdministrationModel
     private GroupsModel groupsModel;
     private ProjectsModel projectsModel;
     private RolesModel rolesModel;
+    private FormDefinitionsModel formsModel;
     private AdministratorsModel administratorsModel;
     private OrganizationClientResource organization;
 
@@ -67,6 +69,7 @@ public class OrganizationalUnitAdministrationModel
         groupsModel = obf.newObjectBuilder(GroupsModel.class).use(organization.groups()).newInstance();
         projectsModel = obf.newObjectBuilder(ProjectsModel.class).use(organization.projects(), this).newInstance();
         rolesModel = obf.newObjectBuilder(RolesModel.class).use(organization.roles()).newInstance();
+        formsModel = obf.newObjectBuilder(FormDefinitionsModel.class).use(organization.forms()).newInstance();
         administratorsModel = obf.newObjectBuilder(AdministratorsModel.class).use(organization.administrators()).newInstance();
     }
 
@@ -90,6 +93,11 @@ public class OrganizationalUnitAdministrationModel
         return rolesModel;
     }
 
+    public FormDefinitionsModel formsModel()
+    {
+        return formsModel;
+    }
+
     public AdministratorsModel administratorsModel()
     {
         return administratorsModel;
@@ -100,6 +108,7 @@ public class OrganizationalUnitAdministrationModel
         groupsModel.refresh();
         projectsModel.refresh();
         rolesModel.refresh();
+        formsModel.refresh();
     }
 
     public void describe(String newDescription)
@@ -199,6 +208,7 @@ public class OrganizationalUnitAdministrationModel
         groupsModel.notifyEvent(event);
         projectsModel.notifyEvent(event);
         rolesModel.notifyEvent(event);
+        formsModel.notifyEvent(event);
         administratorsModel.notifyEvent(event);
 
     }

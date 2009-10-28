@@ -12,13 +12,12 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.form;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JList;
@@ -31,28 +30,29 @@ import javax.swing.event.ListSelectionListener;
 /**
  * JAVADOC
  */
-public class ProjectAdminView
+public class FormDefinitionsAdminView
         extends JSplitPane
 {
     @Structure
     ObjectBuilderFactory obf;
 
     @Uses
-    ProjectsModel projectsModel;
+    FormDefinitionsModel formsModel;
 
     @Uses
     OrganizationalUnitAdministrationModel organizationModel;
 
-    public ProjectAdminView(@Uses final ProjectsView projectsView)
+    public FormDefinitionsAdminView(@Uses final FormDefinitionsView formDefinitionsView)
     {
         super();
 
-        setLeftComponent(projectsView);
+        setLeftComponent(formDefinitionsView);
         setRightComponent(new JPanel());
 
         setDividerLocation(200);
+        setOneTouchExpandable( true );
 
-        final JList list = projectsView.getProjectList();
+        final JList list = formDefinitionsView.getFormList();
         list.addListSelectionListener(new ListSelectionListener()
         {
             public void valueChanged(ListSelectionEvent e)
@@ -62,17 +62,10 @@ public class ProjectAdminView
                     int idx = list.getSelectedIndex();
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
-                        ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        ProjectMembersModel projectMembersModel = projectsModel.getProjectMembersModel(projectValue.entity().get().identity());
-                        LabelsModel projectLabelsModel = projectsModel.getLabelsModel(projectValue.entity().get().identity());
-                        FormsModel formsModel = projectsModel.getFormsModel(projectValue.entity().get().identity());
-                        projectMembersModel.refresh();
-                        projectLabelsModel.refresh();
-                        formsModel.refresh();
-                        ProjectView view = obf.newObjectBuilder(ProjectView.class).use(
-                                projectMembersModel,
-                                projectLabelsModel,
-                                formsModel,
+                        ListItemValue formValue = (ListItemValue) list.getModel().getElementAt(idx);
+                        FormDefinitionModel formModel = formsModel.getFormModel(formValue.entity().get().identity());
+                        FormDefinitionView view = obf.newObjectBuilder(FormDefinitionView.class).use(
+                                formModel,
                                 organizationModel).newInstance();
                         setRightComponent(view);
                     } else

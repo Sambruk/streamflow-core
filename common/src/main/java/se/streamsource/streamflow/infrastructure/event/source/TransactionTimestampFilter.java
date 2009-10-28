@@ -25,8 +25,9 @@ public class TransactionTimestampFilter
     private TransactionHandler handler;
     private long lastTimestamp;
 
-    public TransactionTimestampFilter(TransactionHandler handler)
+    public TransactionTimestampFilter( long lastTimestamp, TransactionHandler handler )
     {
+        this.lastTimestamp = lastTimestamp;
         this.handler = handler;
     }
 

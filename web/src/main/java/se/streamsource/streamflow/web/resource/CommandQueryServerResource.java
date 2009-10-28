@@ -18,7 +18,6 @@ import org.json.JSONException;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
@@ -42,19 +41,12 @@ import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
-import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionCollector;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -85,17 +77,12 @@ import java.util.logging.Logger;
  */
 public class CommandQueryServerResource
         extends BaseServerResource
-        implements EventSourceListener
 {
     @Structure
     protected ValueBuilderFactory vbf;
 
     @Structure
     protected ModuleSPI module;
-
-    @Service
-    EventSource source;
-    public Iterable<TransactionEvents> transactions;
 
     public CommandQueryServerResource()
     {
@@ -148,7 +135,6 @@ public class CommandQueryServerResource
     {
         String operation = getCommandOperation();
         UnitOfWork uow = null;
-        source.registerListener(this, false);
         try
         {
             Method method = getResourceMethod(operation);
@@ -163,17 +149,6 @@ public class CommandQueryServerResource
                 try
                 {
                     uow.complete();
-
-                    if (rep instanceof EmptyRepresentation && transactions != null)
-                    {
-                        rep = new WriterRepresentation(MediaType.APPLICATION_JSON)
-                        {
-                            public void write(Writer writer) throws IOException
-                            {
-                                writer.write(transactions.iterator().next().toJSON());
-                            }
-                        };
-                    }
 
                     return rep;
                 } catch (ConcurrentEntityModificationException e)
@@ -206,9 +181,6 @@ public class CommandQueryServerResource
 
             setStatus(Status.SERVER_ERROR_INTERNAL);
             return new ObjectRepresentation(ex, MediaType.APPLICATION_JAVA_OBJECT);
-        } finally
-        {
-            source.unregisterListener(this);
         }
     }
 
@@ -317,13 +289,6 @@ public class CommandQueryServerResource
     final protected Representation put(Representation representation, Variant variant) throws ResourceException
     {
         return post(representation, variant);
-    }
-
-    public void eventsAvailable(EventStore source)
-    {
-        TransactionCollector collector = new TransactionCollector();
-        source.transactions(null, collector);
-        transactions = collector.transactions();
     }
 
     private Method getResourceMethod(String operation)

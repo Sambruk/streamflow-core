@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.resource;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -27,7 +26,6 @@ import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyTypeDescriptor;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
@@ -35,16 +33,10 @@ import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.StreamFlowResources;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 /**
  * Base class for client-side Command/Query resources
@@ -156,8 +148,7 @@ public class CommandQueryClientResource
         setReference(operationRef);
         try
         {
-            Representation events = post(commandRepresentation);
-            processEvents(events);
+            post(commandRepresentation);
         } finally
         {
             setReference(ref);
@@ -226,34 +217,6 @@ public class CommandQueryClientResource
         return result;
     }
 
-
-    private void processEvents(Representation entity)
-    {
-        if (getResponse().getStatus().isSuccess() && (getRequest().getMethod().equals(Method.POST) || getRequest().getMethod().equals(Method.DELETE) || getRequest().getMethod().equals(Method.PUT)))
-        {
-            try
-            {
-                if (entity != null && !(entity instanceof EmptyRepresentation))
-                {
-                    String source = entity.getText();
-
-                    final TransactionEvents transactionEvents = vbf.newValueFromJSON(TransactionEvents.class,  source);
-
-                    eventListener.eventsAvailable(new EventStore()
-                    {
-                        public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
-                        {
-                            handler.handleTransaction( transactionEvents );
-                        }
-                    });
-                }
-            } catch (Exception e)
-            {
-                throw new OperationException(StreamFlowResources.could_not_process_events, e);
-            }
-        }
-    }
-
     public void create() throws ResourceException
     {
         putCommand(null);
@@ -285,13 +248,10 @@ public class CommandQueryClientResource
             {
                 try
                 {
-                    Representation events = put(commandRepresentation);
+                    put(commandRepresentation);
                     if (!getStatus().isSuccess())
                     {
                         throw new ResourceException(getStatus());
-                    } else
-                    {
-                        processEvents(events);
                     }
                     break;
                 } catch (ResourceException e)
@@ -332,9 +292,6 @@ public class CommandQueryClientResource
                 if (!getStatus().isSuccess())
                 {
                     throw new ResourceException(getStatus());
-                } else
-                {
-                    processEvents(events);
                 }
                 break;
             } catch (ResourceException e)

@@ -14,21 +14,18 @@
 
 package se.streamsource.streamflow.client.ui.administration.form;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionClientResource;
-import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.AbstractListModel;
 import java.util.List;
@@ -36,27 +33,15 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public class FormDefinitionsModel
+public class FormDefinitionModel
         extends AbstractListModel
     implements EventListener
 {
     @Structure
     ValueBuilderFactory vbf;
 
-    @Structure
-    ObjectBuilderFactory obf;
-
     @Uses
-    private FormDefinitionsClientResource forms;
-
-    WeakModelMap<String, FormDefinitionModel> formModels = new WeakModelMap<String, FormDefinitionModel>()
-    {
-        protected FormDefinitionModel newModel( String key )
-        {
-            FormDefinitionClientResource formResource = forms.form( key );
-            return obf.newObjectBuilder( FormDefinitionModel.class ).use( formResource ).newInstance();
-        }
-    };
+    private FormDefinitionClientResource form;
 
     private List<ListItemValue> list;
 
@@ -70,53 +55,53 @@ public class FormDefinitionsModel
         return list == null ? null : list.get(index);
     }
 
-    public void createForm(String description)
+    public void createField(String description, EntityReference valueType)
     {
         try
         {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(description);
-            forms.createForm( builder.newInstance());
+            ValueBuilder<ListItemValue> builder = vbf.newValueBuilder(ListItemValue.class);
+            builder.prototype().description().set( description );
+            builder.prototype().entity().set( valueType );
+            form.createField(  builder.newInstance());
 
         } catch (ResourceException e)
         {
-            throw new OperationException( AdministrationResources.could_not_create_form, e);
+            throw new OperationException( AdministrationResources.could_not_create_field, e);
         }
     }
 
-    public void removeForm(String id)
+    public void removeForm(int idx)
     {
         try
         {
-            forms.form(id).deleteCommand();
+            form.field(idx).deleteCommand();
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_remove_form, e);
+            throw new OperationException(AdministrationResources.could_not_remove_field, e);
         }
     }
 
     public void refresh()
     {
+/*
         try
         {
-            list = forms.forms().items().get();
+            list = form.field().items().get();
             fireContentsChanged(this, 0, list.size());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_refresh, e);
         }
+*/
     }
 
     public void notifyEvent( DomainEvent event )
     {
-        for (FormDefinitionModel formModel : formModels)
-        {
-            formModel.notifyEvent( event );
-        }
+
     }
 
-    public FormDefinitionModel getFormModel( String id )
+    public FormDefinitionModel getFormFieldModel( int index )
     {
-        return formModels.get( id );
+        return null;
     }
 }

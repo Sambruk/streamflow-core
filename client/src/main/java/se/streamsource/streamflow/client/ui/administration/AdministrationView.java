@@ -44,6 +44,7 @@ public class AdministrationView
     {
         setMinimumSize(new Dimension(800, 600));
         setPreferredSize(getMinimumSize());
+        setOneTouchExpandable( true );
 
         setLeftComponent(adminOutlineView);
         adminOutlineView.setMinimumSize(new Dimension(200, 400));
@@ -95,6 +96,7 @@ public class AdministrationView
                                 ouAdminModel.groupsModel(),
                                 ouAdminModel.projectsModel(),
                                 ouAdminModel.rolesModel(),
+                                ouAdminModel.formsModel(),
                                 ouAdminModel.administratorsModel()).newInstance();
                     }
 

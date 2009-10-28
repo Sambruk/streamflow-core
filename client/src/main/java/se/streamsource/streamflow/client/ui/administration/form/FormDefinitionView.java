@@ -12,25 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.client.ui.administration.form;
 
-import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.infrastructure.event.RemoteEventNotification;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-
-import java.rmi.RemoteException;
+import javax.swing.JPanel;
 
 /**
  * JAVADOC
  */
-public class RemoteEventNotificationImpl
-    implements RemoteEventNotification
+public class FormDefinitionView
+    extends JPanel
 {
-    @Service
-    EventSourceListener esl;
-
-    public void notifyEvents() throws RemoteException
-    {
-        System.out.println("NOTIFY EVENTS");
-    }
 }

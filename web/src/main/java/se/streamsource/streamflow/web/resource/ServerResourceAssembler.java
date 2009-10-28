@@ -17,10 +17,12 @@ package se.streamsource.streamflow.web.resource;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.web.resource.events.EventsResource;
+import se.streamsource.streamflow.web.resource.events.EventNotificationServerResource;
+import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
@@ -157,6 +159,7 @@ public class ServerResourceAssembler
                 OrganizationServerResource.class,
                 OrganizationalUnitsServerResource.class,
 
+                FormDefinitionServerResource.class,
                 FormDefinitionsServerResource.class,
 
                 GroupsServerResource.class,
@@ -180,7 +183,8 @@ public class ServerResourceAssembler
                 SearchTaskServerResource.class,
 
                 // Events
-                EventsResource.class
+                EventsServerResource.class,
+                EventNotificationServerResource.class
         );
     }
 }

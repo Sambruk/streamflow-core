@@ -33,12 +33,13 @@ public class OrganizationalUnitAdministrationView
     public OrganizationalUnitAdministrationView(@Uses ProjectAdminView projectAdmin,
                                                 @Uses GroupAdminView groupAdmin,
                                                 @Uses RolesView rolesAdmin,
-//                                                @Uses FormDefinitionsView formsAdmin,
+//                                                @Uses FormDefinitionsAdminView formsAdmin,
                                                 @Uses AdministratorsView administratorsAdmin)
     {
         addTab(text(AdministrationResources.projects_tab), projectAdmin);
         addTab(text(AdministrationResources.groups_tab), groupAdmin);
         addTab(text(AdministrationResources.roles_tab), rolesAdmin);
+//        addTab(text(AdministrationResources.forms_tab), formsAdmin);
         addTab(text(AdministrationResources.metadata_tab), new JList());
         addTab(text(AdministrationResources.administrators_tab), administratorsAdmin);
     }

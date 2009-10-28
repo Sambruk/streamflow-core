@@ -17,34 +17,16 @@ package se.streamsource.streamflow.client.resource.organizations.forms;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
  */
-public class FormDefinitionsClientResource
+public class FieldDefinitionClientResource
         extends CommandQueryClientResource
 {
-    public FormDefinitionsClientResource(@Uses Context context, @Uses Reference reference)
+    public FieldDefinitionClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
-    }
-
-    public ListValue forms() throws ResourceException
-    {
-        return query("forms", ListValue.class);
-    }
-
-    public void createForm( StringDTO nameDTO) throws ResourceException
-    {
-        postCommand("createForm", nameDTO);
-    }
-
-    public FormDefinitionClientResource form(String id)
-    {
-        return getSubResource(id, FormDefinitionClientResource.class);
     }
 }

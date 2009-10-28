@@ -28,7 +28,6 @@ public class NotificationAssembler
 {
     public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
     {
-        moduleAssembly.addObjects( ClientNotificationService.class );
-        moduleAssembly.importServices( ClientNotificationService.class ).importedBy( NewObjectImporter.class ).visibleIn( Visibility.application );
+        moduleAssembly.addServices( NotificationService.class ).visibleIn( Visibility.application );
     }
 }

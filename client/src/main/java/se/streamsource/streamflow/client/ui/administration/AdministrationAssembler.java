@@ -19,6 +19,7 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
+import se.streamsource.streamflow.client.ui.administration.form.FormDefinitionsAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorAdministrationAssembler;
@@ -67,6 +68,7 @@ public class AdministrationAssembler
         new GroupAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Groups"));
         new ProjectAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Projects"));
         new RoleAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Roles"));
+        new FormDefinitionsAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Forms"));
         new AdministratorAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Administrators"));
     }
 }
