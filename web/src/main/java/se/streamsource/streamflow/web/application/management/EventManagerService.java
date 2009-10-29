@@ -43,11 +43,11 @@ import java.util.concurrent.Executors;
  * as JMX Notifications. The event name is set as notification name, and the JSON serialization of
  * the event is used as user date in the notifications.
  */
-@Mixins(EventManagerService.EventManagerMixin.class)
+@Mixins(EventManagerService.Mixin.class)
 public interface EventManagerService
     extends Activatable, ServiceComposite
 {
-    class EventManagerMixin
+    class Mixin
         implements Activatable, EventSourceListener
     {
         @Service

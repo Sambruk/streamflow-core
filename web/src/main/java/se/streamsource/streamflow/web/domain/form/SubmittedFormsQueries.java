@@ -32,17 +32,18 @@ import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 /**
  * JAVADOC
  */
-@Mixins(SubmittedFormsQueries.SubmittedFormsQueriesMixin.class)
+@Mixins(SubmittedFormsQueries.Mixin.class)
 public interface SubmittedFormsQueries
 {
     SubmittedFormsListDTO getSubmittedForms();
 
     SubmittedFormDTO getSubmittedForm(int idx);
 
-    class SubmittedFormsQueriesMixin
+    class Mixin
         implements SubmittedFormsQueries
     {
-        @This SubmittedForms.SubmittedFormsState submittedForms;
+        @This
+        SubmittedForms.Data submittedForms;
 
         @Structure
         ValueBuilderFactory vbf;
@@ -63,10 +64,10 @@ public interface SubmittedFormsQueries
             {
                 formDTO.submissionDate().set( form.submissionDate().get() );
 
-                Describable.DescribableState submitter = uow.get( Describable.DescribableState.class, form.submitter().get().identity() );
+                Describable.Data submitter = uow.get( Describable.Data.class, form.submitter().get().identity() );
                 formDTO.submitter().set( submitter.description().get() );
 
-                Describable.DescribableState formName = uow.get( Describable.DescribableState.class, form.form().get().identity() );
+                Describable.Data formName = uow.get( Describable.Data.class, form.form().get().identity() );
                 formDTO.form().set( formName.description().get() );
                 list.forms().get().add( formBuilder.newInstance() );
             }
@@ -84,10 +85,10 @@ public interface SubmittedFormsQueries
 
             formDTO.submissionDate().set( form.submissionDate().get() );
 
-            Describable.DescribableState submitter = uow.get( Describable.DescribableState.class, form.submitter().get().identity() );
+            Describable.Data submitter = uow.get( Describable.Data.class, form.submitter().get().identity() );
             formDTO.submitter().set( submitter.description().get() );
 
-            Describable.DescribableState formName = uow.get( Describable.DescribableState.class, form.form().get().identity() );
+            Describable.Data formName = uow.get( Describable.Data.class, form.form().get().identity() );
             formDTO.form().set( formName.description().get() );
 
             ValueBuilder<FieldDTO> fieldBuilder = vbf.newValueBuilder( FieldDTO.class );
@@ -95,7 +96,7 @@ public interface SubmittedFormsQueries
 
             for (FieldValue fieldValue : form.values().get())
             {
-                Describable.DescribableState field = uow.get( Describable.DescribableState.class, fieldValue.field().get().identity() );
+                Describable.Data field = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
                 fieldDTO.field().set( field.description().get() );
                 fieldDTO.value().set( fieldValue.value().get() );
                 formDTO.values().get().add( fieldBuilder.newInstance() );

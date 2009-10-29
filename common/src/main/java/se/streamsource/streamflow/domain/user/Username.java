@@ -14,14 +14,18 @@
 
 package se.streamsource.streamflow.domain.user;
 
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.library.constraints.annotation.Matches;
+
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * JAVADOC
+ * Constraint for usernames
  */
-public interface UserSpecification
-        extends ValueComposite
+@ConstraintDeclaration
+@Retention( RUNTIME )
+@Matches("[\\p{Graph}]{4,30}")
+public @interface Username
 {
-    Property<String> username();
 }

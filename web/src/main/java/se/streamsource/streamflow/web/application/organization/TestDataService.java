@@ -29,7 +29,7 @@ import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.form.*;
 import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectRole;
@@ -42,11 +42,11 @@ import java.util.List;
 /**
  * Generates test data
  */
-@Mixins(TestDataService.TestDataMixin.class)
+@Mixins(TestDataService.Mixin.class)
 public interface TestDataService
         extends ServiceComposite, Activatable
 {
-    class TestDataMixin
+    class Mixin
             implements Activatable
     {
         @Structure
@@ -68,7 +68,7 @@ public interface TestDataService
             ou.changeDescription("WayGroup");
 
             // Create suborganizations
-            OrganizationalUnit jayway = ou.createOrganizationalUnit("Jayway");
+            OrganizationalUnitRefactoring jayway = ou.createOrganizationalUnit("Jayway");
             ou.createOrganizationalUnit("Dotway");
             ou.createOrganizationalUnit("Realway");
 

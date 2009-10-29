@@ -23,12 +23,12 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(Ownable.OwnableMixin.class)
+@Mixins(Ownable.Mixin.class)
 public interface Ownable
 {
     void changeOwner(Owner owner);
 
-    interface OwnableState
+    interface Data
     {
         @Optional
         Association<Owner> owner();
@@ -36,11 +36,11 @@ public interface Ownable
         void changedOwner(DomainEvent event, Owner newOwner);
     }
 
-    abstract class OwnableMixin
-            implements Ownable, OwnableState
+    abstract class Mixin
+            implements Ownable, Data
     {
         @This
-        OwnableState state;
+        Data state;
 
         public void changeOwner(Owner owner)
         {

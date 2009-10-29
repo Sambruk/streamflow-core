@@ -27,8 +27,8 @@ import java.util.Set;
  */
 public interface ProjectRoleEntity
         extends ProjectRole,
-        Describable.DescribableState,
-        Removable.RemovableState,
+        Describable.Data,
+        Removable.Data,
         DomainEntity
 {
     @UseDefaults

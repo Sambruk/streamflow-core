@@ -33,31 +33,31 @@ import se.streamsource.streamflow.web.domain.role.Roles;
 /**
  * JAVADOC
  */
-@Mixins(OrganizationalUnits.OrganizationsMixin.class)
+@Mixins(OrganizationalUnits.Mixin.class)
 public interface OrganizationalUnits
 {
-    OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
+    OrganizationalUnitRefactoring createOrganizationalUnit(@MaxLength(50) String name);
 
-    void addOrganizationalUnit(OrganizationalUnit ou);
+    void addOrganizationalUnit( OrganizationalUnitRefactoring ou);
 
-    void removeOrganizationalUnit(OrganizationalUnit ou);
+    void removeOrganizationalUnit( OrganizationalUnitRefactoring ou);
 
-    interface OrganizationalUnitsState
+    interface Data
     {
         @Aggregated
-        ManyAssociation<OrganizationalUnit> organizationalUnits();
+        ManyAssociation<OrganizationalUnitRefactoring> organizationalUnits();
 
         OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id);
-        void organizationalUnitRemoved(DomainEvent create, OrganizationalUnit ou);
-        void organizationalUnitAdded(DomainEvent event, OrganizationalUnit ou);
+        void organizationalUnitRemoved(DomainEvent create, OrganizationalUnitRefactoring ou);
+        void organizationalUnitAdded(DomainEvent event, OrganizationalUnitRefactoring ou);
 
-        OrganizationalUnits getParent(OrganizationalUnit ou);
+        OrganizationalUnits getParent( OrganizationalUnitRefactoring ou);
 
-        OrganizationalUnit getOrganizationalUnitByName(String name);
+        OrganizationalUnitRefactoring getOrganizationalUnitByName(String name);
     }
 
-    abstract class OrganizationsMixin
-            implements OrganizationalUnits, OrganizationalUnitsState
+    abstract class Mixin
+            implements OrganizationalUnits, Data
     {
         @Service
         IdentityGenerator idGenerator;
@@ -69,15 +69,15 @@ public interface OrganizationalUnits
         RolePolicy policy;
 
         @This
-        Roles.RolesState roles;
+        Roles.Data roles;
 
         @This
-        OrganizationalUnit.OrganizationalUnitState ouState;
+        OrganizationalUnitRefactoring.Data ouState;
 
         @This
         OrganizationalUnits organizationalUnits;
         
-        public OrganizationalUnit createOrganizationalUnit(String name)
+        public OrganizationalUnitRefactoring createOrganizationalUnit(String name)
         {
             OrganizationalUnitEntity ou = organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
             addOrganizationalUnit(ou);
@@ -89,7 +89,7 @@ public interface OrganizationalUnits
             return ou;
         }
 
-        public void addOrganizationalUnit(OrganizationalUnit ou)
+        public void addOrganizationalUnit( OrganizationalUnitRefactoring ou)
         {
             if (organizationalUnits().contains(ou)) {
                 return;
@@ -97,7 +97,7 @@ public interface OrganizationalUnits
             organizationalUnitAdded(DomainEvent.CREATE, ou);
         }
 
-        public void removeOrganizationalUnit(OrganizationalUnit ou)
+        public void removeOrganizationalUnit( OrganizationalUnitRefactoring ou)
         {
             if (!organizationalUnits().contains(ou))
                 return; // OU is not a sub-OU of this OU
@@ -113,27 +113,27 @@ public interface OrganizationalUnits
             return ou;
         }
 
-        public void organizationalUnitRemoved(DomainEvent create, OrganizationalUnit ou)
+        public void organizationalUnitRemoved(DomainEvent create, OrganizationalUnitRefactoring ou)
         {
             organizationalUnits().remove(ou);
         }
 
-        public void organizationalUnitAdded(DomainEvent event, OrganizationalUnit ou)
+        public void organizationalUnitAdded(DomainEvent event, OrganizationalUnitRefactoring ou)
         {
             organizationalUnits().add(organizationalUnits().count(), ou);
         }
 
 
-        public OrganizationalUnits getParent(OrganizationalUnit ou)
+        public OrganizationalUnits getParent( OrganizationalUnitRefactoring ou)
         {
             if (organizationalUnits().contains(ou))
             {
                 return organizationalUnits;
             } else
             {
-                for (OrganizationalUnit organizationalUnit : organizationalUnits())
+                for (OrganizationalUnitRefactoring organizationalUnit : organizationalUnits())
                 {
-                    OrganizationalUnitsState state = (OrganizationalUnitsState) organizationalUnit;
+                    Data state = (Data) organizationalUnit;
                     OrganizationalUnits parent = state.getParent(ou);
                     if (parent != null)
                     {
@@ -144,11 +144,11 @@ public interface OrganizationalUnits
             return null;
         }
 
-        public OrganizationalUnit getOrganizationalUnitByName( String name )
+        public OrganizationalUnitRefactoring getOrganizationalUnitByName( String name )
         {
-            for (OrganizationalUnit organizationalUnit : organizationalUnits())
+            for (OrganizationalUnitRefactoring organizationalUnit : organizationalUnits())
             {
-                if (((Describable.DescribableState)organizationalUnit).description().get().equals(name))
+                if (((Describable.Data)organizationalUnit).description().get().equals(name))
                     return organizationalUnit;
             }
             throw new IllegalArgumentException(name);

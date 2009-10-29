@@ -47,11 +47,11 @@ import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 /**
  * JAVADOC
  */
-@Mixins({AccountEntity.AccountMixin.class})
+@Mixins({AccountEntity.Mixin.class})
 public interface AccountEntity
         extends Account, EntityComposite
 {
-    interface AccountState
+    interface Data
             extends Describable
     {
         // Settings
@@ -62,7 +62,7 @@ public interface AccountEntity
         Property<Boolean> registered();
     }
 
-    class AccountMixin
+    class Mixin
             implements AccountSettings, AccountRegistration, AccountConnection
     {
         @Structure
@@ -78,7 +78,7 @@ public interface AccountEntity
         Account account;
 
         @This
-        AccountState state;
+        Data state;
 
         @This
         Describable description;

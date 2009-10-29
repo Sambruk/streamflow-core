@@ -30,7 +30,7 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEnti
 /**
  * JAVADOC
  */
-@Mixins(Projects.ProjectsMixin.class)
+@Mixins(Projects.Mixin.class)
 public interface Projects
 {
     ProjectEntity createProject(String name);
@@ -39,7 +39,7 @@ public interface Projects
 
     void addProject(Project project);
 
-    interface ProjectsState
+    interface Data
     {
         @Aggregated
         ManyAssociation<Project> projects();
@@ -53,8 +53,8 @@ public interface Projects
         ProjectEntity getProjectByName(String name);
     }
 
-    abstract class ProjectsMixin
-            implements Projects, ProjectsState
+    abstract class Mixin
+            implements Projects, Data
     {
         @This
         OrganizationalUnitEntity ou;
@@ -106,7 +106,7 @@ public interface Projects
 
         public ProjectEntity getProjectByName( String name )
         {
-            return (ProjectEntity) Describable.DescribableMixin.getDescribable( projects(), name );
+            return (ProjectEntity) Describable.Mixin.getDescribable( projects(), name );
         }
     }
 

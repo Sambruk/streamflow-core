@@ -12,16 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.client.domain.individual;
+package se.streamsource.streamflow.domain.user;
 
-import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.library.constraints.annotation.Matches;
+
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * JAVADOC
+ * Constraint for passwords
  */
-public interface IndividualEntity
-        extends Individual,
-        Accounts.Data,
-        EntityComposite
+@ConstraintDeclaration
+@Retention( RUNTIME )
+@Matches("[\\p{Graph}åäöÅÄÖ]{4,30}")
+public @interface Password
 {
 }

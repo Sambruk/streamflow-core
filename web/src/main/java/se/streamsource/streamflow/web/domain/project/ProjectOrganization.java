@@ -15,15 +15,15 @@
 package se.streamsource.streamflow.web.domain.project;
 
 import org.qi4j.api.entity.association.Association;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 
 /**
  * JAVADOC
  */
 public interface ProjectOrganization
 {
-    interface ProjectOrganizationState
+    interface Data
     {
-        Association<OrganizationalUnit> organizationalUnit();
+        Association<OrganizationalUnitRefactoring> organizationalUnit();
     }
 }

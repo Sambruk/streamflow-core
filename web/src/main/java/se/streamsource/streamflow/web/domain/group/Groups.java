@@ -26,7 +26,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * JAVADOC
  */
 @Concerns(Groups.DescribeCreatedGroupConcern.class)
-@Mixins(Groups.GroupsMixin.class)
+@Mixins(Groups.Mixin.class)
 public interface Groups
 {
     GroupEntity createGroup(String name);
@@ -37,7 +37,7 @@ public interface Groups
 
     void mergeGroups(Groups groups);
 
-    interface GroupsState
+    interface Data
     {
         @Aggregated
         ManyAssociation<Group> groups();
@@ -49,8 +49,8 @@ public interface Groups
         GroupEntity getGroupByName(String name);
     }
 
-    abstract class GroupsMixin
-        implements Groups, GroupsState
+    abstract class Mixin
+        implements Groups, Data
     {
         public void mergeGroups(Groups groups)
         {
@@ -75,7 +75,7 @@ public interface Groups
 
         public GroupEntity getGroupByName( String name )
         {
-            return (GroupEntity) Describable.DescribableMixin.getDescribable( groups(), name );
+            return (GroupEntity) Describable.Mixin.getDescribable( groups(), name );
         }
     }
 

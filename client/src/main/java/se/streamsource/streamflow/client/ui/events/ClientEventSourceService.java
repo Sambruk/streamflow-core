@@ -37,11 +37,11 @@ import java.util.List;
 /**
  * JAVADOC
  */
-@Mixins(ClientEventSourceService.ClientEventSourceMixin.class)
+@Mixins(ClientEventSourceService.Mixin.class)
 public interface ClientEventSourceService
         extends EventSource, EventSourceListener, ServiceComposite
 {
-    class ClientEventSourceMixin
+    class Mixin
             implements EventSource, EventSourceListener, Activatable, EventStore
     {
         Date after = new Date();

@@ -39,7 +39,7 @@ public class FormDefinitionsSteps
     @Given("form definition named $form")
     public void givenForm(String name)
     {
-        FormDefinitions.FormDefinitionsState forms = orgsSteps.givenOrganization;
+        FormDefinitions.Data forms = orgsSteps.givenOrganization;
         givenForm = forms.getFormByName( name );
     }
 

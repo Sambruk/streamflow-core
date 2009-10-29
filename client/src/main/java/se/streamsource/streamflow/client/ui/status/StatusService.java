@@ -25,13 +25,13 @@ import java.util.logging.Logger;
  * messages comes from an enum to make it easy to know what texts
  * are available.
  */
-@Mixins(StatusService.StatusMixin.class)
+@Mixins(StatusService.Mixin.class)
 public interface StatusService
         extends ServiceComposite
 {
     void status(StatusResources status);
 
-    abstract class StatusMixin
+    abstract class Mixin
             implements StatusService
     {
         public void status(StatusResources status)

@@ -25,23 +25,23 @@ import java.util.List;
 /**
  * Commentable role
  */
-@Mixins(Commentable.CommentableMixin.class)
+@Mixins(Commentable.Mixin.class)
 public interface Commentable
 {
     public void addComment(CommentValue comment);
 
-    interface CommentableState
+    interface Data
     {
         @UseDefaults
         Property<List<CommentValue>> comments();
         void commentAdded(DomainEvent event, CommentValue comment);
     }
 
-    abstract class CommentableMixin
-            implements Commentable, CommentableState
+    abstract class Mixin
+            implements Commentable, Data
     {
         @This
-        CommentableState state;
+        Data state;
 
         public void addComment(CommentValue comment)
         {

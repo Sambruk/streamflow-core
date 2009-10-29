@@ -24,13 +24,13 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(ValueDefinitions.ValueDefinitionsMixin.class)
+@Mixins(ValueDefinitions.Mixin.class)
 public interface ValueDefinitions
 {
     ValueDefinitionEntity createValueDefinition(String name);
     void removeValueDefinition(ValueDefinition value);
 
-    interface ValueDefinitionsState
+    interface Data
     {
         ManyAssociation<ValueDefinitionEntity> valueDefinitions();
 
@@ -41,8 +41,8 @@ public interface ValueDefinitions
         ValueDefinitionEntity getValueDefinitionByName(String name);
     }
 
-    abstract class ValueDefinitionsMixin
-        implements ValueDefinitions, ValueDefinitionsState
+    abstract class Mixin
+        implements ValueDefinitions, Data
     {
         @Service
         IdentityGenerator idGen;
@@ -57,7 +57,7 @@ public interface ValueDefinitions
 
         public ValueDefinitionEntity getValueDefinitionByName( String name )
         {
-            return Describable.DescribableMixin.getDescribable( valueDefinitions(), name );
+            return Describable.Mixin.getDescribable( valueDefinitions(), name );
         }
     }
 }

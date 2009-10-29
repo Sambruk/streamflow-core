@@ -20,7 +20,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.form.FormDefinition;
+import se.streamsource.streamflow.web.domain.form.Fields;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -35,10 +35,10 @@ public class WorkspaceProjectFormDefinitionServerResource
         String formId = getRequest().getAttributes().get("form").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormDefinition.FieldsState fields;
+        Fields.Data fields;
         try
         {
-            fields = uow.get(FormDefinition.FieldsState.class, formId);
+            fields = uow.get( Fields.Data.class, formId);
         } catch(NoSuchEntityException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);

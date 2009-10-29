@@ -29,19 +29,19 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
-import se.streamsource.streamflow.web.domain.user.User;
+import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 import java.util.List;
 
-@Mixins(OrganizationsQueries.OrganizationsQueriesMixin.class)
+@Mixins(OrganizationsQueries.Mixin.class)
 public interface OrganizationsQueries
 {
     public ListValue organizations();
 
     public UserEntityListDTO users();
 
-    class OrganizationsQueriesMixin
+    class Mixin
         implements OrganizationsQueries
     {
         @Structure
@@ -54,7 +54,7 @@ public interface OrganizationsQueries
         UnitOfWorkFactory uowf;
 
         @This
-        OrganizationsEntity.OrganizationsState state;
+        Organizations.Data state;
 
         public ListValue organizations()
         {
@@ -66,7 +66,7 @@ public interface OrganizationsQueries
             Query<UserEntity> usersQuery = qbf.newQueryBuilder(UserEntity.class).
                     newQuery(uowf.currentUnitOfWork());
 
-            usersQuery.orderBy(orderBy(templateFor(User.UserState.class).userName()));
+            usersQuery.orderBy(orderBy(templateFor( UserAuthentication.Data.class).userName()));
 
 
             ValueBuilder<UserEntityListDTO> listBuilder = vbf.newValueBuilder(UserEntityListDTO.class);

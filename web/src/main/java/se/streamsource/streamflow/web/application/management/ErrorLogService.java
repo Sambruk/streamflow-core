@@ -42,11 +42,11 @@ import java.util.logging.Logger;
 /**
  * Service for exposing Logger errors JMX.
  */
-@Mixins(ErrorLogService.ErrorLogMixin.class)
+@Mixins(ErrorLogService.Mixin.class)
 public interface ErrorLogService
     extends Activatable, ServiceComposite
 {
-    class ErrorLogMixin
+    class Mixin
         extends Handler
         implements Activatable
     {

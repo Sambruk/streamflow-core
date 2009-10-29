@@ -21,20 +21,20 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(FieldValueDefinition.FieldValueDefinitionMixin.class)
+@Mixins(FieldValueDefinition.Mixin.class)
 public interface FieldValueDefinition
 {
     void changeValueDefinition(ValueDefinition valueDefinition);
 
-    interface FieldValueDefinitionState
+    interface Data
     {
         Association<ValueDefinition> valueDefinition();
 
         void valueDefinitionChanged( DomainEvent event, ValueDefinition valueDefinition);
     }
 
-    abstract class FieldValueDefinitionMixin
-        implements FieldValueDefinitionState
+    abstract class Mixin
+        implements Data
     {
         public void valueDefinitionChanged( DomainEvent event, ValueDefinition valueDefinition )
         {

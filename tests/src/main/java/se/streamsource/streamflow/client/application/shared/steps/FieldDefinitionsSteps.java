@@ -51,7 +51,7 @@ public class FieldDefinitionsSteps
         {
             FieldDefinitions fields = orgsSteps.givenOrganization;
 
-            ValueDefinitions.ValueDefinitionsState values = orgsSteps.givenOrganization;
+            ValueDefinitions.Data values = orgsSteps.givenOrganization;
 
             ValueDefinition valueDefinition = values.getValueDefinitionByName( type );
 
@@ -67,7 +67,7 @@ public class FieldDefinitionsSteps
     {
         try
         {
-            FieldDefinitions.FieldDefinitionsState fieldsState = orgsSteps.givenOrganization;
+            FieldDefinitions.Data fieldsState = orgsSteps.givenOrganization;
             FieldDefinitions fields = orgsSteps.givenOrganization;
 
             fields.removeFieldDefinition( givenFieldDefinition );

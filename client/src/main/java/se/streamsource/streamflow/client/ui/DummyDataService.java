@@ -25,8 +25,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Restlet;
-import org.restlet.Client;
 import org.restlet.Uniform;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
@@ -41,11 +39,11 @@ import java.util.logging.Logger;
 /**
  * JAVADOC
  */
-@Mixins(DummyDataService.ActivatableMixin.class)
+@Mixins(DummyDataService.Mixin.class)
 public interface DummyDataService
         extends ServiceComposite, Activatable
 {
-    class ActivatableMixin
+    class Mixin
             implements Activatable
     {
         @Structure

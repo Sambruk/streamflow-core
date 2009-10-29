@@ -15,19 +15,19 @@
 package se.streamsource.streamflow.web.resource.task.formdefinitions;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.web.domain.form.FormDefinition;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.web.domain.form.Fields;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
@@ -56,10 +56,10 @@ public class TaskFormDefinitionServerResource
         String formId = getRequest().getAttributes().get("form").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormDefinition.FieldsState fields;
+        Fields.Data fields;
         try
         {
-            fields = uow.get(FormDefinition.FieldsState.class, formId);
+            fields = uow.get(Fields.Data.class, formId);
         } catch(NoSuchEntityException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);

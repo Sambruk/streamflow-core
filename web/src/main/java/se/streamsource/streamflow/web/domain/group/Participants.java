@@ -28,14 +28,14 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * JAVADOC
  */
 @SideEffects(Participants.RemovableSideEffect.class)
-@Mixins(Participants.ParticipantsMixin.class)
+@Mixins(Participants.Mixin.class)
 public interface Participants
 {
     void addParticipant(Participant newParticipant);
 
     void removeParticipant(Participant participant);
 
-    interface ParticipantsState
+    interface Data
     {
         ManyAssociation<Participant> participants();
 
@@ -46,8 +46,8 @@ public interface Participants
         void participantRemoved(DomainEvent event, Participant participant);
     }
 
-    abstract class ParticipantsMixin
-            implements Participants, ParticipantsState
+    abstract class Mixin
+            implements Participants, Data
     {
         @Structure
         ValueBuilderFactory vbf;
@@ -90,7 +90,9 @@ public interface Participants
             extends SideEffectOf<Removable>
             implements Removable
     {
-        @This ParticipantsState state;
+        @This
+        Participants.Data state;
+
         @This Participants participants;
 
         public boolean removeEntity()

@@ -44,7 +44,7 @@ public interface GroupsResource
             return groupResource.use(group).newInstance();
         }
 
-        public Iterable<GroupResource> group(Groups.GroupsState groups)
+        public Iterable<GroupResource> group( Groups.Data groups)
         {
             List<GroupResource> groupList = new ArrayList<GroupResource>();
             for (Group group : groups.groups())

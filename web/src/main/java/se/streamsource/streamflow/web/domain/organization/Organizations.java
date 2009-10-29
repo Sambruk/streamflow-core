@@ -25,20 +25,20 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.library.constraints.annotation.Matches;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.user.Password;
+import se.streamsource.streamflow.domain.user.Username;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
-import se.streamsource.streamflow.web.domain.user.User;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
  * JAVADOC
  */
-@Mixins(Organizations.OrganizationsMixin.class)
+@Mixins(Organizations.Mixin.class)
 public interface Organizations
-    extends OrganizationsQueries
 {
     OrganizationEntity createOrganization(String name);
 
@@ -51,10 +51,10 @@ public interface Organizations
      * @return the created user
      * @throws IllegalArgumentException if user with given name already exists
      */
-    UserEntity createUser(@Matches("\\w+")String username, @Matches(".{6,30}")String password)
+    UserEntity createUser( @Username String username, @Password String password)
             throws IllegalArgumentException;
 
-    interface OrganizationsState
+    interface Data
     {
         OrganizationEntity organizationCreated(DomainEvent event, String id);
 
@@ -67,8 +67,8 @@ public interface Organizations
         UserEntity getUserByName(String name);
     }
 
-    abstract class OrganizationsMixin
-            implements Organizations, OrganizationsState
+    abstract class Mixin
+            implements Organizations, Data
     {
         @Structure
         UnitOfWorkFactory uowf;
@@ -102,7 +102,7 @@ public interface Organizations
             // Check if user already exist
             try
             {
-                uowf.currentUnitOfWork().get(User.class, username);
+                uowf.currentUnitOfWork().get( UserAuthentication.class, username);
 
                 throw new IllegalArgumentException("user_already_exists");
             } catch (NoSuchEntityException e)
@@ -132,7 +132,7 @@ public interface Organizations
 
         public OrganizationEntity getOrganizationByName(String name)
         {
-            Describable.DescribableState template = QueryExpressions.templateFor(Describable.DescribableState.class);
+            Describable.Data template = QueryExpressions.templateFor( Describable.Data.class);
             return qbf.newQueryBuilder(OrganizationEntity.class).
                     where(QueryExpressions.eq(template.description(), name)).
                     newQuery(uowf.currentUnitOfWork()).find();

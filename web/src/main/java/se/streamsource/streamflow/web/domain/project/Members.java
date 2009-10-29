@@ -30,7 +30,7 @@ import se.streamsource.streamflow.web.domain.group.Participant;
  * JAVADOC
  */
 @SideEffects(Members.RemovableSideEffect.class)
-@Mixins(Members.MembersMixin.class)
+@Mixins(Members.Mixin.class)
 public interface Members
 {
     void addMember(Participant participant);
@@ -39,7 +39,7 @@ public interface Members
 
     void removeAllMembers();
 
-    interface MembersState
+    interface Data
     {
         ManyAssociation<Participant> members();
 
@@ -48,11 +48,11 @@ public interface Members
         void memberRemoved(DomainEvent event, Participant participant);
     }
 
-    abstract class MembersMixin
-            implements Members, MembersState
+    abstract class Mixin
+            implements Members, Data
     {
         @This
-        MembersState state;
+        Data state;
 
         @Structure
         ValueBuilderFactory vbf;

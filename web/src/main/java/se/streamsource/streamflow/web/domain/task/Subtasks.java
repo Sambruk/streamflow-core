@@ -20,23 +20,23 @@ import org.qi4j.api.mixin.Mixins;
 /**
  * JAVADOC
  */
-@Mixins(Subtasks.SubtasksMixin.class)
+@Mixins(Subtasks.Mixin.class)
 public interface Subtasks
 {
     void addSubtask(Subtask subtask);
 
     void removeSubtask(Subtask subtask);
 
-    interface SubtasksState
+    interface Data
     {
 //        ManyAssociation<Subtask> subtasks();
     }
 
-    class SubtasksMixin
+    class Mixin
             implements Subtasks
     {
         @This
-        SubtasksState state;
+        Data state;
         @This
         Subtasks subtasks;
 

@@ -19,7 +19,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.role.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -33,8 +33,8 @@ public class RolesServerResource
     public ListValue roles()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnit.OrganizationalUnitState ou = uowf.currentUnitOfWork().get( OrganizationalUnit.OrganizationalUnitState.class, identity);
-        Roles.RolesState roles = (Roles.RolesState) ou.organization().get();
+        OrganizationalUnitRefactoring.Data ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.Data.class, identity);
+        Roles.Data roles = (Roles.Data) ou.organization().get();
 
         return new ListValueBuilder(vbf).addDescribableItems( roles.roles() ).newList();
     }
@@ -45,7 +45,7 @@ public class RolesServerResource
 
         String identity = getRequest().getAttributes().get("organization").toString();
 
-        OrganizationalUnit.OrganizationalUnitState ou = uow.get( OrganizationalUnit.OrganizationalUnitState.class, identity);
+        OrganizationalUnitRefactoring.Data ou = uow.get( OrganizationalUnitRefactoring.Data.class, identity);
         checkPermission( ou );
 
         Roles roles = ou.organization().get();

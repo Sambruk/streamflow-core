@@ -38,12 +38,12 @@ import se.streamsource.streamflow.web.domain.label.Label;
 
 import java.util.List;
 
-@Mixins(DelegationsQueries.DelegationsQueriesMixin.class)
+@Mixins(DelegationsQueries.Mixin.class)
 public interface DelegationsQueries
 {
     DelegationsTaskListDTO delegationsTasks();
 
-    class DelegationsQueriesMixin
+    class Mixin
         implements DelegationsQueries
     {
 
@@ -60,20 +60,20 @@ public interface DelegationsQueries
         Delegatee delegatee;
 
         @This
-        Delegations.DelegationsState delegations;
+        Delegations.Data delegations;
 
         public DelegationsTaskListDTO delegationsTasks()
         {
             // Find all Active tasks delegated to "me"
             QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
-            Association<Delegatee> delegatedTo = templateFor(Delegatable.DelegatableState.class).delegatedTo();
-            Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
+            Association<Delegatee> delegatedTo = templateFor( Delegatable.Data.class).delegatedTo();
+            Association<Assignee> assignee = templateFor( Assignable.Data.class).assignedTo();
             Query<TaskEntity> delegationsQuery = queryBuilder.where(and(
                     eq(delegatedTo, delegatee),
                     isNull(assignee),
-                    eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                    eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE))).
                     newQuery(uowf.currentUnitOfWork());
-            delegationsQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
+            delegationsQuery.orderBy(orderBy(templateFor( Delegatable.Data.class).delegatedOn()));
 
             return buildTaskList(delegationsQuery, DelegatedTaskDTO.class, DelegationsTaskListDTO.class);
         }

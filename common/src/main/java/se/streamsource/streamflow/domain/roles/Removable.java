@@ -28,7 +28,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * Queries for entities that include this one should ensure that the removed flag is set to false
  * before allowing it to be included.
  */
-@Mixins(Removable.RemovableMixin.class)
+@Mixins(Removable.Mixin.class)
 public interface Removable
 {
     /**
@@ -45,7 +45,7 @@ public interface Removable
      */
     boolean reinstate();
 
-    interface RemovableState
+    interface Data
     {
         @UseDefaults
         Property<Boolean> removed();
@@ -53,10 +53,11 @@ public interface Removable
         void removedChanged(DomainEvent event, boolean isRemoved);
     }
 
-    class RemovableMixin
+    class Mixin
             implements Removable
     {
-        @This RemovableState state;
+        @This
+        Data state;
 
         public boolean removeEntity()
         {

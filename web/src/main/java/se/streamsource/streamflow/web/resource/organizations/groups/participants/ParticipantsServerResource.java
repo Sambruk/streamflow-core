@@ -35,7 +35,7 @@ public class ParticipantsServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String identity = getRequest().getAttributes().get("organization").toString();
-        Groups.GroupsState groups = uow.get(Groups.GroupsState.class, identity);
+        Groups.Data groups = uow.get( Groups.Data.class, identity);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
         String groupId = getRequest().getAttributes().get("group").toString();
@@ -43,7 +43,7 @@ public class ParticipantsServerResource
         {
             if (group.identity().get().equals(groupId))
             {
-                Participants.ParticipantsState participants = uow.get(Participants.ParticipantsState.class, groupId);
+                Participants.Data participants = uow.get( Participants.Data.class, groupId);
                 for (Participant participant : participants.participants())
                 {
                     builder.addListItem(participant.getDescription(), EntityReference.getEntityReference(participant));

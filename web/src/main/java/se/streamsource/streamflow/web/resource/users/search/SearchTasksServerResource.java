@@ -68,7 +68,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 				{
 					search = search.substring("label:".length());
 					queryBuilder = queryBuilder.where(eq(QueryExpressions.oneOf(
-							templateFor(Labelable.LabelableState.class)
+							templateFor( Labelable.Data.class)
 									.labels()).description(), search));
 				} else if (search.startsWith("assigned:"))
 				{
@@ -76,15 +76,15 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 					search = getAssignedTo(search);
 					Assignee assignee = templateFor(TaskEntity.class)
 							.assignedTo().get();
-					Describable.DescribableState describable = templateFor(
-							Describable.DescribableState.class, assignee);
+					Describable.Data describable = templateFor(
+							Describable.Data.class, assignee);
 					queryBuilder = queryBuilder.where(eq(describable.description(), search));
 				} else if (search.startsWith("project:"))
 				{
 					search = search.substring("project:".length());
 					Owner owner = templateFor(TaskEntity.class).owner().get();
-					Describable.DescribableState describable = templateFor(
-							Describable.DescribableState.class, owner);
+					Describable.Data describable = templateFor(
+							Describable.Data.class, owner);
 					queryBuilder = queryBuilder.where(eq(describable.description(), search));
 				} else if (search.startsWith("created:"))
 				{

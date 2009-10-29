@@ -41,11 +41,11 @@ import java.util.logging.Logger;
  * 3) an Administrator role
  * 4) an Administrator user
  */
-@Mixins(BootstrapDataService.TestDataMixin.class)
+@Mixins(BootstrapDataService.Mixin.class)
 public interface BootstrapDataService
         extends ServiceComposite, Activatable
 {
-    class TestDataMixin
+    class Mixin
             implements Activatable
     {
         @Structure

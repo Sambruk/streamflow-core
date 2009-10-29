@@ -35,14 +35,14 @@ import java.util.Date;
  */
 @SideEffects(Delegatable.FinishedDelegatedTaskSideEffect.class)
 @Concerns(Delegatable.CompleteDelegatedTaskConcern.class)
-@Mixins(Delegatable.DelegatableMixin.class)
+@Mixins(Delegatable.Mixin.class)
 public interface Delegatable
 {
     void delegateTo(Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom);
 
     void rejectDelegation();
 
-    interface DelegatableState
+    interface Data
     {
         @Optional
         Association<Delegatee> delegatedTo();
@@ -62,11 +62,11 @@ public interface Delegatable
         void delegationRejected(DomainEvent event);
     }
 
-    abstract class DelegatableMixin
-            implements Delegatable, DelegatableState
+    abstract class Mixin
+            implements Delegatable, Data
     {
         @This
-        Ownable.OwnableState ownable;
+        Ownable.Data ownable;
 
         @This
         Task task;
@@ -111,10 +111,10 @@ public interface Delegatable
         implements TaskStatus
     {
         @This
-        DelegatableState delegatable;
+        Delegatable.Data delegatable;
 
         @This
-        TaskStatusState status;
+        Data status;
 
         public void complete()
         {
@@ -133,7 +133,7 @@ public interface Delegatable
         implements TaskStatus
     {
         @This
-        DelegatableState delegatable;
+        Delegatable.Data delegatable;
 
         @This
         Task task;

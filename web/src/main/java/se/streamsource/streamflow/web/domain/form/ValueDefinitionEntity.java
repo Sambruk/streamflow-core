@@ -22,7 +22,7 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
  */
 public interface ValueDefinitionEntity
     extends ValueDefinition,
-        Describable.DescribableState,
+        Describable.Data,
         DomainEntity
 {
 }

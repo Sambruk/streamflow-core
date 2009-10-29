@@ -31,7 +31,7 @@ public class MembersServerResource
     {
         String identity = getRequest().getAttributes().get("project").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
-        Members.MembersState members = uow.get(Members.MembersState.class, identity);
+        Members.Data members = uow.get( Members.Data.class, identity);
 
         return new ListValueBuilder(vbf).addDescribableItems( members.members() ).newList();
     }

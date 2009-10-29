@@ -23,7 +23,7 @@ import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
@@ -47,31 +47,31 @@ public class UserAdministrationServerResource
         OrganizationParticipations organizationParticipations = uowf.currentUnitOfWork().get(OrganizationParticipations.class, id);
         Participant participant = (Participant) organizationParticipations;
         List<TreeNodeValue> list = listBuilder.prototype().roots().get();
-        OrganizationParticipations.OrganizationParticipationsState state = (OrganizationParticipations.OrganizationParticipationsState) organizationParticipations;
+        OrganizationParticipations.Data state = (OrganizationParticipations.Data) organizationParticipations;
         addOrganizationalUnits(state.organizations(), list, participant);
         return listBuilder.newInstance();
     }
 
-    private void addOrganizationalUnits(Iterable<? extends OrganizationalUnit> organizations, List<TreeNodeValue> list, Participant participant)
+    private void addOrganizationalUnits(Iterable<? extends OrganizationalUnitRefactoring> organizations, List<TreeNodeValue> list, Participant participant)
     {
-        for (OrganizationalUnit organization : organizations)
+        for (OrganizationalUnitRefactoring organization : organizations)
         {
-            OrganizationalUnits.OrganizationalUnitsState ou = (OrganizationalUnits.OrganizationalUnitsState) organization;
+            OrganizationalUnits.Data ou = (OrganizationalUnits.Data) organization;
             ValueBuilder<TreeNodeValue> valueBuilder = vbf.newValueBuilder(TreeNodeValue.class);
             TreeNodeValue itemValue = valueBuilder.prototype();
             itemValue.description().set(((Describable) organization).getDescription());
             itemValue.entity().set(EntityReference.getEntityReference(organization));
             List<TreeNodeValue> subOrgs = itemValue.children().get();
 
-            RolePolicy.RolePolicyState rolePolicy = (RolePolicy.RolePolicyState) ou;
+            RolePolicy.Data rolePolicy = (RolePolicy.Data) ou;
 
             if (rolePolicy.hasRoles(participant) || participant.identity().get().equals(UserEntity.ADMINISTRATOR_USERNAME))
             {
-                addOrganizationalUnits(((OrganizationalUnits.OrganizationalUnitsState) organization).organizationalUnits(), subOrgs, participant);
+                addOrganizationalUnits(((OrganizationalUnits.Data) organization).organizationalUnits(), subOrgs, participant);
                 list.add(valueBuilder.newInstance());
 
             } else
-                addOrganizationalUnits(((OrganizationalUnits.OrganizationalUnitsState) organization).organizationalUnits(), list, participant);
+                addOrganizationalUnits(((OrganizationalUnits.Data) organization).organizationalUnits(), list, participant);
         }
     }
 }

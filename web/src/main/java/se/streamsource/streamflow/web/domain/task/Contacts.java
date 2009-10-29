@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * JAVADOC
  */
-@Mixins(Contacts.ContactsMixin.class)
+@Mixins(Contacts.Mixin.class)
 public interface Contacts
 {
     public void addContact(ContactValue newContact);
@@ -37,7 +37,7 @@ public interface Contacts
 
     public void deleteContact(int index);
 
-    interface ContactsState
+    interface Data
     {
         @UseDefaults
         Property<List<ContactValue>> contacts();
@@ -47,11 +47,11 @@ public interface Contacts
         void contactDeleted(DomainEvent event, int index);
     }
 
-    abstract class ContactsMixin
-            implements Contacts, ContactsState
+    abstract class Mixin
+            implements Contacts, Data
     {
         @This
-        ContactsState state;
+        Data state;
 
         @Structure
         ValueBuilderFactory vbf;

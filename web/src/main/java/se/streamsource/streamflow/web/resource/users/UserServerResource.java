@@ -34,7 +34,7 @@ import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.user.User;
+import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.domain.user.WrongPasswordException;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -52,7 +52,7 @@ public class UserServerResource
         UnitOfWork unitOfWork = uowf.newUnitOfWork();
         try
         {
-            unitOfWork.get(User.class, getRequestAttributes().get("user").toString());
+            unitOfWork.get( UserAuthentication.class, getRequestAttributes().get("user").toString());
         } catch (NoSuchEntityException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
@@ -152,7 +152,7 @@ public class UserServerResource
         String userId = (String) getRequestAttributes().get("user");
 
         UnitOfWork uow = uowf.currentUnitOfWork();
-        User user = uow.get(User.class, userId);
+        UserAuthentication user = uow.get( UserAuthentication.class, userId);
 
         user.changePassword(newPassword.oldPassword().get(), newPassword.newPassword().get());
     }

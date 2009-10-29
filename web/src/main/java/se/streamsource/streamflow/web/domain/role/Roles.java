@@ -30,8 +30,8 @@ public interface Roles
     RoleEntity createRole(String name);
     void removeRole(RoleEntity projectRole);
 
-    @Mixins(Roles.RolesMixin.class)
-    interface RolesState
+    @Mixins(Mixin.class)
+    interface Data
     {
         @Aggregated
         ManyAssociation<Role> roles();
@@ -44,8 +44,8 @@ public interface Roles
         void roleRemoved(DomainEvent event, RoleEntity role);
     }
 
-    public abstract class RolesMixin
-        implements RolesState
+    public abstract class Mixin
+        implements Data
     {
         public Role getAdministratorRole()
                 throws IllegalStateException

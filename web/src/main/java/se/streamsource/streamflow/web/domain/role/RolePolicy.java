@@ -27,8 +27,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.user.User;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
+import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 
 import javax.security.auth.Subject;
 import java.security.AccessController;
@@ -42,7 +42,7 @@ import java.util.List;
  * Policy for managging Roles assigned to Participants. Participants
  * can have a list of Roles assigned to them, which can be granted and revoked.
  */
-@Mixins(RolePolicy.RolePolicyMixin.class)
+@Mixins(RolePolicy.Mixin.class)
 public interface RolePolicy
 {
     void grantRole(Participant participant, Role role);
@@ -51,7 +51,7 @@ public interface RolePolicy
 
     void grantAdministratorToCurrentUser();
 
-    interface RolePolicyState
+    interface Data
     {
         @UseDefaults
         Property<List<ParticipantRolesValue>> policy();
@@ -67,8 +67,8 @@ public interface RolePolicy
         boolean hasRoles(Participant participant);
     }
 
-    abstract class RolePolicyMixin
-            implements RolePolicy, RolePolicyState, UserPermissions
+    abstract class Mixin
+            implements RolePolicy, Data, UserPermissions
     {
         @Structure
         ValueBuilderFactory vbf;
@@ -77,7 +77,7 @@ public interface RolePolicy
         UnitOfWorkFactory uowf;
 
         @This
-        OrganizationalUnit.OrganizationalUnitState ouState;
+        OrganizationalUnitRefactoring.Data ouState;
 
         public void grantRole(Participant participant, Role role)
         {
@@ -213,7 +213,7 @@ public interface RolePolicy
             return value != null && !value.roles().get().isEmpty();
         }
 
-        public PermissionCollection getPermissions( User user)
+        public PermissionCollection getPermissions( UserAuthentication user)
         {
             PermissionCollection permissions = null;
 

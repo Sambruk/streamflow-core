@@ -23,8 +23,8 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
  */
 public interface RoleEntity
     extends Role,
-        Describable.DescribableState,
-        Removable.RemovableState,
+        Describable.Data,
+        Removable.Data,
         DomainEntity
 {
 }

@@ -24,13 +24,13 @@ import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
 /**
  * JAVADOC
  */
-@Mixins(ProjectFormDefinitions.ProjectFormDefinitionsMixin.class)
+@Mixins(ProjectFormDefinitions.Mixin.class)
 public interface ProjectFormDefinitions
 {
     void addFormDefinition( FormDefinition formDefinition);
     void removeFormDefinition( FormDefinition formDefinition);
 
-    interface ProjectFormDefinitionsState
+    interface Data
     {
         ManyAssociation<FormDefinition> formDefinitions();
 
@@ -40,8 +40,8 @@ public interface ProjectFormDefinitions
         FormDefinitionEntity getFormDefinitionByName(String name);
     }
 
-    abstract class ProjectFormDefinitionsMixin
-        implements ProjectFormDefinitions, ProjectFormDefinitionsState
+    abstract class Mixin
+        implements ProjectFormDefinitions, Data
     {
         public void addFormDefinition( FormDefinition formDefinition )
         {
@@ -71,7 +71,7 @@ public interface ProjectFormDefinitions
 
         public FormDefinitionEntity getFormDefinitionByName( String name )
         {
-            return (FormDefinitionEntity) Describable.DescribableMixin.getDescribable( formDefinitions(), name );
+            return (FormDefinitionEntity) Describable.Mixin.getDescribable( formDefinitions(), name );
         }
     }
 }

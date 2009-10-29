@@ -31,11 +31,11 @@ import java.util.List;
 /**
  * Authorization policy service.
  */
-@Mixins(PolicyService.PolicyServiceMixin.class)
+@Mixins(PolicyService.Mixin.class)
 public interface PolicyService
     extends AccessPolicy, ServiceComposite
 {
-    class PolicyServiceMixin
+    class Mixin
         implements AccessPolicy
     {
         @Structure

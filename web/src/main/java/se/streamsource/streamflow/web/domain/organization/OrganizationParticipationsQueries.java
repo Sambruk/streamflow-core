@@ -26,17 +26,17 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.user.User;
+import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
-@Mixins(OrganizationParticipationsQueries.OrganizationParticipationsQueriesMixin.class)
+@Mixins(OrganizationParticipationsQueries.Mixin.class)
 public interface OrganizationParticipationsQueries
 {
     public ListValue participatingUsers();
 
     public ListValue nonParticipatingUsers();
 
-    class OrganizationParticipationsQueriesMixin
+    class Mixin
         implements OrganizationParticipationsQueries
     {
         @Structure
@@ -66,7 +66,7 @@ public interface OrganizationParticipationsQueries
             Query<UserEntity> usersQuery = qbf.newQueryBuilder(UserEntity.class).
                     newQuery(uowf.currentUnitOfWork());
 
-            usersQuery.orderBy(orderBy(templateFor(User.UserState.class).userName()));
+            usersQuery.orderBy(orderBy(templateFor( UserAuthentication.Data.class).userName()));
 
             ListValueBuilder userList = new ListValueBuilder(vbf);
 

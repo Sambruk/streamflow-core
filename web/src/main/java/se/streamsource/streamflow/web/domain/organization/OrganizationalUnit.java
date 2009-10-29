@@ -14,118 +14,27 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
-import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
-import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.group.Groups;
 import se.streamsource.streamflow.web.domain.project.ProjectRoles;
 import se.streamsource.streamflow.web.domain.project.Projects;
+import se.streamsource.streamflow.web.domain.project.IdGenerator;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
 
 /**
- * An organizational unit represents a part of an organization.
+ * JAVADOC
  */
-@Mixins(OrganizationalUnit.OrganizationalUnitMixin.class)
 public interface OrganizationalUnit
+    extends
+        Describable,
+        OrganizationalUnitRefactoring,
+        Groups,
+        ProjectRoles,
+        OrganizationalUnits,
+        Projects,
+        Removable,
+        RolePolicy,
+        IdGenerator
 {
-    void moveOrganizationalUnit(OrganizationalUnits to) throws MoveOrganizationalUnitException;
-
-    void mergeOrganizationalUnit(OrganizationalUnit to) throws MergeOrganizationalUnitException;
-
-    void deleteOrganizationalUnit() throws OpenProjectExistsException;
-
-    interface OrganizationalUnitState
-    {
-        Association<Organization> organization();
-
-        OrganizationalUnits getParent();
-    }
-
-    abstract class OrganizationalUnitMixin
-            implements OrganizationalUnit, OrganizationalUnitState
-    {
-        @This
-        Projects.ProjectsState projects;
-
-        @This
-        ProjectRoles projectRoles;
-
-        @This
-        Groups groups;
-
-        @This
-        OrganizationalUnits.OrganizationalUnitsState organizationalUnits;
-
-        @This
-        Removable removable;
-
-        @This
-        OrganizationalUnit organizationalUnit;
-
-
-        public void deleteOrganizationalUnit() throws OpenProjectExistsException
-        {
-            if(projects.projects().count() > 0)
-            {
-                throw new OpenProjectExistsException("There are open projects");
-            }
-            else
-            {
-                for(OrganizationalUnit oue : organizationalUnits.organizationalUnits())
-                {
-                    OrganizationalUnitEntity e = (OrganizationalUnitEntity)oue;
-
-                    if(e.projects().count() > 0)
-                     {
-                         throw new OpenProjectExistsException("There are open projects");
-                     }
-                }
-            }
-            OrganizationalUnits parent = getParent();
-            parent.removeOrganizationalUnit(organizationalUnit);
-            removable.removeEntity();
-        }
-
-        public void moveOrganizationalUnit(OrganizationalUnits to) throws MoveOrganizationalUnitException
-        {
-            OrganizationalUnits parent = getParent();
-            if (organizationalUnit.equals(to))
-            {
-                throw new MoveOrganizationalUnitException();
-            }
-            if (to.equals(parent))
-            {
-                return;
-            }
-
-            parent.removeOrganizationalUnit(organizationalUnit);
-            to.addOrganizationalUnit(organizationalUnit);
-        }
-
-        public void mergeOrganizationalUnit(OrganizationalUnit to) throws MergeOrganizationalUnitException
-        {
-            OrganizationalUnits parent = getParent();
-            OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
-            if (organizationalUnit.equals(toEntity))
-            {
-                throw new MergeOrganizationalUnitException();
-            }
-
-            projectRoles.mergeProjectRoles((ProjectRoles)to);
-            groups.mergeGroups((Groups)to);
-            projects.mergeProjects((Projects)to);
-
-            parent.removeOrganizationalUnit(organizationalUnit);
-            removable.removeEntity();
-        }
-
-        public OrganizationalUnits getParent()
-        {
-            OrganizationalUnits.OrganizationalUnitsState ous = (OrganizationalUnits.OrganizationalUnitsState) organization().get();
-            return ous.getParent(organizationalUnit);
-        }
-    }
 }

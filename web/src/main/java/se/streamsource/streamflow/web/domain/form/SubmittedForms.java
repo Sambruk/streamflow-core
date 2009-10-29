@@ -35,12 +35,12 @@ import java.util.List;
 /**
  * JAVADOC
  */
-@Mixins(SubmittedForms.SubmittedFormsMixin.class)
+@Mixins(SubmittedForms.Mixin.class)
 public interface SubmittedForms
 {
     void submitForm(SubmittedFormValue form);
 
-    interface SubmittedFormsState
+    interface Data
     {
         @UseDefaults
         Property<List<SubmittedFormValue>> submittedForms();
@@ -53,8 +53,8 @@ public interface SubmittedForms
         String getEffectiveValue(FieldDefinition field);
     }
 
-    abstract class SubmittedFormsMixin
-        implements SubmittedForms, SubmittedFormsState
+    abstract class Mixin
+        implements SubmittedForms, Data
     {
         @Structure
         ValueBuilderFactory vbf;

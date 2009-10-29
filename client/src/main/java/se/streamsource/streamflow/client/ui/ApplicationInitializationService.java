@@ -26,11 +26,11 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 /**
  * JAVADOC
  */
-@Mixins(ApplicationInitializationService.ActivatableMixin.class)
+@Mixins(ApplicationInitializationService.Mixin.class)
 public interface ApplicationInitializationService
         extends ServiceComposite, Activatable
 {
-    class ActivatableMixin
+    class Mixin
             implements Activatable
     {
         @Structure

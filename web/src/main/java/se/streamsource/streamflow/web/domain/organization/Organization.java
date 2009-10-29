@@ -24,7 +24,7 @@ import se.streamsource.streamflow.web.domain.role.Roles;
  * JAVADOC
  */
 public interface Organization
-        extends OrganizationalUnit,
+        extends OrganizationalUnitRefactoring,
         Roles,
         FormDefinitions,
         FieldDefinitions,

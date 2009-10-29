@@ -30,21 +30,21 @@ import java.util.List;
 /**
  * JAVADOC
  */
-@Mixins(ProjectFormDefinitionsQueries.FormDefinitionsQueriesMixin.class)
+@Mixins(ProjectFormDefinitionsQueries.Mixin.class)
 public interface ProjectFormDefinitionsQueries
 {
     ListValue applicableFormDefinitionList();
 
     ListValue nonApplicableFormDefinitionList();
 
-    class FormDefinitionsQueriesMixin
+    class Mixin
         implements ProjectFormDefinitionsQueries
     {
         @This
-        ProjectFormDefinitions.ProjectFormDefinitionsState state;
+        ProjectFormDefinitions.Data state;
 
         @This
-        ProjectOrganization.ProjectOrganizationState organizationState;
+        ProjectOrganization.Data organizationState;
 
         @Structure
         ValueBuilderFactory vbf;

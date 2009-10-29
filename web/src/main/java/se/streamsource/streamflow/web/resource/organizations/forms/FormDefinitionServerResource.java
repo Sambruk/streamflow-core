@@ -14,17 +14,17 @@
 
 package se.streamsource.streamflow.web.resource.organizations.forms;
 
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.restlet.resource.ResourceException;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.Status;
-import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
-import se.streamsource.streamflow.web.domain.form.FormDefinitions;
-import se.streamsource.streamflow.web.domain.form.FormDefinition;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.web.domain.form.Fields;
+import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
+import se.streamsource.streamflow.web.domain.form.FormDefinitions;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
@@ -42,7 +42,7 @@ public class FormDefinitionServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
 
         String identity = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnit.OrganizationalUnitState ou = uowf.currentUnitOfWork().get( OrganizationalUnit.OrganizationalUnitState.class, identity);
+        OrganizationalUnitRefactoring.Data ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.Data.class, identity);
 
         FormDefinitions forms = ou.organization().get();
         checkPermission( forms );
@@ -58,10 +58,10 @@ public class FormDefinitionServerResource
         String formId = getRequest().getAttributes().get("form").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormDefinition.FieldsState fields;
+        Fields.Data fields;
         try
         {
-            fields = uow.get(FormDefinition.FieldsState.class, formId);
+            fields = uow.get(Fields.Data.class, formId);
         } catch(NoSuchEntityException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);

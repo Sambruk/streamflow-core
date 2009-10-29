@@ -23,9 +23,9 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
  */
 public interface FieldDefinitionEntity
         extends FieldDefinition,
-        Describable.DescribableState,
-        Notable.NotableState,
-        FieldValueDefinition.FieldValueDefinitionState,
+        Describable.Data,
+        Notable.Data,
+        FieldValueDefinition.Data,
         DomainEntity
 {
 }

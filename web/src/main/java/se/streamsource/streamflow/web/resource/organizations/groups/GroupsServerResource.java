@@ -33,7 +33,7 @@ public class GroupsServerResource
     public ListValue groups()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
-        Groups.GroupsState groups = uowf.currentUnitOfWork().get(Groups.GroupsState.class, identity);
+        Groups.Data groups = uowf.currentUnitOfWork().get( Groups.Data.class, identity);
 
         return new ListValueBuilder(vbf).addDescribableItems( groups.groups() ).newList();
     }

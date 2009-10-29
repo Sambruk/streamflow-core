@@ -26,11 +26,11 @@ import java.util.logging.Logger;
  * Reindexer. If the system property "reindex" is set, then
  * trigger the reindex on startup.
  */
-@Mixins(ReindexOnStartupService.ReindexOnStartupMixin.class)
+@Mixins(ReindexOnStartupService.Mixin.class)
 public interface ReindexOnStartupService
         extends Activatable, ServiceComposite
 {
-    class ReindexOnStartupMixin
+    class Mixin
             implements Activatable
     {
         @Service

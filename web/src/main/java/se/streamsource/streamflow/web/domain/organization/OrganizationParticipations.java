@@ -22,14 +22,14 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * List of organizations a participant is a member of.
  */
-@Mixins(OrganizationParticipations.OrganizationParticipationsMixin.class)
+@Mixins(OrganizationParticipations.Mixin.class)
 public interface OrganizationParticipations
 {
     void join(Organization org);
 
     void leave(Organization ou);
 
-    interface OrganizationParticipationsState
+    interface Data
     {
         ManyAssociation<Organization> organizations();
 
@@ -37,11 +37,11 @@ public interface OrganizationParticipations
         void organizationLeft(DomainEvent event, Organization org);
     }
 
-    abstract class OrganizationParticipationsMixin
-            implements OrganizationParticipations, OrganizationParticipationsState
+    abstract class Mixin
+            implements OrganizationParticipations, Data
     {
         @This
-        OrganizationParticipationsState state;
+        Data state;
 
         public void join(Organization ou)
         {

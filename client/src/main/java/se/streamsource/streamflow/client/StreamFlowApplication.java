@@ -355,7 +355,8 @@ public class StreamFlowApplication
     {
         try
         {
-            app.passivate();
+            if (app != null)
+                app.passivate();
         } catch (Exception e)
         {
             e.printStackTrace();

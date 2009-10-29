@@ -23,14 +23,14 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(Fields.FieldsMixin.class)
+@Mixins(Fields.Mixin.class)
 public interface Fields
 {
     void addField(FieldDefinition field);
     void removeField(FieldDefinition field);
     void moveField(FieldDefinition field, @GreaterThan(-1) Integer toIdx);
 
-    interface FieldsState
+    interface Data
     {
         ManyAssociation<FieldDefinition> fields();
 
@@ -41,8 +41,8 @@ public interface Fields
         FieldDefinitionEntity getFieldByName(String name);
     }
 
-    abstract class FieldsMixin
-        implements Fields, FieldsState
+    abstract class Mixin
+        implements Fields, Data
     {
         public void addField( FieldDefinition field )
         {
@@ -79,7 +79,7 @@ public interface Fields
         {
             for (FieldDefinition fieldDefinition : fields())
             {
-                if (((Describable.DescribableState)fieldDefinition).description().get().equals(name))
+                if (((Describable.Data)fieldDefinition).description().get().equals(name))
                     return (FieldDefinitionEntity) fieldDefinition;
             }
             return null;

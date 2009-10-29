@@ -23,7 +23,7 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -37,12 +37,12 @@ public class OrganizationalUnitsServerResource
     public ListValue organizationalunits()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnits.OrganizationalUnitsState ous = uowf.currentUnitOfWork().get(OrganizationalUnits.OrganizationalUnitsState.class, identity);
+        OrganizationalUnits.Data ous = uowf.currentUnitOfWork().get( OrganizationalUnits.Data.class, identity);
 
         checkPermission(ous);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (OrganizationalUnit ou : ous.organizationalUnits())
+        for (OrganizationalUnitRefactoring ou : ous.organizationalUnits())
         {
             Describable describable = (Describable) ou;
             builder.addListItem(describable.getDescription(), EntityReference.getEntityReference(ou));
@@ -64,7 +64,7 @@ public class OrganizationalUnitsServerResource
     {
         String organization = getRequest().getAttributes().get("organization").toString();
         OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
-        OrganizationalUnit ou = uowf.currentUnitOfWork().get(OrganizationalUnit.class, entity.entity().get().identity());
+        OrganizationalUnitRefactoring ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.class, entity.entity().get().identity());
 
         try
         {

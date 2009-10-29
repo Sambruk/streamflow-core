@@ -33,8 +33,7 @@ public interface IdGenerator
 {
     void assignId(TaskId task);
 
-    @Mixins(IdGeneratorMixin.class)
-    interface IdGeneratorState
+    interface Data
     {
         @UseDefaults
         Property<Long> current();
@@ -50,10 +49,10 @@ public interface IdGenerator
     }
 
     abstract class IdGeneratorMixin
-            implements IdGenerator, IdGeneratorState
+            implements IdGenerator, Data
     {
         @This
-        IdGeneratorState state;
+        Data state;
 
         // Commands
         public void assignId(TaskId task)

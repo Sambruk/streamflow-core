@@ -39,12 +39,12 @@ import se.streamsource.streamflow.web.domain.label.Label;
 
 import java.util.List;
 
-@Mixins(WaitingForQueries.WaitingForQueriesMixin.class)
+@Mixins(WaitingForQueries.Mixin.class)
 public interface WaitingForQueries
 {
     WaitingForTaskListDTO waitingForTasks(Delegator delegator);
 
-    class WaitingForQueriesMixin
+    class Mixin
         implements WaitingForQueries
     {
 
@@ -61,7 +61,7 @@ public interface WaitingForQueries
         WaitingFor waitingFor;
 
         @This
-        WaitingFor.WaitingForState waitingForState;
+        WaitingFor.Data waitingForState;
 
         public WaitingForTaskListDTO waitingForTasks(Delegator delegator)
         {
@@ -70,18 +70,18 @@ public interface WaitingForQueries
             // Find all Active delegated tasks owned by this Entity and delegated by "delegator"
             // or Completed delegated tasks that are marked as unread
             QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
-            Association<Delegator> delegatedBy = templateFor(Delegatable.DelegatableState.class).delegatedBy();
-            Association<WaitingFor> waitingFor = templateFor(Delegatable.DelegatableState.class).delegatedFrom();
-            Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
+            Association<Delegator> delegatedBy = templateFor( Delegatable.Data.class).delegatedBy();
+            Association<WaitingFor> waitingFor = templateFor( Delegatable.Data.class).delegatedFrom();
+            Association<Delegatee> delegatee = templateFor( Delegatable.Data.class).delegatedTo();
             Query<TaskEntity> waitingForQuery = queryBuilder.where(and(
                     eq(waitingFor, this.waitingFor),
                     eq(delegatedBy, delegator),
                     isNotNull(delegatee),
                     or(
-                            eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE),
-                            eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.DONE)))).
+                            eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE),
+                            eq(templateFor( TaskStatus.Data.class).status(), TaskStates.DONE)))).
                     newQuery(uow);
-            waitingForQuery.orderBy(orderBy(templateFor(Delegatable.DelegatableState.class).delegatedOn()));
+            waitingForQuery.orderBy(orderBy(templateFor( Delegatable.Data.class).delegatedOn()));
 
             return buildTaskList(waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
         }

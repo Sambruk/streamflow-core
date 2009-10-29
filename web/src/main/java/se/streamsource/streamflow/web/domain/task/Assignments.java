@@ -29,7 +29,7 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 /**
  * JAVADOC
  */
-@Mixins(Assignments.AssignmentsMixin.class)
+@Mixins(Assignments.Mixin.class)
 public interface Assignments
 {
     Task createAssignedTask(Assignee assignee);
@@ -48,7 +48,7 @@ public interface Assignments
 
     void deleteAssignedTask( Task task );
 
-    interface AssignmentsState
+    interface Data
     {
         Task assignedTaskCreated(DomainEvent event, String id);
         void assignedTaskMarkedAsRead(DomainEvent event, Task task);
@@ -59,8 +59,8 @@ public interface Assignments
 
 
 
-    abstract class AssignmentsMixin
-            implements Assignments, AssignmentsState
+    abstract class Mixin
+            implements Assignments, Data
     {
         @Structure
         ValueBuilderFactory vbf;
@@ -108,7 +108,7 @@ public interface Assignments
 
         public void delegateAssignedTaskTo(Task task, Delegatee delegatee)
         {
-            Assignable.AssignableState assignable = (Assignable.AssignableState) task;
+            Assignable.Data assignable = (Assignable.Data) task;
             Delegator delegator = (Delegator) assignable.assignedTo().get();
             task.unassign();
             task.delegateTo(delegatee, delegator, waitingFor);

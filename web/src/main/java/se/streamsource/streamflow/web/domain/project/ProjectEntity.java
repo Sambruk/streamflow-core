@@ -20,7 +20,7 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.label.Labels;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.task.Delegations;
@@ -41,31 +41,31 @@ public interface ProjectEntity
 
         // State
         InboxQueries,
-        Inbox.InboxState,
+        Inbox.Data,
         AssignmentsQueries,
-        Assignments.AssignmentsState,
+        Assignments.Data,
         DelegationsQueries,
-        Delegations.DelegationsState,
+        Delegations.Data,
         WaitingForQueries,
-        WaitingFor.WaitingForState,
-        Members.MembersState,
-        Describable.DescribableState,
-        ProjectStatus.ProjectStatusState,
-        ProjectOrganization.ProjectOrganizationState,
-        Labels.LabelsState,
-        ProjectFormDefinitions.ProjectFormDefinitionsState,
+        WaitingFor.Data,
+        Members.Data,
+        Describable.Data,
+        ProjectStatus.Data,
+        ProjectOrganization.Data,
+        Labels.Data,
+        ProjectFormDefinitions.Data,
         ProjectFormDefinitionsQueries,
-        Removable.RemovableState
+        Removable.Data
 {
     class ProjectIdGeneratorMixin
             implements IdGenerator
     {
         @This
-        ProjectOrganization.ProjectOrganizationState state;
+        ProjectOrganization.Data state;
 
         public void assignId(TaskId task)
         {
-            ((OrganizationalUnit.OrganizationalUnitState)state.organizationalUnit().get()).organization().get().assignId(task);
+            ((OrganizationalUnitRefactoring.Data)state.organizationalUnit().get()).organization().get().assignId(task);
         }
     }
 }

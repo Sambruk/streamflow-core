@@ -23,10 +23,10 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
  */
 public interface GroupEntity
         extends Group,
-        Describable.DescribableState,
-        Participant.ParticipantState,
-        Participants.ParticipantsState,
-        Removable.RemovableState,
+        Describable.Data,
+        Participation.Data,
+        Participants.Data,
+        Removable.Data,
         DomainEntity
 {
 }

@@ -39,12 +39,12 @@ import se.streamsource.streamflow.web.domain.label.Label;
 
 import java.util.List;
 
-@Mixins(AssignmentsQueries.AssignmentsQueriesMixin.class)
+@Mixins(AssignmentsQueries.Mixin.class)
 public interface AssignmentsQueries
 {
     AssignmentsTaskListDTO assignmentsTasks(Assignee assignee);
 
-    class AssignmentsQueriesMixin
+    class Mixin
         implements AssignmentsQueries
     {
 
@@ -61,18 +61,18 @@ public interface AssignmentsQueries
         Identity id;
 
         @This
-        Assignments.AssignmentsState assignments;
+        Assignments.Data assignments;
 
         public AssignmentsTaskListDTO assignmentsTasks(Assignee assignee)
         {
             // Find all my Active tasks assigned to "me"
             QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
-            Association<Assignee> assignedId = templateFor(Assignable.AssignableState.class).assignedTo();
-            Property<String> ownedId = templateFor(Ownable.OwnableState.class).owner().get().identity();
+            Association<Assignee> assignedId = templateFor( Assignable.Data.class).assignedTo();
+            Property<String> ownedId = templateFor( Ownable.Data.class).owner().get().identity();
             Query<TaskEntity> assignmentsQuery = queryBuilder.where(and(
                     eq(assignedId, assignee),
                     eq(ownedId, id.identity().get()),
-                    eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                    eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE))).
                     newQuery(uowf.currentUnitOfWork());
             assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 

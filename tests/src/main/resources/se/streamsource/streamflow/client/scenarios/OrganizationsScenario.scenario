@@ -12,7 +12,7 @@ And ConstraintViolationException is thrown
 
 Scenario: Create new user with faulty password
 Given the organizations
-When a new user named short is created
+When a new user named abc is created
 Then ConstraintViolationException is thrown
 And no events occurred
 

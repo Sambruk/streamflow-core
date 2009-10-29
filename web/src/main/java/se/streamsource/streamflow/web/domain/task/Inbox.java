@@ -50,7 +50,7 @@ public interface Inbox
 
     void deleteTask( Task task );
 
-    interface InboxState
+    interface Data
     {
         Task taskCreated(DomainEvent event, String id);
         void deletedTask(DomainEvent event, Task task);
@@ -60,7 +60,7 @@ public interface Inbox
     }
 
     abstract class InboxMixin
-            implements Inbox, InboxState
+            implements Inbox, Data
     {
         @This
         Owner owner;

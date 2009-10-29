@@ -39,7 +39,7 @@ public interface TaskQueries
         public ProjectEntity ownerProject()
         {
             // find project that owns this task
-            Ownable.OwnableState ownable = uowf.currentUnitOfWork().get(Ownable.OwnableState.class, identity.identity().get());
+            Ownable.Data ownable = uowf.currentUnitOfWork().get(Ownable.Data.class, identity.identity().get());
 
             Owner owner = ownable.owner().get();
 

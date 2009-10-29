@@ -24,16 +24,16 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 /**
  * JAVADOC
  */
-@Mixins(ValueDefinitionsQueries.ValueDefinitionsQueriesMixin.class)
+@Mixins(ValueDefinitionsQueries.Mixin.class)
 public interface ValueDefinitionsQueries
 {
     ListValue valueDefinitionList();
 
-    class ValueDefinitionsQueriesMixin
+    class Mixin
         implements ValueDefinitionsQueries
     {
         @This
-        ValueDefinitions.ValueDefinitionsState state;
+        ValueDefinitions.Data state;
 
         @Structure
         ValueBuilderFactory vbf;

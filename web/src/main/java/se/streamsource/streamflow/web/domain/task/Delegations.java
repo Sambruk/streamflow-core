@@ -22,7 +22,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * Delegations of tasks
  */
-@Mixins(Delegations.DelegationsMixin.class)
+@Mixins(Delegations.Mixin.class)
 public interface Delegations
 {
     void accept(Task task, Assignee assignee);
@@ -34,15 +34,15 @@ public interface Delegations
     void markDelegatedTaskAsRead(Task task);
      void markDelegateddTaskAsUnread(Task task);
 
-    interface DelegationsState
+    interface Data
     {
         void delegatedTaskMarkedAsRead(DomainEvent event, Task task);
         void delegatedTaskMarkedAsUnread(DomainEvent event, Task task);
         ManyAssociation<Task> unreadDelegatedTasks();
     }
 
-    abstract class DelegationsMixin
-            implements Delegations, DelegationsState
+    abstract class Mixin
+            implements Delegations, Data
     {
         @This
         Owner owner;

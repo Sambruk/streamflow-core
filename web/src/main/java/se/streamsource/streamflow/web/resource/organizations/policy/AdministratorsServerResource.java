@@ -22,7 +22,7 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.role.Role;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
@@ -42,11 +42,11 @@ public class AdministratorsServerResource
         UnitOfWork unitOfWork = uowf.currentUnitOfWork();
 
         String identity = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnit.OrganizationalUnitState ouState = unitOfWork.get(OrganizationalUnit.OrganizationalUnitState.class, identity);
+        OrganizationalUnitRefactoring.Data ouState = unitOfWork.get( OrganizationalUnitRefactoring.Data.class, identity);
         OrganizationEntity organization = (OrganizationEntity) ouState.organization().get();
         Role adminRole = organization.roles().get(0);
 
-        RolePolicy.RolePolicyState rolePolicy = (RolePolicy.RolePolicyState) ouState;
+        RolePolicy.Data rolePolicy = (RolePolicy.Data) ouState;
         List<EntityReference> admins = rolePolicy.participantsWithRole(adminRole);
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (EntityReference admin : admins)

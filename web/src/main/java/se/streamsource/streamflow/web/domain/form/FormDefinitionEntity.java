@@ -23,8 +23,8 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
 public interface FormDefinitionEntity
     extends
         FormDefinition,
-        Describable.DescribableState,
-        Fields.FieldsState,
+        Describable.Data,
+        Fields.Data,
         DomainEntity
 {
 }

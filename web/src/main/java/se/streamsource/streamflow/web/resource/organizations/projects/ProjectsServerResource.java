@@ -32,7 +32,7 @@ public class ProjectsServerResource
     public ListValue projects()
     {
         String identity = getRequest().getAttributes().get("organization").toString();
-        Projects.ProjectsState projectsState = uowf.currentUnitOfWork().get(Projects.ProjectsState.class, identity);
+        Projects.Data projectsState = uowf.currentUnitOfWork().get( Projects.Data.class, identity);
 
         return new ListValueBuilder(vbf).addDescribableItems( projectsState.projects() ).newList();
     }

@@ -27,7 +27,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * Completed -> Archived
  * Dropped -> Archived
  */
-@Mixins(ProjectStatus.ProjectStatusMixin.class)
+@Mixins(ProjectStatus.Mixin.class)
 public interface ProjectStatus
 {
     ProjectStates getStatus();
@@ -35,7 +35,7 @@ public interface ProjectStatus
     void drop();
     void archive();
 
-    interface ProjectStatusState
+    interface Data
     {
         @UseDefaults
         Property<ProjectStates> status();
@@ -43,11 +43,11 @@ public interface ProjectStatus
         void projectStatusChanged(DomainEvent event, ProjectStates newStatus);
     }
 
-    abstract class ProjectStatusMixin
-            implements ProjectStatus, ProjectStatusState
+    abstract class Mixin
+            implements ProjectStatus, Data
     {
         @This
-        ProjectStatusState status;
+        Data status;
 
         public ProjectStates getStatus()
         {

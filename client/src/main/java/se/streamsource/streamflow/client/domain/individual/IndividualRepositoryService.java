@@ -27,11 +27,11 @@ import java.util.logging.Logger;
 /**
  * JAVADOC
  */
-@Mixins(IndividualRepositoryService.IndividualRepositoryMixin.class)
+@Mixins(IndividualRepositoryService.Mixin.class)
 public interface IndividualRepositoryService
         extends IndividualRepository, ServiceComposite, Activatable
 {
-    class IndividualRepositoryMixin
+    class Mixin
             implements IndividualRepository, Activatable
     {
         @Structure

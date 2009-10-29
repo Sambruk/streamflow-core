@@ -25,8 +25,7 @@ import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.web.domain.user.User;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 
 import javax.management.MBeanServer;
 import javax.management.remote.JMXAuthenticator;
@@ -148,7 +147,7 @@ public interface JmxConnectorService
                     String username = aCredentials[0];
                     String password = aCredentials[1];
 
-                    User user = unitOfWork.get(User.class, username);
+                    UserAuthentication user = unitOfWork.get( UserAuthentication.class, username);
 
                     if (!user.login(password))
                     {
@@ -156,7 +155,7 @@ public interface JmxConnectorService
                     }
 
 
-                    if (((UserEntity)user).isAdministrator())
+                    if (((UserAuthentication.Data)user).isAdministrator())
                     {
                         subject = new Subject(true,
                                            Collections.singleton(new JMXPrincipal(username)),

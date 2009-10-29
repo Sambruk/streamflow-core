@@ -24,7 +24,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(WaitingFor.WaitingForMixin.class)
+@Mixins(WaitingFor.Mixin.class)
 public interface WaitingFor
 {
     void completeWaitingForTask(Task task, Assignee assignee);
@@ -45,7 +45,7 @@ public interface WaitingFor
 
     void deleteWaitingForTask( Task task );
 
-    interface WaitingForState
+    interface Data
     {
         ManyAssociation<Task> unreadWaitingForTasks();
         void waitingForTaskMarkedAsUnread(DomainEvent event, Task task);
@@ -54,8 +54,8 @@ public interface WaitingFor
     }
 
 
-    abstract class WaitingForMixin
-            implements WaitingFor, WaitingForState
+    abstract class Mixin
+            implements WaitingFor, Data
     {
         @Structure
         UnitOfWorkFactory uowf;

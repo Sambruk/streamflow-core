@@ -50,12 +50,12 @@ public class OverviewProjectAssignmentsServerResource
 
         // Find all Active tasks owned by "project"
         QueryBuilder<TaskEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(TaskEntity.class);
-        Association<Assignee> assignedTo = templateFor(Assignable.AssignableState.class).assignedTo();
-        Property<String> ownerIdProp = templateFor(Ownable.OwnableState.class).owner().get().identity();
+        Association<Assignee> assignedTo = templateFor( Assignable.Data.class).assignedTo();
+        Property<String> ownerIdProp = templateFor( Ownable.Data.class).owner().get().identity();
         Query<TaskEntity> assignmentsQuery = queryBuilder.where(and(
                 eq(ownerIdProp, projectId),
                 isNotNull(assignedTo),
-                eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE))).
                 newQuery(uow);
         assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 

@@ -23,12 +23,12 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(Subtask.SubtaskMixin.class)
+@Mixins(Subtask.Mixin.class)
 public interface Subtask
 {
     void changeParentTask(Subtasks subtasks);
 
-    interface SubtaskState
+    interface Data
     {
         @Optional
         Association<Subtasks> parentTask();
@@ -36,11 +36,11 @@ public interface Subtask
         void parentTaskChanged(DomainEvent event, Subtasks subtasks);
     }
 
-    abstract class SubtaskMixin
-            implements Subtask, SubtaskState
+    abstract class Mixin
+            implements Subtask, Data
     {
         @This
-        SubtaskState state;
+        Data state;
 
         public void changeParentTask(Subtasks subtasks)
         {

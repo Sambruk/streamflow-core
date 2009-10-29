@@ -51,14 +51,14 @@ import se.streamsource.streamflow.web.domain.task.Delegatable;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-@Mixins(OverviewQueries.OverviewQueriesMixin.class)
+@Mixins(OverviewQueries.Mixin.class)
 public interface OverviewQueries
 {
 
 	public void generateExcelProjectSummary(Locale locale, Workbook workbook);
 	public ProjectSummaryListDTO getProjectsSummary();
 
-	class OverviewQueriesMixin implements OverviewQueries
+	class Mixin implements OverviewQueries
 	{
 		@Structure
 		QueryBuilderFactory qbf;
@@ -73,7 +73,7 @@ public interface OverviewQueries
 		Identity id;
 
         @This
-        Participant.ParticipantState participant;
+        Participation.Data participant;
 
         public ProjectSummaryListDTO getProjectsSummary()
         {
@@ -87,25 +87,25 @@ public interface OverviewQueries
 
             for (Project project : participant.allProjects())
             {
-                Association<Assignee> assigneeAssociation = templateFor(Assignable.AssignableState.class).assignedTo();
-                Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
+                Association<Assignee> assigneeAssociation = templateFor( Assignable.Data.class).assignedTo();
+                Property<String> ownableId = templateFor( Ownable.Data.class).owner().get().identity();
 
                 QueryBuilder<TaskEntity> ownerQueryBuilder = qbf.newQueryBuilder(TaskEntity.class).where(
                         eq(ownableId, ((ProjectEntity)project).identity().get()));
 
-                Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
-                Association<Delegatee> delegatee = templateFor( Delegatable.DelegatableState.class).delegatedTo();
+                Association<Assignee> assignee = templateFor( Assignable.Data.class).assignedTo();
+                Association<Delegatee> delegatee = templateFor( Delegatable.Data.class).delegatedTo();
 
                 QueryBuilder<TaskEntity> inboxQueryBuilder = ownerQueryBuilder.where(and(
                     isNull(assigneeAssociation),
                     isNull(delegatee),
-                    eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
+                    eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE)));
                 Query<TaskEntity> inboxQuery = inboxQueryBuilder.newQuery(uow);
 
                 
                 QueryBuilder<TaskEntity> assignedQueryBuilder = ownerQueryBuilder.where(and(
                         isNotNull(assigneeAssociation),
-                        eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE)));
+                        eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE)));
                 Query<TaskEntity> assignedQuery = assignedQueryBuilder.newQuery(uow);
 
                 builderPrototype.project().set(project.getDescription());

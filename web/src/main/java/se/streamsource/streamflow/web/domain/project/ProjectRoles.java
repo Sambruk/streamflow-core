@@ -25,7 +25,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * JAVADOC
  */
 @Concerns(ProjectRoles.DescribeCreatedRoleConcern.class)
-@Mixins(ProjectRoles.ProjectRolesMixin.class)
+@Mixins(ProjectRoles.Mixin.class)
 public interface ProjectRoles
 {
     ProjectRoleEntity createProjectRole(String name);
@@ -36,7 +36,7 @@ public interface ProjectRoles
 
     void mergeProjectRoles(ProjectRoles projectRoles);
 
-    interface ProjectRolesState
+    interface Data
     {
         @Aggregated
         ManyAssociation<ProjectRole> projectRoles();
@@ -46,8 +46,8 @@ public interface ProjectRoles
         void projectRoleRemoved(DomainEvent event, ProjectRole role);
     }
 
-    abstract class ProjectRolesMixin
-        implements ProjectRoles, ProjectRolesState
+    abstract class Mixin
+        implements ProjectRoles, Data
     {
 
         public void mergeProjectRoles(ProjectRoles projectRoles)

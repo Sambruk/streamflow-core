@@ -22,11 +22,11 @@ import org.qi4j.api.service.ServiceComposite;
 /**
  * JAVADOC
  */
-@Mixins(ExceptionHandlerService.ActivatableMixin.class)
+@Mixins(ExceptionHandlerService.Mixin.class)
 public interface ExceptionHandlerService
         extends ServiceComposite, Activatable
 {
-    class ActivatableMixin
+    class Mixin
             implements Activatable
     {
         @Service

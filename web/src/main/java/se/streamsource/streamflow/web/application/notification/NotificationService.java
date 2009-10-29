@@ -32,7 +32,7 @@ import java.util.concurrent.Executors;
 /**
  * JAVADOC
  */
-@Mixins(NotificationService.NotificationServiceMixin.class)
+@Mixins(NotificationService.Mixin.class)
 public interface NotificationService
         extends ServiceComposite, Activatable
 {
@@ -40,7 +40,7 @@ public interface NotificationService
     void deregisterClient( String id );
 
 
-    abstract class NotificationServiceMixin
+    abstract class Mixin
             implements EventSourceListener, NotificationService
     {
         @Service

@@ -25,8 +25,8 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
 public interface LabelEntity
         extends DomainEntity,
         Label,
-        Describable.DescribableState,
-        Notable.NotableState,
-        Removable.RemovableState
+        Describable.Data,
+        Notable.Data,
+        Removable.Data
 {
 }

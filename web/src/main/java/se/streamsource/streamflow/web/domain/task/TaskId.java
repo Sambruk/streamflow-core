@@ -25,7 +25,7 @@ import se.streamsource.streamflow.web.domain.project.IdGenerator;
 /**
  * Human readable task id
  */
-@Mixins(TaskId.TaskIdMixin.class)
+@Mixins(TaskId.Mixin.class)
 public interface TaskId
 {
     /**
@@ -40,7 +40,7 @@ public interface TaskId
 
     void assignId(IdGenerator idgen);
 
-    interface TaskIdState
+    interface Data
     {
         @Optional
         Property<String> taskId();
@@ -49,11 +49,11 @@ public interface TaskId
         void taskIdAssigned(DomainEvent event, String id);
     }
 
-    abstract class TaskIdMixin
-            implements TaskId, TaskIdState
+    abstract class Mixin
+            implements TaskId, Data
     {
         @This
-        TaskIdState state;
+        Data state;
 
         @This
         TaskId id;

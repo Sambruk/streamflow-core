@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.web.domain.role;
 
-import se.streamsource.streamflow.web.domain.user.User;
+import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 
 import java.security.PermissionCollection;
 
@@ -23,5 +23,5 @@ import java.security.PermissionCollection;
  */
 public interface UserPermissions
 {
-    PermissionCollection getPermissions( User user);
+    PermissionCollection getPermissions( UserAuthentication user);
 }

@@ -25,14 +25,14 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(Labels.LabelsMixin.class)
+@Mixins(Labels.Mixin.class)
 public interface Labels
 {
     Label createLabel();
     void removeLabel(Label label);
     Iterable<Label> getLabels();
 
-    interface LabelsState
+    interface Data
     {
         ManyAssociation<Label> labels();
 
@@ -40,14 +40,14 @@ public interface Labels
         void labelRemoved(DomainEvent event, Label label);
     }
 
-    abstract class LabelsMixin
-            implements Labels, LabelsState
+    abstract class Mixin
+            implements Labels, Data
     {
         @Structure
         UnitOfWorkFactory uowf;
 
         @This
-        LabelsState state;
+        Data state;
 
         public Label createLabel()
         {

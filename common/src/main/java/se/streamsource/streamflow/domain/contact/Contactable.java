@@ -22,7 +22,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(Contactable.ContactableMixin.class)
+@Mixins(Contactable.Mixin.class)
 public interface Contactable
 {
     void updateContact(ContactValue contact);
@@ -30,18 +30,18 @@ public interface Contactable
     ContactValue getContact();
 
 
-    interface ContactableState
+    interface Data
     {
         Property<ContactValue> contact();
 
         void contactUpdated(DomainEvent event, ContactValue contact);
     }
 
-    abstract class ContactableMixin
-            implements Contactable, ContactableState
+    abstract class Mixin
+            implements Contactable, Data
     {
         @This
-        ContactableState state;
+        Data state;
 
         public void updateContact(ContactValue newContact)
         {

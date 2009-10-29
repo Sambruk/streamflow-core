@@ -183,7 +183,7 @@ public class OrganizationServerResource
     {
         String ouId = (String) getRequest().getAttributes().get("organization");
         OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
-        OrganizationalUnit toEntity = uowf.currentUnitOfWork().get(OrganizationalUnit.class, moveValue.entity().get().identity());
+        OrganizationalUnitRefactoring toEntity = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.class, moveValue.entity().get().identity());
 
         checkPermission(ou);
 
@@ -201,7 +201,7 @@ public class OrganizationServerResource
     {
         String ouId = (String) getRequest().getAttributes().get("organization");
 
-        OrganizationalUnit.OrganizationalUnitState ou = uowf.currentUnitOfWork().get( OrganizationalUnit.OrganizationalUnitState.class, ouId);
+        OrganizationalUnitRefactoring.Data ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.Data.class, ouId);
 
         FormDefinitionsQueries forms = (FormDefinitionsQueries) ou.organization().get();
 

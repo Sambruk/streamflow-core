@@ -26,7 +26,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 /**
  * List of accounts
  */
-@Mixins(Accounts.AccountsMixin.class)
+@Mixins(Accounts.Mixin.class)
 public interface Accounts
 {
     Account newAccount();
@@ -35,17 +35,17 @@ public interface Accounts
 
     void visitAccounts(AccountVisitor visitor);
 
-    interface AccountsState
+    interface Data
     {
         @Aggregated
         ManyAssociation<Account> accounts();
     }
 
-    class AccountsMixin
+    class Mixin
             implements Accounts
     {
         @This
-        AccountsState state;
+        Data state;
 
         @Structure
         UnitOfWorkFactory uowf;

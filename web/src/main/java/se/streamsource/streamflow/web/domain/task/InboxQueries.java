@@ -39,12 +39,12 @@ import se.streamsource.streamflow.web.domain.label.Label;
 
 import java.util.List;
 
-@Mixins(InboxQueries.InboxQueriesMixin.class)
+@Mixins(InboxQueries.Mixin.class)
 public interface InboxQueries
 {
     InboxTaskListDTO inboxTasks();
 
-    class InboxQueriesMixin
+    class Mixin
         implements InboxQueries
     {
 
@@ -61,20 +61,20 @@ public interface InboxQueries
         Identity id;
 
         @This
-        Inbox.InboxState inbox;
+        Inbox.Data inbox;
 
         public InboxTaskListDTO inboxTasks()
         {
             // Find all Active tasks with specific owner which have not yet been assigned
             QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
-            Property<String> ownableId = templateFor(Ownable.OwnableState.class).owner().get().identity();
-            Association<Assignee> assignee = templateFor(Assignable.AssignableState.class).assignedTo();
-            Association<Delegatee> delegatee = templateFor(Delegatable.DelegatableState.class).delegatedTo();
+            Property<String> ownableId = templateFor( Ownable.Data.class).owner().get().identity();
+            Association<Assignee> assignee = templateFor( Assignable.Data.class).assignedTo();
+            Association<Delegatee> delegatee = templateFor( Delegatable.Data.class).delegatedTo();
             Query<TaskEntity> inboxQuery = queryBuilder.where(and(
                     eq(ownableId, id.identity().get()),
                     isNull(assignee),
                     isNull(delegatee),
-                    eq(templateFor(TaskStatus.TaskStatusState.class).status(), TaskStates.ACTIVE))).
+                    eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE))).
                     newQuery(uowf.currentUnitOfWork());
 
             inboxQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));

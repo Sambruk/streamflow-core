@@ -18,7 +18,7 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 
 /**
@@ -41,7 +41,7 @@ public class OrganizationalUnitSteps
     {
         try
         {
-            OrganizationalUnit orgUnit1 = ouSteps.givenOu;
+            OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
             OrganizationalUnits orgUnit2 = (OrganizationalUnits) orgsSteps.givenOrganization.getOrganizationalUnitByName(ou2);
             orgUnit1.moveOrganizationalUnit(orgUnit2);
         } catch(Exception e)
@@ -55,8 +55,8 @@ public class OrganizationalUnitSteps
     {
         try
         {
-            OrganizationalUnit orgUnit1 = ouSteps.givenOu;
-            OrganizationalUnit orgUnit2 = orgsSteps.givenOrganization.getOrganizationalUnitByName(ou2);
+            OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
+            OrganizationalUnitRefactoring orgUnit2 = orgsSteps.givenOrganization.getOrganizationalUnitByName(ou2);
             orgUnit1.mergeOrganizationalUnit(orgUnit2);
         } catch(Exception e)
         {
@@ -69,7 +69,7 @@ public class OrganizationalUnitSteps
     {
         try
         {
-            OrganizationalUnit orgUnit1 = ouSteps.givenOu;
+            OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
             orgUnit1.deleteOrganizationalUnit();
         } catch(Exception e)
         {

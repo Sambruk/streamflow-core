@@ -18,7 +18,6 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.domain.user.UserSpecification;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
@@ -41,8 +40,18 @@ import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.task.*;
-import se.streamsource.streamflow.resource.user.*;
+import se.streamsource.streamflow.resource.task.FieldDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.task.TaskContactsDTO;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+import se.streamsource.streamflow.resource.task.TasksQuery;
+import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.resource.user.RegisterUserCommand;
+import se.streamsource.streamflow.resource.user.UserEntityDTO;
+import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskListDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
@@ -66,7 +75,7 @@ public class CommonResourceAssembler
                 NewUserCommand.class).visibleIn(Visibility.application);
 
         // Queries
-        module.addValues(UserSpecification.class, TasksQuery.class).visibleIn(Visibility.application);
+        module.addValues(TasksQuery.class).visibleIn(Visibility.application);
 
         // Result values
         module.addValues(ListValue.class, ListItemValue.class,

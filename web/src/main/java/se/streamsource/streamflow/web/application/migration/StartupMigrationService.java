@@ -35,11 +35,11 @@ import java.util.logging.Logger;
 /**
  * Perform migration of all data in the EntityStore
  */
-@Mixins(StartupMigrationService.StartupMigrationMixin.class)
+@Mixins(StartupMigrationService.Mixin.class)
 public interface StartupMigrationService
     extends Activatable, Configuration, ServiceComposite
 {
-    class StartupMigrationMixin
+    class Mixin
         implements Activatable
     {
         @This

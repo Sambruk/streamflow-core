@@ -22,7 +22,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.security.SecretVerifier;
-import se.streamsource.streamflow.web.domain.user.User;
+import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 
 /**
  * Accept login if user with the given username has the given password
@@ -48,7 +48,7 @@ public class PasswordVerifierService
 
         try
         {
-            User user = unitOfWork.get(User.class, username);
+            UserAuthentication user = unitOfWork.get( UserAuthentication.class, username);
 
             if (user.login(new String(password)))
             {

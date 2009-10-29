@@ -52,11 +52,11 @@ import java.util.Random;
 /**
  * JAVADOC
  */
-@Mixins(ClientEventNotificationService.ClientEventNotificationMixin.class)
+@Mixins(ClientEventNotificationService.Mixin.class)
 public interface ClientEventNotificationService
         extends Activatable, ServiceComposite
 {
-    public class ClientEventNotificationMixin
+    public class Mixin
             implements Activatable
     {
         @Structure
@@ -74,7 +74,7 @@ public interface ClientEventNotificationService
 
         String id;
 
-        public ClientEventNotificationMixin( @Service StreamFlowApplication app )
+        public Mixin( @Service StreamFlowApplication app )
         {
             selector = app.getAccountSelector();
         }

@@ -29,14 +29,14 @@ import java.util.Date;
  * JAVADOC
  */
 @Concerns(Assignable.AssignOnStatusChangeConcern.class)
-@Mixins(Assignable.AssignableMixin.class)
+@Mixins(Assignable.Mixin.class)
 public interface Assignable
 {
     void assignTo(Assignee assignee);
 
     void unassign();
 
-    interface AssignableState
+    interface Data
     {
         @Optional
         Association<Assignee> assignedTo();
@@ -51,8 +51,8 @@ public interface Assignable
         void unassigned(DomainEvent event);
     }
 
-    public abstract class AssignableMixin
-            implements Assignable, AssignableState
+    public abstract class Mixin
+            implements Assignable, Data
     {
         public void assignTo(Assignee assignee)
         {
@@ -86,7 +86,7 @@ public interface Assignable
             implements TaskStatus
     {
         @This
-        AssignableState state;
+        Data state;
 
         @This
         Assignable assignable;

@@ -65,11 +65,11 @@ import java.util.ResourceBundle;
  * JMX Management for StreamFlow. Exposes all configurable services as MBeans,
  * as well as the default ManagerComposite
  */
-@Mixins(ManagerService.ManagerMixin.class)
+@Mixins(ManagerService.Mixin.class)
 public interface ManagerService
         extends ServiceComposite, Activatable
 {
-    class ManagerMixin
+    class Mixin
             implements Activatable
     {
         @Service

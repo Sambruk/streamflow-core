@@ -24,14 +24,14 @@ import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE
 /**
  * Role for maintaining descriptions of entities.
  */
-@Mixins(Describable.DescribableMixin.class)
+@Mixins(Describable.Mixin.class)
 public interface Describable
 {
     void changeDescription(@MaxLength(50) String newDescription);
 
     String getDescription();
 
-    interface DescribableState
+    interface Data
     {
         @UseDefaults
         Property<String> description();
@@ -39,14 +39,14 @@ public interface Describable
         void descriptionChanged(DomainEvent event, String description);
     }
 
-    public abstract class DescribableMixin
-            implements Describable, DescribableState
+    public abstract class Mixin
+            implements Describable, Data
     {
         public static <T extends Describable> T getDescribable(Iterable<T> collection, String desc)
         {
             for (T describable : collection)
             {
-                if (((DescribableState)describable).description().get().equals( desc ))
+                if (((Data)describable).description().get().equals( desc ))
                     return describable;
             }
 

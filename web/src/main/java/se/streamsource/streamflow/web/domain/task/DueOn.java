@@ -25,12 +25,12 @@ import java.util.Date;
 /**
  * Due date management for tasks.
  */
-@Mixins(DueOn.DueOnMixin.class)
+@Mixins(DueOn.Mixin.class)
 public interface DueOn
 {
     void dueOn(@Future Date dueDate);
 
-    interface DueOnState
+    interface Data
     {
         @Optional
         Property<Date> dueOn();
@@ -39,8 +39,8 @@ public interface DueOn
         void dueOnChanged(DomainEvent event, Date dueDate);
     }
 
-    abstract class DueOnMixin
-            implements DueOn, DueOnState
+    abstract class Mixin
+            implements DueOn, Data
     {
         public void dueOn(Date dueDate)
         {

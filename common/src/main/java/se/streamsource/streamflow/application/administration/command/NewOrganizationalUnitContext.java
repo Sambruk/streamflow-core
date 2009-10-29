@@ -21,6 +21,6 @@ import se.streamsource.streamflow.infrastructure.domain.Context;
  * JAVADOC
  */
 public interface NewOrganizationalUnitContext
-        extends Context, Describable.DescribableState
+        extends Context, Describable.Data
 {
 }

@@ -36,7 +36,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.group.Participation;
 import se.streamsource.streamflow.web.domain.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 import se.streamsource.streamflow.web.domain.project.Members;
@@ -66,11 +66,11 @@ import java.util.logging.Logger;
  * listens for domain events, and on "completed" it will put
  * information about the task into the database.
  */
-@Mixins(StatisticsService.StatisticsMixin.class)
+@Mixins(StatisticsService.Mixin.class)
 public interface StatisticsService
         extends EventSourceListener, Configuration, Activatable, ServiceComposite
 {
-    class StatisticsMixin
+    class Mixin
             implements EventSourceListener, Activatable
     {
         @Structure
@@ -195,16 +195,16 @@ public interface StatisticsService
                                 stmt.setString( idx++, assignee.getDescription() );
                                 stmt.setString( idx++, task.owner().get().getDescription() );
                                 Owner owner = task.owner().get();
-                                ProjectOrganization.ProjectOrganizationState po = (ProjectOrganization.ProjectOrganizationState) owner;
-                                Describable.DescribableState organizationalUnit = (Describable.DescribableState) po.organizationalUnit().get();
+                                ProjectOrganization.Data po = (ProjectOrganization.Data) owner;
+                                Describable.Data organizationalUnit = (Describable.Data) po.organizationalUnit().get();
 
                                 // Figure out which group the user belongs to
-                                Participant.ParticipantState participant = (Participant.ParticipantState) assignee;
+                                Participation.Data participant = (Participation.Data) assignee;
                                 String groupName = null;
                                 findgroup:
                                 for (Group group : participant.groups())
                                 {
-                                    Members.MembersState members = (Members.MembersState) owner;
+                                    Members.Data members = (Members.Data) owner;
                                     if (members.members().contains( group ))
                                     {
                                         groupName = group.getDescription();
@@ -219,7 +219,7 @@ public interface StatisticsService
                                 stmt.close();
 
                                 // Add Label information
-                                Labelable.LabelableState labelable = task;
+                                Labelable.Data labelable = task;
                                 for (LabelEntity labelEntity : labelable.labels())
                                 {
                                     stmt = conn.prepareStatement( sql.getProperty( "labels.insert" ) );

@@ -104,23 +104,23 @@ public class SubmittedFormsSteps
     @Then("effective field value for field $field is $value")
     public void removed(String form, String value) throws Exception
     {
-        SubmittedForms.SubmittedFormsState submittedFormsState = (SubmittedForms.SubmittedFormsState) inboxSteps.givenTask;
+        SubmittedForms.Data data = (SubmittedForms.Data) inboxSteps.givenTask;
 
 /*
 
 
-        submittedFormsState.getEffectiveValue(  )
+        data.getEffectiveValue(  )
 
         Ensure.ensureThat();
 
         try
         {
-            FormDefinitions.FormDefinitionsState forms = organizationSetupSteps.organization;
+            FormDefinitions.Data forms = organizationSetupSteps.organization;
 
 
             FormDefinition formDefinition = forms.getFormByName( form );
 
-            submittedFormsState.removeFormDefinition( formDefinition );
+            data.removeFormDefinition( formDefinition );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

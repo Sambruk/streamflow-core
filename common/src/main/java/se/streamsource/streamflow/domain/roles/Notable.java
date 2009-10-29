@@ -25,7 +25,7 @@ public interface Notable
 {
     void changeNote(String newNote);
 
-    interface NotableState
+    interface Data
     {
         @UseDefaults
         Property<String> note();

@@ -39,7 +39,7 @@ public class ValueDefinitionsSteps
     @Given("value definition named $name")
     public void givenValue(String name)
     {
-        ValueDefinitions.ValueDefinitionsState values = orgsSteps.givenOrganization;
+        ValueDefinitions.Data values = orgsSteps.givenOrganization;
         givenValue = values.getValueDefinitionByName( name );
     }
 

@@ -37,13 +37,13 @@ public interface OrganizationEntity
         Organization,
 
         // State
-        IdGenerator.IdGeneratorState,
-        Roles.RolesState,
-        FormDefinitions.FormDefinitionsState,
+        IdGenerator.Data,
+        Roles.Data,
+        FormDefinitions.Data,
         FormDefinitionsQueries,
-        FieldDefinitions.FieldDefinitionsState,
+        FieldDefinitions.Data,
         FieldDefinitionsQueries,
-        ValueDefinitions.ValueDefinitionsState,
+        ValueDefinitions.Data,
         ValueDefinitionsQueries,
 
         //Queries
@@ -51,7 +51,7 @@ public interface OrganizationEntity
     
 {
     abstract class LifecycleConcern
-            extends OrganizationalUnit.OrganizationalUnitMixin
+            extends OrganizationalUnitRefactoring.Mixin
             implements Lifecycle
     {
         @This
