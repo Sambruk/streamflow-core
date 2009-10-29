@@ -16,26 +16,22 @@ package se.streamsource.streamflow.web.resource.events;
 
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.data.MediaType;
-import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import se.streamsource.streamflow.infrastructure.event.RemoteEventNotification;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 import se.streamsource.streamflow.web.application.notification.NotificationService;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.Writer;
 import java.util.Date;
 
 /**
- * JAVADOC
+ * Get events since a given date
  */
 public class EventsServerResource
         extends ServerResource
@@ -49,38 +45,6 @@ public class EventsServerResource
     public EventsServerResource()
     {
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-    }
-
-    @Override
-    protected Representation put( Representation representation, Variant variant ) throws ResourceException
-    {
-        try
-        {
-            String id = getRequest().getResourceRef().getLastSegment();
-
-            InputStream in = representation.getStream();
-            ObjectInputStream oin = new ObjectInputStream(in);
-            RemoteEventNotification stub = (RemoteEventNotification) oin.readObject();
-
-            notification.registerClient( id, stub );
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-
-        return new EmptyRepresentation();
-    }
-
-    @Override
-    protected Representation delete( Variant variant ) throws ResourceException
-    {
-        String id = getRequest().getResourceRef().getLastSegment();
-        notification.deregisterClient( id );
-
-        return new EmptyRepresentation();
     }
 
     @Override

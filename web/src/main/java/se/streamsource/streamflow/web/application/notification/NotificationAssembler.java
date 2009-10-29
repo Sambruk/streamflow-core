@@ -18,7 +18,6 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.spi.service.importer.NewObjectImporter;
 
 /**
  * JAVADOC
@@ -28,6 +27,6 @@ public class NotificationAssembler
 {
     public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
     {
-        moduleAssembly.addServices( NotificationService.class ).visibleIn( Visibility.application );
+        moduleAssembly.addServices( NotificationService.class ).visibleIn( Visibility.application ).instantiateOnStartup();
     }
 }

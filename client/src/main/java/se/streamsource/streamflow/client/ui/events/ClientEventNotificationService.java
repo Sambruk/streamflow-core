@@ -21,32 +21,31 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.resource.EventsClientResource;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.infrastructure.event.RemoteEventNotification;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.Date;
-import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -57,7 +56,7 @@ public interface ClientEventNotificationService
         extends Activatable, ServiceComposite
 {
     public class Mixin
-            implements Activatable
+            implements Activatable, Runnable
     {
         @Structure
         ValueBuilderFactory vbf;
@@ -67,12 +66,10 @@ public interface ClientEventNotificationService
 
         AccountSelector selector;
 
-        private Remote stub;
-        private RemoteEventNotification remoteNotification;
-
         private EventsClientResource resource;
 
-        String id;
+        ScheduledExecutorService notificationListener = Executors.newSingleThreadScheduledExecutor();
+        public SocketChannel channel;
 
         public Mixin( @Service StreamFlowApplication app )
         {
@@ -81,14 +78,6 @@ public interface ClientEventNotificationService
 
         public void activate() throws Exception
         {
-
-            id = Math.abs( new Random().nextLong() ) + "";
-
-            remoteNotification = new RemoteEventNotificationImpl2();
-            try
-            {
-                stub = UnicastRemoteObject.exportObject( remoteNotification, 0 );
-
                 selector.addListSelectionListener( new ListSelectionListener()
                 {
                     public void valueChanged( ListSelectionEvent e )
@@ -107,10 +96,7 @@ public interface ClientEventNotificationService
                         }
                     }
                 } );
-            } catch (RemoteException e)
-            {
-                e.printStackTrace();
-            }
+
         }
 
         public void passivate() throws Exception
@@ -123,21 +109,33 @@ public interface ClientEventNotificationService
 
         private void registerClient( AccountModel accountModel )
         {
+            Reference ref = new Reference( accountModel.settings().server().get() );
+            String host = ref.getHostDomain();
+
             try
             {
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                ObjectOutputStream oout = new ObjectOutputStream( bytes );
-                oout.writeObject( stub );
-                oout.close();
-                InputStream in = new ByteArrayInputStream( bytes.toByteArray() );
+                channel = SocketChannel.open();
+                channel.configureBlocking( true );
+
+                // Send a connection request to the server; this method is non-blocking
+                channel.connect( new InetSocketAddress( host, 8888 ) );
+
+                while (!channel.finishConnect())
+                {
+                    try
+                    {
+                        Thread.sleep( 10 );
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
                 resource = accountModel.serverResource().events();
-                resource.registerClient( id, in );
-            } catch (IOException e1)
+                notificationListener.scheduleAtFixedRate( this, 1, 1, TimeUnit.MILLISECONDS );
+            } catch (IOException e)
             {
-                e1.printStackTrace();
-            } catch (ResourceException e1)
-            {
-                e1.printStackTrace();
+                throw new OperationException( StreamFlowResources.could_not_register_client, e);
             }
         }
 
@@ -147,13 +145,41 @@ public interface ClientEventNotificationService
             {
                 try
                 {
-                    resource.deregisterClient( id );
-                } catch (ResourceException e)
+                    channel.close();
+                } catch (IOException e)
                 {
                     e.printStackTrace();
                 }
+                notificationListener.shutdown();
 
                 resource = null;
+            }
+        }
+
+        public void run()
+        {
+            ByteBuffer buf = ByteBuffer.allocateDirect( 1024 );
+            try
+            {
+                // Clear the buffer and read bytes from socket
+                buf.clear();
+                int numBytesRead = channel.read( buf );
+
+                if (numBytesRead == -1)
+                {
+                    // No more bytes can be read from the channel
+                    channel.close();
+                    notificationListener.shutdown();
+                } else
+                {
+                    // To read the bytes, flip the buffer
+                    buf.flip();
+
+                    pollEvents();
+                }
+            } catch (IOException e)
+            {
+                // Connection may have been closed
             }
         }
 
@@ -199,28 +225,8 @@ public interface ClientEventNotificationService
                 } );
 
             }
-        }
 
 
-        public class RemoteEventNotificationImpl2
-                implements RemoteEventNotification
-        {
-            @Service
-            ClientEventNotificationService notification;
-
-            @Service
-            EventSourceListener esl;
-
-            public void notifyEvents() throws RemoteException
-            {
-                SwingUtilities.invokeLater( new Runnable()
-                {
-                    public void run()
-                    {
-                        pollEvents();
-                    }
-                });
-            }
         }
     }
 }

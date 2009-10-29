@@ -31,7 +31,6 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
-import se.streamsource.streamflow.web.resource.events.EventNotificationServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
@@ -125,7 +124,6 @@ public class APIv1Router
 
         // Events
         attach("/events", createServerResourceFinder( EventsServerResource.class));
-        attach("/events/{id}", createServerResourceFinder( EventNotificationServerResource.class));
 
         // Qi4j
         Router qi4jRouter = new Router(getContext());

@@ -17,7 +17,6 @@ package se.streamsource.streamflow.web.resource;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.web.resource.events.EventNotificationServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
@@ -187,8 +186,7 @@ public class ServerResourceAssembler
                 SearchTaskServerResource.class,
 
                 // Events
-                EventsServerResource.class,
-                EventNotificationServerResource.class
+                EventsServerResource.class
         );
     }
 }

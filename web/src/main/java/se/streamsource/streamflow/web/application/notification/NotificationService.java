@@ -18,16 +18,24 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.event.RemoteEventNotification;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 
-import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  * JAVADOC
@@ -36,58 +44,111 @@ import java.util.concurrent.Executors;
 public interface NotificationService
         extends ServiceComposite, Activatable
 {
-    void registerClient( String id, RemoteEventNotification client );
-    void deregisterClient( String id );
-
-
     abstract class Mixin
             implements EventSourceListener, NotificationService
     {
         @Service
         EventSource source;
 
-        Map<String, RemoteEventNotification> clients = new HashMap<String, RemoteEventNotification>();
+        List<SocketChannel> clientSockets = new ArrayList<SocketChannel>( );
 
-        ExecutorService notifier;
+        ScheduledExecutorService socketListener;
+        public Selector selector;
+        public ByteBuffer notifyData;
 
         public void activate() throws Exception
         {
+            notifyData = ByteBuffer.allocateDirect(10);
+
             source.registerListener( this, true );
-            notifier = Executors.newSingleThreadExecutor();
+            socketListener = Executors.newSingleThreadScheduledExecutor();
+
+            try {
+                   // Create a non-blocking server socket channel on port 80
+                selector = Selector.open();
+                   ServerSocketChannel ssChannel = ServerSocketChannel.open();
+                   ssChannel.configureBlocking(false);
+                   int port = 8888;
+                   ssChannel.socket().bind(new InetSocketAddress(port));
+
+                    ssChannel.register( selector, SelectionKey.OP_ACCEPT);
+                   // See e178 Accepting a Connection on a ServerSocketChannel
+                   // for an example of accepting a connection request
+               } catch (IOException e) {
+               }
+
+            socketListener.scheduleAtFixedRate( new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        Logger.getLogger( "notification" ).info( "Select socket" );
+                        selector.select( 5000 );
+
+                        Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+                        while (it.hasNext())
+                        {
+                            Logger.getLogger( "notification" ).info( "Incoming socket" );
+                            SelectionKey selectionKey = it.next();
+                            it.remove();
+
+                            if (selectionKey.isAcceptable())
+                            {
+                                ServerSocketChannel ssChannel = (ServerSocketChannel) selectionKey.channel();
+                                SocketChannel sChannel = ssChannel.accept();
+                                clientSockets.add( sChannel );                                
+                            }
+                        }
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }, 1, 1, TimeUnit.MICROSECONDS);
         }
 
         public void passivate() throws Exception
         {
-            source.unregisterListener( this );
-            notifier.shutdown();
-        }
-
-        public void registerClient( String id, RemoteEventNotification client )
-        {
-            Map<String, RemoteEventNotification> newClients = new HashMap<String, RemoteEventNotification>( clients );
-            newClients.put( id, client );
-            clients = newClients;
-        }
-
-        public void deregisterClient( String id )
-        {
-            Map<String, RemoteEventNotification> newClients = new HashMap<String, RemoteEventNotification>( clients );
-            newClients.remove( id );
-            clients = newClients;
-        }
-
-        public void eventsAvailable( EventStore source )
-        {
-            for (RemoteEventNotification client : clients.values())
+            for (SocketChannel clientSocket : clientSockets)
             {
                 try
                 {
-                    client.notifyEvents();
-                } catch (RemoteException e)
+                    clientSocket.close();
+                } catch (IOException e)
                 {
                     e.printStackTrace();
                 }
             }
+
+            source.unregisterListener( this );
+            socketListener.shutdown();
+        }
+
+        public void eventsAvailable( EventStore source )
+        {
+            try
+            {
+                for (SocketChannel clientSocket : clientSockets)
+                {
+                    try
+                    {
+                        notifyData.clear();
+                        notifyData.put((byte)0xFF);
+                        notifyData.flip();
+                        clientSocket.write( notifyData );
+                    } catch (IOException e)
+                    {
+                        List<SocketChannel> newList = new ArrayList<SocketChannel>(clientSockets);
+                        newList.remove( clientSocket );
+                        clientSockets = newList;
+                    }
+                }
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            Logger.getLogger( "notification" ).info( "Notified" +clientSockets.size()+" clients");
         }
     }
 }
