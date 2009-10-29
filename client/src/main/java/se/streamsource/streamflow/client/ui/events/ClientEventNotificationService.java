@@ -103,6 +103,7 @@ public interface ClientEventNotificationService
         {
             if (resource != null)
             {
+                System.out.println("DEREGISTER CLIENT");
                 deregisterClient();
             }
         }
@@ -151,6 +152,7 @@ public interface ClientEventNotificationService
                     e.printStackTrace();
                 }
                 notificationListener.shutdown();
+                channel = null;
 
                 resource = null;
             }

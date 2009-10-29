@@ -50,7 +50,7 @@ public interface NotificationService
         @Service
         EventSource source;
 
-        List<SocketChannel> clientSockets = new ArrayList<SocketChannel>( );
+        List<SocketChannel> clientSockets = new ArrayList<SocketChannel>();
 
         ScheduledExecutorService socketListener;
         public Selector selector;
@@ -58,24 +58,18 @@ public interface NotificationService
 
         public void activate() throws Exception
         {
-            notifyData = ByteBuffer.allocateDirect(10);
+            notifyData = ByteBuffer.allocateDirect( 10 );
 
             source.registerListener( this, true );
             socketListener = Executors.newSingleThreadScheduledExecutor();
 
-            try {
-                   // Create a non-blocking server socket channel on port 80
-                selector = Selector.open();
-                   ServerSocketChannel ssChannel = ServerSocketChannel.open();
-                   ssChannel.configureBlocking(false);
-                   int port = 8888;
-                   ssChannel.socket().bind(new InetSocketAddress(port));
+            selector = Selector.open();
+            ServerSocketChannel ssChannel = ServerSocketChannel.open();
+            ssChannel.configureBlocking( false );
+            int port = 8888;
+            ssChannel.socket().bind( new InetSocketAddress( port ) );
 
-                    ssChannel.register( selector, SelectionKey.OP_ACCEPT);
-                   // See e178 Accepting a Connection on a ServerSocketChannel
-                   // for an example of accepting a connection request
-               } catch (IOException e) {
-               }
+            ssChannel.register( selector, SelectionKey.OP_ACCEPT );
 
             socketListener.scheduleAtFixedRate( new Runnable()
             {
@@ -97,7 +91,7 @@ public interface NotificationService
                             {
                                 ServerSocketChannel ssChannel = (ServerSocketChannel) selectionKey.channel();
                                 SocketChannel sChannel = ssChannel.accept();
-                                clientSockets.add( sChannel );                                
+                                clientSockets.add( sChannel );
                             }
                         }
                     } catch (Exception e)
@@ -105,11 +99,16 @@ public interface NotificationService
                         e.printStackTrace();
                     }
                 }
-            }, 1, 1, TimeUnit.MICROSECONDS);
+            }, 1, 1, TimeUnit.MICROSECONDS );
         }
 
         public void passivate() throws Exception
         {
+            source.unregisterListener( this );
+
+            selector.close();
+            socketListener.shutdown();
+
             for (SocketChannel clientSocket : clientSockets)
             {
                 try
@@ -120,9 +119,6 @@ public interface NotificationService
                     e.printStackTrace();
                 }
             }
-
-            source.unregisterListener( this );
-            socketListener.shutdown();
         }
 
         public void eventsAvailable( EventStore source )
@@ -134,12 +130,12 @@ public interface NotificationService
                     try
                     {
                         notifyData.clear();
-                        notifyData.put((byte)0xFF);
+                        notifyData.put( (byte) 0xFF );
                         notifyData.flip();
                         clientSocket.write( notifyData );
                     } catch (IOException e)
                     {
-                        List<SocketChannel> newList = new ArrayList<SocketChannel>(clientSockets);
+                        List<SocketChannel> newList = new ArrayList<SocketChannel>( clientSockets );
                         newList.remove( clientSocket );
                         clientSockets = newList;
                     }
@@ -148,7 +144,7 @@ public interface NotificationService
             {
                 e.printStackTrace();
             }
-            Logger.getLogger( "notification" ).info( "Notified" +clientSockets.size()+" clients");
+            Logger.getLogger( "notification" ).info( "Notified" + clientSockets.size() + " clients" );
         }
     }
 }
