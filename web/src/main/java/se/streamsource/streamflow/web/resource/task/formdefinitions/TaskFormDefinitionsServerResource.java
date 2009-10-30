@@ -21,7 +21,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.project.ProjectFormDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.task.TaskQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -54,7 +54,7 @@ public class TaskFormDefinitionsServerResource
         ListValue formsList;
         if (project != null)
         {
-            ProjectFormDefinitionsQueries forms = uow.get(ProjectFormDefinitionsQueries.class, project.identity().get());
+            FormsQueries forms = uow.get( FormsQueries.class, project.identity().get());
             formsList = forms.applicableFormDefinitionList();
         } else
         {

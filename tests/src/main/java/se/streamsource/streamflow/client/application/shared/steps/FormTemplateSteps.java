@@ -14,18 +14,16 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
-import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
-import se.streamsource.streamflow.web.domain.form.FormDefinitions;
+import se.streamsource.streamflow.web.domain.form.FormTemplateEntity;
 
 /**
  * JAVADOC
  */
-public class FormDefinitionsSteps
+public class FormTemplateSteps
         extends Steps
 {
     @Uses
@@ -34,37 +32,37 @@ public class FormDefinitionsSteps
     @Uses
     OrganizationsSteps orgsSteps;
 
-    public FormDefinitionEntity givenForm;
+    @Uses
+    FormTemplatesSteps formTemplatesSteps;
 
-    @Given("form definition named $form")
-    public void givenForm(String name)
-    {
-        FormDefinitions.Data forms = orgsSteps.givenOrganization;
-        givenForm = forms.getFormByName( name );
-    }
+    @Uses
+    ValueDefinitionsSteps valueDefinitionsSteps;
 
-    @When("a form definition named $name is created")
-    public void createForm(String name) throws Exception
+    @Uses
+    FieldDefinitionsSteps fieldDefinitionsSteps;
+
+    @When("a field named $name is created in form")
+    public void createField(String name) throws Exception
     {
         try
         {
-            FormDefinitions forms = orgsSteps.givenOrganization;
+            FormTemplateEntity form = formTemplatesSteps.givenTemplate;
 
-            givenForm = forms.createFormDefinition( name );
+            form.createField( name, valueDefinitionsSteps.givenValue );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("a form definition is removed")
-    public void removed() throws Exception
+    @When("a field is removed from form")
+    public void removeField() throws Exception
     {
         try
         {
-            FormDefinitions forms = orgsSteps.givenOrganization;
+            FormTemplateEntity form = formTemplatesSteps.givenTemplate;
 
-            forms.removeFormDefinition( givenForm );
+            form.removeField( fieldDefinitionsSteps.givenField );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

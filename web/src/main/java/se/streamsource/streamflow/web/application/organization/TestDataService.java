@@ -22,15 +22,18 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.web.domain.form.*;
+import se.streamsource.streamflow.web.domain.form.Field;
+import se.streamsource.streamflow.web.domain.form.Form;
+import se.streamsource.streamflow.web.domain.form.FormTemplates;
+import se.streamsource.streamflow.web.domain.form.ValueDefinition;
 import se.streamsource.streamflow.web.domain.group.Group;
+import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.task.Task;
@@ -64,7 +67,7 @@ public interface TestDataService
 
             UserEntity user = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
 
-            OrganizationalUnitEntity ou = (OrganizationalUnitEntity) user.organizations().iterator().next();
+            OrganizationEntity ou = (OrganizationEntity) user.organizations().iterator().next();
             ou.changeDescription("WayGroup");
 
             // Create suborganizations
@@ -78,30 +81,9 @@ public interface TestDataService
 
             cc.addParticipant(user);
 
-            // Create form definitions
-            FormDefinitions forms = (FormDefinitions) ou;
-            FormDefinition commentForm = forms.createFormDefinition("CommentForm");
-
-            ValueDefinitions values = (ValueDefinitions) ou;
-            ValueDefinitionEntity stringValue = values.createValueDefinition("String");
-
-            FieldDefinitions fields = (FieldDefinitions) ou;
-            FieldDefinitionEntity commentField = fields.createFieldDefinition("Comment", stringValue);
-
-            commentForm.addField(commentField);
-
-            FormDefinition statusForm = forms.createFormDefinition("StatusForm");
-            FieldDefinitionEntity statusField = fields.createFieldDefinition("Status", stringValue);
-            statusForm.addField(statusField);
-
-            FormDefinition addressForm = forms.createFormDefinition("AddressForm");
-            FieldDefinitionEntity streetField = fields.createFieldDefinition("Street", stringValue);
-            FieldDefinitionEntity zipCodeField = fields.createFieldDefinition("ZipCode", stringValue);
-            FieldDefinitionEntity townField = fields.createFieldDefinition("Town", stringValue);
-
-            addressForm.addField(streetField);
-            addressForm.addField(zipCodeField);
-            addressForm.addField(townField);
+            // Create form
+            ValueDefinition textValue = ou.createValueDefinition( "Textfield" );
+            FormTemplates forms = (FormTemplates) ou;
 
             ProjectRole agent = ou.createProjectRole("Agent");
             ProjectRole manager = ou.createProjectRole("Manager");
@@ -113,7 +95,20 @@ public interface TestDataService
             // Create project
             Project project = ou.createProject("Information query");
 
-            project.addFormDefinition(statusForm);
+            Form commentForm = project.createForm();
+            commentForm.changeDescription( "CommentForm" );
+            Field commentField = commentForm.createField( "Comment", textValue );
+
+            Form statusForm = project.createForm();
+            Field statusField = statusForm.createField( "Status", textValue );
+
+            ou.createFormTemplate( commentForm );
+
+            Form addressForm = project.createForm();
+            addressForm.changeDescription( "Address form" );
+            addressForm.createField( "Street", textValue );
+            addressForm.createField( "Zip code", textValue );
+            addressForm.createField( "Town", textValue );
 
             // Create labels
             project.createLabel().changeDescription("Question");
@@ -154,7 +149,7 @@ public interface TestDataService
             uow.complete();
         }
 
-        private SubmittedFormValue createSubmittedForm(UserEntity user, FormDefinition form, FieldDefinition field, String value)
+        private SubmittedFormValue createSubmittedForm(UserEntity user, Form form, Field field, String value)
         {
             ValueBuilder<SubmittedFormValue> builder = vbf.newValueBuilder(SubmittedFormValue.class);
             builder.prototype().submissionDate().set(new Date());

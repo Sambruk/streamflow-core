@@ -28,10 +28,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.beans.Introspector;
 
 /**
  * Generic mixin for simple event methods that remove an entity from a collection. They have to follow this pattern:
- * void fooRemoved(DomainEvent event, SomeType entity)
+ * void removedFoo(DomainEvent event, SomeType entity)
  * This will remove the entity from the ManyAssociation called "foos"
  */
 @AppliesTo(EventEntityRemovedMixin.EventEntityRemovedAppliesTo.class)
@@ -55,7 +56,8 @@ public class EventEntityRemovedMixin
         if (manyAssociationMethod == null)
         {
             // Find ManyAssociation method
-            manyAssociationMethod = composite.getClass().getInterfaces()[0].getMethod(method.getName().substring(0, method.getName().length() - "Removed".length())+"s");
+            String removedName = Introspector.decapitalize( method.getName().substring("removed".length())) + "s";
+            manyAssociationMethod = composite.getClass().getInterfaces()[0].getMethod(removedName);
             methodMappings.put(method, manyAssociationMethod);
         }
 
@@ -74,7 +76,7 @@ public class EventEntityRemovedMixin
         public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
         {
             return method.getParameterTypes().length == 2 &&
-                    method.getParameterTypes()[0].equals(DomainEvent.class) && method.getName().endsWith("Removed") &&
+                    method.getParameterTypes()[0].equals(DomainEvent.class) && method.getName().startsWith("removed") &&
                     method.getReturnType().equals(Void.TYPE);
         }
     }

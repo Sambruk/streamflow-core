@@ -40,10 +40,8 @@ public interface Participants
         ManyAssociation<Participant> participants();
 
 
-        void participantAdded(DomainEvent event, Participant participant);
-
-
-        void participantRemoved(DomainEvent event, Participant participant);
+        void addedParticipant(DomainEvent event, Participant participant);
+        void removedParticipant(DomainEvent event, Participant participant);
     }
 
     abstract class Mixin
@@ -59,7 +57,7 @@ public interface Participants
         {
             if (!participants().contains(participant))
             {
-                participantAdded(DomainEvent.CREATE, participant);
+                addedParticipant(DomainEvent.CREATE, participant);
                 participant.joinGroup(group);
             }
         }
@@ -68,18 +66,18 @@ public interface Participants
         {
             if (participants().contains(participant))
             {
-                participantRemoved(DomainEvent.CREATE, participant);
+                removedParticipant(DomainEvent.CREATE, participant);
                 participant.leaveGroup(group);
             }
         }
 
         // Events
-        public void participantAdded(DomainEvent event, Participant participant)
+        public void addedParticipant(DomainEvent event, Participant participant)
         {
             participants().add(participant);
         }
 
-        public void participantRemoved(DomainEvent event, Participant participant)
+        public void removedParticipant(DomainEvent event, Participant participant)
         {
             participants().remove(participant);
         }

@@ -70,7 +70,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     protected TaskTableModel( TaskListClientResource resource )
     {
         this.resource = resource;
-        eventFilter = new EventHandlerFilter(this, "labelAdded", "labelRemoved", "descriptionChanged");
+        eventFilter = new EventHandlerFilter(this, "addedLabel", "removedLabel", "changedDescription");
     }
 
     public void notifyEvent( DomainEvent event )
@@ -85,7 +85,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         if (idx != -1)
         {
             TaskDTO updatedTask = getTask( idx );
-            if (event.name().get().equals( "descriptionChanged" ))
+            if (event.name().get().equals( "changedDescription" ))
             {
                 try
                 {
@@ -96,6 +96,22 @@ public abstract class TaskTableModel<T extends TaskListDTO>
                 {
                     e.printStackTrace();
                 }
+            } else if (event.name().get().equals("removedLabel"))
+            {
+                String id = EventParameters.getParameter( event, "param1" );
+                List<ListItemValue> labels = updatedTask.labels().get().items().get();
+                for (ListItemValue label : labels)
+                {
+                    if (label.entity().get().identity().equals(id))
+                    {
+                        labels.remove( label );
+                        fireTableCellUpdated( idx, 1 );
+                        break;
+                    }
+                }
+            } else if (event.name().get().equals( "addedLabel" ))
+            {
+                refresh();
             }
         }
         return true;
@@ -235,8 +251,16 @@ public abstract class TaskTableModel<T extends TaskListDTO>
             boolean same = newRoot.equals(tasks);
             if (!same)
             {
+                int oldCount = tasks == null ? 0 : tasks.size();
                 tasks = newRoot;
-                fireTableDataChanged();
+
+                if (newRoot.size() == oldCount)
+                {
+                    fireTableRowsUpdated( 0, newRoot.size() );
+                } else
+                {
+                    fireTableDataChanged();
+                }
             }
         } catch (ResourceException e)
         {

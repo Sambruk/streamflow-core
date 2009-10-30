@@ -25,7 +25,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.web.domain.form.FieldDefinitionEntity;
+import se.streamsource.streamflow.web.domain.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.form.SubmittedForms;
 
 import java.util.Date;
@@ -43,7 +43,7 @@ public class SubmittedFormsSteps
     OrganizationsSteps organizationsSteps;
 
     @Uses
-    ProjectFormDefinitionsSteps projectFormDefinitionsSteps;
+    FormsSteps formsSteps;
 
     @Uses
     InboxSteps inboxSteps;
@@ -59,7 +59,7 @@ public class SubmittedFormsSteps
     {
         formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
         form = formBuilder.prototype();
-        form.form().set( EntityReference.getEntityReference(projectFormDefinitionsSteps.givenForm ));
+        form.form().set( EntityReference.getEntityReference( formsSteps.givenForm ));
     }
 
     @When("field $name with value $value is added to form")
@@ -67,7 +67,7 @@ public class SubmittedFormsSteps
     {
         ValueBuilder<FieldValue> builder = vbf.newValueBuilder( FieldValue.class );
 
-        FieldDefinitionEntity entity = projectFormDefinitionsSteps.givenForm.getFieldByName( field );
+        FieldEntity entity = formsSteps.givenForm.getFieldByName( field );
         builder.prototype().field().set( EntityReference.getEntityReference( entity ));
         builder.prototype().value().set( value );
 
@@ -118,7 +118,7 @@ public class SubmittedFormsSteps
             FormDefinitions.Data forms = organizationSetupSteps.organization;
 
 
-            FormDefinition formDefinition = forms.getFormByName( form );
+            Form formDefinition = forms.getFormByName( form );
 
             data.removeFormDefinition( formDefinition );
         } catch(Exception e)

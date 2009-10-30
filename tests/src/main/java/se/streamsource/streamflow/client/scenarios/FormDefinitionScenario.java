@@ -15,8 +15,8 @@
 package se.streamsource.streamflow.client.scenarios;
 
 import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplateSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplatesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
@@ -41,7 +41,7 @@ public class FormDefinitionScenario
                 new OrganizationalUnitsSteps(),
                 new ValueDefinitionsSteps(),
                 new FieldDefinitionsSteps(),
-                new FormDefinitionsSteps(),
-                new FormDefinitionSteps());
+                new FormTemplatesSteps(),
+                new FormTemplateSteps());
     }
 }

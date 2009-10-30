@@ -41,9 +41,9 @@ public interface ProjectRoles
         @Aggregated
         ManyAssociation<ProjectRole> projectRoles();
 
-        ProjectRoleEntity projectRoleCreated(DomainEvent event, String id);
-        void projectRoleAdded(DomainEvent event, ProjectRoleEntity role);
-        void projectRoleRemoved(DomainEvent event, ProjectRole role);
+        ProjectRoleEntity createdProjectRole(DomainEvent event, String id);
+        void addedProjectRole(DomainEvent event, ProjectRoleEntity role);
+        void removedProjectRole(DomainEvent event, ProjectRole role);
     }
 
     abstract class Mixin
@@ -66,7 +66,7 @@ public interface ProjectRoles
             {
                 return;
             }
-            projectRoleAdded(DomainEvent.CREATE, (ProjectRoleEntity) projectRole);
+            addedProjectRole(DomainEvent.CREATE, (ProjectRoleEntity) projectRole);
         }
     }
 

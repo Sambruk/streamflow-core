@@ -12,23 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.organization;
+package se.streamsource.streamflow.web.domain.form;
 
-import se.streamsource.streamflow.web.domain.form.FieldTemplates;
-import se.streamsource.streamflow.web.domain.form.FormTemplates;
-import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
-import se.streamsource.streamflow.web.domain.project.IdGenerator;
-import se.streamsource.streamflow.web.domain.role.Roles;
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Notable;
+import se.streamsource.streamflow.web.domain.DomainEntity;
 
 /**
  * JAVADOC
  */
-public interface Organization
-        extends OrganizationalUnitRefactoring,
-        Roles,
-        FormTemplates,
-        FieldTemplates,
-        ValueDefinitions,
-        IdGenerator
+public interface FieldTemplateEntity
+        extends FieldTemplate,
+        Describable.Data,
+        Notable.Data,
+        FieldValueDefinition.Data,
+        DomainEntity
 {
 }

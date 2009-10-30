@@ -56,9 +56,9 @@ public interface RolePolicy
         @UseDefaults
         Property<List<ParticipantRolesValue>> policy();
 
-        void roleGranted(DomainEvent event, Participant participant, Role role);
+        void grantedRole(DomainEvent event, Participant participant, Role role);
 
-        void roleRevoked(DomainEvent event, Participant participant, Role role);
+        void revokedRole(DomainEvent event, Participant participant, Role role);
 
         boolean participantHasRole(Participant participant, Role role);
 
@@ -84,7 +84,7 @@ public interface RolePolicy
             if (participantHasRole(participant, role))
                 return;
 
-            roleGranted(DomainEvent.CREATE, participant,  role);
+            grantedRole(DomainEvent.CREATE, participant,  role);
         }
 
         public void revokeRole(Participant participant, Role role)
@@ -92,7 +92,7 @@ public interface RolePolicy
             if (!participantHasRole(participant, role))
                 return;
 
-            roleRevoked(DomainEvent.CREATE, participant,  role);
+            revokedRole(DomainEvent.CREATE, participant,  role);
         }
 
         public void grantAdministratorToCurrentUser()
@@ -108,7 +108,7 @@ public interface RolePolicy
             }
         }
 
-        public void roleGranted(DomainEvent event, Participant participant, Role role)
+        public void grantedRole(DomainEvent event, Participant participant, Role role)
         {
             EntityReference participantRef = getEntityReference(participant);
             List<ParticipantRolesValue> participantRoles = policy().get();
@@ -138,7 +138,7 @@ public interface RolePolicy
             policy().set(policy);
         }
 
-        public void roleRevoked(DomainEvent event, Participant participant, Role role)
+        public void revokedRole(DomainEvent event, Participant participant, Role role)
         {
             EntityReference participantRef = getEntityReference(participant);
             List<ParticipantRolesValue> participantRoles = policy().get();

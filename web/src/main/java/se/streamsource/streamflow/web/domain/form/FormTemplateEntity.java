@@ -21,11 +21,12 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
 /**
  * JAVADOC
  */
-public interface FieldDefinitionEntity
-        extends FieldDefinition,
+public interface FormTemplateEntity
+    extends
+        FormTemplate,
         Describable.Data,
         Notable.Data,
-        FieldValueDefinition.Data,
+        Fields.Data,
         DomainEntity
 {
 }

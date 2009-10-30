@@ -34,7 +34,7 @@ public interface Commentable
     {
         @UseDefaults
         Property<List<CommentValue>> comments();
-        void commentAdded(DomainEvent event, CommentValue comment);
+        void addedComment(DomainEvent event, CommentValue comment);
     }
 
     abstract class Mixin
@@ -45,10 +45,10 @@ public interface Commentable
 
         public void addComment(CommentValue comment)
         {
-            commentAdded(DomainEvent.CREATE, comment);
+            addedComment(DomainEvent.CREATE, comment);
         }
 
-        public void commentAdded(DomainEvent event, CommentValue comment)
+        public void addedComment(DomainEvent event, CommentValue comment)
         {
             List<CommentValue> comments = state.comments().get();
             comments.add(comment);

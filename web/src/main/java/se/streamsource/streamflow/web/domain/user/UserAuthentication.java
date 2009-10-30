@@ -56,11 +56,11 @@ public interface UserAuthentication
         boolean isAdministrator();
 
 
-        void passwordChanged(DomainEvent event, String hashedPassword);
+        void changedPassword(DomainEvent event, String hashedPassword);
 
         void failedLogin(DomainEvent event);
 
-        void enabledChanged(DomainEvent event, boolean enabled);
+        void changedEnabled(DomainEvent event, boolean enabled);
     }
 
     abstract class Mixin
@@ -86,7 +86,7 @@ public interface UserAuthentication
         {
             if (enabled == disabled().get())
             {
-                enabledChanged(DomainEvent.CREATE, !enabled);
+                changedEnabled(DomainEvent.CREATE, !enabled);
             }
         }
 
@@ -98,15 +98,15 @@ public interface UserAuthentication
                 throw new WrongPasswordException();
             }
 
-            passwordChanged(DomainEvent.CREATE, hashPassword(newPassword));
+            changedPassword(DomainEvent.CREATE, hashPassword(newPassword));
         }
 
         public void resetPassword(String password)
         {
-            passwordChanged(DomainEvent.CREATE,  hashPassword(password));
+            changedPassword(DomainEvent.CREATE,  hashPassword(password));
         }
 
-        public void passwordChanged(DomainEvent event, String hashedPassword)
+        public void changedPassword(DomainEvent event, String hashedPassword)
         {
             hashedPassword().set(hashedPassword);
         }
@@ -115,7 +115,7 @@ public interface UserAuthentication
         {
         }
 
-        public void enabledChanged(DomainEvent event, boolean enabled)
+        public void changedEnabled(DomainEvent event, boolean enabled)
         {
             authenticationState.disabled().set(enabled);
         }

@@ -20,7 +20,7 @@ import se.streamsource.streamflow.domain.roles.Notable;
 /**
  * JAVADOC
  */
-public interface FieldDefinition
+public interface FieldTemplate
         extends Describable, Notable, FieldValueDefinition
 {
 }

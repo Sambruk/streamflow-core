@@ -36,8 +36,8 @@ public interface Delegations
 
     interface Data
     {
-        void delegatedTaskMarkedAsRead(DomainEvent event, Task task);
-        void delegatedTaskMarkedAsUnread(DomainEvent event, Task task);
+        void markedDelegatedTaskAsRead(DomainEvent event, Task task);
+        void markedDelegatedTaskAsUnread(DomainEvent event, Task task);
         ManyAssociation<Task> unreadDelegatedTasks();
     }
 
@@ -70,7 +70,7 @@ public interface Delegations
             {
                 return;
             }
-            delegatedTaskMarkedAsRead( DomainEvent.CREATE, task);
+            markedDelegatedTaskAsRead( DomainEvent.CREATE, task);
         }
 
         public void markDelegateddTaskAsUnread(Task task)
@@ -79,15 +79,15 @@ public interface Delegations
             {
                 return;
             }
-            delegatedTaskMarkedAsUnread(DomainEvent.CREATE, task);
+            markedDelegatedTaskAsUnread(DomainEvent.CREATE, task);
         }
 
-        public void delegatedTaskMarkedAsRead(DomainEvent event, Task task)
+        public void markedDelegatedTaskAsRead(DomainEvent event, Task task)
         {
             unreadDelegatedTasks().remove(task);
         }
 
-        public void delegatedTaskMarkedAsUnread(DomainEvent event, Task task)
+        public void markedDelegatedTaskAsUnread(DomainEvent event, Task task)
         {
             unreadDelegatedTasks().add(task);
         }

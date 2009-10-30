@@ -49,7 +49,7 @@ public class AdministrationModel
         }
     };
 
-    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "organizationalUnitRemoved", "organizationalUnitAdded");;
+    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "removedOrganizationalUnit", "addedOrganizationalUnit");;
 
     public AdministrationModel(@Uses AdministrationNode root)
     {

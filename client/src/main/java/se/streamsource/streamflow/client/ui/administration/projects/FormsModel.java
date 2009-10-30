@@ -60,7 +60,7 @@ public class FormsModel
 
     public FormsModel()
     {
-        eventFilter = new EventHandlerFilter( this, "projectFormDefinitionAdded", "projectFormDefinitionRemoved");
+        eventFilter = new EventHandlerFilter( this, "addedForm", "removedForm");
     }
 
     public int getSize()

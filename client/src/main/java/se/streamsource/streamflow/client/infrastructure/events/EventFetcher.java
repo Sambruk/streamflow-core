@@ -12,23 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.organization;
+package se.streamsource.streamflow.client.infrastructure.events;
 
-import se.streamsource.streamflow.web.domain.form.FieldTemplates;
-import se.streamsource.streamflow.web.domain.form.FormTemplates;
-import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
-import se.streamsource.streamflow.web.domain.project.IdGenerator;
-import se.streamsource.streamflow.web.domain.role.Roles;
+import se.streamsource.streamflow.client.resource.EventsClientResource;
 
 /**
  * JAVADOC
  */
-public interface Organization
-        extends OrganizationalUnitRefactoring,
-        Roles,
-        FormTemplates,
-        FieldTemplates,
-        ValueDefinitions,
-        IdGenerator
+public interface EventFetcher
 {
+    void fetchFromResource( EventsClientResource eventsResource);
+    void stopFetching();
 }

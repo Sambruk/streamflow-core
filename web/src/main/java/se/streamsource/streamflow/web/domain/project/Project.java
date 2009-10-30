@@ -23,6 +23,7 @@ import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.form.Forms;
 
 /**
  * JAVADOC
@@ -32,7 +33,6 @@ public interface Project
         Describable,
         Delegatee,
         Members,
-        ProjectStatus,
         Inbox,
         Assignments,
         Delegations,
@@ -41,7 +41,7 @@ public interface Project
         ProjectOrganization,
         Labels,
         IdGenerator,
-        ProjectFormDefinitions,
+        Forms,
         Removable
 {
 }

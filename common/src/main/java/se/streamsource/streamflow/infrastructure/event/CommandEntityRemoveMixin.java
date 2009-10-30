@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Generic mixin for simple command methods that remove an entity from a collection. They have to follow this pattern:
  * boolean removeFoo(SomeType entity)
  * This will check if the entity exists in the ManyAssociation called "foos" and then call the event method
- * fooRemoved(DomainEvent.CREATE, entity);
+ * removedFoo(DomainEvent.CREATE, entity);
  * The method returns true if the entity was removed, and false if not.
  */
 @AppliesTo(CommandEntityRemoveMixin.CommandEntityRemoveAppliesTo.class)
@@ -71,7 +71,7 @@ public class CommandEntityRemoveMixin
         {
             // removeFoo -> fooRemoved
             String name = method.getName().substring("remove".length());
-            name = Introspector.decapitalize(name) + "Removed";
+            name = "removed"+name;
             Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
             eventMethod = composite.getClass().getMethod(name, parameterTypes);
             //methodMappings.put(method, eventMethod);

@@ -22,14 +22,14 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplateSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplatesSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.MembersSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.ProjectFormDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
@@ -81,15 +81,15 @@ public class TestSetupSteps
 
     @Optional
     @Uses
-    FormDefinitionsSteps formDefinitionsSteps;
+    FormTemplatesSteps formTemplatesSteps;
 
     @Optional
     @Uses
-    FormDefinitionSteps formDefinitionSteps;
+    FormTemplateSteps formTemplateSteps;
 
     @Optional
     @Uses
-    ProjectFormDefinitionsSteps projectFormDefinitionsSteps;
+    FormsSteps formsSteps;
 
     @Optional
     @Uses
@@ -143,18 +143,18 @@ public class TestSetupSteps
     {
         valueDefinitionsSteps.createValue( SOME_VALUE );
 
-        formDefinitionsSteps.createForm( SOME_FORM );
+        formTemplatesSteps.createForm( SOME_FORM);
         fieldDefinitionsSteps.createField( SOME_FIELD, SOME_VALUE );
-        formDefinitionSteps.addFieldToForm( );
+        formTemplateSteps.createField(SOME_FIELD );
         fieldDefinitionsSteps.createField( SOME_FIELD2, SOME_VALUE );
-        formDefinitionSteps.addFieldToForm( );
+        formTemplateSteps.createField(SOME_FIELD);
 
         ouSteps.givenOrganization();
         ouSteps.givenOU( "OU1" );
         projectsSteps.givenProject( "project1" );
 
 
-        projectFormDefinitionsSteps.addForm( );
+        formsSteps.addForm( );
 
         genericSteps.clearEvents();
     }

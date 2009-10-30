@@ -32,8 +32,8 @@ public interface Labelable
     {
         ManyAssociation<LabelEntity> labels();
 
-        void labelAdded(DomainEvent event, Label label);
-        void labelRemoved(DomainEvent event, Label label);
+        void addedLabel(DomainEvent event, Label label);
+        void removedLabel(DomainEvent event, Label label);
     }
 
     abstract class Mixin
@@ -44,18 +44,18 @@ public interface Labelable
 
         public void addLabel(Label label)
         {
-            labelAdded(DomainEvent.CREATE, label);
+            addedLabel(DomainEvent.CREATE, label);
         }
 
         public void removeLabel(Label label)
         {
             if (state.labels().contains((LabelEntity) label))
             {
-                labelRemoved(DomainEvent.CREATE, label);
+                removedLabel(DomainEvent.CREATE, label);
             }
         }
 
-        public void labelAdded(DomainEvent event, Label label)
+        public void addedLabel(DomainEvent event, Label label)
         {
             for (int i = 0; i < state.labels().count(); i++)
             {
@@ -69,7 +69,7 @@ public interface Labelable
             state.labels().add((LabelEntity) label);
         }
 
-        public void labelRemoved(DomainEvent event, Label label)
+        public void removedLabel(DomainEvent event, Label label)
         {
             state.labels().remove((LabelEntity) label);
         }

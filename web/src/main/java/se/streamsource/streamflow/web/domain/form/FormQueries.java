@@ -24,23 +24,23 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 /**
  * JAVADOC
  */
-@Mixins(FormDefinitionsQueries.Mixin.class)
-public interface FormDefinitionsQueries
+@Mixins(FormQueries.Mixin.class)
+public interface FormQueries
 {
-    ListValue formDefinitionList();
+    ListValue getForms();
 
     class Mixin
-        implements FormDefinitionsQueries
+        implements FormQueries
     {
         @This
-        FormDefinitions.Data state;
+        FormTemplates.Data state;
 
         @Structure
         ValueBuilderFactory vbf;
 
-        public ListValue formDefinitionList()
+        public ListValue getForms()
         {
-            return new ListValueBuilder(vbf).addDescribableItems( state.formDefinitions() ).newList();
+            return new ListValueBuilder(vbf).addDescribableItems( state.formTemplates() ).newList();
         }
     }
 }

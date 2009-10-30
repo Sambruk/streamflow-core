@@ -12,23 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.organization;
+package se.streamsource.streamflow.client.ui.events;
 
-import se.streamsource.streamflow.web.domain.form.FieldTemplates;
-import se.streamsource.streamflow.web.domain.form.FormTemplates;
-import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
-import se.streamsource.streamflow.web.domain.project.IdGenerator;
-import se.streamsource.streamflow.web.domain.role.Roles;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * JAVADOC
  */
-public interface Organization
-        extends OrganizationalUnitRefactoring,
-        Roles,
-        FormTemplates,
-        FieldTemplates,
-        ValueDefinitions,
-        IdGenerator
+public class ClientEventSubscriptionAssembler
+    implements Assembler
 {
+    public void assemble(ModuleAssembly module) throws AssemblyException
+    {
+        module.addServices( ClientEventSubscriptionService.class).instantiateOnStartup();
+    }
 }

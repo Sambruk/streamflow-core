@@ -20,9 +20,9 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.form.FormDefinition;
-import se.streamsource.streamflow.web.domain.project.ProjectFormDefinitions;
-import se.streamsource.streamflow.web.domain.project.ProjectFormDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.form.Form;
+import se.streamsource.streamflow.web.domain.form.Forms;
+import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -38,7 +38,7 @@ public class ProjectFormDefinitionsServerResource
 
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        ProjectFormDefinitionsQueries forms = uow.get(ProjectFormDefinitionsQueries.class, identity);
+        FormsQueries forms = uow.get( FormsQueries.class, identity);
 
         checkPermission(forms);
 
@@ -51,34 +51,22 @@ public class ProjectFormDefinitionsServerResource
 
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        ProjectFormDefinitionsQueries forms = uow.get(ProjectFormDefinitionsQueries.class, identity);
+        FormsQueries forms = uow.get( FormsQueries.class, identity);
 
         checkPermission(forms);
 
         return forms.nonApplicableFormDefinitionList();
     }
 
-    public void addForm(EntityReferenceDTO formReference) throws ResourceException
+    public void createForm() throws ResourceException
     {
         String identity = getRequest().getAttributes().get("project").toString();
 
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormDefinition formDefinition;
-        try
-        {
-            formDefinition = uow.get(FormDefinition.class, formReference.entity().get().identity());
+        Forms forms = uow.get( Forms.class, identity);
 
-            checkPermission(formDefinition);
-
-        } catch(NoSuchEntityException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
-        }
-
-        ProjectFormDefinitions forms = uow.get(ProjectFormDefinitions.class, identity);
-
-        forms.addFormDefinition(formDefinition);
+        forms.createForm();
     }
 
     public void removeForm(EntityReferenceDTO formReference) throws ResourceException
@@ -87,20 +75,20 @@ public class ProjectFormDefinitionsServerResource
 
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormDefinition formDefinition;
+        Form form;
         try
         {
-            formDefinition = uow.get(FormDefinition.class, formReference.entity().get().identity());
+            form = uow.get( Form.class, formReference.entity().get().identity());
 
-            checkPermission(formDefinition);
+            checkPermission( form );
         } catch(NoSuchEntityException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
         }
 
-        ProjectFormDefinitions forms = uow.get(ProjectFormDefinitions.class, identity);
+        Forms forms = uow.get( Forms.class, identity);
 
-        forms.removeFormDefinition(formDefinition);
+        forms.removeForm( form );
     }
 
 }

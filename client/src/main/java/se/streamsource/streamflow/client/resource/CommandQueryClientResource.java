@@ -33,6 +33,7 @@ import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.CommandNotification;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 
 import java.io.IOException;
@@ -55,6 +56,9 @@ public class CommandQueryClientResource
 
     @Service
     protected EventSourceListener eventListener;
+
+    @Service
+    protected CommandNotification polling;
 
     public CommandQueryClientResource(@Uses org.restlet.Context context, @Uses Reference reference)
     {
@@ -152,6 +156,7 @@ public class CommandQueryClientResource
         } finally
         {
             setReference(ref);
+            polling.notifyCommandExecuted();
         }
     }
 
@@ -277,6 +282,7 @@ public class CommandQueryClientResource
         } finally
         {
             setReference(ref);
+            polling.notifyCommandExecuted();
         }
     }
 
@@ -288,11 +294,12 @@ public class CommandQueryClientResource
         {
             try
             {
-                Representation events = delete();
+                delete();
                 if (!getStatus().isSuccess())
                 {
                     throw new ResourceException(getStatus());
                 }
+                polling.notifyCommandExecuted();
                 break;
             } catch (ResourceException e)
             {

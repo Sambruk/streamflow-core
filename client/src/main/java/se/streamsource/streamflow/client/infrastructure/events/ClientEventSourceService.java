@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.events;
+package se.streamsource.streamflow.client.infrastructure.events;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.mixin.Mixins;

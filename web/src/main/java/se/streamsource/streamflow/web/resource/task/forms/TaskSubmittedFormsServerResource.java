@@ -24,7 +24,7 @@ import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.task.TaskQueries;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.project.ProjectFormDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -65,7 +65,7 @@ public class TaskSubmittedFormsServerResource
         ListValue formsList;
         if (project != null)
         {
-            ProjectFormDefinitionsQueries forms = uow.get(ProjectFormDefinitionsQueries.class, project.identity().get());
+            FormsQueries forms = uow.get( FormsQueries.class, project.identity().get());
             formsList = forms.applicableFormDefinitionList();
         } else
         {

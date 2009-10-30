@@ -12,15 +12,12 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.form;
-
-import se.streamsource.streamflow.domain.roles.Describable;
+package se.streamsource.streamflow.client.resource;
 
 /**
  * JAVADOC
  */
-public interface FormDefinition
-    extends Describable,
-        Fields
+public interface CommandNotification
 {
+    void notifyCommandExecuted();
 }

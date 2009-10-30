@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;

@@ -48,9 +48,9 @@ public interface SubmittedForms
         @Optional
         Property<EffectiveFormFieldsValue> effectiveFieldValues();
 
-        void formSubmitted( DomainEvent event, SubmittedFormValue form);
+        void submittedForm( DomainEvent event, SubmittedFormValue form);
 
-        String getEffectiveValue(FieldDefinition field);
+        String getEffectiveValue( Field field);
     }
 
     abstract class Mixin
@@ -61,10 +61,10 @@ public interface SubmittedForms
 
         public void submitForm( SubmittedFormValue form )
         {
-            formSubmitted( DomainEvent.CREATE, form);
+            submittedForm( DomainEvent.CREATE, form);
         }
 
-        public void formSubmitted( DomainEvent event, SubmittedFormValue form )
+        public void submittedForm( DomainEvent event, SubmittedFormValue form )
         {
             submittedForms().get().add( form );
 
@@ -94,7 +94,7 @@ public interface SubmittedForms
             effectiveFieldValues().set( effectiveFormFieldsValue );
         }
 
-        public String getEffectiveValue( FieldDefinition field )
+        public String getEffectiveValue( Field field )
         {
             EffectiveFormFieldsValue effectiveFormFieldsValue = effectiveFieldValues().get();
             if (effectiveFormFieldsValue == null)

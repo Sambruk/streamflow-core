@@ -36,8 +36,8 @@ public interface Labels
     {
         ManyAssociation<Label> labels();
 
-        Label labelCreated(DomainEvent event);
-        void labelRemoved(DomainEvent event, Label label);
+        Label createdLabel(DomainEvent event);
+        void removedLabel(DomainEvent event, Label label);
     }
 
     abstract class Mixin
@@ -51,14 +51,14 @@ public interface Labels
 
         public Label createLabel()
         {
-            return labelCreated(DomainEvent.CREATE);
+            return createdLabel(DomainEvent.CREATE);
         }
 
         public void removeLabel(Label label)
         {
             if (state.labels().contains(label))
             {
-                labelRemoved(DomainEvent.CREATE, label);
+                removedLabel(DomainEvent.CREATE, label);
                 label.removeEntity();
             }
         }
@@ -69,7 +69,7 @@ public interface Labels
         }
 
 
-        public Label labelCreated(DomainEvent event)
+        public Label createdLabel(DomainEvent event)
         {
             UnitOfWork uow = uowf.currentUnitOfWork();
             Label label = uow.newEntity(Label.class);
@@ -77,7 +77,7 @@ public interface Labels
             return label;
         }
 
-        public void labelRemoved(DomainEvent event, Label label)
+        public void removedLabel(DomainEvent event, Label label)
         {
             state.labels().remove(label);
         }

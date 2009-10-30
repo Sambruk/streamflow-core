@@ -48,8 +48,8 @@ public interface WaitingFor
     interface Data
     {
         ManyAssociation<Task> unreadWaitingForTasks();
-        void waitingForTaskMarkedAsUnread(DomainEvent event, Task task);
-        void waitingForTaskMarkedAsRead(DomainEvent event, Task task);
+        void markedWaitingForTaskAsUnread(DomainEvent event, Task task);
+        void markedWaitingForTaskAsRead(DomainEvent event, Task task);
         void deletedWaitingForTask(DomainEvent event, Task task);
     }
 
@@ -101,7 +101,7 @@ public interface WaitingFor
             {
                 return;
             }
-            waitingForTaskMarkedAsRead(DomainEvent.CREATE, task);
+            markedWaitingForTaskAsRead(DomainEvent.CREATE, task);
         }
 
         public void markWaitingForAsUnread(Task task)
@@ -110,12 +110,12 @@ public interface WaitingFor
             {
                 return;
             }
-            waitingForTaskMarkedAsUnread(DomainEvent.CREATE, task);
+            markedWaitingForTaskAsUnread(DomainEvent.CREATE, task);
         }
 
         public void rejectTask(Task task)
         {
-            waitingForTaskMarkedAsUnread(DomainEvent.CREATE, task);
+            markedWaitingForTaskAsUnread(DomainEvent.CREATE, task);
         }
 
         public void deleteWaitingForTask( Task task )
@@ -129,12 +129,12 @@ public interface WaitingFor
             uowf.currentUnitOfWork().remove( task );
         }
 
-        public void waitingForTaskMarkedAsUnread(DomainEvent event, Task task)
+        public void markedWaitingForTaskAsUnread(DomainEvent event, Task task)
         {
             unreadWaitingForTasks().add(task);
         }
 
-        public void waitingForTaskMarkedAsRead(DomainEvent event, Task task)
+        public void markedWaitingForTaskAsRead(DomainEvent event, Task task)
         {
             unreadWaitingForTasks().remove(task);
         }

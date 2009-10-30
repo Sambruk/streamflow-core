@@ -12,25 +12,30 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.events;
+package se.streamsource.streamflow.web.domain.form;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
  * JAVADOC
  */
-public class ClientEventSourceAssembler
-    implements Assembler
+@Mixins(FieldSynchronization.Mixin.class)
+public interface FieldSynchronization
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addValues(TransactionEvents.class, DomainEvent.class).visibleIn(Visibility.application);
+    void copyFromTemplate( Field templateField );
 
-        module.addServices(ClientEventSourceService.class).visibleIn(Visibility.application).instantiateOnStartup();
+    class Mixin
+        implements FieldSynchronization
+    {
+        @This
+        FieldValueDefinition.Data fieldValue;
+
+        public void copyFromTemplate( Field templateField )
+        {
+            FieldValueDefinition.Data templateFieldValue = (FieldValueDefinition.Data) templateField;
+            fieldValue.changedValueDefinition( DomainEvent.CREATE, templateFieldValue.valueDefinition().get());
+        }
     }
 }

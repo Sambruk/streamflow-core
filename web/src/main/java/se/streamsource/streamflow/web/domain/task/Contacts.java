@@ -42,9 +42,9 @@ public interface Contacts
         @UseDefaults
         Property<List<ContactValue>> contacts();
 
-        void contactAdded(DomainEvent event, ContactValue newContact);
-        void contactUpdated(DomainEvent event, int index, ContactValue contact);
-        void contactDeleted(DomainEvent event, int index);
+        void addedContact(DomainEvent event, ContactValue newContact);
+        void updatedContact(DomainEvent event, int index, ContactValue contact);
+        void deletedContact(DomainEvent event, int index);
     }
 
     abstract class Mixin
@@ -58,14 +58,14 @@ public interface Contacts
 
         public void addContact(ContactValue newContact)
         {
-            contactAdded(DomainEvent.CREATE, newContact);
+            addedContact(DomainEvent.CREATE, newContact);
         }
 
         public void updateContact(int index, ContactValue contact)
         {
             if (contacts().get().size() > index)
             {
-                contactUpdated(DomainEvent.CREATE, index, contact);
+                updatedContact(DomainEvent.CREATE, index, contact);
             }
         }
 
@@ -73,25 +73,25 @@ public interface Contacts
         {
             if (contacts().get().size() > index)
             {
-                contactDeleted(DomainEvent.CREATE, index);
+                deletedContact(DomainEvent.CREATE, index);
             }
         }
 
-        public void contactAdded(DomainEvent event, ContactValue newContact)
+        public void addedContact(DomainEvent event, ContactValue newContact)
         {
             List<ContactValue> contacts = state.contacts().get();
             contacts.add(newContact);
             state.contacts().set(contacts);
         }
 
-        public void contactUpdated(DomainEvent event, int index, ContactValue contact)
+        public void updatedContact(DomainEvent event, int index, ContactValue contact)
         {
             List<ContactValue> contacts = state.contacts().get();
             contacts.set(index, contact);
             state.contacts().set(contacts);
         }
 
-        public void contactDeleted(DomainEvent event, int index)
+        public void deletedContact(DomainEvent event, int index)
         {
             List<ContactValue> contacts = state.contacts().get();
             contacts.remove(index);

@@ -47,9 +47,9 @@ public interface OrganizationalUnits
         @Aggregated
         ManyAssociation<OrganizationalUnitRefactoring> organizationalUnits();
 
-        OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id);
-        void organizationalUnitRemoved(DomainEvent create, OrganizationalUnitRefactoring ou);
-        void organizationalUnitAdded(DomainEvent event, OrganizationalUnitRefactoring ou);
+        OrganizationalUnitEntity createdOrganizationalUnit(DomainEvent event, @Name("id") String id);
+        void removedOrganizationalUnit(DomainEvent create, OrganizationalUnitRefactoring ou);
+        void addedOrganizationalUnit(DomainEvent event, OrganizationalUnitRefactoring ou);
 
         OrganizationalUnits getParent( OrganizationalUnitRefactoring ou);
 
@@ -79,7 +79,7 @@ public interface OrganizationalUnits
         
         public OrganizationalUnitRefactoring createOrganizationalUnit(String name)
         {
-            OrganizationalUnitEntity ou = organizationalUnitCreated(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
+            OrganizationalUnitEntity ou = createdOrganizationalUnit(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
             addOrganizationalUnit(ou);
             ou.changeDescription(name);
 
@@ -94,7 +94,7 @@ public interface OrganizationalUnits
             if (organizationalUnits().contains(ou)) {
                 return;
             }
-            organizationalUnitAdded(DomainEvent.CREATE, ou);
+            addedOrganizationalUnit(DomainEvent.CREATE, ou);
         }
 
         public void removeOrganizationalUnit( OrganizationalUnitRefactoring ou)
@@ -102,10 +102,10 @@ public interface OrganizationalUnits
             if (!organizationalUnits().contains(ou))
                 return; // OU is not a sub-OU of this OU
 
-            organizationalUnitRemoved(DomainEvent.CREATE, ou);
+            removedOrganizationalUnit(DomainEvent.CREATE, ou);
         }
 
-        public OrganizationalUnitEntity organizationalUnitCreated(DomainEvent event, @Name("id") String id)
+        public OrganizationalUnitEntity createdOrganizationalUnit(DomainEvent event, @Name("id") String id)
         {
             EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class, id);
             ouBuilder.instance().organization().set(ouState.organization().get());
@@ -113,12 +113,12 @@ public interface OrganizationalUnits
             return ou;
         }
 
-        public void organizationalUnitRemoved(DomainEvent create, OrganizationalUnitRefactoring ou)
+        public void removedOrganizationalUnit(DomainEvent create, OrganizationalUnitRefactoring ou)
         {
             organizationalUnits().remove(ou);
         }
 
-        public void organizationalUnitAdded(DomainEvent event, OrganizationalUnitRefactoring ou)
+        public void addedOrganizationalUnit(DomainEvent event, OrganizationalUnitRefactoring ou)
         {
             organizationalUnits().add(organizationalUnits().count(), ou);
         }

@@ -21,8 +21,8 @@ import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.forms.FormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.organizations.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplateServerResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplatesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
@@ -162,8 +162,8 @@ public class ServerResourceAssembler
                 OrganizationServerResource.class,
                 OrganizationalUnitsServerResource.class,
 
-                FormDefinitionServerResource.class,
-                FormDefinitionsServerResource.class,
+                FormTemplateServerResource.class,
+                FormTemplatesServerResource.class,
 
                 GroupsServerResource.class,
                 GroupServerResource.class,

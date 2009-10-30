@@ -12,33 +12,26 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.form;
+package se.streamsource.streamflow.client.infrastructure.events;
 
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
  */
-@Mixins(FieldValueDefinition.Mixin.class)
-public interface FieldValueDefinition
+public class ClientEventsAssembler
+    implements Assembler
 {
-    void changeValueDefinition(ValueDefinition valueDefinition);
-
-    interface Data
+    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
     {
-        Association<ValueDefinition> valueDefinition();
+        moduleAssembly.addValues( TransactionEvents.class, DomainEvent.class).visibleIn(Visibility.application);
 
-        void changedValueDefinition( DomainEvent event, ValueDefinition valueDefinition);
-    }
-
-    abstract class Mixin
-        implements Data
-    {
-        public void changedValueDefinition( DomainEvent event, ValueDefinition valueDefinition )
-        {
-            valueDefinition().set( valueDefinition );
-        }
+        moduleAssembly.addServices( ClientEventFetchingService.class,
+                ClientEventSourceService.class).visibleIn( Visibility.application );
     }
 }

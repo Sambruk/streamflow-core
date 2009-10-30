@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.events;
+package se.streamsource.streamflow.client.infrastructure.events;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
@@ -21,22 +21,18 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.resource.EventsClientResource;
-import se.streamsource.streamflow.client.ui.AccountSelector;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.resource.CommandNotification;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.SwingUtilities;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -51,12 +47,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * JAVADOC
  */
-@Mixins(ClientEventNotificationService.Mixin.class)
-public interface ClientEventNotificationService
-        extends Activatable, ServiceComposite
+@Mixins(ClientEventFetchingService.Mixin.class)
+public interface ClientEventFetchingService
+        extends CommandNotification, EventFetcher, Activatable, ServiceComposite
 {
     public class Mixin
-            implements Activatable, Runnable
+            implements CommandNotification, EventFetcher, Activatable, Runnable
     {
         @Structure
         ValueBuilderFactory vbf;
@@ -64,62 +60,51 @@ public interface ClientEventNotificationService
         @Service
         EventSourceListener listener;
 
-        AccountSelector selector;
-
         private EventsClientResource resource;
 
-        ScheduledExecutorService notificationListener = Executors.newSingleThreadScheduledExecutor();
+        ScheduledExecutorService notificationListener;
         public SocketChannel channel;
-
-        public Mixin( @Service StreamFlowApplication app )
-        {
-            selector = app.getAccountSelector();
-        }
 
         public void activate() throws Exception
         {
-                selector.addListSelectionListener( new ListSelectionListener()
-                {
-                    public void valueChanged( ListSelectionEvent e )
-                    {
-                        if (!e.getValueIsAdjusting())
-                        {
-                            AccountModel accountModel = selector.getSelectedAccount();
-                            if (accountModel != null)
-                            {
-                                deregisterClient();
-                                registerClient( accountModel );
-                            } else
-                            {
-                                deregisterClient();
-                            }
-                        }
-                    }
-                } );
-
         }
 
         public void passivate() throws Exception
         {
-            if (resource != null)
+            stopFetching();
+        }
+
+        public void notifyCommandExecuted()
+        {
+            if (channel == null)
             {
-                System.out.println("DEREGISTER CLIENT");
-                deregisterClient();
+                // Only poll explicitly if no socket is open
+                SwingUtilities.invokeLater( new Runnable()
+                {
+                    public void run()
+                    {
+                        fetchEvents();
+                    }
+                });
             }
         }
 
-        private void registerClient( AccountModel accountModel )
+        public void fetchFromResource( EventsClientResource eventsResource)
         {
-            Reference ref = new Reference( accountModel.settings().server().get() );
-            String host = ref.getHostDomain();
+            if (resource != null && resource.equals( eventsResource ))
+                return; // Already listening
+
+            stopFetching();
+
+            String host = eventsResource.getRequest().getResourceRef().getHostDomain();
 
             try
             {
                 channel = SocketChannel.open();
                 channel.configureBlocking( true );
 
-                // Send a connection request to the server; this method is non-blocking
-                channel.connect( new InetSocketAddress( host, 8888 ) );
+                // Send a connection request to the server
+                channel.connect( new InetSocketAddress( host, 8881 ) );
 
                 while (!channel.finishConnect())
                 {
@@ -132,7 +117,9 @@ public interface ClientEventNotificationService
                     }
                 }
 
-                resource = accountModel.serverResource().events();
+                // Connected - start listening
+                resource = eventsResource;
+                notificationListener = Executors.newSingleThreadScheduledExecutor();
                 notificationListener.scheduleAtFixedRate( this, 1, 1, TimeUnit.MILLISECONDS );
             } catch (IOException e)
             {
@@ -140,7 +127,7 @@ public interface ClientEventNotificationService
             }
         }
 
-        private void deregisterClient()
+        public void stopFetching()
         {
             if (resource != null)
             {
@@ -151,7 +138,14 @@ public interface ClientEventNotificationService
                 {
                     e.printStackTrace();
                 }
-                notificationListener.shutdown();
+                try
+                {
+                    notificationListener.shutdown();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                notificationListener = null;
                 channel = null;
 
                 resource = null;
@@ -172,12 +166,20 @@ public interface ClientEventNotificationService
                     // No more bytes can be read from the channel
                     channel.close();
                     notificationListener.shutdown();
+
+                    channel = null;
                 } else
                 {
                     // To read the bytes, flip the buffer
                     buf.flip();
 
-                    pollEvents();
+                    SwingUtilities.invokeLater( new Runnable()
+                    {
+                        public void run()
+                        {
+                            fetchEvents();
+                        }
+                    });
                 }
             } catch (IOException e)
             {
@@ -185,7 +187,7 @@ public interface ClientEventNotificationService
             }
         }
 
-        public void pollEvents()
+        public void fetchEvents()
         {
             if (resource != null)
             {

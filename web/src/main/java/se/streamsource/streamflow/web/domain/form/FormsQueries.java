@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.project;
+package se.streamsource.streamflow.web.domain.form;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -22,7 +22,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.form.FormDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.project.ProjectOrganization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,18 +30,18 @@ import java.util.List;
 /**
  * JAVADOC
  */
-@Mixins(ProjectFormDefinitionsQueries.Mixin.class)
-public interface ProjectFormDefinitionsQueries
+@Mixins(FormsQueries.Mixin.class)
+public interface FormsQueries
 {
     ListValue applicableFormDefinitionList();
 
     ListValue nonApplicableFormDefinitionList();
 
     class Mixin
-        implements ProjectFormDefinitionsQueries
+        implements FormsQueries
     {
         @This
-        ProjectFormDefinitions.Data state;
+        Forms.Data state;
 
         @This
         ProjectOrganization.Data organizationState;
@@ -51,15 +51,15 @@ public interface ProjectFormDefinitionsQueries
 
         public ListValue applicableFormDefinitionList()
         {
-            return new ListValueBuilder(vbf).addDescribableItems( state.formDefinitions() ).newList();
+            return new ListValueBuilder(vbf).addDescribableItems( state.forms() ).newList();
         }
 
         public ListValue nonApplicableFormDefinitionList()
         {
-            FormDefinitionsQueries queries = (FormDefinitionsQueries) organizationState.organizationalUnit().get();
+            FormQueries queries = (FormQueries) organizationState.organizationalUnit().get();
 
-            List<ListItemValue> allForms = queries.formDefinitionList().items().get();
-            List<ListItemValue> applicable = (new ListValueBuilder(vbf).addDescribableItems( state.formDefinitions() ).newList()).items().get();
+            List<ListItemValue> allForms = queries.getForms().items().get();
+            List<ListItemValue> applicable = (new ListValueBuilder(vbf).addDescribableItems( state.forms() ).newList()).items().get();
 
             List<ListItemValue> nonApplicable = new ArrayList<ListItemValue>();
 

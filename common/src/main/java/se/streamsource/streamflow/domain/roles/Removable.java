@@ -50,7 +50,7 @@ public interface Removable
         @UseDefaults
         Property<Boolean> removed();
 
-        void removedChanged(DomainEvent event, boolean isRemoved);
+        void changedRemoved(DomainEvent event, boolean isRemoved);
     }
 
     class Mixin
@@ -63,7 +63,7 @@ public interface Removable
         {
             if (!state.removed().get())
             {
-                state.removedChanged(DomainEvent.CREATE, true);
+                state.changedRemoved(DomainEvent.CREATE, true);
                 return true;
             } else
             {
@@ -75,7 +75,7 @@ public interface Removable
         {
             if (state.removed().get())
             {
-                state.removedChanged(DomainEvent.CREATE, false);
+                state.changedRemoved(DomainEvent.CREATE, false);
                 return true;
             } else
             {

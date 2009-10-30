@@ -14,17 +14,12 @@
 
 package se.streamsource.streamflow.web.domain.form;
 
-import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.web.domain.DomainEntity;
-
 /**
  * JAVADOC
  */
-public interface FormDefinitionEntity
-    extends
-        FormDefinition,
-        Describable.Data,
-        Fields.Data,
-        DomainEntity
+public interface FormEntity
+    extends FormTemplateEntity,
+        Form,
+        FormTemplateReference.Data
 {
 }

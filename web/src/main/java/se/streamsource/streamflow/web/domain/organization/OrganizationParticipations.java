@@ -33,8 +33,8 @@ public interface OrganizationParticipations
     {
         ManyAssociation<Organization> organizations();
 
-        void organizationJoined(DomainEvent event, Organization org);
-        void organizationLeft(DomainEvent event, Organization org);
+        void joinedOrganization(DomainEvent event, Organization org);
+        void leftOrganization(DomainEvent event, Organization org);
     }
 
     abstract class Mixin
@@ -47,7 +47,7 @@ public interface OrganizationParticipations
         {
             if (!state.organizations().contains(ou))
             {
-                organizationJoined(DomainEvent.CREATE, ou);
+                joinedOrganization(DomainEvent.CREATE, ou);
             }
         }
 
@@ -55,16 +55,16 @@ public interface OrganizationParticipations
         {
             if (state.organizations().contains(ou))
             {
-                organizationLeft(DomainEvent.CREATE, ou);
+                leftOrganization(DomainEvent.CREATE, ou);
             }
         }
 
-        public void organizationJoined(DomainEvent event, Organization org)
+        public void joinedOrganization(DomainEvent event, Organization org)
         {
             state.organizations().add(org);
         }
 
-        public void organizationLeft(DomainEvent event, Organization org)
+        public void leftOrganization(DomainEvent event, Organization org)
         {
             state.organizations().remove(org);
         }

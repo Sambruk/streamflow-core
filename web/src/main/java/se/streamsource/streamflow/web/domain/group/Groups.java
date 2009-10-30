@@ -42,9 +42,9 @@ public interface Groups
         @Aggregated
         ManyAssociation<Group> groups();
 
-        GroupEntity groupCreated(DomainEvent event, String id);
-        void groupAdded(DomainEvent event, GroupEntity group);
-        void groupRemoved(DomainEvent event, Group group);
+        GroupEntity createdGroup(DomainEvent event, String id);
+        void addedGroup(DomainEvent event, GroupEntity group);
+        void removedGroup(DomainEvent event, Group group);
 
         GroupEntity getGroupByName(String name);
     }
@@ -58,7 +58,7 @@ public interface Groups
             while (this.groups().count() >0)
             {
                 Group group = this.groups().get(0);
-                groupRemoved(DomainEvent.CREATE, group);
+                removedGroup(DomainEvent.CREATE, group);
                 groups.addGroup((GroupEntity) group);
             }
 
@@ -70,7 +70,7 @@ public interface Groups
             {
                 return;
             }
-            groupAdded(DomainEvent.CREATE, group);
+            addedGroup(DomainEvent.CREATE, group);
         }
 
         public GroupEntity getGroupByName( String name )

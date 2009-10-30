@@ -39,9 +39,9 @@ public interface Roles
         Role getAdministratorRole()
             throws IllegalStateException;
 
-        RoleEntity roleCreated(DomainEvent event, String id);
-        void roleAdded(DomainEvent event, RoleEntity role);
-        void roleRemoved(DomainEvent event, RoleEntity role);
+        RoleEntity createdRole(DomainEvent event, String id);
+        void addedRole(DomainEvent event, RoleEntity role);
+        void removedRole(DomainEvent event, RoleEntity role);
     }
 
     public abstract class Mixin

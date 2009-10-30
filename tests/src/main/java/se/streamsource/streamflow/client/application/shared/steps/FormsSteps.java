@@ -19,13 +19,13 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
-import se.streamsource.streamflow.web.domain.project.ProjectFormDefinitions;
+import se.streamsource.streamflow.web.domain.form.FormEntity;
+import se.streamsource.streamflow.web.domain.form.Forms;
 
 /**
  * JAVADOC
  */
-public class ProjectFormDefinitionsSteps
+public class FormsSteps
         extends Steps
 {
     @Uses
@@ -35,41 +35,41 @@ public class ProjectFormDefinitionsSteps
     OrganizationsSteps orgsSteps;
 
     @Uses
-    FormDefinitionsSteps formDefinitionsSteps;
+    FormTemplatesSteps formTemplatesSteps;
 
     @Uses
     ProjectsSteps projectSetupSteps;
 
-    public FormDefinitionEntity givenForm;
+    public FormEntity givenForm;
 
     @Given("form named $form")
     public void givenForm(String form)
     {
-        givenForm = projectSetupSteps.givenProject.getFormDefinitionByName( form );
+        givenForm = projectSetupSteps.givenProject.getFormByName( form );
     }
 
-    @When("a form definition is added to project")
+    @When("a form is added to project")
     public void addForm() throws Exception
     {
         try
         {
-            ProjectFormDefinitions projectForms = projectSetupSteps.givenProject;
+            Forms projectForms = projectSetupSteps.givenProject;
 
-            projectForms.addFormDefinition( formDefinitionsSteps.givenForm );
+            formTemplatesSteps.givenTemplate = (FormEntity) projectForms.createForm( );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
 
-    @When("a form definition is removed from project")
+    @When("a form is removed from project")
     public void removeForm() throws Exception
     {
         try
         {
-            ProjectFormDefinitions projectForms = projectSetupSteps.givenProject;
+            Forms projectForms = projectSetupSteps.givenProject;
 
-            projectForms.removeFormDefinition( formDefinitionsSteps.givenForm );
+            projectForms.removeForm( givenForm );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

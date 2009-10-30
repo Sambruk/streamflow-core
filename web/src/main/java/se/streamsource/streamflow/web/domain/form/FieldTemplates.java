@@ -27,25 +27,25 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(FieldDefinitions.Mixin.class)
-public interface FieldDefinitions
+@Mixins(FieldTemplates.Mixin.class)
+public interface FieldTemplates
 {
-    FieldDefinitionEntity createFieldDefinition(String name, ValueDefinition valueDefinition);
-    void removeFieldDefinition(FieldDefinition field);
+    FieldEntity createFieldTemplate(String name, ValueDefinition valueDefinition);
+    void removeFieldDefinition( Field field);
 
     interface Data
     {
-        ManyAssociation<FieldDefinitionEntity> fieldDefinitions();
+        ManyAssociation<FieldEntity> fieldDefinitions();
 
-        FieldDefinitionEntity fieldDefinitionCreated( DomainEvent event, String id, ValueDefinition valueDefinition);
-        void fieldDefinitionAdded( DomainEvent event, FieldDefinitionEntity field);
-        void fieldDefinitionRemoved( DomainEvent event, FieldDefinition field);
+        FieldEntity createdFieldDefinition( DomainEvent event, String id, ValueDefinition valueDefinition);
+        void addedFieldDefinition( DomainEvent event, FieldEntity field);
+        void removedFieldDefinition( DomainEvent event, Field field);
 
-        FieldDefinitionEntity getFieldDefinitionByName(String name);
+        FieldEntity getFieldDefinitionByName(String name);
     }
 
     abstract class Mixin
-        implements FieldDefinitions, Data
+        implements FieldTemplates, Data
     {
         @Service
         IdentityGenerator idGen;
@@ -53,27 +53,27 @@ public interface FieldDefinitions
         @Structure
         UnitOfWorkFactory uowf;
 
-        public FieldDefinitionEntity createFieldDefinition( String name, ValueDefinition valueDefinition )
+        public FieldEntity createFieldTemplate( String name, ValueDefinition valueDefinition )
         {
-            String id = idGen.generate( FieldDefinitionEntity.class );
+            String id = idGen.generate( FieldEntity.class );
 
-            FieldDefinitionEntity field = fieldDefinitionCreated( DomainEvent.CREATE, id, valueDefinition );
-            fieldDefinitionAdded( DomainEvent.CREATE, field );
+            FieldEntity field = createdFieldDefinition( DomainEvent.CREATE, id, valueDefinition );
+            addedFieldDefinition( DomainEvent.CREATE, field );
             field.changeDescription( name );
 
             return field;
         }
 
-        public FieldDefinitionEntity fieldDefinitionCreated( DomainEvent event, String id, ValueDefinition valueDefinition )
+        public FieldEntity createdFieldDefinition( DomainEvent event, String id, ValueDefinition valueDefinition )
         {
-            EntityBuilder<FieldDefinitionEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FieldDefinitionEntity.class, id );
+            EntityBuilder<FieldEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FieldEntity.class, id );
 
             builder.instance().valueDefinition().set( valueDefinition );
 
             return builder.newInstance();
         }
 
-        public FieldDefinitionEntity getFieldDefinitionByName( String name )
+        public FieldEntity getFieldDefinitionByName( String name )
         {
             return Describable.Mixin.getDescribable( fieldDefinitions(), name );
         }

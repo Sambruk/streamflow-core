@@ -43,7 +43,7 @@ public class OrganizationsModel
     @Structure
     ValueBuilderFactory vbf;
 
-    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "organizationCreated", "userCreated");
+    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "createdOrganization", "createdUser");
 
     WeakModelMap<String, OrganizationUsersModel> organizationUsersModels = new WeakModelMap<String, OrganizationUsersModel>()
     {

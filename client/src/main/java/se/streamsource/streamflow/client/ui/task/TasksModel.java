@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.json.JSONException;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.task.TaskClientResource;
 import se.streamsource.streamflow.client.resource.task.TasksClientResource;
@@ -74,14 +73,8 @@ public class TasksModel
 
     public boolean handleEvent( DomainEvent event )
     {
-        try
-        {
-            String key = EventParameters.getParameter( event, "param1" );
-            models.remove( key );
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
+        String key = EventParameters.getParameter( event, "param1" );
+        models.remove( key );
 
         return false;
     }

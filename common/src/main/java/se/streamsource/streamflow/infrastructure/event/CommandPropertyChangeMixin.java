@@ -16,12 +16,11 @@ package se.streamsource.streamflow.infrastructure.event;
 
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.common.AppliesToFilter;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.property.StateHolder;
-import org.qi4j.api.entity.EntityComposite;
 
-import java.beans.Introspector;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -34,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * * The method must have one parameter
  * * The name must start with "change"
  *
- * Example: void changeFoo(String newValue) -> invoke event method "fooChanged(newValue);"
+ * Example: void changeFoo(String newValue) -> invoke event method "changedFoo(newValue);"
  *
  */
 @AppliesTo(CommandPropertyChangeMixin.CommandPropertyChangeAppliesTo.class)
@@ -57,7 +56,7 @@ public class CommandPropertyChangeMixin
         {
             // changeFoo -> fooChanged
             String name = method.getName().substring("change".length());
-            name = Introspector.decapitalize(name) + "Changed";
+            name = "changed"+name;
             Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
             eventMethod = composite.getClass().getInterfaces()[0].getMethod(name, parameterTypes);
             methodMappings.put(method, eventMethod);

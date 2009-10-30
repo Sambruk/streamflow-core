@@ -130,7 +130,7 @@ public interface StatisticsService
 
                     return false;
                 }
-            }.withNames( "statusChanged" );
+            }.withNames( "changedStatus" );
         }
 
         public void passivate() throws Exception

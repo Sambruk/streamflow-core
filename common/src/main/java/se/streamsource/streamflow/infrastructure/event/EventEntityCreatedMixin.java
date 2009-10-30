@@ -49,7 +49,7 @@ public class EventEntityCreatedMixin
         public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
         {
             return method.getParameterTypes().length == 2 &&
-                    method.getParameterTypes()[0].equals(DomainEvent.class) && method.getName().endsWith("Created") &&
+                    method.getParameterTypes()[0].equals(DomainEvent.class) && method.getName().startsWith("created") &&
                     !method.getReturnType().equals(Void.TYPE);
         }
     }

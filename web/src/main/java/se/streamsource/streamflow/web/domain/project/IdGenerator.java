@@ -42,10 +42,10 @@ public interface IdGenerator
         Property<Long> lastIdDate();
 
 
-        void counterSet(DomainEvent event, long counter);
+        void setCounter(DomainEvent event, long counter);
 
 
-        void dateChanged(DomainEvent create, long timeInMillis);
+        void changedDate(DomainEvent create, long timeInMillis);
     }
 
     abstract class IdGeneratorMixin
@@ -67,17 +67,17 @@ public interface IdGenerator
                 // Day has changed - reset counter
                 if (now.get(Calendar.DAY_OF_YEAR) != lastDate.get(Calendar.DAY_OF_YEAR))
                 {
-                    state.counterSet(DomainEvent.CREATE, 0);
+                    state.setCounter(DomainEvent.CREATE, 0);
                 }
             }
             // Save current date
-            state.dateChanged(DomainEvent.CREATE, now.getTimeInMillis());
+            state.changedDate(DomainEvent.CREATE, now.getTimeInMillis());
 
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 
             long current = state.current().get();
             current++;
-            counterSet(DomainEvent.CREATE, current);
+            setCounter(DomainEvent.CREATE, current);
 
             String date = format.format(now.getTime());
 
@@ -87,12 +87,12 @@ public interface IdGenerator
         }
 
         // Events
-        public void dateChanged(DomainEvent create, long timeInMillis)
+        public void changedDate(DomainEvent create, long timeInMillis)
         {
             state.lastIdDate().set(timeInMillis);
         }
 
-        public void counterSet(DomainEvent event, long counter)
+        public void setCounter(DomainEvent event, long counter)
         {
             state.current().set(counter);
         }

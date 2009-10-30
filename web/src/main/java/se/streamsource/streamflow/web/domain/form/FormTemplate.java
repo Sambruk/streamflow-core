@@ -12,15 +12,17 @@
  *
  */
 
-package se.streamsource.streamflow.domain.project;
+package se.streamsource.streamflow.web.domain.form;
+
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Notable;
 
 /**
  * JAVADOC
  */
-public enum ProjectStates
+public interface FormTemplate
+    extends Describable,
+        Notable,
+        Fields
 {
-    ACTIVE,
-    COMPLETED,
-    DROPPED,
-    ARCHIVED
 }

@@ -30,6 +30,6 @@ public interface Notable
         @UseDefaults
         Property<String> note();
 
-        void noteChanged(DomainEvent event, String newNote);
+        void changedNote(DomainEvent event, String newNote);
     }
 }

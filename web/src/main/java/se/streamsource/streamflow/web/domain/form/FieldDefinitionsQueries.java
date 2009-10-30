@@ -33,7 +33,7 @@ public interface FieldDefinitionsQueries
         implements FieldDefinitionsQueries
     {
         @This
-        FieldDefinitions.Data state;
+        FieldTemplates.Data state;
 
         @Structure
         ValueBuilderFactory vbf;

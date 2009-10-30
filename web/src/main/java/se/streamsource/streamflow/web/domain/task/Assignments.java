@@ -50,9 +50,9 @@ public interface Assignments
 
     interface Data
     {
-        Task assignedTaskCreated(DomainEvent event, String id);
-        void assignedTaskMarkedAsRead(DomainEvent event, Task task);
-        void assignedTaskMarkedAsUnread(DomainEvent event, Task task);
+        Task createdAssignedTask(DomainEvent event, String id);
+        void markedAssignedTaskAsRead(DomainEvent event, Task task);
+        void markedAssignedTaskAsUnread(DomainEvent event, Task task);
         void deletedAssignedTask(DomainEvent event, Task task);
         ManyAssociation<Task> unreadAssignedTasks();
     }
@@ -79,7 +79,7 @@ public interface Assignments
 
         public Task createAssignedTask(Assignee assignee)
         {
-            TaskEntity taskEntity = (TaskEntity) assignedTaskCreated(DomainEvent.CREATE, idGenerator.generate(TaskEntity.class));
+            TaskEntity taskEntity = (TaskEntity) createdAssignedTask(DomainEvent.CREATE, idGenerator.generate(TaskEntity.class));
             taskEntity.changeOwner(owner);
             taskEntity.addContact(vbf.newValue( ContactValue.class));
             taskEntity.assignTo( assignee );
@@ -87,7 +87,7 @@ public interface Assignments
             return taskEntity;
         }
 
-        public Task assignedTaskCreated(DomainEvent event, String id)
+        public Task createdAssignedTask(DomainEvent event, String id)
         {
             EntityBuilder<TaskEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class, id);
             builder.instance().createdOn().set( event.on().get() );
@@ -125,7 +125,7 @@ public interface Assignments
             {
                 return;
             }
-            assignedTaskMarkedAsRead(DomainEvent.CREATE, task);
+            markedAssignedTaskAsRead(DomainEvent.CREATE, task);
         }
 
         public void markAssignedTaskAsUnread(Task task)
@@ -134,7 +134,7 @@ public interface Assignments
             {
                 return;
             }
-            assignedTaskMarkedAsUnread(DomainEvent.CREATE, task);
+            markedAssignedTaskAsUnread(DomainEvent.CREATE, task);
         }
 
         public void deleteAssignedTask( Task task )
@@ -148,12 +148,12 @@ public interface Assignments
             uowf.currentUnitOfWork().remove( task );
         }
 
-        public void assignedTaskMarkedAsRead(DomainEvent event, Task task)
+        public void markedAssignedTaskAsRead(DomainEvent event, Task task)
         {
             unreadAssignedTasks().remove(task);
         }
 
-        public void assignedTaskMarkedAsUnread(DomainEvent event, Task task)
+        public void markedAssignedTaskAsUnread(DomainEvent event, Task task)
         {
             unreadAssignedTasks().add(task);
         }

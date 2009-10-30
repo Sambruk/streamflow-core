@@ -19,8 +19,8 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.form.FieldDefinitionEntity;
-import se.streamsource.streamflow.web.domain.form.FieldDefinitions;
+import se.streamsource.streamflow.web.domain.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.form.FieldTemplates;
 import se.streamsource.streamflow.web.domain.form.ValueDefinition;
 import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
 
@@ -36,12 +36,12 @@ public class FieldDefinitionsSteps
     @Uses
     OrganizationsSteps orgsSteps;
 
-    public FieldDefinitionEntity givenFieldDefinition;
+    public FieldEntity givenField;
 
     @Given("field definition named $name")
     public void givenFieldDefinition(String name)
     {
-        givenFieldDefinition = orgsSteps.givenOrganization.getFieldDefinitionByName( name );
+        givenField = orgsSteps.givenOrganization.getFieldDefinitionByName( name );
     }
 
     @When("a field definition named $name of type $type is created")
@@ -49,13 +49,13 @@ public class FieldDefinitionsSteps
     {
         try
         {
-            FieldDefinitions fields = orgsSteps.givenOrganization;
+            FieldTemplates fields = orgsSteps.givenOrganization;
 
             ValueDefinitions.Data values = orgsSteps.givenOrganization;
 
             ValueDefinition valueDefinition = values.getValueDefinitionByName( type );
 
-            this.givenFieldDefinition = fields.createFieldDefinition( name, valueDefinition );
+            this.givenField = fields.createFieldTemplate( name, valueDefinition );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
@@ -67,10 +67,10 @@ public class FieldDefinitionsSteps
     {
         try
         {
-            FieldDefinitions.Data fieldsState = orgsSteps.givenOrganization;
-            FieldDefinitions fields = orgsSteps.givenOrganization;
+            FieldTemplates.Data fieldsState = orgsSteps.givenOrganization;
+            FieldTemplates fields = orgsSteps.givenOrganization;
 
-            fields.removeFieldDefinition( givenFieldDefinition );
+            fields.removeFieldDefinition( givenField );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

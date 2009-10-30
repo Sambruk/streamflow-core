@@ -34,7 +34,7 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.form.FormDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.form.FormQueries;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.*;
@@ -203,9 +203,9 @@ public class OrganizationServerResource
 
         OrganizationalUnitRefactoring.Data ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.Data.class, ouId);
 
-        FormDefinitionsQueries forms = (FormDefinitionsQueries) ou.organization().get();
+        FormQueries forms = (FormQueries) ou.organization().get();
 
-        return forms.formDefinitionList();
+        return forms.getForms();
     }
 
     public ListValue participatingUsers()

@@ -21,20 +21,17 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.form.Fields;
-import se.streamsource.streamflow.web.domain.form.FormDefinitionEntity;
-import se.streamsource.streamflow.web.domain.form.FormDefinitions;
+import se.streamsource.streamflow.web.domain.form.FormTemplate;
+import se.streamsource.streamflow.web.domain.form.FormTemplates;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /organizations/{organization}/forms/{form}
+ * /organizations/{organization}/forms/{template}
  *
- * AND
- *
- * /tasks/{task}/formDefinitions/{form}
- */
-public class FormDefinitionServerResource
+*/
+ public class FormTemplateServerResource
         extends CommandQueryServerResource
 {
     public void deleteOperation() throws ResourceException
@@ -44,18 +41,18 @@ public class FormDefinitionServerResource
         String identity = getRequest().getAttributes().get("organization").toString();
         OrganizationalUnitRefactoring.Data ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.Data.class, identity);
 
-        FormDefinitions forms = ou.organization().get();
-        checkPermission( forms );
+        FormTemplates templates = ou.organization().get();
+        checkPermission( templates );
 
-        String formId = getRequest().getAttributes().get("form").toString();
-        FormDefinitionEntity formDefinitionEntity = uow.get(FormDefinitionEntity.class, formId);
+        String formId = getRequest().getAttributes().get("template").toString();
+        FormTemplate template = uow.get( FormTemplate.class, formId);
 
-        forms.removeFormDefinition( formDefinitionEntity);
+        templates.removeFormTemplate( template );
     }
 
     public ListValue fields() throws ResourceException
     {
-        String formId = getRequest().getAttributes().get("form").toString();
+        String formId = getRequest().getAttributes().get("template").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
 
         Fields.Data fields;

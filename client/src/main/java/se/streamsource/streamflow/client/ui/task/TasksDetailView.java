@@ -92,7 +92,7 @@ public class TasksDetailView
 
         setPreferredSize(new Dimension(getWidth(), 500));
 
-        subscriber = new ForEvents(new EventQuery().withNames( "descriptionChanged" ), new EventHandler()
+        subscriber = new ForEvents(new EventQuery().withNames( "changedDescription" ), new EventHandler()
         {
             public boolean handleEvent( DomainEvent event )
             {

@@ -36,7 +36,7 @@ public interface DueOn
         Property<Date> dueOn();
 
 
-        void dueOnChanged(DomainEvent event, Date dueDate);
+        void changedDueOn(DomainEvent event, Date dueDate);
     }
 
     abstract class Mixin
@@ -44,10 +44,10 @@ public interface DueOn
     {
         public void dueOn(Date dueDate)
         {
-            dueOnChanged(DomainEvent.CREATE, dueDate);
+            changedDueOn(DomainEvent.CREATE, dueDate);
         }
 
-        public void dueOnChanged(DomainEvent event, Date dueDate)
+        public void changedDueOn(DomainEvent event, Date dueDate)
         {
             dueOn().set(dueDate);
         }

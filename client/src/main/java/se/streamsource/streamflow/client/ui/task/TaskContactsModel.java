@@ -47,7 +47,7 @@ public class TaskContactsModel
     @Uses
     private TaskContactsClientResource contactsClientResource;
 
-    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "contactAdded", "contactDeleted", "contactUpdated");
+    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "addedContact", "deletedContact", "updatedContact");
 
     public TaskContactsModel()
     {

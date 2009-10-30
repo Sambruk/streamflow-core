@@ -46,7 +46,7 @@ public class UsersAdministrationModel
     private Class[] columnClasses;
     private boolean[] columnEditable;
 
-    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "userCreated", "enabledChanged");
+    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "createdUser", "changedEnabled");
 
 
     public UsersAdministrationModel(@Uses OrganizationsClientResource organizations) throws ResourceException

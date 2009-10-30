@@ -56,9 +56,9 @@ public interface Organizations
 
     interface Data
     {
-        OrganizationEntity organizationCreated(DomainEvent event, String id);
+        OrganizationEntity createdOrganization(DomainEvent event, String id);
 
-        UserEntity userCreated(DomainEvent event, String username, String password);
+        UserEntity createdUser(DomainEvent event, String username, String password);
 
         OrganizationEntity getOrganizationByName(String name);
 
@@ -85,7 +85,7 @@ public interface Organizations
         public OrganizationEntity createOrganization(String name)
         {
 //            OrganizationEntity ou = state.organizationCreated(CREATE, idGen.generate(OrganizationEntity.class));
-            OrganizationEntity ou = organizationCreated(CREATE, "Organization");
+            OrganizationEntity ou = createdOrganization(CREATE, "Organization");
 
             // Change name
             ou.changeDescription(name);
@@ -110,16 +110,16 @@ public interface Organizations
                 // Ok!
             }
 
-            UserEntity user = userCreated(CREATE, username, password);
+            UserEntity user = createdUser(CREATE, username, password);
             return user;
         }
 
-        public OrganizationEntity organizationCreated(DomainEvent event, String id)
+        public OrganizationEntity createdOrganization(DomainEvent event, String id)
         {
             return uowf.currentUnitOfWork().newEntity(OrganizationEntity.class, id);
         }
 
-        public UserEntity userCreated(DomainEvent event, String username, String password)
+        public UserEntity createdUser(DomainEvent event, String username, String password)
         {
             EntityBuilder<UserEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(UserEntity.class, username);
             UserEntity userEntity = builder.instance();

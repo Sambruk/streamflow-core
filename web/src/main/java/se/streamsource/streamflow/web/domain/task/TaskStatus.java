@@ -40,7 +40,7 @@ public interface TaskStatus
         @UseDefaults
         Property<TaskStates> status();
 
-        void statusChanged(DomainEvent event, TaskStates status);
+        void changedStatus(DomainEvent event, TaskStates status);
     }
 
     abstract class Mixin
@@ -51,7 +51,7 @@ public interface TaskStatus
         {
             if (status().get().equals(TaskStates.ACTIVE) || status().get().equals(TaskStates.DONE))
             {
-                statusChanged(DomainEvent.CREATE, TaskStates.COMPLETED);
+                changedStatus(DomainEvent.CREATE, TaskStates.COMPLETED);
             }
         }
 
@@ -59,7 +59,7 @@ public interface TaskStatus
         {
             if (status().get().equals(TaskStates.ACTIVE)  || status().get().equals(TaskStates.DONE))
             {
-                statusChanged(DomainEvent.CREATE, TaskStates.DROPPED);
+                changedStatus(DomainEvent.CREATE, TaskStates.DROPPED);
             }
         }
 
@@ -67,7 +67,7 @@ public interface TaskStatus
         {
             if (status().get().equals(TaskStates.ACTIVE))
             {
-                statusChanged(DomainEvent.CREATE, TaskStates.DONE);
+                changedStatus(DomainEvent.CREATE, TaskStates.DONE);
             }
         }
 
@@ -75,7 +75,7 @@ public interface TaskStatus
         {
             if (status().get().equals(TaskStates.DONE) || status().get().equals(TaskStates.COMPLETED))
             {
-                statusChanged(DomainEvent.CREATE, TaskStates.ACTIVE);
+                changedStatus(DomainEvent.CREATE, TaskStates.ACTIVE);
             }
         }
     }

@@ -52,7 +52,7 @@ public interface Inbox
 
     interface Data
     {
-        Task taskCreated(DomainEvent event, String id);
+        Task createdTask(DomainEvent event, String id);
         void deletedTask(DomainEvent event, Task task);
         void markedAsRead(DomainEvent event, Task task);
         void markedAsUnread(DomainEvent event, Task task);
@@ -79,7 +79,7 @@ public interface Inbox
 
         public Task createTask()
         {
-            TaskEntity taskEntity = (TaskEntity) taskCreated(DomainEvent.CREATE, idGenerator.generate(TaskEntity.class));
+            TaskEntity taskEntity = (TaskEntity) createdTask(DomainEvent.CREATE, idGenerator.generate(TaskEntity.class));
             taskEntity.changeOwner(owner);
             taskEntity.addContact(vbf.newValue(ContactValue.class));
 
@@ -133,7 +133,7 @@ public interface Inbox
             markedAsUnread(DomainEvent.CREATE, task);
         }
 
-        public Task taskCreated(DomainEvent event, String id)
+        public Task createdTask(DomainEvent event, String id)
         {
             EntityBuilder<TaskEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class, id);
             builder.instance().createdOn().set( event.on().get() );

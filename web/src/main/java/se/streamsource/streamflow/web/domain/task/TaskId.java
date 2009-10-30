@@ -46,7 +46,7 @@ public interface TaskId
         Property<String> taskId();
 
 
-        void taskIdAssigned(DomainEvent event, String id);
+        void assignedTaskId(DomainEvent event, String id);
     }
 
     abstract class Mixin
@@ -70,12 +70,12 @@ public interface TaskId
         {
             if (state.taskId().get() == null)
             {
-                state.taskIdAssigned(DomainEvent.CREATE, id);
+                state.assignedTaskId(DomainEvent.CREATE, id);
             }
         }
 
         // Event
-        public void taskIdAssigned(DomainEvent event, String id)
+        public void assignedTaskId(DomainEvent event, String id)
         {
             state.taskId().set(id);
         }

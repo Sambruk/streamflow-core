@@ -66,7 +66,7 @@ public interface NotificationService
             selector = Selector.open();
             ServerSocketChannel ssChannel = ServerSocketChannel.open();
             ssChannel.configureBlocking( false );
-            int port = 8888;
+            int port = 8881;
             ssChannel.socket().bind( new InetSocketAddress( port ) );
 
             ssChannel.register( selector, SelectionKey.OP_ACCEPT );

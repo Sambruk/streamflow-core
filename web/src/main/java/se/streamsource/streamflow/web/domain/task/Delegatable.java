@@ -59,7 +59,7 @@ public interface Delegatable
 
         void delegatedTo(DomainEvent create, Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom);
 
-        void delegationRejected(DomainEvent event);
+        void rejectedDelegation(DomainEvent event);
     }
 
     abstract class Mixin
@@ -93,11 +93,11 @@ public interface Delegatable
             {
                 WaitingFor waitingFor = delegatedFrom().get();
                 waitingFor.rejectTask(task);
-                delegationRejected(DomainEvent.CREATE);
+                rejectedDelegation(DomainEvent.CREATE);
             }
         }
 
-        public void delegationRejected(DomainEvent event)
+        public void rejectedDelegation(DomainEvent event)
         {
             delegatedTo().set(null);
             delegatedBy().set(null);

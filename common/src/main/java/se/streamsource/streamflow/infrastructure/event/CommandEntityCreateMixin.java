@@ -26,7 +26,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
-import java.beans.Introspector;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -35,8 +34,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Generic mixin for simple command methods that create an entity and add it to a collection. They have to follow this pattern:
  * SomeType createFoo(<args>)
- * This will generated an id for "SomeType" (so SomeType needs to extend EntityComposite!) and then call the event method "fooCreated(DomainEvent.CREATE, id)"
- * followed by "fooAdded(DomainEvent.CREATE, entity)".
+ * This will generated an id for "SomeType" (so SomeType needs to extend EntityComposite!) and then call the
+ * event method "createdFoo(DomainEvent.CREATE, id)"
+ * followed by "addedFoo(DomainEvent.CREATE, entity)".
  * The new entity is then returned from the method.
  */
 @AppliesTo(CommandEntityCreateMixin.CommandEntityCreateAppliesTo.class)
@@ -67,18 +67,18 @@ public class CommandEntityCreateMixin
         Method addedMethod;
         //if (createdMethod == null)
         //{
-            // createFoo -> fooCreated
+            // createFoo -> createdFoo
             String name = method.getName().substring("create".length());
             {
-                String createdName = Introspector.decapitalize(name) + "Created";
+                String createdName = "created"+name;
                 Class[] parameterTypes = new Class[]{DomainEvent.class, String.class};
                 createdMethod = composite.getClass().getMethod(createdName, parameterTypes);
                 //createdMappings.put(method, createdMethod);
             }
 
-            // createFoo -> fooAdded
+            // createFoo -> addedFoo
             {
-                String addedName = Introspector.decapitalize(name) + "Added";
+                String addedName = "added"+name;
                 Class[] parameterTypes = new Class[]{DomainEvent.class, method.getReturnType()};
                 addedMethod = composite.getClass().getMethod(addedName, parameterTypes);
                 //addedMappings.put(method, addedMethod);

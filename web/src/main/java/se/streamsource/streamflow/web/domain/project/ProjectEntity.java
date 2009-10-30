@@ -19,6 +19,8 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.web.domain.DomainEntity;
+import se.streamsource.streamflow.web.domain.form.Forms;
+import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.task.Assignments;
@@ -50,11 +52,10 @@ public interface ProjectEntity
         WaitingFor.Data,
         Members.Data,
         Describable.Data,
-        ProjectStatus.Data,
         ProjectOrganization.Data,
         Labels.Data,
-        ProjectFormDefinitions.Data,
-        ProjectFormDefinitionsQueries,
+        Forms.Data,
+        FormsQueries,
         Removable.Data
 {
     class ProjectIdGeneratorMixin

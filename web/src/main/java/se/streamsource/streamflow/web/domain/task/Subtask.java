@@ -33,7 +33,7 @@ public interface Subtask
         @Optional
         Association<Subtasks> parentTask();
 
-        void parentTaskChanged(DomainEvent event, Subtasks subtasks);
+        void changedParentTask(DomainEvent event, Subtasks subtasks);
     }
 
     abstract class Mixin
@@ -44,10 +44,10 @@ public interface Subtask
 
         public void changeParentTask(Subtasks subtasks)
         {
-            parentTaskChanged(DomainEvent.CREATE, subtasks);
+            changedParentTask(DomainEvent.CREATE, subtasks);
         }
 
-        public void parentTaskChanged(DomainEvent event, Subtasks subtasks)
+        public void changedParentTask(DomainEvent event, Subtasks subtasks)
         {
             state.parentTask().set(subtasks);
         }

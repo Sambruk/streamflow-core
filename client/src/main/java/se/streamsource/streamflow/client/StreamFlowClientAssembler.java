@@ -24,11 +24,12 @@ import se.streamsource.streamflow.client.domain.individual.IndividualAssembler;
 import se.streamsource.streamflow.client.infrastructure.application.RestletClientAssembler;
 import se.streamsource.streamflow.client.infrastructure.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.client.infrastructure.domain.ClientEntityStoreAssembler;
+import se.streamsource.streamflow.client.infrastructure.events.ClientEventsAssembler;
 import se.streamsource.streamflow.client.infrastructure.ui.UIInfrastructureAssembler;
 import se.streamsource.streamflow.client.resource.ClientResourceAssembler;
 import se.streamsource.streamflow.client.ui.UIAssembler;
 import se.streamsource.streamflow.client.ui.administration.AdministrationAssembler;
-import se.streamsource.streamflow.client.ui.events.ClientEventSourceAssembler;
+import se.streamsource.streamflow.client.ui.events.ClientEventSubscriptionAssembler;
 import se.streamsource.streamflow.client.ui.menu.MenuAssembler;
 import se.streamsource.streamflow.client.ui.overview.OverviewAssembler;
 import se.streamsource.streamflow.client.ui.search.SearchAssembler;
@@ -89,6 +90,7 @@ public class StreamFlowClientAssembler
         new UIAssembler().assemble(uiLayer.moduleAssembly("UI View"));
         new UIInfrastructureAssembler().assemble(uiLayer.moduleAssembly("View infrastructure"));
         new RestletClientAssembler().assemble(uiLayer.moduleAssembly("REST Client"));
+        new ClientEventSubscriptionAssembler().assemble(uiLayer.moduleAssembly("Client event subscribtion"));
     }
 
     protected void assembleClientDomainLayer(LayerAssembly domainLayer) throws AssemblyException
@@ -105,7 +107,7 @@ public class StreamFlowClientAssembler
     {
         new ConfigurationAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Configuration"));
         new ClientEntityStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Client EntityStore"));
-        new ClientEventSourceAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Client EventSource"));
+        new ClientEventsAssembler().assemble( domainInfrastructureLayer.moduleAssembly("Client events" ));
     }
 
 }

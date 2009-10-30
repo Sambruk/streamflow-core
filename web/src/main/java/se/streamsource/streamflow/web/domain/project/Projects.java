@@ -44,9 +44,9 @@ public interface Projects
         @Aggregated
         ManyAssociation<Project> projects();
 
-        ProjectEntity projectCreated(DomainEvent event, String id);
-        void projectRemoved(DomainEvent event, Project project);
-        void projectAdded(DomainEvent event, Project project);
+        ProjectEntity createdProject(DomainEvent event, String id);
+        void removedProject(DomainEvent event, Project project);
+        void addedProject(DomainEvent event, Project project);
 
         void mergeProjects(Projects projects);
 
@@ -69,14 +69,14 @@ public interface Projects
         {
             String id = idgen.generate(ProjectEntity.class);
 
-            ProjectEntity project = projectCreated(DomainEvent.CREATE, id);
-            projectAdded(DomainEvent.CREATE, project);
+            ProjectEntity project = createdProject(DomainEvent.CREATE, id);
+            addedProject(DomainEvent.CREATE, project);
             project.changeDescription(name);
 
             return project;
         }
 
-        public ProjectEntity projectCreated(DomainEvent event, String id)
+        public ProjectEntity createdProject(DomainEvent event, String id)
         {
             EntityBuilder<ProjectEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(ProjectEntity.class, id);
             builder.instance().organizationalUnit().set(ou);
@@ -101,7 +101,7 @@ public interface Projects
             {
                 return;
             }
-            projectAdded(DomainEvent.CREATE, project);
+            addedProject(DomainEvent.CREATE, project);
         }
 
         public ProjectEntity getProjectByName( String name )

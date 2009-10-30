@@ -62,7 +62,7 @@ public class EventPropertyChangeMixinTest
             @UseDefaults
             Property<String> foo();
 
-            void fooChanged(DomainEvent event, String newFoo);
+            void changedFoo(DomainEvent event, String newFoo);
         }
     }
 

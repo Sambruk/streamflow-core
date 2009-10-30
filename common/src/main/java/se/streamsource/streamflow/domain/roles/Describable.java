@@ -36,7 +36,7 @@ public interface Describable
         @UseDefaults
         Property<String> description();
 
-        void descriptionChanged(DomainEvent event, String description);
+        void changedDescription(DomainEvent event, String description);
     }
 
     public abstract class Mixin
@@ -55,7 +55,7 @@ public interface Describable
 
         public void changeDescription(String newDescription)
         {
-            descriptionChanged(CREATE, newDescription);
+            changedDescription(CREATE, newDescription);
         }
 
         public String getDescription()
@@ -64,7 +64,7 @@ public interface Describable
         }
 
         // State
-        public void descriptionChanged(DomainEvent event, String description)
+        public void changedDescription(DomainEvent event, String description)
         {
             description().set(description);
         }

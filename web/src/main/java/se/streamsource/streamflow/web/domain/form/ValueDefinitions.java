@@ -17,7 +17,9 @@ package se.streamsource.streamflow.web.domain.form;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
@@ -34,9 +36,8 @@ public interface ValueDefinitions
     {
         ManyAssociation<ValueDefinitionEntity> valueDefinitions();
 
-        ValueDefinitionEntity valueDefinitionCreated( DomainEvent event, String id);
-        void valueDefinitionAdded( DomainEvent event, ValueDefinitionEntity value);
-        void valueDefinitionRemoved( DomainEvent event, ValueDefinition value);
+        ValueDefinitionEntity createdValueDefinition( DomainEvent event, String id);
+        void removedValueDefinition( DomainEvent event, ValueDefinition value);
 
         ValueDefinitionEntity getValueDefinitionByName(String name);
     }
@@ -47,12 +48,32 @@ public interface ValueDefinitions
         @Service
         IdentityGenerator idGen;
 
+        @Structure
+        UnitOfWorkFactory uowf;
+
         public ValueDefinitionEntity createValueDefinition( String name )
         {
-            ValueDefinitionEntity value = valueDefinitionCreated( DomainEvent.CREATE, idGen.generate(ValueDefinitionEntity.class ));
-            valueDefinitionAdded( DomainEvent.CREATE, value);
+            ValueDefinitionEntity value = createdValueDefinition( DomainEvent.CREATE, idGen.generate(ValueDefinitionEntity.class ));
             value.changeDescription( name );
             return value;
+        }
+
+        public void removeValueDefinition( ValueDefinition value )
+        {
+            if (valueDefinitions().contains( (ValueDefinitionEntity) value ))
+                removedValueDefinition( DomainEvent.CREATE, value );
+        }
+
+        public ValueDefinitionEntity createdValueDefinition( DomainEvent event, String id )
+        {
+            ValueDefinitionEntity value = uowf.currentUnitOfWork().newEntity( ValueDefinitionEntity.class, id );
+            valueDefinitions().add( value );
+            return value;
+        }
+
+        public void removedValueDefinition( DomainEvent event, ValueDefinition value )
+        {
+            valueDefinitions().remove( (ValueDefinitionEntity) value );
         }
 
         public ValueDefinitionEntity getValueDefinitionByName( String name )

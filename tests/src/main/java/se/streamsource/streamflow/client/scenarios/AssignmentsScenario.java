@@ -16,14 +16,14 @@ package se.streamsource.streamflow.client.scenarios;
 
 import se.streamsource.streamflow.client.application.shared.steps.AssignmentsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplateSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplatesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.MembersSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.ProjectFormDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
@@ -48,9 +48,9 @@ public class AssignmentsScenario
                 new TestSetupSteps(),
                 new ValueDefinitionsSteps(),
                 new FieldDefinitionsSteps(),
-                new FormDefinitionSteps(),
-                new FormDefinitionsSteps(),
-                new ProjectFormDefinitionsSteps(),
+                new FormTemplateSteps(),
+                new FormTemplatesSteps(),
+                new FormsSteps(),
                 new OrganizationsSteps(),
                 new OrganizationalUnitsSteps(),
                 new AssignmentsSteps(),

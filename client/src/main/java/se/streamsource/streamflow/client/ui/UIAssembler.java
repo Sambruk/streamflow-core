@@ -16,7 +16,6 @@ package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.ApplicationContext;
 import static org.qi4j.api.common.Visibility.*;
-import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -24,7 +23,6 @@ import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
-import se.streamsource.streamflow.client.ui.events.ClientEventNotificationService;
 
 /**
  * JAVADOC
@@ -45,7 +43,6 @@ public class UIAssembler
 
         module.addServices(DummyDataService.class).instantiateOnStartup();
         module.addServices(ApplicationInitializationService.class).instantiateOnStartup();
-        module.addServices( ClientEventNotificationService.class).visibleIn( Visibility.module).instantiateOnStartup();
 
         UIAssemblers.addDialogs(module, NameDialog.class, SelectUsersAndGroupsDialog.class, CreateUserDialog.class);
 

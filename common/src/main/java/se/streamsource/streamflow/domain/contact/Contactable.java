@@ -34,7 +34,7 @@ public interface Contactable
     {
         Property<ContactValue> contact();
 
-        void contactUpdated(DomainEvent event, ContactValue contact);
+        void updatedContact(DomainEvent event, ContactValue contact);
     }
 
     abstract class Mixin
@@ -45,7 +45,7 @@ public interface Contactable
 
         public void updateContact(ContactValue newContact)
         {
-            contactUpdated(DomainEvent.CREATE, newContact);
+            updatedContact(DomainEvent.CREATE, newContact);
         }
 
         public ContactValue getContact()
@@ -53,7 +53,7 @@ public interface Contactable
             return state.contact().get();
         }
 
-        public void contactUpdated(DomainEvent event, ContactValue contact)
+        public void updatedContact(DomainEvent event, ContactValue contact)
         {
             state.contact().set(contact);
         }

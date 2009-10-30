@@ -19,6 +19,7 @@ import org.qi4j.api.common.AppliesToFilter;
 import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.property.StateHolder;
 
+import java.beans.Introspector;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Generic mixin for simple event methods that update a property. They have to follow this pattern:
- * void fooChanged(DomainEvent event, SomeType newValue)
+ * void changedFoo(DomainEvent event, SomeType newValue)
  * This will cause the property "foo" to be updated with the "newValue"
  */
 @AppliesTo(EventPropertyChangedMixin.EventPropertyChangeAppliesTo.class)
@@ -44,7 +45,8 @@ public class EventPropertyChangedMixin
         if (propertyMethod == null)
         {
             // Find property method
-            propertyMethod = method.getDeclaringClass().getMethod(method.getName().substring(0, method.getName().length() - "Changed".length()));
+            String propName = Introspector.decapitalize( method.getName().substring( "changed".length() ));
+            propertyMethod = method.getDeclaringClass().getMethod( propName );
             methodMappings.put(method, propertyMethod);
         }
 
@@ -59,7 +61,7 @@ public class EventPropertyChangedMixin
     {
         public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
         {
-            return method.getParameterTypes().length == 2 && method.getParameterTypes()[0].equals(DomainEvent.class) && method.getName().endsWith("Changed");
+            return method.getParameterTypes().length == 2 && method.getParameterTypes()[0].equals(DomainEvent.class) && method.getName().startsWith("changed");
         }
     }
 }
