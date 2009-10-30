@@ -17,30 +17,40 @@ package se.streamsource.streamflow.client.scenarios;
 import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FormTemplateSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FormTemplatesSteps;
-import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.MembersSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
 /**
  * JAVADOC
  */
-public class FormDefinitionsScenario
+public class FormTemplatesScenario
         extends AbstractWebDomainApplicationScenario
 {
-    public FormDefinitionsScenario()
+    public FormTemplatesScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public FormDefinitionsScenario(ClassLoader classLoader)
+    public FormTemplatesScenario(ClassLoader classLoader)
     {
         super(classLoader, new TestSetupSteps(),
                 new OrganizationsSteps(),
                 new OrganizationalUnitsSteps(),
                 new ValueDefinitionsSteps(),
                 new FieldDefinitionsSteps(),
+                new ParticipantsSteps(),
+                new ProjectsSteps(),
+                new GroupsSteps(),
+                new MembersSteps(),
+                new FormsSteps(),
                 new FormTemplatesSteps(),
                 new FormTemplateSteps());
     }

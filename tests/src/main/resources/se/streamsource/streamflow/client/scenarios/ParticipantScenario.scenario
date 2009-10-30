@@ -17,7 +17,7 @@ Given organizational unit named OU1
 Given group named group1
 Given user named user2
 When a participant joins a group
-Then events participantAdded,joinedGroup occurred
+Then events addedParticipant,joinedGroup occurred
 
 When a participant leaves a group
-Then events participantRemoved,leftGroup occurred
+Then events removedParticipant,leftGroup occurred

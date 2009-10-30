@@ -1,0 +1,8 @@
+Scenario: Form added and removed to/from project
+Given basic setup 1
+Given project named project1
+When a form named SomeForm is created
+Then events createdForm,changedDescription occurred
+
+When a form is removed from project
+Then events removedForm occurred

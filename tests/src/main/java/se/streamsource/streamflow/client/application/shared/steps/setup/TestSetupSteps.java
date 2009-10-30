@@ -142,6 +142,9 @@ public class TestSetupSteps
     public void setupForms() throws Exception
     {
         valueDefinitionsSteps.createValue( SOME_VALUE );
+        ouSteps.givenOrganization();
+        ouSteps.givenOU( OU1 );
+        projectsSteps.givenProject( PROJECT1 );
 
         formsSteps.createForm( SOME_FORM);
         fieldDefinitionsSteps.createField( SOME_FIELD, SOME_VALUE );

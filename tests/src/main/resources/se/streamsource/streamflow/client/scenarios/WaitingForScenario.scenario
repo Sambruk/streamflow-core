@@ -7,13 +7,13 @@ Given project named project2
 Given first waitingFor task
 
 When waitingFor task is marked as read
-Then events waitingForTaskMarkedAsRead occurred
+Then events markedWaitingForTaskAsRead occurred
 
 When waitingFor task is marked as read
 Then no events occurred
 
 When waitingFor task is marked as unread
-Then events waitingForTaskMarkedAsUnread occurred
+Then events markedWaitingForTaskAsUnread occurred
 
 When waitingFor task is marked as unread
 Then no events occurred

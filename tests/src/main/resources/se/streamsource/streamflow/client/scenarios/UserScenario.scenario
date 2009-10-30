@@ -2,7 +2,7 @@ Scenario: User changes password
 Given basic user setup
 Given user named user1
 When user changes password from password1 to newPassword
-Then events passwordChanged occurred
+Then events changedPassword occurred
 And exception is not thrown
 
 Scenario: User changes password with too short password
@@ -24,7 +24,7 @@ Given basic user setup
 Given user named user1
 When user changes password from password1 to ÅÄÖåäö9999?!_-
 Then exception is not thrown
-And events passwordChanged occurred
+And events changedPassword occurred
 
 Scenario: User tries to change password but get exception
 Given basic user setup
@@ -50,7 +50,7 @@ Scenario: User is disabled
 Given basic user setup
 Given user named user1
 When user enabled is set to false
-Then events enabledChanged occurred
+Then events changedEnabled occurred
 And exception is not thrown
 
 Scenario: Enabled user is enabled
@@ -63,7 +63,7 @@ Scenario: Disabled user is enabled
 Given basic user setup
 Given user named disabledUser
 When user enabled is set to true
-Then events enabledChanged occurred
+Then events changedEnabled occurred
 And exception is not thrown
 
 Scenario: Disabled user is disabled
@@ -76,7 +76,7 @@ Scenario: User reset password
 Given basic user setup
 Given user named user1
 When user resets password with newPassword
-Then events passwordChanged occurred
+Then events changedPassword occurred
 
 
 

@@ -32,15 +32,15 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
 /**
  * JAVADOC
  */
-public class ProjectFormDefinitionsScenario
+public class FormsScenario
         extends AbstractWebDomainApplicationScenario
 {
-    public ProjectFormDefinitionsScenario()
+    public FormsScenario()
     {
         this(Thread.currentThread().getContextClassLoader());
     }
 
-    public ProjectFormDefinitionsScenario(ClassLoader classLoader)
+    public FormsScenario(ClassLoader classLoader)
     {
         super(classLoader, new TestSetupSteps(),
                 new ValueDefinitionsSteps(),

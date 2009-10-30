@@ -1,7 +1,7 @@
 Scenario: create value and field definitions
 Given basic organizational unit setup
 When a value definition named SomeValue is created
-Then events valueDefinitionCreated,valueDefinitionAdded,descriptionChanged occurred
+Then events createdValueDefinition,changedDescription occurred
 
 When a field definition named SomeField of type SomeValue is created
-Then events fieldDefinitionCreated,fieldDefinitionAdded,descriptionChanged occurred
+Then events createdFieldDefinition,addedFieldDefinition,changedDescription occurred

@@ -7,5 +7,5 @@ Given user named user1
 When inbox task is created
 And events are cleared
 And comment with text mycomment is added
-Then events commentAdded occurred
+Then events addedComment occurred
 

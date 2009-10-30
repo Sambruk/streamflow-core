@@ -2,10 +2,10 @@ Scenario: Create/remove new Organization Unit
 Given basic organizational unit setup
 Given the organization
 When an organizational unit named jayway2000 is created
-Then events organizationalUnitCreated,organizationalUnitAdded,descriptionChanged occurred
+Then events createdOrganizationalUnit,addedOrganizationalUnit,changedDescription occurred
 
 When an organizational unit named jayway2000 is removed
-Then events organizationalUnitRemoved occurred
+Then events removedOrganizationalUnit occurred
 
 Scenario: Organizational Unit names cannot be more than 50 characters
 Given basic organizational unit setup

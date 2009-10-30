@@ -1,7 +1,7 @@
 Scenario: Create new user
 Given the organizations
 When a new user named newUser is created
-Then events userCreated occurred
+Then events createdUser occurred
 And exception is not thrown
 
 Scenario: Create new user with invalid user name

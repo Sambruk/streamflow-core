@@ -1,4 +1,4 @@
-Scenario: create form and add fields
+Scenario: create and remove form templates
 Given basic setup 1
 Given the organization
 Given organizational unit named OU1
@@ -11,5 +11,8 @@ And events are cleared
 When a field named Foo is added to form
 Then events createdField,changedDescription occurred
 
-When a field named Foo is removed from form
-Then events removedField occurred
+When a form template is created
+Then events createdFormTemplate,changedDescription,changedNote,createdField,changedDescription,changedValueDefinition occurred
+
+When a form template is removed
+Then events removedFormTemplate occurred

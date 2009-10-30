@@ -19,6 +19,7 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
+import se.streamsource.streamflow.web.domain.form.Field;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.domain.form.Forms;
 
@@ -51,7 +52,7 @@ public class FormsSteps
         givenForm = projectSetupSteps.givenProject.getFormByName( form );
     }
 
-    @When("a form named $name is created in project")
+    @When("a form named $name is created")
     public void createForm(String name) throws Exception
     {
         try
@@ -80,8 +81,16 @@ public class FormsSteps
         }
     }
 
+    @When("a field named $name is added to form")
     public void createField( String someField )
     {
         givenForm.createField( someField, valueSteps.givenValue );
+    }
+
+    @When("a field named $name is removed from form")
+    public void removeField(String name)
+    {
+        Field field = givenForm.getFieldByName( name );
+        givenForm.removeField(field);
     }
 }

@@ -4,7 +4,7 @@ Given the organization
 Given organizational unit named OU1
 Given organizational unit named OU1Sub
 When organizational unit is moved to organizational unit named OU2
-Then events organizationalUnitRemoved,organizationalUnitAdded occurred
+Then events removedOrganizationalUnit,addedOrganizationalUnit occurred
 And exception is not thrown
 
 Scenario: Failed move organizational unit
@@ -15,7 +15,7 @@ When organizational unit is moved to organizational unit named OU1
 Then MoveOrganizationalUnitException is thrown
 And no events occurred
 
-Scenario: Move organizational unit with no events
+Scenario: Move organizational unit to the same parent (=no change)
 Given basic organizational unit setup
 Given the organization
 Given organizational unit named OU1
@@ -30,7 +30,7 @@ Given the organization
 Given organizational unit named OU1
 Given organizational unit named OU1Sub
 When organizational unit is merged to organizational unit named OU1
-Then events organizationalUnitRemoved,removedChanged occurred
+Then events removedOrganizationalUnit,changedRemoved occurred
 And exception is not thrown
 
 Scenario: Failed merge organizational unit
@@ -46,7 +46,7 @@ Given basic organizational unit setup
 Given the organization
 Given organizational unit named OU1
 When organizational unit is deleted
-Then events organizationalUnitRemoved,removedChanged occurred
+Then events removedOrganizationalUnit,changedRemoved occurred
 
 Scenario: Failed delete organizational unit
 Given basic organizational unit setup

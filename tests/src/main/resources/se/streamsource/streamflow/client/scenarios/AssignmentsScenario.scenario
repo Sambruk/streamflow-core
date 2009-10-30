@@ -5,7 +5,7 @@ Given organizational unit named OU1
 Given project named project1
 Given user named user1
 When an assigned task is created
-Then events assignedTaskCreated,changedOwner,dateChanged,counterSet,taskIdAssigned,contactAdded,assignedTo occurred
+Then events createdAssignedTask,changedOwner,changedDate,setCounter,assignedTaskId,addedContact,assignedTo occurred
 
 Scenario: Mark assigned task as unread and read
 Given basic setup 1
@@ -16,13 +16,13 @@ Given user named user1
 When an assigned task is created
 And events are cleared
 And an assigned task is marked as unread
-Then events assignedTaskMarkedAsUnread occurred
+Then events markedAssignedTaskAsUnread occurred
 
 When an assigned task is marked as unread
 Then no events occurred
 
 When an assigned task is marked as read
-Then events assignedTaskMarkedAsRead occurred
+Then events markedAssignedTaskAsRead occurred
 
 When an assigned task is marked as read
 Then no events occurred
@@ -36,7 +36,7 @@ Given user named user1
 When an assigned task is created
 And events are cleared
 And assigned task is completed
-Then events statusChanged occurred
+Then events changedStatus occurred
 
 Scenario: Drop assigned task
 Given basic setup 1
@@ -47,7 +47,7 @@ Given user named user1
 When an assigned task is created
 And events are cleared
 And assigned task is dropped
-Then events statusChanged occurred
+Then events changedStatus occurred
 
 Scenario: Forward assigned task
 Given basic setup 1

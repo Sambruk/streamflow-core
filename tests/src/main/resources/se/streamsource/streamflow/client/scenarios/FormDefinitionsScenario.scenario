@@ -1,7 +1,0 @@
-Scenario: create and remove form definition
-Given basic organizational unit setup
-When a form definition named SomeForm is created
-Then events formDefinitionCreated,formDefinitionAdded,descriptionChanged occurred
-
-When a form definition is removed
-Then events formDefinitionRemoved occurred

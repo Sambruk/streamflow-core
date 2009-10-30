@@ -26,6 +26,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.MemoryEventStoreService;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -57,7 +58,8 @@ public class GenericSteps
         ensureThat( throwable, CoreMatchers.nullValue() );
         
         List<DomainEvent> events = eventService.getEvents();
-        ensureThat(events != null);
+        if (events == null)
+            events = Collections.emptyList();
         String eventNames = "";
         String comma = "";
         for (DomainEvent event : events)
