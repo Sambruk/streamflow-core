@@ -32,6 +32,9 @@ public class FormsSteps
     GenericSteps genericSteps;
 
     @Uses
+    ValueDefinitionsSteps valueSteps;
+
+    @Uses
     OrganizationsSteps orgsSteps;
 
     @Uses
@@ -48,14 +51,15 @@ public class FormsSteps
         givenForm = projectSetupSteps.givenProject.getFormByName( form );
     }
 
-    @When("a form is added to project")
-    public void addForm() throws Exception
+    @When("a form named $name is created in project")
+    public void createForm(String name) throws Exception
     {
         try
         {
             Forms projectForms = projectSetupSteps.givenProject;
 
-            formTemplatesSteps.givenTemplate = (FormEntity) projectForms.createForm( );
+            givenForm = (FormEntity) projectForms.createForm( );
+            givenForm.changeDescription(name);
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
@@ -76,5 +80,8 @@ public class FormsSteps
         }
     }
 
-
+    public void createField( String someField )
+    {
+        givenForm.createField( someField, valueSteps.givenValue );
+    }
 }

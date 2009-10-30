@@ -143,18 +143,18 @@ public class TestSetupSteps
     {
         valueDefinitionsSteps.createValue( SOME_VALUE );
 
-        formTemplatesSteps.createForm( SOME_FORM);
+        formsSteps.createForm( SOME_FORM);
         fieldDefinitionsSteps.createField( SOME_FIELD, SOME_VALUE );
-        formTemplateSteps.createField(SOME_FIELD );
+        formsSteps.createField(SOME_FIELD );
         fieldDefinitionsSteps.createField( SOME_FIELD2, SOME_VALUE );
-        formTemplateSteps.createField(SOME_FIELD);
+        formsSteps.createField(SOME_FIELD);
 
         ouSteps.givenOrganization();
         ouSteps.givenOU( "OU1" );
         projectsSteps.givenProject( "project1" );
 
 
-        formsSteps.addForm( );
+        formTemplatesSteps.createTemplate();
 
         genericSteps.clearEvents();
     }

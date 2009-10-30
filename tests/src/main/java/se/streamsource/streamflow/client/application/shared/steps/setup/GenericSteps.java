@@ -19,6 +19,7 @@ import static org.jbehave.Ensure.*;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
+import org.junit.Assert;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -47,6 +48,12 @@ public class GenericSteps
     @Then("events $commaSeparatedList occurred")
     public void eventsOccured(String expectedEvents)
     {
+        if (throwable != null)
+        {
+            throwable.printStackTrace();
+            Assert.fail( "Exception was thrown" );
+        }
+
         ensureThat( throwable, CoreMatchers.nullValue() );
         
         List<DomainEvent> events = eventService.getEvents();

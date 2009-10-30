@@ -46,15 +46,14 @@ public class FormTemplatesSteps
         givenTemplate = forms.getTemplateByName( name );
     }
 
-    @When("a form template named $name is created")
-    public void createForm(String name) throws Exception
+    @When("a form template is created")
+    public void createTemplate() throws Exception
     {
         try
         {
             FormTemplates forms = orgsSteps.givenOrganization;
 
             givenTemplate = forms.createFormTemplate( formsSteps.givenForm );
-            givenTemplate.changeDescription( name );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
@@ -62,7 +61,7 @@ public class FormTemplatesSteps
     }
 
     @When("a form template is removed")
-    public void removed() throws Exception
+    public void removeTemplate() throws Exception
     {
         try
         {
@@ -74,6 +73,4 @@ public class FormTemplatesSteps
             genericSteps.setThrowable(e);
         }
     }
-
-
 }
