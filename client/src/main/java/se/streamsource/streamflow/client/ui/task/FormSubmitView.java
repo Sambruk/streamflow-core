@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.ConstantSize;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
@@ -40,10 +41,9 @@ public class FormSubmitView
 
     private CardLayout layout = new CardLayout();
     private DefaultFormBuilder formBuilder;
-    private JPanel form;
+    private JScrollPane scrollPane;
     FormLayout formLayout = new FormLayout(
-                "pref, 4dlu, 50dlu",
-                "");
+            "pref, 4dlu, 150dlu","");
 
     private Map<ListItemValue, TextField> fields;
 
@@ -58,15 +58,12 @@ public class FormSubmitView
 
         setLayout(layout);
 
-
-        form = new JPanel();
-        JScrollPane scrollPane = new JScrollPane(form);
+        scrollPane = new JScrollPane();
 
         fields = new HashMap<ListItemValue, TextField>();
 
         add(new JPanel(), "EMPTY");
         add(scrollPane, "CONTACT");
-
     }
 
     public void setModel(FormSubmitModel model)
@@ -74,19 +71,19 @@ public class FormSubmitView
         this.model = model;
         if (model != null)
         {
-            form.removeAll();
+            scrollPane.setViewportView(new JPanel());
+
             fields.clear();
-            formBuilder = new DefaultFormBuilder(formLayout, form);
+            formBuilder = new DefaultFormBuilder(formLayout, (JPanel)scrollPane.getViewport().getView());
+            ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
+            formBuilder.setLineGapSize(lineGap);
             formBuilder.setDefaultDialogBorder();
 
             for (ListItemValue value : model.getFields())
             {
-                formBuilder.append(new JLabel(value.description().get()));
                 fields.put(value, new TextField(30));
-                formBuilder.append(fields.get(value));
-                formBuilder.nextLine();
+                formBuilder.append(value.description().get(), fields.get(value));
             }
-
             layout.show(this, "CONTACT");
         } else
         {
