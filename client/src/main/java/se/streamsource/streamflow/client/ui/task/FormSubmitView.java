@@ -19,11 +19,18 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * JAVADOC
@@ -36,12 +43,16 @@ public class FormSubmitView
     private DefaultFormBuilder formBuilder;
     private JPanel form;
     FormLayout formLayout = new FormLayout(
-                "200dlu",
+                "pref, 4dlu, 50dlu",
                 "");
 
+    private Map<ListItemValue, TextField> fields;
 
-    public FormSubmitView(@Service ApplicationContext context,
-                         @Structure ObjectBuilderFactory obf)
+    @Structure
+    ValueBuilderFactory vbf;
+    private FormSubmitModel model;
+
+    public FormSubmitView(@Service ApplicationContext context)
     {
         ActionMap am = context.getActionMap(this);
         setActionMap(am);
@@ -52,6 +63,8 @@ public class FormSubmitView
         form = new JPanel();
         JScrollPane scrollPane = new JScrollPane(form);
 
+        fields = new HashMap<ListItemValue, TextField>();
+
         add(new JPanel(), "EMPTY");
         add(scrollPane, "CONTACT");
 
@@ -59,19 +72,20 @@ public class FormSubmitView
 
     public void setModel(FormSubmitModel model)
     {
+        this.model = model;
         if (model != null)
         {
             form.removeAll();
-
+            fields.clear();
             formBuilder = new DefaultFormBuilder(formLayout, form);
             formBuilder.setDefaultDialogBorder();
 
             for (ListItemValue value : model.getFields())
             {
                 formBuilder.append(new JLabel(value.description().get()));
-                formBuilder.append(new TextField(30));
+                fields.put(value, new TextField(30));
+                formBuilder.append(fields.get(value));
                 formBuilder.nextLine();
-                form.doLayout();
             }
 
             layout.show(this, "CONTACT");
@@ -80,5 +94,24 @@ public class FormSubmitView
             layout.show(this, "EMPTY");
         }
 
+    }
+
+    public SubmittedFormValue getSubmittedFormValue()
+    {
+        ValueBuilder<SubmittedFormValue> submittedFormBuilder = vbf.newValueBuilder(SubmittedFormValue.class);
+        ValueBuilder<FieldValue> fieldBuilder =vbf.newValueBuilder(FieldValue.class);
+        java.util.List<FieldValue> fields = new ArrayList<FieldValue>();
+
+        for (Map.Entry<ListItemValue, TextField> stringComponentEntry : this.fields.entrySet())
+        {
+            fieldBuilder.prototype().field().set(stringComponentEntry.getKey().entity().get());
+            fieldBuilder.prototype().value().set(stringComponentEntry.getValue().getText());
+            fields.add(fieldBuilder.newInstance());
+        }
+
+        submittedFormBuilder.prototype().values().set(fields);
+        submittedFormBuilder.prototype().submissionDate().set(new Date());
+        submittedFormBuilder.prototype().form().set(model.formReference);
+        return submittedFormBuilder.newInstance();
     }
 }

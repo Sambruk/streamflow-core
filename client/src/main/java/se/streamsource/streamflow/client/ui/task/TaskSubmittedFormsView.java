@@ -43,11 +43,10 @@ public class TaskSubmittedFormsView
     @Service
     DialogService dialogs;
 
-    //@Uses
-    //Iterable<FormSubmissionDialog> formSubmissionDialog;
-
     @Structure
     ObjectBuilderFactory obf;
+
+    private SimpleDateFormat formatter = new SimpleDateFormat(i18n.text(WorkspaceResources.date_format));
 
     public TaskSubmittedFormsView(@Service ApplicationContext context)
     {
@@ -63,7 +62,7 @@ public class TaskSubmittedFormsView
             public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)
             {
                 SubmittedFormListDTO listDTO = (SubmittedFormListDTO) o;
-                String dateString = new SimpleDateFormat(i18n.text(WorkspaceResources.date_format)).format(listDTO.submissionDate().get());
+                String dateString = formatter.format(listDTO.submissionDate().get());
                 String listItem = dateString + ":" + listDTO.form().get() + " (" + listDTO.submitter().get() +")";
                 return super.getListCellRendererComponent(jList, listItem, i, b, b1);
             }
@@ -82,7 +81,8 @@ public class TaskSubmittedFormsView
     public void add() throws IOException, ResourceException
     {
         FormSubmissionDialog dialog =
-                obf.newObjectBuilder(FormSubmissionDialog.class).use(model.getTaskFormDefinitionsResource()).newInstance();
+                obf.newObjectBuilder(FormSubmissionDialog.class).
+                        use(model.getTaskFormDefinitionsResource(), model.getTaskSubmittedFormsClientResource()).newInstance();
 
         dialogs.showOkCancelHelpDialog(this, dialog);
     }

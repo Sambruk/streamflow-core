@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.domain.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
@@ -28,8 +29,9 @@ import java.util.List;
 public interface SubmittedFormValue
     extends ValueComposite
 {
-    Property<Date> submissionDate();
+    @Optional
     Property<EntityReference> submitter();
+    Property<Date> submissionDate();
     Property<EntityReference> form();
 
     @UseDefaults

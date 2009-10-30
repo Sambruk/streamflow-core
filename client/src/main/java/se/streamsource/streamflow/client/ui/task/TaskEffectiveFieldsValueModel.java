@@ -18,38 +18,47 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
-import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
-import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
 
 /**
  * List of contacts for a task
  */
-public class TaskSubmittedFormsModel
-        extends AbstractListModel
+public class TaskEffectiveFieldsValueModel
+        extends AbstractTableModel
         implements Refreshable, EventListener, EventHandler
 
 {
+
+    String[] columnNames = {
+            i18n.text(WorkspaceResources.field_date),
+            i18n.text(WorkspaceResources.field_name),
+            i18n.text(WorkspaceResources.field_value),
+            i18n.text(WorkspaceResources.field_submitter)
+    };
+
+    private SimpleDateFormat formatter = new SimpleDateFormat(i18n.text(WorkspaceResources.date_format));
+
     @Structure
     ValueBuilderFactory vbf;
 
     @Uses
     TaskSubmittedFormsClientResource taskSubmittedForms;
 
-    @Uses
-    TaskFormDefinitionsClientResource formDefinitions;
-
-    List<SubmittedFormListDTO> submittedForms = Collections.emptyList();
+    List<EffectiveFieldValue> effectiveFields = Collections.emptyList();
 
     EventHandlerFilter eventFilter = new EventHandlerFilter(this, "formSubmitted");
 
@@ -57,8 +66,7 @@ public class TaskSubmittedFormsModel
     {
         try
         {
-            submittedForms = taskSubmittedForms.taskSubmittedForms().forms().get();
-            fireContentsChanged(this, 0, getSize());
+            effectiveFields = taskSubmittedForms.effectiveFields().fields().get();
         } catch (Exception e)
         {
             throw new OperationException(TaskResources.could_not_refresh, e);
@@ -70,21 +78,45 @@ public class TaskSubmittedFormsModel
         return taskSubmittedForms;
     }
 
-    public TaskFormDefinitionsClientResource getTaskFormDefinitionsResource()
+    public int getRowCount()
     {
-        return formDefinitions;
+        return effectiveFields==null?0:effectiveFields.size();
     }
 
-    public int getSize()
+    public int getColumnCount()
     {
-        return submittedForms.size();
+        return columnNames.length;
     }
 
-    public Object getElementAt(int i)
+    public Object getValueAt(int row, int col)
     {
-        return submittedForms.get(i);
+        EffectiveFieldValue value = effectiveFields.get(row);
+
+        switch(col)
+        {
+            case 0:
+                return formatter.format(value.submissionDate().get());
+            case 1:
+                return value.field().get().toString();
+            case 2:
+                return value.value().get();
+            case 3:
+                return value.submitter().get().toString();
+        }
+        return null;
     }
 
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex)
+    {
+        return false;
+    }
+
+    @Override
+    public String getColumnName(int i)
+    {
+        return columnNames[i];
+    }
 
     public void notifyEvent( DomainEvent event )
     {
@@ -95,11 +127,10 @@ public class TaskSubmittedFormsModel
     {
         if (taskSubmittedForms.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get()))
         {
-            Logger.getLogger("workspace").info("Refresh submitted forms");
+            Logger.getLogger("workspace").info("Refresh effective field");
             refresh();
         }
 
         return false;
     }
-
 }

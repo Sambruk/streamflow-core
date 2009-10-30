@@ -19,6 +19,8 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 
 import java.io.IOException;
@@ -38,6 +40,16 @@ public class TaskSubmittedFormsClientResource
     public SubmittedFormsListDTO taskSubmittedForms() throws ResourceException, IOException
     {
         return query("taskSubmittedForms", SubmittedFormsListDTO.class);
+    }
+
+    public void submitForm(SubmittedFormValue value) throws ResourceException
+    {
+        postCommand("submitForm", value);
+    }
+
+    public EffectiveFormFieldsValue effectiveFields() throws ResourceException
+    {
+        return query("effectiveFields", EffectiveFormFieldsValue.class);
     }
 
     public TaskSubmittedFormClientResource taskSubmittedForm(int index)

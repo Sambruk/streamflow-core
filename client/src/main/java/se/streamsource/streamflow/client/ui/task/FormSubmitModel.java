@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
@@ -31,6 +32,9 @@ public class FormSubmitModel
     @Uses
     TaskFormDefinitionClientResource form;
 
+    @Uses
+    EntityReference formReference;
+
     public List<ListItemValue> getFields()
     {
         try
@@ -41,5 +45,9 @@ public class FormSubmitModel
             throw new OperationException(WorkspaceResources.could_not_get_form, e);
         }
     }
-
+    
+    public EntityReference formReference()
+    {
+        return formReference;
+    }
 }

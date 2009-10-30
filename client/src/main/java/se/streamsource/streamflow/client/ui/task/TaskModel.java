@@ -41,6 +41,9 @@ public class TaskModel
     @Uses
     private TaskSubmittedFormsModel forms;
 
+    @Uses
+    private TaskEffectiveFieldsValueModel effectiveValues;
+
     public TaskClientResource resource()
     {
         return resource;
@@ -66,6 +69,11 @@ public class TaskModel
         return forms;
     }
 
+    public TaskEffectiveFieldsValueModel effectiveValues()
+    {
+        return effectiveValues;
+    }
+
 
     public void refresh()
     {
@@ -73,6 +81,7 @@ public class TaskModel
         comments.refresh();
         contacts.refresh();
         forms.refresh();
+        effectiveValues.refresh();
     }
 
     public void notifyEvent( DomainEvent event )
@@ -81,5 +90,6 @@ public class TaskModel
         general.notifyEvent(event);
         contacts.notifyEvent( event );
         forms.notifyEvent(event);
+        effectiveValues.notifyEvent(event);
     }
 }

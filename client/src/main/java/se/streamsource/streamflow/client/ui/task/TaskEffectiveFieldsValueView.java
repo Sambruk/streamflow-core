@@ -15,11 +15,15 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXList;
+import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -27,17 +31,44 @@ import javax.swing.*;
 public class TaskEffectiveFieldsValueView
         extends JPanel
 {
-    TaskContactModel model;
+    TaskEffectiveFieldsValueModel model;
 
     public ValueBuilder<ContactValue> valueBuilder;
-    
-    public JPanel form;
+    private JXTable effectiveValueTable;
 
-    public TaskEffectiveFieldsValueView(@Service ApplicationContext appContext)
-    {
+    public TaskEffectiveFieldsValueView(@Service ApplicationContext context)
+    {       super(new BorderLayout());
+
+        ActionMap am = context.getActionMap(this);
+        setActionMap(am);
+        setMinimumSize(new Dimension(150, 0));
+
+        effectiveValueTable = new JXTable();
+
+        JScrollPane submittedFormsScollPane = new JScrollPane();
+        submittedFormsScollPane.setViewportView(effectiveValueTable);
+
+        add(submittedFormsScollPane, BorderLayout.CENTER);
     }
 
 
+    public void setModel(TaskEffectiveFieldsValueModel model)
+    {
+        this.model = model;
+        effectiveValueTable.setModel(model);
+    }
 
 
+    @Override
+    public void setVisible(boolean b)
+    {
+        super.setVisible(b);
+        if (b)
+        {
+            if (model != null)
+            {
+                model.refresh();
+            }
+        }
+    }
 }

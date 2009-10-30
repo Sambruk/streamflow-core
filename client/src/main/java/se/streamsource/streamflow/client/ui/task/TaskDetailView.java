@@ -37,6 +37,7 @@ public class TaskDetailView
     private TaskGeneralView generalView;
     private TaskContactsAdminView contactsView;
     private TaskSubmittedFormsAdminView formsView;
+    private TaskEffectiveFieldsValueView effectiveView;
     private TaskModel model;
 
     public TaskDetailView(@Service ApplicationContext appContext,
@@ -54,6 +55,7 @@ public class TaskDetailView
         this.generalView = generalView;
         this.contactsView = contactsView;
         this.formsView = formsAdminView.getSubmittedFormsView();
+        this.effectiveView = formsAdminView.getEffectiveFieldsValueView();
 
         addTab(i18n.text(WorkspaceResources.general_tab), i18n.icon(Icons.general), generalView, i18n.text(WorkspaceResources.general_tab));
         addTab(i18n.text(WorkspaceResources.contacts_tab), i18n.icon(Icons.projects), contactsView, i18n.text(WorkspaceResources.contacts_tab));
@@ -108,6 +110,7 @@ public class TaskDetailView
             commentsView.setModel(model.comments());
             contactsView.setModel(model.contacts());
             formsView.setModel(model.forms());
+            effectiveView.setModel(model.effectiveValues());
 
 /*
             setPreferredSize(new Dimension(getWidth(), 500));

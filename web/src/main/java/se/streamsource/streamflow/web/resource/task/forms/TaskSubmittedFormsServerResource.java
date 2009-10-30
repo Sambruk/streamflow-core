@@ -14,19 +14,25 @@
 
 package se.streamsource.streamflow.web.resource.task.forms;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.web.domain.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.task.TaskQueries;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
+import se.streamsource.streamflow.web.domain.task.TaskQueries;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * Mapped to:
@@ -52,9 +58,23 @@ public class TaskSubmittedFormsServerResource
         return forms.getSubmittedForms();
     }
 
+    public void submitForm(SubmittedFormValue value)
+    {
+        String formsQueryId = getRequest().getAttributes().get("task").toString();
+        SubmittedForms forms = uowf.currentUnitOfWork().get(SubmittedForms.class, formsQueryId);
+
+        UserEntity user = uowf.currentUnitOfWork().get(UserEntity.class, getClientInfo().getUser().getIdentifier());
+
+        ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder(SubmittedFormValue.class);
+
+        formBuilder.withPrototype(value);
+        formBuilder.prototype().submitter().set(EntityReference.getEntityReference(user));
+
+        forms.submitForm(formBuilder.newInstance());
+    }
+
     public ListValue applicableFormDefinitionList()
     {
-        // find project identity is
         String taskId = getRequest().getAttributes().get("task").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
 
@@ -72,6 +92,20 @@ public class TaskSubmittedFormsServerResource
             formsList = vbf.newValue(ListValue.class);
         }
         return formsList;
+    }
+
+    public EffectiveFormFieldsValue effectiveFields()
+    {
+        String formsQueryId = getRequest().getAttributes().get("task").toString();
+        SubmittedForms.Data fields = uowf.currentUnitOfWork().get(SubmittedForms.Data.class, formsQueryId);
+
+        EffectiveFormFieldsValue fieldsValue = fields.effectiveFieldValues().get();
+        if (fieldsValue == null)
+        {
+            return vbf.newValueBuilder(EffectiveFormFieldsValue.class).newInstance();
+        }
+
+        return fields.effectiveFieldValues().get();
     }
     
 

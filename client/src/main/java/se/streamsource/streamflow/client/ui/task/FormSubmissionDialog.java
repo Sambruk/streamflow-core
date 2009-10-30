@@ -21,7 +21,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -40,6 +45,11 @@ public class FormSubmissionDialog
     @Structure
     ObjectBuilderFactory obf;
 
+    private FormSubmitView formSubmitView;
+
+    @Uses
+    TaskSubmittedFormsClientResource submittedFormsResource;
+
     public FormSubmissionDialog(@Service ApplicationContext context,
                                 @Uses final FormsListView formsListView,
                                 @Uses final FormSubmitView formSubmitView)
@@ -50,6 +60,7 @@ public class FormSubmissionDialog
 
         setPreferredSize(dialogSize);
 
+        this.formSubmitView = formSubmitView;
         add(formsListView, BorderLayout.WEST);
         add(formSubmitView, BorderLayout.CENTER);
 
@@ -67,23 +78,29 @@ public class FormSubmissionDialog
                         TaskFormDefinitionsClientResource resource = formsListView.getResource();
                         FormSubmitModel model =
                                 obf.newObjectBuilder(FormSubmitModel.class).
-                                        use(resource.formDefinition(value.entity().get().identity())).newInstance();
+                                        use(resource.formDefinition(value.entity().get().identity()), value.entity().get()).newInstance();
                         formSubmitView.setModel(model);
                     } else
                     {
                         formSubmitView.setModel(null);
                     }
                 }
-
             }
         });
-
-
     }
 
     @Action
     public void execute()
     {
+        SubmittedFormValue value = formSubmitView.getSubmittedFormValue();
+
+        try
+        {
+            submittedFormsResource.submitForm(value);
+        } catch (ResourceException e)
+        {
+            throw new OperationException(WorkspaceResources.could_not_submit_form, e);
+        }
 
         WindowUtils.findWindow(this).dispose();
     }

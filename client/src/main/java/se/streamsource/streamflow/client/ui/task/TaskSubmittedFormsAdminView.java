@@ -66,8 +66,7 @@ public class TaskSubmittedFormsAdminView
             }
         });
     }
-
-
+    
     public void setModel(TaskSubmittedFormsModel model)
     {
         formsView.setModel(model);

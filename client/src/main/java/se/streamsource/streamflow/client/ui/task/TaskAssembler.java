@@ -29,7 +29,7 @@ public class TaskAssembler
     public void assemble( ModuleAssembly module ) throws AssemblyException
     {
         UIAssemblers.addViews(module, TasksDetailView.class, TableSelectionView.class, TaskContactsAdminView.class,
-                TaskFormsAdminView.class, TaskSubmittedFormsAdminView.class, TaskEffectiveFieldsValueView.class);
+                TaskFormsAdminView.class, TaskSubmittedFormsAdminView.class);
 
         UIAssemblers.addDialogs(module, AddCommentDialog.class, FormSubmissionDialog.class);
 
@@ -54,6 +54,10 @@ public class TaskAssembler
         UIAssemblers.addMV(module,
                 TaskGeneralModel.class,
                 TaskGeneralView.class);
+
+        UIAssemblers.addMV(module,
+                TaskEffectiveFieldsValueModel.class,
+                TaskEffectiveFieldsValueView.class);
 
         UIAssemblers.addMV(module,
                 TaskSubmittedFormsModel.class,

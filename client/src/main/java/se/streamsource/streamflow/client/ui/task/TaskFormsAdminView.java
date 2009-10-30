@@ -29,11 +29,13 @@ public class TaskFormsAdminView
 {
 
     private TaskSubmittedFormsAdminView submittedFormsView;
+    private TaskEffectiveFieldsValueView effectiveFieldsValueView;
 
-    public TaskFormsAdminView(@Uses TaskSubmittedFormsAdminView submittedFormsView,
-                              @Uses TaskEffectiveFieldsValueView effectiveFieldsValueView)
+    public TaskFormsAdminView(@Uses TaskEffectiveFieldsValueView effectiveFieldsValueView,
+                              @Uses TaskSubmittedFormsAdminView submittedFormsView)
     {
         this.submittedFormsView = submittedFormsView;
+        this.effectiveFieldsValueView = effectiveFieldsValueView;
         addTab(i18n.text(WorkspaceResources.effective_fields_tab), effectiveFieldsValueView);
         addTab(i18n.text(WorkspaceResources.submitted_forms_tab), submittedFormsView);
     }
@@ -48,5 +50,11 @@ public class TaskFormsAdminView
     {
         super.setVisible(b);
         submittedFormsView.setVisible(b);
+        effectiveFieldsValueView.setVisible(b);
+    }
+
+    public TaskEffectiveFieldsValueView getEffectiveFieldsValueView()
+    {
+        return effectiveFieldsValueView;
     }
 }
