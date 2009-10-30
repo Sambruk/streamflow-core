@@ -30,6 +30,7 @@ public class FormAssembler
         moduleAssembly.addValues( EffectiveFieldValue.class,
                 EffectiveFormFieldsValue.class,
                 FieldValue.class,
-                SubmittedFormValue.class).visibleIn( Visibility.application );
+                SubmittedFormValue.class,
+                SubmitFormDTO.class).visibleIn( Visibility.application );
     }
 }

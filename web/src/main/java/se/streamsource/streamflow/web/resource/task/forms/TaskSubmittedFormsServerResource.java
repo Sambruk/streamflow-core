@@ -22,17 +22,20 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
+import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.task.TaskQueries;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+
+import java.util.Date;
 
 /**
  * Mapped to:
@@ -58,7 +61,7 @@ public class TaskSubmittedFormsServerResource
         return forms.getSubmittedForms();
     }
 
-    public void submitForm(SubmittedFormValue value)
+    public void submitForm(SubmitFormDTO submitDTO)
     {
         String formsQueryId = getRequest().getAttributes().get("task").toString();
         SubmittedForms forms = uowf.currentUnitOfWork().get(SubmittedForms.class, formsQueryId);
@@ -67,8 +70,10 @@ public class TaskSubmittedFormsServerResource
 
         ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder(SubmittedFormValue.class);
 
-        formBuilder.withPrototype(value);
         formBuilder.prototype().submitter().set(EntityReference.getEntityReference(user));
+        formBuilder.prototype().form().set(submitDTO.form().get());
+        formBuilder.prototype().submissionDate().set(new Date());
+        formBuilder.prototype().values().set(submitDTO.values().get());
 
         forms.submitForm(formBuilder.newInstance());
     }
@@ -94,18 +99,13 @@ public class TaskSubmittedFormsServerResource
         return formsList;
     }
 
-    public EffectiveFormFieldsValue effectiveFields()
+    public EffectiveFieldsDTO effectiveFields()
     {
         String formsQueryId = getRequest().getAttributes().get("task").toString();
-        SubmittedForms.Data fields = uowf.currentUnitOfWork().get(SubmittedForms.Data.class, formsQueryId);
 
-        EffectiveFormFieldsValue fieldsValue = fields.effectiveFieldValues().get();
-        if (fieldsValue == null)
-        {
-            return vbf.newValueBuilder(EffectiveFormFieldsValue.class).newInstance();
-        }
+        SubmittedFormsQueries fields = uowf.currentUnitOfWork().get(SubmittedFormsQueries.class, formsQueryId);
 
-        return fields.effectiveFieldValues().get();
+        return fields.effectiveFields();
     }
     
 

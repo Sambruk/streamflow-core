@@ -19,17 +19,14 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.Date;
 import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface SubmittedFormValue
+public interface SubmitFormDTO
     extends ValueComposite
 {
-    Property<EntityReference> submitter();
-    Property<Date> submissionDate();
     Property<EntityReference> form();
 
     @UseDefaults

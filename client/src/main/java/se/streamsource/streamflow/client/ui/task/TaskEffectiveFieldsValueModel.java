@@ -18,21 +18,21 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
-import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
 
 import javax.swing.table.AbstractTableModel;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-import java.text.SimpleDateFormat;
 
 /**
  * List of contacts for a task
@@ -50,7 +50,7 @@ public class TaskEffectiveFieldsValueModel
             i18n.text(WorkspaceResources.field_submitter)
     };
 
-    private SimpleDateFormat formatter = new SimpleDateFormat(i18n.text(WorkspaceResources.date_format));
+    private SimpleDateFormat formatter = new SimpleDateFormat(i18n.text(WorkspaceResources.date_time_format));
 
     @Structure
     ValueBuilderFactory vbf;
@@ -58,15 +58,15 @@ public class TaskEffectiveFieldsValueModel
     @Uses
     TaskSubmittedFormsClientResource taskSubmittedForms;
 
-    List<EffectiveFieldValue> effectiveFields = Collections.emptyList();
+    List<EffectiveFieldDTO> effectiveFields = Collections.emptyList();
 
-    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "formSubmitted");
+    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "submittedForm");
 
     public void refresh()
     {
         try
         {
-            effectiveFields = taskSubmittedForms.effectiveFields().fields().get();
+            effectiveFields = taskSubmittedForms.effectiveFields().effectiveFields().get();
         } catch (Exception e)
         {
             throw new OperationException(TaskResources.could_not_refresh, e);
@@ -90,18 +90,18 @@ public class TaskEffectiveFieldsValueModel
 
     public Object getValueAt(int row, int col)
     {
-        EffectiveFieldValue value = effectiveFields.get(row);
+        EffectiveFieldDTO value = effectiveFields.get(row);
 
         switch(col)
         {
             case 0:
                 return formatter.format(value.submissionDate().get());
             case 1:
-                return value.field().get().toString();
+                return value.fieldName().get();
             case 2:
-                return value.value().get();
+                return value.fieldValue().get();
             case 3:
-                return value.submitter().get().toString();
+                return value.submitter().get();
         }
         return null;
     }

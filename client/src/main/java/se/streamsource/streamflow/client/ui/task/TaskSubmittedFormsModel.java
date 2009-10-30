@@ -51,7 +51,7 @@ public class TaskSubmittedFormsModel
 
     List<SubmittedFormListDTO> submittedForms = Collections.emptyList();
 
-    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "formSubmitted");
+    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "submittedForm");
 
     public void refresh()
     {

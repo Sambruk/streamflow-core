@@ -12,26 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.domain.form;
+package se.streamsource.streamflow.resource.task;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface SubmittedFormValue
+public interface EffectiveFieldDTO
     extends ValueComposite
 {
-    Property<EntityReference> submitter();
     Property<Date> submissionDate();
-    Property<EntityReference> form();
-
-    @UseDefaults
-    Property<List<FieldValue>> values();
+    Property<String> submitter();
+    Property<String> fieldName();
+    Property<String> fieldValue();
 }

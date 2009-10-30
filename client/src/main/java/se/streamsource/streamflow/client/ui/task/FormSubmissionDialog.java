@@ -23,10 +23,10 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -92,11 +92,11 @@ public class FormSubmissionDialog
     @Action
     public void execute()
     {
-        SubmittedFormValue value = formSubmitView.getSubmittedFormValue();
+        SubmitFormDTO submitDTO = formSubmitView.getSubmitFormDTO();
 
         try
         {
-            submittedFormsResource.submitForm(value);
+            submittedFormsResource.submitForm(submitDTO);
         } catch (ResourceException e)
         {
             throw new OperationException(WorkspaceResources.could_not_submit_form, e);

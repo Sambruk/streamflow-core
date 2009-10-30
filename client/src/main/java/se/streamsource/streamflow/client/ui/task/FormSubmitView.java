@@ -22,13 +22,12 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,9 +95,9 @@ public class FormSubmitView
 
     }
 
-    public SubmittedFormValue getSubmittedFormValue()
+    public SubmitFormDTO getSubmitFormDTO()
     {
-        ValueBuilder<SubmittedFormValue> submittedFormBuilder = vbf.newValueBuilder(SubmittedFormValue.class);
+        ValueBuilder<SubmitFormDTO> submittedFormBuilder = vbf.newValueBuilder(SubmitFormDTO.class);
         ValueBuilder<FieldValue> fieldBuilder =vbf.newValueBuilder(FieldValue.class);
         java.util.List<FieldValue> fields = new ArrayList<FieldValue>();
 
@@ -110,7 +109,6 @@ public class FormSubmitView
         }
 
         submittedFormBuilder.prototype().values().set(fields);
-        submittedFormBuilder.prototype().submissionDate().set(new Date());
         submittedFormBuilder.prototype().form().set(model.formReference);
         return submittedFormBuilder.newInstance();
     }
