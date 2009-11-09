@@ -68,6 +68,13 @@ public class AdministrationOutlineView
         tree.setShowsRootHandles(true);
         tree.setEditable(true);
 
+        if(model.getRoot().accountsModel.organizations().roots().get().isEmpty())
+        {
+            context.getActionMap().get("showAdministrationWindow").setEnabled(false);
+        } else
+        {
+            context.getActionMap().get("showAdministrationWindow").setEnabled(true);
+        }
         DefaultTreeRenderer renderer = new DefaultTreeRenderer(new WrappingProvider(
                 new IconValue()
                 {

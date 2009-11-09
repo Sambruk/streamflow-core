@@ -63,7 +63,7 @@ public interface OrganizationalUnitRefactoring
         Removable removable;
 
         @This
-        OrganizationalUnitRefactoring organizationalUnit;
+        OrganizationalUnit organizationalUnit;
 
 
         public void deleteOrganizationalUnit() throws OpenProjectExistsException

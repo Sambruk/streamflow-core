@@ -47,7 +47,8 @@ public interface OrganizationEntity
         ValueDefinitionsQueries,
 
         //Queries
-        OrganizationParticipationsQueries
+        OrganizationParticipationsQueries,
+        OrganizationQueries
     
 {
     abstract class LifecycleConcern

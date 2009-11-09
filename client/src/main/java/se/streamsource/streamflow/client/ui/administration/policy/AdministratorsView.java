@@ -18,16 +18,15 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Set;
 
 /**
@@ -42,7 +41,7 @@ public class AdministratorsView
     DialogService dialogs;
 
     @Uses
-    Iterable<SelectUsersAndGroupsDialog> selectUsersAndGroupsDialogs;
+    ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroupsDialogs;
 
     public JList administratorList;
 
@@ -69,7 +68,7 @@ public class AdministratorsView
     @Action
     public void add()
     {
-        SelectUsersAndGroupsDialog dialog = selectUsersAndGroupsDialogs.iterator().next();
+        SelectUsersAndGroupsDialog dialog = selectUsersAndGroupsDialogs.use(model.getFilterResource()).newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
         Set<String> added = dialog.getUsersAndGroups();
         if (added != null)

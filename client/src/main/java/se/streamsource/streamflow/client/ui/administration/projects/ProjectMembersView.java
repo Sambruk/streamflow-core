@@ -20,15 +20,15 @@ import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Set;
 
 /**
@@ -41,7 +41,7 @@ public class ProjectMembersView
     DialogService dialogs;
 
     @Uses
-    Iterable<SelectUsersAndGroupsDialog> selectUsersAndGroups;
+    ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
 
     @Structure
     ObjectBuilderFactory obf;
@@ -74,7 +74,7 @@ public class ProjectMembersView
     @Action
     public void add()
     {
-        SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.iterator().next();
+        SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use(membersModel.getFilterResource()).newInstance();
         dialogs.showOkCancelHelpDialog(this, dialog);
         Set<String> members = dialog.getUsersAndGroups();
         if (members != null)

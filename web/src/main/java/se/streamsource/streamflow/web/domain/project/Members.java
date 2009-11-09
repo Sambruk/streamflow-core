@@ -24,7 +24,10 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.user.User;
 
 /**
  * JAVADOC
@@ -78,6 +81,12 @@ public interface Members
             if (!members().contains(participant))
             {
                 return;
+            }
+            // Get all active tasks in a project for a particular user and unassign.
+            for(TaskDTO taskDTO : ((ProjectEntity)project).assignmentsTasks((User)participant).tasks().get())
+            {
+               Task task = uowf.currentUnitOfWork().get(Task.class, taskDTO.task().get().identity());
+               task.unassign();
             }
             removedMember(DomainEvent.CREATE, participant);
             participant.leaveProject(project);

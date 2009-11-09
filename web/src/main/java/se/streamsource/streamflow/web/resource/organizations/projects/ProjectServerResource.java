@@ -26,7 +26,10 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.project.*;
+import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.project.ProjectRoles;
+import se.streamsource.streamflow.web.domain.project.Projects;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;
@@ -97,5 +100,4 @@ public class ProjectServerResource
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
     }
-
 }

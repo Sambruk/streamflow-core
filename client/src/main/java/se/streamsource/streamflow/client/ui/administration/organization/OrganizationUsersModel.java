@@ -33,13 +33,11 @@ public class OrganizationUsersModel
     implements Refreshable, EventListener
 {
     private OrganizationClientResource organizationResource;
-    private OrganizationsClientResource parentResource;
     private List<ListItemValue> users;
 
     public OrganizationUsersModel(@Uses OrganizationClientResource organizationResource)
     {
         this.organizationResource = organizationResource;
-        this.parentResource = parentResource;
         refresh();
     }
 

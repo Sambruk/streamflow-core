@@ -14,14 +14,27 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.group.Group;
+import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.web.domain.role.ParticipantRolesValue;
+import se.streamsource.streamflow.web.domain.role.Role;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
+
+import java.util.List;
 
 /**
  * List of organizations a participant is a member of.
  */
+ @Concerns(OrganizationParticipations.LeaveConcern.class)
 @Mixins(OrganizationParticipations.Mixin.class)
 public interface OrganizationParticipations
 {
@@ -67,6 +80,60 @@ public interface OrganizationParticipations
         public void leftOrganization(DomainEvent event, Organization org)
         {
             state.organizations().remove(org);
+        }
+    }
+
+    abstract class LeaveConcern
+        extends ConcernOf<OrganizationParticipations>
+        implements OrganizationParticipations
+    {
+        @This
+        UserEntity user;
+        
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        public void leave(Organization ou)
+        {
+            userLeaves((OrganizationalUnitEntity) ou);
+            next.leave(ou);
+        }
+
+        private boolean userLeaves(OrganizationalUnitEntity org)
+        {
+            for(ParticipantRolesValue participantRoleValue : org.policy().get())
+            {
+                if(participantRoleValue.participant().get().equals(EntityReference.getEntityReference(user)))
+                {
+                    for (EntityReference reference : participantRoleValue.roles().get())
+                    {
+                        org.revokeRole(user,uowf.currentUnitOfWork().get(Role.class, reference.identity()));
+                    }
+
+                }
+            }
+
+            // leave project
+            for(Project project : org.projects())
+            {
+                user.leaveProject(project);
+            }
+
+            List<Group> groupList = user.groups().toList();
+            for(Group group : org.groups())
+            {
+                if(groupList.contains(group))
+                {
+                    user.leaveGroup(group);
+                }
+            }
+
+            for(OrganizationalUnit orgUnit : org.organizationalUnits())
+            {
+                userLeaves((OrganizationalUnitEntity)orgUnit);
+            }
+
+            return true;
         }
     }
 }

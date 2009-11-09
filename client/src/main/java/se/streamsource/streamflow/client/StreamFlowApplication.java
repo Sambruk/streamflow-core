@@ -259,6 +259,10 @@ public class StreamFlowApplication
     public void selectAccount()
     {
         accountSelector.clearSelection();
+        if (administrationWindow.getFrame().isVisible())
+        {
+            administrationWindow.getFrame().setVisible(false);
+        }
     }
 
     public AccountsModel accountsModel()
@@ -288,6 +292,7 @@ public class StreamFlowApplication
         {
             show(workspaceWindow);
         }
+        workspaceWindow.getFrame().toFront();
     }
 
     @Action
@@ -297,6 +302,7 @@ public class StreamFlowApplication
         {
             show(overviewWindow);
         }
+        overviewWindow.getFrame().toFront();
     }
 
     @Action
@@ -304,6 +310,7 @@ public class StreamFlowApplication
     {
         if (!administrationWindow.getFrame().isVisible())
             show(administrationWindow);
+        administrationWindow.getFrame().toFront();
     }
 
     @Action
@@ -311,6 +318,7 @@ public class StreamFlowApplication
     {
         if (!searchWindow.getFrame().isVisible())
             show(searchWindow);
+        searchWindow.getFrame().toFront();
     }
 
     @Action
@@ -318,6 +326,7 @@ public class StreamFlowApplication
     {
         if (!debugWindow.getFrame().isVisible())
             show(debugWindow);
+        debugWindow.getFrame().toFront();
     }
 
     @Action

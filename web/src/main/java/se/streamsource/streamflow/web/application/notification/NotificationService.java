@@ -66,7 +66,7 @@ public interface NotificationService
             selector = Selector.open();
             ServerSocketChannel ssChannel = ServerSocketChannel.open();
             ssChannel.configureBlocking( false );
-            int port = 8881;
+            int port = 8888;
             ssChannel.socket().bind( new InetSocketAddress( port ) );
 
             ssChannel.register( selector, SelectionKey.OP_ACCEPT );
@@ -77,7 +77,7 @@ public interface NotificationService
                 {
                     try
                     {
-                        Logger.getLogger( "notification" ).info( "Select socket" );
+ //                       Logger.getLogger( "notification" ).info( "Select socket" );
                         selector.select( 5000 );
 
                         Iterator<SelectionKey> it = selector.selectedKeys().iterator();

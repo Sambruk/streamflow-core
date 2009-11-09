@@ -104,7 +104,7 @@ public interface ClientEventFetchingService
                 channel.configureBlocking( true );
 
                 // Send a connection request to the server
-                channel.connect( new InetSocketAddress( host, 8881 ) );
+                channel.connect( new InetSocketAddress( host, 8888 ) );
 
                 while (!channel.finishConnect())
                 {

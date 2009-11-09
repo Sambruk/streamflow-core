@@ -15,17 +15,21 @@
 package se.streamsource.streamflow.client.resource.organizations.projects.members;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.client.ui.UsersAndGroupsFilter;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
  */
 public class MembersClientResource
         extends CommandQueryClientResource
+    implements UsersAndGroupsFilter
 {
     public MembersClientResource(@Uses Context context, @Uses Reference reference)
     {
@@ -40,5 +44,20 @@ public class MembersClientResource
     public ListValue members() throws ResourceException
     {
         return query("members", ListValue.class);
+    }
+
+    public ListValue findUsers(String query) throws ResourceException
+    {
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(query);
+        return query("findUsers", builder.newInstance(), ListValue.class);
+    }
+
+    public ListValue findGroups(String query) throws ResourceException
+    {
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(query);
+        return query("findGroups", builder.newInstance(), ListValue.class);
+
     }
 }

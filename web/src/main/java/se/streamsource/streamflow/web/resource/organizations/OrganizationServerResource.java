@@ -14,13 +14,8 @@
 
 package se.streamsource.streamflow.web.resource.organizations;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -31,16 +26,10 @@ import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitExce
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.form.FormQueries;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
-import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.*;
-import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -54,8 +43,8 @@ public class OrganizationServerResource
 
     public void describe(StringDTO stringValue)
     {
-        String taskId = (String) getRequest().getAttributes().get("organization");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
+        String orgId = (String) getRequest().getAttributes().get("organization");
+        Describable describable = uowf.currentUnitOfWork().get(Describable.class, orgId);
 
         checkPermission(describable);
         describable.changeDescription(stringValue.string().get());
@@ -73,93 +62,33 @@ public class OrganizationServerResource
 
     public ListValue findUsers(StringDTO query)
     {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+        String orgId = getRequest().getAttributes().get("organization").toString();
 
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+        OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
+        checkPermission(ouq);
 
-        if (query.string().get().length() > 0)
-        {
-            QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
-            Query<UserEntity> users = queryBuilder.where(matches(
-                    templateFor(UserEntity.class).userName(), "^" + query.string().get())).
-                    newQuery(uow);
-
-            try
-            {
-                for (Participant participant : users)
-                {
-                    builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                    listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
-                }
-            } catch (Exception e)
-            {
-                //e.printStackTrace();
-            }
-        }
-        return listBuilder.newList();
+        return ((OrganizationQueries)ouq.organization().get()).findUsers(query.string().get());
     }
 
 
     public ListValue findGroups(StringDTO query)
     {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+        String orgId = getRequest().getAttributes().get("organization").toString();
 
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+        OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
+        checkPermission(ouq);
 
-        if (query.string().get().length() > 0)
-        {
-            QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
-            Query<GroupEntity> groups = queryBuilder.where(
-                    and(
-                            eq(templateFor(GroupEntity.class).removed(), false),
-                            matches(templateFor(GroupEntity.class).description(), "^" + query.string().get()))).
-                    newQuery(uow);
-
-            try
-            {
-                for (Participant participant : groups)
-                {
-                    builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                    listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
-                }
-            } catch (Exception e)
-            {
-                //e.printStackTrace();
-            }
-        }
-        return listBuilder.newList();
+        return ((OrganizationQueries)ouq.organization().get()).findGroups(query.string().get());
     }
 
     public ListValue findProjects(StringDTO query)
     {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+        String orgId = getRequest().getAttributes().get("organization").toString();
 
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+        OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
+        checkPermission(ouq);
 
-        if (query.string().get().length() > 0)
-        {
-            QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-            Query<ProjectEntity> projects = queryBuilder.where(and(
-                    eq(templateFor(ProjectEntity.class).removed(), false),
-                    matches(templateFor(ProjectEntity.class).description(), "^" + query.string().get()))).
-                    newQuery(uow);
-
-            try
-            {
-                for (Project project : projects)
-                {
-                    builder.prototype().entity().set(EntityReference.getEntityReference(project));
-                    listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
-                }
-            } catch (Exception e)
-            {
-                //e.printStackTrace();
-            }
-        }
-        return listBuilder.newList();
+        return ((OrganizationQueries)ouq.organization().get()).findProjects(query.string().get());
     }
 
     public void move(EntityReferenceDTO moveValue) throws ResourceException
@@ -257,8 +186,8 @@ public class OrganizationServerResource
 
         for(ListItemValue value : users.items().get())
         {
-            OrganizationParticipations user = uow.get(OrganizationParticipations.class, value.entity().get().identity());
-            user.leave(org);
+            OrganizationParticipations uop = uow.get(OrganizationParticipations.class, value.entity().get().identity());
+            uop.leave(org);
         }
     }
 

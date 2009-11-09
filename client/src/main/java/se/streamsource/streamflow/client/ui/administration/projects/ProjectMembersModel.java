@@ -22,13 +22,14 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
+import se.streamsource.streamflow.client.ui.UsersAndGroupsFilter;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 import java.util.Set;
 
 /**
@@ -101,5 +102,10 @@ public class ProjectMembersModel
 
     public void notifyEvent( DomainEvent event )
     {
+    }
+
+    public UsersAndGroupsFilter getFilterResource()
+    {
+        return members;
     }
 }

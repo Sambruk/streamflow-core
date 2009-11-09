@@ -19,12 +19,13 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
+import se.streamsource.streamflow.client.ui.UsersAndGroupsFilter;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.swing.AbstractListModel;
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -90,5 +91,10 @@ public class GroupModel
     public void notifyEvent( DomainEvent event )
     {
 
+    }
+
+    public UsersAndGroupsFilter getFilterResource()
+    {
+        return group;
     }
 }

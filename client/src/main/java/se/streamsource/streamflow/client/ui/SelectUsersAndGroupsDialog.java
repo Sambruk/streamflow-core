@@ -23,10 +23,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
-import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.*;
@@ -48,7 +47,7 @@ public class SelectUsersAndGroupsDialog
     private Set<String> usersAndGroups;
 
     public SelectUsersAndGroupsDialog(@Service ApplicationContext context,
-                                      final @Uses OrganizationalUnitAdministrationModel organizationModel,
+                                      final @Uses UsersAndGroupsFilter resource,
                                       @Structure ObjectBuilderFactory obf)
     {
         super(new BorderLayout());
@@ -68,7 +67,7 @@ public class SelectUsersAndGroupsDialog
             {
                 try
                 {
-                    ListValue list = organizationModel.getOrganization().findUsers(addUsersView.searchText());
+                    ListValue list = resource.findUsers(addUsersView.searchText());
                     addUsersView.getModel().setModel(list);
                 } catch (ResourceException e)
                 {
@@ -84,12 +83,12 @@ public class SelectUsersAndGroupsDialog
             {
                 try
                 {
-                    ListValue list = organizationModel.getOrganization().findGroups(addGroupsView.searchText());
+                    ListValue list = resource.findGroups(addGroupsView.searchText());
                     addGroupsView.getModel().setModel(list);
                 } catch (ResourceException e)
                 {
                     e.printStackTrace();
-                }
+                } 
             }
         });
 

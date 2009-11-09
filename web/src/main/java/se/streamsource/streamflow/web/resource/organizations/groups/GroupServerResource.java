@@ -17,9 +17,16 @@ package se.streamsource.streamflow.web.resource.organizations.groups;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
 import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -56,6 +63,61 @@ public class GroupServerResource
         GroupEntity group = uow.get(GroupEntity.class, identity);
 
         groups.removeGroup(group);
+    }
+
+    public ListValue findUsers(StringDTO query) throws ResourceException
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        String orgId = getRequest().getAttributes().get("organization").toString();
+
+        OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
+        checkPermission(ouq);
+
+        ListValue list = ((OrganizationQueries)ouq.organization().get()).findUsers(query.string().get());
+
+        String groupId = getRequest().getAttributes().get("group").toString();
+        GroupEntity group = uow.get(GroupEntity.class,groupId);
+
+        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+
+        for(ListItemValue user : list.items().get())
+        {
+            if(!group.participants().contains(uow.get(Participant.class, user.entity().get().identity())))
+            {
+                listBuilder.addListItem(user.description().get(), user.entity().get());
+            }
+        }
+
+        return listBuilder.newList();
+    }
+
+    public ListValue findGroups(StringDTO query) throws ResourceException
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        String orgId = getRequest().getAttributes().get("organization").toString();
+
+        OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
+        checkPermission(ouq);
+
+        ListValue list = ((OrganizationQueries)ouq.organization().get()).findGroups(query.string().get());
+
+        String groupId = getRequest().getAttributes().get("group").toString();
+        GroupEntity group = uow.get(GroupEntity.class,groupId);
+
+        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+
+        for(ListItemValue grp : list.items().get())
+        {
+            if(!group.participants().contains(uow.get(Group.class, grp.entity().get().identity()))
+               && !group.identity().get().equals(grp.entity().get().identity()))
+            {
+                listBuilder.addListItem(grp.description().get(), grp.entity().get());
+            }
+        }
+
+        return listBuilder.newList();
     }
 
 }

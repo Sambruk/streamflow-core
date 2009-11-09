@@ -36,24 +36,24 @@ import se.streamsource.streamflow.web.domain.role.Roles;
 @Mixins(OrganizationalUnits.Mixin.class)
 public interface OrganizationalUnits
 {
-    OrganizationalUnitRefactoring createOrganizationalUnit(@MaxLength(50) String name);
+    OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
 
-    void addOrganizationalUnit( OrganizationalUnitRefactoring ou);
+    void addOrganizationalUnit( OrganizationalUnit ou);
 
-    void removeOrganizationalUnit( OrganizationalUnitRefactoring ou);
+    void removeOrganizationalUnit( OrganizationalUnit ou);
 
     interface Data
     {
         @Aggregated
-        ManyAssociation<OrganizationalUnitRefactoring> organizationalUnits();
+        ManyAssociation<OrganizationalUnit> organizationalUnits();
 
         OrganizationalUnitEntity createdOrganizationalUnit(DomainEvent event, @Name("id") String id);
-        void removedOrganizationalUnit(DomainEvent create, OrganizationalUnitRefactoring ou);
-        void addedOrganizationalUnit(DomainEvent event, OrganizationalUnitRefactoring ou);
+        void removedOrganizationalUnit(DomainEvent create, OrganizationalUnit ou);
+        void addedOrganizationalUnit(DomainEvent event, OrganizationalUnit ou);
 
-        OrganizationalUnits getParent( OrganizationalUnitRefactoring ou);
+        OrganizationalUnits getParent( OrganizationalUnit ou);
 
-        OrganizationalUnitRefactoring getOrganizationalUnitByName(String name);
+        OrganizationalUnit getOrganizationalUnitByName(String name);
     }
 
     abstract class Mixin
@@ -77,7 +77,7 @@ public interface OrganizationalUnits
         @This
         OrganizationalUnits organizationalUnits;
         
-        public OrganizationalUnitRefactoring createOrganizationalUnit(String name)
+        public OrganizationalUnit createOrganizationalUnit(String name)
         {
             OrganizationalUnitEntity ou = createdOrganizationalUnit(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
             addOrganizationalUnit(ou);
@@ -89,7 +89,7 @@ public interface OrganizationalUnits
             return ou;
         }
 
-        public void addOrganizationalUnit( OrganizationalUnitRefactoring ou)
+        public void addOrganizationalUnit( OrganizationalUnit ou)
         {
             if (organizationalUnits().contains(ou)) {
                 return;
@@ -97,7 +97,7 @@ public interface OrganizationalUnits
             addedOrganizationalUnit(DomainEvent.CREATE, ou);
         }
 
-        public void removeOrganizationalUnit( OrganizationalUnitRefactoring ou)
+        public void removeOrganizationalUnit( OrganizationalUnit ou)
         {
             if (!organizationalUnits().contains(ou))
                 return; // OU is not a sub-OU of this OU
@@ -113,25 +113,25 @@ public interface OrganizationalUnits
             return ou;
         }
 
-        public void removedOrganizationalUnit(DomainEvent create, OrganizationalUnitRefactoring ou)
+        public void removedOrganizationalUnit(DomainEvent create, OrganizationalUnit ou)
         {
             organizationalUnits().remove(ou);
         }
 
-        public void addedOrganizationalUnit(DomainEvent event, OrganizationalUnitRefactoring ou)
+        public void addedOrganizationalUnit(DomainEvent event, OrganizationalUnit ou)
         {
             organizationalUnits().add(organizationalUnits().count(), ou);
         }
 
 
-        public OrganizationalUnits getParent( OrganizationalUnitRefactoring ou)
+        public OrganizationalUnits getParent( OrganizationalUnit ou)
         {
             if (organizationalUnits().contains(ou))
             {
                 return organizationalUnits;
             } else
             {
-                for (OrganizationalUnitRefactoring organizationalUnit : organizationalUnits())
+                for (OrganizationalUnit organizationalUnit : organizationalUnits())
                 {
                     Data state = (Data) organizationalUnit;
                     OrganizationalUnits parent = state.getParent(ou);
@@ -144,9 +144,9 @@ public interface OrganizationalUnits
             return null;
         }
 
-        public OrganizationalUnitRefactoring getOrganizationalUnitByName( String name )
+        public OrganizationalUnit getOrganizationalUnitByName( String name )
         {
-            for (OrganizationalUnitRefactoring organizationalUnit : organizationalUnits())
+            for (OrganizationalUnit organizationalUnit : organizationalUnits())
             {
                 if (((Describable.Data)organizationalUnit).description().get().equals(name))
                     return organizationalUnit;

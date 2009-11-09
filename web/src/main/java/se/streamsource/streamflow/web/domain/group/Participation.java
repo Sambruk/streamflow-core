@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.web.domain.group;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -33,6 +35,7 @@ import java.util.List;
  * JAVADOC
  */
 @SideEffects(Participation.RemovableSideEffect.class)
+@Concerns(Participation.LeaveConcern.class)
 @Mixins(Participation.Mixin.class)
 public interface Participation
 {
@@ -136,11 +139,15 @@ public interface Participation
 
         public void joinGroup(Group group)
         {
-            joinedGroup(DomainEvent.CREATE, group);
+            if(!group.equals(participant))
+               joinedGroup(DomainEvent.CREATE, group);
         }
 
         public void leaveGroup(Group group)
         {
+            if (!state.groups().contains(group))
+                return;
+
             leftGroup(DomainEvent.CREATE, group);
         }
 
@@ -216,6 +223,31 @@ public interface Participation
         public boolean reinstate()
         {
             return result.reinstate();
+        }
+    }
+
+    abstract class LeaveConcern
+        extends ConcernOf<Participation>
+        implements Participation
+    {
+
+        @This
+        Participation.Data state;
+
+        @This
+        Participant participant;
+
+
+        public void leaveProject(Project project)
+        {
+            project.removeMember(participant);
+            next.leaveProject(project);
+        }
+
+        public void leaveGroup(Group group)
+        {
+            group.removeParticipant(participant);
+            next.leaveGroup(group);
         }
     }
 
