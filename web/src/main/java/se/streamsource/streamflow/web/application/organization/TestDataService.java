@@ -100,6 +100,7 @@ public interface TestDataService
             Field commentField = commentForm.createField( "Comment", textValue );
 
             Form statusForm = project.createForm();
+            statusForm.changeDescription("StatusForm");
             Field statusField = statusForm.createField( "Status", textValue );
 
             ou.createFormTemplate( commentForm );

@@ -22,6 +22,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
+import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.roles.Describable;
@@ -40,7 +41,7 @@ public interface SubmittedFormsQueries
     EffectiveFieldsDTO effectiveFields();
 
     class Mixin
-        implements SubmittedFormsQueries
+            implements SubmittedFormsQueries
     {
         @This
         SubmittedForms.Data submittedForms;
@@ -114,17 +115,21 @@ public interface SubmittedFormsQueries
             EffectiveFieldsDTO list = listBuilder.prototype();
             EffectiveFieldDTO fieldDTO = fieldBuilder.prototype();
 
-            for (EffectiveFieldValue fieldValue : submittedForms.effectiveFieldValues().get().fields().get())
+            EffectiveFormFieldsValue effectiveFormFields = submittedForms.effectiveFieldValues().get(); 
+            if (effectiveFormFields != null)
             {
-                fieldDTO.submissionDate().set( fieldValue.submissionDate().get() );
+                for (EffectiveFieldValue fieldValue : effectiveFormFields.fields().get())
+                {
+                    fieldDTO.submissionDate().set( fieldValue.submissionDate().get() );
 
-                Describable.Data submitter = uow.get( Describable.Data.class, fieldValue.submitter().get().identity() );
-                fieldDTO.submitter().set( submitter.description().get() );
+                    Describable.Data submitter = uow.get( Describable.Data.class, fieldValue.submitter().get().identity() );
+                    fieldDTO.submitter().set( submitter.description().get() );
 
-                fieldDTO.fieldValue().set(fieldValue.value().get() );
-                Describable.Data fieldName = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
-                fieldDTO.fieldName().set( fieldName.description().get() );
-                list.effectiveFields().get().add( fieldBuilder.newInstance() );
+                    fieldDTO.fieldValue().set(fieldValue.value().get() );
+                    Describable.Data fieldName = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
+                    fieldDTO.fieldName().set( fieldName.description().get() );
+                    list.effectiveFields().get().add( fieldBuilder.newInstance() );
+                }
             }
 
             return listBuilder.newInstance();

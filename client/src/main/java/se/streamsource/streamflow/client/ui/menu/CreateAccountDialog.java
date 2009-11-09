@@ -32,7 +32,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.PASSWORD;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import static se.streamsource.streamflow.client.ui.menu.MenuResources.*;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;
 
@@ -79,10 +79,10 @@ public class CreateAccountDialog
 
         BindingFormBuilder bb = new BindingFormBuilder(builder, accountBinder);
 
-        bb.appendLine(create_account_name, TEXTFIELD, template.name())
-                .appendLine(create_account_server, TEXTFIELD, template.server())
-                .appendLine(create_account_username, TEXTFIELD, template.userName())
-                .appendLine(create_account_password, PASSWORD, template.password());
+        bb.appendLine(AdministrationResources.create_account_name, TEXTFIELD, template.name())
+                .appendLine(AdministrationResources.create_account_server, TEXTFIELD, template.server())
+                .appendLine(AdministrationResources.create_account_username, TEXTFIELD, template.userName())
+                .appendLine(AdministrationResources.create_account_password, PASSWORD, template.password());
 
 
         accountBuilder = vbf.newValueBuilder(AccountSettingsValue.class);
