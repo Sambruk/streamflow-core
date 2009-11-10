@@ -103,6 +103,9 @@ public class WorkspaceProjectServerResource
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
+        String projId = getRequest().getAttributes().get("project").toString();
+        ProjectEntity proj = uow.get(ProjectEntity.class, projId);
+
         if (query.string().get().length() > 0)
         {
             QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
@@ -113,8 +116,12 @@ public class WorkspaceProjectServerResource
 
             for (Project project : projects)
             {
-                builder.prototype().entity().set(EntityReference.getEntityReference(project));
-                listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
+                // dont add myself
+                if(!proj.equals(project))
+                {
+                    builder.prototype().entity().set(EntityReference.getEntityReference(project));
+                    listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
+                }
             }
         }
 

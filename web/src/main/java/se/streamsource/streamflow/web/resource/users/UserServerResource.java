@@ -72,19 +72,29 @@ public class UserServerResource
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
+        String userId = getRequest().getAttributes().get("user").toString();
+        UserEntity user = uow.get(UserEntity.class, userId);
+
         if (query.string().get().length() > 0)
         {
             QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
-            queryBuilder.where(matches(
-                    templateFor(UserEntity.class).userName(), "^" + query.string().get()));
-            Query<UserEntity> users = queryBuilder.newQuery(uow);
+            QueryBuilder<UserEntity> finalQueryBuilder = queryBuilder.where(and(
+                    matches(templateFor(UserEntity.class).userName(), "^" + query.string().get()),
+                    contains(templateFor(UserEntity.class).organizations(), user.organizations().get(0))
+                    )
+            );
+            Query<UserEntity> users = finalQueryBuilder.newQuery(uow);
 
             try
             {
                 for (Participant participant : users)
                 {
-                    builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                    listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
+                    // dont add myself
+                    if(!participant.equals(user))
+                    {
+                        builder.prototype().entity().set(EntityReference.getEntityReference(participant));
+                        listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
+                    }
                 }
             } catch (Exception e)
             {

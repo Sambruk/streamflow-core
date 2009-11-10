@@ -25,16 +25,17 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowResources;
-import se.streamsource.streamflow.client.resource.EventsClientResource;
 import se.streamsource.streamflow.client.resource.CommandNotification;
+import se.streamsource.streamflow.client.resource.EventsClientResource;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -198,25 +199,29 @@ public interface ClientEventFetchingService
                         try
                         {
                             Representation eventsRepresentation = resource.getEvents( afterTimestamp );
+                            Reader response = eventsRepresentation.getReader();
 
-                            BufferedReader reader = new BufferedReader( eventsRepresentation.getReader() );
-
-                            try
+                            if(response != null)
                             {
-                                String line;
-                                while ((line = reader.readLine()) != null)
+                                BufferedReader reader = new BufferedReader( response );
+
+                                try
                                 {
-                                    TransactionEvents events = vbf.newValueFromJSON( TransactionEvents.class, line );
-                                    if (!handler.handleTransaction( events ))
+                                    String line;
+                                    while ((line = reader.readLine()) != null)
                                     {
-                                        reader.close();
-                                        return;
+                                        TransactionEvents events = vbf.newValueFromJSON( TransactionEvents.class, line );
+                                        if (!handler.handleTransaction( events ))
+                                        {
+                                            reader.close();
+                                            return;
+                                        }
                                     }
+                                    reader.close();
+                                } catch (Exception e)
+                                {
+                                    e.printStackTrace();
                                 }
-                                reader.close();
-                            } catch (Exception e)
-                            {
-                                e.printStackTrace();
                             }
                         } catch (ResourceException e)
                         {
