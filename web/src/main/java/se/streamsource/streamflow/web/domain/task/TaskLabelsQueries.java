@@ -1,20 +1,31 @@
+/*
+ * Copyright (c) 2009, Henrik Bernstr&ouml;m. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package se.streamsource.streamflow.web.domain.task;
 
 import static org.qi4j.api.query.QueryExpressions.matches;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
 
-import org.openrdf.sail.rdbms.evaluation.QueryBuilderFactory;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.spi.structure.ModuleSPI;
 
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -34,32 +45,32 @@ public interface TaskLabelsQueries
 	class Mixin
 	implements TaskLabelsQueries 
 	{
-		@This Ownable.Data ownable;
+		@This 
+		Ownable.Data ownable;
 		
-		@This Labelable.Data labelable;
+		@This 
+		Labelable.Data labelable;
 		
-		@Structure QueryBuilderFactory qbf;
+		@Structure 
+		QueryBuilderFactory qbf;
 		
-		@Structure ValueBuilderFactory vbf;
+		@Structure 
+		ValueBuilderFactory vbf;
 		
-		@Structure UnitOfWorkFactory uowf;
+		@Structure 
+		UnitOfWorkFactory uowf;
 		
-	    @Structure
-	    protected ModuleSPI module;
-
 		public ListValue organizationLabels(String prefix)
 		{
-	        UnitOfWork uow = uowf.currentUnitOfWork();
-
 	        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
 	        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
 	        if (prefix.length() > 0)
 	        {
-	            QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(LabelEntity.class);
+	            QueryBuilder<LabelEntity> queryBuilder = qbf.newQueryBuilder(LabelEntity.class);
 	            Query<LabelEntity> labels = queryBuilder.where(matches(
 	                    templateFor(LabelEntity.class).description(), "^" + prefix)).
-	                    newQuery(uow);
+	                    newQuery(uowf.currentUnitOfWork());
 
 	            try
 	            {
