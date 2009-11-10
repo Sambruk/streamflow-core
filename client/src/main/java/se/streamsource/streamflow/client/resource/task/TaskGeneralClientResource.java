@@ -14,20 +14,22 @@
 
 package se.streamsource.streamflow.client.resource.task;
 
+import java.io.IOException;
+import java.util.Date;
+
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.entity.EntityReference;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.roles.DateDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import java.io.IOException;
-import java.util.Date;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.DateDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 /**
  * Mapped to /task/{id}/general
@@ -45,38 +47,48 @@ public class TaskGeneralClientResource
         return getQuery(TaskGeneralDTO.class);
     }
 
-    public void describe(String newDescription) throws ResourceException
+    public void changeDescription(String newDescription) throws ResourceException
     {
         ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
         builder.prototype().string().set(newDescription);
-        putCommand("describe", builder.newInstance());
+        putCommand("changedescription", builder.newInstance());
     }
 
     public void changeNote(String newNote) throws ResourceException
     {
         ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
         builder.prototype().string().set(newNote);
-        putCommand("changeNote", builder.newInstance());
+        putCommand("changenote", builder.newInstance());
     }
 
     public void changeDueOn(Date newDueOn) throws ResourceException
     {
         ValueBuilder<DateDTO> builder = vbf.newValueBuilder(DateDTO.class);
         builder.prototype().date().set(newDueOn);
-        putCommand("changeDueOn", builder.newInstance());
+        putCommand("changedueon", builder.newInstance());
     }
 
     public void addLabel(String labelId) throws ResourceException
     {
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         builder.prototype().entity().set( EntityReference.parseEntityReference(labelId));
-        postCommand("addLabel", builder.newInstance());
+        postCommand("addlabel", builder.newInstance());
     }
 
     public void removeLabel(String labelId) throws ResourceException
     {
         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
         builder.prototype().entity().set(EntityReference.parseEntityReference(labelId));
-        putCommand("removeLabel", builder.newInstance());
+        putCommand("removelabel", builder.newInstance());
+    }
+    
+    public ListValue ownerLabels() throws ResourceException 
+    {
+    	return query("ownerlabels", ListValue.class);
+    }
+    
+    public ListValue organizationLabels(StringDTO prefix) throws ResourceException 
+    {
+    	return query("organizationlabels", prefix, ListValue.class);
     }
 }

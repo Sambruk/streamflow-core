@@ -26,6 +26,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -35,8 +36,11 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
+import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.task.DueOn;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.task.TaskLabelsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -85,28 +89,28 @@ public class TaskGeneralServerResource
         return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
     }
 
-    public void describe(StringDTO stringValue)
+    public void changedescription(StringDTO stringValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
         describable.changeDescription(stringValue.string().get());
     }
 
-    public void changeNote(StringDTO noteValue)
+    public void changenote(StringDTO noteValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Notable notable = uowf.currentUnitOfWork().get(Notable.class, taskId);
         notable.changeNote(noteValue.string().get());
     }
 
-    public void changeDueOn(DateDTO dueOnValue)
+    public void changedueon(DateDTO dueOnValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         DueOn dueOn = uowf.currentUnitOfWork().get(DueOn.class, taskId);
         dueOn.dueOn(dueOnValue.date().get());
     }
 
-    public void addLabel( EntityReferenceDTO reference)
+    public void addlabel( EntityReferenceDTO reference)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String taskId = (String) getRequest().getAttributes().get("task");
@@ -117,7 +121,7 @@ public class TaskGeneralServerResource
         task.addLabel(label);
     }
 
-    public void removeLabel(EntityReferenceDTO reference)
+    public void removelabel(EntityReferenceDTO reference)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String taskId = (String) getRequest().getAttributes().get("task");
@@ -126,5 +130,23 @@ public class TaskGeneralServerResource
         Label label = uow.get(Label.class, reference.entity().get().identity());
 
         task.removeLabel(label);
+    }
+    
+    public ListValue ownerlabels()
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String id = (String) getRequest().getAttributes().get("task");
+        TaskLabelsQueries labels = uow.get(TaskLabelsQueries.class, id);
+
+        return labels.ownerLabels();
+    }
+    
+    public ListValue organizationlabels(StringDTO prefix)
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String id = (String) getRequest().getAttributes().get("task");
+        TaskLabelsQueries labels = uow.get(TaskLabelsQueries.class, id);
+
+        return labels.organizationLabels(prefix.string().get());
     }
 }

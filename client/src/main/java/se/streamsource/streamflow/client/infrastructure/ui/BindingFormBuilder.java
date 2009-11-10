@@ -14,18 +14,32 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+import java.awt.Component;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
-import javax.swing.*;
-import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 
 /**
  * JAVADOC
@@ -80,6 +94,20 @@ public class BindingFormBuilder
                     public Component newField()
                     {
                         return new JCheckBox();
+                    }
+                },
+        COMBOBOX
+                {
+                    public Component newField()
+                    {
+                        return new JComboBox();
+                    }
+                },
+        DELETABLELABELSLIST
+                {
+                    public Component newField()
+                    {
+                        return new DeletableLabelsList();
                     }
                 },
         DATEPICKER

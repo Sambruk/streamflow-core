@@ -14,93 +14,156 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Date;
+
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
-
-import java.util.Date;
 
 /**
  * Model for the general info about a task.
  */
-public class TaskGeneralModel
-        implements Refreshable, EventListener
+public class TaskGeneralModel implements Refreshable, EventListener,
+		EventHandler, PropertyChangeListener
 
 {
-    @Uses
-    private TaskGeneralClientResource generalClientResource;
+	EventHandlerFilter eventFilter = new EventHandlerFilter(this, "labelAdded",
+			"labelDeleted", "labelUpdated");
 
-    TaskGeneralDTO general;
+	@Uses
+	private TaskGeneralClientResource generalClientResource;
 
-    public void refresh()
-    {
-        try
-        {
-            general = (TaskGeneralDTO) generalClientResource.general().buildWith().prototype();
-        } catch (Exception e)
-        {
-            throw new OperationException(TaskResources.could_not_refresh,  e);
-        }
-    }
+	TaskGeneralDTO general;
 
-    public TaskGeneralDTO getGeneral()
-    {
-        if (general == null)
-            refresh();
+	public TaskGeneralDTO getGeneral()
+	{
+		if (general == null)
+			refresh();
 
-        return general;
-    }
+		return general;
+	}
 
-    public void describe(String newDescription)
-    {
-        try
-        {
-            generalClientResource.describe(newDescription);
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_change_description, e);
-        }
-    }
+	public void describe(String newDescription)
+	{
+		try
+		{
+			generalClientResource.changeDescription(newDescription);
+		} catch (ResourceException e)
+		{
+			throw new OperationException(
+					TaskResources.could_not_change_description, e);
+		}
+	}
 
-    public void changeNote(String newNote)
-    {
-        try
-        {
-            generalClientResource.changeNote(newNote);
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_change_note, e);
-        }
-    }
+	public void changeNote(String newNote)
+	{
+		try
+		{
+			generalClientResource.changeNote(newNote);
+		} catch (ResourceException e)
+		{
+			throw new OperationException(TaskResources.could_not_change_note, e);
+		}
+	}
 
-    public void changeDueOn(Date newDueOn)
-    {
-        try
-        {
-            generalClientResource.changeDueOn(newDueOn);
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_change_due_on, e);
-        }
-    }
+	public void changeDueOn(Date newDueOn)
+	{
+		try
+		{
+			generalClientResource.changeDueOn(newDueOn);
+		} catch (ResourceException e)
+		{
+			throw new OperationException(TaskResources.could_not_change_due_on,
+					e);
+		}
+	}
 
-    public void addLabel(String label) throws ResourceException
-    {
-        generalClientResource.addLabel(label);
-    }
+	public void addLabel(String labelId) throws ResourceException
+	{
+		try
+		{
+			generalClientResource.addLabel(labelId);
+		} catch (ResourceException e)
+		{
+			throw new OperationException(TaskResources.could_not_add_label,
+					e);
+		}
+	}
 
-    public void removeLabel(String label) throws ResourceException
-    {
-        generalClientResource.removeLabel(label);
-    }
+	public void removeLabel(String labelId) throws ResourceException
+	{
+		try
+		{
+			generalClientResource.removeLabel(labelId);
+		} catch (ResourceException e)
+		{
+			throw new OperationException(TaskResources.could_not_remove_label,
+					e);
+		}
+	}
+	
+	public ListValue getOwnerLabels()  
+	{
+		try
+		{
+			return generalClientResource.ownerLabels();
+		} catch (ResourceException e)
+		{
+			throw new OperationException(TaskResources.could_not_get_owner_labels,
+					e);
+		}
+	}
+	
+	public ListValue getOrganizationLabels(StringDTO prefix)
+	{
+		try
+		{
+			return generalClientResource.organizationLabels(prefix);
+		} catch (ResourceException e)
+		{
+			throw new OperationException(TaskResources.could_not_get_organisation_labels,
+					e);
+		}
+	}
 
-    public void notifyEvent( DomainEvent event )
-    {
+	public void refresh()
+	{
+		try
+		{
+			general = (TaskGeneralDTO) generalClientResource.general()
+					.buildWith().prototype();
+		} catch (Exception e)
+		{
+			throw new OperationException(TaskResources.could_not_refresh, e);
+		}
+	}
 
-    }
+	public void notifyEvent(DomainEvent event)
+	{
+
+	}
+
+	public boolean handleEvent(DomainEvent event)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		// TODO Auto-generated method stub
+
+	}
 }

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
  *
+ * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -30,6 +30,13 @@ public enum TaskResources
     could_not_change_address,
     could_not_change_email_address,
     could_not_change_contact_id,
-    could_not_change_due_on, could_not_change_description, could_not_view_details, could_not_add_comment
+    could_not_change_due_on, 
+    could_not_change_description, 
+    could_not_view_details, 
+    could_not_add_comment,
+    could_not_remove_label,
+    could_not_add_label, 
+    could_not_get_owner_labels, 
+    could_not_get_organisation_labels
 
 }

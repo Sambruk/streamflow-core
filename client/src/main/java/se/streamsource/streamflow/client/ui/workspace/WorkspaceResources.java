@@ -32,6 +32,7 @@ public enum WorkspaceResources
     id_label,
     description_label,
     labels_label,
+    selected_labels_label,
     note_label,
     name_label,
     contact_id_label,

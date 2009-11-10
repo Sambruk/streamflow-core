@@ -47,12 +47,17 @@ public class ListValueBuilder
     {
         for (Describable item : items)
         {
-            addListItem( item.getDescription(), EntityReference.getEntityReference(item ));
+            addListItem( item.getDescription(), EntityReference.getEntityReference(item));
         }
 
         return this;
     }
 
+    public ListValueBuilder addDescribable(Describable item)
+    {
+        return addListItem( item.getDescription(), EntityReference.getEntityReference(item));
+    }
+    
     public ListValue newList()
     {
         return listBuilder.newInstance();
