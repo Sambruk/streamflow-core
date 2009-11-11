@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
@@ -130,7 +131,7 @@ public interface StatisticsService
 
                     return false;
                 }
-            }.withNames( "changedStatus" );
+            }.withNames( "changedStatus", "statusChanged" );
         }
 
         public void passivate() throws Exception
@@ -176,7 +177,15 @@ public interface StatisticsService
 
                         for (DomainEvent domainEvent : eventCollector.events())
                         {
-                            TaskEntity task = uow.get( TaskEntity.class, domainEvent.entity().get() );
+                            TaskEntity task = null;
+                            try
+                            {
+                                task = uow.get( TaskEntity.class, domainEvent.entity().get() );
+                            } catch (NoSuchEntityException e)
+                            {
+                                // Entity has been removed
+                                continue;
+                            }
 
                             // Only save statistics for tasks in projects
                             if (task.owner().get() instanceof Project)
