@@ -201,9 +201,9 @@ public interface StatisticsService
                                 stmt.setTimestamp( idx++, new java.sql.Timestamp( domainEvent.on().get().getTime() ) );
                                 stmt.setLong( idx++, domainEvent.on().get().getTime() - task.createdOn().get().getTime() );
                                 Assignee assignee = task.assignedTo().get();
-                                stmt.setString( idx++, assignee.getDescription() );
-                                stmt.setString( idx++, task.owner().get().getDescription() );
+                                stmt.setString( idx++, assignee == null ? "" : assignee.getDescription() );
                                 Owner owner = task.owner().get();
+                                stmt.setString( idx++, owner.getDescription() );
                                 ProjectOrganization.Data po = (ProjectOrganization.Data) owner;
                                 Describable.Data organizationalUnit = (Describable.Data) po.organizationalUnit().get();
 
