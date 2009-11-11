@@ -188,7 +188,8 @@ public interface StatisticsService
                             }
 
                             // Only save statistics for tasks in projects
-                            if (task.owner().get() instanceof Project)
+                            Owner owner = task.owner().get();
+                            if (owner instanceof Project)
                             {
                                 PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "completed.insert" ) );
                                 int idx = 1;
@@ -202,26 +203,29 @@ public interface StatisticsService
                                 stmt.setLong( idx++, domainEvent.on().get().getTime() - task.createdOn().get().getTime() );
                                 Assignee assignee = task.assignedTo().get();
                                 stmt.setString( idx++, assignee == null ? "" : assignee.getDescription() );
-                                Owner owner = task.owner().get();
                                 stmt.setString( idx++, owner.getDescription() );
                                 ProjectOrganization.Data po = (ProjectOrganization.Data) owner;
                                 Describable.Data organizationalUnit = (Describable.Data) po.organizationalUnit().get();
 
                                 // Figure out which group the user belongs to
-                                Participation.Data participant = (Participation.Data) assignee;
-                                String groupName = null;
-                                findgroup:
-                                for (Group group : participant.groups())
+                                if (assignee == null)
                                 {
-                                    Members.Data members = (Members.Data) owner;
-                                    if (members.members().contains( group ))
+                                    Participation.Data participant = (Participation.Data) assignee;
+                                    String groupName = null;
+                                    findgroup:
+                                    for (Group group : participant.groups())
                                     {
-                                        groupName = group.getDescription();
-                                        break findgroup;
+                                        Members.Data members = (Members.Data) owner;
+                                        if (members.members().contains( group ))
+                                        {
+                                            groupName = group.getDescription();
+                                            break findgroup;
+                                        }
                                     }
+
+                                    stmt.setString( idx++, groupName );
                                 }
 
-                                stmt.setString( idx++, groupName );
                                 stmt.setString( idx, organizationalUnit.description().get() );
 
                                 stmt.executeUpdate();

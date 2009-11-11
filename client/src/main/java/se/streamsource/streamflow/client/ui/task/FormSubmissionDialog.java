@@ -29,10 +29,12 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 /**
  * JAVADOC

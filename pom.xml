@@ -47,11 +47,15 @@
         </repository>
         <repository>
             <id>webstart</id>
-            <url>http://repository.codehaus.org/</url>
+            <url>http://repository.codehaus.org</url>
         </repository>
         <repository>
             <id>Apache</id>
-            <url>http://mirrors.sunsite.dk/maven2/</url>
+            <url>http://mirrors.sunsite.dk/maven2</url>
+        </repository>
+        <repository>
+            <id>JBoss</id>
+            <url>http://repository.jboss.org/maven2</url>
         </repository>
     </repositories>
 
