@@ -52,7 +52,7 @@ public class WorkspaceProjectInboxView
     @Override
     protected void buildToolbar(JPanel toolbar)
     {
-        addToolbarButton(toolbar, "createTask");
+//        addToolbarButton(toolbar, "createTask");
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action forwardTasksFromInbox = addToolbarButton(toolbar, "forwardTasks");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
