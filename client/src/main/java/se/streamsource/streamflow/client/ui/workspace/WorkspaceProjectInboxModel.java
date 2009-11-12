@@ -31,9 +31,9 @@ public class WorkspaceProjectInboxModel
     public WorkspaceProjectInboxModel(@Uses WorkspaceProjectInboxClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{"", text(description_column_header), text(created_column_header)};
-        columnClasses = new Class[]{Boolean.class, String.class, Date.class};
-        columnEditable = new boolean[]{true, false, false};
+        columnNames = new String[]{text(description_column_header), text(created_column_header), ""};
+        columnClasses = new Class[]{String.class, Date.class, Boolean.class};
+        columnEditable = new boolean[]{false, false, true};
     }
 
     @Override

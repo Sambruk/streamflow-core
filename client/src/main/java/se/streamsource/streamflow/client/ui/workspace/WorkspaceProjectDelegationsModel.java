@@ -14,12 +14,14 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.domain.task.TaskStates;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
@@ -35,9 +37,9 @@ public class WorkspaceProjectDelegationsModel
     public WorkspaceProjectDelegationsModel(@Uses WorkspaceProjectDelegationsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{"", text(description_column_header), text(delegated_from_header), text(delegated_on_header)};
-        columnClasses = new Class[]{Boolean.class, String.class, String.class, Date.class, Date.class};
-        columnEditable = new boolean[]{true, false, false, false};
+        columnNames = new String[]{text(description_column_header), text(delegated_from_header), text(delegated_on_header), ""};
+        columnClasses = new Class[]{String.class, String.class, Date.class, Date.class, Boolean.class};
+        columnEditable = new boolean[]{false, false, false, true};
     }
 
     @Override
@@ -58,13 +60,61 @@ public class WorkspaceProjectDelegationsModel
         DelegatedTaskDTO task = (DelegatedTaskDTO) tasks.get(rowIndex);
         switch (column)
         {
-            case 2:
+            case 1:
                 return task.delegatedFrom().get();
-            case 3:
+            case 2:
                 return task.delegatedOn().get();
+            case 3:
+                return !task.status().get().equals(TaskStates.ACTIVE);
         }
 
         return super.getValueAt(rowIndex, column);
+    }
+    
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int column)
+    {
+        try
+        {
+            switch (column)
+            {
+                case 0:
+                {
+                    String description = (String) aValue;
+                    TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
+                    if (!description.equals(taskValue.description().get()))
+                    {
+                        taskValue.description().set(description);
+                        fireTableCellUpdated(rowIndex, column);
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    Boolean completed = (Boolean) aValue;
+                    if (completed)
+                    {
+
+                        TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
+                        if (taskValue.status().get() == TaskStates.ACTIVE)
+                        {
+                            EntityReference task = taskValue.task().get();
+                            getResource().task(task.identity()).complete();
+
+                            taskValue.status().set(TaskStates.COMPLETED);
+                            fireTableCellUpdated(rowIndex, column);
+                        }
+                    }
+                    break;
+                }
+            }
+        } catch (ResourceException e)
+        {
+            // TODO Better error handling
+            e.printStackTrace();
+        }
+
+        return; // Skip if don't know what is going on
     }
 
     public void reject(int idx) throws ResourceException

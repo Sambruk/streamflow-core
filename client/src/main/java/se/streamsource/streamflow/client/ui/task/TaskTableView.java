@@ -115,11 +115,11 @@ public abstract class TaskTableView
         add(toolbar, BorderLayout.NORTH);
 
 
-        taskTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
-        taskTable.getColumn(0).setMaxWidth(30);
-        taskTable.getColumn(0).setResizable(false);
-        taskTable.getColumn(2).setPreferredWidth(150);
-        taskTable.getColumn(2).setMaxWidth(150);
+        taskTable.getColumn(taskTable.getColumnCount()-1).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
+        taskTable.getColumn(taskTable.getColumnCount()-1).setMaxWidth(30);
+        taskTable.getColumn(taskTable.getColumnCount()-1).setResizable(false);
+        taskTable.getColumn(1).setPreferredWidth(150);
+        taskTable.getColumn(1).setMaxWidth(150);
         taskTable.setAutoCreateColumnsFromModel(false);
 
         splitPane.setTopComponent(taskScrollPane);

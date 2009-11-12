@@ -14,14 +14,21 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.created_column_header;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.description_column_header;
 
 import java.util.Date;
+
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
+
+import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 
 /**
  * JAVADOC
@@ -32,8 +39,8 @@ public class OverviewProjectAssignmentsModel
     public OverviewProjectAssignmentsModel(@Uses OverviewProjectAssignmentsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{"", text(description_column_header), text(created_column_header), text(OverviewResources.assigned_to_column_header)};
-        columnClasses = new Class[]{Boolean.class, String.class, Date.class, String.class};
+        columnNames = new String[]{text(description_column_header), text(created_column_header), text(OverviewResources.assigned_to_column_header), ""};
+        columnClasses = new Class[]{String.class, Date.class, String.class, Boolean.class};
         columnEditable = new boolean[]{false, false, false, false};
     }
 
@@ -49,11 +56,59 @@ public class OverviewProjectAssignmentsModel
         OverviewAssignedTaskDTO task = (OverviewAssignedTaskDTO) tasks.get(rowIndex);
         switch (column)
         {
-            case 3:
+            case 2:
                 return task.assignedTo().get();
+			case 3:
+				return !task.status().get().equals(TaskStates.ACTIVE);
         }
 
         return super.getValueAt(rowIndex, column);
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int column)
+    {
+        try
+        {
+            switch (column)
+            {
+                case 0:
+                {
+                    String description = (String) aValue;
+                    TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
+                    if (!description.equals(taskValue.description().get()))
+                    {
+                        taskValue.description().set(description);
+                        fireTableCellUpdated(rowIndex, column);
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    Boolean completed = (Boolean) aValue;
+                    if (completed)
+                    {
+
+                        TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
+                        if (taskValue.status().get() == TaskStates.ACTIVE)
+                        {
+                            EntityReference task = taskValue.task().get();
+                            getResource().task(task.identity()).complete();
+
+                            taskValue.status().set(TaskStates.COMPLETED);
+                            fireTableCellUpdated(rowIndex, column);
+                        }
+                    }
+                    break;
+                }
+            }
+        } catch (ResourceException e)
+        {
+            // TODO Better error handling
+            e.printStackTrace();
+        }
+
+        return; // Skip if don't know what is going on
     }
 
     @Override

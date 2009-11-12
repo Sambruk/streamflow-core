@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
@@ -23,6 +24,7 @@ import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 
 import java.util.Date;
 import java.util.List;
@@ -36,8 +38,8 @@ public class SearchResultTableModel
     public SearchResultTableModel(@Uses SearchClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{"", text(description_column_header), text(project_column_header), text(assigned_to_header), text(created_column_header)};
-        columnClasses = new Class[]{Boolean.class, String.class, String.class, String.class, Date.class};
+        columnNames = new String[]{text(description_column_header), text(project_column_header), text(assigned_to_header), text(created_column_header), ""};
+        columnClasses = new Class[]{String.class, String.class, String.class, Date.class, Boolean.class};
         columnEditable = new boolean[]{false, false, false, false, false};
     }
 
@@ -82,8 +84,6 @@ public class SearchResultTableModel
         switch (column)
         {
             case 0:
-                return !task.status().get().equals(TaskStates.ACTIVE);
-            case 1:
             {
                 StringBuilder desc = new StringBuilder(task.description().get());
                 List<ListItemValue> labels = task.labels().get().items().get();
@@ -100,12 +100,14 @@ public class SearchResultTableModel
                 }
                 return desc.toString();
             }
-            case 2:
+            case 1:
                 return task.project().get();
-            case 3:
+            case 2:
                 return task.assignedTo().get();
-            case 4:
+            case 3:
                 return task.creationDate().get();
+            case 4:
+                return !task.status().get().equals(TaskStates.ACTIVE);
             case IS_READ:
                 return task.isRead().get();
             case IS_DROPPED:
@@ -113,5 +115,51 @@ public class SearchResultTableModel
         }
 
         return null;
+    }
+    
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int column)
+    {
+        try
+        {
+            switch (column)
+            {
+                case 0:
+                {
+                    String description = (String) aValue;
+                    TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
+                    if (!description.equals(taskValue.description().get()))
+                    {
+                        taskValue.description().set(description);
+                        fireTableCellUpdated(rowIndex, column);
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    Boolean completed = (Boolean) aValue;
+                    if (completed)
+                    {
+
+                        TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
+                        if (taskValue.status().get() == TaskStates.ACTIVE)
+                        {
+                            EntityReference task = taskValue.task().get();
+                            getResource().task(task.identity()).complete();
+
+                            taskValue.status().set(TaskStates.COMPLETED);
+                            fireTableCellUpdated(rowIndex, column);
+                        }
+                    }
+                    break;
+                }
+            }
+        } catch (ResourceException e)
+        {
+            // TODO Better error handling
+            e.printStackTrace();
+        }
+
+        return; // Skip if don't know what is going on
     }
 }

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
@@ -37,9 +38,9 @@ public class WorkspaceProjectWaitingForModel
     public WorkspaceProjectWaitingForModel(@Uses WorkspaceProjectWaitingforClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{"", text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header)};
-        columnClasses = new Class[]{Boolean.class, String.class, String.class, String.class, Date.class};
-        columnEditable = new boolean[]{true, false, false, false, false};
+        columnNames = new String[]{text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), ""};
+        columnClasses = new Class[]{String.class, String.class, String.class, Date.class, Boolean.class};
+        columnEditable = new boolean[]{false, false, false, false, true};
     }
 
     @Override
@@ -60,15 +61,63 @@ public class WorkspaceProjectWaitingForModel
         WaitingForTaskDTO task = (WaitingForTaskDTO) tasks.get(rowIndex);
         switch (column)
         {
-            case 2:
+            case 1:
                 return task.delegatedTo().get();
-            case 3:
+            case 2:
                 return task.assignedTo().get();
-            case 4:
+            case 3:
                 return task.delegatedOn().get();
+            case 4:
+                return !task.status().get().equals(TaskStates.ACTIVE);
         }
 
         return super.getValueAt(rowIndex, column);
+    }
+    
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int column)
+    {
+        try
+        {
+            switch (column)
+            {
+                case 0:
+                {
+                    String description = (String) aValue;
+                    TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
+                    if (!description.equals(taskValue.description().get()))
+                    {
+                        taskValue.description().set(description);
+                        fireTableCellUpdated(rowIndex, column);
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    Boolean completed = (Boolean) aValue;
+                    if (completed)
+                    {
+
+                        TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
+                        if (taskValue.status().get() == TaskStates.ACTIVE)
+                        {
+                            EntityReference task = taskValue.task().get();
+                            getResource().task(task.identity()).complete();
+
+                            taskValue.status().set(TaskStates.COMPLETED);
+                            fireTableCellUpdated(rowIndex, column);
+                        }
+                    }
+                    break;
+                }
+            }
+        } catch (ResourceException e)
+        {
+            // TODO Better error handling
+            e.printStackTrace();
+        }
+
+        return; // Skip if don't know what is going on
     }
 
     public void complete(int row)

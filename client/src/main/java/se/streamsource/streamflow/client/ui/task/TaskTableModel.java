@@ -168,8 +168,6 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         switch (column)
         {
             case 0:
-                return !task.status().get().equals(TaskStates.ACTIVE);
-            case 1:
             {
                 StringBuilder desc = new StringBuilder(task.description().get());
                 List<ListItemValue> labels = task.labels().get().items().get();
@@ -186,8 +184,10 @@ public abstract class TaskTableModel<T extends TaskListDTO>
                 }
                 return desc.toString();
             }
-            case 2:
+            case 1:
                 return task.creationDate().get();
+            case 2:
+                return !task.status().get().equals(TaskStates.ACTIVE);
             case IS_READ:
                 return task.isRead().get();
             case IS_DROPPED:
@@ -206,6 +206,17 @@ public abstract class TaskTableModel<T extends TaskListDTO>
             {
                 case 0:
                 {
+                    String description = (String) aValue;
+                    TaskDTO taskValue = tasks.get(rowIndex);
+                    if (!description.equals(taskValue.description().get()))
+                    {
+                        taskValue.description().set(description);
+                        fireTableCellUpdated(rowIndex, column);
+                    }
+                    break;
+                }
+                case 2:
+                {
                     Boolean completed = (Boolean) aValue;
                     if (completed)
                     {
@@ -221,17 +232,6 @@ public abstract class TaskTableModel<T extends TaskListDTO>
                         }
                     }
                     break;
-                }
-                case 1:
-                {
-                    String description = (String) aValue;
-                    TaskDTO taskValue = tasks.get(rowIndex);
-                    if (!description.equals(taskValue.description().get()))
-                    {
-                        taskValue.description().set(description);
-                        fireTableCellUpdated(rowIndex, column);
-                    }
-
                 }
             }
         } catch (ResourceException e)
