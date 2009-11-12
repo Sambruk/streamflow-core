@@ -14,40 +14,46 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Date;
-
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+
+import java.util.Date;
+import java.util.Observable;
 
 /**
  * Model for the general info about a task.
  */
-public class TaskGeneralModel implements Refreshable, EventListener,
-		EventHandler, PropertyChangeListener
+public class TaskGeneralModel extends Observable implements Refreshable, EventListener,
+		EventHandler
 
 {
-	EventHandlerFilter eventFilter = new EventHandlerFilter(this, "labelAdded",
-			"labelDeleted", "labelUpdated");
+	EventHandlerFilter eventFilter = new EventHandlerFilter(this, "addedLabel",
+			"removedLabel");
 
-	@Uses
 	private TaskGeneralClientResource generalClientResource;
 
 	TaskGeneralDTO general;
 
-	public TaskGeneralDTO getGeneral()
+    @Uses LabelsModel labelsModel;
+
+    @Uses LabelSelectionModel selectionModel;
+
+    public TaskGeneralModel(@Uses TaskGeneralClientResource generalClientResource)
+    {
+        this.generalClientResource = generalClientResource;
+        eventFilter = new EventHandlerFilter(generalClientResource.getRequest().getResourceRef().getParentRef().getLastSegment(), this, "addedLabel",
+                "removedLabel");
+    }
+
+    public TaskGeneralDTO getGeneral()
 	{
 		if (general == null)
 			refresh();
@@ -90,7 +96,7 @@ public class TaskGeneralModel implements Refreshable, EventListener,
 		}
 	}
 
-	public void addLabel(String labelId) throws ResourceException
+	public void addLabel(String labelId)
 	{
 		try
 		{
@@ -102,7 +108,7 @@ public class TaskGeneralModel implements Refreshable, EventListener,
 		}
 	}
 
-	public void removeLabel(String labelId) throws ResourceException
+	public void removeLabel(String labelId)
 	{
 		try
 		{
@@ -114,29 +120,16 @@ public class TaskGeneralModel implements Refreshable, EventListener,
 		}
 	}
 	
-	public ListValue getOwnerLabels()  
-	{
-		try
-		{
-			return generalClientResource.ownerLabels();
-		} catch (ResourceException e)
-		{
-			throw new OperationException(TaskResources.could_not_get_owner_labels,
-					e);
-		}
-	}
-	
-	public ListValue getOrganizationLabels(StringDTO prefix)
-	{
-		try
-		{
-			return generalClientResource.organizationLabels(prefix);
-		} catch (ResourceException e)
-		{
-			throw new OperationException(TaskResources.could_not_get_organisation_labels,
-					e);
-		}
-	}
+    public LabelsModel labelsModel()
+    {
+        return labelsModel;
+    }
+
+
+    public LabelSelectionModel selectionModel()
+    {
+        return selectionModel;
+    }
 
 	public void refresh()
 	{
@@ -144,6 +137,11 @@ public class TaskGeneralModel implements Refreshable, EventListener,
 		{
 			general = (TaskGeneralDTO) generalClientResource.general()
 					.buildWith().prototype();
+
+            labelsModel.setLabels(general.labels().get());
+
+            selectionModel.refresh();
+            
 		} catch (Exception e)
 		{
 			throw new OperationException(TaskResources.could_not_refresh, e);
@@ -152,18 +150,14 @@ public class TaskGeneralModel implements Refreshable, EventListener,
 
 	public void notifyEvent(DomainEvent event)
 	{
+        eventFilter.handleEvent(event);
 
+        labelsModel.notifyEvent(event);
 	}
 
 	public boolean handleEvent(DomainEvent event)
 	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void propertyChange(PropertyChangeEvent evt)
-	{
-		// TODO Auto-generated method stub
-
+        refresh();
+		return true;
 	}
 }

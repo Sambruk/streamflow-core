@@ -18,15 +18,10 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -36,8 +31,6 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
-import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.task.DueOn;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskLabelsQueries;
@@ -61,11 +54,9 @@ public class TaskGeneralServerResource
         setNegotiated(true);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
-
-    @Override
-    protected Representation get(Variant variant) throws ResourceException
+    public TaskGeneralDTO general()
     {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Get general task information"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
         ValueBuilder<TaskGeneralDTO> builder = vbf.newValueBuilder(TaskGeneralDTO.class);
         TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
         builder.prototype().description().set(task.description().get());
@@ -84,9 +75,8 @@ public class TaskGeneralServerResource
         builder.prototype().creationDate().set(task.createdOn().get());
         builder.prototype().taskId().set(task.taskId().get());
         builder.prototype().dueOn().set(task.dueOn().get());
-        uow.discard();
 
-        return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
+        return builder.newInstance();
     }
 
     public void changedescription(StringDTO stringValue)
@@ -132,21 +122,12 @@ public class TaskGeneralServerResource
         task.removeLabel(label);
     }
     
-    public ListValue ownerlabels()
+    public ListValue possiblelabels()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
         String id = (String) getRequest().getAttributes().get("task");
         TaskLabelsQueries labels = uow.get(TaskLabelsQueries.class, id);
 
-        return labels.ownerLabels();
-    }
-    
-    public ListValue organizationlabels(StringDTO prefix)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("task");
-        TaskLabelsQueries labels = uow.get(TaskLabelsQueries.class, id);
-
-        return labels.organizationLabels(prefix.string().get());
+        return labels.possibleLabels();
     }
 }

@@ -26,7 +26,7 @@ public class ListItemCellRenderer extends DefaultListCellRenderer
 {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
     {
-        ListItemValue group = (ListItemValue) value;
-        return super.getListCellRendererComponent(list, group.description().get(), index, isSelected, cellHasFocus);
+        ListItemValue itemValue = (ListItemValue) value;
+        return super.getListCellRendererComponent(list, itemValue == null ? "" : itemValue.description().get(), index, isSelected, cellHasFocus);
     }
 }

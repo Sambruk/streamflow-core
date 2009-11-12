@@ -14,45 +14,29 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.COMBOBOX;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.DATEPICKER;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.DELETABLELABELSLIST;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.LABEL;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDatePicker;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.LayoutFocusTraversalPolicy;
-
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXList;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueBuilder;
-import org.restlet.resource.ResourceException;
-
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import se.streamsource.streamflow.client.infrastructure.ui.DeletableLabelsList;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -62,6 +46,8 @@ public class TaskGeneralView extends JScrollPane implements Observer
 	@Service
 	UncaughtExceptionHandler exception;
 
+    LabelSelectionView labelSelection;
+
 	private StateBinder taskBinder;
 
 	TaskGeneralModel model;
@@ -70,15 +56,14 @@ public class TaskGeneralView extends JScrollPane implements Observer
 	public JTextField descriptionField;
 	private JScrollPane notePane;
 	public JXDatePicker dueOnField;
-	private JToggleButton editButton;
 	private JLabel issueLabel;
 	public JPanel form;
-	public DeletableLabelsList labels;
-	public JXList selectedLabels;
-	public JComboBox availableLabels;
+	public LabelsView labels;
 	
-	public TaskGeneralView(@Service ApplicationContext appContext)
+	public TaskGeneralView(@Service ApplicationContext appContext, @Uses LabelsView labels)
     {
+        this.labels = labels;
+        this.labelSelection = labels.labelSelection();
         setActionMap(appContext.getActionMap(this));
         FormLayout layout = new FormLayout(
                 "200dlu",
@@ -98,15 +83,12 @@ public class TaskGeneralView extends JScrollPane implements Observer
         BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
         bb.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
         
-        bb.appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
+        bb.appendLine(new Label(i18n.text(WorkspaceResources.labels_label))).appendLine(labels)
+                .appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
                 .appendLine(WorkspaceResources.note_label, notePane, template.note())
-                .appendLine(WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn())
-                .appendLine(WorkspaceResources.labels_label, labels = (DeletableLabelsList) DELETABLELABELSLIST.newField(), template.labels());
+                .appendLine(WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn());
 
-        availableLabels = (JComboBox) COMBOBOX.newField();
 
-        add(availableLabels);
-        
         setViewportView(form);
 
         taskBinder.addObserver(this);
@@ -145,8 +127,10 @@ public class TaskGeneralView extends JScrollPane implements Observer
 		issueLabel.setVisible(issueVisible);
 		((JLabel) issueLabel.getClientProperty("labeledBy"))
 				.setVisible(issueVisible);
-		
-		labels.setListValue(general.labels().get());
+
+
+		labels.setLabelsModel(model.labelsModel());
+        labelSelection.setLabelSelectionModel(model.selectionModel());
 	}
 
 	public void update(Observable o, Object arg)
@@ -163,15 +147,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
 			model.changeDueOn((Date) property.get());
 		} else if (property.qualifiedName().name().equals("labels")) 
 		{
-			try
-			{
-				model.removeLabel(property.get().toString());
-			} catch (ResourceException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			model.refresh();
+			model.removeLabel(property.get().toString());
 		}
 	}
 }

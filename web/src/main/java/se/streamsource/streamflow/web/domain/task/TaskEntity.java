@@ -46,6 +46,7 @@ public interface TaskEntity
         TaskStatus.Data,
         TaskId.Data,
         TaskQueries,
+        TaskLabelsQueries,
         DomainEntity
 {
 }

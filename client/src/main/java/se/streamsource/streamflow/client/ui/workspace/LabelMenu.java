@@ -15,18 +15,14 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.task.TaskModel;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.task.TasksModel;
-import se.streamsource.streamflow.client.ui.task.TaskModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MenuEvent;
@@ -107,22 +103,10 @@ public class LabelMenu
                             String labelId = label.entity().get().identity();
                             if (checkBoxMenuItem.isSelected())
                             {
-                                try
-                                {
-                                    taskModel.general().addLabel(labelId);
-                                } catch (ResourceException e1)
-                                {
-                                    e1.printStackTrace();
-                                }
+                                taskModel.general().addLabel(labelId);
                             } else
                             {
-                                try
-                                {
-                                    taskModel.general().removeLabel(labelId);
-                                } catch (ResourceException e1)
-                                {
-                                    e1.printStackTrace();
-                                }
+                                taskModel.general().removeLabel(labelId);
                             }
                         }
                     }

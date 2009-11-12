@@ -14,44 +14,6 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.KeyboardFocusManager;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.ResourceBundle;
-import java.util.Set;
-
-import javax.swing.InputVerifier;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.text.JTextComponent;
-
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXDialog;
@@ -63,7 +25,19 @@ import org.qi4j.api.property.Property;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.*;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -86,8 +60,7 @@ public class StateBinder
                 JScrollPane.class,
                 JPasswordField.class,
                 JCheckBox.class,
-                JXDatePicker.class,
-                DeletableLabelsList.class);
+                JXDatePicker.class);
 
         errorMessages = ResourceBundle.getBundle(getClass().getName());
     }
@@ -401,22 +374,6 @@ public class StateBinder
                 });
 
                 return binding;
-            } else if (component instanceof DeletableLabelsList)
-            {
-                final DeletableLabelsList deletableLabels = (DeletableLabelsList) component;
-
-                deletableLabels.addPropertyChangeListener(new PropertyChangeListener()
-                {
-                    public void propertyChange(PropertyChangeEvent e)
-                    {
-                        if ("labels".equals(e.getPropertyName()))
-                        {
-                            binding.updateProperty(e.getNewValue());
-                        }
-                    }
-                });
-
-                return binding;
             }
 
 
@@ -448,11 +405,7 @@ public class StateBinder
             {
                 JXDatePicker datePicker = (JXDatePicker) component;
                 datePicker.setDate((Date) value);
-            } else if (component instanceof DeletableLabelsList)
-            {
-            	DeletableLabelsList deletableLabels = (DeletableLabelsList) component;
-            	deletableLabels.setListValue((ListValue) value);
-            }
+            } 
         }
     }
 

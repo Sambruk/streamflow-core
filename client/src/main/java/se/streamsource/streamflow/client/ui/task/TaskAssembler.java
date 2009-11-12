@@ -56,6 +56,14 @@ public class TaskAssembler
                 TaskGeneralView.class);
 
         UIAssemblers.addMV(module,
+                LabelsModel.class,
+                LabelsView.class);
+
+        UIAssemblers.addMV(module,
+                LabelSelectionModel.class,
+                LabelSelectionView.class);
+
+        UIAssemblers.addMV(module,
                 TaskEffectiveFieldsValueModel.class,
                 TaskEffectiveFieldsValueView.class);
 
