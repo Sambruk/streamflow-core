@@ -37,6 +37,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
+import org.restlet.data.CharacterSet;
 import org.restlet.representation.*;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
@@ -243,7 +244,7 @@ public class CommandQueryServerResource
                     "$queries", queries.toString(),
                     "$commands", commands.toString(),
                     "$title", getRequest().getResourceRef().getLastSegment());
-            return new StringRepresentation(content, MediaType.TEXT_HTML);
+            return new StringRepresentation(content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8);
         } catch (IOException e)
         {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
@@ -258,14 +259,14 @@ public class CommandQueryServerResource
             {
                 if (variant.getMediaType().equals(MediaType.APPLICATION_JSON))
                 {
-                    return new StringRepresentation(((Value) returnValue).toJSON(), MediaType.APPLICATION_JSON);
+                    return new StringRepresentation(((Value) returnValue).toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
                 } else if (variant.getMediaType().equals(MediaType.TEXT_HTML))
                 {
                     try
                     {
                         String template = TemplateUtil.getTemplate("resources/value.html", CommandQueryServerResource.class);
                         String content = TemplateUtil.eval(template, "$content", ((Value) returnValue).toJSON());
-                        return new StringRepresentation(content, MediaType.TEXT_HTML);
+                        return new StringRepresentation(content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8);
                     } catch (IOException e)
                     {
                         throw new ResourceException(e);

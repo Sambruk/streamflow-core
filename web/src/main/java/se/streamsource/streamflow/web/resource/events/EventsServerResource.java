@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.resource.events;
 
 import org.qi4j.api.injection.scope.Service;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
@@ -54,9 +55,9 @@ public class EventsServerResource
 
         final Date afterDate = after == null ? null : new Date(Long.parseLong(after ));
 
-        return new WriterRepresentation(MediaType.TEXT_PLAIN)
+        WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_PLAIN )
         {
-            public void write(final Writer writer) throws IOException
+            public void write( final Writer writer ) throws IOException
             {
                 store.transactions( afterDate, new TransactionHandler()
                 {
@@ -66,7 +67,7 @@ public class EventsServerResource
                         {
                             String json = transaction.toJSON();
                             writer.write( json );
-                            writer.write('\n');
+                            writer.write( '\n' );
 
                             return true;
                         } catch (IOException e)
@@ -74,8 +75,10 @@ public class EventsServerResource
                             return false;
                         }
                     }
-                });
+                } );
             }
         };
+        representation.setCharacterSet( CharacterSet.UTF_8 );
+        return representation;
     }
 }

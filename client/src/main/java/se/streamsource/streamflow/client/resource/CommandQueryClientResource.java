@@ -28,6 +28,7 @@ import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.data.CharacterSet;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
@@ -138,7 +139,7 @@ public class CommandQueryClientResource
     protected void postCommand(String operation, ValueComposite command) throws ResourceException
     {
         Representation commandRepresentation;
-        commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON);
+        commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
 
         postCommand( operation, commandRepresentation );
     }
@@ -238,7 +239,7 @@ public class CommandQueryClientResource
     {
         Representation commandRepresentation;
         if (command != null)
-            commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON);
+            commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
         else
             commandRepresentation = new EmptyRepresentation();
 
