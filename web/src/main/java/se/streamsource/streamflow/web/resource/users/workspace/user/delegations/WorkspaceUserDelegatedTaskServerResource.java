@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.resource.users.workspace.user.delegations;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.Task;
@@ -59,14 +58,6 @@ public class WorkspaceUserDelegatedTaskServerResource
         Task task = uow.get(Task.class, taskId);
         Delegations user = uow.get(Delegations.class, id);
         user.reject(task);
-    }
-
-    public void deleteOperation() throws ResourceException
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        uow.remove(task);
     }
 
     public void markAsRead()

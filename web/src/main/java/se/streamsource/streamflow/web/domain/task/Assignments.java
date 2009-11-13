@@ -25,6 +25,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.task.TaskStates;
 
 /**
  * JAVADOC
@@ -139,8 +140,11 @@ public interface Assignments
 
         public void deleteAssignedTask( Task task )
         {
-            markAssignedTaskAsRead( task );
-            deletedAssignedTask( DomainEvent.CREATE, task );
+            if (((TaskStatus.Data)task).status().get().equals( TaskStates.ACTIVE))
+            {
+                markAssignedTaskAsRead( task );
+                deletedAssignedTask( DomainEvent.CREATE, task );
+            }
         }
 
         public void deletedAssignedTask( DomainEvent event, Task task )

@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.domain.task.TaskStates;
 
 /**
  * JAVADOC
@@ -120,8 +121,11 @@ public interface WaitingFor
 
         public void deleteWaitingForTask( Task task )
         {
-            markWaitingForAsRead( task );
-            deletedWaitingForTask( DomainEvent.CREATE, task );
+            if (((TaskStatus.Data)task).status().get().equals( TaskStates.ACTIVE))
+            {
+                markWaitingForAsRead( task );
+                deletedWaitingForTask( DomainEvent.CREATE, task );
+            }
         }
 
         public void deletedWaitingForTask( DomainEvent event, Task task )

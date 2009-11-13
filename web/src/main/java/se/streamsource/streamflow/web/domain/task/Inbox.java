@@ -24,6 +24,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -142,8 +143,11 @@ public interface Inbox
 
         public void deleteTask( Task task )
         {
-            markAsRead( task );
-            deletedTask( DomainEvent.CREATE, task );
+            if (((TaskStatus.Data)task).status().get().equals(TaskStates.ACTIVE))
+            {
+                markAsRead( task );
+                deletedTask( DomainEvent.CREATE, task );
+            }
         }
 
         public void deletedTask( DomainEvent event, Task task )
