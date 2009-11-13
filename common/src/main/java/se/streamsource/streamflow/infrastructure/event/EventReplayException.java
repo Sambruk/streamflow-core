@@ -20,8 +20,17 @@ package se.streamsource.streamflow.infrastructure.event;
 public class EventReplayException
     extends Exception
 {
-    public EventReplayException( Throwable cause )
+    private DomainEvent event;
+
+    public EventReplayException( DomainEvent event, Throwable cause )
     {
         super( cause );
+        this.event = event;
+    }
+
+    @Override
+    public String getMessage()
+    {
+        return "Could not replay event:"+event+", caused by:"+getCause();
     }
 }

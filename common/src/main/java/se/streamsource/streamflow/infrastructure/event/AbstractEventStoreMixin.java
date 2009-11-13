@@ -159,8 +159,8 @@ public abstract class AbstractEventStoreMixin
     protected long getCurrentTimestamp()
     {
         long timestamp = System.currentTimeMillis();
-        if (timestamp == lastTimestamp)
-            timestamp++; // Increase by one to ensure uniqueness
+        if (timestamp <= lastTimestamp)
+            timestamp = lastTimestamp+1; // Increase by one to ensure uniqueness
         lastTimestamp = timestamp;
         return timestamp;
     }

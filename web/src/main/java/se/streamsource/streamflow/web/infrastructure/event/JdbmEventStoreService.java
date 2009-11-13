@@ -90,7 +90,7 @@ public interface JdbmEventStoreService
 
         public void passivate() throws IOException
         {
-            System.out.println("Close event db");
+            logger.info("Close event db");
             recordManager.close();
         }
 
@@ -144,6 +144,7 @@ public interface JdbmEventStoreService
                 String valueJson;
                 BufferedReader reader = new BufferedReader(in);
                 int count = 0;
+                logger.info( "Import events" );
                 while ((valueJson = reader.readLine()) != null)
                 {
                     JSONObject json = (JSONObject) new JSONTokener(valueJson).nextValue();
@@ -156,11 +157,13 @@ public interface JdbmEventStoreService
                     count++;
                     if (count%1000 == 0)
                     {
+                        logger.info( "Imported "+count+" events" );
                         commit(); // Commit every 1000 transactions to avoid OutOfMemory issues
                     }
 
                 }
                 commit();
+                logger.info("Import events done, "+count+" events imported");
             } catch (JSONException e)
             {
                 rollback();

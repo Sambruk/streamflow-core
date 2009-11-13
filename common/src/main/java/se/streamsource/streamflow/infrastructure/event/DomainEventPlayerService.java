@@ -63,23 +63,25 @@ public interface DomainEventPlayerService
 
         public void replayEvents(Date afterDate) throws EventReplayException
         {
-            final EventReplayException[] ex = new EventReplayException[0];
+            final EventReplayException[] ex = new EventReplayException[1];
             eventStore.transactions( afterDate, new TransactionHandler()
             {
                 public boolean handleTransaction( TransactionEvents transaction )
                 {
                     UnitOfWork uow = uowf.newUnitOfWork();
+                    DomainEvent currentEvent = null;
                     try
                     {
                         for (DomainEvent domainEvent : transaction.events().get())
                         {
+                            currentEvent = domainEvent;
                             // Get the entity
                             Class entityType = module.classLoader().loadClass(domainEvent.entityType().get() );
                             String id = domainEvent.entity().get();
                             Object entity = uow.get(entityType, id);
 
                             // Get method
-                            Method eventMethod = getEventMethod(entity.getClass(), domainEvent.name().get());
+                            Method eventMethod = getEventMethod(entityType, domainEvent.name().get());
 
                             if (eventMethod == null)
                             {
@@ -114,7 +116,7 @@ public interface DomainEventPlayerService
                     } catch (Exception e)
                     {
                         uow.discard();
-                        ex[0] = new EventReplayException(e);
+                        ex[0] = new EventReplayException(currentEvent, e);
                         return false;
                     }
                 }
