@@ -22,9 +22,10 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
+import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 
 /**
  * JAVADOC
@@ -38,6 +39,16 @@ public class SubmittedFormsQueriesSteps
     @Uses
     OrganizationsSteps organizationsSteps;
 
+
+    @Uses
+    SubmittedFormsSteps submittedFormsSteps;
+
+    @Uses
+    OrganizationalUnitsSteps ouSteps;
+
+    @Uses
+    ProjectsSteps projectsSteps;
+
     @Uses
     FormsSteps formsSteps;
 
@@ -46,6 +57,33 @@ public class SubmittedFormsQueriesSteps
     private SubmittedFormsListDTO submittedForms;
     private SubmittedFormDTO submittedForm;
     private EffectiveFieldsDTO effectiveFieldsDTO;
+
+
+    @Given("basic form submit setup")
+    public void setupFormSubmit() throws Exception
+    {
+        ouSteps.givenOrganization();
+        ouSteps.givenOU( TestSetupSteps.OU1 );
+        projectsSteps.givenProject( TestSetupSteps.PROJECT1 );
+
+        formsSteps.givenForm( TestSetupSteps.SOME_FORM );
+        organizationsSteps.givenUser( TestSetupSteps.USER1 );
+        inboxSteps.createTask();
+        submittedFormsSteps.createForm();
+        submittedFormsSteps.addFieldValueToForm( TestSetupSteps.SOME_FIELD, TestSetupSteps.SOME_VALUE);
+        submittedFormsSteps.submissionDateIsNow();
+        submittedFormsSteps.submitterIsSet();
+        submittedFormsSteps.submitForm();
+
+        submittedFormsSteps.createForm();
+        submittedFormsSteps.addFieldValueToForm( TestSetupSteps.SOME_FIELD, TestSetupSteps.SOME_VALUE2);
+        submittedFormsSteps.submissionDateIsNow();
+        submittedFormsSteps.submitterIsSet();
+        submittedFormsSteps.submitForm();
+
+        genericSteps.clearEvents();
+    }
+
 
     @Given("project task")
     public void givenProjectTask()

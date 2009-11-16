@@ -161,31 +161,6 @@ public class TestSetupSteps
         genericSteps.clearEvents();
     }
 
-    @Given("basic form submit setup")
-    public void setupFormSubmit() throws Exception
-    {
-        ouSteps.givenOrganization();
-        ouSteps.givenOU( OU1 );
-        projectsSteps.givenProject( PROJECT1 );
-
-        formsSteps.givenForm( SOME_FORM );
-        organizationsSteps.givenUser( USER1 );
-        inboxSteps.createTask();
-        submittedFormsSteps.createForm();
-        submittedFormsSteps.addFieldValueToForm( SOME_FIELD, SOME_VALUE);
-        submittedFormsSteps.submissionDateIsNow();
-        submittedFormsSteps.submitterIsSet();
-        submittedFormsSteps.submitForm();
-
-        submittedFormsSteps.createForm();
-        submittedFormsSteps.addFieldValueToForm( SOME_FIELD, SOME_VALUE2);
-        submittedFormsSteps.submissionDateIsNow();
-        submittedFormsSteps.submitterIsSet();
-        submittedFormsSteps.submitForm();
-
-        genericSteps.clearEvents();
-    }
-
     @Given("basic group setup")
     public void setupGroups() throws Exception
     {

@@ -1,0 +1,19 @@
+Scenario: Find the owner project of a project task
+Given basic organizational unit setup
+Given basic user setup
+Given basic project setup
+Given project named project1
+Given project task
+When querying for the owning project
+Then project1 is returned
+
+Scenario: Find the owner project of a user task
+Given basic organizational unit setup
+Given basic user setup
+Given basic project setup
+Given project named project1
+Given user task
+When querying for the owning project
+Then null is returned
+
+
