@@ -21,17 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormTemplateSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormTemplatesSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.MembersSteps;
-import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.*;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.task.Assignments;
@@ -63,6 +53,7 @@ public class TestSetupSteps
     public static final String GROUP2 = "group2";
 
     public static final String SOME_VALUE = "SomeValue";
+    public static final String SOME_VALUE2 = "SomeValue2";
     public static final String SOME_FIELD = "SomeField";
     public static final String SOME_FIELD2 = "SomeField2";
     public static final String SOME_FORM = "SomeForm";
@@ -93,6 +84,10 @@ public class TestSetupSteps
 
     @Optional
     @Uses
+    InboxSteps inboxSteps;
+
+    @Optional
+    @Uses
     OrganizationalUnitsSteps ouSteps;
 
     @Optional
@@ -110,6 +105,10 @@ public class TestSetupSteps
     @Optional
     @Uses
     OrganizationsSteps organizationsSteps;
+
+    @Optional
+    @Uses
+    SubmittedFormsSteps submittedFormsSteps;
 
     @Optional
     @Uses
@@ -158,6 +157,31 @@ public class TestSetupSteps
 
 
         formTemplatesSteps.createTemplate();
+
+        genericSteps.clearEvents();
+    }
+
+    @Given("basic form submit setup")
+    public void setupFormSubmit() throws Exception
+    {
+        ouSteps.givenOrganization();
+        ouSteps.givenOU( OU1 );
+        projectsSteps.givenProject( PROJECT1 );
+
+        formsSteps.givenForm( SOME_FORM );
+        organizationsSteps.givenUser( USER1 );
+        inboxSteps.createTask();
+        submittedFormsSteps.createForm();
+        submittedFormsSteps.addFieldValueToForm( SOME_FIELD, SOME_VALUE);
+        submittedFormsSteps.submissionDateIsNow();
+        submittedFormsSteps.submitterIsSet();
+        submittedFormsSteps.submitForm();
+
+        submittedFormsSteps.createForm();
+        submittedFormsSteps.addFieldValueToForm( SOME_FIELD, SOME_VALUE2);
+        submittedFormsSteps.submissionDateIsNow();
+        submittedFormsSteps.submitterIsSet();
+        submittedFormsSteps.submitForm();
 
         genericSteps.clearEvents();
     }
