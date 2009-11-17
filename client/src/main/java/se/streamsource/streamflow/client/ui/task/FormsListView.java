@@ -43,11 +43,13 @@ public class FormsListView
         ActionMap am = context.getActionMap(this);
         setActionMap(am);
         setMinimumSize(new Dimension(150, 0));
-
         this.model = model;
+
+        JPanel panel = new JPanel(new BorderLayout());
         formList = new JList(model);
         formList.setCellRenderer(new ListItemCellRenderer());
-        setViewportView(formList);
+        panel.add(formList, BorderLayout.CENTER);
+        setViewportView(panel);
     }
 
     public TaskFormDefinitionsClientResource getResource()

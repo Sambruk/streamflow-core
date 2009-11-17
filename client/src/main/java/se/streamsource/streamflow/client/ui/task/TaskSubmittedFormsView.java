@@ -80,11 +80,17 @@ public class TaskSubmittedFormsView
     @org.jdesktop.application.Action
     public void add() throws IOException, ResourceException
     {
-        FormSubmissionDialog dialog =
-                obf.newObjectBuilder(FormSubmissionDialog.class).
+        FormSubmissionWizard dialog =
+                obf.newObjectBuilder(FormSubmissionWizard.class).
                         use(model.getTaskFormDefinitionsResource(), model.getTaskSubmittedFormsClientResource()).newInstance();
 
-        dialogs.showOkCancelHelpDialog(this, dialog);
+        JFrame frame = new JFrame(i18n.text(WorkspaceResources.form_submit_wizard));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        Container contentPane = frame.getContentPane();
+        contentPane.add(dialog);
+        frame.setSize(400, 300);
+        frame.setVisible(true);
     }
 
     public void setModel(TaskSubmittedFormsModel model)

@@ -15,9 +15,10 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.ConstantSize;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ConstantSize;
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
@@ -36,34 +37,28 @@ import java.util.Map;
  * JAVADOC
  */
 public class FormSubmitView
-        extends JPanel
+        extends JScrollPane
 {
-
-    private CardLayout layout = new CardLayout();
     private DefaultFormBuilder formBuilder;
-    private JScrollPane scrollPane;
     FormLayout formLayout = new FormLayout(
             "pref, 4dlu, 150dlu","");
 
-    private Map<ListItemValue, TextField> fields;
+    private Map<EntityReference, TextField> fields;
 
     @Structure
     ValueBuilderFactory vbf;
     private FormSubmitModel model;
+    private JPanel panel;
 
     public FormSubmitView(@Service ApplicationContext context)
     {
         ActionMap am = context.getActionMap(this);
         setActionMap(am);
 
-        setLayout(layout);
+        panel = new JPanel();
+        setViewportView(panel);
 
-        scrollPane = new JScrollPane();
-
-        fields = new HashMap<ListItemValue, TextField>();
-
-        add(new JPanel(), "EMPTY");
-        add(scrollPane, "CONTACT");
+        fields = new HashMap<EntityReference, TextField>();
     }
 
     public void setModel(FormSubmitModel model)
@@ -71,25 +66,21 @@ public class FormSubmitView
         this.model = model;
         if (model != null)
         {
-            scrollPane.setViewportView(new JPanel());
-
+            panel.removeAll();
             fields.clear();
-            formBuilder = new DefaultFormBuilder(formLayout, (JPanel)scrollPane.getViewport().getView());
+            formBuilder = new DefaultFormBuilder(formLayout, panel);
             ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
             formBuilder.setLineGapSize(lineGap);
-            formBuilder.setDefaultDialogBorder();
 
             for (ListItemValue value : model.getFields())
             {
-                fields.put(value, new TextField(30));
-                formBuilder.append(value.description().get(), fields.get(value));
+                TextField textField = new TextField(30);
+                fields.put(value.entity().get(), textField);
+                formBuilder.append(value.description().get(), textField);
             }
-            layout.show(this, "CONTACT");
-        } else
-        {
-            layout.show(this, "EMPTY");
+            panel.revalidate();
+            panel.repaint();
         }
-
     }
 
     public SubmitFormDTO getSubmitFormDTO()
@@ -98,9 +89,9 @@ public class FormSubmitView
         ValueBuilder<FieldValue> fieldBuilder =vbf.newValueBuilder(FieldValue.class);
         java.util.List<FieldValue> fields = new ArrayList<FieldValue>();
 
-        for (Map.Entry<ListItemValue, TextField> stringComponentEntry : this.fields.entrySet())
+        for (Map.Entry<EntityReference, TextField> stringComponentEntry : this.fields.entrySet())
         {
-            fieldBuilder.prototype().field().set(stringComponentEntry.getKey().entity().get());
+            fieldBuilder.prototype().field().set(stringComponentEntry.getKey());
             fieldBuilder.prototype().value().set(stringComponentEntry.getValue().getText());
             fields.add(fieldBuilder.newInstance());
         }
