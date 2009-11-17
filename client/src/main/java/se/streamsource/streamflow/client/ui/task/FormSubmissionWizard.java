@@ -52,7 +52,6 @@ public class FormSubmissionWizard
     TaskSubmittedFormsClientResource submittedFormsResource;
     private FormsListView formsListView;
     private JButton previous;
-    private JButton next;
     private JButton submit;
 
     public FormSubmissionWizard(@Service ApplicationContext context,
@@ -78,8 +77,7 @@ public class FormSubmissionWizard
         submit = new JButton(am.get("submit"));
         toolbar.add(submit);
         toolbar.add(new JButton(am.get("cancel")));
-        next = new JButton(am.get("next"));
-        toolbar.add(next);
+        toolbar.add(new JButton(am.get("next")));
         add(toolbar, BorderLayout.SOUTH);
 
         formsListView.getFormList().getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("next")));
@@ -119,7 +117,7 @@ public class FormSubmissionWizard
         {
             formSubmitView.setModel(null);
         }
-        next.setEnabled(false);
+        formsListView.getFormList().clearSelection();
         previous.setEnabled(true);
         submit.setEnabled(true);
         layout.show(panel, "INPUTFORM");
@@ -128,7 +126,6 @@ public class FormSubmissionWizard
     @Action
     public void previous()
     {
-        next.setEnabled(true);
         previous.setEnabled(false);
         submit.setEnabled(false);
         layout.show(panel, "SELECTFORM");

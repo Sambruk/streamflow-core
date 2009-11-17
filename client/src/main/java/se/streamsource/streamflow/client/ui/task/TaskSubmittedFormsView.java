@@ -85,7 +85,6 @@ public class TaskSubmittedFormsView
                         use(model.getTaskFormDefinitionsResource(), model.getTaskSubmittedFormsClientResource()).newInstance();
 
         JFrame frame = new JFrame(i18n.text(WorkspaceResources.form_submit_wizard));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Container contentPane = frame.getContentPane();
         contentPane.add(dialog);

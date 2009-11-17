@@ -44,10 +44,10 @@ public class TaskEffectiveFieldsValueModel
 {
 
     String[] columnNames = {
-            i18n.text(WorkspaceResources.field_date),
             i18n.text(WorkspaceResources.field_name),
             i18n.text(WorkspaceResources.field_value),
-            i18n.text(WorkspaceResources.field_submitter)
+            i18n.text(WorkspaceResources.field_submitter),
+            i18n.text(WorkspaceResources.field_date)
     };
 
     private SimpleDateFormat formatter = new SimpleDateFormat(i18n.text(WorkspaceResources.date_time_format));
@@ -95,13 +95,13 @@ public class TaskEffectiveFieldsValueModel
         switch(col)
         {
             case 0:
-                return formatter.format(value.submissionDate().get());
-            case 1:
                 return value.fieldName().get();
-            case 2:
+            case 1:
                 return value.fieldValue().get();
-            case 3:
+            case 2:
                 return value.submitter().get();
+            case 3:
+                return formatter.format(value.submissionDate().get());
         }
         return null;
     }
