@@ -143,9 +143,9 @@ public interface TestDataService
                 project.createTask().changeDescription("Arbetsuppgift " + i);
 
             // Create labels
-            user.createLabel().changeDescription("Label 1");
-            user.createLabel().changeDescription("Label 2");
-            user.createLabel().changeDescription("Label 3");
+            for (int i = 1; i < 10; i++)
+            user.createLabel().changeDescription("Label " + i);
+
 
             uow.complete();
         }

@@ -35,8 +35,7 @@ public class TaskGeneralModel extends Observable implements Refreshable, EventLi
 		EventHandler
 
 {
-	EventHandlerFilter eventFilter = new EventHandlerFilter(this, "addedLabel",
-			"removedLabel");
+	EventHandlerFilter eventFilter;
 
 	private TaskGeneralClientResource generalClientResource;
 
@@ -50,7 +49,7 @@ public class TaskGeneralModel extends Observable implements Refreshable, EventLi
     {
         this.generalClientResource = generalClientResource;
         eventFilter = new EventHandlerFilter(generalClientResource.getRequest().getResourceRef().getParentRef().getLastSegment(), this, "addedLabel",
-                "removedLabel");
+                "removedLabel", "changedOwner");
     }
 
     public TaskGeneralDTO getGeneral()

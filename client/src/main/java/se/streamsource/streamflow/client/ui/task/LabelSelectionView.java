@@ -24,13 +24,15 @@ public class LabelSelectionView
     public LabelSelectionView()
     {
         setRenderer(new ListItemCellRenderer());
-//        AutoCompleteDecorator.decorate(this, new ObjectToStringConverter()
-//        {
-//            public String getPreferredStringForItem(Object o)
-//            {
-//                return o == null ? "" : ((ListItemValue)o).description().get();
-//            }
-//        });
+        
+        /*AutoCompleteDecorator.decorate(this, new ObjectToStringConverter()
+        {
+            public String getPreferredStringForItem(Object o)
+            {
+                return o == null ? "" : ((ListItemValue)o).description().get();
+            }
+        });*/
+
     }
 
     public void setLabelSelectionModel(LabelSelectionModel model)

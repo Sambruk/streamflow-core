@@ -68,6 +68,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
         FormLayout layout = new FormLayout(
                 "200dlu",
                 "");
+
         form = new JPanel();
         form.setFocusable(false);
         DefaultFormBuilder builder = new DefaultFormBuilder(layout, form);
@@ -83,11 +84,11 @@ public class TaskGeneralView extends JScrollPane implements Observer
         BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
         bb.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
         
-        bb.appendLine(new Label(i18n.text(WorkspaceResources.labels_label))).appendLine(labels)
+        bb.appendLine(new JLabel(i18n.text(WorkspaceResources.labels_label)))
+                .appendLine(labels)
                 .appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
                 .appendLine(WorkspaceResources.note_label, notePane, template.note())
                 .appendLine(WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn());
-
 
         setViewportView(form);
 

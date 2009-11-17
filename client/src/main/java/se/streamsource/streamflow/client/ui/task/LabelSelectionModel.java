@@ -16,14 +16,12 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.*;
 import java.util.List;
@@ -38,7 +36,6 @@ public class LabelSelectionModel
 
     @Uses
     TaskGeneralClientResource resource;
-    private String prefix = "";
 
     List<ListItemValue> possibleLabels;
 
@@ -56,7 +53,10 @@ public class LabelSelectionModel
 
     public void setSelectedItem(Object anItem)
     {
-        selectedItem = (ListItemValue) anItem;
+        if(anItem instanceof ListItemValue)
+        {
+            selectedItem = (ListItemValue) anItem;
+        }
     }
 
     public Object getSelectedItem()
@@ -64,23 +64,11 @@ public class LabelSelectionModel
         return selectedItem;
     }
 
-    public void setLabelPrefix(String newPrefix)
-    {
-        if (prefix.equals(""))
-        {
-            this.prefix = newPrefix;
-            refresh();
-        } else
-            this.prefix = newPrefix;
-    }
-
     public void refresh() throws OperationException
     {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(prefix);
         try
         {
-            possibleLabels = resource.possibleLabels(builder.newInstance()).items().get();
+            possibleLabels = resource.possibleLabels().items().get();
             fireContentsChanged(this, 0, possibleLabels.size());
         } catch (ResourceException e)
         {

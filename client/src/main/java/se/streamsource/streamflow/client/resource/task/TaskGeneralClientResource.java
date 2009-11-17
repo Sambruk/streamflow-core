@@ -81,8 +81,8 @@ public class TaskGeneralClientResource
         putCommand("removelabel", builder.newInstance());
     }
     
-    public ListValue possibleLabels(StringDTO prefix) throws ResourceException 
+    public ListValue possibleLabels() throws ResourceException
     {
-    	return query("possiblelabels", prefix, ListValue.class);
+    	return query("possiblelabels", ListValue.class);
     }
 }

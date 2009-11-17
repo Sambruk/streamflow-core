@@ -31,15 +31,9 @@ public class WorkspaceUserWaitingForView
     @Uses
     protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
 
-    @Uses
-    LabelMenu labelMenu;
-
     protected void buildPopupMenu(JPopupMenu popup)
     {
-        taskTable.getSelectionModel().addListSelectionListener(labelMenu);
-
         ActionMap am = getActionMap();
-        popup.add(labelMenu);
         popup.add(am.get("markTasksAsUnread"));
         popup.add(am.get("markTasksAsRead"));
         Action rejectFinished = am.get("rejectFinished");

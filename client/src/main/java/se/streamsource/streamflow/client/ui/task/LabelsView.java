@@ -1,6 +1,7 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -22,10 +23,13 @@ public class LabelsView extends JPanel implements ListDataListener, ActionListen
 	{
         this.labelSelection = labelSelection;
         setLayout(new BorderLayout());
-        labelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        add(labelPanel, BorderLayout.CENTER);
-        add(labelSelection, BorderLayout.SOUTH);
+        labelPanel = new JPanel(new ModifiedFlowLayout(FlowLayout.LEFT));
+        //labelPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
+        //setBorder(BorderFactory.createLineBorder(Color.BLUE, 1));
+
+        add(labelPanel, BorderLayout.NORTH);
+        add(labelSelection,BorderLayout.SOUTH);
 
         labelSelection.addActionListener(this);
 	}
@@ -48,7 +52,10 @@ public class LabelsView extends JPanel implements ListDataListener, ActionListen
 			labelView.addActionListener(this);
 			labelPanel.add(labelView);
 		}
-        repaint();
+        
+        labelPanel.revalidate();
+        labelPanel.repaint();
+        
 	}
 
 	public void contentsChanged(ListDataEvent e)
@@ -79,14 +86,8 @@ public class LabelsView extends JPanel implements ListDataListener, ActionListen
             if (labelItem != null)
             {
                 model.addLabel(labelItem.entity().get());
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    public void run()
-                    {
-                        labelSelection.setSelectedItem(null);
-                    }
-                });
             }
+            
         }
 	}
 

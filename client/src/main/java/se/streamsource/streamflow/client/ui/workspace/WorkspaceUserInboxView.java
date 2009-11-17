@@ -31,14 +31,8 @@ public class WorkspaceUserInboxView
     @Uses
     protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
 
-    @Uses
-    LabelMenu labelMenu;
-
     protected void buildPopupMenu(JPopupMenu popup)
     {
-        taskTable.getSelectionModel().addListSelectionListener(labelMenu);
-
-        popup.add(labelMenu);
         ActionMap am = getActionMap();
         popup.add(am.get("markTasksAsUnread"));
         popup.add(am.get("markTasksAsRead"));

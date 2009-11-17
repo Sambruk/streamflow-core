@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
@@ -27,15 +26,10 @@ import javax.swing.*;
 public class WorkspaceProjectDelegationsView
         extends TaskTableView
 {
-    @Uses
-    LabelMenu labelMenu;
 
     protected void buildPopupMenu(JPopupMenu popup)
     {
-        taskTable.getSelectionModel().addListSelectionListener(labelMenu);
-
         ActionMap am = getActionMap();
-        popup.add(labelMenu);
         Action markTasksAsUnread = am.get("markTasksAsUnread");
         popup.add(markTasksAsUnread);
         popup.add(am.get("markTasksAsRead"));

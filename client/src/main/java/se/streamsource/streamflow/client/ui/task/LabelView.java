@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 public class LabelView extends JPanel
 {
 	ListItemValue itemValue;
-	private Icon icon;
 	JButton button;
 
 	public LabelView(ListItemValue itemValue)
@@ -23,6 +22,7 @@ public class LabelView extends JPanel
 		JXLabel label = new JXLabel(itemValue.description().get());
 		button = new JButton(i18n.icon(Icons.deleteLabel, 16));
 		button.setBorder(new EmptyBorder(new Insets(0,0,0,0)));
+
 		this.add(label);
 		this.add(button);
         setBorder(BorderFactory.createEtchedBorder());

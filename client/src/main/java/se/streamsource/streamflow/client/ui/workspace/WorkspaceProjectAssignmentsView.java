@@ -31,14 +31,10 @@ public class WorkspaceProjectAssignmentsView
     @Uses
     protected ObjectBuilder<ProjectSelectionDialog> projectSelectionDialog;
 
-    @Uses
-    LabelMenu labelMenu;
+
 
     protected void buildPopupMenu(JPopupMenu popup)
     {
-        taskTable.getSelectionModel().addListSelectionListener(labelMenu);
-
-        popup.add(labelMenu);
         ActionMap am = getActionMap();
         popup.add(am.get("markTasksAsUnread"));
         popup.add(am.get("markTasksAsRead"));
