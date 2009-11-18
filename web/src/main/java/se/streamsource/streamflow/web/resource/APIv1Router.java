@@ -31,6 +31,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
+import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
@@ -132,6 +133,9 @@ public class APIv1Router
         qi4jRouter.attach("/query", createServerResourceFinder(SPARQLResource.class));
         qi4jRouter.attach("/query/index", createServerResourceFinder(IndexResource.class));
         attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
+
+
+        attach("/admin/console", createServerResourceFinder( ConsoleServerResource.class));
 
         // Version info
         Directory directory = new Directory(getContext(), "clap://class/static/");

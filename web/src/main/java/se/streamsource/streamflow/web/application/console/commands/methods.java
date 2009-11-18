@@ -12,17 +12,30 @@
  *
  */
 
-package se.streamsource.streamflow.web.application.console;
+package se.streamsource.streamflow.web.application.console.commands;
+
+import bsh.CallStack;
+import bsh.Interpreter;
+
+import java.lang.reflect.Method;
 
 /**
  * JAVADOC
  */
-public interface Console
+public class methods
 {
-    enum Language
+    public static void invoke( final Interpreter env, CallStack callstack, Object entity)
     {
-        BEANSHELL
+        try
+        {
+            env.println( entity.toString() );
+            for (Method method : entity.getClass().getMethods())
+            {
+                env.println(method.toGenericString());
+            }
+        } catch (Throwable throwable)
+        {
+            throwable.printStackTrace();
+        }
     }
-
-    public ConsoleResultValue executeScript(ConsoleScriptValue script) throws Exception;
 }

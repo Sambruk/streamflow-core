@@ -14,22 +14,54 @@
 
 package se.streamsource.streamflow.web.application.console;
 
-import bsh.Interpreter;
 import bsh.EvalError;
+import bsh.Interpreter;
+import org.qi4j.api.Qi4j;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceFinder;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * JAVADOC
  */
+@Mixins(ConsoleService.Mixin.class)
 public interface ConsoleService
     extends Console, ServiceComposite
 {
     class Mixin
         implements Activatable, Console
     {
+        @Structure
+        ValueBuilderFactory vbf;
+
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        @Structure
+        QueryBuilderFactory qbf;
+
+        @Structure
+        ServiceFinder services;
+
+        @Structure
+        Qi4j qi4j;
+
         public void activate() throws Exception
         {
         }
@@ -38,9 +70,9 @@ public interface ConsoleService
         {
         }
 
-        public Map executeScript( String script, Language language )
+        public ConsoleResultValue executeScript( ConsoleScriptValue script ) throws Exception
         {
-            if (language == Console.Language.BEANSHELL)
+            if (script.language().get() == Console.Language.BEANSHELL)
             {
                 return executeBeanshell(script);
             }
@@ -48,18 +80,82 @@ public interface ConsoleService
             return null;
         }
 
-        private Map executeBeanshell( String script )
+        private ConsoleResultValue executeBeanshell( ConsoleScriptValue script ) throws Exception
         {
+            ValueBuilder<ConsoleResultValue> builder = vbf.newValueBuilder( ConsoleResultValue.class );
+
             Interpreter interpreter = new Interpreter();
+
+            // Bind default stuff
+            UnitOfWork unitOfWork = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Script" ));
+            interpreter.set( "uow", unitOfWork );
+            interpreter.set("query", qbf);
+            interpreter.set("services", services);
+            interpreter.set("qi4j", qi4j);
+
+            // Import commands
+            interpreter.eval( "importCommands(\"se.streamsource.streamflow.web.application.console.commands\");" );
+
+            // Bind given values
+            for (Map.Entry<String, Object> entry : script.bindings().get().entrySet())
+            {
+                interpreter.set( entry.getKey(), entry.getValue() );
+            }
+
+            // Replace output streams
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            PrintStream out = new PrintStream( stream );
+
+            interpreter.setOut( out );
+            interpreter.setErr( out );
+
+            // Add log handler
+            Logger root = Logger.getLogger( "" );
+            final List<LogRecord> log = builder.prototype().log().get();
+            Handler handler = new Handler()
+            {
+                public void publish( LogRecord record )
+                {
+                    log.add( record );
+                }
+
+                public void flush()
+                {
+                }
+
+                public void close() throws SecurityException
+                {
+                }
+            };
+            root.addHandler( handler );
+
+            // Eval script
             try
             {
-                interpreter.eval( script );
+                interpreter.eval( script.script().get() );
+
+                builder.prototype().out().set( new String(stream.toByteArray(), "UTF-8") );
+
+                if (script.completeUnitOfWork().get())
+                {
+                    unitOfWork.complete();
+                } else
+                {
+                    unitOfWork.discard();
+                }
+
             } catch (EvalError evalError)
             {
                 evalError.printStackTrace();
+                builder.prototype().out().set( evalError.toString() );
+            } finally
+            {
+
+                // Remove handler
+                root.removeHandler( handler );
             }
 
-            return null;
+            return builder.newInstance();
         }
     }
 }

@@ -21,6 +21,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
+import se.streamsource.streamflow.web.application.console.ConsoleAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.migration.MigrationAssembler;
 import se.streamsource.streamflow.web.application.notification.NotificationAssembler;
@@ -105,6 +106,7 @@ public class StreamFlowWebAssembler
 
     protected void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
     {
+        new ConsoleAssembler().assemble( appLayer.moduleAssembly( "Console" ));
         new MigrationAssembler().assemble(appLayer.moduleAssembly("Migration"));
         new ManagementAssembler().assemble(appLayer.moduleAssembly("Management"));
         new NotificationAssembler().assemble(appLayer.moduleAssembly("Notification"));

@@ -14,15 +14,21 @@
 
 package se.streamsource.streamflow.web.application.console;
 
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.api.common.Visibility;
+
 /**
  * JAVADOC
  */
-public interface Console
+public class ConsoleAssembler
+    implements Assembler
 {
-    enum Language
+    public void assemble( ModuleAssembly module ) throws AssemblyException
     {
-        BEANSHELL
-    }
+        module.addValues( ConsoleScriptValue.class, ConsoleResultValue.class ).visibleIn( Visibility.application );
 
-    public ConsoleResultValue executeScript(ConsoleScriptValue script) throws Exception;
+        module.addServices( ConsoleService.class ).visibleIn( Visibility.application );
+    }
 }

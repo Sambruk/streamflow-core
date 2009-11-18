@@ -82,6 +82,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.Worksp
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskServerResource;
+import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 
 /**
  * Assembler for API resources
@@ -186,7 +187,10 @@ public class ServerResourceAssembler
                 SearchTaskServerResource.class,
 
                 // Events
-                EventsServerResource.class
+                EventsServerResource.class,
+
+                // Admin
+                ConsoleServerResource.class
         );
     }
 }

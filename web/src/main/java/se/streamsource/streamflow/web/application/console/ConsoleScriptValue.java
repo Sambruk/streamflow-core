@@ -14,15 +14,26 @@
 
 package se.streamsource.streamflow.web.application.console;
 
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.Map;
+
 /**
  * JAVADOC
  */
-public interface Console
+public interface ConsoleScriptValue
+    extends ValueComposite
 {
-    enum Language
-    {
-        BEANSHELL
-    }
+    @UseDefaults
+    Property<Console.Language> language();
 
-    public ConsoleResultValue executeScript(ConsoleScriptValue script) throws Exception;
+    Property<String> script();
+
+    @UseDefaults
+    Property<Map<String, Object>> bindings();
+
+    @UseDefaults
+    Property<Boolean> completeUnitOfWork();
 }

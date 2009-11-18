@@ -14,14 +14,15 @@
 
 package se.streamsource.streamflow.web.application.management;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.rest.MBeanServerImporter;
-import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
 import se.streamsource.streamflow.infrastructure.event.DomainEventPlayerService;
+import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
 
 import javax.management.MBeanServer;
 
@@ -39,7 +40,7 @@ public class ManagementAssembler
             module.addTransients(ManagerComposite.class);
 
             module.importServices(MBeanServer.class).importedBy(MBeanServerImporter.class);
-            module.addServices(ManagerService.class).instantiateOnStartup();
+            module.addServices(ManagerService.class).visibleIn( Visibility.application ).instantiateOnStartup();
 
             module.addServices(JmxConnectorService.class).identifiedBy("jmxconnector").instantiateOnStartup();
             

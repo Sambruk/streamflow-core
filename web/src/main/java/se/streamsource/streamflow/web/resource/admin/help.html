@@ -1,0 +1,42 @@
+<html>
+<head>
+    <title>Console help</title>
+</head>
+<body>
+<a href="?">Back to console</a>
+<h1>Console help</h1>
+The admin console allows you to perform BeanShell scripts inside the StreamFlow server. Enter the script in the textarea and click
+"Run script" to execute it. The "Result" part will contain all output from "print" commands in the script. The "Log" part
+will contain all the log events caused by the execution of the script.
+<br/>
+For more information about BeanShell, see their <a href="http://www.beanshell.org/manual/contents.html">website</a>.
+
+<h2>Predefined variables</h2>
+The following variables are already bound in the scripting environment:
+<ul>
+    <li>qi4j: The Qi4j runtime</li>
+    <li>services: A services finder in the web layer</li>
+    <li>uow: The UnitOfWork for the script execution</li>
+    <li>query: A QueryBuilderFactory in the web layer</li>
+</ul>
+
+<h2>Commands</h2>
+The following commands can be used in BeanShell scripts:
+<ul>
+    <li>methods(object): list methods of object</li>
+    <li>state(entity): list state of EntityComposite</li>
+</ul>
+
+<h2>Sample scripts</h2>
+Here are some sample scripts for common tasks.
+<h3>Find user</h3>
+<pre>
+import se.streamsource.streamflow.web.domain.user.UserEntity;
+import org.qi4j.api.query.QueryExpressions;
+template = QueryExpressions.templateFor(UserEntity.class);
+admin = query.newQueryBuilder(UserEntity.class).where(QueryExpressions.eq(template.identity(), "administrator")).newQuery(uow).find();
+print(admin);
+</pre>
+
+</body>
+</html>
