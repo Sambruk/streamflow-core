@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class LabelView extends JPanel
-    implements FocusListener, KeyListener
+    implements FocusListener, KeyListener, MouseListener
 {
 	ListItemValue itemValue;
 	JButton button;
@@ -35,7 +35,7 @@ public class LabelView extends JPanel
 
         addFocusListener(this);
         addKeyListener(this);
-        
+        addMouseListener(this);
 	}
 
     public ListItemValue label()
@@ -72,6 +72,27 @@ public class LabelView extends JPanel
     }
 
     public void keyReleased(KeyEvent e)
+    {
+    }
+
+    public void mouseClicked(MouseEvent e)
+    {
+        this.requestFocusInWindow();
+    }
+
+    public void mousePressed(MouseEvent e)
+    {
+    }
+
+    public void mouseReleased(MouseEvent e)
+    {
+    }
+
+    public void mouseEntered(MouseEvent e)
+    {
+    }
+
+    public void mouseExited(MouseEvent e)
     {
     }
 }
