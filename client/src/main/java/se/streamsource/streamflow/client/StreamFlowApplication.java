@@ -139,7 +139,7 @@ public class StreamFlowApplication
             MacOsUIExtension osUIExtension = new MacOsUIExtension(this);
             osUIExtension.attachMacUIExtension();
             osUIExtension.convertAccelerators();
-        } catch (ClassNotFoundException e)
+        } catch (Throwable e)
         {
             //Do nothing
         }
