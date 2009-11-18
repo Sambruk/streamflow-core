@@ -22,7 +22,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -62,7 +62,7 @@ public class GroupsView
 
         groupList = new JListPopup(model, popup);
 
-        groupList.setCellRenderer(new ListItemCellRenderer());
+        groupList.setCellRenderer(new ListItemListCellRenderer());
 
         add(groupList, BorderLayout.CENTER);
 

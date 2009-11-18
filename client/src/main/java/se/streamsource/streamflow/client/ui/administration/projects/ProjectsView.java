@@ -20,7 +20,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -57,7 +57,7 @@ public class ProjectsView
 
         JScrollPane scrollPane = new JScrollPane();
         projectList = new JListPopup(model, popup);
-        projectList.setCellRenderer(new ListItemCellRenderer());
+        projectList.setCellRenderer(new ListItemListCellRenderer());
         scrollPane.setViewportView(projectList);
         add(scrollPane, BorderLayout.CENTER);
 

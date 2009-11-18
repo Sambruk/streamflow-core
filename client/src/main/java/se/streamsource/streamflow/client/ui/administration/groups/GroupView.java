@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -55,7 +55,7 @@ public class GroupView
 
         participantList = new JList(model);
 
-        participantList.setCellRenderer(new ListItemCellRenderer());
+        participantList.setCellRenderer(new ListItemListCellRenderer());
 
         add(participantList, BorderLayout.CENTER);
 

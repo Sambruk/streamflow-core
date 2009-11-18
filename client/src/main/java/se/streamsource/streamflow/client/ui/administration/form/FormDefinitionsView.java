@@ -19,7 +19,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -53,7 +53,7 @@ public class FormDefinitionsView
 
         formList = new JList(model);
 
-        formList.setCellRenderer(new ListItemCellRenderer());
+        formList.setCellRenderer(new ListItemListCellRenderer());
         add( formList, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();

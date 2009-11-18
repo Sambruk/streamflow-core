@@ -14,9 +14,15 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.user.inbox;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.ValueBuilderFactory;
+
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
+import se.streamsource.streamflow.web.domain.group.Participation;
 import se.streamsource.streamflow.web.domain.task.InboxQueries;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
@@ -27,6 +33,9 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class WorkspaceUserInboxServerResource
         extends AbstractTaskListServerResource
 {
+	@Structure
+	ValueBuilderFactory vbf; 
+	
     public InboxTaskListDTO tasks(TasksQuery query)
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
@@ -41,5 +50,15 @@ public class WorkspaceUserInboxServerResource
         String userId = (String) getRequest().getAttributes().get("user");
 
         createTask(userId);
+    }
+    
+    public ListValue projects()
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String userId = (String) getRequest().getAttributes().get("user");
+    	Participation.Data user = uow.get(Participation.Data.class, userId);
+    	ListValueBuilder builder = new ListValueBuilder(vbf);
+
+    	return builder.addDescribableItems(user.allProjects()).newList();
     }
 }

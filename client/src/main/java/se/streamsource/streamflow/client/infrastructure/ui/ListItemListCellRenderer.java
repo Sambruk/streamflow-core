@@ -22,7 +22,7 @@ import java.awt.*;
 /**
  * List renderer for lists that use ListItemValue as items.
  */
-public class ListItemCellRenderer extends DefaultListCellRenderer
+public class ListItemListCellRenderer extends DefaultListCellRenderer
 {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
     {

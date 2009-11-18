@@ -27,7 +27,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AccountView;
@@ -79,7 +79,7 @@ public class AccountsDialog
         setActionMap(context.getActionMap(this));
 
         accountList = new JList(model);
-        accountList.setCellRenderer(new ListItemCellRenderer());
+        accountList.setCellRenderer(new ListItemListCellRenderer());
 
         JScrollPane scroll = new JScrollPane(accountList);
         scroll.setMinimumSize(new Dimension(200, 300));

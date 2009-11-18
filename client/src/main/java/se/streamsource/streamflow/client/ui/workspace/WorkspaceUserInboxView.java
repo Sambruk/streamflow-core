@@ -14,23 +14,63 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.table.TableColumn;
+
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.autocomplete.ComboBoxCellEditor;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import se.streamsource.streamflow.client.ui.task.TaskTableView;
 
-import javax.swing.*;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemTableCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.task.TaskTableView;
+import se.streamsource.streamflow.client.ui.task.TasksDetailView;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 /**
  * JAVADOC
  */
 public class WorkspaceUserInboxView
-        extends TaskTableView
+        extends TaskTableView implements ItemListener
 {
     @Uses
     protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
 
+    public void init(@Service ApplicationContext context,
+            @Uses final TaskTableModel model,
+            final @Uses TasksDetailView detailsView,
+            @Structure final ObjectBuilderFactory obf,
+            @Structure ValueBuilderFactory vbf)
+    {
+    	super.init(context, model, detailsView, obf, vbf);
+        taskTable.getColumn(2).setPreferredWidth(150);
+        taskTable.getColumn(2).setMaxWidth(150);
+        taskTable.putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
+        ProjectSelectionModel projectsModel = new ProjectSelectionModel(((WorkspaceUserInboxModel)model).getProjects());
+        JComboBox projectsCombo = new JComboBox(projectsModel);
+        projectsCombo.addItemListener(this);
+        projectsCombo.setRenderer(new ListItemListCellRenderer());
+        TableColumn column = taskTable.getColumnModel().getColumn(1);
+        column.setCellEditor(new ComboBoxCellEditor(projectsCombo));
+        column.setCellRenderer(new ListItemTableCellRenderer());
+    }
+    
     protected void buildPopupMenu(JPopupMenu popup)
     {
         ActionMap am = getActionMap();
@@ -74,4 +114,37 @@ public class WorkspaceUserInboxView
         dialogSelection = dialog.getSelected();
         super.forwardTasks();
     }
+
+    public void forwardTask(String identity) throws ResourceException
+    {
+    	((WorkspaceUserInboxModel)model).forward(getTaskTable().getSelectedRow(), identity);
+    }
+    
+
+	public void itemStateChanged(ItemEvent e)
+	{
+		if (e.getStateChange() == ItemEvent.DESELECTED) 
+		{
+			// Event type not of interest.
+			return;
+		}
+		if (e.getSource() instanceof JComboBox)
+		{
+			JComboBox combo = (JComboBox)e.getSource();
+			if(combo.getModel() instanceof ProjectSelectionModel)
+			{
+				ProjectSelectionModel model = (ProjectSelectionModel)combo.getModel();
+				ListItemValue project = (ListItemValue)model.getSelectedItem();
+				String identity = project.entity().get().identity();
+				try
+				{
+					forwardTask(identity);
+					taskTable.getCellEditor().stopCellEditing();
+				} catch (ResourceException e1)
+				{
+					throw new OperationException(WorkspaceResources.could_not_refresh_projects, e1);
+				}
+			}
+		}
+	}
 }

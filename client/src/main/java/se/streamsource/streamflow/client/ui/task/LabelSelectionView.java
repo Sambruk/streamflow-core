@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 
 import javax.swing.*;
 
@@ -23,7 +23,7 @@ public class LabelSelectionView
 {
     public LabelSelectionView()
     {
-        setRenderer(new ListItemCellRenderer());
+        setRenderer(new ListItemListCellRenderer());
         
         /*AutoCompleteDecorator.decorate(this, new ObjectToStringConverter()
         {

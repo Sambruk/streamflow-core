@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.task;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
 
 import javax.swing.*;
@@ -47,7 +47,7 @@ public class FormsListView
 
         JPanel panel = new JPanel(new BorderLayout());
         formList = new JList(model);
-        formList.setCellRenderer(new ListItemCellRenderer());
+        formList.setCellRenderer(new ListItemListCellRenderer());
         panel.add(formList, BorderLayout.CENTER);
         setViewportView(panel);
     }

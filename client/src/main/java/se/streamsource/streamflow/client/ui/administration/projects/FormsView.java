@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -52,7 +52,7 @@ public class FormsView
         setActionMap(am);
         formList = new JList(model);
 
-        formList.setCellRenderer(new ListItemCellRenderer());
+        formList.setCellRenderer(new ListItemListCellRenderer());
 
         add(formList, BorderLayout.CENTER);
 

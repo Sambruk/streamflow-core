@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
@@ -57,7 +57,7 @@ public class LabelsView
         popup.add(am.get("rename"));
         labelList = new JListPopup(model, popup);
 
-        labelList.setCellRenderer(new ListItemCellRenderer());
+        labelList.setCellRenderer(new ListItemListCellRenderer());
 
         add(labelList, BorderLayout.CENTER);
 

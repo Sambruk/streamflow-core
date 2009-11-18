@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.ui;
 
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 
@@ -36,7 +36,7 @@ public class AccountSelector
     {
         super(dataModel);
         this.dataModel = dataModel;
-        setCellRenderer(new ListItemCellRenderer());
+        setCellRenderer(new ListItemListCellRenderer());
 
         dataModel.addListDataListener(this);
     }

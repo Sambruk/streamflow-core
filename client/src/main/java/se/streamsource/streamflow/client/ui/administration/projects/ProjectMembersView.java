@@ -23,7 +23,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 
@@ -59,7 +59,7 @@ public class ProjectMembersView
 
         membersList = new JXList(membersModel);
 
-        membersList.setCellRenderer( new ListItemCellRenderer() );
+        membersList.setCellRenderer( new ListItemListCellRenderer() );
 
         add( membersList, BorderLayout.CENTER);
 

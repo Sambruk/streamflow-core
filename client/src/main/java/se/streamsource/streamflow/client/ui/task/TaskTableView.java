@@ -114,12 +114,11 @@ public abstract class TaskTableView
 
         add(toolbar, BorderLayout.NORTH);
 
-
+        taskTable.getColumn(1).setPreferredWidth(150);
+        taskTable.getColumn(1).setMaxWidth(150);
         taskTable.getColumn(taskTable.getColumnCount()-1).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
         taskTable.getColumn(taskTable.getColumnCount()-1).setMaxWidth(30);
         taskTable.getColumn(taskTable.getColumnCount()-1).setResizable(false);
-        taskTable.getColumn(1).setPreferredWidth(150);
-        taskTable.getColumn(1).setMaxWidth(150);
         taskTable.setAutoCreateColumnsFromModel(false);
 
         splitPane.setTopComponent(taskScrollPane);
@@ -226,8 +225,8 @@ public abstract class TaskTableView
 
     abstract protected void buildPopupMenu(JPopupMenu popup);
 
-    abstract protected void buildToolbar(JPanel toolbar);
-
+    abstract protected void buildToolbar(JPanel toolbar); 
+    
     protected Action addToolbarButton(JPanel toolbar, String name)
     {
         ActionMap am = getActionMap();

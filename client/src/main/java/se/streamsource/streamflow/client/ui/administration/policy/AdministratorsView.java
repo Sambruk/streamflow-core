@@ -20,7 +20,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -54,7 +54,7 @@ public class AdministratorsView
 
         administratorList = new JList(model);
 
-        administratorList.setCellRenderer(new ListItemCellRenderer());
+        administratorList.setCellRenderer(new ListItemListCellRenderer());
         add(administratorList, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();

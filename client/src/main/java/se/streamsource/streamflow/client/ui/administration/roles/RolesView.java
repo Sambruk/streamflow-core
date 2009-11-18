@@ -19,7 +19,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -51,7 +51,7 @@ public class RolesView
 
         roleList = new JList(model);
 
-        roleList.setCellRenderer(new ListItemCellRenderer());
+        roleList.setCellRenderer(new ListItemListCellRenderer());
         add(roleList, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel();

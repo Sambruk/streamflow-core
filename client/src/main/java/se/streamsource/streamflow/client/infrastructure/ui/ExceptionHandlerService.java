@@ -35,7 +35,6 @@ public interface ExceptionHandlerService
         public void activate() throws Exception
         {
             Thread.setDefaultUncaughtExceptionHandler(handler);
-
         }
 
         public void passivate() throws Exception

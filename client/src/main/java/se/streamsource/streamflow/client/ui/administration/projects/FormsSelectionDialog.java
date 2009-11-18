@@ -19,7 +19,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -44,7 +44,7 @@ public class FormsSelectionDialog
         setActionMap(context.getActionMap(this));
 
         forms = new JList(model);
-        forms.setCellRenderer(new ListItemCellRenderer());
+        forms.setCellRenderer(new ListItemListCellRenderer());
 
         if (model.getSize() == 0)
         {

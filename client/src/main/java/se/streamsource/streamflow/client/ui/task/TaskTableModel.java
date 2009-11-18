@@ -14,12 +14,17 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
@@ -27,6 +32,7 @@ import se.streamsource.streamflow.client.resource.users.workspace.TaskListClient
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -35,9 +41,6 @@ import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-
-import javax.swing.table.AbstractTableModel;
-import java.util.List;
 
 /**
  * Base class for all models that list tasks
@@ -66,12 +69,14 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     protected Class[] columnClasses;
     protected boolean[] columnEditable;
     private EventHandlerFilter eventFilter;
+    
+    protected ListValue projects;
 
     protected TaskTableModel( TaskListClientResource resource )
     {
         this.resource = resource;
         eventFilter = new EventHandlerFilter(this, "addedLabel", "removedLabel", "changedDescription");
-    }
+   }
 
     public void notifyEvent( DomainEvent event )
     {

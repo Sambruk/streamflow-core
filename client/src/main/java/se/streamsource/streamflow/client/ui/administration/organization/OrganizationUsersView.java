@@ -23,7 +23,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -61,7 +61,7 @@ public class OrganizationUsersView
 
         participantList = new JList(model);
 
-        participantList.setCellRenderer(new ListItemCellRenderer());
+        participantList.setCellRenderer(new ListItemListCellRenderer());
 
         JScrollPane scrollPane = new JScrollPane(participantList);
         add(scrollPane, BorderLayout.CENTER);
