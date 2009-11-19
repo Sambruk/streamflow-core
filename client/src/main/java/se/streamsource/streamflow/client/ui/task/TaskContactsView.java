@@ -58,6 +58,7 @@ public class TaskContactsView
         contactView = obf.newObject(TaskContactView.class);
 
         contacts = new JList();
+        contacts.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         JScrollPane contactsScrollPane = new JScrollPane();
         contactsScrollPane.setViewportView(contacts);
         contacts.setCellRenderer(new DefaultListCellRenderer()

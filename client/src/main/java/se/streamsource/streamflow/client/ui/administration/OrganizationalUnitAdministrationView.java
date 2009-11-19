@@ -21,7 +21,6 @@ import se.streamsource.streamflow.client.ui.administration.policy.Administrators
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdminView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
 
-import javax.swing.JList;
 import javax.swing.JTabbedPane;
 
 /**
@@ -33,14 +32,11 @@ public class OrganizationalUnitAdministrationView
     public OrganizationalUnitAdministrationView(@Uses ProjectAdminView projectAdmin,
                                                 @Uses GroupAdminView groupAdmin,
                                                 @Uses RolesView rolesAdmin,
-//                                                @Uses FormDefinitionsAdminView formsAdmin,
                                                 @Uses AdministratorsView administratorsAdmin)
     {
         addTab(text(AdministrationResources.projects_tab), projectAdmin);
         addTab(text(AdministrationResources.groups_tab), groupAdmin);
         addTab(text(AdministrationResources.roles_tab), rolesAdmin);
-//        addTab(text(AdministrationResources.forms_tab), formsAdmin);
-        addTab(text(AdministrationResources.metadata_tab), new JList());
         addTab(text(AdministrationResources.administrators_tab), administratorsAdmin);
     }
 }
