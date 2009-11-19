@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.OperationsException;
 import javax.swing.JComboBox;
 
 import org.qi4j.api.entity.EntityReference;
@@ -53,7 +54,7 @@ public class WorkspaceUserInboxModel
     ListValue projects;
     
     ListItemValue selectedProject;
-    Map<TaskDTO, ListItemValue> selectedProjects = new HashMap<TaskDTO, ListItemValue>();
+    Map<String, ListItemValue> selectedProjects = new HashMap<String, ListItemValue>();
     
     public WorkspaceUserInboxModel(@Uses WorkspaceUserInboxClientResource resource)
     {
@@ -121,9 +122,7 @@ public class WorkspaceUserInboxModel
                 return desc.toString();
             }
             case 1:
-            {
-            	return selectedProjects.get(task);
-            }
+            	return selectedProjects.get(task.task().get().identity());
             case 2:
                 return task.creationDate().get();
             case 3:
@@ -157,7 +156,7 @@ public class WorkspaceUserInboxModel
                 }
                 case 1:
                 {
-                	selectedProjects.put((TaskDTO)tasks.get(rowIndex), (ListItemValue)aValue);
+                	selectedProjects.put(((TaskDTO)tasks.get(rowIndex)).task().get().identity(), (ListItemValue)aValue);
                 	break;
                 }	
                 case 3:
@@ -181,8 +180,8 @@ public class WorkspaceUserInboxModel
             }
         } catch (ResourceException e)
         {
-            // TODO Better error handling
             e.printStackTrace();
+            throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
         }
 
         return; // Skip if don't know what is going on

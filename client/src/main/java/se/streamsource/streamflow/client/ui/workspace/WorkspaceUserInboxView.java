@@ -139,7 +139,10 @@ public class WorkspaceUserInboxView
 				try
 				{
 					forwardTask(identity);
-					taskTable.getCellEditor().stopCellEditing();
+					if(taskTable.getCellEditor() != null)
+					{
+						taskTable.getCellEditor().stopCellEditing();
+					}
 				} catch (ResourceException e1)
 				{
 					throw new OperationException(WorkspaceResources.could_not_refresh_projects, e1);
