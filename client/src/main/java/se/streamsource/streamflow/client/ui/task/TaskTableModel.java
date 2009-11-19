@@ -14,17 +14,12 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import java.util.List;
-
-import javax.swing.table.AbstractTableModel;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
@@ -41,6 +36,10 @@ import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
+
+import javax.swing.table.AbstractTableModel;
+import javax.swing.*;
+import java.util.List;
 
 /**
  * Base class for all models that list tasks
@@ -83,13 +82,14 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         eventFilter.handleEvent( event );
     }
 
-    public boolean handleEvent( DomainEvent event )
+    public boolean handleEvent( final DomainEvent event )
     {
-        int idx = getTaskIndex( event );
+       final int idx = getTaskIndex( event );
 
         if (idx != -1)
         {
-            TaskDTO updatedTask = getTask( idx );
+            final TaskDTO updatedTask = getTask( idx );
+
             if (event.name().get().equals( "changedDescription" ))
             {
                 try
@@ -116,7 +116,24 @@ public abstract class TaskTableModel<T extends TaskListDTO>
                 }
             } else if (event.name().get().equals( "addedLabel" ))
             {
-                refresh();
+                SwingUtilities.invokeLater(
+                    new Runnable(){
+                        public void run(){
+                          List<ListItemValue> labels = tasksModel.models
+                                  .get(updatedTask.task().get().identity())
+                                  .general().getGeneral().labels().get().items().get();
+                          for(ListItemValue label : labels)
+                          {
+                              if(label.entity().get().identity()
+                                      .equals(EventParameters.getParameter(event, "param1")))
+                              {
+                                 List<ListItemValue> newLabels = updatedTask.labels().get().items().get();
+                                 newLabels.add(label);
+                                 fireTableCellUpdated(idx,1);
+                              }
+                          }
+                        }
+                    });
             }
         }
         return true;
