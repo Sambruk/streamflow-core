@@ -98,10 +98,11 @@ public class OverviewProjectsNode
 
     public void notifyEvent( DomainEvent event )
     {
-        for (Object child : children)
-        {
-            EventListener listener = (EventListener) child;
-            listener.notifyEvent( event );
-        }
+        if (children != null)
+            for (Object child : children)
+            {
+                EventListener listener = (EventListener) child;
+                listener.notifyEvent( event );
+            }
     }
 }
