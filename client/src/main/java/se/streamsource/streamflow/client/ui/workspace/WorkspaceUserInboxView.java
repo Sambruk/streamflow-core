@@ -145,7 +145,7 @@ public class WorkspaceUserInboxView
 					}
 				} catch (ResourceException e1)
 				{
-					throw new OperationException(WorkspaceResources.could_not_refresh_projects, e1);
+					throw new OperationException(WorkspaceResources.could_not_forward_task_to_project, e1);
 				}
 			}
 		}
