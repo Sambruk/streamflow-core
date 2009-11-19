@@ -52,6 +52,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.application.security.AccessPolicy;
+import se.streamsource.streamflow.web.infrastructure.event.CommandEventListenerService;
 import se.streamsource.streamflow.web.infrastructure.event.EventSourceService;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
@@ -77,7 +78,7 @@ public class CommandQueryResourceTest
     public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
     {
         new EntityTestAssembler().assemble( moduleAssembly );
-        moduleAssembly.addServices( MemoryEventStoreService.class, EventSourceService.class, DomainEventFactoryService.class);
+        moduleAssembly.addServices( CommandEventListenerService.class, MemoryEventStoreService.class, EventSourceService.class, DomainEventFactoryService.class);
         moduleAssembly.importServices( EventSourceListener.class );
         moduleAssembly.importServices( AccessPolicy.class ).importedBy( NewObjectImporter.class );
         moduleAssembly.addObjects( ResourceFinder.class, TestEventListener.class, TestAccessPolicy.class, TestClientResource.class, TestServerResource.class );
