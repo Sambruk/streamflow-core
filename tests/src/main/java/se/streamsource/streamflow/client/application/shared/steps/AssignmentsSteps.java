@@ -75,7 +75,7 @@ public class AssignmentsSteps
     public void forward(String name)
     {
         UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
-        projectsSteps.givenProject.forwardAssignedTask(givenTask, user);
+        projectsSteps.givenProject.forwardAssignedTaskTo(givenTask, user);
     }
 
 

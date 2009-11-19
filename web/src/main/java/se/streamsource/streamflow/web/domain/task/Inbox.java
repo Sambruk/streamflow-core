@@ -24,7 +24,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import static se.streamsource.streamflow.domain.task.TaskStates.*;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -35,21 +35,23 @@ public interface Inbox
 {
     Task createTask();
 
-    void receiveTask(Task task);
+    void receiveTask(@HasStatus(ACTIVE) Task task);
 
-    void completeTask(Task task, Assignee assignee);
+    void completeTask(@HasStatus(ACTIVE) Task task, Assignee assignee);
 
-    void dropTask(Task task, Assignee assignee);
+    void dropTask(@HasStatus(ACTIVE) Task task, Assignee assignee);
 
-    void assignTo(Task task, Assignee assignee);
+    void assignTo(@HasStatus(ACTIVE) Task task, Assignee assignee);
 
-    void delegateTo(Task task, Delegatee delegatee, Delegator delegator);
+    void forwardTo( @HasStatus(ACTIVE) Task task, Inbox receiverInbox );
+
+    void delegateTo(@HasStatus(ACTIVE) Task task, Delegatee delegatee, Delegator delegator);
 
     void markAsRead(Task task);
 
     void markAsUnread(Task task);
 
-    void deleteTask( Task task );
+    void deleteTask( @HasStatus(ACTIVE) Task task );
 
     interface Data
     {
@@ -57,6 +59,7 @@ public interface Inbox
         void deletedTask(DomainEvent event, Task task);
         void markedAsRead(DomainEvent event, Task task);
         void markedAsUnread(DomainEvent event, Task task);
+        
         ManyAssociation<Task> unreadInboxTasks();
     }
 
@@ -111,6 +114,12 @@ public interface Inbox
             task.assignTo(assignee);
         }
 
+        public void forwardTo( Task task, Inbox receiverInbox )
+        {
+            markAsRead( task );
+            receiverInbox.receiveTask( task );
+        }
+
         public void delegateTo(Task task, Delegatee delegatee, Delegator delegator)
         {
             task.delegateTo(delegatee, delegator, waitingFor);
@@ -143,11 +152,8 @@ public interface Inbox
 
         public void deleteTask( Task task )
         {
-            if (((TaskStatus.Data)task).status().get().equals(TaskStates.ACTIVE))
-            {
-                markAsRead( task );
-                deletedTask( DomainEvent.CREATE, task );
-            }
+            markAsRead( task );
+            deletedTask( DomainEvent.CREATE, task );
         }
 
         public void deletedTask( DomainEvent event, Task task )

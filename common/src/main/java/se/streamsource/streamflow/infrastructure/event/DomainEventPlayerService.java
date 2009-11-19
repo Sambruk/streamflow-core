@@ -32,6 +32,8 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
  * DomainEvent player
@@ -58,8 +60,9 @@ public interface DomainEventPlayerService
         @Structure
         Module module;
 
-        String
-        version;
+        String version;
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 
         public void replayEvents(Date afterDate) throws EventReplayException
         {
@@ -126,7 +129,7 @@ public interface DomainEventPlayerService
                 throw ex[0];
         }
 
-        private Object getParameterArgument( Class<?> parameterType, Object value, UnitOfWork uow )
+        private Object getParameterArgument( Class<?> parameterType, Object value, UnitOfWork uow ) throws ParseException
         {
             if (value.equals(JSONObject.NULL))
                 return null;
@@ -143,6 +146,9 @@ public interface DomainEventPlayerService
             } else if (parameterType.equals(Integer.class) || parameterType.equals( Integer.TYPE ))
             {
                 return (Integer) value;
+            } else if (parameterType.equals(Date.class))
+            {
+                return dateFormat.parse( (String) value);
             } else if (ValueComposite.class.isAssignableFrom( parameterType ))
             {
                 return module.valueBuilderFactory().newValueFromJSON( parameterType, (String) value );

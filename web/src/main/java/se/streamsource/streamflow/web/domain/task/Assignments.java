@@ -14,18 +14,18 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import static se.streamsource.streamflow.domain.task.TaskStates.*;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -35,19 +35,19 @@ public interface Assignments
 {
     Task createAssignedTask(Assignee assignee);
 
-    void completeAssignedTask(Task task);
+    void completeAssignedTask(@HasStatus(ACTIVE) Task task);
 
-    void dropAssignedTask(Task task);
+    void dropAssignedTask(@HasStatus(ACTIVE) Task task);
 
-    void delegateAssignedTaskTo(Task task, Delegatee delegatee);
+    void delegateAssignedTaskTo(@HasStatus(ACTIVE) Task task, Delegatee delegatee);
 
-    void forwardAssignedTask(Task task, Inbox receiverInbox);
+    void forwardAssignedTaskTo(@HasStatus(ACTIVE) Task task, Inbox receiverInbox);
 
     void markAssignedTaskAsRead(Task task);
 
     void markAssignedTaskAsUnread(Task task);
 
-    void deleteAssignedTask( Task task );
+    void deleteAssignedTask( @HasStatus(ACTIVE) Task task );
 
     interface Data
     {
@@ -115,8 +115,9 @@ public interface Assignments
             task.delegateTo(delegatee, delegator, waitingFor);
         }
 
-        public void forwardAssignedTask(Task task, Inbox receiverInbox)
+        public void forwardAssignedTaskTo(Task task, Inbox receiverInbox)
         {
+            task.unassign();
             receiverInbox.receiveTask(task);
         }
 
@@ -140,11 +141,8 @@ public interface Assignments
 
         public void deleteAssignedTask( Task task )
         {
-            if (((TaskStatus.Data)task).status().get().equals( TaskStates.ACTIVE))
-            {
-                markAssignedTaskAsRead( task );
-                deletedAssignedTask( DomainEvent.CREATE, task );
-            }
+            markAssignedTaskAsRead( task );
+            deletedAssignedTask( DomainEvent.CREATE, task );
         }
 
         public void deletedAssignedTask( DomainEvent event, Task task )

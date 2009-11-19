@@ -19,6 +19,7 @@ import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 /**
  * JAVADOC
@@ -26,6 +27,9 @@ import se.streamsource.streamflow.web.domain.task.TaskEntity;
 public class InboxSteps
         extends Steps
 {
+    @Uses
+    OrganizationsSteps orgsSteps;
+
     @Uses
     ProjectsSteps projectsSteps;
 
@@ -40,6 +44,19 @@ public class InboxSteps
         givenTask = (TaskEntity) projectsSteps.givenProject.createTask();
     }
 
+    @When("inbox task is forwarded to user $name")
+    public void forward(String name)
+    {
+        try
+        {
+            UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
+            projectsSteps.givenProject.forwardTo(givenTask, user);
+        } catch (Exception e)
+        {
+            genericSteps.setThrowable( e );
+        }
+    }
+
     @When("task is marked as $mark")
     public void markTaskAs(String mark)
     {
@@ -52,10 +69,21 @@ public class InboxSteps
         }
     }
 
+    @When("task is completed")
+    public void completeTask()
+    {
+        try
+        {
+            projectsSteps.givenProject.completeTask( givenTask, orgsSteps.givenUser );
+        } catch (Exception e)
+        {
+            genericSteps.setThrowable( e );
+        }
+    }
+
     /*
     void receiveTask(Task task);
 
-    void completeTask(Task task, Assignee assignee);
 
     void dropTask(Task task, Assignee assignee);
 

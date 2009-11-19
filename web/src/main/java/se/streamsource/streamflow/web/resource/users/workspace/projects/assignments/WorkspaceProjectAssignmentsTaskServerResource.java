@@ -77,7 +77,7 @@ public class WorkspaceProjectAssignmentsTaskServerResource
         Inbox receiverInbox = uow.get(Inbox.class, reference.entity().get().identity());
 
         Assignments assignments = uowf.currentUnitOfWork().get(Assignments.class, projectId);
-        assignments.forwardAssignedTask(task, receiverInbox);
+        assignments.forwardAssignedTaskTo(task, receiverInbox);
     }
 
     public void markAsRead()

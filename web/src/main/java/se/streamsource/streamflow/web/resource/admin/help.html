@@ -29,6 +29,13 @@ The following commands can be used in BeanShell scripts:
 
 <h2>Sample scripts</h2>
 Here are some sample scripts for common tasks.
+<h3>Get user</h3>
+<pre>
+import se.streamsource.streamflow.web.domain.user.UserEntity;
+admin = uow.get(UserEntity.class, "administrator");
+state(admin); // Print state of admin user
+</pre>
+
 <h3>Find user</h3>
 <pre>
 import se.streamsource.streamflow.web.domain.user.UserEntity;

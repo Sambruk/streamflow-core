@@ -18,6 +18,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.entity.association.ManyAssociation;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import static se.streamsource.streamflow.domain.task.TaskStates.ACTIVE;
 
 /**
  * Delegations of tasks
@@ -25,11 +26,11 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Delegations.Mixin.class)
 public interface Delegations
 {
-    void accept(Task task, Assignee assignee);
+    void accept(@HasStatus(ACTIVE) Task task, Assignee assignee);
 
-    void reject(Task task);
+    void reject(@HasStatus(ACTIVE) Task task);
 
-    void finishDelegatedTask(Task task, Assignee assignee);
+    void finishDelegatedTask(@HasStatus(ACTIVE) Task task, Assignee assignee);
 
     void markDelegatedTaskAsRead(Task task);
      void markDelegateddTaskAsUnread(Task task);

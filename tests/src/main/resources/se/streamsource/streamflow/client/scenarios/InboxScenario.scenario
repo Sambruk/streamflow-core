@@ -14,3 +14,19 @@ When task is marked as read
 Then events markedAsRead occurred
 When task is marked as read
 Then no events occurred
+
+Scenario: Forward task
+Given basic setup 1
+When inbox task is created
+And events are cleared
+And inbox task is forwarded to user user2
+Then events changedOwner,markedAsUnread occurred
+
+Scenario: Forward completed task
+Given basic setup 1
+Given user named user1
+When inbox task is created
+And task is completed
+And events are cleared
+And inbox task is forwarded to user user2
+Then ConstraintViolationException is thrown

@@ -19,8 +19,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import static se.streamsource.streamflow.domain.task.TaskStates.*;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.domain.task.TaskStates;
 
 /**
  * JAVADOC
@@ -30,13 +30,13 @@ public interface WaitingFor
 {
     void completeWaitingForTask(Task task, Assignee assignee);
 
-    void completeFinishedTask(Task task);
+    void completeFinishedTask(@HasStatus(DONE) Task task);
 
-    void rejectFinishedTask(Task task);
+    void rejectFinishedTask(@HasStatus(DONE) Task task);
 
     void dropWaitingForTask(Task task, Assignee assignee);
 
-    void assignWaitingForTask(Task task, Assignee assignee);
+    void assignWaitingForTask(@HasStatus(ACTIVE) Task task, Assignee assignee);
 
     void markWaitingForAsRead(Task task);
 
@@ -63,6 +63,9 @@ public interface WaitingFor
 
         @This
         Owner owner;
+
+        @This
+        Inbox inbox;
 
         public void completeWaitingForTask(Task task, Assignee assignee)
         {
@@ -93,7 +96,7 @@ public interface WaitingFor
             task.unassign();
             task.rejectDelegation();
             task.changeOwner(owner);
-             task.assignTo( assignee );
+            task.assignTo( assignee );
         }
 
         public void markWaitingForAsRead(Task task)
@@ -116,12 +119,13 @@ public interface WaitingFor
 
         public void rejectTask(Task task)
         {
-            markedWaitingForTaskAsUnread(DomainEvent.CREATE, task);
+            markWaitingForAsUnread( task );
+            inbox.receiveTask( task );
         }
 
         public void deleteWaitingForTask( Task task )
         {
-            if (((TaskStatus.Data)task).status().get().equals( TaskStates.ACTIVE))
+            if (((TaskStatus.Data)task).status().get().equals( ACTIVE))
             {
                 markWaitingForAsRead( task );
                 deletedWaitingForTask( DomainEvent.CREATE, task );

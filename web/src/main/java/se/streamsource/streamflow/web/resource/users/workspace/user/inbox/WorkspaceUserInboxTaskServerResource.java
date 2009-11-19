@@ -80,8 +80,10 @@ public class WorkspaceUserInboxTaskServerResource
         String taskId = (String) getRequest().getAttributes().get("task");
         UnitOfWork uow = uowf.currentUnitOfWork();
         TaskEntity task = uow.get(TaskEntity.class, taskId);
+        String userId = (String) getRequest().getAttributes().get("user");
+        Inbox inbox = uow.get(Inbox.class, userId);
         Inbox receiverInbox = uow.get(Inbox.class, reference.entity().get().identity());
-        receiverInbox.receiveTask(task);
+        inbox.forwardTo(task, receiverInbox);
     }
 
     public void markAsRead()

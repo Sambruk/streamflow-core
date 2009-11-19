@@ -54,7 +54,7 @@ public class StreamFlowWebAssembler
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
         assembly.setName("StreamFlow web");
-        assembly.setVersion("0.1.15.0");
+        assembly.setVersion("0.2.18.0");
         LayerAssembly configurationLayer = assembly.layerAssembly("Configuration");
         LayerAssembly domainInfrastructureLayer = assembly.layerAssembly("Domain infrastructure");
         LayerAssembly domainLayer = assembly.layerAssembly("Domain");
