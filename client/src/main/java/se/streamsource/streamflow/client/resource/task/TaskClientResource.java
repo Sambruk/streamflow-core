@@ -56,58 +56,8 @@ public class TaskClientResource
 
     public TaskFormDefinitionsClientResource formDefinitions()
     {
-        TaskFormDefinitionsClientResource formDefinitions = getSubResource("formDefinitions", TaskFormDefinitionsClientResource.class);
+        TaskFormDefinitionsClientResource formDefinitions = getSubResource("formdefinitions", TaskFormDefinitionsClientResource.class);
         formDefinitions.setRoot(this);
         return formDefinitions;
     }
-
-/*
-    public void complete() throws ResourceException
-    {
-        putCommand("complete");
-    }
-
-    public void drop() throws ResourceException
-    {
-        putCommand("drop");
-    }
-*/
-
-/*
-    public void describe(StringDTO stringValue) throws ResourceException
-    {
-        putCommand("describe", stringValue);
-    }
-*/
-
-/*
-    public void assignToMe() throws ResourceException
-    {
-        putCommand("assignToMe");
-    }
-
-    public void markAsRead() throws ResourceException
-    {
-        putCommand("markAsRead");
-    }
-
-    public void markAsUnread() throws ResourceException
-    {
-        putCommand("markAsUnread");
-    }
-
-    public void delegate(String delegateeId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(EntityReference.parseEntityReference(delegateeId));
-        putCommand("delegate", builder.newInstance());
-    }
-
-    public void forward(String receiverId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(EntityReference.parseEntityReference(receiverId));
-        putCommand("forward", builder.newInstance());
-    }
-*/
 }

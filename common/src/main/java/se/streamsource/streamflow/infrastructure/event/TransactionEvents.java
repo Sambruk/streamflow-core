@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
@@ -33,5 +34,6 @@ public interface TransactionEvents
     Property<Long> timestamp();
 
     // List of events for this transaction
+    @UseDefaults
     Property<List<DomainEvent>> events();
 }

@@ -27,7 +27,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /tasks/{task}/formDefinitions/
+ * /tasks/{task}/formdefinitions/
  */
 public class TaskFormDefinitionsServerResource
         extends CommandQueryServerResource

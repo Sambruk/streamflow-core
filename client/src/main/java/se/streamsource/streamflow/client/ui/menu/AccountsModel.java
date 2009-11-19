@@ -32,7 +32,6 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import javax.swing.AbstractListModel;
@@ -46,7 +45,7 @@ import java.util.Observer;
  */
 public class AccountsModel
         extends AbstractListModel
-        implements EventListener
+//        implements EventListener
 {
     @Structure
     ValueBuilderFactory vbf;

@@ -25,7 +25,6 @@ import org.restlet.resource.ServerResource;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
-import se.streamsource.streamflow.web.application.notification.NotificationService;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -39,9 +38,6 @@ public class EventsServerResource
 {
     @Service
     EventStore store;
-
-    @Service
-    NotificationService notification;
 
     public EventsServerResource()
     {

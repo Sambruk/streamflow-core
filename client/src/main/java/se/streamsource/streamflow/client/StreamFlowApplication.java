@@ -160,8 +160,6 @@ public class StreamFlowApplication
             {
                 accountsModel.notifyEvent( event );
 
-
-
                 return true;
             }
         });
@@ -169,8 +167,7 @@ public class StreamFlowApplication
 
         showWorkspaceWindow();
 
-        // Auto-select first account
-
+        // Auto-select first account if only one available
         SwingUtilities.invokeLater( new Runnable()
         {
             public void run()
@@ -181,8 +178,6 @@ public class StreamFlowApplication
                 }
             }
         });
-
-// TODO Add this later        clientRegistration( accountSelector );
     }
 
     @Override

@@ -120,8 +120,8 @@ public class APIv1Router
         attach("/tasks/{task}/contacts/{index}", createServerResourceFinder( TaskContactServerResource.class));
         attach("/tasks/{task}/forms", createServerResourceFinder( TaskSubmittedFormsServerResource.class));
         attach("/tasks/{task}/forms/{index}", createServerResourceFinder( TaskSubmittedFormServerResource.class));
-        attach("/tasks/{task}/formDefinitions", createServerResourceFinder(TaskFormDefinitionsServerResource.class));
-        attach("/tasks/{task}/formDefinitions/{form}", createServerResourceFinder(TaskFormDefinitionServerResource.class));
+        attach("/tasks/{task}/formdefinitions", createServerResourceFinder(TaskFormDefinitionsServerResource.class));
+        attach("/tasks/{task}/formdefinitions/{form}", createServerResourceFinder(TaskFormDefinitionServerResource.class));
 
         // Events
         attach("/events", createServerResourceFinder( EventsServerResource.class));

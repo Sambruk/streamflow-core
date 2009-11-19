@@ -31,7 +31,6 @@ public class ClientEventsAssembler
     {
         moduleAssembly.addValues( TransactionEvents.class, DomainEvent.class).visibleIn(Visibility.application);
 
-        moduleAssembly.addServices( ClientEventFetchingService.class,
-                ClientEventSourceService.class).visibleIn( Visibility.application );
+        moduleAssembly.addServices( ClientEventSourceService.class).visibleIn( Visibility.application );
     }
 }

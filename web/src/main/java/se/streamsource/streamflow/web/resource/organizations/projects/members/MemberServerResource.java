@@ -15,8 +15,6 @@
 package se.streamsource.streamflow.web.resource.organizations.projects.members;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.Participant;
@@ -34,7 +32,7 @@ public class MemberServerResource
 {
     public void putOperation() throws ResourceException
     {
-        UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Add member"));
+        UnitOfWork uow = uowf.currentUnitOfWork();
 
         String member = getRequest().getAttributes().get("member").toString();
         Participant participant = uow.get(Participant.class, member);
@@ -47,19 +45,9 @@ public class MemberServerResource
             checkPermission(project);
         } catch(AccessControlException e)
         {
-            uow.discard();
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
         }
         project.addMember(participant);
-
-        try
-        {
-            uow.complete();
-        } catch (UnitOfWorkCompletionException e)
-        {
-            uow.discard();
-            throw new ResourceException(e);
-        }
     }
 
     public void deleteOperation() throws ResourceException

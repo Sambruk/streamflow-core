@@ -19,6 +19,7 @@ import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
@@ -33,18 +34,25 @@ import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.util.Annotations;
 import org.qi4j.spi.value.ValueDescriptor;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.data.CharacterSet;
-import org.restlet.representation.*;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.ObjectRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
+import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.web.infrastructure.event.CommandEvents;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -82,9 +90,11 @@ public class CommandQueryServerResource
     @Structure
     protected ModuleSPI module;
 
+    @Service
+    CommandEvents commandEvents;
+
     public CommandQueryServerResource()
     {
-
         getVariants().addAll(Arrays.asList(new Variant(MediaType.TEXT_HTML), new Variant(MediaType.APPLICATION_JSON)));
 
         setNegotiated(true);
@@ -143,10 +153,22 @@ public class CommandQueryServerResource
             {
                 uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase(operation));
 
+                commandEvents.reset();
                 Representation rep = returnRepresentation(invoke(method, args), variant);
                 try
                 {
                     uow.complete();
+
+                    if (rep instanceof EmptyRepresentation)
+                    {
+                        rep = new WriterRepresentation(MediaType.APPLICATION_JSON)
+                        {
+                            public void write( Writer writer) throws IOException
+                            {
+                                writer.write(commandEvents.commandEvents().toJSON());
+                            }
+                        };
+                    }
 
                     return rep;
                 } catch (ConcurrentEntityModificationException e)
