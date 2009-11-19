@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -43,7 +44,7 @@ public class ProjectAdminView
     @Uses
     OrganizationalUnitAdministrationModel organizationModel;
 
-    public ProjectAdminView(@Uses final ProjectsView projectsView)
+    public ProjectAdminView(@Uses final ProjectsView projectsView, @Uses final AdministrationView adminView)
     {
         super();
 
@@ -73,7 +74,8 @@ public class ProjectAdminView
                                 projectMembersModel,
                                 projectLabelsModel,
                                 formsModel,
-                                organizationModel).newInstance();
+                                organizationModel,
+                                adminView).newInstance();
                         setRightComponent(view);
                     } else
                     {

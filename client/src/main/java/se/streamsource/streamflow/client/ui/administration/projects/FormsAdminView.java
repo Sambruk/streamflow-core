@@ -17,10 +17,9 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -37,13 +36,7 @@ public class FormsAdminView
     @Structure
     ObjectBuilderFactory obf;
 
-    @Uses
-    ProjectsModel projectsModel;
-
-    @Uses
-    OrganizationalUnitAdministrationModel organizationModel;
-
-    public FormsAdminView(@Uses final FormsView formsView)
+    public FormsAdminView(@Uses final FormsView formsView, @Uses final AdministrationView adminView)
     {
         super();
 
@@ -62,19 +55,7 @@ public class FormsAdminView
                     int idx = list.getSelectedIndex();
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
-                        ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        ProjectMembersModel projectMembersModel = projectsModel.getProjectMembersModel(projectValue.entity().get().identity());
-                        LabelsModel projectLabelsModel = projectsModel.getLabelsModel(projectValue.entity().get().identity());
-                        FormsModel formsModel = projectsModel.getFormsModel(projectValue.entity().get().identity());
-                        projectMembersModel.refresh();
-                        projectLabelsModel.refresh();
-                        formsModel.refresh();
- /*                       FormView view = obf.newObjectBuilder(FormView.class).use(
-                                projectMembersModel,
-                                projectLabelsModel,
-                                formsModel,
-                                organizationModel).newInstance();
-                        setRightComponent(view);*/
+                        adminView.show( new JLabel("Form editor") );
                     } else
                     {
                         setRightComponent(new JPanel());

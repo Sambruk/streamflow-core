@@ -32,7 +32,7 @@ import java.awt.*;
  * JAVADOC
  */
 public class AdministrationView
-        extends JSplitPane
+        extends JPanel
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -40,18 +40,35 @@ public class AdministrationView
     @Structure
     UnitOfWorkFactory uowf;
 
+    JSplitPane mainView = new JSplitPane();
+    JPanel detailView;
+
+    CardLayout viewSwitch = new CardLayout();
+
     public AdministrationView(@Uses AdministrationOutlineView adminOutlineView)
     {
+        setLayout( viewSwitch );
+
+        detailView = new JPanel(new BorderLayout());
+
+        detailView.add( new JButton("Done"), BorderLayout.SOUTH );
+
+        add(mainView, "main");
+        add(detailView, "detail");
+
+        viewSwitch.show( this, "main" );
+
         setMinimumSize(new Dimension(800, 600));
         setPreferredSize(getMinimumSize());
-        setOneTouchExpandable( true );
 
-        setLeftComponent(adminOutlineView);
+        mainView.setOneTouchExpandable( true );
+
+        mainView.setLeftComponent(adminOutlineView);
         adminOutlineView.setMinimumSize(new Dimension(200, 400));
-        setRightComponent(new JPanel());
+        mainView.setRightComponent(new JPanel());
 
-        setDividerLocation(200);
-        setResizeWeight(0);
+        mainView.setDividerLocation(200);
+        mainView.setResizeWeight(0);
         adminOutlineView.getTree().addTreeSelectionListener(new TreeSelectionListener()
         {
             public void valueChanged(TreeSelectionEvent e)
@@ -97,12 +114,19 @@ public class AdministrationView
                                 ouAdminModel.projectsModel(),
                                 ouAdminModel.rolesModel(),
                                 ouAdminModel.formsModel(),
-                                ouAdminModel.administratorsModel()).newInstance();
+                                ouAdminModel.administratorsModel(),
+                                AdministrationView.this).newInstance();
                     }
 
-                    setRightComponent(view);
+                    mainView.setRightComponent(view);
                 }
             }
         });
+    }
+
+    public void show(JComponent view)
+    {
+        detailView.add( view, BorderLayout.CENTER );
+        viewSwitch.show( this, "detail" );
     }
 }

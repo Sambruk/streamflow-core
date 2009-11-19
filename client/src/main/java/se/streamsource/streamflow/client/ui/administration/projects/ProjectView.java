@@ -29,7 +29,7 @@ public class ProjectView
 
     public ProjectView(@Uses ProjectMembersView membersView,
                        @Uses LabelsView labelsView,
-                       @Uses FormsView formsView)
+                       @Uses FormsAdminView formsView)
     {
         super();
 
