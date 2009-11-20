@@ -59,8 +59,6 @@ public class WorkspaceUserInboxView
             @Structure ValueBuilderFactory vbf)
     {
     	super.init(context, model, detailsView, obf, vbf);
-        taskTable.getColumn(2).setPreferredWidth(150);
-        taskTable.getColumn(2).setMaxWidth(150);
         taskTable.putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
         ProjectSelectionModel projectsModel = new ProjectSelectionModel(((WorkspaceUserInboxModel)model).getProjects());
         JComboBox projectsCombo = new JComboBox(projectsModel);

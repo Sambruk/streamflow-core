@@ -31,7 +31,7 @@ public class WorkspaceProjectAssignmentsModel
     public WorkspaceProjectAssignmentsModel(@Uses WorkspaceProjectAssignmentsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(created_column_header), ""};
+        columnNames = new String[]{text(description_column_header), text(created_column_header), text(complete_task_header)};
         columnClasses = new Class[]{String.class, Date.class, Boolean.class};
         columnEditable = new boolean[]{false, false, true};
     }

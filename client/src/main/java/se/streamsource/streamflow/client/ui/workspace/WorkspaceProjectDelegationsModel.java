@@ -37,8 +37,8 @@ public class WorkspaceProjectDelegationsModel
     public WorkspaceProjectDelegationsModel(@Uses WorkspaceProjectDelegationsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(delegated_from_header), text(delegated_on_header), ""};
-        columnClasses = new Class[]{String.class, String.class, Date.class, Date.class, Boolean.class};
+        columnNames = new String[]{text(description_column_header), text(delegated_from_header), text(delegated_on_header), text(delegated_done_header)};
+        columnClasses = new Class[]{String.class, String.class, Date.class, Boolean.class};
         columnEditable = new boolean[]{false, false, false, true};
     }
 
@@ -94,7 +94,6 @@ public class WorkspaceProjectDelegationsModel
                     Boolean completed = (Boolean) aValue;
                     if (completed)
                     {
-
                         TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
                         if (taskValue.status().get() == TaskStates.ACTIVE)
                         {

@@ -14,11 +14,18 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
+import se.streamsource.streamflow.client.ui.task.TasksDetailView;
 
 import javax.swing.*;
 
@@ -31,6 +38,17 @@ public class WorkspaceProjectWaitingForView
     @Uses
     protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
 
+    public void init(@Service ApplicationContext context,
+            @Uses final TaskTableModel model,
+            final @Uses TasksDetailView detailsView,
+            @Structure final ObjectBuilderFactory obf,
+            @Structure ValueBuilderFactory vbf)
+    {
+    	super.init(context, model, detailsView, obf, vbf);
+        taskTable.getColumn(3).setPreferredWidth(150);
+        taskTable.getColumn(3).setMaxWidth(150);
+    }
+    
     protected void buildPopupMenu(JPopupMenu popup)
     {
         ActionMap am = getActionMap();

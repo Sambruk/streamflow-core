@@ -37,7 +37,7 @@ public class WorkspaceUserDelegationsModel
     public WorkspaceUserDelegationsModel(@Uses WorkspaceUserDelegationsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(delegated_from_header), text(delegated_on_header), ""};
+        columnNames = new String[]{text(description_column_header), text(delegated_from_header), text(delegated_on_header), text(delegated_done_header)};
         columnClasses = new Class[]{String.class, String.class, Date.class, Boolean.class};
         columnEditable = new boolean[]{false, false, false, true};
     }

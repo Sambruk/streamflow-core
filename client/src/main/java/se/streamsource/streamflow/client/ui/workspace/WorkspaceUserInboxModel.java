@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.complete_task_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.project_column_header;
@@ -59,7 +60,7 @@ public class WorkspaceUserInboxModel
     public WorkspaceUserInboxModel(@Uses WorkspaceUserInboxClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(project_column_header), text(created_column_header), ""};
+        columnNames = new String[]{text(description_column_header), text(project_column_header), text(created_column_header), text(complete_task_header)};
         columnClasses = new Class[]{String.class, JComboBox.class, Date.class, Boolean.class};
         columnEditable = new boolean[]{false, true, false, true};
     }
