@@ -40,7 +40,7 @@ public class WorkspaceProjectWaitingForModel
         super(resource);
         columnNames = new String[]{text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), text(complete_task_header)};
         columnClasses = new Class[]{String.class, String.class, String.class, Date.class, Boolean.class};
-        columnEditable = new boolean[]{false, false, false, false, true};
+        columnEditable = new boolean[]{false, false, false, false, false};
     }
 
     @Override
