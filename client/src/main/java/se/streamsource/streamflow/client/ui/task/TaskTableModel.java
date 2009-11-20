@@ -315,7 +315,7 @@ public abstract class TaskTableModel<T extends TaskListDTO>
 
     public void completeTask(int idx)
     {
-        setValueAt(true, idx, 0);
+        setValueAt(true, idx, columnNames.length-1);
     }
 
     public void removeTask(int idx) throws ResourceException
