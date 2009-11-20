@@ -105,36 +105,15 @@ public class WorkspaceUserInboxModel
 
         switch (column)
         {
-            case 0:
-            {
-                StringBuilder desc = new StringBuilder(task.description().get());
-                List<ListItemValue> labels = task.labels().get().items().get();
-                if (labels.size() > 0)
-                {
-                    desc.append(" (");
-                    String comma = "";
-                    for (ListItemValue label : labels)
-                    {
-                        desc.append(comma + label.description().get());
-                        comma = ",";
-                    }
-                    desc.append(")");
-                }
-                return desc.toString();
-            }
             case 1:
             	return selectedProjects.get(task.task().get().identity());
             case 2:
                 return task.creationDate().get();
             case 3:
                 return !task.status().get().equals(TaskStates.ACTIVE);
-            case IS_READ:
-                return task.isRead().get();
-            case IS_DROPPED:
-                return task.status().get().equals(TaskStates.DROPPED);
         }
-
-        return null;
+        
+        return super.getValueAt(rowIndex, column);
     }
 
     @Override
