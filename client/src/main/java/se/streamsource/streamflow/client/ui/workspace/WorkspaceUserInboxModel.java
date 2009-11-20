@@ -14,34 +14,28 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.complete_task_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.project_column_header;
+import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.WorkspaceUserInboxClientResource;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TasksQuery;
 
+import javax.swing.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.management.OperationsException;
-import javax.swing.JComboBox;
-
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.users.workspace.user.inbox.WorkspaceUserInboxClientResource;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.task.TasksQuery;
 
 /**
  * JAVADOC
@@ -52,17 +46,20 @@ public class WorkspaceUserInboxModel
     @Structure
     ValueBuilderFactory vbf;
 
-    ListValue projects;
+    ProjectSelectorModel projects;
     
     ListItemValue selectedProject;
     Map<String, ListItemValue> selectedProjects = new HashMap<String, ListItemValue>();
     
-    public WorkspaceUserInboxModel(@Uses WorkspaceUserInboxClientResource resource)
+    public WorkspaceUserInboxModel(@Uses WorkspaceUserInboxClientResource resource, @Structure ObjectBuilderFactory obf)
     {
         super(resource);
         columnNames = new String[]{text(description_column_header), text(project_column_header), text(created_column_header), text(complete_task_header)};
         columnClasses = new Class[]{String.class, JComboBox.class, Date.class, Boolean.class};
         columnEditable = new boolean[]{false, true, false, true};
+
+        projects = obf.newObjectBuilder(ProjectSelectorModel.class)
+                .use(resource).newInstance();
     }
 
     public int getColumnCount()
@@ -75,18 +72,7 @@ public class WorkspaceUserInboxModel
     {
         return (WorkspaceUserInboxClientResource) super.getResource();
     }
-    
-    public ListValue getProjects()
-    {
-    	try 
-    	{
-    		return getResource().projects();
-        } catch (ResourceException e)
-        {
-            throw new OperationException( WorkspaceResources.could_not_refresh_projects, e);
-        }
-    }
-    
+
     @Override
     public void forward(int idx, String receiverId) throws ResourceException
     {
@@ -173,7 +159,6 @@ public class WorkspaceUserInboxModel
         try
         {
             List<? extends TaskDTO> newRoot = getResource().tasks(vbf.newValue( TasksQuery.class ));
-            projects = getResource().projects();
             boolean same = newRoot.equals(tasks);
             if (!same)
             {
@@ -192,5 +177,17 @@ public class WorkspaceUserInboxModel
         {
             throw new OperationException( WorkspaceResources.could_not_perform_operation, e);
         }
+    }
+
+    @Override
+    public void notifyEvent( DomainEvent event )
+    {
+        super.notifyEvent(event);
+        projects.notifyEvent(event);
+    }
+
+    public ProjectSelectorModel getProjectsModel()
+    {
+        return projects;
     }
 }

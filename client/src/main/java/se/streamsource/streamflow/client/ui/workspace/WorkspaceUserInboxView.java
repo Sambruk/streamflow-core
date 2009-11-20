@@ -14,16 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.table.TableColumn;
-
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.autocomplete.ComboBoxCellEditor;
 import org.qi4j.api.injection.scope.Service;
@@ -33,7 +23,6 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemTableCellRenderer;
@@ -42,6 +31,11 @@ import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
 import se.streamsource.streamflow.client.ui.task.TasksDetailView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+
+import javax.swing.*;
+import javax.swing.table.TableColumn;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * JAVADOC
@@ -60,8 +54,8 @@ public class WorkspaceUserInboxView
     {
     	super.init(context, model, detailsView, obf, vbf);
         taskTable.putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
-        ProjectSelectionModel projectsModel = new ProjectSelectionModel(((WorkspaceUserInboxModel)model).getProjects());
-        JComboBox projectsCombo = new JComboBox(projectsModel);
+
+        JComboBox projectsCombo = new JComboBox(((WorkspaceUserInboxModel)model).getProjectsModel());
         projectsCombo.addItemListener(this);
         projectsCombo.setRenderer(new ListItemListCellRenderer());
         TableColumn column = taskTable.getColumnModel().getColumn(1);
@@ -129,9 +123,9 @@ public class WorkspaceUserInboxView
 		if (e.getSource() instanceof JComboBox)
 		{
 			JComboBox combo = (JComboBox)e.getSource();
-			if(combo.getModel() instanceof ProjectSelectionModel)
+			if(combo.getModel() instanceof ProjectSelectorModel)
 			{
-				ProjectSelectionModel model = (ProjectSelectionModel)combo.getModel();
+				ProjectSelectorModel model = (ProjectSelectorModel)combo.getModel();
 				ListItemValue project = (ListItemValue)model.getSelectedItem();
 				String identity = project.entity().get().identity();
 				try

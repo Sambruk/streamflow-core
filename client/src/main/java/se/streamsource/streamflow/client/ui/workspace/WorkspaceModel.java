@@ -36,7 +36,8 @@ public class WorkspaceModel
     {
         super(node);
 
-        eventHandlerFilter = new EventHandlerFilter(this, "joinedProject","leftProject","joinedGroup","leftGroup");
+        eventHandlerFilter = new EventHandlerFilter(this, "joinedProject","leftProject","joinedGroup","leftGroup",
+                "createdProject","removedProject");
     }
 
     @Override

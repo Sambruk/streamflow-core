@@ -27,7 +27,6 @@ import se.streamsource.streamflow.client.resource.users.workspace.TaskListClient
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -68,8 +67,6 @@ public abstract class TaskTableModel<T extends TaskListDTO>
     protected Class[] columnClasses;
     protected boolean[] columnEditable;
     private EventHandlerFilter eventFilter;
-    
-    protected ListValue projects;
 
     protected TaskTableModel( TaskListClientResource resource )
     {

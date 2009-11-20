@@ -46,7 +46,7 @@ public class WorkspaceAssembler
                 WorkspaceProjectWaitingForNode.class,
                 LabelMenu.class);
 
-        UIAssemblers.addModels(module, LabelsModel.class);
+        UIAssemblers.addModels(module, LabelsModel.class, ProjectSelectorModel.class);
 
         UIAssemblers.addMV(module,
                 WorkspaceModel.class,

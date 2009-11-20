@@ -14,29 +14,34 @@
 
 package se.streamsource.streamflow.web.domain.project;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilderFactory;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.and;
+import static org.qi4j.api.query.QueryExpressions.eq;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
+import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.form.Forms;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
-import se.streamsource.streamflow.web.domain.task.Assignments;
-import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
-import se.streamsource.streamflow.web.domain.task.Delegations;
-import se.streamsource.streamflow.web.domain.task.DelegationsQueries;
-import se.streamsource.streamflow.web.domain.task.Inbox;
-import se.streamsource.streamflow.web.domain.task.InboxQueries;
-import se.streamsource.streamflow.web.domain.task.TaskId;
-import se.streamsource.streamflow.web.domain.task.WaitingFor;
-import se.streamsource.streamflow.web.domain.task.WaitingForQueries;
+import se.streamsource.streamflow.web.domain.task.*;
 
 /**
  * JAVADOC
  */
 @Mixins(ProjectEntity.ProjectIdGeneratorMixin.class)
+@Concerns(ProjectEntity.RemovableConcern.class)
 public interface ProjectEntity
         extends DomainEntity,
         Project,
@@ -67,6 +72,40 @@ public interface ProjectEntity
         public void assignId(TaskId task)
         {
             ((OrganizationalUnitRefactoring.Data)state.organizationalUnit().get()).organization().get().assignId(task);
+        }
+    }
+
+    abstract class RemovableConcern
+        extends ConcernOf<Removable>
+        implements Removable
+    {
+        @Structure
+        UnitOfWorkFactory uowf;
+
+        @Structure
+        ValueBuilderFactory vbf;
+
+        @Structure
+        QueryBuilderFactory qbf;
+
+        @This
+        Identity id;
+
+        public boolean removeEntity()
+        {
+            Query<TaskEntity> query = qbf.newQueryBuilder(TaskEntity.class).
+                    where(
+                        and(
+                            eq(templateFor( Ownable.Data.class).owner().get().identity(), id.identity().get() ),
+                            eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE)
+                            )
+                    ).newQuery(uowf.currentUnitOfWork());
+
+            if(query.count() == 0)
+            {
+                return next.removeEntity();
+            }
+            throw new IllegalStateException("Cannot remove project with ACTIVE tasks.");
         }
     }
 }

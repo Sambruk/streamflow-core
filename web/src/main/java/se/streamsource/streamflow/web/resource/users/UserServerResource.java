@@ -80,6 +80,7 @@ public class UserServerResource
             QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
             QueryBuilder<UserEntity> finalQueryBuilder = queryBuilder.where(and(
                     matches(templateFor(UserEntity.class).userName(), "^" + query.string().get()),
+                    // TODO: should be a contains(ManyAssociation, List ) in Qi4j
                     contains(templateFor(UserEntity.class).organizations(), user.organizations().get(0))
                     )
             );

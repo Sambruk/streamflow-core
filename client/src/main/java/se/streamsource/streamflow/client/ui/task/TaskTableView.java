@@ -196,6 +196,8 @@ public abstract class TaskTableView
                             selectedTask = dto;
 
                             TaskModel taskModel = model.task(dto.task().get().identity());
+                            // since automatic event distribution is switched off, refresh is needed before show
+                            taskModel.refresh();
 
                             detailsView.show( taskModel );
 

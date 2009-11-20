@@ -119,7 +119,8 @@ public interface Participation
             // List my own
             for (Project project : state.projects())
             {
-                if (!projects.contains(project))
+                if (!projects.contains(project)
+                    && !((Removable.Data)project).removed().get())
                     projects.add(project);
             }
 
@@ -129,7 +130,8 @@ public interface Participation
                 Iterable<Project> groupProjects = ((Data)group).allProjects();
                 for (Project groupProject : groupProjects)
                 {
-                    if (!projects.contains(groupProject))
+                    if (!projects.contains(groupProject)
+                        && !((Removable.Data)groupProject).removed().get())
                         projects.add(groupProject);
                 }
             }
