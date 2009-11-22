@@ -17,12 +17,12 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.OperationException;
 
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -36,7 +36,9 @@ public class FormsAdminView
     @Structure
     ObjectBuilderFactory obf;
 
-    public FormsAdminView(@Uses final FormsView formsView, @Uses final AdministrationView adminView)
+    public FormsAdminView(@Uses final FormsView formsView,
+                          @Uses final AdministrationView adminView,
+                          @Structure final ObjectBuilderFactory obf)
     {
         super();
 
@@ -53,9 +55,20 @@ public class FormsAdminView
                 if (!e.getValueIsAdjusting())
                 {
                     int idx = list.getSelectedIndex();
+
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
-                        adminView.show( new JLabel("Form editor") );
+                        try
+                        {
+                            setRightComponent(
+                                obf.newObjectBuilder(FormView.class).
+                                        use(formsView.getModel().getFormsResource().form(idx).form(),
+                                            adminView).newInstance()
+                        );
+                        } catch (ResourceException e1)
+                        {
+                            throw new OperationException(AdministrationResources.could_not_get_form, e1);  
+                        }
                     } else
                     {
                         setRightComponent(new JPanel());

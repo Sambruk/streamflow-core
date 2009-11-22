@@ -19,42 +19,21 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.domain.form.FormValue;
 
 /**
  * JAVADOC
  */
-public class ProjectFormDefinitionsClientResource
+public class ProjectFormDefinitionClientResource
         extends CommandQueryClientResource
 {
-    public ProjectFormDefinitionsClientResource(@Uses Context context, @Uses Reference reference)
+    public ProjectFormDefinitionClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
-
-    public ProjectFormDefinitionClientResource form(int index)
+    
+    public FormValue form() throws ResourceException
     {
-        return getSubResource(""+index, ProjectFormDefinitionClientResource.class);
-    }
-
-    public ListValue forms() throws ResourceException
-    {
-        return query("forms", ListValue.class);
-    }
-
-    public ListValue nonApplicableForms() throws ResourceException
-    {
-        return query("nonApplicableForms", ListValue.class);
-    }
-
-    public void addForm(EntityReferenceDTO formDTO) throws ResourceException
-    {
-        putCommand("addForm", formDTO);
-    }
-
-    public void removeForm(EntityReferenceDTO formDTO) throws ResourceException
-    {
-        putCommand("removeForm", formDTO);
+        return query("form", FormValue.class);
     }
 }

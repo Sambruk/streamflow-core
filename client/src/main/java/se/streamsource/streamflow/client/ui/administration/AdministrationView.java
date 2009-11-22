@@ -14,6 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.ApplicationActionMap;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -44,14 +47,18 @@ public class AdministrationView
     JPanel detailView;
 
     CardLayout viewSwitch = new CardLayout();
+    private ApplicationActionMap am;
 
-    public AdministrationView(@Uses AdministrationOutlineView adminOutlineView)
+    public AdministrationView(@Service ApplicationContext context,
+                              @Uses AdministrationOutlineView adminOutlineView)
     {
+        am = context.getActionMap(this);
+        setActionMap(am);
+
         setLayout( viewSwitch );
 
         detailView = new JPanel(new BorderLayout());
 
-        detailView.add( new JButton("Done"), BorderLayout.SOUTH );
 
         add(mainView, "main");
         add(detailView, "detail");
@@ -126,7 +133,17 @@ public class AdministrationView
 
     public void show(JComponent view)
     {
+        detailView.removeAll();
         detailView.add( view, BorderLayout.CENTER );
+        detailView.add( new JButton(am.get("done")), BorderLayout.SOUTH );
+        detailView.revalidate();
+        detailView.repaint();
         viewSwitch.show( this, "detail" );
+    }
+
+    @org.jdesktop.application.Action
+    public void done()
+    {
+        viewSwitch.show(this, "main");
     }
 }

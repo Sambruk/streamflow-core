@@ -45,6 +45,7 @@ import se.streamsource.streamflow.web.resource.organizations.organizationalunits
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorServerResource;
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
@@ -105,6 +106,7 @@ public class APIv1Router
         attach("/organizations/{organization}/projects/{labels}/labels", createServerResourceFinder(LabelsServerResource.class));
         attach("/organizations/{organization}/projects/{labels}/labels/{label}", createServerResourceFinder(LabelServerResource.class));
         attach("/organizations/{organization}/projects/{project}/forms", createServerResourceFinder( ProjectFormDefinitionsServerResource.class));
+        attach("/organizations/{organization}/projects/{project}/forms/{index}", createServerResourceFinder( ProjectFormDefinitionServerResource.class));
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RoleServerResource.class));
         attach("/organizations/{organization}/forms", createServerResourceFinder( FormTemplatesServerResource.class));

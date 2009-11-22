@@ -97,16 +97,19 @@ public interface TestDataService
 
             Form commentForm = project.createForm();
             commentForm.changeDescription( "CommentForm" );
+            commentForm.changeNote("This is a comment form. Use it to capture any comments related to the current task.");
             Field commentField = commentForm.createField( "Comment", textValue );
 
             Form statusForm = project.createForm();
             statusForm.changeDescription("StatusForm");
+            statusForm.changeNote("This is the Status form. \nWhen urgencies occur please upgrade the status of the current task");
             Field statusField = statusForm.createField( "Status", textValue );
 
             ou.createFormTemplate( commentForm );
 
             Form addressForm = project.createForm();
             addressForm.changeDescription( "Address form" );
+            addressForm.changeNote("Address form of the task");
             addressForm.createField( "Street", textValue );
             addressForm.createField( "Zip code", textValue );
             addressForm.createField( "Town", textValue );

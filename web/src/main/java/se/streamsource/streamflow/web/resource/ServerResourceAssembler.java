@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.resource;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
@@ -33,6 +34,7 @@ import se.streamsource.streamflow.web.resource.organizations.policy.Administrato
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
@@ -82,7 +84,6 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.Worksp
 import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskServerResource;
-import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 
 /**
  * Assembler for API resources
@@ -176,6 +177,7 @@ public class ServerResourceAssembler
                 MembersServerResource.class,
                 MemberServerResource.class,
                 ProjectFormDefinitionsServerResource.class,
+                ProjectFormDefinitionServerResource.class,
 
                 RolesServerResource.class,
                 RoleServerResource.class,

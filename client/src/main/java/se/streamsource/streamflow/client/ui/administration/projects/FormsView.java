@@ -92,4 +92,9 @@ public class FormsView
     {
         return formList;
     }
+
+    public FormsModel getModel()
+    {
+        return model;
+    }
 }
