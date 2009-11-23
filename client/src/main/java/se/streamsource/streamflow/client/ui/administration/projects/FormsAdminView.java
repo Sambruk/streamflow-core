@@ -63,8 +63,7 @@ public class FormsAdminView
                             setRightComponent(
                                 obf.newObjectBuilder(FormView.class).
                                         use(formsView.getModel().getFormsResource().form(idx).form(),
-                                            adminView).newInstance()
-                        );
+                                            adminView).newInstance());
                         } catch (ResourceException e1)
                         {
                             throw new OperationException(AdministrationResources.could_not_get_form, e1);  

@@ -14,6 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ConstantSize;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
@@ -32,6 +35,8 @@ public class FormView
 {
     private AdministrationView adminView;
     private FormValue form;
+    FormLayout formLayout = new FormLayout(
+            "pref, 4dlu, 150dlu","");
 
 
     public FormView(@Service ApplicationContext context,
@@ -58,11 +63,26 @@ public class FormView
     {
         JPanel panel = new JPanel(new BorderLayout());
 
-        panel.add(new JLabel(form.description().get()), BorderLayout.NORTH);
-        panel.add(new JTextArea(form.note().get()), BorderLayout.CENTER);
+        DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, panel);
+        ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
+        formBuilder.setLineGapSize(lineGap);
+
+        formBuilder.append("Description", new TextField(form.description().get()));
+        formBuilder.append("Note", new TextArea(form.note().get()));
+
+
+        formBuilder.append("", new JSeparator());
+
+        formBuilder.append("Field Value");
+        formBuilder.append("Field Name");
 
         for (ListItemValue value : form.fields().get().items().get())
         {
+            TextField textField = new TextField(value.description().get());
+            //fields.put(value.entity().get(), textField);
+            JComboBox box = new JComboBox();
+            box.setModel(new ValueDefinitionSelectionModel());
+            formBuilder.append(box, textField);
         }
 
         adminView.show( panel );
