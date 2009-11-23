@@ -25,6 +25,7 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.eq;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -43,6 +44,8 @@ import java.util.List;
 public interface AssignmentsQueries
 {
     AssignmentsTaskListDTO assignmentsTasks(Assignee assignee);
+
+    boolean assignmentsHaveActiveTasks();
 
     class Mixin
         implements AssignmentsQueries
@@ -77,6 +80,20 @@ public interface AssignmentsQueries
             assignmentsQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
             return buildTaskList(assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class);
+        }
+
+        public boolean assignmentsHaveActiveTasks()
+        {
+            QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
+            Association<Assignee> assignedId = templateFor( Assignable.Data.class).assignedTo();
+            Property<String> ownedId = templateFor( Ownable.Data.class).owner().get().identity();
+            Query<TaskEntity> assignmentsQuery = queryBuilder.where(and(
+                    isNotNull(assignedId),
+                    eq(ownedId, id.identity().get()),
+                    eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE))).
+                    newQuery(uowf.currentUnitOfWork());
+
+            return assignmentsQuery.count() > 0;
         }
 
         protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(

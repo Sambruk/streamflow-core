@@ -20,16 +20,12 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-import static org.qi4j.api.query.QueryExpressions.and;
-import static org.qi4j.api.query.QueryExpressions.eq;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.web.domain.DomainEntity;
 import se.streamsource.streamflow.web.domain.form.Forms;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
@@ -91,21 +87,41 @@ public interface ProjectEntity
         @This
         Identity id;
 
+        @This
+        Members members;
+
+        @This
+        InboxQueries inbox;
+
+        @This
+        AssignmentsQueries assignments;
+
+        @This
+        WaitingForQueries waitingFor;
+
+        @This
+        DelegationsQueries delegationsQueries;
+
+        @This
+        Delegations delegations;
+
         public boolean removeEntity()
         {
-            Query<TaskEntity> query = qbf.newQueryBuilder(TaskEntity.class).
-                    where(
-                        and(
-                            eq(templateFor( Ownable.Data.class).owner().get().identity(), id.identity().get() ),
-                            eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE)
-                            )
-                    ).newQuery(uowf.currentUnitOfWork());
-
-            if(query.count() == 0)
+            if(inbox.inboxHasActiveTasks()
+               || assignments.assignmentsHaveActiveTasks()
+               || waitingFor.hasActiveOrDoneAndUnreadTasks() )
             {
+                throw new IllegalStateException("Cannot remove project with ACTIVE tasks.");
+
+            } else
+            {
+                for(TaskDTO taskDTO : delegationsQueries.delegationsTasks().tasks().get())
+                {
+                    delegations.reject( uowf.currentUnitOfWork().get(Task.class, taskDTO.task().get().identity()));
+                }
+                members.removeAllMembers();
                 return next.removeEntity();
             }
-            throw new IllegalStateException("Cannot remove project with ACTIVE tasks.");
         }
     }
 }

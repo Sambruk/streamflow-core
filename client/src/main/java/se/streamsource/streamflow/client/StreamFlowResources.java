@@ -24,5 +24,6 @@ public enum StreamFlowResources
     operation_not_permitted,
     export_data_file_with_open_option,
     export_completed,
-    could_not_register_client, excel_file
+    could_not_register_client, excel_file,
+    confirmation, proceed_label;
 }

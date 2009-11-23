@@ -44,7 +44,10 @@ public class UIAssembler
         module.addServices(DummyDataService.class).instantiateOnStartup();
         module.addServices(ApplicationInitializationService.class).instantiateOnStartup();
 
-        UIAssemblers.addDialogs(module, NameDialog.class, SelectUsersAndGroupsDialog.class, CreateUserDialog.class);
+        UIAssemblers.addDialogs(module, NameDialog.class,
+                SelectUsersAndGroupsDialog.class,
+                CreateUserDialog.class,
+                ConfirmationDialog.class);
 
         UIAssemblers.addModels(module, TableMultipleSelectionModel.class,
                 TableSingleSelectionModel.class);

@@ -24,6 +24,7 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.eq;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
@@ -43,6 +44,8 @@ import java.util.List;
 public interface WaitingForQueries
 {
     WaitingForTaskListDTO waitingForTasks(Delegator delegator);
+
+    boolean hasActiveOrDoneAndUnreadTasks();
 
     class Mixin
         implements WaitingForQueries
@@ -84,6 +87,27 @@ public interface WaitingForQueries
             waitingForQuery.orderBy(orderBy(templateFor( Delegatable.Data.class).delegatedOn()));
 
             return buildTaskList(waitingForQuery, WaitingForTaskDTO.class, WaitingForTaskListDTO.class);
+        }
+
+        public boolean hasActiveOrDoneAndUnreadTasks()
+        {
+            UnitOfWork uow = uowf.currentUnitOfWork();
+
+            // Find all Active delegated tasks owned by this Entity
+            // or Completed delegated tasks that are marked as unread
+            QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder(TaskEntity.class);
+            Association<Delegator> delegatedBy = templateFor( Delegatable.Data.class).delegatedBy();
+            Association<WaitingFor> waitingFor = templateFor( Delegatable.Data.class).delegatedFrom();
+            Association<Delegatee> delegatee = templateFor( Delegatable.Data.class).delegatedTo();
+            Query<TaskEntity> waitingForQuery = queryBuilder.where(and(
+                    eq(waitingFor, this.waitingFor),
+                    isNotNull(delegatee),
+                    or(
+                            eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE),
+                            eq(templateFor( TaskStatus.Data.class).status(), TaskStates.DONE)))).
+                    newQuery(uow);
+
+            return waitingForQuery.count() > 0;
         }
 
         protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(

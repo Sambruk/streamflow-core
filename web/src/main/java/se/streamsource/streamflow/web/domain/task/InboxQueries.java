@@ -44,6 +44,8 @@ public interface InboxQueries
 {
     InboxTaskListDTO inboxTasks();
 
+    boolean inboxHasActiveTasks();
+
     class Mixin
         implements InboxQueries
     {
@@ -80,6 +82,11 @@ public interface InboxQueries
             inboxQuery.orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
             return buildTaskList(inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class);
+        }
+
+        public boolean inboxHasActiveTasks()
+        {
+            return inboxTasks().tasks().get().size() > 0;
         }
 
         protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
