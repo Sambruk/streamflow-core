@@ -31,6 +31,9 @@ import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
+
+import java.sql.Date;
 
 /**
  * JAVADOC
@@ -105,6 +108,39 @@ public abstract class AbstractEventStoreTest
                 count[0]++;
 
                 return count[0] < 5;
+            }
+        });
+
+        Assert.assertThat( count[0], CoreMatchers.equalTo(5 ));
+    }
+
+    @Test
+    public void getEventsAfterDate()
+    {
+        TransactionTimestampFilter timestamp;
+        eventStore.transactions(null, timestamp = new TransactionTimestampFilter(0, new TransactionHandler()
+        {
+            int count = 0;
+            public boolean handleTransaction( TransactionEvents transaction )
+            {
+                count++;
+
+                return count < 5;
+            }
+        }));
+
+        final long lastTimeStamp = timestamp.lastTimestamp();
+
+        final int[] count = new int[1];
+        eventStore.transactions(new Date(lastTimeStamp),new TransactionHandler()
+        {
+            public boolean handleTransaction( TransactionEvents transaction )
+            {
+                Assert.assertThat( transaction.timestamp().get(), CoreMatchers.not(lastTimeStamp ));
+
+                count[0]++;
+
+                return true;
             }
         });
 

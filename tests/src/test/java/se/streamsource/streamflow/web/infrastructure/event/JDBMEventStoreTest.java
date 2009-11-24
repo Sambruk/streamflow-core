@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import org.junit.Test;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
@@ -34,10 +33,5 @@ public class JDBMEventStoreTest
 
         module.addServices( FileConfiguration.class );
         module.addServices( JdbmEventStoreService.class);
-    }
-
-    @Test
-    public void testPerformance()
-    {
     }
 }
