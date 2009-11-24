@@ -56,7 +56,7 @@ public class WorkspaceUserInboxModel
         super(resource);
         columnNames = new String[]{text(description_column_header), text(project_column_header), text(created_column_header), text(complete_task_header)};
         columnClasses = new Class[]{String.class, JComboBox.class, Date.class, Boolean.class};
-        columnEditable = new boolean[]{false, true, false, true};
+        columnEditable = new boolean[]{false, true, false, false};
 
         projects = obf.newObjectBuilder(ProjectSelectorModel.class)
                 .use(resource).newInstance();

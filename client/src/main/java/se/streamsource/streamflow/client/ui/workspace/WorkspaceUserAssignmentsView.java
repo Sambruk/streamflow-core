@@ -49,8 +49,9 @@ public class WorkspaceUserAssignmentsView
     {
         addToolbarButton(toolbar, "createTask");
         Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
+        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(delegateTasks));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(delegateTasks, acceptAction));
     }
 
     @Override

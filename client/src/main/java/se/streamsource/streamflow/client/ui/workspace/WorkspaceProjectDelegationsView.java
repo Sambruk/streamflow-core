@@ -41,8 +41,9 @@ public class WorkspaceProjectDelegationsView
     {
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "reject");
+        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox, acceptAction));
     }
 
     @org.jdesktop.application.Action

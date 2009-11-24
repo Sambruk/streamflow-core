@@ -64,11 +64,11 @@ public class WorkspaceProjectWaitingForView
     @Override
     protected void buildToolbar(JPanel toolbar)
     {
-        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action delegateTasksFromWaitingFor = addToolbarButton(toolbar, "delegateTasks");
+        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(acceptAction, assignAction, delegateTasksFromWaitingFor));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromWaitingFor, acceptAction));
     }
 
     @Override

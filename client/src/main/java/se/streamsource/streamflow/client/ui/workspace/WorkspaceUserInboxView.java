@@ -81,8 +81,9 @@ public class WorkspaceUserInboxView
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action forwardTasksFromInbox = addToolbarButton(toolbar, "forwardTasks");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
+        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, forwardTasksFromInbox, delegateTasksFromInbox));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, forwardTasksFromInbox, delegateTasksFromInbox, acceptAction));
     }
 
     @Override
