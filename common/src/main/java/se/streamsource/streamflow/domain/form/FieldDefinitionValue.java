@@ -14,25 +14,16 @@
 
 package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC
  */
-public class FormAssembler
-    implements Assembler
+public interface FieldDefinitionValue
+    extends ValueComposite
 {
-    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
-    {
-        moduleAssembly.addValues( EffectiveFieldValue.class,
-                EffectiveFormFieldsValue.class,
-                FieldValue.class,
-                FormValue.class,
-                FieldDefinitionValue.class,
-                SubmittedFormValue.class,
-                SubmitFormDTO.class).visibleIn( Visibility.application );
-    }
+    Property<String> description();
+    Property<String> note();
+    Property<String> valueDefinition();
 }

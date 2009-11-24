@@ -14,15 +14,15 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ConstantSize;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.domain.form.FormValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,12 +35,13 @@ public class FormView
 {
     private AdministrationView adminView;
     private FormValue form;
-    FormLayout formLayout = new FormLayout(
-            "pref, 4dlu, 150dlu","");
 
+    @Structure
+    ObjectBuilderFactory obf;
+    private ProjectFormDefinitionClientResource formResource;
 
     public FormView(@Service ApplicationContext context,
-                    @Uses FormValue form,
+                    @Uses ProjectFormDefinitionClientResource formResource,
                     @Uses AdministrationView adminView)
     {
         super(new BorderLayout());
@@ -48,7 +49,14 @@ public class FormView
         ActionMap am = context.getActionMap(this);
 
         this.adminView = adminView;
-        this.form = form;
+        this.formResource = formResource;
+        try
+        {
+            this.form = formResource.form();
+        } catch (ResourceException e)
+        {
+            e.printStackTrace();
+        }
 
         JTextArea textArea = new JTextArea(form.note().get());
         textArea.setLineWrap(true);
@@ -61,31 +69,10 @@ public class FormView
     @org.jdesktop.application.Action
     public void edit()
     {
-        JPanel panel = new JPanel(new BorderLayout());
+        FormEditAdminView formEditAdminView = obf.newObjectBuilder(FormEditAdminView.class).
+                use(form, formResource).newInstance();
 
-        DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, panel);
-        ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
-        formBuilder.setLineGapSize(lineGap);
-
-        formBuilder.append("Description", new TextField(form.description().get()));
-        formBuilder.append("Note", new TextArea(form.note().get()));
-
-
-        formBuilder.append("", new JSeparator());
-
-        formBuilder.append("Field Value");
-        formBuilder.append("Field Name");
-
-        for (ListItemValue value : form.fields().get().items().get())
-        {
-            TextField textField = new TextField(value.description().get());
-            //fields.put(value.entity().get(), textField);
-            JComboBox box = new JComboBox();
-            box.setModel(new ValueDefinitionSelectionModel());
-            formBuilder.append(box, textField);
-        }
-
-        adminView.show( panel );
+        adminView.show( formEditAdminView );
     }
 
 }

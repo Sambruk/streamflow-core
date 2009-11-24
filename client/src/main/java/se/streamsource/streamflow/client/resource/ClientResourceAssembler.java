@@ -32,6 +32,8 @@ import se.streamsource.streamflow.client.resource.organizations.policy.Administr
 import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRoleClientResource;
@@ -131,6 +133,8 @@ public class ClientResourceAssembler
                 LabelClientResource.class,
                 ProjectFormDefinitionsClientResource.class,
                 ProjectFormDefinitionClientResource.class,
+                ProjectFormDefinitionFieldsClientResource.class,
+                ProjectFormDefinitionFieldClientResource.class,
 
                 OverviewClientResource.class,
                 OverviewProjectsClientResource.class,

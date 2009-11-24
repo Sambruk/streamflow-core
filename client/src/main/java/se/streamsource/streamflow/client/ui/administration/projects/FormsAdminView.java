@@ -17,10 +17,7 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.OperationException;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -58,16 +55,10 @@ public class FormsAdminView
 
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
-                        try
-                        {
-                            setRightComponent(
+                        setRightComponent(
                                 obf.newObjectBuilder(FormView.class).
-                                        use(formsView.getModel().getFormsResource().form(idx).form(),
-                                            adminView).newInstance());
-                        } catch (ResourceException e1)
-                        {
-                            throw new OperationException(AdministrationResources.could_not_get_form, e1);  
-                        }
+                                        use(formsView.getModel().getFormsResource().form(idx),
+                                                adminView).newInstance());
                     } else
                     {
                         setRightComponent(new JPanel());

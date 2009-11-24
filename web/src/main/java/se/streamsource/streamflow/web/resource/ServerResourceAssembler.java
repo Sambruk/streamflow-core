@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.resource.organizations.projects.ProjectSer
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
@@ -178,6 +179,7 @@ public class ServerResourceAssembler
                 MemberServerResource.class,
                 ProjectFormDefinitionsServerResource.class,
                 ProjectFormDefinitionServerResource.class,
+                ProjectFormDefinitionFieldServerResource.class,
 
                 RolesServerResource.class,
                 RoleServerResource.class,

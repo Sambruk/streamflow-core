@@ -12,34 +12,26 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.organizations.projects.forms;
+package se.streamsource.streamflow.client.resource.organizations.projects.forms.fields;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsClientResource;
-import se.streamsource.streamflow.domain.form.FormValue;
 
 /**
  * JAVADOC
  */
-public class ProjectFormDefinitionClientResource
+public class ProjectFormDefinitionFieldsClientResource
         extends CommandQueryClientResource
 {
-    public ProjectFormDefinitionClientResource(@Uses Context context, @Uses Reference reference)
+    public ProjectFormDefinitionFieldsClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
-    
-    public FormValue form() throws ResourceException
-    {
-        return query("form", FormValue.class);
-    }
 
-    public ProjectFormDefinitionFieldsClientResource fields()
+    public ProjectFormDefinitionFieldClientResource field(int index)
     {
-        return getSubResource("fields", ProjectFormDefinitionFieldsClientResource.class);
+        return getSubResource(""+index, ProjectFormDefinitionFieldClientResource.class);
     }
 }

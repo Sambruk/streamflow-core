@@ -82,7 +82,14 @@ public interface TestDataService
             cc.addParticipant(user);
 
             // Create form
-            ValueDefinition textValue = ou.createValueDefinition( "Textfield" );
+            ValueDefinition textValue = ou.createValueDefinition( "Text" );
+            ou.createValueDefinition("Number");
+            ou.createValueDefinition("Date");
+            ou.createValueDefinition("Single selection");
+            ou.createValueDefinition("Multi selection");
+            ou.createValueDefinition("Comment");
+            ou.createValueDefinition("Page break");
+
             FormTemplates forms = (FormTemplates) ou;
 
             ProjectRole agent = ou.createProjectRole("Agent");
@@ -110,9 +117,9 @@ public interface TestDataService
             Form addressForm = project.createForm();
             addressForm.changeDescription( "Address form" );
             addressForm.changeNote("Address form of the task");
-            addressForm.createField( "Street", textValue );
-            addressForm.createField( "Zip code", textValue );
-            addressForm.createField( "Town", textValue );
+            addressForm.createField( "Street", textValue ).changeNote("Street of the address. Note that it must only be the the street name of the address not the number");
+            addressForm.createField( "Zip code", textValue ).changeNote("This is the ZIP code of the resident");
+            addressForm.createField( "Town", textValue ).changeNote("Town of the address.");
 
             // Create labels
             project.createLabel().changeDescription("Question");
