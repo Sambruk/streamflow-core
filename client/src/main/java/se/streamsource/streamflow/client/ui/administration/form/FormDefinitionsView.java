@@ -20,13 +20,14 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -41,6 +42,9 @@ public class FormDefinitionsView
 
     @Uses
     Iterable<NameDialog> nameDialogs;
+
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
 
     public JList formList;
 
@@ -83,9 +87,14 @@ public class FormDefinitionsView
     @Action
     public void remove()
     {
-        ListItemValue selected = (ListItemValue) formList.getSelectedValue();
-        model.removeForm(selected.entity().get().identity());
-        model.refresh();
+        ConfirmationDialog dialog = confirmationDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
+        if(dialog.isConfirmed())
+        {
+            ListItemValue selected = (ListItemValue) formList.getSelectedValue();
+            model.removeForm(selected.entity().get().identity());
+            model.refresh();
+        }
     }
 
 }

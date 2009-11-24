@@ -29,8 +29,11 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AccountView;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.StreamFlowResources;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -64,6 +67,9 @@ public class AccountsDialog
 
     @Uses
     Iterable<CreateAccountDialog> createAccountDialog;
+
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
 
     AccountView accountView;
 
@@ -136,8 +142,13 @@ public class AccountsDialog
     @Action
     public void remove() throws UnitOfWorkCompletionException
     {
-        System.out.println("DeleteAccount invoked");
-        model.removeAccount(accountList.getSelectedIndex());
+        ConfirmationDialog dialog = confirmationDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
+        if(dialog.isConfirmed())
+        {
+            System.out.println("DeleteAccount invoked");
+            model.removeAccount(accountList.getSelectedIndex());
+        }
     }
 
 }

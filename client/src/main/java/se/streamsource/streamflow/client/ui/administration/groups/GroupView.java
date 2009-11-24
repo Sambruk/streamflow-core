@@ -22,7 +22,10 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -37,6 +40,9 @@ public class GroupView
 {
     @Service
     DialogService dialogs;
+
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
 
     @Uses
     ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
@@ -81,9 +87,14 @@ public class GroupView
     @Action
     public void remove() throws ResourceException
     {
-        ListItemValue value = (ListItemValue) participantList.getSelectedValue();
-        model.removeParticipant(value.entity().get().identity());
-        model.refresh();
+        ConfirmationDialog dialog = confirmationDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
+        if(dialog.isConfirmed())
+        {
+            ListItemValue value = (ListItemValue) participantList.getSelectedValue();
+            model.removeParticipant(value.entity().get().identity());
+            model.refresh();
+        }
     }
 
     public JList getParticipantList()

@@ -22,7 +22,10 @@ import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -39,6 +42,9 @@ public class AdministratorsView
 
     @Service
     DialogService dialogs;
+
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
 
     @Uses
     ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroupsDialogs;
@@ -83,7 +89,12 @@ public class AdministratorsView
     @Action
     public void remove()
     {
-        ListItemValue selected = (ListItemValue) administratorList.getSelectedValue();
-        model.removeAdministrator(selected.entity().get().identity());
+        ConfirmationDialog dialog = confirmationDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
+        if(dialog.isConfirmed())
+        {
+            ListItemValue selected = (ListItemValue) administratorList.getSelectedValue();
+            model.removeAdministrator(selected.entity().get().identity());
+        }
     }
 }

@@ -23,6 +23,9 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -37,6 +40,9 @@ public class FormsView
     public JList formList;
     private FormsModel model;
 
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
+    
     @Service
     DialogService dialogs;
 
@@ -80,11 +86,16 @@ public class FormsView
     @Action
     public void remove()
     {
-        ListItemValue selected = (ListItemValue) formList.getSelectedValue();
-        if (selected != null)
+        ConfirmationDialog dialog = confirmationDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
+        if(dialog.isConfirmed())
         {
-            model.removeForm(selected.entity().get());
-            formList.clearSelection();
+            ListItemValue selected = (ListItemValue) formList.getSelectedValue();
+            if (selected != null)
+            {
+                model.removeForm(selected.entity().get());
+                formList.clearSelection();
+            }
         }
     }
 

@@ -42,7 +42,7 @@ public class ProjectsView
     DialogService dialogs;
 
     @Uses
-    Iterable<ConfirmationDialog> confirmationDialogs;
+    Iterable<ConfirmationDialog> confirmationDialog;
 
     public JListPopup projectList;
 
@@ -87,7 +87,7 @@ public class ProjectsView
     @Action
     public void remove()
     {
-        ConfirmationDialog dialog = confirmationDialogs.iterator().next();
+        ConfirmationDialog dialog = confirmationDialog.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
         if(dialog.isConfirmed())
         {

@@ -25,10 +25,13 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.SelectOrganizationUsersDialog;
 import se.streamsource.streamflow.client.ui.administration.SelectOrganizationUsersDialogModel;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 
@@ -38,6 +41,9 @@ import java.awt.*;
 public class OrganizationUsersView
     extends JPanel
 {
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
+    
     @Structure
     ObjectBuilderFactory obf;
 
@@ -96,17 +102,22 @@ public class OrganizationUsersView
     @org.jdesktop.application.Action
     public void remove() throws ResourceException
     {
-        ListValueBuilder userList = new ListValueBuilder(vbf);
-        for( int index : participantList.getSelectedIndices())
+        ConfirmationDialog dialog = confirmationDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
+        if(dialog.isConfirmed())
         {
-            ListItemValue user = (ListItemValue) model.getElementAt(index);
-            userList.addListItem(user.description().get(), user.entity().get());
+            ListValueBuilder userList = new ListValueBuilder(vbf);
+            for( int index : participantList.getSelectedIndices())
+            {
+                ListItemValue user = (ListItemValue) model.getElementAt(index);
+                userList.addListItem(user.description().get(), user.entity().get());
+            }
+
+            model.getResource().leave(userList.newList());
+            model.refresh();
+
+            participantList.clearSelection();
         }
-
-        model.getResource().leave(userList.newList());
-        model.refresh();
-
-        participantList.clearSelection();
     }
 
     public JList getParticipantList()

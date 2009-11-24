@@ -20,11 +20,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.*;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -38,6 +37,9 @@ public class GroupsView
 {
     @Uses
     Iterable<NameDialog> nameDialogs;
+
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
 
     GroupsModel model;
 
@@ -89,8 +91,13 @@ public class GroupsView
     @Action
     public void remove()
     {
-        ListItemValue selected = (ListItemValue) groupList.getSelectedValue();
-        model.removeGroup(selected.entity().get().identity());
+        ConfirmationDialog dialog = confirmationDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
+        if(dialog.isConfirmed())
+        {
+            ListItemValue selected = (ListItemValue) groupList.getSelectedValue();
+            model.removeGroup(selected.entity().get().identity());
+        }
     }
 
     @Action

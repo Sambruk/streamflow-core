@@ -25,7 +25,10 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.StreamFlowResources;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,6 +42,9 @@ public class ProjectMembersView
 {
     @Service
     DialogService dialogs;
+
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
 
     @Uses
     ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
@@ -87,7 +93,9 @@ public class ProjectMembersView
     @Action
     public void remove()
     {
-        if (!membersList.isSelectionEmpty())
+        ConfirmationDialog dialog = confirmationDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
+        if(dialog.isConfirmed() && !membersList.isSelectionEmpty())
         {
             membersModel.removeMember(membersList.getSelectedIndex());
             membersModel.refresh();
