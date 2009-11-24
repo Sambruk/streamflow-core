@@ -37,7 +37,7 @@ import se.streamsource.streamflow.web.domain.task.WaitingFor;
 public interface UserEntity
         extends DomainEntity, User,
 
-        // State
+        // Data
         Inbox.Data,
         Assignments.Data,
         Delegations.Data,

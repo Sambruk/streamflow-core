@@ -30,7 +30,7 @@ import se.streamsource.streamflow.web.domain.project.AssignTaskIdSideEffect;
 @SideEffects(AssignTaskIdSideEffect.class)
 public interface TaskEntity
         extends Task,
-        // State
+        // Data
         Assignable.Data,
         Commentable.Data,
         Contacts.Data,

@@ -42,7 +42,7 @@ public interface ProjectEntity
         extends DomainEntity,
         Project,
 
-        // State
+        // Data
         InboxQueries,
         Inbox.Data,
         AssignmentsQueries,

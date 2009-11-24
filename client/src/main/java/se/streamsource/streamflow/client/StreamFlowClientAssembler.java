@@ -53,7 +53,7 @@ public class StreamFlowClientAssembler
     public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory) throws AssemblyException
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
-        assembly.setName("StreamFlow client");
+        assembly.setName("StreamFlowClient");
         assembly.setVersion("0.1");
 
         // Create layers

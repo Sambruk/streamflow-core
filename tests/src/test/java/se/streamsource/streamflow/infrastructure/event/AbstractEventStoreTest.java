@@ -14,11 +14,15 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.bootstrap.AssemblyException;
@@ -31,14 +35,16 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler
 /**
  * JAVADOC
  */
-public class MemoryEventStoreTest
+public abstract class AbstractEventStoreTest
     extends AbstractQi4jTest
 {
     public void assemble(ModuleAssembly module) throws AssemblyException
     {
+        module.layerAssembly().applicationAssembly().setMode( Application.Mode.test );
+
         new EntityTestAssembler().assemble(module);
         module.addValues(TransactionEvents.class, DomainEvent.class);
-        module.addServices( MemoryEventStoreService.class, DomainEventFactoryService.class);
+        module.addServices( DomainEventFactoryService.class);
         module.addObjects(getClass());
         module.addEntities(TestEntity.class);
     }
@@ -49,25 +55,60 @@ public class MemoryEventStoreTest
     @Service
     EventListener listener;
 
-    @Test
-    public void testEventStore() throws UnitOfWorkCompletionException
+    @Before
+    public void initStore() throws UnitOfWorkCompletionException
     {
-        objectBuilderFactory.newObjectBuilder(MemoryEventStoreTest.class).injectTo((this));
+        objectBuilderFactory.newObjectBuilder( AbstractEventStoreTest.class).injectTo((this));
 
+
+        for (int i = 0; i < 10; i++)
+            addEvent();
+    }
+
+    protected void addEvent()
+            throws UnitOfWorkCompletionException
+    {
         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-        TestEntity entity = uow.newEntity(TestEntity.class);
-        entity.somethingHappened(DomainEvent.CREATE, "foo");
+        TestEntity entity = uow.newEntity( TestEntity.class);
+        entity.somethingHappened( DomainEvent.CREATE, "foo");
         uow.complete();
+    }
+
+    @Test
+    public void getAllEvents() throws UnitOfWorkCompletionException
+    {
+        final int[] count = new int[1];
 
         eventStore.transactions(null, new TransactionHandler()
         {
             public boolean handleTransaction( TransactionEvents transaction )
             {
+                count[0]++;
                 System.out.println(transaction.toJSON());
 
                 return true;
             }
         });
+
+        Assert.assertThat( count[0], CoreMatchers.equalTo(10 ));
+    }
+
+    @Test
+    public void getHalfOfEvents() throws UnitOfWorkCompletionException
+    {
+        final int[] count = new int[1];
+
+        eventStore.transactions(null, new TransactionHandler()
+        {
+            public boolean handleTransaction( TransactionEvents transaction )
+            {
+                count[0]++;
+
+                return count[0] < 5;
+            }
+        });
+
+        Assert.assertThat( count[0], CoreMatchers.equalTo(5 ));
     }
 
     @Concerns(EventCreationConcern.class)

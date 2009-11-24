@@ -12,15 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.event;
+package se.streamsource.streamflow.infrastructure.event;
 
-import se.streamsource.streamflow.web.domain.DomainEntity;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
  * JAVADOC
  */
-interface TestEntity
-        extends DomainEntity, Tester, Tester.TestState
+public class MemoryEventStoreTest
+    extends AbstractEventStoreTest
 {
+    public void assemble(ModuleAssembly module) throws AssemblyException
+    {
+        super.assemble( module );
+        module.addServices( MemoryEventStoreService.class);
+    }
 }
-

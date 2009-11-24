@@ -52,7 +52,7 @@ public class StreamFlowWebAssembler
     public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory) throws AssemblyException
     {
         ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
-        assembly.setName("StreamFlow web");
+        assembly.setName("StreamFlowServer");
         assembly.setVersion("0.2.18.0");
         LayerAssembly configurationLayer = assembly.layerAssembly("Configuration");
         LayerAssembly domainInfrastructureLayer = assembly.layerAssembly("Domain infrastructure");

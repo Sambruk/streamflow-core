@@ -26,7 +26,7 @@ public interface EventStore
     /**
      * Get list of event transactions after the given timestamp. If they are on the exact same timestamp, they will not be included.
      *
-     * The method uses double-dispatch, so a handler is sent in which is given each transaction, one at a time.
+     * The method uses the visitor pattern, so a handler is sent in which is given each transaction, one at a time.
      *
      * @param afterTimestamp
      * @param handler

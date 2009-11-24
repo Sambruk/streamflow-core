@@ -78,6 +78,9 @@ public interface StatisticsService
         Qi4j api;
 
         @Service
+        EventStore eventStore;
+
+        @Service
         EventSource source;
 
         @Service
@@ -132,6 +135,8 @@ public interface StatisticsService
                     return false;
                 }
             }.withNames( "changedStatus", "statusChanged" );
+
+            eventsAvailable( eventStore );
         }
 
         public void passivate() throws Exception
@@ -202,29 +207,29 @@ public interface StatisticsService
                                 stmt.setTimestamp( idx++, new java.sql.Timestamp( domainEvent.on().get().getTime() ) );
                                 stmt.setLong( idx++, domainEvent.on().get().getTime() - task.createdOn().get().getTime() );
                                 Assignee assignee = task.assignedTo().get();
-                                stmt.setString( idx++, assignee == null ? "" : assignee.getDescription() );
+                                if (assignee == null)
+                                    continue;
+
+                                stmt.setString( idx++, assignee.getDescription() );
                                 stmt.setString( idx++, owner.getDescription() );
                                 ProjectOrganization.Data po = (ProjectOrganization.Data) owner;
                                 Describable.Data organizationalUnit = (Describable.Data) po.organizationalUnit().get();
 
                                 // Figure out which group the user belongs to
-                                if (assignee == null)
+                                Participation.Data participant = (Participation.Data) assignee;
+                                String groupName = null;
+                                findgroup:
+                                for (Group group : participant.groups())
                                 {
-                                    Participation.Data participant = (Participation.Data) assignee;
-                                    String groupName = null;
-                                    findgroup:
-                                    for (Group group : participant.groups())
+                                    Members.Data members = (Members.Data) owner;
+                                    if (members.members().contains( group ))
                                     {
-                                        Members.Data members = (Members.Data) owner;
-                                        if (members.members().contains( group ))
-                                        {
-                                            groupName = group.getDescription();
-                                            break findgroup;
-                                        }
+                                        groupName = group.getDescription();
+                                        break findgroup;
                                     }
-
-                                    stmt.setString( idx++, groupName );
                                 }
+
+                                stmt.setString( idx++, groupName );
 
                                 stmt.setString( idx, organizationalUnit.description().get() );
 

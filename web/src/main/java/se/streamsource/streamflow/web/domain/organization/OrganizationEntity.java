@@ -36,7 +36,7 @@ public interface OrganizationEntity
         // Roles
         Organization,
 
-        // State
+        // Data
         IdGenerator.Data,
         Roles.Data,
         FormTemplates.Data,

@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.infrastructure.configuration;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
@@ -39,9 +37,7 @@ import java.util.logging.Logger;
  * Services will most likely want to create their own subdirectories in the directories accessed
  * from here.
  */
-@Concerns({FileConfiguration.AutoCreateDirectoriesConcern.class,
-        FileConfiguration.DeleteTestDataConcern.class})
-@Mixins(FileConfiguration.FileConfigurationMixin.class)
+@Mixins(FileConfiguration.Mixin.class)
 public interface FileConfiguration
         extends ServiceComposite, Activatable
 {
@@ -62,7 +58,7 @@ public interface FileConfiguration
 
     File logDirectory();
 
-    interface FileState
+    interface Data
     {
         Property<OS> os();
 
@@ -79,28 +75,23 @@ public interface FileConfiguration
         Property<File> log();
     }
 
-    abstract class FileConfigurationMixin
+    abstract class Mixin
             implements FileConfiguration, Activatable
     {
         @This
-        FileState state;
+        Data data;
 
         @Uses
         ServiceDescriptor descriptor;
 
+        @Structure
+        Application app;
+
         public void activate() throws Exception
         {
-            String osName = System.getProperty("os.name").toLowerCase();
-            OS os;
-            if (osName.indexOf("win") != -1)
-                os = OS.windows;
-            else if (osName.indexOf("mac") != -1)
-                os = OS.mac;
-            else
-                os = OS.unix;
+            OS os = detectOS();
 
-            state.os().set(os);
-
+            data.os().set(os);
             Logger.getLogger(getClass().getName()).info("Operating system:" + os.name());
 
             // Get bundle with application name and configured directories
@@ -109,9 +100,9 @@ public interface FileConfiguration
                 user = System.getProperty("user.home");
             ResourceBundle bundle = ResourceBundle.getBundle(FileConfiguration.class.getName(), new Locale(os.name()));
 
-            // Set application name. This is taken from the bundle but can be overriden by a system property
-            String application = System.getProperty("application", bundle.getString("application"));
-            state.application().set(application);
+            // Set application name. This is taken from the Qi4j application but can be overriden by a system property
+            String application = System.getProperty("application", app.name() );
+            data.application().set(application);
 
             // Temp dir
             String temp = System.getProperty("java.io.tmpdir");
@@ -119,114 +110,71 @@ public interface FileConfiguration
             // Arguments available to use in directory specifications
             String[] args = new String[]{application, user, os.name(), temp};
 
-            state.configuration().set(new File(MessageFormat.format(bundle.getString("configuration"), args)));
-            state.data().set(new File(MessageFormat.format(bundle.getString("data"), args)));
-            state.temporary().set(new File(MessageFormat.format(bundle.getString("temporary"), args)));
-            state.cache().set(new File(MessageFormat.format(bundle.getString("cache"), args)));
-            state.log().set(new File(MessageFormat.format(bundle.getString("log"), args)));
+            data.configuration().set(new File(MessageFormat.format(bundle.getString("configuration"), args)));
+            data.data().set(new File(MessageFormat.format(bundle.getString("data"), args)));
+            data.temporary().set(new File(MessageFormat.format(bundle.getString("temporary"), args)));
+            data.cache().set(new File(MessageFormat.format(bundle.getString("cache"), args)));
+            data.log().set(new File(MessageFormat.format(bundle.getString("log"), args)));
+
+            autoCreateDirectories();
+
+            testCleanup();
         }
 
         public void passivate() throws Exception
         {
+            testCleanup();
         }
 
         public OS os()
         {
-            return state.os().get();
+            return data.os().get();
         }
 
         public File configurationDirectory()
         {
-            return state.configuration().get();
+            return data.configuration().get();
         }
 
         public File dataDirectory()
         {
-            return state.data().get();
+            return data.data().get();
         }
 
         public File temporaryDirectory()
         {
-            return state.temporary().get();
+            return data.temporary().get();
         }
 
         public File cacheDirectory()
         {
-            return state.cache().get();
+            return data.cache().get();
         }
 
         public File logDirectory()
         {
-            return state.log().get();
-        }
-    }
-
-    class AutoCreateDirectoriesConcern
-            extends ConcernOf<Activatable>
-            implements Activatable
-    {
-        @Structure
-        Application application;
-
-        @This
-        FileConfiguration config;
-
-        public void activate() throws Exception
-        {
-            next.activate();
-
-            if (application.mode().equals(Application.Mode.production))
-            {
-                // Create directories
-                if (!config.configurationDirectory().mkdirs())
-                    throw new IllegalStateException("Could not create configuration directory(" + config.configurationDirectory() + ")");
-                if (!config.dataDirectory().mkdirs())
-                    throw new IllegalStateException("Could not create data directory(" + config.dataDirectory() + ")");
-                if (!config.temporaryDirectory().mkdirs())
-                    throw new IllegalStateException("Could not create temporary directory(" + config.temporaryDirectory() + ")");
-                if (!config.cacheDirectory().mkdirs())
-                    throw new IllegalStateException("Could not create cache directory(" + config.cacheDirectory() + ")");
-                if (!config.logDirectory().mkdirs())
-                    throw new IllegalStateException("Could not create log directory(" + config.logDirectory() + ")");
-            }
+            return data.log().get();
         }
 
-        public void passivate() throws Exception
+        private void testCleanup()
         {
-            next.passivate();
-        }
-    }
-
-    class DeleteTestDataConcern
-            extends ConcernOf<Activatable>
-            implements Activatable
-    {
-        @Structure
-        Application application;
-
-        @This
-        FileConfiguration config;
-
-        public void activate() throws Exception
-        {
-            next.activate();
-        }
-
-        public void passivate() throws Exception
-        {
-            if (application.mode().equals(Application.Mode.test))
+            if (app.mode().equals(Application.Mode.test))
             {
                 // Delete test data
-                delete(config.configurationDirectory());
-                delete(config.dataDirectory());
-                delete(config.temporaryDirectory());
-                delete(config.cacheDirectory());
-                delete(config.logDirectory());
+                delete(configurationDirectory());
+                delete(dataDirectory());
+                delete(temporaryDirectory());
+                delete(cacheDirectory());
+                delete(logDirectory());
             }
         }
+
 
         private boolean delete(File file)
         {
+            if (!file.exists())
+                return true;
+
             if (file.isFile())
             {
                 return file.delete();
@@ -241,5 +189,34 @@ public interface FileConfiguration
                 return file.delete();
             }
         }
+
+        private OS detectOS()
+        {
+            String osName = System.getProperty("os.name").toLowerCase();
+            OS os;
+            if (osName.indexOf("win") != -1)
+                os = OS.windows;
+            else if (osName.indexOf("mac") != -1)
+                os = OS.mac;
+            else
+                os = OS.unix;
+            return os;
+        }
+
+        private void autoCreateDirectories()
+        {
+            // Create directories
+            if (!configurationDirectory().exists() && !configurationDirectory().mkdirs())
+                throw new IllegalStateException("Could not create configuration directory(" + configurationDirectory() + ")");
+            if (!dataDirectory().exists() && !dataDirectory().mkdirs())
+                throw new IllegalStateException("Could not create data directory(" + dataDirectory() + ")");
+            if (!temporaryDirectory().exists() && !temporaryDirectory().mkdirs())
+                throw new IllegalStateException("Could not create temporary directory(" + temporaryDirectory() + ")");
+            if (!cacheDirectory().exists() && !cacheDirectory().mkdirs())
+                throw new IllegalStateException("Could not create cache directory(" + cacheDirectory() + ")");
+            if (!logDirectory().exists() && !logDirectory().mkdirs())
+                throw new IllegalStateException("Could not create log directory(" + logDirectory() + ")");
+        }
+
     }
 }
