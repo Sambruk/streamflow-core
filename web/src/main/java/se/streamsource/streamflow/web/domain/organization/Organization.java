@@ -16,7 +16,6 @@ package se.streamsource.streamflow.web.domain.organization;
 
 import se.streamsource.streamflow.web.domain.form.FieldTemplates;
 import se.streamsource.streamflow.web.domain.form.FormTemplates;
-import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
 import se.streamsource.streamflow.web.domain.role.Roles;
 
@@ -28,7 +27,6 @@ public interface Organization
         Roles,
         FormTemplates,
         FieldTemplates,
-        ValueDefinitions,
         IdGenerator
 {
 }

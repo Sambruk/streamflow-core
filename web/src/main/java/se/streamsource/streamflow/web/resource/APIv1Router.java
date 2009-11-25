@@ -48,6 +48,7 @@ import se.streamsource.streamflow.web.resource.organizations.projects.ProjectSer
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
@@ -108,7 +109,7 @@ public class APIv1Router
         attach("/organizations/{organization}/projects/{labels}/labels/{label}", createServerResourceFinder(LabelServerResource.class));
         attach("/organizations/{organization}/projects/{project}/forms", createServerResourceFinder( ProjectFormDefinitionsServerResource.class));
         attach("/organizations/{organization}/projects/{project}/forms/{index}", createServerResourceFinder( ProjectFormDefinitionServerResource.class));
-        //attach("/organizations/{organization}/projects/{project}/forms/{index}/fields", createServerResourceFinder( ProjectFormDefinitionServerResource.class));
+        attach("/organizations/{organization}/projects/{project}/forms/{index}/fields", createServerResourceFinder( ProjectFormDefinitionFieldsServerResource.class));
         attach("/organizations/{organization}/projects/{project}/forms/{index}/fields/{fieldIndex}", createServerResourceFinder( ProjectFormDefinitionFieldServerResource.class));
         attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
         attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RoleServerResource.class));

@@ -17,11 +17,15 @@ package se.streamsource.streamflow.client.application.shared.steps;
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.form.Field;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.domain.form.Forms;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
 
 /**
  * JAVADOC
@@ -33,9 +37,6 @@ public class FormsSteps
     GenericSteps genericSteps;
 
     @Uses
-    ValueDefinitionsSteps valueSteps;
-
-    @Uses
     OrganizationsSteps orgsSteps;
 
     @Uses
@@ -43,6 +44,9 @@ public class FormsSteps
 
     @Uses
     ProjectsSteps projectSetupSteps;
+
+    @Structure
+    ValueBuilderFactory vbf;
 
     public FormEntity givenForm;
 
@@ -84,7 +88,9 @@ public class FormsSteps
     @When("a field named $name is added to form")
     public void createField( String someField )
     {
-        givenForm.createField( someField, valueSteps.givenValue );
+        ValueBuilder<TextFieldValue> builder = vbf.newValueBuilder(TextFieldValue.class);
+        builder.prototype().width().set(30);
+        givenForm.createField( someField, builder.newInstance() );
     }
 
     @When("a field named $name is removed from form")

@@ -17,7 +17,9 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,16 +32,25 @@ public class FieldsView
 {
     private JList fieldList;
 
+    @Service
+    DialogService dialogs;
+
+    @Uses
+    Iterable<FieldCreationDialog> fieldCreationDialog;
+    private FieldsModel model;
 
     public FieldsView(@Service ApplicationContext context,
                       @Uses FieldsModel model)
     {
+        this.model = model;
         JPanel panel = new JPanel(new BorderLayout());
         ActionMap am = context.getActionMap(this);
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("add")));
         toolbar.add(new JButton(am.get("remove")));
+        toolbar.add(new JButton(am.get("up")));
+        toolbar.add(new JButton(am.get("down")));
 
         model.refresh();
         fieldList = new JList(model);
@@ -49,17 +60,35 @@ public class FieldsView
         panel.add(toolbar, BorderLayout.SOUTH);
 
         setViewportView(panel);
+        fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+        fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("up")));
+        fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("down")));
     }
 
     @org.jdesktop.application.Action
     public void add()
     {
+        FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
+        dialogs.showOkCancelHelpDialog(this, dialog, "Add new field to form");
 
+        model.addField(dialog.getName(), dialog.getFieldType());
     }
 
 
     @org.jdesktop.application.Action
     public void remove()
+    {
+        // remove the field
+    }
+
+    @org.jdesktop.application.Action
+    public void up()
+    {
+
+    }
+
+    @org.jdesktop.application.Action
+    public void down()
     {
 
     }

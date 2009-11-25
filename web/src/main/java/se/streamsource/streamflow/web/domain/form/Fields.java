@@ -21,7 +21,9 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.library.constraints.annotation.GreaterThan;
+import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
@@ -31,7 +33,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Fields.Mixin.class)
 public interface Fields
 {
-    FieldEntity createField( String name, ValueDefinition value );
+    FieldEntity createField( String name, FieldValue fieldValue );
     void removeField( Field field);
     void moveField( Field field, @GreaterThan(-1) Integer toIdx);
 
@@ -39,7 +41,7 @@ public interface Fields
     {
         ManyAssociation<Field> fields();
 
-        FieldEntity createdField( DomainEvent event, String id, ValueDefinition value );
+        FieldEntity createdField( DomainEvent event, String id, FieldValue value );
         void removedField(DomainEvent event, Field field);
         void movedField(DomainEvent event, Field field, int toIdx);
 
@@ -55,9 +57,12 @@ public interface Fields
         @Structure
         UnitOfWorkFactory uowf;
 
-        public FieldEntity createField( String name, ValueDefinition value )
+        @Structure
+        ValueBuilderFactory vbf;
+
+        public FieldEntity createField( String name, FieldValue fieldValue )
         {
-            FieldEntity field = createdField(DomainEvent.CREATE, idGen.generate( FieldEntity.class ), value);
+            FieldEntity field = createdField(DomainEvent.CREATE, idGen.generate( FieldEntity.class ), fieldValue);
             field.changeDescription( name );
             return field;
         }
@@ -88,10 +93,12 @@ public interface Fields
             return null;
         }
 
-        public FieldEntity createdField( DomainEvent event, String id, ValueDefinition value )
+        public FieldEntity createdField( DomainEvent event, String id, FieldValue fieldValue )
         {
+
             EntityBuilder<FieldEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FieldEntity.class, id );
-            builder.instance().valueDefinition().set( value );
+            builder.instance().fieldValue().set(fieldValue);
+
             FieldEntity field = builder.newInstance();
 
             fields().add( field );

@@ -12,21 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import org.qi4j.api.property.Property;
 
 /**
  * JAVADOC
  */
-public class FieldEditModel
+public interface TextFieldValue
+    extends FieldValue
 {
-    @Uses
-    FieldDefinitionValue value;
-
-    public FieldDefinitionValue getField()
-    {
-        return value;
-    }
+    Property<Integer> width();
 }

@@ -16,9 +16,11 @@ package se.streamsource.streamflow.web.resource.organizations.projects.forms.fie
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.CreateFieldDTO;
+import se.streamsource.streamflow.domain.form.FieldTypes;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.web.domain.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -27,18 +29,16 @@ import java.util.List;
 
 /**
  * Mapped to:
- * /organizations/{organization}/projects/{project}/forms/{index}/fields/{fieldIndex}
+ * /organizations/{organization}/projects/{project}/forms/{index}/fields
  */
-public class ProjectFormDefinitionFieldServerResource
+public class ProjectFormDefinitionFieldsServerResource
         extends CommandQueryServerResource
 {
-    public FieldDefinitionValue field()
+    public void addField(CreateFieldDTO createFieldDTO)
     {
         String identity = getRequest().getAttributes().get("project").toString();
 
         String index = getRequest().getAttributes().get("index").toString();
-
-        String fieldIndex = getRequest().getAttributes().get("fieldIndex").toString();
 
         UnitOfWork uow = uowf.currentUnitOfWork();
 
@@ -52,14 +52,27 @@ public class ProjectFormDefinitionFieldServerResource
 
         FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
 
-        FieldEntity field = (FieldEntity) form.fields().get(Integer.parseInt(fieldIndex));
+        form.createField(createFieldDTO.name().get(), getFieldValue(createFieldDTO.fieldType().get()));
+    }
 
-        ValueBuilder<FieldDefinitionValue> builder = vbf.newValueBuilder(FieldDefinitionValue.class);
+    private FieldValue getFieldValue(FieldTypes fieldType)
+    {
+        TextFieldValue value = null;
+        switch (fieldType)
+        {
+            case text:
+                ValueBuilder<TextFieldValue> valueBuilder = vbf.newValueBuilder(TextFieldValue.class);
+                valueBuilder.prototype().width().set(30);
+                value = valueBuilder.newInstance();
+                break;
+            case number:
+            case date:
+            case single_selection:
+            case multi_selection:
+            case comment:
+            case page_break:
 
-        builder.prototype().note().set(field.note().get());
-        builder.prototype().description().set(field.description().get());
-        builder.prototype().fieldValue().set(field.fieldValue().get());
-
-        return builder.newInstance();
+        }
+        return value;
     }
 }

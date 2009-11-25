@@ -18,12 +18,7 @@ import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.web.domain.form.FieldTemplates;
-import se.streamsource.streamflow.web.domain.form.FieldDefinitionsQueries;
-import se.streamsource.streamflow.web.domain.form.FormTemplates;
-import se.streamsource.streamflow.web.domain.form.FormQueries;
-import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
-import se.streamsource.streamflow.web.domain.form.ValueDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.form.*;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
 import se.streamsource.streamflow.web.domain.role.Roles;
 
@@ -43,8 +38,6 @@ public interface OrganizationEntity
         FormQueries,
         FieldTemplates.Data,
         FieldDefinitionsQueries,
-        ValueDefinitions.Data,
-        ValueDefinitionsQueries,
 
         //Queries
         OrganizationParticipationsQueries,

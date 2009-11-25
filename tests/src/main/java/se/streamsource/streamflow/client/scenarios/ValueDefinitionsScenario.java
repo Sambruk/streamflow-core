@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.scenarios;
 
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
@@ -35,7 +34,6 @@ public class ValueDefinitionsScenario
     {
         super(classLoader, new TestSetupSteps(),
                 new OrganizationsSteps(),
-                new OrganizationalUnitsSteps(),
-                new ValueDefinitionsSteps());
+                new OrganizationalUnitsSteps());
     }
 }

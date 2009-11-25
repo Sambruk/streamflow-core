@@ -23,7 +23,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.form.SubmittedForms;
@@ -65,7 +65,7 @@ public class SubmittedFormsSteps
     @When("field $name with value $value is added to form")
     public void addFieldValueToForm(String field, String value)
     {
-        ValueBuilder<FieldValue> builder = vbf.newValueBuilder( FieldValue.class );
+        ValueBuilder<SubmittedFieldValue> builder = vbf.newValueBuilder( SubmittedFieldValue.class );
 
         FieldEntity entity = formsSteps.givenForm.getFieldByName( field );
         builder.prototype().field().set( EntityReference.getEntityReference( entity ));

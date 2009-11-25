@@ -23,7 +23,7 @@ import java.util.Date;
  * JAVADOC
  */
 public interface EffectiveFieldValue
-    extends FieldValue
+    extends SubmittedFieldValue
 {
     Property<EntityReference> submitter();
     Property<Date> submissionDate();

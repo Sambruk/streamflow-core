@@ -17,12 +17,15 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.domain.form.CreateFieldDTO;
+import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
@@ -70,18 +73,21 @@ public class FieldsModel
         }
     }
 
-    public void addField(EntityReference field)
+    public void addField(String name, FieldTypes fieldType)
     {
-        /*
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(form);
+
+        ValueBuilder<CreateFieldDTO> builder = vbf.newValueBuilder(CreateFieldDTO.class);
+        builder.prototype().name().set(name);
+        builder.prototype().fieldType().set(fieldType);
+
         try
         {
             formResource.fields().addField(builder.newInstance());
+            refresh();
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_add_form_definition, e);
-        }*/
+            throw new OperationException(AdministrationResources.could_not_add_field, e);
+        }
     }
 
     public void removeField(EntityReference field)

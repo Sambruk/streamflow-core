@@ -32,7 +32,6 @@ public class SubmittedFormsQueriesScenario
     public SubmittedFormsQueriesScenario(ClassLoader classLoader)
     {
         super(classLoader, new TestSetupSteps(),
-                new ValueDefinitionsSteps(),
                 new FieldDefinitionsSteps(),
                 new FormTemplateSteps(),
                 new FormTemplatesSteps(),

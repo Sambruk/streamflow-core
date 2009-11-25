@@ -15,12 +15,13 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.ConstantSize;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.FieldTypes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,53 +29,33 @@ import java.awt.*;
 /**
  * JAVADOC
  */
-public class FieldEditView
+public class ValueDefinitionNumberEditView
     extends JScrollPane
 {
 
 
-    public FieldEditView(@Service ApplicationContext context,
-                         @Uses FieldEditModel model)
+    public ValueDefinitionNumberEditView(@Service ApplicationContext context,
+                                         @Uses FieldEditModel model)
     {
         JPanel panel = new JPanel(new BorderLayout());
-        ActionMap am = context.getActionMap(this);
 
         JPanel fieldPanel = new JPanel();
-        model.refresh();
         FieldDefinitionValue value = model.getField();
 
         FormLayout formLayout = new FormLayout(
                 "pref, 4dlu, 150dlu","");
 
         DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, fieldPanel);
-        ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
-        formBuilder.setLineGapSize(lineGap);
 
-        formBuilder.append("Value Definition:", new JLabel(value.valueDefinition().get()));
-        formBuilder.append("Description", new TextField(value.description().get()));
+        formBuilder.append("Type:", new JLabel(i18n.text(FieldTypes.number)));
+        formBuilder.append("Mandatory", new Checkbox());
+        formBuilder.append("Name", new TextField(value.description().get()));
         TextArea textArea = new TextArea(value.note().get());
         //textArea.setLineWrap(true);
         //textArea.setWrapStyleWord(true);
-        formBuilder.append("Note", textArea);
+        formBuilder.append("Description", textArea);
         panel.add(fieldPanel, BorderLayout.CENTER);
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("add")));
-        toolbar.add(new JButton(am.get("remove")));
-        panel.add(toolbar, BorderLayout.SOUTH);
-
         setViewportView(panel);
-    }
-
-    @org.jdesktop.application.Action
-    public void add()
-    {
-        
-    }
-
-    @org.jdesktop.application.Action
-    public void remove()
-    {
-
     }
 }

@@ -12,17 +12,18 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.form;
+package se.streamsource.streamflow.domain.form;
 
-import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.web.domain.DomainEntity;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC
  */
-public interface ValueDefinitionEntity
-    extends ValueDefinition,
-        Describable.Data,
-        DomainEntity
+public interface SubmittedFieldValue
+    extends ValueComposite
 {
+    Property<EntityReference> field();
+    Property<String> value();
 }

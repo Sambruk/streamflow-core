@@ -12,21 +12,18 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC
  */
-public class FieldEditModel
+public interface CreateFieldDTO
+    extends ValueComposite
 {
-    @Uses
-    FieldDefinitionValue value;
+    Property<String> name();
 
-    public FieldDefinitionValue getField()
-    {
-        return value;
-    }
+    Property<FieldTypes> fieldType();
 }

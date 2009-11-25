@@ -30,5 +30,5 @@ public interface SubmitFormDTO
     Property<EntityReference> form();
 
     @UseDefaults
-    Property<List<FieldValue>> values();
+    Property<List<SubmittedFieldValue>> values();
 }

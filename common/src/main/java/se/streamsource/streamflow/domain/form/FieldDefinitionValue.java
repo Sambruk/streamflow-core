@@ -25,5 +25,5 @@ public interface FieldDefinitionValue
 {
     Property<String> description();
     Property<String> note();
-    Property<String> valueDefinition();
+    Property<FieldValue> fieldValue();
 }

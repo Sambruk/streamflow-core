@@ -16,8 +16,10 @@ package se.streamsource.streamflow.client.resource.organizations.projects.forms.
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
+import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 
 /**
  * JAVADOC
@@ -33,5 +35,10 @@ public class ProjectFormDefinitionFieldsClientResource
     public ProjectFormDefinitionFieldClientResource field(int index)
     {
         return getSubResource(""+index, ProjectFormDefinitionFieldClientResource.class);
+    }
+
+    public void addField(CreateFieldDTO createFieldDTO) throws ResourceException
+    {
+        putCommand("addField", createFieldDTO);
     }
 }

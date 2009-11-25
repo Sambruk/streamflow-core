@@ -35,7 +35,7 @@ public interface FieldSynchronization
         public void copyFromTemplate( Field templateField )
         {
             FieldValueDefinition.Data templateFieldValue = (FieldValueDefinition.Data) templateField;
-            fieldValue.changedValueDefinition( DomainEvent.CREATE, templateFieldValue.valueDefinition().get());
+            fieldValue.changedFieldValue( DomainEvent.CREATE, templateFieldValue.fieldValue().get());
         }
     }
 }

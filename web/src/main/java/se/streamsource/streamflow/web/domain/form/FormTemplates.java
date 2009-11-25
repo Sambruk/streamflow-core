@@ -69,7 +69,7 @@ public interface FormTemplates
 
             for (Field field : form.fields())
             {
-                FieldEntity templateField = template.createField( field.getDescription(), ((FieldValueDefinition.Data)field).valueDefinition().get() );
+                FieldEntity templateField = template.createField( field.getDescription(), ((FieldValueDefinition.Data)field).fieldValue().get() );
                 templateField.copyFromTemplate( field );
             }
 

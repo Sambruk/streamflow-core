@@ -25,7 +25,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 
 
@@ -77,7 +77,7 @@ public interface SubmittedForms
                 fieldBuilder.prototype().submissionDate().set( submittedFormValue.submissionDate().get() );
                 fieldBuilder.prototype().submitter().set( submittedFormValue.submitter().get() );
 
-                for (FieldValue fieldValue : submittedFormValue.values().get())
+                for (SubmittedFieldValue fieldValue : submittedFormValue.values().get())
                 {
                     fieldBuilder.prototype().field().set( fieldValue.field().get() );
                     fieldBuilder.prototype().value().set( fieldValue.value().get() );

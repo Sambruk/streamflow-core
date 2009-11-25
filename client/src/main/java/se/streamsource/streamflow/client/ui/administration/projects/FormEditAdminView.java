@@ -15,12 +15,14 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.ConstantSize;
 import com.jgoodies.forms.layout.FormLayout;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
+import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.FormValue;
 
 import javax.swing.*;
@@ -49,11 +51,9 @@ public class FormEditAdminView
         JPanel leftPanel = new JPanel(new BorderLayout());
 
         DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, leftPanel);
-        ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
-        formBuilder.setLineGapSize(lineGap);
 
-        formBuilder.append("Description", new TextField(form.description().get()));
-        formBuilder.append("Note", new TextArea(form.note().get()));
+        formBuilder.append("Name", new TextField(form.description().get()));
+        formBuilder.append("Description", new TextArea(form.note().get()));
 
         formBuilder.append("Fields", fieldsView);
 
@@ -76,9 +76,54 @@ public class FormEditAdminView
 
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
-                        setRightComponent(
-                                obf.newObjectBuilder(FieldEditView.class).
-                                        use(formResource.fields().field(idx)).newInstance());
+                        try
+                        {
+                            FieldDefinitionValue definitionValue = formResource.fields().field(idx).field();
+                            FieldValue value = definitionValue.fieldValue().get();
+                            setRightComponent(
+                                    obf.newObjectBuilder(ValueDefinitionTextEditView.class).
+                                            use(definitionValue).newInstance());
+
+                            /*
+                            if (value instanceof TextFieldValue)
+                            {
+                                setRightComponent(
+                                        obf.newObjectBuilder(ValueDefinitionTextEditView.class).
+                                                use(definitionValue).newInstance());
+                            } else if (value instanceof FieldValue)
+                            {
+                                setRightComponent(
+                                        obf.newObjectBuilder(ValueDefinitionNumberEditView.class).
+                                                use(definitionValue).newInstance());
+                            } else if (value instanceof FieldValue)
+                            {
+                                setRightComponent(
+                                        obf.newObjectBuilder(ValueDefinitionDateEditView.class).
+                                                use(definitionValue).newInstance());
+                            } else if (value instanceof FieldValue)
+                            {
+                                setRightComponent(
+                                        obf.newObjectBuilder(ValueDefinitionSingleSelectionEditView.class).
+                                                use(definitionValue).newInstance());
+                            } else if (value instanceof FieldValue)
+                            {
+                                setRightComponent(
+                                        obf.newObjectBuilder(ValueDefinitionMultiSelectionEditView.class).
+                                                use(definitionValue).newInstance());
+                            } else if (value instanceof FieldValue)
+                            {
+                                setRightComponent(
+                                        obf.newObjectBuilder(ValueDefinitionCommentEditView.class).
+                                                use(definitionValue).newInstance());
+                            } else
+                            {
+                                setRightComponent(new JPanel());
+                            }*/
+
+                        } catch (ResourceException e1)
+                        {
+                            e1.printStackTrace();
+                        }
                     } else
                     {
                         setRightComponent(new JPanel());

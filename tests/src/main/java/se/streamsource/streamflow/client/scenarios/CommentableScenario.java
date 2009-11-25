@@ -28,7 +28,6 @@ import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSt
 import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
-import se.streamsource.streamflow.client.application.shared.steps.ValueDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
@@ -49,7 +48,6 @@ public class CommentableScenario
         super(classLoader,
                 new CommentableSteps(),
                 new TestSetupSteps(),
-                new ValueDefinitionsSteps(),
                 new FieldDefinitionsSteps(),
                 new FormTemplateSteps(),
                 new FormTemplatesSteps(),

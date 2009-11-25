@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -30,14 +31,14 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(FieldTemplates.Mixin.class)
 public interface FieldTemplates
 {
-    FieldEntity createFieldTemplate(String name, ValueDefinition valueDefinition);
+    FieldEntity createFieldTemplate(String name, FieldValue valueDefinition);
     void removeFieldDefinition( Field field);
 
     interface Data
     {
         ManyAssociation<FieldEntity> fieldDefinitions();
 
-        FieldEntity createdFieldDefinition( DomainEvent event, String id, ValueDefinition valueDefinition);
+        FieldEntity createdFieldDefinition( DomainEvent event, String id, FieldValue valueDefinition);
         void addedFieldDefinition( DomainEvent event, FieldEntity field);
         void removedFieldDefinition( DomainEvent event, Field field);
 
@@ -53,7 +54,7 @@ public interface FieldTemplates
         @Structure
         UnitOfWorkFactory uowf;
 
-        public FieldEntity createFieldTemplate( String name, ValueDefinition valueDefinition )
+        public FieldEntity createFieldTemplate( String name, FieldValue valueDefinition )
         {
             String id = idGen.generate( FieldEntity.class );
 
@@ -64,11 +65,11 @@ public interface FieldTemplates
             return field;
         }
 
-        public FieldEntity createdFieldDefinition( DomainEvent event, String id, ValueDefinition valueDefinition )
+        public FieldEntity createdFieldDefinition( DomainEvent event, String id, FieldValue valueDefinition )
         {
             EntityBuilder<FieldEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FieldEntity.class, id );
 
-            builder.instance().valueDefinition().set( valueDefinition );
+            builder.instance().fieldValue().set( valueDefinition );
 
             return builder.newInstance();
         }

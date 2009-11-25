@@ -23,7 +23,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -86,8 +86,8 @@ public class FormSubmitView
     public SubmitFormDTO getSubmitFormDTO()
     {
         ValueBuilder<SubmitFormDTO> submittedFormBuilder = vbf.newValueBuilder(SubmitFormDTO.class);
-        ValueBuilder<FieldValue> fieldBuilder =vbf.newValueBuilder(FieldValue.class);
-        java.util.List<FieldValue> fields = new ArrayList<FieldValue>();
+        ValueBuilder<SubmittedFieldValue> fieldBuilder =vbf.newValueBuilder(SubmittedFieldValue.class);
+        java.util.List<SubmittedFieldValue> fields = new ArrayList<SubmittedFieldValue>();
 
         for (Map.Entry<EntityReference, TextField> stringComponentEntry : this.fields.entrySet())
         {

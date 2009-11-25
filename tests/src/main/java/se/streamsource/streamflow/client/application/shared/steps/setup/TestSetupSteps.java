@@ -64,10 +64,6 @@ public class TestSetupSteps
 
     @Optional
     @Uses
-    ValueDefinitionsSteps valueDefinitionsSteps;
-
-    @Optional
-    @Uses
     FieldDefinitionsSteps fieldDefinitionsSteps;
 
     @Optional
@@ -140,15 +136,12 @@ public class TestSetupSteps
     @Given("basic form setup")
     public void setupForms() throws Exception
     {
-        valueDefinitionsSteps.createValue( SOME_VALUE );
         ouSteps.givenOrganization();
         ouSteps.givenOU( OU1 );
         projectsSteps.givenProject( PROJECT1 );
 
         formsSteps.createForm( SOME_FORM);
-        fieldDefinitionsSteps.createField( SOME_FIELD, SOME_VALUE );
         formsSteps.createField(SOME_FIELD );
-        fieldDefinitionsSteps.createField( SOME_FIELD2, SOME_VALUE );
         formsSteps.createField(SOME_FIELD);
 
         ouSteps.givenOrganization();

@@ -65,7 +65,7 @@ public interface FormTemplateReference
             Fields.Data templateFields = (Fields.Data) template().get();
             for (Field templateField : templateFields.fields())
             {
-                FieldEntity field = fields.createField( templateField.getDescription(), ((FieldValueDefinition.Data) templateField).valueDefinition().get() );
+                FieldEntity field = fields.createField( templateField.getDescription(), ((FieldValueDefinition.Data) templateField).fieldValue().get() );
                 field.copyFromTemplate(templateField);
             }
             // TODO What else should be copied? Description? Note?

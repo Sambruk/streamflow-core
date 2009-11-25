@@ -22,15 +22,15 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.web.domain.form.Field;
 import se.streamsource.streamflow.web.domain.form.Form;
 import se.streamsource.streamflow.web.domain.form.FormTemplates;
-import se.streamsource.streamflow.web.domain.form.ValueDefinition;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
@@ -81,15 +81,6 @@ public interface TestDataService
 
             cc.addParticipant(user);
 
-            // Create form
-            ValueDefinition textValue = ou.createValueDefinition( "Text" );
-            ou.createValueDefinition("Number");
-            ou.createValueDefinition("Date");
-            ou.createValueDefinition("Single selection");
-            ou.createValueDefinition("Multi selection");
-            ou.createValueDefinition("Comment");
-            ou.createValueDefinition("Page break");
-
             FormTemplates forms = (FormTemplates) ou;
 
             ProjectRole agent = ou.createProjectRole("Agent");
@@ -105,21 +96,23 @@ public interface TestDataService
             Form commentForm = project.createForm();
             commentForm.changeDescription( "CommentForm" );
             commentForm.changeNote("This is a comment form. Use it to capture any comments related to the current task.");
-            Field commentField = commentForm.createField( "Comment", textValue );
+            ValueBuilder<TextFieldValue> builder = vbf.newValueBuilder(TextFieldValue.class);
+            builder.prototype().width().set(30);
+            Field commentField = commentForm.createField( "Comment", builder.newInstance());
 
             Form statusForm = project.createForm();
             statusForm.changeDescription("StatusForm");
             statusForm.changeNote("This is the Status form. \nWhen urgencies occur please upgrade the status of the current task");
-            Field statusField = statusForm.createField( "Status", textValue );
+            Field statusField = statusForm.createField( "Status", builder.newInstance() );
 
             ou.createFormTemplate( commentForm );
 
             Form addressForm = project.createForm();
             addressForm.changeDescription( "Address form" );
             addressForm.changeNote("Address form of the task");
-            addressForm.createField( "Street", textValue ).changeNote("Street of the address. Note that it must only be the the street name of the address not the number");
-            addressForm.createField( "Zip code", textValue ).changeNote("This is the ZIP code of the resident");
-            addressForm.createField( "Town", textValue ).changeNote("Town of the address.");
+            addressForm.createField( "Street", builder.newInstance() ).changeNote("Street of the address. Note that it must only be the the street name of the address not the number");
+            addressForm.createField( "Zip code", builder.newInstance() ).changeNote("This is the ZIP code of the resident");
+            addressForm.createField( "Town", builder.newInstance() ).changeNote("Town of the address.");
 
             // Create labels
             project.createLabel().changeDescription("Question");
@@ -167,9 +160,9 @@ public interface TestDataService
             builder.prototype().submitter().set(EntityReference.getEntityReference(user));
             builder.prototype().form().set(EntityReference.getEntityReference(form));
 
-            List<FieldValue> list = builder.prototype().values().get();
+            List<SubmittedFieldValue> list = builder.prototype().values().get();
 
-            ValueBuilder<FieldValue> fieldBuilder = vbf.newValueBuilder(FieldValue.class);
+            ValueBuilder<SubmittedFieldValue> fieldBuilder = vbf.newValueBuilder(SubmittedFieldValue.class);
             fieldBuilder.prototype().field().set(EntityReference.getEntityReference(field));
             fieldBuilder.prototype().value().set(value);
             list.add(fieldBuilder.newInstance());

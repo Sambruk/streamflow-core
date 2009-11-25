@@ -21,8 +21,6 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.form.FieldTemplates;
-import se.streamsource.streamflow.web.domain.form.ValueDefinition;
-import se.streamsource.streamflow.web.domain.form.ValueDefinitions;
 
 /**
  * JAVADOC
@@ -44,6 +42,7 @@ public class FieldDefinitionsSteps
         givenField = orgsSteps.givenOrganization.getFieldDefinitionByName( name );
     }
 
+/*
     @When("a field definition named $name of type $type is created")
     public void createField(String name, String type) throws Exception
     {
@@ -51,17 +50,13 @@ public class FieldDefinitionsSteps
         {
             FieldTemplates fields = orgsSteps.givenOrganization;
 
-            ValueDefinitions.Data values = orgsSteps.givenOrganization;
-
-            ValueDefinition valueDefinition = values.getValueDefinitionByName( type );
-
-            this.givenField = fields.createFieldTemplate( name, valueDefinition );
+            this.givenField = fields.createFieldTemplate( field );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
         }
     }
-
+*/
     @When("a field definition namedis removed")
     public void removed() throws Exception
     {

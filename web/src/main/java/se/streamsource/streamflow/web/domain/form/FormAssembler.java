@@ -18,6 +18,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
 
 /**
  * JAVADOC
@@ -30,7 +31,8 @@ public class FormAssembler
         moduleAssembly.addEntities(
                 FormTemplateEntity.class,
                 FormEntity.class,
-                FieldEntity.class,
-                ValueDefinitionEntity.class ).visibleIn( Visibility.application );
+                FieldEntity.class).visibleIn( Visibility.application );
+
+        moduleAssembly.addValues(TextFieldValue.class).visibleIn( Visibility.application);
     }
 }

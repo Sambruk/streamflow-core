@@ -23,7 +23,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.task.*;
@@ -95,7 +95,7 @@ public interface SubmittedFormsQueries
             ValueBuilder<FieldDTO> fieldBuilder = vbf.newValueBuilder( FieldDTO.class );
             FieldDTO fieldDTO = fieldBuilder.prototype();
 
-            for (FieldValue fieldValue : form.values().get())
+            for (SubmittedFieldValue fieldValue : form.values().get())
             {
                 Describable.Data field = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
                 fieldDTO.field().set( field.description().get() );

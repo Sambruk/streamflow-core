@@ -36,11 +36,9 @@ public class FormTemplateSteps
     FormTemplatesSteps formTemplatesSteps;
 
     @Uses
-    ValueDefinitionsSteps valueDefinitionsSteps;
-
-    @Uses
     FieldDefinitionsSteps fieldDefinitionsSteps;
 
+    /*
     @When("a field named $name is created in form")
     public void createField(String name) throws Exception
     {
@@ -53,7 +51,7 @@ public class FormTemplateSteps
         {
             genericSteps.setThrowable(e);
         }
-    }
+    }*/
 
     @When("a field is removed from form")
     public void removeField() throws Exception

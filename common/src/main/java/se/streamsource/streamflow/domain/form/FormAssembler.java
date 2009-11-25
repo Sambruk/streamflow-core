@@ -27,10 +27,12 @@ public class FormAssembler
 {
     public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
     {
-        moduleAssembly.addValues( EffectiveFieldValue.class,
+        moduleAssembly.addValues( CreateFieldDTO.class, 
+                EffectiveFieldValue.class,
                 EffectiveFormFieldsValue.class,
-                FieldValue.class,
+                SubmittedFieldValue.class,
                 FormValue.class,
+                FieldValue.class,
                 FieldDefinitionValue.class,
                 SubmittedFormValue.class,
                 SubmitFormDTO.class).visibleIn( Visibility.application );

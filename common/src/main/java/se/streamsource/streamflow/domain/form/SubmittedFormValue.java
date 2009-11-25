@@ -33,5 +33,5 @@ public interface SubmittedFormValue
     Property<EntityReference> form();
 
     @UseDefaults
-    Property<List<FieldValue>> values();
+    Property<List<SubmittedFieldValue>> values();
 }
