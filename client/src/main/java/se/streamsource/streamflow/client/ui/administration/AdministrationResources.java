@@ -76,6 +76,6 @@ public enum AdministrationResources
     administrators_tab, could_not_add_administrator, could_not_remove_administrator, selection_not_an_organizational_unit, merge_to,
     username_label, password_label, confirm_password_label, passwords_dont_match,
     could_not_import_users, could_not_list_form_definitions, no_form_definitions_available, could_not_add_form_definition, could_not_remove_form_definition, user_enabled_label,
-    import_users, users_tab, organizations_tab, could_not_find_organization, could_not_get_users, join_organization, import_files, could_not_create_form, could_not_remove_form, could_not_create_field, could_not_remove_field, create_account_name, create_account_server, create_account_username, create_account_password, could_not_get_form, could_not_add_field;
-    
+    import_users, users_tab, organizations_tab, could_not_find_organization, could_not_get_users, join_organization, import_files, could_not_create_form, could_not_remove_form, could_not_create_field, could_not_remove_field, create_account_name, create_account_server, create_account_username, create_account_password, could_not_get_form, could_not_add_field,
+    username_password_cviolation, user_already_exists;
 }
