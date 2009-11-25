@@ -133,15 +133,30 @@ public class BindingFormBuilder
 
     public BindingFormBuilder appendLine(Enum resourceKey, Component component, Property property, StateBinder stateBinderIn, Object... args)
     {
-        String resource = getResource(resourceKey, args);
+        append(resourceKey, component, property, stateBinderIn, args);
+
+        formBuilder.nextLine();
+
+        return this;
+    }
+
+	public BindingFormBuilder append(Enum resourceKey, Component component,
+			Property property, StateBinder stateBinderIn, Object... args)
+	{
+		String resource = getResource(resourceKey, args);
 
         JLabel label = formBuilder.append(resource);
         label.setFocusable(false);
-        formBuilder.nextLine();
-        stateBinderIn.bind(component, property);
-        formBuilder.append(component);
         label.setLabelFor(component);
         formBuilder.nextLine();
+        return append(component, property, stateBinderIn);
+	}
+
+	public BindingFormBuilder append(Component component, Property property,
+			StateBinder stateBinderIn)
+	{
+		stateBinderIn.bind(component, property);
+        formBuilder.append(component);
 
         if (component instanceof JXDatePicker)
         {
@@ -153,10 +168,11 @@ public class BindingFormBuilder
             // Set date format
             ((JXDatePicker) component).setFormats(new SimpleDateFormat(getResource(WorkspaceResources.date_format)));
         }
-
         return this;
-    }
+	}
 
+	
+	
     public BindingFormBuilder appendButtonLine(Action buttonAction)
     {
         JButton button = new JButton(buttonAction);
@@ -170,6 +186,12 @@ public class BindingFormBuilder
         JToggleButton button = new JToggleButton(buttonAction);
         formBuilder.append(button);
         formBuilder.nextLine();
+        return this;
+    }
+
+    public BindingFormBuilder append(Component component)
+    {
+        formBuilder.append(component);
         return this;
     }
 

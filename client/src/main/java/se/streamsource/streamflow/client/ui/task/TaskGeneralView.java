@@ -14,29 +14,42 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.DATEPICKER;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.LABEL;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.LayoutFocusTraversalPolicy;
+
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
+
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -57,7 +70,8 @@ public class TaskGeneralView extends JScrollPane implements Observer
 	private JScrollPane notePane;
 	public JXDatePicker dueOnField;
 	private JLabel issueLabel;
-	public JPanel form;
+	public JPanel leftForm;
+	public JPanel rightForm;
 	public LabelsView labels;
 	
 	public TaskGeneralView(@Service ApplicationContext appContext, @Uses LabelsView labels)
@@ -65,13 +79,15 @@ public class TaskGeneralView extends JScrollPane implements Observer
         this.labels = labels;
         this.labelSelection = labels.labelSelection();
         setActionMap(appContext.getActionMap(this));
-        FormLayout layout = new FormLayout(
-                "200dlu",
-                "");
+        
+        // Layout and form for the left panel
+        FormLayout leftLayout = new FormLayout(
+                "165dlu",
+        		"");
 
-        form = new JPanel();
-        form.setFocusable(false);
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout, form);
+        leftForm = new JPanel();
+        leftForm.setFocusable(false);
+        DefaultFormBuilder builder = new DefaultFormBuilder(leftLayout, leftForm);
         builder.setDefaultDialogBorder();
 
         taskBinder = new StateBinder();
@@ -84,13 +100,29 @@ public class TaskGeneralView extends JScrollPane implements Observer
         BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
         bb.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
         
-        bb.appendLine(new JLabel(i18n.text(WorkspaceResources.labels_label)))
-                .appendLine(labels)
-                .appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
-                .appendLine(WorkspaceResources.note_label, notePane, template.note())
-                .appendLine(WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn());
+        bb.appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
+                .appendLine(WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn())
+                .appendLine(WorkspaceResources.note_label, notePane, template.note());
 
-        setViewportView(form);
+        // Layout and form for the right panel
+        FormLayout rightLayout = new FormLayout(
+                "165dlu:grow",
+        		"pref, pref, pref");
+
+        rightForm = new JPanel(rightLayout);
+        rightForm.setFocusable(false);
+        DefaultFormBuilder rightBuilder = new DefaultFormBuilder(rightLayout, rightForm);
+        rightBuilder.setDefaultDialogBorder();
+
+        CellConstraints cc = new CellConstraints();
+        rightBuilder.add(new JLabel(i18n.text(WorkspaceResources.labels_label)), cc.xy(1, 1));
+        rightBuilder.nextLine();
+        rightBuilder.add(labels, cc.xy(1, 2));
+        
+        JPanel formsContainer = new JPanel(new BorderLayout());
+        formsContainer.add(leftForm, BorderLayout.WEST);
+        formsContainer.add(rightForm, BorderLayout.CENTER);
+        setViewportView(formsContainer);
 
         taskBinder.addObserver(this);
 
@@ -102,7 +134,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
         {
             public void focusGained(FocusEvent e)
             {
-                Component defaultComp = getFocusTraversalPolicy().getDefaultComponent(form);
+                Component defaultComp = getFocusTraversalPolicy().getDefaultComponent(leftForm);
                 if (defaultComp != null)
                 {
                     defaultComp.requestFocusInWindow();
@@ -128,7 +160,6 @@ public class TaskGeneralView extends JScrollPane implements Observer
 		issueLabel.setVisible(issueVisible);
 		((JLabel) issueLabel.getClientProperty("labeledBy"))
 				.setVisible(issueVisible);
-
 
 		labels.setLabelsModel(model.labelsModel());
         labelSelection.setLabelSelectionModel(model.selectionModel());
