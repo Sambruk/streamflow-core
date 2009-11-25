@@ -23,13 +23,10 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowResources;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Frame;
+import javax.swing.*;
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.logging.Level;
@@ -87,9 +84,24 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                     }
                 }
 
-                showErrorDialog(ex, frame);
+
+                try
+                {
+                    showErrorDialog(ex, frame, text(StreamFlowResources.valueOf(HtmlErrorMessageExtractor.parse(ex.getMessage()))));
+                } catch(IllegalArgumentException iae)
+                {
+                    // once again in case the resource enum does not exist - now showing non translated error msg
+                    showErrorDialog(ex, frame);
+                }
             }                                                
         });
+    }
+
+    private void showErrorDialog(Throwable ex, Frame frame, String errorMsg) {
+        JXErrorPane pane = new JXErrorPane();
+        pane.setErrorInfo(new ErrorInfo("Uncaught exception", errorMsg, null, "Error", ex, Level.SEVERE, Collections.<String, String>emptyMap()));
+        pane.setPreferredSize(new Dimension(700, 400));
+        JXErrorPane.showDialog(frame, pane);
     }
 
     private void showErrorDialog(Throwable ex, Frame frame) {

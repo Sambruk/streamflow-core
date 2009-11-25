@@ -110,9 +110,12 @@ public class OrganizationsServerResource
         try
         {
             organizations.createUser(userCommand.username().get(), userCommand.password().get());
+        } catch (ConstraintViolationException cve)
+        {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "username_password_cviolation");
         } catch (IllegalArgumentException iae)
         {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Username or password may not be empty or contain whitespace charcters");
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "user_already_exists");
         }
     }
 

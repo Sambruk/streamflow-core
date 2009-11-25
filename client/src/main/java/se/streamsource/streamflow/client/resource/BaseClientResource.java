@@ -29,6 +29,8 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.w3c.dom.Node;
 import org.xml.sax.helpers.DefaultHandler;
+import se.streamsource.streamflow.client.StreamFlowResources;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 import javax.xml.xpath.XPathConstants;
 import java.io.IOException;
@@ -109,7 +111,15 @@ public class BaseClientResource
 
         if (!getResponse().getStatus().isSuccess())
         {
-            throw new ResourceException(getResponse().getStatus(), getResponse().getEntityAsText());
+            String errorMsg = "";
+            try
+            {
+                errorMsg = getResponse().getEntity().getText();
+            } catch (IOException e)
+            {
+                throw new ResourceException(getResponse().getStatus(), text(StreamFlowResources.could_not_extract_response));
+            }
+            throw new ResourceException(getResponse().getStatus(),errorMsg);
         }
 
         return rep;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Arvid Huss. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,19 +12,17 @@
  *
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.client.infrastructure.ui;
+
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
- * i18n resources that don't fit in any of the other resource enumerations.
+ * Convenience class to fetch the HTMLEditorKit.Parser
  */
-public enum StreamFlowResources
+public class HtmlParserGetter extends HTMLEditorKit
 {
-    startup_error,
-    could_not_process_events, 
-    operation_not_permitted,
-    export_data_file_with_open_option,
-    export_completed,
-    could_not_register_client, excel_file,
-    confirmation, proceed_label, could_not_extract_response,
-    search_string_malformed;
+    public HTMLEditorKit.Parser getParser()
+    {
+        return super.getParser();
+    }
 }

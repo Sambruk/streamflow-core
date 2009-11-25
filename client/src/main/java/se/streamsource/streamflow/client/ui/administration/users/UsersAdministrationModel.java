@@ -20,6 +20,7 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.HtmlErrorMessageExtractor;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -126,7 +127,7 @@ public class UsersAdministrationModel
             organizations.createUser(username, password);
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_create_user, e);
+            throw new OperationException(AdministrationResources.valueOf(HtmlErrorMessageExtractor.parse(e.getMessage())), e);
         }
     }
 

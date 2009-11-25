@@ -19,6 +19,8 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
 import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
@@ -49,10 +51,16 @@ import java.util.regex.PatternSyntaxException;
 public class SearchTasksServerResource extends AbstractTaskListServerResource
 {
 	public SearchTaskListDTO search(StringDTO query)
+            throws ResourceException
 	{
 		UnitOfWork uow = uowf.currentUnitOfWork();
 
 		String queryString = query.string().get().trim();
+        if(queryString.matches("[\\$\\.\\*\\+\\?\\(\\)\\[\\]\\|\\^\\{\\}\\\\]+"))
+        {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "search_string_malformed");
+        }
+
 		if (queryString.length() > 0)
 		{
 			QueryBuilder<TaskEntity> queryBuilder = module
