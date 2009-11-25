@@ -48,8 +48,8 @@ public class WorkspaceUserAssignmentsView
     protected void buildToolbar(JPanel toolbar)
     {
         addToolbarButton(toolbar, "createTask");
-        Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
         Action acceptAction = addToolbarButton(toolbar, "completeTasks");
+        Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
         taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(delegateTasks, acceptAction));
     }
