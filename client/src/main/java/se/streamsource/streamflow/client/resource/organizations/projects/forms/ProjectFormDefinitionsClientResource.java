@@ -21,6 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -56,5 +57,10 @@ public class ProjectFormDefinitionsClientResource
     public void removeForm(EntityReferenceDTO formDTO) throws ResourceException
     {
         putCommand("removeForm", formDTO);
+    }
+
+    public void createForm(StringDTO stringDTO) throws ResourceException
+    {
+        putCommand("createForm", stringDTO);
     }
 }

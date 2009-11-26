@@ -49,8 +49,8 @@ public class FieldsView
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("add")));
         toolbar.add(new JButton(am.get("remove")));
-        toolbar.add(new JButton(am.get("up")));
-        toolbar.add(new JButton(am.get("down")));
+        //toolbar.add(new JButton(am.get("up")));
+        //toolbar.add(new JButton(am.get("down")));
 
         model.refresh();
         fieldList = new JList(model);
@@ -61,8 +61,8 @@ public class FieldsView
 
         setViewportView(panel);
         fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
-        fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("up")));
-        fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("down")));
+        //fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("up")));
+        //fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("down")));
     }
 
     @org.jdesktop.application.Action

@@ -22,6 +22,7 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
+import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;
@@ -99,5 +100,26 @@ public class ProjectFormDefinitionServerResource
         FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
 
         form.changeNote(newNote.string().get());
+    }
+
+
+    public void deleteOperation()
+    {
+        String identity = getRequest().getAttributes().get("project").toString();
+        String index = getRequest().getAttributes().get("index").toString();
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        ProjectEntity project = uow.get( ProjectEntity.class, identity);
+
+        checkPermission(project);
+
+        List<ListItemValue> itemValues = project.applicableFormDefinitionList().items().get();
+
+        ListItemValue value = itemValues.get(Integer.parseInt(index));
+
+        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+
+        project.removeForm(form);
     }
 }

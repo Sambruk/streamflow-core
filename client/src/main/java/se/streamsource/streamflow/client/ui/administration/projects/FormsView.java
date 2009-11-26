@@ -72,14 +72,14 @@ public class FormsView
     @Action
     public void add()
     {
-        FormsSelectionDialog dialog = obf.newObjectBuilder(FormsSelectionDialog.class).use(model.getFormsResource()).newInstance();
+        FormCreationDialog formDialog = obf.newObject(FormCreationDialog.class);
 
-        dialogs.showOkCancelHelpDialog(this, dialog);
+        dialogs.showOkCancelHelpDialog(this, formDialog, "Create new form");
 
-        ListItemValue selected = dialog.getSelectedForm();
-        if (selected != null)
+        String name = formDialog.getName();
+        if (name != null && !name.isEmpty())
         {
-            model.addForm(selected.entity().get());
+            model.createForm(name);
         }
     }
 

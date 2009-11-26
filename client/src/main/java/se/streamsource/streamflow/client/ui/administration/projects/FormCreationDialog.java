@@ -21,7 +21,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
@@ -31,7 +30,7 @@ import java.awt.*;
 /**
  * Select a name for something.
  */
-public class FieldCreationDialog
+public class FormCreationDialog
         extends JPanel
 {
 
@@ -41,7 +40,7 @@ public class FieldCreationDialog
     private JComboBox box;
 
 
-    public FieldCreationDialog(@Service ApplicationContext context)
+    public FormCreationDialog(@Service ApplicationContext context)
     {
         super(new BorderLayout());
 
@@ -54,9 +53,6 @@ public class FieldCreationDialog
 
         textField = new TextField();
         formBuilder.append(i18n.text(AdministrationResources.name_label), textField);
-        //box = new JComboBox(new String[]{"Text","Number","Date","Single selection", "Multi selection", "Comment", "Page break"});
-        box = new JComboBox(new String[]{"Text"});
-        formBuilder.append("Value Type", box);
         add(panel, BorderLayout.CENTER);
     }
 
@@ -70,11 +66,6 @@ public class FieldCreationDialog
     public void close()
     {
         WindowUtils.findWindow(this).dispose();
-    }
-
-    public FieldTypes getFieldType()
-    {
-        return FieldTypes.text;
     }
 
     public String getName()

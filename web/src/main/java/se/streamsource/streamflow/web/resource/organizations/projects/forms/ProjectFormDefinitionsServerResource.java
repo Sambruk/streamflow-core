@@ -20,9 +20,11 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.form.Form;
 import se.streamsource.streamflow.web.domain.form.Forms;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
+import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -58,17 +60,6 @@ public class ProjectFormDefinitionsServerResource
         return forms.nonApplicableFormDefinitionList();
     }
 
-    public void createForm() throws ResourceException
-    {
-        String identity = getRequest().getAttributes().get("project").toString();
-
-        UnitOfWork uow = uowf.currentUnitOfWork();
-
-        Forms forms = uow.get( Forms.class, identity);
-
-        forms.createForm();
-    }
-
     public void removeForm(EntityReferenceDTO formReference) throws ResourceException
     {
         String identity = getRequest().getAttributes().get("project").toString();
@@ -91,4 +82,19 @@ public class ProjectFormDefinitionsServerResource
         forms.removeForm( form );
     }
 
+
+    public void createForm(StringDTO formName)
+    {
+        String identity = getRequest().getAttributes().get("project").toString();
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        Project project = uow.get(Project.class, identity);
+
+        checkPermission(project);
+
+        Form form = project.createForm();
+        form.changeDescription(formName.string().get());
+    }
+    
 }

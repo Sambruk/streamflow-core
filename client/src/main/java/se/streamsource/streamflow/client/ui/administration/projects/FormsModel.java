@@ -32,6 +32,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.*;
 import java.util.List;
@@ -82,6 +83,19 @@ public class FormsModel
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_refresh_list_of_members, e);
+        }
+    }
+
+    public void createForm(String formName)
+    {
+        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
+        builder.prototype().string().set(formName);
+        try
+        {
+            forms.createForm(builder.newInstance());
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_add_form_definition, e);
         }
     }
 
