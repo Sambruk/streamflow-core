@@ -40,7 +40,7 @@ public class WorkspaceProjectInboxView
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, dropAction, removeTaskAction));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class WorkspaceProjectInboxView
         Action forwardTasksFromInbox = addToolbarButton(toolbar, "forwardTasks");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, forwardTasksFromInbox, delegateTasksFromInbox, acceptAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, assignAction, forwardTasksFromInbox, delegateTasksFromInbox, acceptAction));
     }
 
     @Override

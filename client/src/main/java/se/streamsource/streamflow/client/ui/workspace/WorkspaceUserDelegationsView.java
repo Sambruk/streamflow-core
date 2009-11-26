@@ -32,8 +32,9 @@ public class WorkspaceUserDelegationsView
         ActionMap am = getActionMap();
         Action markTasksAsUnread = am.get("markTasksAsUnread");
         popup.add(markTasksAsUnread);
-        popup.add(am.get("markTasksAsRead"));
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(markTasksAsUnread));
+        Action markTasksAsRead = am.get( "markTasksAsRead" );
+        popup.add( markTasksAsRead );
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(3, taskTable, markTasksAsRead, markTasksAsUnread));
     }
 
     @Override
@@ -43,7 +44,7 @@ public class WorkspaceUserDelegationsView
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "reject");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox, acceptAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(3, taskTable, assignAction, delegateTasksFromInbox, acceptAction));
     }
 
 

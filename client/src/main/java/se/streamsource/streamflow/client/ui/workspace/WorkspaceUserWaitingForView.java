@@ -52,15 +52,17 @@ public class WorkspaceUserWaitingForView
     protected void buildPopupMenu(JPopupMenu popup)
     {
         ActionMap am = getActionMap();
-        popup.add(am.get("markTasksAsUnread"));
-        popup.add(am.get("markTasksAsRead"));
+        Action markTasksAsUnread = am.get( "markTasksAsUnread" );
+        popup.add( markTasksAsUnread );
+        Action markTasksAsRead = am.get( "markTasksAsRead" );
+        popup.add( markTasksAsRead );
         Action rejectFinished = am.get("rejectFinished");
         popup.add(rejectFinished);
         Action dropAction = am.get("dropTasks");
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction, rejectFinished));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(4, taskTable, markTasksAsRead, markTasksAsUnread, dropAction, removeTaskAction, rejectFinished));
     }
 
     @Override
@@ -70,7 +72,7 @@ public class WorkspaceUserWaitingForView
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromInbox, acceptAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(4, taskTable, assignAction, delegateTasksFromInbox, acceptAction));
     }
 
     @Override

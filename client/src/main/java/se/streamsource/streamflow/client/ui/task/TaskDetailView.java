@@ -69,8 +69,6 @@ public class TaskDetailView
         setMnemonicAt(3, KeyEvent.VK_4);
         setMnemonicAt(4, KeyEvent.VK_5);
 
-        setTaskModel(null);
-
         setFocusable(true);
 //        setFocusCycleRoot(true);
 
@@ -92,36 +90,18 @@ public class TaskDetailView
     public void setTaskModel( TaskModel model)
     {
         this.model = model;
-        if (model == null)
-        {
-            //generalView.setModel(null);
-            //commentsView.setModel(null);
-            //contactsView.setModel(null);
-/*
-            setPreferredSize(new Dimension(getWidth(), 50));
-            setMaximumSize(new Dimension(getWidth(), 50));
-*/
-            validateTree();
-            setSelectedIndex(-1);
-            setEnabled(false);
-        } else
-        {
-            generalView.setModel(model.general());
-            commentsView.setModel(model.comments());
-            contactsView.setModel(model.contacts());
-            formsView.setModel(model.forms());
-            effectiveView.setModel(model.effectiveValues());
+        generalView.setModel(model.general());
+        commentsView.setModel(model.comments());
+        contactsView.setModel(model.contacts());
+        formsView.setModel(model.forms());
+        effectiveView.setModel(model.effectiveValues());
 
-/*
-            setPreferredSize(new Dimension(getWidth(), 500));
-*/
-            validateTree();
-            setEnabled(true);
+        validateTree();
+        setEnabled(true);
 
-            if (getSelectedIndex() == -1)
-            {
-                setSelectedIndex(0);
-            }
+        if (getSelectedIndex() == -1)
+        {
+            setSelectedIndex(0);
         }
     }
 

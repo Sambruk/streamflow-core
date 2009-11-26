@@ -45,7 +45,7 @@ public class SelectionActionEnabler
             for (int i = 0; i < action.length; i++)
             {
                 Action action1 = action[i];
-                action1.setEnabled(!((ListSelectionModel) e.getSource()).isSelectionEmpty());
+                action1.setEnabled(!((ListSelectionModel) e.getSource()).isSelectionEmpty() && isSelectedValueValid());
             }
         }
     }
@@ -57,5 +57,15 @@ public class SelectionActionEnabler
             Action action1 = action[i];
             action1.setEnabled(e.getNewLeadSelectionPath() != null);
         }
+    }
+
+    /**
+     * Override this to add logic for whether the currently selected value is valid or not.
+     *
+     * @return
+     */
+    public boolean isSelectedValueValid()
+    {
+        return true;
     }
 }

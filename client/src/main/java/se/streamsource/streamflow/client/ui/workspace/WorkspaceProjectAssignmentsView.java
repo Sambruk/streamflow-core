@@ -36,14 +36,17 @@ public class WorkspaceProjectAssignmentsView
     protected void buildPopupMenu(JPopupMenu popup)
     {
         ActionMap am = getActionMap();
-        popup.add(am.get("markTasksAsUnread"));
-        popup.add(am.get("markTasksAsRead"));
+        Action markTasksAsUnread = am.get( "markTasksAsUnread" );
+        popup.add( markTasksAsUnread );
+        Action markTasksAsRead = am.get( "markTasksAsRead" );
+        popup.add( markTasksAsRead );
         Action dropAction = am.get("dropTasks");
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
-        popup.add(am.get("forwardTasks"));
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
+        Action forwardTasks = am.get( "forwardTasks" );
+        popup.add( forwardTasks );
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, markTasksAsRead, markTasksAsUnread, forwardTasks, dropAction, removeTaskAction));
     }
 
     @Override
@@ -53,7 +56,7 @@ public class WorkspaceProjectAssignmentsView
         Action acceptAction = addToolbarButton(toolbar, "completeTasks");
         Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(delegateTasks, acceptAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, delegateTasks, acceptAction));
     }
 
     @Override

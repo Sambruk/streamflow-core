@@ -52,13 +52,15 @@ public class WorkspaceProjectWaitingForView
     protected void buildPopupMenu(JPopupMenu popup)
     {
         ActionMap am = getActionMap();
-        popup.add(am.get("markTasksAsUnread"));
-        popup.add(am.get("markTasksAsRead"));
+        Action markTasksAsUnread = am.get( "markTasksAsUnread" );
+        popup.add( markTasksAsUnread );
+        Action markTasksAsRead = am.get( "markTasksAsRead" );
+        popup.add( markTasksAsRead );
         Action dropAction = am.get("dropTasks");
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(dropAction, removeTaskAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(4, taskTable, markTasksAsRead, markTasksAsUnread, dropAction, removeTaskAction));
     }
 
     @Override
@@ -68,7 +70,7 @@ public class WorkspaceProjectWaitingForView
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action delegateTasksFromWaitingFor = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(assignAction, delegateTasksFromWaitingFor, acceptAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(4, taskTable, assignAction, delegateTasksFromWaitingFor, acceptAction));
     }
 
     @Override
