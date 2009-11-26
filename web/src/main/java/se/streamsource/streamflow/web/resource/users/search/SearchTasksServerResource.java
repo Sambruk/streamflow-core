@@ -132,7 +132,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 
 	protected List<String> extractSubQueries(String query)
 	{
-		List<String> subQueries = null;
+		List<String> subQueries = new ArrayList<String>();
 		// TODO: Extract regular expression to resource file.
 		String regExp = "(?:\\w+\\:)?(?:\\\"[^\\\"]*?\\\")|(?:[^\\s]+)";
 		Pattern p;
@@ -146,13 +146,14 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 		Matcher m = p.matcher(query);
 		while (m.find())
 		{
-			if (subQueries == null)
-			{
-				subQueries = new ArrayList<String>();
-			}
-
 			subQueries.add(m.group());
 		}
+        
+        if(subQueries.isEmpty())
+        {
+            if(query.length() > 0)
+                subQueries.add(query);
+        }
 		return subQueries;
 	}
 
