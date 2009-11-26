@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
@@ -33,6 +34,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Collections;
 
 /**
  * JAVADOC
@@ -75,9 +77,11 @@ public class WorkspaceProjectsNode
         try
         {
             se.streamsource.streamflow.client.resource.users.UserClientResource user = account.userResource();
-            ListValue projects = user.workspace().projects().listProjects();
+            ListValue projects = user.workspace().projects().listProjects().<ListValue>buildWith().prototype();
 
             super.removeAllChildren();
+
+            Collections.sort( projects.items().get(), new ListItemComparator() );
 
             for (ListItemValue project : projects.items().get())
             {
@@ -97,6 +101,7 @@ public class WorkspaceProjectsNode
                         account.tasks(),
                         project.description().get()).newInstance());
             }
+
         } catch (ResourceException e)
         {
             throw new OperationException(WorkspaceResources.could_not_refresh_projects, e);

@@ -14,14 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.ResourceMap;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import static se.streamsource.streamflow.infrastructure.configuration.FileConfiguration.OS.mac;
 
-import javax.swing.*;
+import javax.swing.JMenuBar;
 
 /**
  * Menu bar for the Workspace window
@@ -30,14 +25,12 @@ public class OverviewMenuBar
         extends JMenuBar
 {
     public OverviewMenuBar(@Uses FileMenu fileMenu,
-                            @Uses SearchMenu searchMenu,
                             @Uses ViewMenu viewMenu,
                             @Uses WindowMenu windowMenu,
                             @Uses HelpMenu helpMenu
                             )
     {
         add(fileMenu);
-        add(searchMenu);
         add(viewMenu);
         add(windowMenu);
         add(helpMenu);

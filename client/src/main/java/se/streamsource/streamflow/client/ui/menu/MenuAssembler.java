@@ -35,7 +35,6 @@ public class MenuAssembler
         UIAssemblers.addViews(module,
                 FileMenu.class,
                 EditMenu.class,
-                SearchMenu.class,
                 ViewMenu.class,
                 AccountMenu.class,
                 TaskMenu.class,
