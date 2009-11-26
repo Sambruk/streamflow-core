@@ -14,22 +14,19 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
+import ca.odell.glazedlists.TextFilterator;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
-import java.awt.*;
+import java.util.List;
 
 /**
- * List renderer for lists that use ListItemValue as items.
+ * JAVADOC
  */
-public class ListItemListCellRenderer extends DefaultListCellRenderer
+public class ListItemFilterator
+    implements TextFilterator<ListItemValue>
 {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+    public void getFilterStrings( List<String> strings, ListItemValue listItemValue )
     {
-        if (value instanceof ListItemValue)
-        {
-            ListItemValue itemValue = (ListItemValue) value;
-            return super.getListCellRendererComponent(list, itemValue == null ? "" : itemValue.description().get(), index, isSelected, cellHasFocus);
-        } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
+        strings.add( listItemValue.description().get() );
     }
 }

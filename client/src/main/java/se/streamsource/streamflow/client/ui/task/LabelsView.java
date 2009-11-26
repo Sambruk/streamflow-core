@@ -4,14 +4,18 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import java.awt.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class LabelsView extends JPanel implements ListDataListener, ActionListener
+public class LabelsView extends JPanel implements ListDataListener, ActionListener, ListSelectionListener
 {
 	private LabelsModel model;
 
@@ -28,10 +32,10 @@ public class LabelsView extends JPanel implements ListDataListener, ActionListen
         //labelPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
         //setBorder(BorderFactory.createLineBorder(Color.BLUE, 1));
 
-        add(labelPanel, BorderLayout.NORTH);
-        add(labelSelection,BorderLayout.SOUTH);
+        add(labelSelection,BorderLayout.NORTH);
+        add(labelPanel, BorderLayout.SOUTH);
 
-        labelSelection.addActionListener(this);
+        labelSelection.getList().addListSelectionListener( this);
 	}
 
     public void setLabelsModel(LabelsModel model)
@@ -73,22 +77,21 @@ public class LabelsView extends JPanel implements ListDataListener, ActionListen
 		initComponents();
 	}
 
-	public void actionPerformed(ActionEvent e)
+    public void valueChanged( ListSelectionEvent e )
+    {
+        ListItemValue labelItem = (ListItemValue) labelSelection.getList().getSelectedValue();
+        if (labelItem != null)
+        {
+            labelSelection.getList().clearSelection();
+            model.addLabel(labelItem.entity().get());
+        }
+    }
+
+    public void actionPerformed(ActionEvent e)
 	{
 		Component component = ((Component) e.getSource());
-		if (component instanceof JButton)
-		{
-			LabelView labelView = (LabelView) component.getParent();
-            model.removeLabel(labelView.label().entity().get());
-		} else if(component instanceof LabelSelectionView)
-        {
-            ListItemValue labelItem = (ListItemValue) labelSelection.getModel().getSelectedItem();
-            if (labelItem != null)
-            {
-                model.addLabel(labelItem.entity().get());
-            }
-            
-        }
+        LabelView labelView = (LabelView) component.getParent();
+        model.removeLabel(labelView.label().entity().get());
 	}
 
     public LabelSelectionView labelSelection()

@@ -119,9 +119,17 @@ public interface TestDataService
             project.createLabel().changeDescription("Issue chase");
             project.createLabel().changeDescription("Suggestion");
 
+            for (int i = 0; i < 50; i++)
+                project.createLabel().changeDescription("Label "+i);
+
             project.addMember(user);
 
             // Create project
+            Project info2 = ou.createProject("Info query");
+
+            info2.addMember(cc);
+            info2.addMember(user);
+
             Project parks = ou.createProject("City parks");
 
             parks.addMember(cc);

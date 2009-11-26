@@ -14,29 +14,58 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.swing.AutoCompleteSupport;
+import ca.odell.glazedlists.swing.EventListModel;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemFilterator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
 
 public class LabelSelectionView
-    extends JComboBox
+        extends JPanel
 {
+    public AutoCompleteSupport support;
+    public JTextField filterEdit;
+    public JList list;
+    public EventListModel listModel;
+
     public LabelSelectionView()
     {
-        setRenderer(new ListItemListCellRenderer());
-        
-        /*AutoCompleteDecorator.decorate(this, new ObjectToStringConverter()
-        {
-            public String getPreferredStringForItem(Object o)
-            {
-                return o == null ? "" : ((ListItemValue)o).description().get();
-            }
-        });*/
+        setLayout( new BorderLayout() );
 
+        filterEdit = new JTextField( 20 );
+
+        list = new JList();
+        list.setCellRenderer( new ListItemListCellRenderer() );
+
+        JScrollPane listPane = new JScrollPane(list);
+
+        add(filterEdit, BorderLayout.NORTH);
+        add(listPane, BorderLayout.CENTER);
     }
 
-    public void setLabelSelectionModel(LabelSelectionModel model)
+    public JList getList()
     {
-        setModel(model);
+        return list;
+    }
+
+    public void setLabelSelectionModel( LabelSelectionModel model )
+    {
+        SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( model.getList(), new ListItemComparator() );
+        FilterList<ListItemValue> textFilteredIssues = new FilterList<ListItemValue>( sortedIssues, new TextComponentMatcherEditor( filterEdit, new ListItemFilterator() ) );
+        listModel = new EventListModel<ListItemValue>(textFilteredIssues);
+
+        list.setModel( listModel );
+
+        filterEdit.setText( "" );
     }
 }

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.BasicEventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -23,13 +24,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
 import java.util.List;
 
 public class LabelSelectionModel
-    extends AbstractListModel
-    implements ComboBoxModel, Refreshable
-
+    implements Refreshable
 {
     @Structure
     ValueBuilderFactory vbf;
@@ -39,29 +37,11 @@ public class LabelSelectionModel
 
     List<ListItemValue> possibleLabels;
 
-    ListItemValue selectedItem;
+    private BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
 
-    public int getSize()
+    public BasicEventList<ListItemValue> getList()
     {
-        return possibleLabels == null ? 0 : possibleLabels.size();
-    }
-
-    public Object getElementAt(int index)
-    {
-        return possibleLabels == null ? null : possibleLabels.get(index);
-    }
-
-    public void setSelectedItem(Object anItem)
-    {
-        if(anItem instanceof ListItemValue)
-        {
-            selectedItem = (ListItemValue) anItem;
-        }
-    }
-
-    public Object getSelectedItem()
-    {
-        return selectedItem;
+        return list;
     }
 
     public void refresh() throws OperationException
@@ -69,7 +49,10 @@ public class LabelSelectionModel
         try
         {
             possibleLabels = resource.possibleLabels().items().get();
-            fireContentsChanged(this, 0, possibleLabels.size());
+
+            list.clear();
+            list.addAll( possibleLabels );
+
         } catch (ResourceException e)
         {
             throw new OperationException(TaskResources.could_not_refresh, e);

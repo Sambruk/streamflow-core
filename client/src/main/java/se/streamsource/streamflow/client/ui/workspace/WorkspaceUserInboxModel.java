@@ -46,9 +46,8 @@ public class WorkspaceUserInboxModel
     @Structure
     ValueBuilderFactory vbf;
 
-    ProjectSelectorModel projects;
-    
-    ListItemValue selectedProject;
+    ProjectSelectorModel2 projects;
+
     Map<String, ListItemValue> selectedProjects = new HashMap<String, ListItemValue>();
     
     public WorkspaceUserInboxModel(@Uses WorkspaceUserInboxClientResource resource, @Structure ObjectBuilderFactory obf)
@@ -58,7 +57,7 @@ public class WorkspaceUserInboxModel
         columnClasses = new Class[]{String.class, JComboBox.class, Date.class, Boolean.class};
         columnEditable = new boolean[]{false, true, false, false};
 
-        projects = obf.newObjectBuilder(ProjectSelectorModel.class)
+        projects = obf.newObjectBuilder(ProjectSelectorModel2.class)
                 .use(resource).newInstance();
     }
 
@@ -122,7 +121,23 @@ public class WorkspaceUserInboxModel
                 }
                 case 1:
                 {
-                	selectedProjects.put(((TaskDTO)tasks.get(rowIndex)).task().get().identity(), (ListItemValue)aValue);
+                    if (aValue != null)
+                    {
+                        String projectName = (String) aValue;
+
+                        ListItemValue projectId = projects.getProjectByName(projectName);
+
+                        if (projectId != null)
+                        {
+                            forward(rowIndex, projectId.entity().get().identity());
+                            selectedProjects.put(((TaskDTO)tasks.get(rowIndex)).task().get().identity(), projectId);
+                            fireTableCellUpdated(rowIndex, column);
+                        }
+                    } else
+                    {
+                        System.out.println("Null selected");
+                    }
+
                 	break;
                 }	
                 case 3:
@@ -162,6 +177,8 @@ public class WorkspaceUserInboxModel
             boolean same = newRoot.equals(tasks);
             if (!same)
             {
+                selectedProjects.clear();
+
                 int oldCount = tasks == null ? 0 : tasks.size();
                 tasks = newRoot;
 
@@ -186,7 +203,7 @@ public class WorkspaceUserInboxModel
         projects.notifyEvent(event);
     }
 
-    public ProjectSelectorModel getProjectsModel()
+    public ProjectSelectorModel2 getProjectsModel()
     {
         return projects;
     }

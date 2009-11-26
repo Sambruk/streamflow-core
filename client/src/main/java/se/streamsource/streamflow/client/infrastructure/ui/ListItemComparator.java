@@ -16,20 +16,19 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
-import java.awt.*;
+import java.util.Comparator;
 
 /**
- * List renderer for lists that use ListItemValue as items.
+ * JAVADOC
  */
-public class ListItemListCellRenderer extends DefaultListCellRenderer
+public class ListItemComparator
+    implements Comparator<ListItemValue>
 {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+    public int compare( ListItemValue o1, ListItemValue o2 )
     {
-        if (value instanceof ListItemValue)
-        {
-            ListItemValue itemValue = (ListItemValue) value;
-            return super.getListCellRendererComponent(list, itemValue == null ? "" : itemValue.description().get(), index, isSelected, cellHasFocus);
-        } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
+        String s1 = o1.description().get();
+        String s2 = o2.description().get();
+
+        return s1.compareTo(s2);
     }
 }

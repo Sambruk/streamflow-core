@@ -14,8 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.autocomplete.ComboBoxCellEditor;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -23,8 +24,6 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemTableCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
@@ -32,16 +31,18 @@ import se.streamsource.streamflow.client.ui.task.TaskTableView;
 import se.streamsource.streamflow.client.ui.task.TasksDetailView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.table.TableColumn;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * JAVADOC
  */
 public class WorkspaceUserInboxView
-        extends TaskTableView implements ItemListener
+        extends TaskTableView
 {
     @Uses
     protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
@@ -54,13 +55,97 @@ public class WorkspaceUserInboxView
     {
     	super.init(context, model, detailsView, obf, vbf);
         taskTable.putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
+        taskTable.setEditingColumn( 1 );
 
-        JComboBox projectsCombo = new JComboBox(((WorkspaceUserInboxModel)model).getProjectsModel());
+ /*       final JComboBox projectsCombo = new JComboBox(((WorkspaceUserInboxModel)model).getProjectsModel());
+        AutoCompleteDecorator.decorate( projectsCombo, new ObjectToStringConverter()
+        {
+            public String getPreferredStringForItem( Object o )
+            {
+                return o == null ? null : ((ListItemValue)o).description().get();
+            }
+        });
         projectsCombo.addItemListener(this);
         projectsCombo.setRenderer(new ListItemListCellRenderer());
         TableColumn column = taskTable.getColumnModel().getColumn(1);
-        column.setCellEditor(new ComboBoxCellEditor(projectsCombo));
+        final ComboBoxCellEditor cellEditor = new ComboBoxCellEditor( projectsCombo )
+        {
+            @Override
+            public Object getCellEditorValue()
+            {
+                Object cellEditorValue = super.getCellEditorValue();
+                return cellEditorValue;
+            }
+
+            @Override
+            public boolean stopCellEditing()
+            {
+                return super.stopCellEditing();
+            }
+        };
+//        column.setCellEditor( cellEditor );
+*/
+        TableColumn column = taskTable.getColumnModel().getColumn(1);
+                
+        final AutoCompleteSupport.AutoCompleteCellEditor editor = AutoCompleteSupport.createTableCellEditor(new TableFormat<ListItemValue>()
+        {
+            public int getColumnCount()
+            {
+                return 0;
+            }
+
+            public String getColumnName( int i )
+            {
+                return "";
+            }
+
+            public Object getColumnValue( ListItemValue listItemValue, int i )
+            {
+                return listItemValue.description().get();
+            }
+        }, ((WorkspaceUserInboxModel)model).getProjectsModel().getList(), 1);
+        editor.getAutoCompleteSupport().setStrict( true );
+        editor.getAutoCompleteSupport().setSelectsTextOnFocusGain( true );
+        editor.setClickCountToStart( 1 );
+        final JComboBox combo = (JComboBox) editor.getComponent();
+
+/*
+        editor.addCellEditorListener( new CellEditorListener()
+        {
+            public void editingStopped( ChangeEvent e )
+            {
+                JTextField field = (JTextField) editor.getAutoCompleteSupport().Component();
+                field.setText( "" );
+            }
+
+            public void editingCanceled( ChangeEvent e )
+            {
+                System.out.println(e);
+            }
+        });
+*/
+
+//        combo.setRenderer( new ListItemListCellRenderer() );
+
+        column.setCellEditor( editor );
         column.setCellRenderer(new ListItemTableCellRenderer());
+
+/*
+        taskTable.getSelectionModel().addListSelectionListener( new ListSelectionListener()
+        {
+            public void valueChanged( ListSelectionEvent e )
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    AutoCompleteComboBoxEditor editor = (AutoCompleteComboBoxEditor) projectsCombo.getEditor();
+//                    editor.setItem( null );
+                    JTextField field = (JTextField) editor.getEditorComponent();
+//                    field.setText( "" );
+                    editor.selectAll();
+                }
+            }
+        });
+*/
     }
     
     protected void buildPopupMenu(JPopupMenu popup)
@@ -107,40 +192,4 @@ public class WorkspaceUserInboxView
         dialogSelection = dialog.getSelected();
         super.forwardTasks();
     }
-
-    public void forwardTask(String identity) throws ResourceException
-    {
-    	((WorkspaceUserInboxModel)model).forward(getTaskTable().getSelectedRow(), identity);
-    }
-    
-
-	public void itemStateChanged(ItemEvent e)
-	{
-		if (e.getStateChange() == ItemEvent.DESELECTED) 
-		{
-			// Event type not of interest.
-			return;
-		}
-		if (e.getSource() instanceof JComboBox)
-		{
-			JComboBox combo = (JComboBox)e.getSource();
-			if(combo.getModel() instanceof ProjectSelectorModel)
-			{
-				ProjectSelectorModel model = (ProjectSelectorModel)combo.getModel();
-				ListItemValue project = (ListItemValue)model.getSelectedItem();
-				String identity = project.entity().get().identity();
-				try
-				{
-					forwardTask(identity);
-					if(taskTable.getCellEditor() != null)
-					{
-						taskTable.getCellEditor().stopCellEditing();
-					}
-				} catch (ResourceException e1)
-				{
-					throw new OperationException(WorkspaceResources.could_not_forward_task_to_project, e1);
-				}
-			}
-		}
-	}
 }
