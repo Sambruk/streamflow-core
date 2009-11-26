@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 public class LabelSelectionView
         extends JPanel
@@ -48,6 +49,7 @@ public class LabelSelectionView
         list.setCellRenderer( new ListItemListCellRenderer() );
 
         JScrollPane listPane = new JScrollPane(list);
+        listPane.setPreferredSize( new Dimension((int)listPane.getPreferredSize().getWidth(), (int)listPane.getPreferredSize().getHeight()/2) );
 
         add(filterEdit, BorderLayout.NORTH);
         add(listPane, BorderLayout.CENTER);
