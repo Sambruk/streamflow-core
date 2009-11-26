@@ -19,46 +19,40 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
-import se.streamsource.streamflow.domain.form.FormValue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Observer;
+import java.util.Observable;
 
 /**
  * JAVADOC
  */
 public class FormView
     extends JPanel
+    implements Observer
 {
     private AdministrationView adminView;
-    private FormValue form;
+    private FormModel model;
 
     @Structure
     ObjectBuilderFactory obf;
-    private ProjectFormDefinitionClientResource formResource;
+    private JTextArea textArea;
 
     public FormView(@Service ApplicationContext context,
-                    @Uses ProjectFormDefinitionClientResource formResource,
+                    @Uses FormModel model,
                     @Uses AdministrationView adminView)
     {
         super(new BorderLayout());
-
+        this.model = model;
         ActionMap am = context.getActionMap(this);
 
         this.adminView = adminView;
-        this.formResource = formResource;
-        try
-        {
-            this.form = formResource.form();
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
 
-        JTextArea textArea = new JTextArea(form.note().get());
+
+        model.addObserver(this);
+        textArea = new JTextArea(model.getNote());
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setEditable(false);
@@ -71,9 +65,18 @@ public class FormView
     public void edit()
     {
         FormEditAdminView formEditAdminView = obf.newObjectBuilder(FormEditAdminView.class).
-                use(form, formResource).newInstance();
+                use(model.getResource()).newInstance();
 
         adminView.show( formEditAdminView );
     }
 
+    public FormModel getModel()
+    {
+        return model;
+    }
+
+    public void update(Observable observable, Object o)
+    {
+        textArea.setText(model.getNote());
+    }
 }

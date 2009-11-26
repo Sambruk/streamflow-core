@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
@@ -50,6 +51,9 @@ public class FormsModel
     ProjectFormDefinitionsClientResource forms;
 
     @Structure
+    ObjectBuilderFactory obf;
+
+    @Structure
     ValueBuilderFactory vbf;
 
     EventSourceListener subscriber;
@@ -58,10 +62,11 @@ public class FormsModel
     private List<ListItemValue> formsList;
 
     private EventHandlerFilter eventFilter;
+    private FormModel formModel;
 
     public FormsModel()
     {
-        eventFilter = new EventHandlerFilter( this, "addedForm", "removedForm");
+        eventFilter = new EventHandlerFilter( this, "createdForm", "removedForm", "changedDescription");
     }
 
     public int getSize()
@@ -128,13 +133,16 @@ public class FormsModel
     public void notifyEvent( DomainEvent event )
     {
         eventFilter.handleEvent( event );
+        if (formModel != null)
+        {
+            formModel.notifyEvent(event);
+        }
     }
 
     public boolean handleEvent( DomainEvent event )
     {
         Logger.getLogger("administration").info("Refresh project form definitions");
         refresh();
-
         return false;
     }
 
@@ -146,5 +154,10 @@ public class FormsModel
     public ProjectFormDefinitionsClientResource getFormsResource()
     {
         return forms;
+    }
+
+    public void setFormModel(FormModel formModel)
+    {
+        this.formModel = formModel;
     }
 }

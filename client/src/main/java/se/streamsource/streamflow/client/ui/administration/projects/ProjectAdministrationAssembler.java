@@ -33,13 +33,16 @@ public class ProjectAdministrationAssembler
         UIAssemblers.addMV(module, ProjectsModel.class,
                 ProjectsView.class);
 
-        UIAssemblers.addViews(module, ProjectView.class, LabelsView.class, FormsAdminView.class, FormView.class,
-                FormEditAdminView.class);
+        UIAssemblers.addViews(module, ProjectView.class, LabelsView.class, FormsAdminView.class);
 
         UIAssemblers.addMV(module, ProjectMembersModel.class,
                 ProjectMembersView.class);
 
         UIAssemblers.addMV(module, FormsModel.class, FormsView.class);
+
+        UIAssemblers.addMV(module, FormModel.class, FormView.class);
+
+        UIAssemblers.addMV(module, FormEditAdminModel.class, FormEditAdminView.class);
 
         UIAssemblers.addMV(module, FieldsModel.class, FieldsView.class);
 

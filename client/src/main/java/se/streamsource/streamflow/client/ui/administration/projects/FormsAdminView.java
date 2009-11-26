@@ -55,10 +55,12 @@ public class FormsAdminView
 
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
+                        FormView formView = obf.newObjectBuilder(FormView.class).
+                                use(formsView.getModel().getFormsResource().form(idx),
+                                        adminView).newInstance();
+                        formsView.setFormModel(formView.getModel());
                         setRightComponent(
-                                obf.newObjectBuilder(FormView.class).
-                                        use(formsView.getModel().getFormsResource().form(idx),
-                                                adminView).newInstance());
+                                formView);
                     } else
                     {
                         setRightComponent(new JPanel());

@@ -31,7 +31,6 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.domain.form.FormValue;
@@ -54,22 +53,21 @@ public class FormEditAdminView
 {
 
     StateBinder formValueBinder;
-    private ProjectFormDefinitionClientResource formResource;
     private ValueBuilderFactory vbf;
+    private FormEditAdminModel model;
 
 
     public FormEditAdminView(@Service ApplicationContext context,
                              @Uses FieldsView fieldsView,
-                             @Uses FormValue form,
-                             @Uses final ProjectFormDefinitionClientResource formResource,
+                             @Uses final FormEditAdminModel model,
                              @Structure final ObjectBuilderFactory obf,
                              @Structure ValueBuilderFactory vbf)
     {
         super();
 
+        this.model = model;
         JPanel leftPanel = new JPanel(new BorderLayout());
 
-        this.formResource = formResource;
         this.vbf = vbf;
         FormLayout formLayout = new FormLayout(
                 "200dlu","");
@@ -88,7 +86,7 @@ public class FormEditAdminView
 
         formValueBinder.addObserver(this);
 
-        FormValue value = vbf.newValueBuilder(FormValue.class).withPrototype(form).prototype();
+        FormValue value = vbf.newValueBuilder(FormValue.class).withPrototype(model.getFormValue()).prototype();
         formValueBinder.updateWith(value);
 
         formBuilder.append(i18n.text(AdministrationResources.fields_label), fieldsView);
@@ -114,48 +112,7 @@ public class FormEditAdminView
                     {
                             setRightComponent(
                                     obf.newObjectBuilder(FieldValueTextEditView.class).
-                                            use(formResource.fields().field(idx)).newInstance());
-
-                            /*
-                            if (value instanceof TextFieldValue)
-                            {
-                                setRightComponent(
-                                        obf.newObjectBuilder(FieldValueTextEditView.class).
-                                                use(definitionValue).newInstance());
-                            } else if (value instanceof FieldValue)
-                            {
-                                setRightComponent(
-                                        obf.newObjectBuilder(FieldValueNumberEditView.class).
-                                                use(definitionValue).newInstance());
-                            } else if (value instanceof FieldValue)
-                            {
-                                setRightComponent(
-                                        obf.newObjectBuilder(FieldValueDateEditView.class).
-                                                use(definitionValue).newInstance());
-                            } else if (value instanceof FieldValue)
-                            {
-                                setRightComponent(
-                                        obf.newObjectBuilder(FieldValueSingleSelectionEditView.class).
-                                                use(definitionValue).newInstance());
-                            } else if (value instanceof FieldValue)
-                            {
-                                setRightComponent(
-                                        obf.newObjectBuilder(FieldValueMultiSelectionEditView.class).
-                                                use(definitionValue).newInstance());
-                            } else if (value instanceof FieldValue)
-                            {
-                                setRightComponent(
-                                        obf.newObjectBuilder(FieldValueCommentEditView.class).
-                                                use(definitionValue).newInstance());
-                            } else
-                            {
-                                setRightComponent(new JPanel());
-                            }
-
-                        } catch (ResourceException e1)
-                        {
-                            e1.printStackTrace();
-                        }*/
+                                            use(model.getFieldResource(idx)).newInstance());
                     } else
                     {
                         setRightComponent(new JPanel());
@@ -175,7 +132,7 @@ public class FormEditAdminView
             {
                 ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
                 builder.prototype().string().set((String) property.get());
-                formResource.changeDescription(builder.newInstance());
+                model.changeDescription(builder.newInstance());
             } catch (ResourceException e)
             {
                 throw new OperationException(TaskResources.could_not_change_name, e);
@@ -186,7 +143,7 @@ public class FormEditAdminView
             {
                 ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
                 builder.prototype().string().set((String) property.get());
-                formResource.changeNote(builder.newInstance());
+                model.changeNote(builder.newInstance());
             } catch (ResourceException e)
             {
                 throw new OperationException(TaskResources.could_not_change_note, e);

@@ -108,4 +108,9 @@ public class FormsView
     {
         return model;
     }
+
+    public void setFormModel(FormModel formModel)
+    {
+        model.setFormModel(formModel);
+    }
 }
