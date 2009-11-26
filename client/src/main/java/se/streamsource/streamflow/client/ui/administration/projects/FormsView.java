@@ -77,7 +77,7 @@ public class FormsView
         dialogs.showOkCancelHelpDialog(this, formDialog, "Create new form");
 
         String name = formDialog.getName();
-        if (name != null && !name.isEmpty())
+        if (name != null && !"".equals(name))
         {
             model.createForm(name);
         }

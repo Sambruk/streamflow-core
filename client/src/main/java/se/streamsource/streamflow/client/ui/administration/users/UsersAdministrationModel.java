@@ -19,6 +19,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.HtmlErrorMessageExtractor;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
@@ -127,7 +128,7 @@ public class UsersAdministrationModel
             organizations.createUser(username, password);
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.valueOf(HtmlErrorMessageExtractor.parse(e.getMessage())), e);
+            throw new OperationException(ErrorResources.valueOf(HtmlErrorMessageExtractor.parse(e.getMessage())), e);
         }
     }
 

@@ -21,6 +21,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
@@ -58,7 +59,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 		String queryString = query.string().get().trim();
         if(queryString.matches("[\\$\\.\\*\\+\\?\\(\\)\\[\\]\\|\\^\\{\\}\\\\]+"))
         {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "search_string_malformed");
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ErrorResources.search_string_malformed.toString());
         }
 
 		if (queryString.length() > 0)

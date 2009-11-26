@@ -21,10 +21,12 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.application.error.ErrorResources;
 
 import java.util.Date;
 import java.util.List;
@@ -49,9 +51,16 @@ public class SearchResultTableModel
         return (SearchClientResource) super.getResource();
     }
 
-    public void search(String text) throws ResourceException
+    public void search(String text)
     {
-        getResource().search(text);
+
+        try
+        {
+            getResource().search(text);
+        } catch (ResourceException e)
+        {
+            throw new OperationException(ErrorResources.search_string_malformed, e);
+        }
         refresh();
     }
 

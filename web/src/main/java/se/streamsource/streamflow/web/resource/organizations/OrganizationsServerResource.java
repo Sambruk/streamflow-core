@@ -31,6 +31,7 @@ import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
@@ -112,10 +113,10 @@ public class OrganizationsServerResource
             organizations.createUser(userCommand.username().get(), userCommand.password().get());
         } catch (ConstraintViolationException cve)
         {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "username_password_cviolation");
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ErrorResources.username_password_cviolation.toString());
         } catch (IllegalArgumentException iae)
         {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "user_already_exists");
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ErrorResources.user_already_exists.toString());
         }
     }
 

@@ -71,7 +71,7 @@ public class FieldsView
         FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog, "Add new field to form");
 
-        if (dialog.getName()!=null && !dialog.getName().isEmpty())
+        if (dialog.getName()!=null && !"".equals(dialog.getName()))
         {
             model.addField(dialog.getName(), dialog.getFieldType());
         }
