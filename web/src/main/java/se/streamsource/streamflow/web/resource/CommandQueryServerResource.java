@@ -168,6 +168,7 @@ public class CommandQueryServerResource
                                 writer.write(commandEvents.commandEvents().toJSON());
                             }
                         };
+                        rep.setCharacterSet( CharacterSet.UTF_8 );
                     }
 
                     return rep;
