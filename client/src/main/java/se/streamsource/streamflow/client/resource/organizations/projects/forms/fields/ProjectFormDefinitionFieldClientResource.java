@@ -16,10 +16,12 @@ package se.streamsource.streamflow.client.resource.organizations.projects.forms.
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.resource.roles.BooleanDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -35,5 +37,20 @@ public class ProjectFormDefinitionFieldClientResource
     public FieldDefinitionValue field() throws ResourceException
     {
         return query("field", FieldDefinitionValue.class);
+    }
+
+    public void updateMandatory(BooleanDTO mandatory) throws ResourceException
+    {
+        putCommand("updateMandatory", mandatory);
+    }
+
+    public void changeDescription(StringDTO newDescription) throws ResourceException
+    {
+        putCommand("changeDescription", newDescription);
+    }
+
+    public void changeNote(StringDTO newNote) throws ResourceException
+    {
+        putCommand("changeNote", newNote);
     }
 }

@@ -19,6 +19,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -35,7 +36,6 @@ public class ProjectFormDefinitionServerResource
     public FormValue form()
     {
         String identity = getRequest().getAttributes().get("project").toString();
-
         String index = getRequest().getAttributes().get("index").toString();
 
         UnitOfWork uow = uowf.currentUnitOfWork();
@@ -59,5 +59,45 @@ public class ProjectFormDefinitionServerResource
         builder.prototype().fields().set(new ListValueBuilder(vbf).addDescribableItems( form.fields()).newList());
 
         return builder.newInstance();
+    }
+
+    public void changeDescription(StringDTO newDescription)
+    {
+        String identity = getRequest().getAttributes().get("project").toString();
+        String index = getRequest().getAttributes().get("index").toString();
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        FormsQueries forms = uow.get( FormsQueries.class, identity);
+
+        checkPermission(forms);
+
+        List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
+
+        ListItemValue value = itemValues.get(Integer.parseInt(index));
+
+        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+
+        form.changeDescription(newDescription.string().get());
+    }
+
+    public void changeNote(StringDTO newNote)
+    {
+        String identity = getRequest().getAttributes().get("project").toString();
+        String index = getRequest().getAttributes().get("index").toString();
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        FormsQueries forms = uow.get( FormsQueries.class, identity);
+
+        checkPermission(forms);
+
+        List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
+
+        ListItemValue value = itemValues.get(Integer.parseInt(index));
+
+        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+
+        form.changeNote(newNote.string().get());
     }
 }

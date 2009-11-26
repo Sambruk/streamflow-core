@@ -36,7 +36,7 @@ public enum TaskResources
     could_not_add_comment,
     could_not_remove_label,
     could_not_add_label, 
-    could_not_get_owner_labels, 
-    could_not_get_organisation_labels
+    could_not_get_owner_labels,
+    could_not_change_mandatory, could_not_get_organisation_labels
 
 }

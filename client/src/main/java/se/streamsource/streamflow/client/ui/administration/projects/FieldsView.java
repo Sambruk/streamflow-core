@@ -71,14 +71,21 @@ public class FieldsView
         FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog, "Add new field to form");
 
-        model.addField(dialog.getName(), dialog.getFieldType());
+        if (dialog.getName()!=null && !dialog.getName().isEmpty())
+        {
+            model.addField(dialog.getName(), dialog.getFieldType());
+        }
     }
 
 
     @org.jdesktop.application.Action
     public void remove()
     {
-        // remove the field
+        int index = fieldList.getSelectedIndex();
+        if (index != -1)
+        {
+            model.removeField(index);            
+        }
     }
 
     @org.jdesktop.application.Action

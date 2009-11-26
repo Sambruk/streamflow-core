@@ -21,6 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsClientResource;
 import se.streamsource.streamflow.domain.form.FormValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -41,5 +42,15 @@ public class ProjectFormDefinitionClientResource
     public ProjectFormDefinitionFieldsClientResource fields()
     {
         return getSubResource("fields", ProjectFormDefinitionFieldsClientResource.class);
+    }
+
+    public void changeDescription(StringDTO newDescription) throws ResourceException
+    {
+        putCommand("changeDescription", newDescription);
+    }
+
+    public void changeNote(StringDTO newNote) throws ResourceException
+    {
+        putCommand("changeNote", newNote);
     }
 }

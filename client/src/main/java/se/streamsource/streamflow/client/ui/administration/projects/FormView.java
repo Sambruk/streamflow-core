@@ -61,6 +61,7 @@ public class FormView
         JTextArea textArea = new JTextArea(form.note().get());
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        textArea.setEditable(false);
         add(textArea, BorderLayout.CENTER);
         add(new JButton(am.get("edit")), BorderLayout.SOUTH);
 

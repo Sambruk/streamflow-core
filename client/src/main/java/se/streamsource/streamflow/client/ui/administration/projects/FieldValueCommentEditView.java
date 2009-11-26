@@ -29,13 +29,13 @@ import java.awt.*;
 /**
  * JAVADOC
  */
-public class ValueDefinitionCommentEditView
+public class FieldValueCommentEditView
     extends JScrollPane
 {
 
 
-    public ValueDefinitionCommentEditView(@Service ApplicationContext context,
-                                         @Uses FieldEditModel model)
+    public FieldValueCommentEditView(@Service ApplicationContext context,
+                                         @Uses FieldValueTextEditModel model)
     {
         JPanel panel = new JPanel(new BorderLayout());
 

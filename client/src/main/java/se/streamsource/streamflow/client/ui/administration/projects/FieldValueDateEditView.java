@@ -29,13 +29,13 @@ import java.awt.*;
 /**
  * JAVADOC
  */
-public class ValueDefinitionSingleSelectionEditView
+public class FieldValueDateEditView
     extends JScrollPane
 {
 
 
-    public ValueDefinitionSingleSelectionEditView(@Service ApplicationContext context,
-                                         @Uses FieldEditModel model)
+    public FieldValueDateEditView(@Service ApplicationContext context,
+                                         @Uses FieldValueTextEditModel model)
     {
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -47,7 +47,7 @@ public class ValueDefinitionSingleSelectionEditView
 
         DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, fieldPanel);
 
-        formBuilder.append("Type:", new JLabel(i18n.text(FieldTypes.single_selection)));
+        formBuilder.append("Type:", new JLabel(i18n.text(FieldTypes.date)));
         formBuilder.append("Mandatory", new Checkbox());
         formBuilder.append("Name", new TextField(value.description().get()));
         TextArea textArea = new TextArea(value.note().get());

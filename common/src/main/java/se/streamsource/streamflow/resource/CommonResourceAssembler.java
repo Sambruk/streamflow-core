@@ -37,6 +37,7 @@ import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
+import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -58,6 +59,7 @@ public class CommonResourceAssembler
         // Commands
         module.addValues(RegisterUserCommand.class,
                 ChangePasswordCommand.class,
+                BooleanDTO.class,
                 StringDTO.class,
                 DateDTO.class,
                 EntityReferenceDTO.class,

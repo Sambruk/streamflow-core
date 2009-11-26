@@ -29,13 +29,13 @@ import java.awt.*;
 /**
  * JAVADOC
  */
-public class ValueDefinitionNumberEditView
+public class FieldValueMultiSelectionEditView
     extends JScrollPane
 {
 
 
-    public ValueDefinitionNumberEditView(@Service ApplicationContext context,
-                                         @Uses FieldEditModel model)
+    public FieldValueMultiSelectionEditView(@Service ApplicationContext context,
+                                         @Uses FieldValueTextEditModel model)
     {
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -47,7 +47,7 @@ public class ValueDefinitionNumberEditView
 
         DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, fieldPanel);
 
-        formBuilder.append("Type:", new JLabel(i18n.text(FieldTypes.number)));
+        formBuilder.append("Type:", new JLabel(i18n.text(FieldTypes.multi_selection)));
         formBuilder.append("Mandatory", new Checkbox());
         formBuilder.append("Name", new TextField(value.description().get()));
         TextArea textArea = new TextArea(value.note().get());

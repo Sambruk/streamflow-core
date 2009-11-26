@@ -52,7 +52,8 @@ public class FieldCreationDialog
 
         textField = new TextField();
         formBuilder.append("Name", textField);
-        box = new JComboBox(new String[]{"Text","Number","Date","Single selection", "Multi selection", "Comment", "Page break"});
+        //box = new JComboBox(new String[]{"Text","Number","Date","Single selection", "Multi selection", "Comment", "Page break"});
+        box = new JComboBox(new String[]{"Text"});
         formBuilder.append("Value Type", box);
         add(panel, BorderLayout.CENTER);
     }

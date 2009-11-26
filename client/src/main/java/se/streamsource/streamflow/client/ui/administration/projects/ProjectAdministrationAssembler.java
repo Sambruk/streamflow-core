@@ -43,7 +43,7 @@ public class ProjectAdministrationAssembler
 
         UIAssemblers.addMV(module, FieldsModel.class, FieldsView.class);
 
-        UIAssemblers.addMV(module, FieldEditModel.class, ValueDefinitionTextEditView.class);
+        UIAssemblers.addMV(module, FieldValueTextEditModel.class, FieldValueTextEditView.class);
 
         UIAssemblers.addModels(module, FormsSelectionModel.class);
 

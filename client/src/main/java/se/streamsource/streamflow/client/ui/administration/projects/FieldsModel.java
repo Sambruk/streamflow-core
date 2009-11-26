@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -27,18 +26,21 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * JAVADOC
  */
 public class FieldsModel
     extends AbstractListModel
-        implements Refreshable
+        implements Refreshable, EventListener, EventHandler
 {
     @Uses
     ProjectFormDefinitionClientResource formResource;
@@ -46,8 +48,7 @@ public class FieldsModel
     @Structure
     ValueBuilderFactory vbf;
 
-    EventSourceListener subscriber;
-    EventSource source;
+    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "changedDescription");
 
     private List<ListItemValue> fieldsList;
 
@@ -90,19 +91,15 @@ public class FieldsModel
         }
     }
 
-    public void removeField(EntityReference field)
+    public void removeField(int index)
     {
-        /*
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(form);
         try
         {
-            forms.removeForm(builder.newInstance());
+            formResource.fields().field(index).delete();
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_remove_form_definition, e);
+            throw new OperationException(AdministrationResources.could_not_remove_field, e);
         }
-        */
     }
 
     public List<ListItemValue> getProjectFormFieldList()
@@ -114,4 +111,21 @@ public class FieldsModel
     {
         return formResource;
     }
+
+    public void notifyEvent( DomainEvent event )
+    {
+        eventFilter.handleEvent( event );
+    }
+
+    public boolean handleEvent( DomainEvent event )
+    {
+        if (formResource.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get()))
+        {
+            Logger.getLogger("adminitration").info("Refresh field list");
+            refresh();
+        }
+
+        return false;
+    }
+
 }
