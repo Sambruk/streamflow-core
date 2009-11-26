@@ -16,7 +16,6 @@ package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
@@ -34,10 +33,9 @@ import java.awt.Dimension;
 public class LabelSelectionView
         extends JPanel
 {
-    public AutoCompleteSupport support;
-    public JTextField filterEdit;
-    public JList list;
-    public EventListModel listModel;
+    private JTextField filterEdit;
+    private JList list;
+    private EventListModel listModel;
 
     public LabelSelectionView()
     {
