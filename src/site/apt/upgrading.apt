@@ -1,0 +1,12 @@
+                                                       ---------
+                                                       Upgrading
+                                                       ---------
+
+Upgrading from version 0.1 to 0.2
+
+	Some minor changes were made between these versions:
+
+	* Something important here.
+
+	* The default value of the <<<whatever>>> property of SomeClass has been changed
+	  from <<<true>>> to <<<false>>>.

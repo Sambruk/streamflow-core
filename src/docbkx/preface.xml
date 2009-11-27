@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preface id="preface">
+  <title>Preface</title>
+
+  <para>StreamFlow is a system for managing the work flow of individuals or
+  organizations. It follows the Getting Things Done (GTD) thinking in that it
+  should be easy to create new projects or tasks, etc. It provides statistics
+  that can be used by third-party reporting tools. As a bonus, it also
+  integrates easily with external systems.</para>
+
+  <para>Other systems are terrible. They can be described here, thus
+  motivating for the development of StreamFlow. </para>
+</preface>

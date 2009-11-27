@@ -1,0 +1,51 @@
+                                                       ---------
+                                                       Downloads
+                                                       ---------
+
+Downloads
+
+* Get the latest StreamFlow releases here
+
+	* <<StreamFlow 0.2.0.RELEASE is the current production release>>
+
+		* {{{http://www.streamsource.se/download/community?project=StreamFlow}Download}} | {{{http://static.streamsource.se/streamflow/docs/0.2.x/changelog.txt}Changelog}} | {{{http://static.streamsource.se/streamflow/docs/0.2.x/reference/html/}Documentation (HTML)}} | {{{http://static.streamsource.se/streamflow/docs/0.2.x/reference/pdf/streamflow-reference.pdf}Documentation (PDF)}} | {{{http://static.streamsource.se/streamflow/docs/0.2.x/apidocs/}API}}
+	
+	* <<StreamFlow 0.2.1 is the upcoming production release>>
+
+		* {{{snapshots.html}Download nightly snapshots}}
+
+Sources
+
+	Sources are available in the StreamSource Subversion repository:
+
+	* https://source.waygroup.se/svn/streamsource/streamflow/trunk (latest sources)
+
+	* https://source.waygroup.se/svn/streamsource/streamflow/tags/streamflow-0.2.0.RELEASE (0.2.0 release sources)
+
+Maven Users
+
+	Artifacts for all production releases are available from the central Maven repository. The dependencies in 0.2.0 are:
+
++--------------------------------------------------+
+<dependency>
+	<groupId>org.springframework.ldap</groupId>
+	<artifactId>streamflow-war</artifactId>
+	<version>0.2.0.RELEASE</version>
+</dependency>
++--------------------------------------------------+
+
+	Release candidates and milestones are available from the StreamSource milestone repository:
+
++--------------------------------------------------+
+<repositories>
+	<repository>
+		<id>streamsource-milestone</id>
+		<name>StreamSource Milestone Repository</name>
+		<url>http://s3.amazonaws.com/maven.streamsource.se/milestone</url>
+	</repository>
+</repositories>
++--------------------------------------------------+
+
+
+	At this point there are no milestones or release candidates.
+

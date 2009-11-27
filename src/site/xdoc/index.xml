@@ -1,0 +1,17 @@
+<document>
+    <properties>
+        <title>Home</title>
+    </properties>
+    <body>
+        <h2>What is StreamFlow?</h2>
+		<p> StreamFlow is a system for managing tasks.
+		</p>
+        <h2>Key Features</h2>
+        <ul>
+			<li><b>Some Feature:</b> Some feature description.</li>
+            <li><b>Built by Maven:</b> This assists you in effectively reusing the StreamFlow artifacts
+                in your own Maven-based projects.</li>
+            <li><b>Apache license.</b> You can confidently use StreamFlow in your project.</li>
+        </ul>
+  </body>
+</document>
