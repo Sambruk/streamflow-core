@@ -19,7 +19,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +47,7 @@ public class FieldsView
 
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("add")));
-        toolbar.add(new JButton(am.get("remove")));
+        //toolbar.add(new JButton(am.get("remove")));
         //toolbar.add(new JButton(am.get("up")));
         //toolbar.add(new JButton(am.get("down")));
 
@@ -60,7 +59,7 @@ public class FieldsView
         panel.add(toolbar, BorderLayout.SOUTH);
 
         setViewportView(panel);
-        fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+        //fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
         //fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("up")));
         //fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("down")));
     }
