@@ -20,6 +20,7 @@ import org.jdesktop.swingx.error.ErrorInfo;
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowResources;
@@ -94,7 +95,15 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 
                 try
                 {
-                    showErrorDialog(ex, frame, text(StreamFlowResources.valueOf(HtmlErrorMessageExtractor.parse(ex.getMessage()))));
+                    // special treatment for unauthorized access
+                    if(ex.getCause() instanceof ResourceException
+                       && Status.CLIENT_ERROR_UNAUTHORIZED.equals(((ResourceException)ex.getCause()).getStatus()))
+                    {
+                        showErrorDialog(ex, frame, text(ErrorResources.unauthorized_access));
+                    } else
+                    {
+                        showErrorDialog(ex, frame, text(StreamFlowResources.valueOf(HtmlErrorMessageExtractor.parse(ex.getMessage()))));
+                    }
                 } catch(IllegalArgumentException iae)
                 {
                     // once again in case the resource enum does not exist - now showing non translated error msg
@@ -106,14 +115,14 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 
     private void showErrorDialog(Throwable ex, Frame frame, String errorMsg) {
         JXErrorPane pane = new JXErrorPane();
-        pane.setErrorInfo(new ErrorInfo("Uncaught exception", errorMsg, null, "Error", ex, Level.SEVERE, Collections.<String, String>emptyMap()));
+        pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), errorMsg, null, "Error", ex, Level.SEVERE, Collections.<String, String>emptyMap()));
         pane.setPreferredSize(new Dimension(700, 400));
         JXErrorPane.showDialog(frame, pane);
     }
 
     private void showErrorDialog(Throwable ex, Frame frame) {
         JXErrorPane pane = new JXErrorPane();
-        pane.setErrorInfo(new ErrorInfo("Uncaught exception", ex.getMessage(), null, "Error", ex, Level.SEVERE, Collections.<String, String>emptyMap()));
+        pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), ex.getMessage(), null, "Error", ex, Level.SEVERE, Collections.<String, String>emptyMap()));
         pane.setPreferredSize(new Dimension(700, 400));
         JXErrorPane.showDialog(frame, pane);
     }

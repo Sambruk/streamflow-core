@@ -21,5 +21,5 @@ public enum ErrorResources
 {
     search_string_malformed,
     username_password_cviolation,
-    user_already_exists
+    unauthorized_access, error, user_already_exists
 }
