@@ -21,6 +21,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
@@ -52,5 +53,10 @@ public class ProjectFormDefinitionFieldClientResource
     public void changeNote(StringDTO newNote) throws ResourceException
     {
         putCommand("changeNote", newNote);
+    }
+
+    public void moveField(IntegerDTO newIndex) throws ResourceException
+    {
+        putCommand("moveField", newIndex);
     }
 }

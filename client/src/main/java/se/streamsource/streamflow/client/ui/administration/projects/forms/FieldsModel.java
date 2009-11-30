@@ -30,6 +30,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import javax.swing.*;
 import java.util.List;
@@ -123,7 +124,20 @@ public class FieldsModel
                 refresh();
             }
         }
+
         return false;
     }
 
+    public void moveField(int fromIndex, int newIndex)
+    {
+        ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder(IntegerDTO.class);
+        builder.prototype().integer().set(newIndex);
+        try
+        {
+            fieldsResource.field(fromIndex).moveField(builder.newInstance());
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_remove_field, e);
+        }
+    }
 }

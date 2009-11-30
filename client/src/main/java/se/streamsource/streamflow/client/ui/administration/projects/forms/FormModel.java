@@ -63,7 +63,7 @@ public class FormModel
 
     public FormModel(@Uses ProjectFormDefinitionClientResource resource)
     {
-        eventFilter = new EventHandlerFilter( this, "changedNote");
+        eventFilter = new EventHandlerFilter( this, "changedNote", "movedField");
         this.resource = resource;
         refresh();
     }
@@ -135,8 +135,16 @@ public class FormModel
 
     public boolean handleEvent(DomainEvent event)
     {
-        Logger.getLogger("administration").info("Refresh the note");
-        refresh();
+        if (formValue.form().get().identity().equals(event.entity().get()))
+        {
+            if (event.name().get().equals("movedField"))
+            {
+                fieldModels.clear();
+                getFieldsModel().refresh();
+            }
+            Logger.getLogger("administration").info("Refresh the note");
+            refresh();
+        }
         return false;
     }
 

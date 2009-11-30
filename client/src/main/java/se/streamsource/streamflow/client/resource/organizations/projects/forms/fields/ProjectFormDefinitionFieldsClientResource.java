@@ -23,7 +23,7 @@ import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
- * JAVADOC
+ * /organizations/{organization}/projects/{project}/forms/{index}/fields
  */
 public class ProjectFormDefinitionFieldsClientResource
         extends CommandQueryClientResource

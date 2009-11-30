@@ -22,6 +22,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRende
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 
 /**
@@ -38,6 +40,8 @@ public class FieldsView
     @Uses
     Iterable<FieldCreationDialog> fieldCreationDialog;
     private FieldsModel model;
+    private JButton upButton;
+    private JButton downButton;
 
     public FieldsView(@Service ApplicationContext context,
                       @Uses FieldsModel model)
@@ -49,8 +53,12 @@ public class FieldsView
         JPanel toolbar = new JPanel();
         toolbar.add(new JButton(am.get("add")));
         toolbar.add(new JButton(am.get("remove")));
-        //toolbar.add(new JButton(am.get("up")));
-        //toolbar.add(new JButton(am.get("down")));
+        upButton = new JButton(am.get("up"));
+        toolbar.add(upButton);
+        downButton = new JButton(am.get("down"));
+        toolbar.add(downButton);
+        upButton.setEnabled(false);
+        downButton.setEnabled(false);
 
         model.refresh();
         fieldList = new JList(model);
@@ -61,8 +69,25 @@ public class FieldsView
 
         setViewportView(panel);
         fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
-        //fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("up")));
-        //fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("down")));
+        fieldList.addListSelectionListener(new ListSelectionListener()
+        {
+
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    int idx = fieldList.getSelectedIndex();
+
+                    upButton.setEnabled(idx != 0);
+                    downButton.setEnabled(idx != fieldList.getModel().getSize()-1);
+                    if (idx == -1)
+                    {
+                        upButton.setEnabled(false);
+                        downButton.setEnabled(false);
+                    }
+                }
+            }
+        });
     }
 
     @org.jdesktop.application.Action
@@ -92,13 +117,23 @@ public class FieldsView
     @org.jdesktop.application.Action
     public void up()
     {
-
+        int index = fieldList.getSelectedIndex();
+        if (index>0 && index<fieldList.getModel().getSize())
+        {
+            model.moveField(index, index -1);
+            fieldList.setSelectedIndex(index-1);
+        }
     }
 
     @org.jdesktop.application.Action
     public void down()
     {
-
+        int index = fieldList.getSelectedIndex();
+        if (index>=0 && index<fieldList.getModel().getSize()-1)
+        {
+            model.moveField(index, index +1);
+            fieldList.setSelectedIndex(index+1);
+        }
     }
 
     public JList getFieldList()

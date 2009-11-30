@@ -37,10 +37,7 @@ import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
-import se.streamsource.streamflow.resource.roles.BooleanDTO;
-import se.streamsource.streamflow.resource.roles.DateDTO;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.roles.*;
 import se.streamsource.streamflow.resource.task.*;
 import se.streamsource.streamflow.resource.user.*;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskDTO;
@@ -62,6 +59,7 @@ public class CommonResourceAssembler
                 BooleanDTO.class,
                 StringDTO.class,
                 DateDTO.class,
+                IntegerDTO.class,
                 EntityReferenceDTO.class,
                 NewCommentCommand.class,
                 NewUserCommand.class).visibleIn(Visibility.application);

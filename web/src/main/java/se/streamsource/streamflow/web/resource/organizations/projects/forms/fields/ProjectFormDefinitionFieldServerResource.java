@@ -20,6 +20,7 @@ import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
@@ -157,6 +158,29 @@ public class ProjectFormDefinitionFieldServerResource
 
         FieldEntity field = (FieldEntity) form.fields().get(Integer.parseInt(fieldIndex));
         form.removeField(field);
+    }
+
+    public void moveField(IntegerDTO newIndex)
+    {
+        String identity = getRequest().getAttributes().get("project").toString();
+        String index = getRequest().getAttributes().get("index").toString();
+        String fieldIndex = getRequest().getAttributes().get("fieldIndex").toString();
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        FormsQueries forms = uow.get( FormsQueries.class, identity);
+
+        checkPermission(forms);
+
+        List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
+
+        ListItemValue value = itemValues.get(Integer.parseInt(index));
+
+        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+
+        FieldEntity field = (FieldEntity) form.fields().get(Integer.parseInt(fieldIndex));
+
+        form.moveField(field, newIndex.integer().get());
     }
 
 
