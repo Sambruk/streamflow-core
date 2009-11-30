@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.ui.administration.projects.forms;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
@@ -33,8 +32,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import java.util.Observable;
@@ -49,15 +46,10 @@ public class FormModel
 
 {
     @Structure
-    ValueBuilderFactory vbf;
-
-    @Structure
     ObjectBuilderFactory obf;
 
-    EventSourceListener subscriber;
-    EventSource source;
-
     private EventHandlerFilter eventFilter;
+
     private ProjectFormDefinitionClientResource resource;
     private FormValue formValue;
 

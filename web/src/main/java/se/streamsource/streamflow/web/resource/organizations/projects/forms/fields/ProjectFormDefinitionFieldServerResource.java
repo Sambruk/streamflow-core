@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.resource.organizations.projects.forms.fie
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.entity.EntityReference;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -58,6 +59,7 @@ public class ProjectFormDefinitionFieldServerResource
 
         ValueBuilder<FieldDefinitionValue> builder = vbf.newValueBuilder(FieldDefinitionValue.class);
 
+        builder.prototype().field().set(EntityReference.getEntityReference(field));
         builder.prototype().note().set(field.note().get());
         builder.prototype().description().set(field.description().get());
         builder.prototype().fieldValue().set(field.fieldValue().get());

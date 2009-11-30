@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.domain.form;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
@@ -23,6 +24,7 @@ import org.qi4j.api.value.ValueComposite;
 public interface FieldDefinitionValue
     extends ValueComposite
 {
+    Property<EntityReference> field();
     Property<String> description();
     Property<String> note();
     Property<FieldValue> fieldValue();

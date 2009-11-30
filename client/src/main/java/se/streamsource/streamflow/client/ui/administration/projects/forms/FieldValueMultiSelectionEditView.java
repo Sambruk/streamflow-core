@@ -51,8 +51,6 @@ public class FieldValueMultiSelectionEditView
         formBuilder.append("Mandatory", new Checkbox());
         formBuilder.append("Name", new TextField(value.description().get()));
         TextArea textArea = new TextArea(value.note().get());
-        //textArea.setLineWrap(true);
-        //textArea.setWrapStyleWord(true);
         formBuilder.append("Description", textArea);
         panel.add(fieldPanel, BorderLayout.CENTER);
 

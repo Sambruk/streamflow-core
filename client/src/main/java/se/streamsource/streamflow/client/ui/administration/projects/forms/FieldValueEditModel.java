@@ -109,8 +109,11 @@ public class FieldValueEditModel
 
     public boolean handleEvent(DomainEvent event)
     {
-        Logger.getLogger("administration").info("Refresh the field values");
-        refresh();
+        if ( value.field().get().identity().equals( event.entity().get() ))
+        {
+            Logger.getLogger("administration").info("Refresh the field values");
+            refresh();
+        }
         return false;
     }
 

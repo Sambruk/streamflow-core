@@ -52,11 +52,9 @@ public class FormEditAdminView
         extends JSplitPane
     implements Observer
 {
-
     StateBinder formValueBinder;
     private ValueBuilderFactory vbf;
     private FormModel model;
-
 
     public FormEditAdminView(@Service ApplicationContext context,
                              @Uses final FormModel model,

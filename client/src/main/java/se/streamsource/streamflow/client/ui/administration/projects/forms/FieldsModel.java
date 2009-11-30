@@ -104,9 +104,17 @@ public class FieldsModel
         }
     }
 
-    public List<ListItemValue> getProjectFormFieldList()
+    public void moveField(int fromIndex, int newIndex)
     {
-        return fieldsList;
+        ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder(IntegerDTO.class);
+        builder.prototype().integer().set(newIndex);
+        try
+        {
+            fieldsResource.field(fromIndex).moveField(builder.newInstance());
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.could_not_remove_field, e);
+        }
     }
 
     public void notifyEvent( DomainEvent event )
@@ -126,18 +134,5 @@ public class FieldsModel
         }
 
         return false;
-    }
-
-    public void moveField(int fromIndex, int newIndex)
-    {
-        ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder(IntegerDTO.class);
-        builder.prototype().integer().set(newIndex);
-        try
-        {
-            fieldsResource.field(fromIndex).moveField(builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_field, e);
-        }
     }
 }

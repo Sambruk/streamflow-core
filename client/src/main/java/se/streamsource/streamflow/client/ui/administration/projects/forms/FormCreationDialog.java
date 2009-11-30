@@ -39,7 +39,6 @@ public class FormCreationDialog
     private TextField textField;
     private JComboBox box;
 
-
     public FormCreationDialog(@Service ApplicationContext context)
     {
         super(new BorderLayout());

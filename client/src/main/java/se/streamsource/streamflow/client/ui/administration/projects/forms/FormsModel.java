@@ -33,8 +33,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
@@ -51,7 +49,7 @@ public class FormsModel
 
 {
     @Uses
-    ProjectFormDefinitionsClientResource forms;
+    ProjectFormDefinitionsClientResource formsResource;
 
     @Structure
     ObjectBuilderFactory obf;
@@ -59,13 +57,9 @@ public class FormsModel
     @Structure
     ValueBuilderFactory vbf;
 
-    EventSourceListener subscriber;
-    EventSource source;
-
     private List<ListItemValue> formsList;
 
     private EventHandlerFilter eventFilter;
-    private FormModel formModel;
 
     public FormsModel()
     {
@@ -78,7 +72,7 @@ public class FormsModel
         {
             try
             {
-                ListValue value = forms.forms();
+                ListValue value = formsResource.forms();
                 int index = 0;
                 for (ListItemValue listItemValue : value.items().get())
                 {
@@ -88,7 +82,7 @@ public class FormsModel
                     }
                     index++;
                 }
-                ProjectFormDefinitionClientResource resource = forms.form(index);
+                ProjectFormDefinitionClientResource resource = formsResource.form(index);
                 return obf.newObjectBuilder(FormModel.class).use(resource).newInstance();
             } catch (ResourceException e)
             {
@@ -112,7 +106,7 @@ public class FormsModel
     {
         try
         {
-            formsList = forms.forms().items().get();
+            formsList = formsResource.forms().items().get();
             fireContentsChanged( this, 0, getSize() );
         } catch (ResourceException e)
         {
@@ -126,7 +120,7 @@ public class FormsModel
         builder.prototype().string().set(formName);
         try
         {
-            forms.createForm(builder.newInstance());
+            formsResource.createForm(builder.newInstance());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_add_form_definition, e);
@@ -139,7 +133,7 @@ public class FormsModel
         builder.prototype().entity().set(form);
         try
         {
-            forms.addForm(builder.newInstance());
+            formsResource.addForm(builder.newInstance());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_add_form_definition, e);
@@ -152,7 +146,7 @@ public class FormsModel
         builder.prototype().entity().set(form);
         try
         {
-            forms.removeForm(builder.newInstance());
+            formsResource.removeForm(builder.newInstance());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_remove_form_definition, e);
@@ -170,19 +164,12 @@ public class FormsModel
 
     public boolean handleEvent( DomainEvent event )
     {
-        Logger.getLogger("administration").info("Refresh project form definitions");
-        refresh();
+        if (formsResource.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get()))
+        {
+            Logger.getLogger("administration").info("Refresh project form definitions");
+            refresh();
+        }
         return false;
-    }
-
-    public List<ListItemValue> getProjectFormsList()
-    {
-        return formsList;
-    }
-
-    public ProjectFormDefinitionsClientResource getFormsResource()
-    {
-        return forms;
     }
 
     public FormModel getFormModel(String identity)

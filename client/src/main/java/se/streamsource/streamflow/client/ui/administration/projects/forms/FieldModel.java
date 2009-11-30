@@ -14,18 +14,13 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 
 import javax.swing.*;
 import java.util.List;
@@ -39,12 +34,6 @@ public class FieldModel
 {
     @Uses
     ProjectFormDefinitionClientResource formResource;
-
-    @Structure
-    ValueBuilderFactory vbf;
-
-    EventSourceListener subscriber;
-    EventSource source;
 
     private List<ListItemValue> fieldsList;
 
@@ -66,46 +55,7 @@ public class FieldModel
             fireContentsChanged( this, 0, getSize() );
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_members, e);
+            throw new OperationException(AdministrationResources.could_not_get_fields, e);
         }
-    }
-
-    public void addField(EntityReference field)
-    {
-        /*
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(form);
-        try
-        {
-            fieldsResource.fields().addField(builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_add_form_definition, e);
-        }*/
-    }
-
-    public void removeField(EntityReference field)
-    {
-        /*
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(form);
-        try
-        {
-            forms.removeForm(builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_form_definition, e);
-        }
-        */
-    }
-
-    public List<ListItemValue> getProjectFormFieldList()
-    {
-        return fieldsList;
-    }
-
-    public ProjectFormDefinitionClientResource getFormsResource()
-    {
-        return formResource;
     }
 }
