@@ -26,8 +26,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.StreamFlowResources;
 
 import javax.swing.*;
@@ -81,7 +83,7 @@ public class ProjectMembersView
     public void add()
     {
         SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use(membersModel.getFilterResource()).newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+        dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.add_user_or_group_title));
         Set<String> members = dialog.getUsersAndGroups();
         if (members != null)
         {

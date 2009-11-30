@@ -23,8 +23,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -75,7 +77,7 @@ public class AdministratorsView
     public void add()
     {
         SelectUsersAndGroupsDialog dialog = selectUsersAndGroupsDialogs.use(model.getFilterResource()).newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+        dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.add_user_or_group_title));
         Set<String> added = dialog.getUsersAndGroups();
         if (added != null)
         {

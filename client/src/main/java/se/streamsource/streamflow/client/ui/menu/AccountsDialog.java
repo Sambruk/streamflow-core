@@ -25,15 +25,17 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.ui.administration.AccountView;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.administration.AccountResources;
+import se.streamsource.streamflow.client.ui.administration.AccountView;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -131,7 +133,7 @@ public class AccountsDialog
     public void add() throws ResourceException, UnitOfWorkCompletionException
     {
         CreateAccountDialog dialog = createAccountDialog.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+        dialogs.showOkCancelHelpDialog(this, dialog, text(AccountResources.create_account_title));
 
         if (dialog.settings() != null)
         {

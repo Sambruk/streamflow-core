@@ -26,5 +26,5 @@ public enum AccountResources
     password_label,
     testconnection_separator,
     connected_separator,
-    registration_separator
+    create_account_title, account_title, registration_separator
 }

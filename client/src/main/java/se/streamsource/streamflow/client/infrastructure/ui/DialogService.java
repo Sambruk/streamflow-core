@@ -66,7 +66,7 @@ public class DialogService
         return dialog;
     }
 
-    public void showOkDialog(Component component, JComponent main)
+    public JXDialog showOkDialog(Component component, JComponent main)
     {
         Window window = WindowUtils.findWindow(component);
         JXDialog dialog;
@@ -96,6 +96,8 @@ public class DialogService
                 finalDialog.setVisible(false);
             }
         });
+
+        return dialog;
     }
 
     private JPanel createHelpOKCancelApplyBar(
@@ -130,4 +132,8 @@ public class DialogService
     }
 
 
+    public void showOkDialog(Component component, JComponent main, String title)
+    {
+        showOkDialog(component,main).setTitle(title);  
+    }
 }

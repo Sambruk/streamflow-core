@@ -41,8 +41,10 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
+import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
@@ -56,11 +58,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import javax.swing.UnsupportedLookAndFeelException;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
@@ -247,7 +246,7 @@ public class StreamFlowApplication
     public void manageAccounts()
     {
         AccountsDialog dialog = accountsDialog.use(accountsModel).newInstance();
-        dialogs.showOkDialog(getMainFrame(), dialog);
+        dialogs.showOkDialog(getMainFrame(), dialog, text(AccountResources.account_title));
     }
 
     @Action

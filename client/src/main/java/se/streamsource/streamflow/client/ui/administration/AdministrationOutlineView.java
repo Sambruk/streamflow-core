@@ -27,9 +27,12 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
@@ -51,6 +54,9 @@ public class AdministrationOutlineView
     DialogService dialogs;
     @Uses
     Iterable<NameDialog> nameDialogs;
+
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
 
     private AdministrationModel model;
 
@@ -157,7 +163,7 @@ public class AdministrationOutlineView
             OrganizationalStructureAdministrationNode orgNode = (OrganizationalStructureAdministrationNode) node;
 
             NameDialog dialog = nameDialogs.iterator().next();
-            dialogs.showOkCancelHelpDialog(this, dialog);
+            dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.create_ou_title));
             if (dialog.name() != null)
             {
                 ArrayList<Integer> expandedRows = new ArrayList<Integer>();
@@ -191,8 +197,14 @@ public class AdministrationOutlineView
             if (parent instanceof OrganizationalStructureAdministrationNode)
             {
                 OrganizationalStructureAdministrationNode orgParent = (OrganizationalStructureAdministrationNode) parent;
-                orgParent.model().removeOrganizationalUnit(orgNode.ou().entity().get());
-                model.refresh();
+
+                ConfirmationDialog dialog = confirmationDialog.iterator().next();
+                dialogs.showOkCancelHelpDialog(this, dialog, text(StreamFlowResources.confirmation));
+                if(dialog.isConfirmed())
+                {
+                    orgParent.model().removeOrganizationalUnit(orgNode.ou().entity().get());
+                    model.refresh();
+                }
 
             }
         }

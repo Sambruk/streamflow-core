@@ -21,8 +21,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -80,7 +82,7 @@ public class GroupsView
     public void add()
     {
         NameDialog dialog = obf.newObject(NameDialog.class);
-        dialogs.showOkCancelHelpDialog(this, dialog);
+        dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.add_group_title));
         String name = dialog.name();
         if (name != null)
         {

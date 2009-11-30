@@ -20,8 +20,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -76,7 +78,7 @@ public class ProjectsView
     {
         NameDialog dialog = nameDialogs.iterator().next();
 
-        dialogs.showOkCancelHelpDialog(this, dialog);
+        dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.add_project_title));
 
         if (dialog.name() != null)
         {

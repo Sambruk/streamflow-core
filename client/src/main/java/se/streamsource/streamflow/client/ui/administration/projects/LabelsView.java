@@ -23,7 +23,9 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 
 import javax.swing.*;
@@ -72,7 +74,7 @@ public class LabelsView
     public void add()
     {
         NameDialog dialog = nameDialogs.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+        dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.add_label_title));
         String name = dialog.name();
         if (name != null)
         {
