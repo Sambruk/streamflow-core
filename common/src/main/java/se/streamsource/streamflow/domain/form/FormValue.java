@@ -17,7 +17,6 @@ package se.streamsource.streamflow.domain.form;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * JAVADOC
@@ -28,6 +27,4 @@ public interface FormValue
     Property<EntityReference> form();
     Property<String> description();
     Property<String> note();
-
-    Property<ListValue> fields();
 }

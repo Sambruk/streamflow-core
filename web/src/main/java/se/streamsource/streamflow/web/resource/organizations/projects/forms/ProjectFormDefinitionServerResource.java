@@ -18,7 +18,6 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
@@ -56,8 +55,6 @@ public class ProjectFormDefinitionServerResource
         builder.prototype().note().set(form.note().get());
         builder.prototype().description().set(form.description().get());
         builder.prototype().form().set(value.entity().get());
-
-        builder.prototype().fields().set(new ListValueBuilder(vbf).addDescribableItems( form.fields()).newList());
 
         return builder.newInstance();
     }
