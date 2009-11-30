@@ -22,6 +22,8 @@ import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.
 
 import java.util.Date;
 
+import javax.swing.ImageIcon;
+
 /**
  * JAVADOC
  */
@@ -31,8 +33,8 @@ public class WorkspaceUserAssignmentsModel
     public WorkspaceUserAssignmentsModel(@Uses WorkspaceUserAssignmentsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(created_column_header), text(complete_task_header)};
-        columnClasses = new Class[]{String.class, Date.class, Boolean.class};
+        columnNames = new String[]{text(description_column_header), text(created_column_header), text(task_status_header)};
+        columnClasses = new Class[]{String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false};
     }
 

@@ -37,6 +37,20 @@ public enum TaskResources
     could_not_remove_label,
     could_not_add_label, 
     could_not_get_owner_labels,
-    could_not_change_mandatory, could_not_get_organisation_labels
+    could_not_change_mandatory, 
+    could_not_get_organisation_labels,
+    
+    // Task statuses
+    task_status_active_icon,
+    task_status_archived_icon,
+    task_status_completed_icon,
+    task_status_done_icon,
+    task_status_dropped_icon,
+    task_status_active_text,
+    task_status_archived_text,
+    task_status_completed_text,
+    task_status_done_text,
+    task_status_dropped_text
+
 
 }

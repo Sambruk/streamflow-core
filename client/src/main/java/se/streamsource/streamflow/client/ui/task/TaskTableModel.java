@@ -205,7 +205,9 @@ public abstract class TaskTableModel<T extends TaskListDTO>
             case 1:
                 return task.creationDate().get();
             case 2:
-                return !task.status().get().equals(TaskStates.ACTIVE);
+            {
+                return task.status().get();
+            }
             case IS_READ:
                 return task.isRead().get();
             case IS_DROPPED:

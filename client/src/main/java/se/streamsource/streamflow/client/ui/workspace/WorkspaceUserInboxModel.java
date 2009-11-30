@@ -53,8 +53,8 @@ public class WorkspaceUserInboxModel
     public WorkspaceUserInboxModel(@Uses WorkspaceUserInboxClientResource resource, @Structure ObjectBuilderFactory obf)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(project_column_header), text(created_column_header), text(complete_task_header)};
-        columnClasses = new Class[]{String.class, JComboBox.class, Date.class, Boolean.class};
+        columnNames = new String[]{text(description_column_header), text(project_column_header), text(created_column_header), text(task_status_header)};
+        columnClasses = new Class[]{String.class, JComboBox.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, true, false, false};
 
         projects = obf.newObjectBuilder(ProjectSelectorModel2.class)
@@ -95,7 +95,7 @@ public class WorkspaceUserInboxModel
             case 2:
                 return task.creationDate().get();
             case 3:
-                return !task.status().get().equals(TaskStates.ACTIVE);
+                return task.status().get();
         }
         
         return super.getValueAt(rowIndex, column);

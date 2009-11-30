@@ -14,20 +14,29 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.assigned_to_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.complete_task_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_on_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_to_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.task_status_header;
+
+import java.util.Date;
+
+import javax.swing.ImageIcon;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.client.OperationException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
-
-import java.util.Date;
 
 /**
  * JAVADOC
@@ -39,8 +48,8 @@ public class WorkspaceUserWaitingForModel
     public WorkspaceUserWaitingForModel(@Uses WorkspaceUserWaitingForClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), text(complete_task_header)};
-        columnClasses = new Class[]{String.class, String.class, String.class, Date.class, Boolean.class};
+        columnNames = new String[]{text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), text(task_status_header)};
+        columnClasses = new Class[]{String.class, String.class, String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false, false};
     }
 
@@ -69,7 +78,7 @@ public class WorkspaceUserWaitingForModel
             case 3:
                 return task.delegatedOn().get();
             case 4:
-                return !task.status().get().equals(TaskStates.ACTIVE);
+                return task.status().get();
         }
 
         return super.getValueAt(rowIndex, column);

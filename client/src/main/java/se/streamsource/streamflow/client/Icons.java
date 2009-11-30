@@ -44,5 +44,6 @@ public enum Icons
 
     // Admin
     account,
-    deleteLabel, organization
+    deleteLabel, organization,
+
 }

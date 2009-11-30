@@ -29,6 +29,8 @@ import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 import java.util.Date;
 
+import javax.swing.ImageIcon;
+
 /**
  * JAVADOC
  */
@@ -38,8 +40,8 @@ public class WorkspaceProjectWaitingForModel
     public WorkspaceProjectWaitingForModel(@Uses WorkspaceProjectWaitingforClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), text(complete_task_header)};
-        columnClasses = new Class[]{String.class, String.class, String.class, Date.class, Boolean.class};
+        columnNames = new String[]{text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), text(task_status_header)};
+        columnClasses = new Class[]{String.class, String.class, String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false, false};
     }
 
@@ -68,7 +70,7 @@ public class WorkspaceProjectWaitingForModel
             case 3:
                 return task.delegatedOn().get();
             case 4:
-                return !task.status().get().equals(TaskStates.ACTIVE);
+                return task.status().get();
         }
 
         return super.getValueAt(rowIndex, column);

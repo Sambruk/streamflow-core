@@ -14,6 +14,36 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import static java.util.Collections.reverseOrder;
+import static java.util.Collections.sort;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -24,7 +54,10 @@ import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.CheckBoxProvider;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
+import org.jdesktop.swingx.renderer.IconValues;
+import org.jdesktop.swingx.renderer.MappedValue;
 import org.jdesktop.swingx.renderer.StringValue;
+import org.jdesktop.swingx.renderer.StringValues;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -32,6 +65,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -39,30 +73,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.FontHighlighter;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 import se.streamsource.streamflow.resource.task.TaskDTO;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import static java.util.Collections.*;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Base class for all views of task lists.
@@ -118,9 +128,10 @@ public abstract class TaskTableView
         taskTable.getColumn(1).setMaxWidth(150);
         taskTable.getColumn(2).setPreferredWidth(150);
         taskTable.getColumn(2).setMaxWidth(150);
-        taskTable.getColumn(taskTable.getColumnCount()-1).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
-        taskTable.getColumn(taskTable.getColumnCount()-1).setMaxWidth(35);
+        taskTable.getColumn(taskTable.getColumnCount()-1).setCellRenderer(new IconifiedTaskStatusRenderer());
+        taskTable.getColumn(taskTable.getColumnCount()-1).setMaxWidth(40);
         taskTable.getColumn(taskTable.getColumnCount()-1).setResizable(false);
+        
         taskTable.setAutoCreateColumnsFromModel(false);
 
         splitPane.setTopComponent(taskScrollPane);
@@ -140,6 +151,7 @@ public abstract class TaskTableView
                 return format.format(time);
             }
         }));
+        taskTable.setDefaultRenderer(ImageIcon.class, new IconifiedTaskStatusRenderer());
 
         taskTable.addHighlighter(HighlighterFactory.createAlternateStriping());
         taskTable.addHighlighter(new FontHighlighter(new HighlightPredicate()

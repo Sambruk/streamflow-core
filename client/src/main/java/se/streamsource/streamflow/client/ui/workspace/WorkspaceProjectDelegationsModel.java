@@ -14,19 +14,27 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_done_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_from_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_on_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.task_status_header;
+
+import java.util.Date;
+
+import javax.swing.ImageIcon;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
-
-import java.util.Date;
 
 /**
  * JAVADOC
@@ -37,8 +45,8 @@ public class WorkspaceProjectDelegationsModel
     public WorkspaceProjectDelegationsModel(@Uses WorkspaceProjectDelegationsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(delegated_from_header), text(delegated_on_header), text(delegated_done_header)};
-        columnClasses = new Class[]{String.class, String.class, Date.class, Boolean.class};
+        columnNames = new String[]{text(description_column_header), text(delegated_from_header), text(delegated_on_header), text(task_status_header)};
+        columnClasses = new Class[]{String.class, String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false};
     }
 
@@ -65,7 +73,7 @@ public class WorkspaceProjectDelegationsModel
             case 2:
                 return task.delegatedOn().get();
             case 3:
-                return !task.status().get().equals(TaskStates.ACTIVE);
+                return task.status().get();
         }
 
         return super.getValueAt(rowIndex, column);

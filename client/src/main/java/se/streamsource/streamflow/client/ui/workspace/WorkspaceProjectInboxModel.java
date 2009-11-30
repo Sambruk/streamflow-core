@@ -14,13 +14,20 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxClientResource;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.complete_task_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.task_status_header;
 
 import java.util.Date;
+
+import javax.swing.ImageIcon;
+
+import org.qi4j.api.injection.scope.Uses;
+
+import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxClientResource;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 
 /**
  * JAVADOC
@@ -31,8 +38,8 @@ public class WorkspaceProjectInboxModel
     public WorkspaceProjectInboxModel(@Uses WorkspaceProjectInboxClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(created_column_header), text(complete_task_header)};
-        columnClasses = new Class[]{String.class, Date.class, Boolean.class};
+        columnNames = new String[]{text(description_column_header), text(created_column_header), text(task_status_header)};
+        columnClasses = new Class[]{String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false};
     }
 
