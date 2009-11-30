@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;

@@ -12,12 +12,13 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -55,12 +56,13 @@ public class FormsAdminView
 
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
+                        ListItemValue formValue = (ListItemValue) list.getModel().getElementAt(idx);
+                        FormModel formModel = formsView.getModel().getFormModel(formValue.entity().get().identity());
+
                         FormView formView = obf.newObjectBuilder(FormView.class).
-                                use(formsView.getModel().getFormsResource().form(idx),
-                                        adminView).newInstance();
-                        formsView.setFormModel(formView.getModel());
-                        setRightComponent(
-                                formView);
+                                use(formModel, adminView).newInstance();
+
+                        setRightComponent(formView);
                     } else
                     {
                         setRightComponent(new JPanel());

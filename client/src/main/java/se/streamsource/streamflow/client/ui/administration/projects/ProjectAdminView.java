@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 

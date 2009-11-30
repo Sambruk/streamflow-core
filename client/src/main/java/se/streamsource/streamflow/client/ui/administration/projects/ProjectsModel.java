@@ -28,6 +28,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;

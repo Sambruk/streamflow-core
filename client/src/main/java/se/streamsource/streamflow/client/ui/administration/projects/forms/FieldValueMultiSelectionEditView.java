@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -35,7 +35,7 @@ public class FieldValueMultiSelectionEditView
 
 
     public FieldValueMultiSelectionEditView(@Service ApplicationContext context,
-                                         @Uses FieldValueTextEditModel model)
+                                         @Uses FieldValueEditModel model)
     {
         JPanel panel = new JPanel(new BorderLayout());
 

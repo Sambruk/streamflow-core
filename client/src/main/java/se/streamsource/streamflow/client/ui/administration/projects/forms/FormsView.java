@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -20,12 +20,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
-import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -49,7 +49,8 @@ public class FormsView
     @Structure
     ObjectBuilderFactory obf;
 
-    public FormsView(@Service ApplicationContext context, @Uses FormsModel model)
+    public FormsView(@Service ApplicationContext context,
+                     @Uses FormsModel model)
     {
         super(new BorderLayout());
         this.model = model;
@@ -107,10 +108,5 @@ public class FormsView
     public FormsModel getModel()
     {
         return model;
-    }
-
-    public void setFormModel(FormModel formModel)
-    {
-        model.setFormModel(formModel);
     }
 }

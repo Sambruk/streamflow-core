@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -29,13 +29,13 @@ import java.awt.*;
 /**
  * JAVADOC
  */
-public class FieldValueDateEditView
+public class FieldValueSingleSelectionEditView
     extends JScrollPane
 {
 
 
-    public FieldValueDateEditView(@Service ApplicationContext context,
-                                         @Uses FieldValueTextEditModel model)
+    public FieldValueSingleSelectionEditView(@Service ApplicationContext context,
+                                         @Uses FieldValueEditModel model)
     {
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -47,7 +47,7 @@ public class FieldValueDateEditView
 
         DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, fieldPanel);
 
-        formBuilder.append("Type:", new JLabel(i18n.text(FieldTypes.date)));
+        formBuilder.append("Type:", new JLabel(i18n.text(FieldTypes.single_selection)));
         formBuilder.append("Mandatory", new Checkbox());
         formBuilder.append("Name", new TextField(value.description().get()));
         TextArea textArea = new TextArea(value.note().get());

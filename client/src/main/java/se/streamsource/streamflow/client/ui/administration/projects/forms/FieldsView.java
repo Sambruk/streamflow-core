@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;

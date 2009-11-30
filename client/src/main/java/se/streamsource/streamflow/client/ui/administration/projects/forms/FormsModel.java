@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -23,9 +23,12 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -68,6 +71,32 @@ public class FormsModel
     {
         eventFilter = new EventHandlerFilter( this, "createdForm", "removedForm", "changedDescription");
     }
+
+    WeakModelMap<String, FormModel> formModels = new WeakModelMap<String, FormModel>()
+    {
+        protected FormModel newModel( String key )
+        {
+            try
+            {
+                ListValue value = forms.forms();
+                int index = 0;
+                for (ListItemValue listItemValue : value.items().get())
+                {
+                    if (listItemValue.entity().get().identity().equals(key))
+                    {
+                        break;
+                    }
+                    index++;
+                }
+                ProjectFormDefinitionClientResource resource = forms.form(index);
+                return obf.newObjectBuilder(FormModel.class).use(resource).newInstance();
+            } catch (ResourceException e)
+            {
+                throw new OperationException(AdministrationResources.could_not_get_form, e);
+            }
+        }
+    };
+
 
     public int getSize()
     {
@@ -133,9 +162,9 @@ public class FormsModel
     public void notifyEvent( DomainEvent event )
     {
         eventFilter.handleEvent( event );
-        if (formModel != null)
+        for (FormModel model : formModels)
         {
-            formModel.notifyEvent(event);
+            model.notifyEvent( event );
         }
     }
 
@@ -156,8 +185,8 @@ public class FormsModel
         return forms;
     }
 
-    public void setFormModel(FormModel formModel)
+    public FormModel getFormModel(String identity)
     {
-        this.formModel = formModel;
+        return formModels.get(identity);
     }
 }

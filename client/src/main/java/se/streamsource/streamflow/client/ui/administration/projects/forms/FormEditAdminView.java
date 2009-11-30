@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -35,6 +35,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -54,12 +55,12 @@ public class FormEditAdminView
 
     StateBinder formValueBinder;
     private ValueBuilderFactory vbf;
-    private FormEditAdminModel model;
+    private FormModel model;
 
 
     public FormEditAdminView(@Service ApplicationContext context,
+                             @Uses final FormModel model,
                              @Uses FieldsView fieldsView,
-                             @Uses final FormEditAdminModel model,
                              @Structure final ObjectBuilderFactory obf,
                              @Structure ValueBuilderFactory vbf)
     {
@@ -110,9 +111,12 @@ public class FormEditAdminView
 
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
-                            setRightComponent(
-                                    obf.newObjectBuilder(FieldValueTextEditView.class).
-                                            use(model.getFieldResource(idx)).newInstance());
+                        ListItemValue fieldValue = (ListItemValue) list.getModel().getElementAt(idx);
+                        FieldValueEditModel editModel = model.getFieldModel(fieldValue.entity().get().identity());
+
+                        setRightComponent(
+                                obf.newObjectBuilder(FieldValueTextEditView.class).
+                                        use(editModel).newInstance());
                     } else
                     {
                         setRightComponent(new JPanel());

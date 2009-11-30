@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -27,20 +27,37 @@ import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+
+import java.util.logging.Logger;
 
 /**
  * JAVADOC
  */
-public class FieldValueTextEditModel
-    implements Refreshable
+public class FieldValueEditModel
+    implements Refreshable, EventListener, EventHandler
 {
     private FieldDefinitionValue value;
 
     @Uses
-    ProjectFormDefinitionFieldClientResource fieldResource;    
+    ProjectFormDefinitionFieldClientResource fieldResource;
 
     @Structure
     ValueBuilderFactory vbf;
+
+    EventSourceListener subscriber;
+    EventSource source;
+    private EventHandlerFilter eventFilter;
+
+    public FieldValueEditModel()
+    {
+        eventFilter = new EventHandlerFilter( this, "changedNote");
+    }
 
     public FieldDefinitionValue getField()
     {
@@ -83,6 +100,18 @@ public class FieldValueTextEditModel
         {
             throw new OperationException(AdministrationResources.could_not_get_field, e);
         }
+    }
+
+    public void notifyEvent(DomainEvent event)
+    {
+        eventFilter.handleEvent( event );
+    }
+
+    public boolean handleEvent(DomainEvent event)
+    {
+        Logger.getLogger("administration").info("Refresh the field values");
+        refresh();
+        return false;
     }
 
 }

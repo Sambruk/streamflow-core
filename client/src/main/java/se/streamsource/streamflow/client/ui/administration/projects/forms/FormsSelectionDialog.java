@@ -12,18 +12,17 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.ConstantSize;
-import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.domain.form.FieldTypes;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,38 +30,36 @@ import java.awt.*;
 /**
  * Select a name for something.
  */
-public class FieldCreationDialog
+public class FormsSelectionDialog
         extends JPanel
 {
 
-    FormLayout formLayout = new FormLayout(
-            "pref, 4dlu, 150dlu","");
-    private TextField textField;
-    private JComboBox box;
+    private JList forms;
+    private ListItemValue selected;
 
-
-    public FieldCreationDialog(@Service ApplicationContext context)
+    public FormsSelectionDialog(@Service ApplicationContext context, @Uses FormsSelectionModel model)
     {
         super(new BorderLayout());
 
         setActionMap(context.getActionMap(this));
 
-        JPanel panel = new JPanel();
-        DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, panel);
-        ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
-        formBuilder.setLineGapSize(lineGap);
+        forms = new JList(model);
+        forms.setCellRenderer(new ListItemListCellRenderer());
 
-        textField = new TextField();
-        formBuilder.append(i18n.text(AdministrationResources.name_label), textField);
-        //box = new JComboBox(new String[]{"Text","Number","Date","Single selection", "Multi selection", "Comment", "Page break"});
-        box = new JComboBox(new String[]{"Text"});
-        formBuilder.append("Value Type", box);
-        add(panel, BorderLayout.CENTER);
+        if (model.getSize() == 0)
+        {
+            add(new JLabel(i18n.text(AdministrationResources.no_form_definitions_available)), BorderLayout.CENTER);
+        } else
+        {
+            add(forms, BorderLayout.CENTER);
+        }
     }
 
     @Action
     public void execute()
     {
+        selected = (ListItemValue) forms.getSelectedValue();
+
         WindowUtils.findWindow(this).dispose();
     }
 
@@ -72,13 +69,9 @@ public class FieldCreationDialog
         WindowUtils.findWindow(this).dispose();
     }
 
-    public FieldTypes getFieldType()
-    {
-        return FieldTypes.text;
-    }
 
-    public String getName()
+    public ListItemValue getSelectedForm()
     {
-        return textField.getText();
+        return selected;
     }
 }

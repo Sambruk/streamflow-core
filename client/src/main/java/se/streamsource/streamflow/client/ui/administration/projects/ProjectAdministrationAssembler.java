@@ -18,6 +18,7 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
+import se.streamsource.streamflow.client.ui.administration.projects.forms.*;
 
 /**
  * JAVADOC
@@ -33,7 +34,7 @@ public class ProjectAdministrationAssembler
         UIAssemblers.addMV(module, ProjectsModel.class,
                 ProjectsView.class);
 
-        UIAssemblers.addViews(module, ProjectView.class, LabelsView.class, FormsAdminView.class);
+        UIAssemblers.addViews(module, ProjectView.class, LabelsView.class, FormsAdminView.class, FormEditAdminView.class);
 
         UIAssemblers.addMV(module, ProjectMembersModel.class,
                 ProjectMembersView.class);
@@ -42,11 +43,9 @@ public class ProjectAdministrationAssembler
 
         UIAssemblers.addMV(module, FormModel.class, FormView.class);
 
-        UIAssemblers.addMV(module, FormEditAdminModel.class, FormEditAdminView.class);
-
         UIAssemblers.addMV(module, FieldsModel.class, FieldsView.class);
 
-        UIAssemblers.addMV(module, FieldValueTextEditModel.class, FieldValueTextEditView.class);
+        UIAssemblers.addMV(module, FieldValueEditModel.class, FieldValueTextEditView.class);
 
         UIAssemblers.addModels(module, FormsSelectionModel.class);
 

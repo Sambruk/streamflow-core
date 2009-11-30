@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -21,7 +21,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
+import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;
@@ -43,7 +43,7 @@ public class FieldsModel
         implements Refreshable, EventListener, EventHandler
 {
     @Uses
-    ProjectFormDefinitionClientResource formResource;
+    ProjectFormDefinitionFieldsClientResource fieldsResource;
 
     @Structure
     ValueBuilderFactory vbf;
@@ -66,7 +66,7 @@ public class FieldsModel
     {
         try
         {
-            fieldsList = formResource.form().fields().get().items().get();
+            fieldsList = fieldsResource.fields().items().get();
             fireContentsChanged( this, 0, getSize() );
         } catch (ResourceException e)
         {
@@ -83,7 +83,7 @@ public class FieldsModel
 
         try
         {
-            formResource.fields().addField(builder.newInstance());
+            fieldsResource.addField(builder.newInstance());
             refresh();
         } catch (ResourceException e)
         {
@@ -95,7 +95,7 @@ public class FieldsModel
     {
         try
         {
-            formResource.fields().field(index).delete();
+            fieldsResource.field(index).delete();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_remove_field, e);
@@ -107,11 +107,6 @@ public class FieldsModel
         return fieldsList;
     }
 
-    public ProjectFormDefinitionClientResource getFormsResource()
-    {
-        return formResource;
-    }
-
     public void notifyEvent( DomainEvent event )
     {
         eventFilter.handleEvent( event );
@@ -119,12 +114,14 @@ public class FieldsModel
 
     public boolean handleEvent( DomainEvent event )
     {
-        if (formResource.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get()))
+        for (ListItemValue value : fieldsList)
         {
-            Logger.getLogger("adminitration").info("Refresh field list");
-            refresh();
+            if (value.entity().get().identity().equals( event.entity().get()))
+            {
+                Logger.getLogger("adminitration").info("Refresh field list");
+                refresh();
+            }
         }
-
         return false;
     }
 

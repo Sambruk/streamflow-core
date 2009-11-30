@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
@@ -23,8 +23,8 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Observer;
 import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
@@ -64,8 +64,10 @@ public class FormView
     @org.jdesktop.application.Action
     public void edit()
     {
+        FieldsModel fieldsModel = model.getFieldsModel();
+
         FormEditAdminView formEditAdminView = obf.newObjectBuilder(FormEditAdminView.class).
-                use(model.getResource()).newInstance();
+                use(model, fieldsModel).newInstance();
 
         adminView.show( formEditAdminView );
     }

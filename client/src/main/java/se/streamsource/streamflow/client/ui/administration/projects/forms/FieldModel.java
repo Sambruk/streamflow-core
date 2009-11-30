@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -77,7 +77,7 @@ public class FieldModel
         builder.prototype().entity().set(form);
         try
         {
-            formResource.fields().addField(builder.newInstance());
+            fieldsResource.fields().addField(builder.newInstance());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_add_form_definition, e);

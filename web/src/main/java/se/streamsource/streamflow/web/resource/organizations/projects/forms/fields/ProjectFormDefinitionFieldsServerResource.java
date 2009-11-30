@@ -21,6 +21,8 @@ import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -34,6 +36,26 @@ import java.util.List;
 public class ProjectFormDefinitionFieldsServerResource
         extends CommandQueryServerResource
 {
+    public ListValue fields()
+    {
+        String identity = getRequest().getAttributes().get("project").toString();
+        String index = getRequest().getAttributes().get("index").toString();
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        FormsQueries forms = uow.get( FormsQueries.class, identity);
+
+        checkPermission(forms);
+
+        List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
+
+        ListItemValue value = itemValues.get(Integer.parseInt(index));
+
+        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+
+        return new ListValueBuilder(vbf).addDescribableItems( form.fields()).newList();
+    }
+
     public void addField(CreateFieldDTO createFieldDTO)
     {
         String identity = getRequest().getAttributes().get("project").toString();

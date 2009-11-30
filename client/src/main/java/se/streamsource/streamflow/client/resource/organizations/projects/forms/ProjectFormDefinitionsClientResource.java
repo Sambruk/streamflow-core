@@ -24,7 +24,8 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
- * JAVADOC
+ * Mapped to:
+ * /organizations/{organization}/projects/{project}/forms
  */
 public class ProjectFormDefinitionsClientResource
         extends CommandQueryClientResource
@@ -38,7 +39,7 @@ public class ProjectFormDefinitionsClientResource
     {
         return getSubResource(""+index, ProjectFormDefinitionClientResource.class);
     }
-
+    
     public ListValue forms() throws ResourceException
     {
         return query("forms", ListValue.class);

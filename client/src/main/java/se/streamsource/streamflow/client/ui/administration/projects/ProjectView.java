@@ -19,6 +19,8 @@ import org.qi4j.api.injection.scope.Uses;
 
 import javax.swing.*;
 
+import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsAdminView;
+
 /**
  * JAVADOC
  */

@@ -12,17 +12,17 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects;
+package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.ConstantSize;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,36 +30,35 @@ import java.awt.*;
 /**
  * Select a name for something.
  */
-public class FormsSelectionDialog
+public class FormCreationDialog
         extends JPanel
 {
 
-    private JList forms;
-    private ListItemValue selected;
+    FormLayout formLayout = new FormLayout(
+            "pref, 4dlu, 150dlu","");
+    private TextField textField;
+    private JComboBox box;
 
-    public FormsSelectionDialog(@Service ApplicationContext context, @Uses FormsSelectionModel model)
+
+    public FormCreationDialog(@Service ApplicationContext context)
     {
         super(new BorderLayout());
 
         setActionMap(context.getActionMap(this));
 
-        forms = new JList(model);
-        forms.setCellRenderer(new ListItemListCellRenderer());
+        JPanel panel = new JPanel();
+        DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, panel);
+        ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
+        formBuilder.setLineGapSize(lineGap);
 
-        if (model.getSize() == 0)
-        {
-            add(new JLabel(i18n.text(AdministrationResources.no_form_definitions_available)), BorderLayout.CENTER);
-        } else
-        {
-            add(forms, BorderLayout.CENTER);
-        }
+        textField = new TextField();
+        formBuilder.append(i18n.text(AdministrationResources.name_label), textField);
+        add(panel, BorderLayout.CENTER);
     }
 
     @Action
     public void execute()
     {
-        selected = (ListItemValue) forms.getSelectedValue();
-
         WindowUtils.findWindow(this).dispose();
     }
 
@@ -69,9 +68,8 @@ public class FormsSelectionDialog
         WindowUtils.findWindow(this).dispose();
     }
 
-
-    public ListItemValue getSelectedForm()
+    public String getName()
     {
-        return selected;
+        return textField.getText();
     }
 }
