@@ -116,8 +116,6 @@ public interface Fields
         public void removedField( DomainEvent event, Field field )
         {
             fields().remove( field );
-
-            uowf.currentUnitOfWork().remove( field );
         }
     }
 }

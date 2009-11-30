@@ -96,6 +96,7 @@ public class FieldsModel
         try
         {
             fieldsResource.field(index).delete();
+            refresh();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_remove_field, e);
