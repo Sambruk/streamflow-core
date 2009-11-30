@@ -81,7 +81,6 @@ public interface DummyDataService
                 final Account account = individual.newAccount();
                 account.updateSettings(builder.newInstance());
 
-                account.register(client);
 
                 StreamFlowClientResource server = account.server(client);
                 String response = server.version();

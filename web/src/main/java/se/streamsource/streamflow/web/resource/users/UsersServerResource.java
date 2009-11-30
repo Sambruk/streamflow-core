@@ -27,11 +27,6 @@ import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.resource.user.RegisterUserCommand;
-import se.streamsource.streamflow.web.domain.organization.Organization;
-import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.Organizations;
-import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -71,35 +66,5 @@ public class UsersServerResource
         {
             return new InputRepresentation(getClass().getResourceAsStream("resources/usersearch.html"), MediaType.TEXT_HTML);
         }
-    }
-
-
-    public void register(RegisterUserCommand registerUser) throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-
-        // Check if user already exists
-        try
-        {
-            UserEntity existingUser = uow.get(UserEntity.class, registerUser.username().get());
-
-            if (!existingUser.isCorrectPassword(registerUser.password().get()))
-                throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-            return; // Already exists
-        } catch (NoSuchEntityException e)
-        {
-            // Ok!
-        }
-
-        Organizations orgs = uow.get(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
-
-        UserEntity user = (UserEntity) orgs.createUser(registerUser.username().get(), registerUser.password().get());
-
-        // Lookup the bootstrap organization
-        Organization org = uow.get(OrganizationEntity.class, "Organization");
-        // Join the organization
-        user.join(org);
-
-        setLocationRef("users/" + user.identity().get());
     }
 }

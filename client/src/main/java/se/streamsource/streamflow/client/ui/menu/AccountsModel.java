@@ -111,7 +111,6 @@ public class AccountsModel
         Account account = repository.individual().newAccount();
         account.updateSettings(accountSettingsValue);
 
-        account.register(client);
         uow.complete();
 
         refresh();

@@ -170,12 +170,6 @@ public class AccountView
     }
 
     @Action
-    public void register()
-    {
-        model.register();
-    }
-
-    @Action
     public void changePassword() throws Exception
     {
         ChangePasswordDialog changePasswordDialog = changePasswords.iterator().next();

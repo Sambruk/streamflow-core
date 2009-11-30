@@ -24,7 +24,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
@@ -100,39 +99,12 @@ public class AccountModel
         notifyObservers();
     }
 
-    public void register()
-    {
-        try
-        {
-            UnitOfWork uow = uowf.newUnitOfWork();
-            uow.get(account).register(client);
-            uow.complete();
-        } catch (Exception e)
-        {
-            throw new OperationException(AdministrationResources.could_not_register_user, e);
-        }
-        setChanged();
-        notifyObservers();
-    }
-
     public String test() throws IOException, ResourceException
     {
         UnitOfWork uow = uowf.newUnitOfWork();
         try
         {
             return uow.get(account).server(client).version();
-        } finally
-        {
-            uow.discard();
-        }
-    }
-
-    public boolean isRegistered()
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
-        try
-        {
-            return uow.get(account).isRegistered();
         } finally
         {
             uow.discard();
@@ -171,13 +143,8 @@ public class AccountModel
         Account acc = uow.get(account);
         try
         {
-            if (acc.isRegistered())
-            {
-                return acc.user(client).administration().organizations();
-            } else
-            {
-                return vbf.newValue(TreeValue.class);
-            }
+            return acc.user(client).administration().organizations();
+
         } finally
         {
             uow.discard();

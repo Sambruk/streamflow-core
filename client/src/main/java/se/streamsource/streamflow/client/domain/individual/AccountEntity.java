@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -24,13 +23,8 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.Uniform;
+import org.restlet.*;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
@@ -39,10 +33,8 @@ import org.restlet.routing.Filter;
 import org.restlet.security.Verifier;
 import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
-import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
-import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 
 /**
  * JAVADOC
@@ -57,13 +49,10 @@ public interface AccountEntity
         // Settings
         Property<AccountSettingsValue> settings();
 
-        // Registration
-        @UseDefaults
-        Property<Boolean> registered();
     }
 
     class Mixin
-            implements AccountSettings, AccountRegistration, AccountConnection
+            implements AccountSettings, AccountConnection
     {
         @Structure
         ValueBuilderFactory vbf;
@@ -106,29 +95,6 @@ public interface AccountEntity
             settings.password().set(changePassword.newPassword().get());
 
             updateSettings(settings);
-        }
-
-        // AccountRegistration
-        public void register(Uniform client) throws ResourceException
-        {
-            ValueBuilder<RegisterUserCommand> commandBuilder = vbf.newValueBuilder(RegisterUserCommand.class);
-            commandBuilder.prototype().username().set(state.settings().get().userName().get());
-            commandBuilder.prototype().password().set(state.settings().get().password().get());
-
-            ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
-            ContactValue contact = contactBuilder.newInstance();
-            commandBuilder.prototype().contact().set(contact);
-
-            RegisterUserCommand command = commandBuilder.newInstance();
-
-            StreamFlowClientResource server = server(client);
-            server.users().register(command);
-            state.registered().set(true);
-        }
-
-        public boolean isRegistered()
-        {
-            return state.registered().get();
         }
 
         // AccountConnection

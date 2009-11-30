@@ -17,9 +17,7 @@ package se.streamsource.streamflow.client.resource.users;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 
 /**
  * JAVADOC
@@ -35,10 +33,5 @@ public class UsersClientResource
     public UserClientResource user(String username)
     {
         return getSubResource(username, UserClientResource.class);
-    }
-
-    public void register(RegisterUserCommand command) throws ResourceException
-    {
-        postCommand("register", command);
     }
 }
