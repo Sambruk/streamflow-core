@@ -27,7 +27,10 @@ import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
 import se.streamsource.streamflow.client.ui.task.TasksDetailView;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
  * JAVADOC
@@ -72,7 +75,8 @@ public class WorkspaceUserWaitingForView
         Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
         Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(4, taskTable, assignAction, delegateTasksFromInbox, acceptAction));
+        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(acceptAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(4, taskTable, assignAction, delegateTasksFromInbox));
     }
 
     @Override
