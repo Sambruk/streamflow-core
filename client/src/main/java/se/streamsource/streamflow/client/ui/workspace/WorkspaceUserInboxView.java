@@ -25,7 +25,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemTableCellRenderer;
-import se.streamsource.streamflow.client.ui.task.IconifiedTaskStatusRenderer;
+import se.streamsource.streamflow.client.ui.task.TaskStatusTableCellRenderer;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
 import se.streamsource.streamflow.client.ui.task.TasksDetailView;
@@ -85,7 +85,7 @@ public class WorkspaceUserInboxView
         column.setCellRenderer(new ListItemTableCellRenderer());
         
         column = taskTable.getColumnModel().getColumn(3);
-        column.setCellRenderer(new IconifiedTaskStatusRenderer());
+        column.setCellRenderer(new TaskStatusTableCellRenderer());
         
     }
     

@@ -7,13 +7,12 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.task.TaskStates;
 
-public class IconifiedTaskStatusRenderer extends DefaultTableCellRenderer
+public class TaskStatusTableCellRenderer extends DefaultTableCellRenderer
 {
-	public IconifiedTaskStatusRenderer()
+	public TaskStatusTableCellRenderer()
 	{
 	}
 

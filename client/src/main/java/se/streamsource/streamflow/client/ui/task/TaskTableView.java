@@ -128,7 +128,7 @@ public abstract class TaskTableView
         taskTable.getColumn(1).setMaxWidth(150);
         taskTable.getColumn(2).setPreferredWidth(150);
         taskTable.getColumn(2).setMaxWidth(150);
-        taskTable.getColumn(taskTable.getColumnCount()-1).setCellRenderer(new IconifiedTaskStatusRenderer());
+        taskTable.getColumn(taskTable.getColumnCount()-1).setCellRenderer(new TaskStatusTableCellRenderer());
         taskTable.getColumn(taskTable.getColumnCount()-1).setMaxWidth(40);
         taskTable.getColumn(taskTable.getColumnCount()-1).setResizable(false);
         
@@ -151,7 +151,7 @@ public abstract class TaskTableView
                 return format.format(time);
             }
         }));
-        taskTable.setDefaultRenderer(ImageIcon.class, new IconifiedTaskStatusRenderer());
+        taskTable.setDefaultRenderer(ImageIcon.class, new TaskStatusTableCellRenderer());
 
         taskTable.addHighlighter(HighlighterFactory.createAlternateStriping());
         taskTable.addHighlighter(new FontHighlighter(new HighlightPredicate()
