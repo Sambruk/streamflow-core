@@ -62,6 +62,7 @@ public class AdministrationOutlineView
 
     @Structure
     ObjectBuilderFactory obf;
+    private RefreshWhenVisible refreshWhenVisible;
 
     public AdministrationOutlineView(@Service ApplicationContext context, 
                                      @Uses final AdministrationModel model) throws Exception
@@ -144,8 +145,9 @@ public class AdministrationOutlineView
             }
         });
 
-
-        addAncestorListener(new RefreshWhenVisible(model));
+        refreshWhenVisible = new RefreshWhenVisible(model);
+        addRefreshWhenVisible();
+        //addAncestorListener(refreshWhenVisible);
     }
 
 
@@ -252,4 +254,14 @@ public class AdministrationOutlineView
 
     }
 
+
+    public void removeRefreshWhenVisible()
+    {
+        removeAncestorListener(refreshWhenVisible);
+    }
+
+    public void addRefreshWhenVisible()
+    {
+        addAncestorListener(refreshWhenVisible);
+    }
 }

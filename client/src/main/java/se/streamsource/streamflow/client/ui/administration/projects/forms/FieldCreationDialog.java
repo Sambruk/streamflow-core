@@ -37,7 +37,8 @@ public class FieldCreationDialog
 
     FormLayout formLayout = new FormLayout(
             "pref, 4dlu, 150dlu","");
-    private TextField textField;
+    private TextField nameField;
+    String name;
     private JComboBox box;
 
 
@@ -52,8 +53,8 @@ public class FieldCreationDialog
         ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
         formBuilder.setLineGapSize(lineGap);
 
-        textField = new TextField();
-        formBuilder.append(i18n.text(AdministrationResources.name_label), textField);
+        nameField = new TextField();
+        formBuilder.append(i18n.text(AdministrationResources.name_label), nameField);
         //box = new JComboBox(new String[]{"Text","Number","Date","Single selection", "Multi selection", "Comment", "Page break"});
         box = new JComboBox(new String[]{"Text"});
         formBuilder.append("Value Type", box);
@@ -63,6 +64,8 @@ public class FieldCreationDialog
     @Action
     public void execute()
     {
+        name = nameField.getText();
+
         WindowUtils.findWindow(this).dispose();
     }
 
@@ -77,8 +80,8 @@ public class FieldCreationDialog
         return FieldTypes.text;
     }
 
-    public String getName()
+    public String name()
     {
-        return textField.getText();
+        return name;
     }
 }

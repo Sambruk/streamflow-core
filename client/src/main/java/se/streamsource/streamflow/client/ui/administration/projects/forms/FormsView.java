@@ -26,6 +26,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRende
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -45,6 +46,9 @@ public class FormsView
     
     @Service
     DialogService dialogs;
+
+    @Uses
+    Iterable<NameDialog> newFormDialogs;
 
     @Structure
     ObjectBuilderFactory obf;
@@ -73,11 +77,11 @@ public class FormsView
     @Action
     public void add()
     {
-        FormCreationDialog formDialog = obf.newObject(FormCreationDialog.class);
+        NameDialog formDialog = newFormDialogs.iterator().next();
 
         dialogs.showOkCancelHelpDialog(this, formDialog, "Create new form");
 
-        String name = formDialog.getName();
+        String name = formDialog.name();
         if (name != null && !"".equals(name))
         {
             model.createForm(name);

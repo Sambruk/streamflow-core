@@ -20,6 +20,9 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.StreamFlowResources;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -39,6 +42,10 @@ public class FieldsView
 
     @Uses
     Iterable<FieldCreationDialog> fieldCreationDialog;
+
+    @Uses
+    Iterable<ConfirmationDialog> confirmationDialog;
+
     private FieldsModel model;
     private JButton upButton;
     private JButton downButton;
@@ -96,9 +103,9 @@ public class FieldsView
         FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog, "Add new field to form");
 
-        if (dialog.getName()!=null && !"".equals(dialog.getName()))
+        if (dialog.name()!=null && !"".equals(dialog.name()))
         {
-            model.addField(dialog.getName(), dialog.getFieldType());
+            model.addField(dialog.name(), dialog.getFieldType());
         }
     }
 
@@ -109,8 +116,13 @@ public class FieldsView
         int index = fieldList.getSelectedIndex();
         if (index != -1)
         {
-            model.removeField(index);
-            fieldList.clearSelection();
+            ConfirmationDialog dialog = confirmationDialog.iterator().next();
+            dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
+            if(dialog.isConfirmed())
+            {
+                model.removeField(index);
+                fieldList.clearSelection();
+            }
         }
     }
 

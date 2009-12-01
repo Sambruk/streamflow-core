@@ -49,6 +49,6 @@ public class ProjectAdministrationAssembler
 
         UIAssemblers.addModels(module, FormsSelectionModel.class);
 
-        UIAssemblers.addDialogs(module, FormsSelectionDialog.class, FieldCreationDialog.class, FormCreationDialog.class);
+        UIAssemblers.addDialogs(module, FormsSelectionDialog.class, FieldCreationDialog.class);
     }
 }

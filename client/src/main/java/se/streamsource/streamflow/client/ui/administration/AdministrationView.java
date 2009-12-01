@@ -48,12 +48,14 @@ public class AdministrationView
 
     CardLayout viewSwitch = new CardLayout();
     private ApplicationActionMap am;
+    private AdministrationOutlineView adminOutlineView;
 
     public AdministrationView(@Service ApplicationContext context,
                               @Uses AdministrationOutlineView adminOutlineView)
     {
         am = context.getActionMap(this);
         setActionMap(am);
+        this.adminOutlineView = adminOutlineView;
 
         setLayout( viewSwitch );
 
@@ -144,6 +146,8 @@ public class AdministrationView
     @org.jdesktop.application.Action
     public void done()
     {
+        adminOutlineView.removeRefreshWhenVisible();
         viewSwitch.show(this, "main");
+        adminOutlineView.addRefreshWhenVisible();
     }
 }
