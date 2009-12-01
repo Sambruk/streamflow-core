@@ -25,9 +25,9 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.web.domain.form.Field;
 import se.streamsource.streamflow.web.domain.form.Form;
 import se.streamsource.streamflow.web.domain.form.FormTemplates;
@@ -96,8 +96,7 @@ public interface TestDataService
             Form commentForm = project.createForm();
             commentForm.changeDescription( "CommentForm" );
             commentForm.changeNote("This is a comment form. Use it to capture any comments related to the current task.");
-            ValueBuilder<TextFieldValue> builder = vbf.newValueBuilder(TextFieldValue.class);
-            builder.prototype().width().set(30);
+            ValueBuilder<FieldValue> builder = vbf.newValueBuilder(FieldValue.class);
             Field commentField = commentForm.createField( "Comment", builder.newInstance());
 
             Form statusForm = project.createForm();

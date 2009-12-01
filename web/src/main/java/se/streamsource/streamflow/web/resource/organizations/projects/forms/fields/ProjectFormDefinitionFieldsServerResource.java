@@ -19,7 +19,6 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -79,12 +78,11 @@ public class ProjectFormDefinitionFieldsServerResource
 
     private FieldValue getFieldValue(FieldTypes fieldType)
     {
-        TextFieldValue value = null;
+        FieldValue value = null;
         switch (fieldType)
         {
             case text:
-                ValueBuilder<TextFieldValue> valueBuilder = vbf.newValueBuilder(TextFieldValue.class);
-                valueBuilder.prototype().width().set(30);
+                ValueBuilder<FieldValue> valueBuilder = vbf.newValueBuilder(FieldValue.class);
                 value = valueBuilder.newInstance();
                 break;
             case number:
