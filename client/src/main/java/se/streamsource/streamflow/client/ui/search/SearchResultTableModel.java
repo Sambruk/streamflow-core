@@ -14,22 +14,29 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.assigned_to_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.project_column_header;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+
+import se.streamsource.streamflow.application.error.ErrorResources;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.application.error.ErrorResources;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * JAVADOC
@@ -41,7 +48,7 @@ public class SearchResultTableModel
     {
         super(resource);
         columnNames = new String[]{text(description_column_header), text(project_column_header), text(assigned_to_header), text(created_column_header), ""};
-        columnClasses = new Class[]{String.class, String.class, String.class, Date.class, Boolean.class};
+        columnClasses = new Class[]{String.class, String.class, String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false, false};
     }
 
@@ -116,7 +123,7 @@ public class SearchResultTableModel
             case 3:
                 return task.creationDate().get();
             case 4:
-                return !task.status().get().equals(TaskStates.ACTIVE);
+                return task.status().get();
             case IS_READ:
                 return task.isRead().get();
             case IS_DROPPED:

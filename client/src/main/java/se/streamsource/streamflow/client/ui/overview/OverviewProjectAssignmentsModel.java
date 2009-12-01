@@ -20,6 +20,8 @@ import static se.streamsource.streamflow.client.ui.overview.OverviewResources.de
 
 import java.util.Date;
 
+import javax.swing.ImageIcon;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
@@ -40,7 +42,7 @@ public class OverviewProjectAssignmentsModel
     {
         super(resource);
         columnNames = new String[]{text(description_column_header), text(created_column_header), text(OverviewResources.assigned_to_column_header), ""};
-        columnClasses = new Class[]{String.class, Date.class, String.class, Boolean.class};
+        columnClasses = new Class[]{String.class, Date.class, String.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false};
     }
 
@@ -59,7 +61,7 @@ public class OverviewProjectAssignmentsModel
             case 2:
                 return task.assignedTo().get();
 			case 3:
-				return !task.status().get().equals(TaskStates.ACTIVE);
+				return task.status().get();
         }
 
         return super.getValueAt(rowIndex, column);
