@@ -14,18 +14,22 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JLabel;
+import javax.swing.JTabbedPane;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-
-import javax.swing.JLabel;
-import javax.swing.JTabbedPane;
-import java.awt.event.KeyEvent;
 
 /**
  * JAVADOC
@@ -70,9 +74,8 @@ public class TaskDetailView
         setMnemonicAt(4, KeyEvent.VK_5);
 
         setFocusable(true);
-//        setFocusCycleRoot(true);
+        setFocusCycleRoot(true);
 
-/*
         addFocusListener(new FocusListener()
         {
             public void focusGained(FocusEvent e)
@@ -84,7 +87,6 @@ public class TaskDetailView
             {
             }
         });
-*/
     }
 
     public void setTaskModel( TaskModel model)
