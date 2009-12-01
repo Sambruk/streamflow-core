@@ -114,8 +114,6 @@ public class AccountView
                 .appendToggleButtonLine(am.get("edit"))
                 .appendSeparator(account_separator)
                 .appendButtonLine(am.get("test"))
-
-                //.appendButtonLine(am.get("register")) - removed in Sprint 17 - Unplanned Items
                 .appendButtonLine(am.get("changePassword"));
 
         setViewportView(panel);
