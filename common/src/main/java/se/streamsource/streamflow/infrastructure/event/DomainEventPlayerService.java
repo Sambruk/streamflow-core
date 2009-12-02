@@ -24,16 +24,17 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 /**
  * DomainEvent player
@@ -71,7 +72,7 @@ public interface DomainEventPlayerService
             {
                 public boolean handleTransaction( TransactionEvents transaction )
                 {
-                    UnitOfWork uow = uowf.newUnitOfWork();
+                    UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Event replay" ));
                     DomainEvent currentEvent = null;
                     try
                     {
