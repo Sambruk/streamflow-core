@@ -17,23 +17,24 @@ package se.streamsource.streamflow.client.ui.administration.projects.forms;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 /**
  * JAVADOC
  */
 public class FieldsView
-    extends JScrollPane
+    extends JPanel
 {
     private JList fieldList;
 
@@ -53,8 +54,9 @@ public class FieldsView
     public FieldsView(@Service ApplicationContext context,
                       @Uses FieldsModel model)
     {
+        super(new BorderLayout());
         this.model = model;
-        JPanel panel = new JPanel(new BorderLayout());
+        JScrollPane scrollPanel = new JScrollPane();
         ActionMap am = context.getActionMap(this);
 
         JPanel toolbar = new JPanel();
@@ -71,10 +73,16 @@ public class FieldsView
         fieldList = new JList(model);
         fieldList.setCellRenderer(new ListItemListCellRenderer());
 
-        panel.add(fieldList, BorderLayout.CENTER);
-        panel.add(toolbar, BorderLayout.SOUTH);
+        scrollPanel.setViewportView(fieldList);
 
-        setViewportView(panel);
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.add(new JSeparator(), BorderLayout.NORTH);
+        titlePanel.add(new JLabel(i18n.text(AdministrationResources.fields_label)), BorderLayout.CENTER);
+
+        add(titlePanel, BorderLayout.NORTH);
+        add(scrollPanel, BorderLayout.CENTER);
+        add(toolbar, BorderLayout.SOUTH);
+
         fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
         fieldList.addListSelectionListener(new ListSelectionListener()
         {

@@ -16,28 +16,26 @@ package se.streamsource.streamflow.client.ui.task;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ConstantSize;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * JAVADOC
  */
 public class FormSubmitView
-        extends JScrollPane
+    extends JScrollPane
+    implements Observer
 {
     private DefaultFormBuilder formBuilder;
     FormLayout formLayout = new FormLayout(
@@ -64,23 +62,8 @@ public class FormSubmitView
     public void setModel(FormSubmitModel model)
     {
         this.model = model;
-        if (model != null)
-        {
-            panel.removeAll();
-            fields.clear();
-            formBuilder = new DefaultFormBuilder(formLayout, panel);
-            ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
-            formBuilder.setLineGapSize(lineGap);
-
-            for (ListItemValue value : model.getFields())
-            {
-                TextField textField = new TextField(30);
-                fields.put(value.entity().get(), textField);
-                formBuilder.append(value.description().get(), textField);
-            }
-            panel.revalidate();
-            panel.repaint();
-        }
+        model.addObserver(this);
+        model.refresh();
     }
 
     public SubmitFormDTO getSubmitFormDTO()
@@ -97,7 +80,26 @@ public class FormSubmitView
         }
 
         submittedFormBuilder.prototype().values().set(fields);
-        submittedFormBuilder.prototype().form().set(model.formReference);
+        submittedFormBuilder.prototype().form().set(model.formEntityReference());
         return submittedFormBuilder.newInstance();
+    }
+
+    public void update(Observable observable, Object o)
+    {
+        if (model != null)
+        {
+            panel.removeAll();
+            fields.clear();
+            formBuilder = new DefaultFormBuilder(formLayout, panel);
+
+            for (ListItemValue value : model.fields())
+            {
+                TextField textField = new TextField(30);
+                fields.put(value.entity().get(), textField);
+                formBuilder.append(value.description().get(), textField);
+            }
+            panel.revalidate();
+            panel.repaint();
+        }
     }
 }

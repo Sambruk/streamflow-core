@@ -27,6 +27,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnable
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -79,12 +80,15 @@ public class FormsView
     {
         NameDialog formDialog = newFormDialogs.iterator().next();
 
-        dialogs.showOkCancelHelpDialog(this, formDialog, "Create new form");
+        dialogs.showOkCancelHelpDialog(this, formDialog, i18n.text(AdministrationResources.create_new_form));
 
         String name = formDialog.name();
         if (name != null && !"".equals(name))
         {
             model.createForm(name);
+            // Should not be needed. But ProjectsModel.projectFormsModels does not
+            // store sub organizational units, so update mechanism does not work
+            model.refresh();
         }
     }
 
@@ -100,6 +104,7 @@ public class FormsView
             {
                 model.removeForm(selected.entity().get());
                 formList.clearSelection();
+                model.refresh();
             }
         }
     }

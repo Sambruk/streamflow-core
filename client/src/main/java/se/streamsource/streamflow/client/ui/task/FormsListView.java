@@ -18,7 +18,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,16 +44,13 @@ public class FormsListView
         setActionMap(am);
         setMinimumSize(new Dimension(150, 0));
         this.model = model;
+        model.refresh();
 
         JPanel panel = new JPanel(new BorderLayout());
         formList = new JList(model);
         formList.setCellRenderer(new ListItemListCellRenderer());
         panel.add(formList, BorderLayout.CENTER);
         setViewportView(panel);
-    }
-
-    public TaskFormDefinitionsClientResource getResource()
-    {
-        return model.getResource();
+        addAncestorListener(new RefreshWhenVisible(model));
     }
 }

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.resource.task;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
@@ -36,5 +37,10 @@ public class TaskFormDefinitionClientResource
     public ListValue fields() throws ResourceException
     {
         return query("fields", ListValue.class);
+    }
+
+    public EntityReference formEntityReference()
+    {
+        return EntityReference.parseEntityReference(getRequest().getResourceRef().getLastSegment());
     }
 }

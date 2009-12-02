@@ -30,12 +30,11 @@ import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.domain.form.FormValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -65,13 +64,16 @@ public class FormEditAdminView
         super();
 
         this.model = model;
+        JPanel formAttributePanel = new JPanel(new BorderLayout());
         JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(formAttributePanel, BorderLayout.CENTER);
+        leftPanel.add(fieldsView, BorderLayout.SOUTH);
 
         this.vbf = vbf;
         FormLayout formLayout = new FormLayout(
                 "200dlu","");
 
-        DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, leftPanel);
+        DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, formAttributePanel);
         formBuilder.setDefaultDialogBorder();
 
         formValueBinder = new StateBinder();
@@ -87,9 +89,6 @@ public class FormEditAdminView
 
         FormValue value = vbf.newValueBuilder(FormValue.class).withPrototype(model.getFormValue()).prototype();
         formValueBinder.updateWith(value);
-
-        formBuilder.append(i18n.text(AdministrationResources.fields_label), fieldsView);
-
 
         setLeftComponent(leftPanel);
         setRightComponent(new JPanel());

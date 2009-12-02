@@ -80,8 +80,8 @@ public class TaskSubmittedFormsView
     @org.jdesktop.application.Action
     public void add() throws IOException, ResourceException
     {
-        FormSubmissionWizard dialog =
-                obf.newObjectBuilder(FormSubmissionWizard.class).
+        FormSubmissionWizardView dialog =
+                obf.newObjectBuilder(FormSubmissionWizardView.class).
                         use(model.getTaskFormDefinitionsResource(), model.getTaskSubmittedFormsClientResource()).newInstance();
 
         JFrame frame = new JFrame(i18n.text(WorkspaceResources.form_submit_wizard));

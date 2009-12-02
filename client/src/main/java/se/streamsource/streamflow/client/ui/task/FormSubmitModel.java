@@ -14,40 +14,50 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import java.util.List;
+import java.util.Observable;
 
 /**
  * Model for a FormDefinition
  */
 public class FormSubmitModel
+    extends Observable
+    implements Refreshable
 {
     @Uses
     TaskFormDefinitionClientResource form;
 
-    @Uses
-    EntityReference formReference;
+    private List<ListItemValue> fieldValues;
 
-    public List<ListItemValue> getFields()
+    public void refresh() throws OperationException
     {
         try
         {
-            return form.fields().items().get();
+            fieldValues = form.fields().items().get();
+            setChanged();
+            notifyObservers();
         } catch (ResourceException e)
         {
             throw new OperationException(WorkspaceResources.could_not_get_form, e);
         }
     }
-    
-    public EntityReference formReference()
+
+    public List<ListItemValue> fields()
     {
-        return formReference;
+        return fieldValues;
+    }
+
+    public EntityReference formEntityReference()
+    {
+        return form.formEntityReference();
     }
 }

@@ -15,15 +15,14 @@
 package se.streamsource.streamflow.client.ui.administration.projects.forms;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.ConstantSize;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.domain.form.FieldTypes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,8 +49,6 @@ public class FieldCreationDialog
 
         JPanel panel = new JPanel();
         DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, panel);
-        ConstantSize lineGap = new ConstantSize(10 , ConstantSize.MILLIMETER);
-        formBuilder.setLineGapSize(lineGap);
 
         nameField = new TextField();
         formBuilder.append(i18n.text(AdministrationResources.name_label), nameField);

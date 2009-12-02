@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -25,16 +26,19 @@ import java.util.List;
 
 public class FormsListModel
     extends AbstractListModel
+    implements Refreshable
 {
-    List<ListItemValue> forms;
-    private TaskFormDefinitionsClientResource resource;
+    private List<ListItemValue> forms;
 
-    public FormsListModel(@Uses TaskFormDefinitionsClientResource resource)
+    @Uses
+    TaskFormDefinitionsClientResource resource;
+
+    public void refresh() throws OperationException
     {
-        this.resource = resource;
         try
         {
             forms = resource.applicableFormDefinitionList().items().get();
+            fireContentsChanged(this, 0, forms.size());
         } catch (ResourceException e)
         {
             throw new OperationException(WorkspaceResources.could_not_get_submitted_form, e);
@@ -45,16 +49,9 @@ public class FormsListModel
     {
         return forms.size();
     }
-    
+
     public Object getElementAt(int i)
     {
         return forms.get(i);
     }
-
-    public TaskFormDefinitionsClientResource getResource()
-    {
-        return resource;
-    }
-
-    
 }

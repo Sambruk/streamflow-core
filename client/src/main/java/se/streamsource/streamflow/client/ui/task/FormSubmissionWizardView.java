@@ -21,12 +21,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
-import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -36,7 +31,7 @@ import java.awt.*;
 /**
  * JAVADOC
  */
-public class FormSubmissionWizard
+public class FormSubmissionWizardView
         extends JPanel
 {
     Dimension dialogSize = new Dimension(600, 300);
@@ -44,25 +39,25 @@ public class FormSubmissionWizard
     @Structure
     ObjectBuilderFactory obf;
 
+    private FormSubmissionWizardModel model;
+    private FormsListView formsListView;
     private FormSubmitView formSubmitView;
+
     private CardLayout layout = new CardLayout();
     private JPanel panel;
 
-    @Uses
-    TaskSubmittedFormsClientResource submittedFormsResource;
-    private FormsListView formsListView;
-    private JButton previous;
-    private JButton submit;
-
-    public FormSubmissionWizard(@Service ApplicationContext context,
-                                @Uses final FormsListView formsListView,
-                                @Uses final FormSubmitView formSubmitView)
+    public FormSubmissionWizardView(@Service ApplicationContext context,
+                                    @Uses final FormsListView formsListView,
+                                    @Uses final FormSubmitView formSubmitView,
+                                    @Uses FormSubmissionWizardModel model)
     {
         super(new BorderLayout());
+        this.model = model;
         ActionMap am = context.getActionMap(this);
         setActionMap(am);
         setActionMap(context.getActionMap(this));
         setPreferredSize(dialogSize);
+
         this.formSubmitView = formSubmitView;
         this.formsListView = formsListView;
 
@@ -72,62 +67,40 @@ public class FormSubmissionWizard
         add(panel, BorderLayout.CENTER);
 
         JPanel toolbar = new JPanel(new FlowLayout());
-        previous = new JButton(am.get("previous"));
-        toolbar.add(previous);
-        submit = new JButton(am.get("submit"));
-        toolbar.add(submit);
+        toolbar.add(model.previousButton(new JButton(am.get("previous"))));
+        toolbar.add(model.submitButton(new JButton(am.get("submit"))));
         toolbar.add(new JButton(am.get("cancel")));
         toolbar.add(new JButton(am.get("next")));
         add(toolbar, BorderLayout.SOUTH);
 
         formsListView.getFormList().getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("next")));
-        previous.setEnabled(false);
-        submit.setEnabled(false);
+        model.initialStep();
     }
 
     @Action
     public void submit()
     {
         SubmitFormDTO submitDTO = formSubmitView.getSubmitFormDTO();
-
-        try
-        {
-            submittedFormsResource.submitForm(submitDTO);
-        } catch (ResourceException e)
-        {
-            throw new OperationException(WorkspaceResources.could_not_submit_form, e);
-        }
-
+        model.submitForm(submitDTO);
         WindowUtils.findWindow(this).dispose();
     }
 
     @Action
     public void next()
     {
-        JList formList = formsListView.getFormList();
-        ListItemValue value = (ListItemValue) formList.getSelectedValue();
-        if (value != null)
-        {
-            TaskFormDefinitionsClientResource resource = formsListView.getResource();
-            FormSubmitModel model =
-                    obf.newObjectBuilder(FormSubmitModel.class).
-                            use(resource.formDefinition(value.entity().get().identity()), value.entity().get()).newInstance();
-            formSubmitView.setModel(model);
-        } else
-        {
-            formSubmitView.setModel(null);
-        }
+        ListItemValue value = (ListItemValue) formsListView.getFormList().getSelectedValue();
         formsListView.getFormList().clearSelection();
-        previous.setEnabled(true);
-        submit.setEnabled(true);
+
+        formSubmitView.setModel(model.getFormSubmitModel(value.entity().get().identity()));
+
+        model.nextStep();
         layout.show(panel, "INPUTFORM");
     }
 
     @Action
     public void previous()
     {
-        previous.setEnabled(false);
-        submit.setEnabled(false);
+        model.previousStep();
         layout.show(panel, "SELECTFORM");
     }
 }
