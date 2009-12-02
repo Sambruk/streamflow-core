@@ -25,6 +25,7 @@ import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 
 import javax.management.MBeanServer;
@@ -123,7 +124,7 @@ public interface JmxConnectorService
             public Subject authenticate(Object credentials)
             {
 
-                UnitOfWork unitOfWork = uowf.newUnitOfWork();
+                UnitOfWork unitOfWork = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Authenticate JMX user" ));
                 Subject subject = null;
 
                 try
