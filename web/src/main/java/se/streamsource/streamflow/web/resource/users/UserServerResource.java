@@ -20,6 +20,8 @@ import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.usecase.Usecase;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -45,17 +47,22 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class UserServerResource
         extends CommandQueryServerResource
 {
+    private static Usecase usecase = UsecaseBuilder.newUsecase( "Check if user exists" );
+
     @Override
     protected Representation get(Variant variant) throws ResourceException
     {
         // Check if user exists
-        UnitOfWork unitOfWork = uowf.newUnitOfWork();
+        UnitOfWork unitOfWork = uowf.newUnitOfWork( usecase );
         try
         {
             unitOfWork.get( UserAuthentication.class, getRequestAttributes().get("user").toString());
         } catch (NoSuchEntityException e)
         {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+        } finally
+        {
+            unitOfWork.discard();
         }
 
         if (getRequest().getResourceRef().hasQuery())
