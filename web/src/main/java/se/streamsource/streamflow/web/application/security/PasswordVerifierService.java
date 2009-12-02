@@ -19,6 +19,8 @@ import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.Usecase;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.security.SecretVerifier;
@@ -31,6 +33,8 @@ import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 public class PasswordVerifierService
         extends SecretVerifier
 {
+    private static Usecase usecase = UsecaseBuilder.newUsecase( "Verify password" );
+
     @Structure
     UnitOfWorkFactory uowf;
 
@@ -44,7 +48,7 @@ public class PasswordVerifierService
 
     public boolean verify(String username, char[] password)
     {
-        UnitOfWork unitOfWork = uowf.newUnitOfWork();
+        UnitOfWork unitOfWork = uowf.newUnitOfWork(usecase);
 
         try
         {
@@ -69,6 +73,7 @@ public class PasswordVerifierService
             }
         } catch (NoSuchEntityException e)
         {
+            unitOfWork.discard();
             return false;
         }
     }
