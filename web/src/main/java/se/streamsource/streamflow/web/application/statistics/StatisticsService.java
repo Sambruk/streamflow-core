@@ -45,6 +45,7 @@ import se.streamsource.streamflow.web.domain.label.Labelable;
 import se.streamsource.streamflow.web.domain.project.Members;
 import se.streamsource.streamflow.web.domain.project.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.web.domain.project.ProjectOrganization;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
@@ -216,7 +217,7 @@ public interface StatisticsService
 
                                 stmt.setString( idx++, assignee.getDescription() );
                                 stmt.setString( idx++, owner.getDescription() );
-                                OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
+                                ProjectOrganization.Data po = (ProjectOrganization.Data) owner;
                                 Describable.Data organizationalUnit = (Describable.Data) po.organizationalUnit().get();
 
                                 // Figure out which group the user belongs to
