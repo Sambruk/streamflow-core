@@ -19,7 +19,6 @@ import org.qi4j.api.constraint.Name;
 import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -44,7 +43,7 @@ public interface Manager
     public String backup() throws Exception;
     public String restore() throws Exception;
 
-    public String generateTestData(@Name("Nr of tasks") int nrOfTasks) throws UnitOfWorkCompletionException;
+    public String generateTestData(@Name("Nr of tasks") int nrOfTasks) throws Exception;
 
     public String databaseSize();    
 
