@@ -27,8 +27,8 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.entitystore.jdbm.DatabaseExport;
 import org.qi4j.entitystore.jdbm.DatabaseImport;
 import org.qi4j.index.reindexer.Reindexer;
@@ -288,7 +288,7 @@ public interface ManagerComposite
                 else
                 {
                     // Ensure that at least the root OrganizationsEntity is created
-                    UnitOfWork uow = uowf.newUnitOfWork();
+                    UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase( "Create organizations" ));
                     uow.newEntity( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
                     uow.complete();
                 }
@@ -438,18 +438,25 @@ public interface ManagerComposite
         }
 
 
-        public String generateTestData( @Name("Nr of tasks") int nrOfTasks ) throws UnitOfWorkCompletionException
+        public String generateTestData( @Name("Nr of tasks") int nrOfTasks ) throws Exception
         {
-            UnitOfWork uow = uowf.newUnitOfWork();
+            UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Generate test data" ));
 
-            Inbox inbox = uow.get( Inbox.class, "administrator" );
-
-            for (int i = 0; i < nrOfTasks; i++)
+            try
             {
-                inbox.createTask().changeDescription( "Task " + i );
-            }
+                Inbox inbox = uow.get( Inbox.class, "administrator" );
 
-            uow.complete();
+                for (int i = 0; i < nrOfTasks; i++)
+                {
+                    inbox.createTask().changeDescription( "Task " + i );
+                }
+
+                uow.complete();
+            } catch (Exception e)
+            {
+                uow.discard();
+                throw e;
+            }
 
             return "Created " + nrOfTasks + " in Administrators inbox";
         }
