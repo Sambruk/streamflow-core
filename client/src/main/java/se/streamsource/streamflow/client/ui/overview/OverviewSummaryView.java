@@ -58,7 +58,6 @@ public class OverviewSummaryView extends JPanel
 			@Structure ValueBuilderFactory vbf)
 	{
 		this.model = model;
-		model.refresh();
 		setLayout(new BorderLayout());
 
 		ActionMap am = context.getActionMap(OverviewSummaryView.class, this);
