@@ -25,6 +25,8 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.Usecase;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
@@ -41,8 +43,8 @@ import se.streamsource.streamflow.web.domain.group.Participation;
 import se.streamsource.streamflow.web.domain.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 import se.streamsource.streamflow.web.domain.project.Members;
+import se.streamsource.streamflow.web.domain.project.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.project.ProjectOrganization;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
@@ -96,7 +98,9 @@ public interface StatisticsService
         private Properties sql;
 
         private boolean initialized = false;
-        public EventSpecification completedFilter;
+        private EventSpecification completedFilter;
+
+        private Usecase usecase = UsecaseBuilder.newUsecase( "Log statistics" );
 
         public void activate() throws Exception
         {
@@ -176,7 +180,7 @@ public interface StatisticsService
                     try
                     {
 
-                        uow = uowf.newUnitOfWork();
+                        uow = uowf.newUnitOfWork(usecase);
                         conn = dataSource.getConnection();
                         conn.setAutoCommit( false );
 
@@ -212,7 +216,7 @@ public interface StatisticsService
 
                                 stmt.setString( idx++, assignee.getDescription() );
                                 stmt.setString( idx++, owner.getDescription() );
-                                ProjectOrganization.Data po = (ProjectOrganization.Data) owner;
+                                OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
                                 Describable.Data organizationalUnit = (Describable.Data) po.organizationalUnit().get();
 
                                 // Figure out which group the user belongs to
