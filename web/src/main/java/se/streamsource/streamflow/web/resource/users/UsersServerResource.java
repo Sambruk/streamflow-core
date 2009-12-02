@@ -18,6 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -47,7 +48,7 @@ public class UsersServerResource
         {
             // Find users
             String id = form.getFirstValue("username");
-            UnitOfWork uow = uowf.newUnitOfWork();
+            UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Find user by name" ));
             try
             {
                 UserEntity user = uow.get(UserEntity.class, id);
