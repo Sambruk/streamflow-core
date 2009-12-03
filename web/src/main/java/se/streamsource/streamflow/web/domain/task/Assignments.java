@@ -97,7 +97,16 @@ public interface Assignments
 
         public void completeAssignedTask(Task task)
         {
-            task.complete();
+        	// Complete (TaskStates.COMPLETED) assigned tasks 
+        	// but finish (TaskStates.DONE) assigned AND delegated
+        	// tasks.
+        	if (((Delegatable.Data)task).delegatedFrom().get() != null) 
+        	{
+        		task.done();
+        	} else 
+        	{
+        		task.complete();
+        	}
             markAssignedTaskAsRead(task);
         }
 

@@ -18,8 +18,6 @@ import java.util.Date;
 
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -28,7 +26,6 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 
-import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
