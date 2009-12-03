@@ -18,3 +18,15 @@ Then events markedWaitingForTaskAsUnread occurred
 When waitingFor task is marked as unread
 Then no events occurred
 
+Scenario: Complete waitingFor task 
+Given basic setup 1
+Given the organization
+Given user named user2
+Given organizational unit named OU2
+Given project named project2
+Given first waitingFor task
+
+When waitingFor task is completed
+Then events changedOwner,assignedTo,changedStatus occurred
+Then task is completed
+

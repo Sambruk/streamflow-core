@@ -14,9 +14,9 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import java.util.Date;
+
 import org.qi4j.api.Qi4j;
-import org.qi4j.api.sideeffect.SideEffectOf;
-import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
@@ -25,16 +25,16 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import org.qi4j.api.sideeffect.SideEffectOf;
+import org.qi4j.api.sideeffect.SideEffects;
 
-import java.util.Date;
+import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
  */
 @SideEffects(Delegatable.FinishedDelegatedTaskSideEffect.class)
-@Concerns(Delegatable.CompleteDelegatedTaskConcern.class)
 @Mixins(Delegatable.Mixin.class)
 public interface Delegatable
 {
@@ -55,7 +55,6 @@ public interface Delegatable
 
         @Optional
         Property<Date> delegatedOn();
-
 
         void delegatedTo(DomainEvent create, Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom);
 
@@ -106,29 +105,7 @@ public interface Delegatable
         }
     }
 
-    abstract class CompleteDelegatedTaskConcern
-        extends ConcernOf<TaskStatus>
-        implements TaskStatus
-    {
-        @This
-        Delegatable.Data delegatable;
-
-        @This
-        Data status;
-
-        public void complete()
-        {
-            if (delegatable.delegatedFrom().get() != null && status.status().get().equals(TaskStates.ACTIVE))
-            {
-                done();
-            } else
-            {
-                next.complete();
-            }
-        }
-    }
-
-    abstract public class FinishedDelegatedTaskSideEffect
+   abstract public class FinishedDelegatedTaskSideEffect
         extends SideEffectOf<TaskStatus>
         implements TaskStatus
     {

@@ -100,7 +100,6 @@ public class WorkspaceUserWaitingForView
         model.refresh();
     }
 
-
     @org.jdesktop.application.Action
     public void completeTasks()
     {

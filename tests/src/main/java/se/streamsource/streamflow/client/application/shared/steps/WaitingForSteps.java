@@ -14,14 +14,20 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
+import static org.jbehave.Ensure.ensureThat;
+
+import org.hamcrest.CoreMatchers;
 import org.jbehave.scenario.annotations.Given;
+import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
+import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
@@ -73,11 +79,18 @@ public class WaitingForSteps
         projectsSteps.givenProject.completeWaitingForTask( givenTask, orgsSteps.givenUser );
     }
 
-    @When("waitingFor task is finished")
-            public void completeFinishedTask()
+    @Then("task is completed")
+    public void taskStatusEqualsCompleted()
     {
-        projectsSteps.givenProject.completeFinishedTask( givenTask );
+        ensureThat(givenTask.status().get(), CoreMatchers.equalTo( TaskStates.COMPLETED ));
     }
+    
+//  @When("waitingFor task is finished")
+//  public void completeFinishedTask()
+//	{
+//  	projectsSteps.givenProject.completeWaitingForTask(givenTask, assignee)
+//  	projectsSteps.givenProject.completeFinishedTask( givenTask );
+//	}
 
 /*
     void rejectFinishedTask(Task task);

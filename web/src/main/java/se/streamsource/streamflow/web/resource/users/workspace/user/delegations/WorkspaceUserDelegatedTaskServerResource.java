@@ -77,6 +77,6 @@ public class WorkspaceUserDelegatedTaskServerResource
         Task task = uow.get(Task.class, taskId);
         String userId = (String) getRequest().getAttributes().get("user");
         Delegations delegations = uow.get(Delegations.class, userId);
-        delegations.markDelegateddTaskAsUnread(task);
+        delegations.markDelegatedTaskAsUnread(task);
     }
 }

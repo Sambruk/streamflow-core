@@ -90,7 +90,7 @@ public interface Assignable
 
         @This
         Assignable assignable;
-
+        
         public void complete()
         {
             next.complete();

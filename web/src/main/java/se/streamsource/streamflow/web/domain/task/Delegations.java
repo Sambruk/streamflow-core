@@ -33,7 +33,7 @@ public interface Delegations
     void finishDelegatedTask(@HasStatus(ACTIVE) Task task, Assignee assignee);
 
     void markDelegatedTaskAsRead(Task task);
-     void markDelegateddTaskAsUnread(Task task);
+    void markDelegatedTaskAsUnread(Task task);
 
     interface Data
     {
@@ -74,7 +74,7 @@ public interface Delegations
             markedDelegatedTaskAsRead( DomainEvent.CREATE, task);
         }
 
-        public void markDelegateddTaskAsUnread(Task task)
+        public void markDelegatedTaskAsUnread(Task task)
         {
             if (unreadDelegatedTasks().contains(task))
             {

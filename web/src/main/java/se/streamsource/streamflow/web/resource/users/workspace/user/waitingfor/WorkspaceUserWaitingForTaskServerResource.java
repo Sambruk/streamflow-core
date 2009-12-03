@@ -51,7 +51,6 @@ public class WorkspaceUserWaitingForTaskServerResource
         delegations.rejectFinishedTask( task );
     }
 
-
     public void completeFinishedTask()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();

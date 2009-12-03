@@ -21,10 +21,23 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.client.application.shared.steps.*;
+
+import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplateSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplatesSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.InboxSteps;
+import se.streamsource.streamflow.client.application.shared.steps.MembersSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.SubmittedFormsSteps;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
@@ -121,6 +134,8 @@ public class TestSetupSteps
     public Task readInboxTask;
     public Task readWaitingForTask;
     public Task unreadWaitingForTask;
+    public Task readDelegatedTask;
+    public Task unreadDelegatedTask;
 
     @Given("basic setup 1")
     public void setup1() throws Exception
@@ -252,7 +267,7 @@ public class TestSetupSteps
         readWaitingForTask = project.createTask();
         project.delegateTo( readWaitingForTask, project, user2 );
         readWaitingForTask.delegateTo(user, user2, waitingFor);
-
+        
         genericSteps.clearEvents();
     }
 
