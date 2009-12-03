@@ -21,6 +21,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Date;
@@ -72,6 +73,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
 	private JLabel issueLabel;
 	public JPanel leftForm;
 	public JPanel rightForm;
+	public JPanel bottomForm;
 	public LabelsView labels;
 	
 	public TaskGeneralView(@Service ApplicationContext appContext, @Uses LabelsView labels)
@@ -87,22 +89,22 @@ public class TaskGeneralView extends JScrollPane implements Observer
 
         leftForm = new JPanel();
         leftForm.setFocusable(false);
-        DefaultFormBuilder builder = new DefaultFormBuilder(leftLayout, leftForm);
-        builder.setDefaultDialogBorder();
+        DefaultFormBuilder leftBuilder = new DefaultFormBuilder(leftLayout, leftForm);
+        leftBuilder.setDefaultDialogBorder();
 
         taskBinder = new StateBinder();
         taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
         TaskGeneralDTO template = taskBinder.bindingTemplate(TaskGeneralDTO.class);
 
-        notePane = (JScrollPane)TEXTAREA.newField();
-        notePane.setSize(10,50);
+//        notePane = (JScrollPane)TEXTAREA.newField();
+//        notePane.setSize(10,50);
 
-        BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
-        bb.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
+        BindingFormBuilder leftBindingBuilder = new BindingFormBuilder(leftBuilder, taskBinder);
+        leftBindingBuilder.appendLine(WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId());
         
-        bb.appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
-                .appendLine(WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn())
-                .appendLine(WorkspaceResources.note_label, notePane, template.note());
+        leftBindingBuilder.appendLine(WorkspaceResources.description_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description())
+                .appendLine(WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn());
+//                .appendLine(WorkspaceResources.note_label, notePane, template.note());
 
         // Layout and form for the right panel
         FormLayout rightLayout = new FormLayout(
@@ -119,10 +121,31 @@ public class TaskGeneralView extends JScrollPane implements Observer
         rightBuilder.nextLine();
         rightBuilder.add(labels, cc.xy(1, 2));
         
+        // Layout and form for the bottom panel
+        FormLayout bottomLayout = new FormLayout(
+                "330dlu:grow",
+        		"15dlu,fill:pref:grow");
+
+        bottomForm = new JPanel();
+        bottomForm.setFocusable(false);
+        DefaultFormBuilder bottomBuilder = new DefaultFormBuilder(bottomLayout, bottomForm);
+        bottomBuilder.setDefaultDialogBorder();
+
+        notePane = (JScrollPane)TEXTAREA.newField();
+        notePane.setMinimumSize(new Dimension(10,50));
+
+        BindingFormBuilder bottomBindingBuilder = new BindingFormBuilder(bottomBuilder, taskBinder);
+        bottomBindingBuilder.appendLine(WorkspaceResources.note_label, notePane, template.note());
+        
         JPanel formsContainer = new JPanel(new BorderLayout());
         formsContainer.add(leftForm, BorderLayout.WEST);
         formsContainer.add(rightForm, BorderLayout.CENTER);
-        setViewportView(formsContainer);
+        
+        JPanel borderLayoutContainer = new JPanel(new BorderLayout());
+        borderLayoutContainer.add(formsContainer, BorderLayout.NORTH);
+        borderLayoutContainer.add(bottomForm, BorderLayout.CENTER);
+        
+        setViewportView(borderLayoutContainer);
 
         taskBinder.addObserver(this);
 
