@@ -167,8 +167,6 @@ public class AccountModel
         {
             Account account1 = uow.get(account);
             account1.changePassword(client, changePasswordCommand);
-            setChanged();
-            notifyObservers();
             uow.complete();
         } catch (Exception ex)
         {
