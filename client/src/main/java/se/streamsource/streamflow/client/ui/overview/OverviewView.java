@@ -147,6 +147,7 @@ public class OverviewView
         overviewOutline.setMinimumSize(new Dimension(150, 300));
 
         pane.setLeftComponent(overviewOutline);
+        pane.setRightComponent( new JPanel() );
 
         add(pane, BorderLayout.CENTER);
 
