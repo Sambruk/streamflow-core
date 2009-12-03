@@ -49,8 +49,10 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 
 /**
  * JAVADOC
@@ -90,7 +92,11 @@ public class TaskGeneralView extends JScrollPane implements Observer
         leftForm = new JPanel();
         leftForm.setFocusable(false);
         DefaultFormBuilder leftBuilder = new DefaultFormBuilder(leftLayout, leftForm);
-        leftBuilder.setDefaultDialogBorder();
+        leftBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY8,
+                Sizes.DLUX8,
+                Sizes.DLUY2,
+                Sizes.DLUX4));
+
 
         taskBinder = new StateBinder();
         taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
@@ -114,7 +120,11 @@ public class TaskGeneralView extends JScrollPane implements Observer
         rightForm = new JPanel(rightLayout);
         rightForm.setFocusable(false);
         DefaultFormBuilder rightBuilder = new DefaultFormBuilder(rightLayout, rightForm);
-        rightBuilder.setDefaultDialogBorder();
+        rightBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY8,
+                Sizes.DLUX4,
+                Sizes.DLUY2,
+                Sizes.DLUX8));
+
 
         CellConstraints cc = new CellConstraints();
         rightBuilder.add(new JLabel(i18n.text(WorkspaceResources.labels_label)), cc.xy(1, 1));
@@ -129,7 +139,11 @@ public class TaskGeneralView extends JScrollPane implements Observer
         bottomForm = new JPanel();
         bottomForm.setFocusable(false);
         DefaultFormBuilder bottomBuilder = new DefaultFormBuilder(bottomLayout, bottomForm);
-        bottomBuilder.setDefaultDialogBorder();
+        bottomBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY2,
+                Sizes.DLUX8,
+                Sizes.DLUY8,
+                Sizes.DLUX8));
+
 
         notePane = (JScrollPane)TEXTAREA.newField();
         notePane.setMinimumSize(new Dimension(10,50));
