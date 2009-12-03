@@ -129,6 +129,7 @@ public class FieldsView
             if(dialog.isConfirmed())
             {
                 model.removeField(index);
+                model.fieldModels.clear();
                 fieldList.clearSelection();
             }
         }
@@ -159,5 +160,10 @@ public class FieldsView
     public JList getFieldList()
     {
         return fieldList;
+    }
+
+    public FieldsModel getModel()
+    {
+        return model;
     }
 }

@@ -22,12 +22,8 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsClientResource;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FormValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -55,36 +51,10 @@ public class FormModel
 
     public FormModel(@Uses ProjectFormDefinitionClientResource resource)
     {
-        eventFilter = new EventHandlerFilter( this, "changedNote", "movedField");
+        eventFilter = new EventHandlerFilter( this, "changedNote", "movedField", "changedDescription");
         this.resource = resource;
         refresh();
     }
-
-    WeakModelMap<String, FieldValueEditModel> fieldModels = new WeakModelMap<String, FieldValueEditModel>()
-    {
-        protected FieldValueEditModel newModel( String key )
-        {
-            try
-            {
-                ListValue value = resource.fields().fields();
-                int index = 0;
-                for (ListItemValue listItemValue : value.items().get())
-                {
-                    if (listItemValue.entity().get().identity().equals(key))
-                    {
-                        break;
-                    }
-                    index++;
-                }
-                ProjectFormDefinitionFieldClientResource fieldResource = resource.fields().field(index);
-                return obf.newObjectBuilder(FieldValueEditModel.class).use(fieldResource).newInstance();
-            } catch (ResourceException e)
-            {
-                throw new OperationException(AdministrationResources.could_not_get_form, e);
-            }
-        }
-    };
-
 
     WeakModelMap<String, FieldsModel> fieldsModels = new WeakModelMap<String, FieldsModel>()
     {
@@ -119,10 +89,6 @@ public class FormModel
             fieldsModel.notifyEvent( event );
         }
 
-        for (FieldValueEditModel fieldModel : fieldModels)
-        {
-            fieldModel.notifyEvent( event );
-        }
     }
 
     public boolean handleEvent(DomainEvent event)
@@ -131,7 +97,6 @@ public class FormModel
         {
             if (event.name().get().equals("movedField"))
             {
-                fieldModels.clear();
                 getFieldsModel().refresh();
             }
             Logger.getLogger("administration").info("Refresh the note");
@@ -163,11 +128,6 @@ public class FormModel
     public void changeNote(StringDTO stringDTO) throws ResourceException
     {
         resource.changeNote(stringDTO);
-    }
-
-    public FieldValueEditModel getFieldModel(String id)
-    {
-        return fieldModels.get( id );
     }
 
     public FieldsModel getFieldsModel()

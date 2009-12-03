@@ -86,9 +86,6 @@ public class FormsView
         if (name != null && !"".equals(name))
         {
             model.createForm(name);
-            // Should not be needed. But ProjectsModel.projectFormsModels does not
-            // store sub organizational units, so update mechanism does not work
-            model.refresh();
         }
     }
 
@@ -103,8 +100,8 @@ public class FormsView
             if (selected != null)
             {
                 model.removeForm(selected.entity().get());
+                model.formModels.clear();
                 formList.clearSelection();
-                model.refresh();
             }
         }
     }

@@ -56,8 +56,8 @@ public class FormEditAdminView
     private FormModel model;
 
     public FormEditAdminView(@Service ApplicationContext context,
-                             @Uses final FormModel model,
-                             @Uses FieldsView fieldsView,
+                             @Uses FormModel model,
+                             @Uses final FieldsView fieldsView,
                              @Structure final ObjectBuilderFactory obf,
                              @Structure ValueBuilderFactory vbf)
     {
@@ -109,7 +109,7 @@ public class FormEditAdminView
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
                         ListItemValue fieldValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        FieldValueEditModel editModel = model.getFieldModel(fieldValue.entity().get().identity());
+                        FieldValueEditModel editModel = fieldsView.getModel().getFieldModel(fieldValue.entity().get().identity());
 
                         setRightComponent(
                                 obf.newObjectBuilder(FieldValueTextEditView.class).

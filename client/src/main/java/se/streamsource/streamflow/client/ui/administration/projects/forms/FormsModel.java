@@ -164,11 +164,8 @@ public class FormsModel
 
     public boolean handleEvent( DomainEvent event )
     {
-        if (formsResource.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get()))
-        {
-            Logger.getLogger("administration").info("Refresh project form definitions");
-            refresh();
-        }
+        Logger.getLogger("administration").info("Refresh project form definitions");
+        refresh();
         return false;
     }
 

@@ -18,6 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
@@ -38,7 +39,6 @@ import java.io.IOException;
 public class OrganizationalStructureAdministrationNode
         extends DefaultMutableTreeNode implements Transferable, EventListener
 {
-    @Structure
     ObjectBuilderFactory obf;
 
     WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode>()
@@ -50,22 +50,51 @@ public class OrganizationalStructureAdministrationNode
         }
     };
 
+    WeakModelMap<String, OrganizationalUnitAdministrationModel> orgUnitModels = new WeakModelMap<String, OrganizationalUnitAdministrationModel>()
+    {
+
+        protected OrganizationalUnitAdministrationModel newModel(String key)
+        {
+            try
+            {
+                OrganizationClientResource resource = orgResource.organization( key );
+                return obf.newObjectBuilder(OrganizationalUnitAdministrationModel.class).use(resource).newInstance();
+            } catch (ResourceException e)
+            {
+                throw new OperationException(AdministrationResources.could_not_get_organization, e);
+            }
+        }
+    };
+
     OrganizationalUnitAdministrationModel model;
 
     OrganizationsClientResource orgResource;
+    private TreeNode parentNode;
 
     public OrganizationalStructureAdministrationNode(@Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses OrganizationsClientResource orgResource, @Structure ObjectBuilderFactory obf) throws ResourceException
     {
         super(ou.buildWith().prototype());
+        this.obf = obf;
         this.orgResource = orgResource;
-
-        OrganizationClientResource resource = orgResource.organization(ou.entity().get().identity());
-        model = obf.newObjectBuilder(OrganizationalUnitAdministrationModel.class).use(resource).newInstance();
+        this.parentNode = parent;
+        model = getOrgUnitModel(ou.entity().get().identity());
 
         for (TreeNodeValue treeNodeValue : ou.children().get())
         {
             add(obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(this, treeNodeValue, orgResource).newInstance());
         }
+    }
+
+    public OrganizationalUnitAdministrationModel getOrgUnitModel(String key)
+    {
+        if (parentNode instanceof AccountAdministrationNode)
+        {
+            return orgUnitModels.get( key );
+        } else if (parentNode instanceof OrganizationalStructureAdministrationNode)
+        {
+            return ((OrganizationalStructureAdministrationNode)parentNode).getOrgUnitModel( key );
+        }
+        return null;
     }
 
     @Override
@@ -108,7 +137,10 @@ public class OrganizationalStructureAdministrationNode
 
     public void notifyEvent( DomainEvent event )
     {
-        model.notifyEvent(event);
+        for (OrganizationalUnitAdministrationModel model : orgUnitModels)
+        {
+            model.notifyEvent( event );
+        }
 
         for (OrganizationalStructureAdministrationNode organizationalStructureAdministrationNode : models)
         {
