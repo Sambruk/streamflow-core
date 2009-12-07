@@ -34,6 +34,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.web.domain.organization.Organizations;
@@ -255,5 +256,14 @@ public class OrganizationsServerResource
         checkPermission(organizations);
         
         return organizations.organizations();
+    }
+
+    public void resetPassword(ResetPasswordCommand command)
+    {
+        UserEntity userEntity = uowf.currentUnitOfWork().get(UserEntity.class, command.entity().get().identity());
+
+        checkPermission(userEntity);
+
+        userEntity.resetPassword(command.password().get());
     }
 }

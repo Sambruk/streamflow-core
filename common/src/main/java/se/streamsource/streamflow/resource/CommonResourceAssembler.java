@@ -62,7 +62,8 @@ public class CommonResourceAssembler
                 IntegerDTO.class,
                 EntityReferenceDTO.class,
                 NewCommentCommand.class,
-                NewUserCommand.class).visibleIn(Visibility.application);
+                NewUserCommand.class,
+                ResetPasswordCommand.class).visibleIn(Visibility.application);
 
         // Queries
         module.addValues(TasksQuery.class).visibleIn(Visibility.application);

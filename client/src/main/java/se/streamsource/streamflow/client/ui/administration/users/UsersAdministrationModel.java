@@ -175,4 +175,13 @@ public class UsersAdministrationModel
 
         return false;
     }
+
+    public void resetPassword(int index, String password)
+    {try
+        {
+            organizations.resetPassword(users.get(index).entity().get(), password);
+        } catch (ResourceException e)
+        {
+            throw new OperationException(AdministrationResources.reset_password_failed,e);
+        }}
 }

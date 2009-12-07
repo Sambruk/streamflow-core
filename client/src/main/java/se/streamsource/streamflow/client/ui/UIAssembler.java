@@ -47,7 +47,8 @@ public class UIAssembler
         UIAssemblers.addDialogs(module, NameDialog.class,
                 SelectUsersAndGroupsDialog.class,
                 CreateUserDialog.class,
-                ConfirmationDialog.class);
+                ConfirmationDialog.class,
+                ResetPasswordDialog.class);
 
         UIAssemblers.addModels(module, TableMultipleSelectionModel.class,
                 TableSingleSelectionModel.class);

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.resource.organizations;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
@@ -23,6 +24,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 
@@ -70,5 +72,14 @@ public class OrganizationsClientResource
     public ListValue organizations() throws ResourceException
     {
         return query("organizations", ListValue.class);
+    }
+
+    public void resetPassword(EntityReference userentity, String password) throws ResourceException
+    {
+        ValueBuilder<ResetPasswordCommand> builder = vbf.newValueBuilder(ResetPasswordCommand.class);
+        builder.prototype().entity().set(userentity);
+        builder.prototype().password().set(password);
+
+        postCommand("resetPassword",builder.newInstance());
     }
 }
