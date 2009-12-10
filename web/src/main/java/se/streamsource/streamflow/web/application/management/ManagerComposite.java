@@ -206,6 +206,13 @@ public interface ManagerComposite
             } finally
             {
                 in.close();
+                try
+                {
+                    reindex();
+                } catch (Exception e)
+                {
+                    throw new RuntimeException("Could not reindex rdf-repository", e);
+                }
             }
 
             return "Data imported successfully";
