@@ -14,19 +14,23 @@
 
 package se.streamsource.streamflow.web.resource.task.formdefinitions;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.form.Fields;
+import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -67,6 +71,26 @@ public class TaskFormDefinitionServerResource
 
         return new ListValueBuilder(vbf).addDescribableItems( fields.fields()).newList();
     }
+
+
+    public FormValue form()
+    {
+        String formId = getRequest().getAttributes().get("form").toString();
+
+        UnitOfWork uow = uowf.currentUnitOfWork();
+
+        FormEntity form = uow.get(FormEntity.class, formId);
+
+        ValueBuilder<FormValue> builder = vbf.newValueBuilder(FormValue.class);
+
+        builder.prototype().note().set(form.note().get());
+        builder.prototype().description().set(form.description().get());
+        builder.prototype().form().set(EntityReference.parseEntityReference(formId));
+
+        return builder.newInstance();
+    }
+
+
 
     @Override
     protected String getConditionalIdentityAttribute()

@@ -13,8 +13,11 @@
  */
 package se.streamsource.streamflow.client.ui.task;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
@@ -30,8 +33,24 @@ public class FormsListModel
 {
     private List<ListItemValue> forms;
 
+    WeakModelMap<String, FormSubmitModel> formSubmitModels = new WeakModelMap<String, FormSubmitModel>()
+    {
+        @Override
+        protected FormSubmitModel newModel(String key)
+        {
+            return obf.newObjectBuilder(FormSubmitModel.class)
+                    .use(submittedFormsResource, resource.formDefinition(key)).newInstance();
+        }
+    };
+
     @Uses
     TaskSubmittedFormsClientResource resource;
+
+    @Uses
+    TaskSubmittedFormsClientResource submittedFormsResource;
+
+    @Structure
+    ObjectBuilderFactory obf;
 
     public void refresh() throws OperationException
     {
@@ -53,5 +72,15 @@ public class FormsListModel
     public Object getElementAt(int i)
     {
         return forms.get(i);
+    }
+
+    public List<ListItemValue> formsList()
+    {
+        return forms;
+    }
+
+    public FormSubmitModel getFormSubmitModel(String key)
+    {
+        return formSubmitModels.get(key);
     }
 }

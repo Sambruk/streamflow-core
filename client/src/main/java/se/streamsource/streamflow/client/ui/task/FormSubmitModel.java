@@ -14,41 +14,45 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import java.util.List;
-import java.util.Observable;
 
 /**
  * Model for a FormDefinition
  */
 public class FormSubmitModel
-    extends Observable
-    implements Refreshable
 {
-    @Uses
-    TaskFormDefinitionClientResource form;
-
     private List<ListItemValue> fieldValues;
+    private EntityReference formEntityReference;
 
-    public void refresh() throws OperationException
+    @Uses
+    TaskSubmittedFormsClientResource submittedFormsResource;
+
+    public FormSubmitModel(@Uses TaskFormDefinitionClientResource form)
     {
         try
         {
             fieldValues = form.fields().items().get();
-            setChanged();
-            notifyObservers();
         } catch (ResourceException e)
         {
             throw new OperationException(WorkspaceResources.could_not_get_form, e);
         }
+        formEntityReference = form.formEntityReference();
+    }
+
+    public List<ListItemValue> fieldsForPage(String pageId)
+    {
+        // find field in page with id
+        return fieldValues;
     }
 
     public List<ListItemValue> fields()
@@ -58,6 +62,17 @@ public class FormSubmitModel
 
     public EntityReference formEntityReference()
     {
-        return form.formEntityReference();
+        return formEntityReference;
+    }
+
+    public void submit(SubmitFormDTO submitFormDTO)
+    {
+        try
+        {
+            submittedFormsResource.submitForm(submitFormDTO);
+        } catch (ResourceException e)
+        {
+            throw new OperationException(WorkspaceResources.could_not_submit_form, e);
+        }
     }
 }

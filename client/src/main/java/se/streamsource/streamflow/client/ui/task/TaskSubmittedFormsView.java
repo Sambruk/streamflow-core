@@ -20,6 +20,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import org.netbeans.spi.wizard.Wizard;
+import org.netbeans.api.wizard.WizardDisplayer;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
@@ -80,16 +82,12 @@ public class TaskSubmittedFormsView
     @org.jdesktop.application.Action
     public void add() throws IOException, ResourceException
     {
-        FormSubmissionWizardView dialog =
-                obf.newObjectBuilder(FormSubmissionWizardView.class).
-                        use(model.getTaskSubmittedFormsClientResource()).newInstance();
-
-        JFrame frame = new JFrame(i18n.text(WorkspaceResources.form_submit_wizard));
-
-        Container contentPane = frame.getContentPane();
-        contentPane.add(dialog);
-        frame.setSize(400, 300);
-        frame.setVisible(true);
+        FormsListModel formsListModel = obf.newObjectBuilder(FormsListModel.class)
+                .use(model.getTaskSubmittedFormsClientResource(), getResource()).newInstance();
+        FormSubmitWizardController wizardController = obf.newObjectBuilder(FormSubmitWizardController.class).
+                use(formsListModel).newInstance();
+        Wizard wizard = wizardController.createWizard();
+        WizardDisplayer.showWizard(wizard);
     }
 
     public void setModel(TaskSubmittedFormsModel model)

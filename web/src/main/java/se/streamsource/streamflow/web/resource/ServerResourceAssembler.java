@@ -39,8 +39,6 @@ import se.streamsource.streamflow.web.resource.organizations.projects.ProjectSer
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.FormDefinitionFieldServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
@@ -182,8 +180,6 @@ public class ServerResourceAssembler
                 MemberServerResource.class,
                 FormDefinitionsServerResource.class,
                 FormDefinitionServerResource.class,
-                FormDefinitionFieldsServerResource.class,
-                FormDefinitionFieldServerResource.class,
                 SelectedTaskTypesServerResource.class,
                 SelectedTaskTypeServerResource.class,
 

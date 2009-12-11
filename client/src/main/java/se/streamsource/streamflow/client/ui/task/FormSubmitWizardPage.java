@@ -17,9 +17,11 @@ package se.streamsource.streamflow.client.ui.task;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
+import org.netbeans.spi.wizard.WizardPage;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
@@ -28,51 +30,67 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * JAVADOC
  */
-public class FormSubmitView
-    extends JScrollPane
-    implements Observer
+public class FormSubmitWizardPage
+    extends WizardPage
 {
     private DefaultFormBuilder formBuilder;
     FormLayout formLayout = new FormLayout(
-            "pref, 4dlu, 150dlu","");
+            "pref, 4dlu, 80dlu","");
 
-    private Map<EntityReference, TextField> fields;
+    private Map<EntityReference, TextField> allFields;
 
     @Structure
     ValueBuilderFactory vbf;
+
     private FormSubmitModel model;
+
     private JPanel panel;
 
-    public FormSubmitView(@Service ApplicationContext context)
+    public FormSubmitWizardPage(@Service ApplicationContext context,
+                                @Uses FormSubmitModel model)
     {
         ActionMap am = context.getActionMap(this);
         setActionMap(am);
-
+        setLayout(new FlowLayout());
+        allFields = new HashMap<EntityReference, TextField>();
+        setLayout(new BorderLayout());
+        JScrollPane scroll = new JScrollPane();
         panel = new JPanel();
-        setViewportView(panel);
-
-        fields = new HashMap<EntityReference, TextField>();
-    }
-
-    public void setModel(FormSubmitModel model)
-    {
+        scroll.setViewportView(panel);
+        add(scroll,  BorderLayout.CENTER);
         this.model = model;
-        model.addObserver(this);
-        model.refresh();
     }
 
-    public SubmitFormDTO getSubmitFormDTO()
+    public void updateView(String pageId)
+    {
+        panel.removeAll();
+        formBuilder = new DefaultFormBuilder(formLayout, panel);
+
+        for (ListItemValue value : model.fieldsForPage(pageId))
+        {
+            TextField textField = new TextField();
+            allFields.put(value.entity().get(), textField);
+            formBuilder.append(value.description().get(), textField);
+        }
+        revalidate();
+        repaint();
+    }
+
+
+    private SubmitFormDTO getSubmitFormDTO()
     {
         ValueBuilder<SubmitFormDTO> submittedFormBuilder = vbf.newValueBuilder(SubmitFormDTO.class);
         ValueBuilder<SubmittedFieldValue> fieldBuilder =vbf.newValueBuilder(SubmittedFieldValue.class);
         java.util.List<SubmittedFieldValue> fields = new ArrayList<SubmittedFieldValue>();
 
-        for (Map.Entry<EntityReference, TextField> stringComponentEntry : this.fields.entrySet())
+        for (Map.Entry<EntityReference, TextField> stringComponentEntry : this.allFields.entrySet())
         {
             fieldBuilder.prototype().field().set(stringComponentEntry.getKey());
             fieldBuilder.prototype().value().set(stringComponentEntry.getValue().getText());
@@ -84,22 +102,13 @@ public class FormSubmitView
         return submittedFormBuilder.newInstance();
     }
 
-    public void update(Observable observable, Object o)
+    public Map<EntityReference, TextField> getEnteredFields()
     {
-        if (model != null)
-        {
-            panel.removeAll();
-            fields.clear();
-            formBuilder = new DefaultFormBuilder(formLayout, panel);
+        return allFields;
+    }
 
-            for (ListItemValue value : model.fields())
-            {
-                TextField textField = new TextField(30);
-                fields.put(value.entity().get(), textField);
-                formBuilder.append(value.description().get(), textField);
-            }
-            panel.revalidate();
-            panel.repaint();
-        }
+    public void submit()
+    {
+        model.submit(getSubmitFormDTO());
     }
 }

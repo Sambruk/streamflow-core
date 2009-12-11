@@ -20,6 +20,7 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 
@@ -42,5 +43,10 @@ public class TaskFormDefinitionClientResource
     public EntityReference formEntityReference()
     {
         return EntityReference.parseEntityReference(getRequest().getResourceRef().getLastSegment());
+    }
+
+    public FormValue form() throws ResourceException
+    {
+        return query("form", FormValue.class);
     }
 }

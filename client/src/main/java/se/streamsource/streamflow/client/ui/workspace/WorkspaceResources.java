@@ -23,6 +23,7 @@ public enum WorkspaceResources
 
     inbox_tab, detail_tab,
 
+    description_column_header,
     title_column_header,
     created_column_header,
     project_column_header,
@@ -32,6 +33,7 @@ public enum WorkspaceResources
     add_task_title,
     task_separator,
     id_label,
+    description_label,
     title_label,
     labels_label,
     selected_labels_label,
@@ -99,6 +101,10 @@ public enum WorkspaceResources
     field_submitter, 
     date_time_format, 
     form_submit_wizard,
+    form_select_description,
+    form_submit_title,
+    form_submit_description,
+    select_form,
     tasktype_label,
     could_not_refresh,
     search_user
