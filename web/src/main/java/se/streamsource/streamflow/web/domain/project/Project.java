@@ -16,14 +16,14 @@ package se.streamsource.streamflow.web.domain.project;
 
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
-import se.streamsource.streamflow.web.domain.label.Labels;
-import se.streamsource.streamflow.web.domain.task.Inbox;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
+import se.streamsource.streamflow.web.domain.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Delegations;
-import se.streamsource.streamflow.web.domain.task.WaitingFor;
+import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.form.Forms;
+import se.streamsource.streamflow.web.domain.task.WaitingFor;
+import se.streamsource.streamflow.web.domain.tasktype.SelectedTaskTypes;
 
 /**
  * JAVADOC
@@ -38,10 +38,10 @@ public interface Project
         Delegations,
         WaitingFor,
         Owner,
-        ProjectOrganization,
-        Labels,
+        OwningOrganizationalUnit,
+        SelectedLabels,
         IdGenerator,
-        Forms,
-        Removable
+        Removable,
+        SelectedTaskTypes
 {
 }

@@ -36,7 +36,7 @@ import java.security.AccessControlException;
 
 /**
  * Mapped to:
- * /organizations/{organization}/projects/{project}
+ * /organizations/{organization}/organizationalunits/{ou}/projects/{project}
  */
 public class ProjectServerResource
         extends CommandQueryServerResource
@@ -53,7 +53,7 @@ public class ProjectServerResource
 
         try
         {
-            ProjectRoles.Data roles = uowf.currentUnitOfWork().get( ProjectRoles.Data.class, getRequest().getAttributes().get("organization").toString());
+            ProjectRoles.Data roles = uowf.currentUnitOfWork().get( ProjectRoles.Data.class, getRequest().getAttributes().get("ou").toString());
             for (ProjectRole projectRole : roles.projectRoles())
             {
                 if (projectRole.getDescription().equals(query.string().get()))
@@ -67,12 +67,12 @@ public class ProjectServerResource
         return builder.newInstance();
     }
 
-    public void describe(StringDTO stringValue) throws ResourceException
+    public void changedescription(StringDTO stringValue) throws ResourceException
     {
         String projectId = (String) getRequest().getAttributes().get("project");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, projectId);
 
-        String identity = getRequest().getAttributes().get("organization").toString();
+        String identity = getRequest().getAttributes().get("ou").toString();
 
         String newName = stringValue.string().get();
 
@@ -84,7 +84,7 @@ public class ProjectServerResource
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String org = getRequest().getAttributes().get("organization").toString();
+        String org = getRequest().getAttributes().get("ou").toString();
 
         Projects projects = uow.get(Projects.class, org);
 

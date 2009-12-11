@@ -49,7 +49,7 @@ public class TaskView
         BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
 /*
         bb.appendSeparator(task_separator)
-                .appendLine(description_label, TEXTFIELD, template.description())
+                .appendLine(title_label, TEXTFIELD, template.description())
                 .appendLine(note_label, TEXTAREA, template.note());
 */
     }

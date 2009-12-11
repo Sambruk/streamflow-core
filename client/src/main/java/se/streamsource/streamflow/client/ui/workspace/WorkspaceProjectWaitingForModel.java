@@ -40,7 +40,7 @@ public class WorkspaceProjectWaitingForModel
     public WorkspaceProjectWaitingForModel(@Uses WorkspaceProjectWaitingforClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), text(task_status_header)};
+        columnNames = new String[]{text( title_column_header ), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), text(task_status_header)};
         columnClasses = new Class[]{String.class, String.class, String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false, false};
     }

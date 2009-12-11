@@ -14,11 +14,13 @@
 
 package se.streamsource.streamflow.infrastructure.event.source;
 
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+
 /**
  * JAVADOC
  */
 public abstract class OnEvents
-        implements EventSourceListener, Runnable
+        implements TransactionHandler, Runnable
 {
     EventSpecification specification;
 
@@ -27,18 +29,21 @@ public abstract class OnEvents
         specification = new EventQuery().withNames( eventNames );
     }
 
-    public void eventsAvailable( EventStore source )
-    {
-        EventMatcher handler = new EventMatcher( specification )
-        {
-            @Override
-            public void run()
-            {
-                OnEvents.this.run();
-            }
-        };
-        source.transactions( null, new TransactionEventAdapter( handler ) );
-        if (handler.matches())
-            handler.run();
-    }
+   public boolean handleTransaction( TransactionEvents transaction )
+   {
+      EventMatcher handler = new EventMatcher( specification )
+      {
+          @Override
+          public void run()
+          {
+              OnEvents.this.run();
+          }
+      };
+      new TransactionEventAdapter( handler ).handleTransaction( transaction );
+
+      if (handler.matches())
+          handler.run();
+
+      return false;
+   }
 }

@@ -26,6 +26,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
@@ -76,6 +77,9 @@ public class ProjectMembersView
         toolbar.add(new JButton(getActionMap().get("remove")));
         add(toolbar, BorderLayout.SOUTH);
         membersList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler(getActionMap().get("remove")));
+
+
+        addAncestorListener( new RefreshWhenVisible(membersModel, this) );
     }
 
 

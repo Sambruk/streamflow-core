@@ -20,42 +20,61 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
  * Mapped to /task/{id}/forms
  */
 public class TaskSubmittedFormsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public TaskSubmittedFormsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public TaskSubmittedFormsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public SubmittedFormsListDTO taskSubmittedForms() throws ResourceException, IOException
-    {
-        return query("taskSubmittedForms", SubmittedFormsListDTO.class);
-    }
+   public SubmittedFormsListDTO taskSubmittedForms() throws ResourceException, IOException
+   {
+      return query( "taskSubmittedForms", SubmittedFormsListDTO.class );
+   }
 
-    public void submitForm(SubmitFormDTO submitDTO) throws ResourceException
-    {
-        postCommand("submitForm", submitDTO);
-    }
+   public void submitForm( SubmitFormDTO submitDTO ) throws ResourceException
+   {
+      postCommand( "submitForm", submitDTO );
+   }
 
-    public EffectiveFieldsDTO effectiveFields() throws ResourceException
-    {
-        return query("effectiveFields", EffectiveFieldsDTO.class);
-    }
+   public ListValue applicableFormDefinitionList() throws ResourceException
+   {
+      return query( "applicableforms", ListValue.class );
+   }
 
-    public TaskSubmittedFormClientResource taskSubmittedForm(int index)
-    {
-        TaskSubmittedFormClientResource submittedForm = getSubResource("" + index, TaskSubmittedFormClientResource.class);
-        submittedForm.setRoot(getRoot());
-        return submittedForm;
-    }
+   public EffectiveFieldsDTO effectiveFields() throws ResourceException
+   {
+      return query( "effectiveFields", EffectiveFieldsDTO.class );
+   }
+
+   public TaskSubmittedFormClientResource taskSubmittedForm( int index )
+   {
+      TaskSubmittedFormClientResource submittedForm = getSubResource( "" + index, TaskSubmittedFormClientResource.class );
+      submittedForm.setRoot( getRoot() );
+      return submittedForm;
+   }
+
+   public TaskFormDefinitionClientResource formDefinition( String formId )
+   {
+      Reference ref = getReference().clone();
+      List<String> segments = ref.getSegments();
+      segments.remove( ref.getSegments().size() - 1 );
+      ref.setSegments( segments );
+      ref.addSegment( "formdefinitions" ).addSegment( formId );
+      TaskFormDefinitionClientResource res = getResource( ref, TaskFormDefinitionClientResource.class );
+      res.setRoot( getRoot() );
+      return res;
+   }
 }

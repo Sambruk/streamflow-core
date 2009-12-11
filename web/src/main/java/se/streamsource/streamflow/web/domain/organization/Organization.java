@@ -14,19 +14,30 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.web.domain.form.FieldTemplates;
 import se.streamsource.streamflow.web.domain.form.FormTemplates;
+import se.streamsource.streamflow.web.domain.label.Labels;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
+import se.streamsource.streamflow.web.domain.project.ProjectRoles;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.role.Roles;
+import se.streamsource.streamflow.web.domain.tasktype.TaskTypes;
 
 /**
  * JAVADOC
  */
 public interface Organization
-        extends OrganizationalUnitRefactoring,
-        Roles,
-        FormTemplates,
+        extends
+        Describable,
+        ProjectRoles,
+        RolePolicy,
         FieldTemplates,
-        IdGenerator
+        FormTemplates,
+        IdGenerator,
+        Labels,
+        OrganizationalUnits,
+        Roles,
+        TaskTypes
 {
 }

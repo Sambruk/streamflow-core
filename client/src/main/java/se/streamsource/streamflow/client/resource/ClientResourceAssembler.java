@@ -40,7 +40,15 @@ import se.streamsource.streamflow.client.resource.organizations.projects.members
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRolesClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RoleClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
-import se.streamsource.streamflow.client.resource.task.*;
+import se.streamsource.streamflow.client.resource.task.TaskClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskContactClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskContactsClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.client.resource.task.TasksClientResource;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
@@ -59,8 +67,6 @@ import se.streamsource.streamflow.client.resource.users.workspace.projects.assig
 import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.forms.WorkspaceProjectFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingforClientResource;
@@ -86,7 +92,8 @@ public class ClientResourceAssembler
         module.addValues(ResourceListItem.class);
 
         // /users
-        module.addObjects(StreamFlowClientResource.class,
+        module.addObjects(CommandQueryClient.class,
+                StreamFlowClientResource.class,
                 UsersClientResource.class,
                 se.streamsource.streamflow.client.resource.users.UserClientResource.class,
                 UserAdministrationClientResource.class,
@@ -99,7 +106,6 @@ public class ClientResourceAssembler
                 TaskContactClientResource.class,
                 TaskSubmittedFormsClientResource.class,
                 TaskSubmittedFormClientResource.class,
-                TaskFormDefinitionsClientResource.class,
                 TaskFormDefinitionClientResource.class,
 
                 WorkspaceClientResource.class,
@@ -126,8 +132,6 @@ public class ClientResourceAssembler
                 WorkspaceProjectDelegationsTaskClientResource.class,
                 WorkspaceProjectWaitingforClientResource.class,
                 WorkspaceProjectWaitingforTaskClientResource.class,
-                WorkspaceProjectFormDefinitionClientResource.class,
-                WorkspaceProjectFormDefinitionsClientResource.class,
 
                 LabelsClientResource.class,
                 LabelClientResource.class,

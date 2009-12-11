@@ -14,11 +14,13 @@
 
 package se.streamsource.streamflow.infrastructure.event.source;
 
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+
 /**
  * JAVADOC
  */
 public class ForEvents
-        implements EventSourceListener
+        implements TransactionHandler
 {
     private EventHandlerFilter filter;
 
@@ -27,8 +29,9 @@ public class ForEvents
         filter = new EventHandlerFilter(specification, handler);
     }
 
-    public void eventsAvailable( EventStore source )
-    {
-        source.transactions( null, new TransactionEventAdapter( filter ) );
-    }
+   public boolean handleTransaction( TransactionEvents transaction )
+   {
+      new TransactionEventAdapter( filter ).handleTransaction( transaction );
+      return false;
+   }
 }

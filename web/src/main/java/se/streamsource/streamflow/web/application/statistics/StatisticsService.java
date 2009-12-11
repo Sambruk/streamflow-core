@@ -29,21 +29,22 @@ import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Participation;
 import se.streamsource.streamflow.web.domain.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 import se.streamsource.streamflow.web.domain.project.Members;
-import se.streamsource.streamflow.web.domain.project.ProjectOrganization;
+import se.streamsource.streamflow.web.domain.project.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Owner;
@@ -57,7 +58,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import static java.util.Arrays.*;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -71,10 +71,10 @@ import java.util.logging.Logger;
  */
 @Mixins(StatisticsService.Mixin.class)
 public interface StatisticsService
-        extends EventSourceListener, Configuration, Activatable, ServiceComposite
+        extends TransactionHandler, Configuration, Activatable, ServiceComposite
 {
     class Mixin
-            implements EventSourceListener, Activatable
+            implements TransactionHandler, Activatable
     {
         @Structure
         Qi4j api;
@@ -140,7 +140,7 @@ public interface StatisticsService
                 }
             }.withNames( "changedStatus", "statusChanged" );
 
-            eventsAvailable( eventStore );
+            handleTransaction( null ); // Trigger a load
         }
 
         public void passivate() throws Exception
@@ -148,8 +148,8 @@ public interface StatisticsService
             source.unregisterListener( this );
         }
 
-        public synchronized void eventsAvailable( EventStore eventStore )
-        {
+       public boolean handleTransaction( TransactionEvents transaction )
+       {
             if (config.configuration().enabled().get())
             {
                 if (!initialized)
@@ -161,13 +161,13 @@ public interface StatisticsService
                     } catch (SQLException e)
                     {
                         logger.log( Level.SEVERE, "Could not create statistics tables", e );
-                        return;
+                        return false;
                     }
                 }
 
                 TransactionTimestampFilter timestamp;
                 EventCollector eventCollector;
-                eventStore.transactions( new Date( config.configuration().lastEventDate().get() ),
+                eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
                         timestamp = new TransactionTimestampFilter(config.configuration().lastEventDate().get(), 
                                 new TransactionEventAdapter(
                                         new EventHandlerFilter( completedFilter, eventCollector = new EventCollector() ))));
@@ -216,7 +216,7 @@ public interface StatisticsService
 
                                 stmt.setString( idx++, assignee.getDescription() );
                                 stmt.setString( idx++, owner.getDescription() );
-                                ProjectOrganization.Data po = (ProjectOrganization.Data) owner;
+                                OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
                                 Describable.Data organizationalUnit = (Describable.Data) po.organizationalUnit().get();
 
                                 // Figure out which group the user belongs to
@@ -291,6 +291,8 @@ public interface StatisticsService
 
                 }
             }
+
+          return true;
         }
 
 

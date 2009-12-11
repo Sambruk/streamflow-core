@@ -19,7 +19,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -27,7 +26,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -45,9 +44,6 @@ public class TaskSubmittedFormsModel
 
     @Uses
     TaskSubmittedFormsClientResource taskSubmittedForms;
-
-    @Uses
-    TaskFormDefinitionsClientResource formDefinitions;
 
     List<SubmittedFormListDTO> submittedForms = Collections.emptyList();
 
@@ -68,11 +64,6 @@ public class TaskSubmittedFormsModel
     public TaskSubmittedFormsClientResource getTaskSubmittedFormsClientResource()
     {
         return taskSubmittedForms;
-    }
-
-    public TaskFormDefinitionsClientResource getTaskFormDefinitionsResource()
-    {
-        return formDefinitions;
     }
 
     public int getSize()

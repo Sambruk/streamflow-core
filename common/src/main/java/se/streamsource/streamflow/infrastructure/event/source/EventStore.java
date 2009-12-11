@@ -14,10 +14,6 @@
 
 package se.streamsource.streamflow.infrastructure.event.source;
 
-import org.qi4j.api.common.Optional;
-
-import java.util.Date;
-
 /**
  * An EventStore is a store of events. Events are grouped in the transactions in which they were created.
  */
@@ -32,5 +28,5 @@ public interface EventStore
      * @param handler
      * @return
      */
-    void transactions(@Optional Date afterTimestamp, TransactionHandler handler);
+    void transactionsAfter(long afterTimestamp, TransactionHandler handler);
 }

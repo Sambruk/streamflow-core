@@ -44,7 +44,7 @@ public class WorkspaceUserAssignedTaskServerResource
         assignments.completeAssignedTask(task);
     }
 
-    public void describe(StringDTO stringValue)
+    public void changedescription(StringDTO stringValue)
     {
         String taskId = (String) getRequest().getAttributes().get("task");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);

@@ -80,6 +80,6 @@ public class OrganizationsClientResource
         builder.prototype().entity().set(userentity);
         builder.prototype().password().set(password);
 
-        postCommand("resetPassword",builder.newInstance());
+        putCommand("resetPassword",builder.newInstance());
     }
 }

@@ -14,22 +14,20 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JLabel;
-import javax.swing.JTabbedPane;
-
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+
+import javax.swing.JLabel;
+import javax.swing.JTabbedPane;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 
 /**
  * JAVADOC
@@ -40,8 +38,7 @@ public class TaskDetailView
     private TaskCommentsView commentsView;
     private TaskGeneralView generalView;
     private TaskContactsAdminView contactsView;
-    private TaskSubmittedFormsAdminView formsView;
-    private TaskEffectiveFieldsValueView effectiveView;
+    private TaskFormsAdminView formsView;
     private TaskModel model;
 
     public TaskDetailView(@Service ApplicationContext appContext,
@@ -58,8 +55,7 @@ public class TaskDetailView
         this.commentsView = commentsView;
         this.generalView = generalView;
         this.contactsView = contactsView;
-        this.formsView = formsAdminView.getSubmittedFormsView();
-        this.effectiveView = formsAdminView.getEffectiveFieldsValueView();
+        this.formsView = formsAdminView;
 
         addTab(i18n.text(WorkspaceResources.general_tab), i18n.icon(Icons.general), generalView, i18n.text(WorkspaceResources.general_tab));
         addTab(i18n.text(WorkspaceResources.contacts_tab), i18n.icon(Icons.projects), contactsView, i18n.text(WorkspaceResources.contacts_tab));
@@ -96,7 +92,6 @@ public class TaskDetailView
         commentsView.setModel(model.comments());
         contactsView.setModel(model.contacts());
         formsView.setModel(model.forms());
-        effectiveView.setModel(model.effectiveValues());
 
         validateTree();
         setEnabled(true);

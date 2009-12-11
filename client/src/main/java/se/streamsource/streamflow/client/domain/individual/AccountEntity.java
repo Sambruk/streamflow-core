@@ -24,13 +24,16 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.*;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.Uniform;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
-import org.restlet.security.Verifier;
 import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.domain.roles.Describable;
@@ -148,36 +151,6 @@ public interface AccountEntity
             request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, settings.userName().get(), settings.password().get()));
 
             return super.beforeHandle(request, response);
-        }
-    }
-    class AuthenticationVerifier extends Verifier
-    {
-        private UnitOfWorkFactory uowf;
-        private AccountSettings account;
-
-        public AuthenticationVerifier(UnitOfWorkFactory uowf, AccountSettings account)
-        {
-            this.uowf = uowf;
-            this.account = account;
-        }
-
-        public int verify(Request request, Response response)
-        {
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            AccountSettingsValue settings;
-            if (uow == null)
-            {
-                uow = uowf.newUnitOfWork();
-                settings = uow.get(account).accountSettings();
-                uow.discard();
-            } else
-            {
-                settings = uow.get(account).accountSettings();
-            }
-
-            request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, settings.userName().get(), settings.password().get()));
-
-            return Verifier.RESULT_VALID;
         }
     }
 }

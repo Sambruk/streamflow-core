@@ -27,7 +27,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
+import se.streamsource.streamflow.web.domain.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.user.UserAuthentication;
 
 import javax.security.auth.Subject;
@@ -77,7 +77,7 @@ public interface RolePolicy
         UnitOfWorkFactory uowf;
 
         @This
-        OrganizationalUnitRefactoring.Data ouState;
+        OwningOrganization orgOwner;
 
         public void grantRole(Participant participant, Role role)
         {
@@ -102,7 +102,7 @@ public interface RolePolicy
             {
                 Principal principal = subject.getPrincipals().iterator().next();
                 Participant user = uowf.currentUnitOfWork().get(Participant.class, principal.getName());
-                OrganizationEntity org = (OrganizationEntity) ouState.organization().get();
+                OrganizationEntity org = (OrganizationEntity) orgOwner.organization().get();
                 Role administrator = org.getAdministratorRole();
                 grantRole(user, administrator);
             }

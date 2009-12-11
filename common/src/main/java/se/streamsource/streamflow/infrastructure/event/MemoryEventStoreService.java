@@ -25,12 +25,14 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.common.Optional;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 /**
@@ -59,13 +61,13 @@ public interface MemoryEventStoreService
         {
         }
 
-        public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
+        public void transactionsAfter( long afterTimestamp, TransactionHandler handler )
         {
             // Lock datastore first
             lock.lock();
             try
             {
-                Long startTime = afterTimestamp == null ? Long.MIN_VALUE : afterTimestamp.getTime()+1;
+                Long startTime = afterTimestamp+1;
                 Collection<String> txsAfterDate = store.tailMap(startTime).values();
 
                 for (String txJson : txsAfterDate)

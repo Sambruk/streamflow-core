@@ -14,12 +14,11 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import org.jdesktop.swingx.JXTree;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesView;
 
-import javax.swing.*;
-
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsAdminView;
+import javax.swing.JTabbedPane;
 
 /**
  * JAVADOC
@@ -27,21 +26,14 @@ import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsA
 public class ProjectView
         extends JTabbedPane
 {
-    public JXTree memberRoleTree;
-
     public ProjectView(@Uses ProjectMembersView membersView,
-                       @Uses LabelsView labelsView,
-                       @Uses FormsAdminView formsView)
+                       @Uses SelectedLabelsView selectedLabelsView,
+                       @Uses SelectedTaskTypesView selectedTaskTypesView)
     {
         super();
 
         addTab("Members", membersView);
-        addTab("Labels", labelsView);
-        addTab("Forms", formsView);
-    }
-
-    public JXTree getMembers()
-    {
-        return memberRoleTree;
+        addTab("Labels", selectedLabelsView );
+        addTab("Task types", selectedTaskTypesView);
     }
 }

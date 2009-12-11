@@ -51,6 +51,6 @@ public class FormsListView
         formList.setCellRenderer(new ListItemListCellRenderer());
         panel.add(formList, BorderLayout.CENTER);
         setViewportView(panel);
-        addAncestorListener(new RefreshWhenVisible(model));
+        addAncestorListener(new RefreshWhenVisible(model, this));
     }
 }

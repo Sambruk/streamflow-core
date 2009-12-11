@@ -23,6 +23,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
@@ -30,8 +31,11 @@ import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 /**
  * JAVADOC
@@ -73,6 +77,8 @@ public class FormsView
         toolbar.add(new JButton(am.get("remove")));
         add(toolbar, BorderLayout.SOUTH);
         formList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+
+        addAncestorListener( new RefreshWhenVisible(model, this) );
     }
 
     @Action

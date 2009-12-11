@@ -202,6 +202,9 @@ public class CommandQueryServerResource
             }
         } catch (Exception ex)
         {
+            if (uow != null)
+                uow.discard();
+
             Logger.getLogger("command").log(Level.SEVERE, "Could not process command:" + operation, ex);
 
             setStatus(Status.SERVER_ERROR_INTERNAL);

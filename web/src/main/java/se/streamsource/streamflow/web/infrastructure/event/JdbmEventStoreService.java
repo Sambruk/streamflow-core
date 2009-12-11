@@ -29,7 +29,6 @@ import jdbm.recman.CacheRecordManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
@@ -174,12 +173,12 @@ public interface JdbmEventStoreService
             }
         }
 
-        public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
+        public void transactionsAfter( long afterTimestamp, TransactionHandler handler )
         {
             // Lock datastore first
             lock.lock();
 
-            final Long afterTime = afterTimestamp == null ? Long.MIN_VALUE : afterTimestamp.getTime()+1;
+            final Long afterTime = afterTimestamp+1;
 
             try
             {

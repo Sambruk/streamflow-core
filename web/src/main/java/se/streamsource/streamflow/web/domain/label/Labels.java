@@ -28,7 +28,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Labels.Mixin.class)
 public interface Labels
 {
-    Label createLabel();
+    Label createLabel( String name );
     void removeLabel(Label label);
     Iterable<Label> getLabels();
 
@@ -49,9 +49,11 @@ public interface Labels
         @This
         Data state;
 
-        public Label createLabel()
+        public Label createLabel( String name )
         {
-            return createdLabel(DomainEvent.CREATE);
+            Label label = createdLabel(DomainEvent.CREATE);
+            label.changeDescription( name );
+            return label;
         }
 
         public void removeLabel(Label label)

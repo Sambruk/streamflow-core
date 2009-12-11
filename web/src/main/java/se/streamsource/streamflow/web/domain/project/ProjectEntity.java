@@ -27,11 +27,19 @@ import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.web.domain.DomainEntity;
-import se.streamsource.streamflow.web.domain.form.Forms;
-import se.streamsource.streamflow.web.domain.form.FormsQueries;
-import se.streamsource.streamflow.web.domain.label.Labels;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
-import se.streamsource.streamflow.web.domain.task.*;
+import se.streamsource.streamflow.web.domain.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.task.Assignments;
+import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
+import se.streamsource.streamflow.web.domain.task.Delegations;
+import se.streamsource.streamflow.web.domain.task.DelegationsQueries;
+import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.task.InboxQueries;
+import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.task.TaskId;
+import se.streamsource.streamflow.web.domain.task.WaitingFor;
+import se.streamsource.streamflow.web.domain.task.WaitingForQueries;
+import se.streamsource.streamflow.web.domain.tasktype.SelectedTaskTypes;
 
 /**
  * JAVADOC
@@ -43,31 +51,32 @@ public interface ProjectEntity
         Project,
 
         // Data
-        InboxQueries,
         Inbox.Data,
-        AssignmentsQueries,
         Assignments.Data,
-        DelegationsQueries,
         Delegations.Data,
-        WaitingForQueries,
         WaitingFor.Data,
         Members.Data,
         Describable.Data,
-        ProjectOrganization.Data,
-        Labels.Data,
-        Forms.Data,
-        FormsQueries,
-        Removable.Data
+        OwningOrganizationalUnit.Data,
+        SelectedLabels.Data,
+        Removable.Data,
+        SelectedTaskTypes.Data,
+
+        // Queries
+        AssignmentsQueries,
+        DelegationsQueries,
+        InboxQueries,
+        WaitingForQueries
 {
     class ProjectIdGeneratorMixin
             implements IdGenerator
     {
         @This
-        ProjectOrganization.Data state;
+        OwningOrganizationalUnit.Data state;
 
         public void assignId(TaskId task)
         {
-            ((OrganizationalUnitRefactoring.Data)state.organizationalUnit().get()).organization().get().assignId(task);
+            ((OwningOrganization)state.organizationalUnit().get()).organization().get().assignId(task);
         }
     }
 

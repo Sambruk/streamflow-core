@@ -31,15 +31,13 @@ public class WorkspaceUserNode
         extends DefaultMutableTreeNode
     implements EventListener
 {
-    private LabelsModel labelsModel;
     @Uses private UserClientResource user;
 
     public WorkspaceUserNode(@Uses AccountModel account,
                              @Uses WorkspaceUserInboxNode inbox,
                              @Uses WorkspaceUserAssignmentsNode assignments,
                              @Uses WorkspaceUserDelegationsNode delegations,
-                             @Uses WorkspaceUserWaitingForNode waitingFor,
-                             @Uses LabelsModel labels) throws ResourceException
+                             @Uses WorkspaceUserWaitingForNode waitingFor) throws ResourceException
     {
         super(account);
 
@@ -50,13 +48,6 @@ public class WorkspaceUserNode
         add(delegations);
 
         add(waitingFor);
-
-        labelsModel = labels;
-    }
-
-    public LabelsModel labelsModel()
-    {
-        return labelsModel;
     }
 
     public ListValue findUsers(String name) throws ResourceException

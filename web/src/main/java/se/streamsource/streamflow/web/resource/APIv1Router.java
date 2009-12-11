@@ -33,6 +33,9 @@ import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
+import se.streamsource.streamflow.web.resource.labels.LabelsServerResource;
+import se.streamsource.streamflow.web.resource.labels.SelectedLabelServerResource;
+import se.streamsource.streamflow.web.resource.labels.SelectedLabelsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplateServerResource;
@@ -45,27 +48,29 @@ import se.streamsource.streamflow.web.resource.organizations.organizationalunits
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorServerResource;
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.ProjectFormDefinitionsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.labels.LabelServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.FormDefinitionFieldServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
+import se.streamsource.streamflow.web.resource.task.TaskServerResource;
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
 import se.streamsource.streamflow.web.resource.task.formdefinitions.TaskFormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.task.formdefinitions.TaskFormDefinitionsServerResource;
 import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormServerResource;
 import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormsServerResource;
 import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
 import se.streamsource.streamflow.web.resource.users.UsersServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.rest.CompositeFinder;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
@@ -73,107 +78,121 @@ import se.streamsource.streamflow.web.rest.ResourceFinder;
  * Router for v1 of the StreamFlow REST API.
  */
 public class APIv1Router
-        extends Router
+      extends Router
 {
-    private ObjectBuilderFactory factory;
+   private ObjectBuilderFactory factory;
 
-    public APIv1Router(@Uses Context context, @Structure ObjectBuilderFactory factory)
-    {
-        super(context);
-        this.factory = factory;
+   public APIv1Router( @Uses Context context, @Structure ObjectBuilderFactory factory )
+   {
+      super( context );
+      this.factory = factory;
 
-        attach(createServerResourceFinder(StreamFlowServerResource.class));
+      attach( createServerResourceFinder( StreamFlowServerResource.class ) );
 
-        // Users
-        attach("/users", createServerResourceFinder(UsersServerResource.class, false));
+      // Users
+      attach( "/users", createServerResourceFinder( UsersServerResource.class, false ) );
 
-        UserAccessFilter userFilter = factory.newObject(UserAccessFilter.class);
-        userFilter.setNext(factory.newObjectBuilder(UsersRouter.class).use(context).newInstance());
-        attach("/users/{user}", userFilter);
+      UserAccessFilter userFilter = factory.newObject( UserAccessFilter.class );
+      userFilter.setNext( factory.newObjectBuilder( UsersRouter.class ).use( context ).newInstance() );
+      attach( "/users/{user}", userFilter );
 
-        attach("/users/{labels}/workspace/user/labels", createServerResourceFinder(LabelsServerResource.class));
+      attach( "/users/{labels}/workspace/user/labels", createServerResourceFinder( LabelsServerResource.class ) );
 
-        // OrganizationalUnits
-        attach("/organizations", createServerResourceFinder(OrganizationsServerResource.class));
+      // Organizations
+      attach( "/organizations", createServerResourceFinder( OrganizationsServerResource.class ) );
 // Test of composite CQSR        attach("/organizations/{entity}", createServerCompositeFinder(OrganizationCompositeResource.class));
-        attach("/organizations/{organization}", createServerResourceFinder(OrganizationServerResource.class));
-        attach("/organizations/{organization}/groups", createServerResourceFinder(GroupsServerResource.class));
-        attach("/organizations/{organization}/groups/{group}", createServerResourceFinder(GroupServerResource.class));
-        attach("/organizations/{organization}/groups/{group}/participants", createServerResourceFinder(ParticipantsServerResource.class));
-        attach("/organizations/{organization}/groups/{group}/participants/{participant}", createServerResourceFinder(ParticipantServerResource.class));
-        attach("/organizations/{organization}/projects", createServerResourceFinder(se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource.class));
-        attach("/organizations/{organization}/projects/{project}", createServerResourceFinder(ProjectServerResource.class));
-        attach("/organizations/{organization}/projects/{project}/members", createServerResourceFinder(MembersServerResource.class));
-        attach("/organizations/{organization}/projects/{project}/members/{member}", createServerResourceFinder(MemberServerResource.class));
-        attach("/organizations/{organization}/projects/{labels}/labels", createServerResourceFinder(LabelsServerResource.class));
-        attach("/organizations/{organization}/projects/{labels}/labels/{label}", createServerResourceFinder(LabelServerResource.class));
-        attach("/organizations/{organization}/projects/{project}/forms", createServerResourceFinder( ProjectFormDefinitionsServerResource.class));
-        attach("/organizations/{organization}/projects/{project}/forms/{index}", createServerResourceFinder( ProjectFormDefinitionServerResource.class));
-        attach("/organizations/{organization}/projects/{project}/forms/{index}/fields", createServerResourceFinder( ProjectFormDefinitionFieldsServerResource.class));
-        attach("/organizations/{organization}/projects/{project}/forms/{index}/fields/{fieldIndex}", createServerResourceFinder( ProjectFormDefinitionFieldServerResource.class));
-        attach("/organizations/{organization}/roles", createServerResourceFinder(RolesServerResource.class));
-        attach("/organizations/{organization}/roles/{role}", createServerResourceFinder(RoleServerResource.class));
-        attach("/organizations/{organization}/forms", createServerResourceFinder( FormTemplatesServerResource.class));
-        attach("/organizations/{organization}/forms/{form}", createServerResourceFinder( FormTemplateServerResource.class));
-        attach("/organizations/{organization}/administrators", createServerResourceFinder(AdministratorsServerResource.class));
-        attach("/organizations/{organization}/administrators/{administrator}", createServerResourceFinder(AdministratorServerResource.class));
-        attach("/organizations/{organization}/organizationalunits", createServerResourceFinder(OrganizationalUnitsServerResource.class));
+      attach( "/organizations/{organization}", createServerResourceFinder( OrganizationServerResource.class ) );
+      attach( "/organizations/{organization}/roles", createServerResourceFinder( RolesServerResource.class ) );
+      attach( "/organizations/{organization}/roles/{role}", createServerResourceFinder( RoleServerResource.class ) );
+      attach( "/organizations/{organization}/forms", createServerResourceFinder( FormTemplatesServerResource.class ) );
+      attach( "/organizations/{organization}/forms/{form}", createServerResourceFinder( FormTemplateServerResource.class ) );
+      attach( "/organizations/{organization}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
+      attach( "/organizations/{organization}/administrators/{administrator}", createServerResourceFinder( AdministratorServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits", createServerResourceFinder( OrganizationalUnitsServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes", createServerResourceFinder( TaskTypesServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{tasktype}", createServerResourceFinder( TaskTypeServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{labels}/labels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{labels}/labels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms", createServerResourceFinder( FormDefinitionsServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{index}", createServerResourceFinder( FormDefinitionServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{index}/fields", createServerResourceFinder( FormDefinitionFieldsServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{index}/fields/{fieldIndex}", createServerResourceFinder( FormDefinitionFieldServerResource.class ) );
+      attach( "/organizations/{labels}/labels", createServerResourceFinder( LabelsServerResource.class ) );
 
-        // Tasks
-        attach("/tasks/{task}/general", createServerResourceFinder( TaskGeneralServerResource.class));
-        attach("/tasks/{task}/comments", createServerResourceFinder( TaskCommentsServerResource.class));
-        attach("/tasks/{task}/contacts", createServerResourceFinder( TaskContactsServerResource.class));
-        attach("/tasks/{task}/contacts/{index}", createServerResourceFinder( TaskContactServerResource.class));
-        attach("/tasks/{task}/forms", createServerResourceFinder( TaskSubmittedFormsServerResource.class));
-        attach("/tasks/{task}/forms/{index}", createServerResourceFinder( TaskSubmittedFormServerResource.class));
-        attach("/tasks/{task}/formdefinitions", createServerResourceFinder(TaskFormDefinitionsServerResource.class));
-        attach("/tasks/{task}/formdefinitions/{form}", createServerResourceFinder(TaskFormDefinitionServerResource.class));
+      // OrganizationalUnits
+      attach( "/organizations/{organization}/organizationalunits/{ou}/groups", createServerResourceFinder( GroupsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/groups/{group}", createServerResourceFinder( GroupServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/groups/{group}/participants", createServerResourceFinder( ParticipantsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/groups/{group}/participants/{participant}", createServerResourceFinder( ParticipantServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects", createServerResourceFinder( se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{project}", createServerResourceFinder( ProjectServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{project}/members", createServerResourceFinder( MembersServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{project}/members/{member}", createServerResourceFinder( MemberServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{labels}/labels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{labels}/labels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{tasktypes}/tasktypes", createServerResourceFinder( SelectedTaskTypesServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{tasktypes}/tasktypes/{tasktype}", createServerResourceFinder( SelectedTaskTypeServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/administrators/{administrator}", createServerResourceFinder( AdministratorServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/organizationalunits", createServerResourceFinder( OrganizationalUnitsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{labels}/labels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{labels}/labels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
 
-        // Events
-        attach("/events", createServerResourceFinder( EventsServerResource.class));
+      // Tasks
+      attach( "/tasks/{task}", createServerResourceFinder( TaskServerResource.class ) );
+      attach( "/tasks/{task}/general", createServerResourceFinder( TaskGeneralServerResource.class ) );
+      attach( "/tasks/{task}/comments", createServerResourceFinder( TaskCommentsServerResource.class ) );
+      attach( "/tasks/{task}/contacts", createServerResourceFinder( TaskContactsServerResource.class ) );
+      attach( "/tasks/{task}/contacts/{index}", createServerResourceFinder( TaskContactServerResource.class ) );
+      attach( "/tasks/{task}/forms", createServerResourceFinder( TaskSubmittedFormsServerResource.class ) );
+      attach( "/tasks/{task}/forms/{index}", createServerResourceFinder( TaskSubmittedFormServerResource.class ) );
+      attach( "/tasks/{task}/formdefinitions/{form}", createServerResourceFinder( TaskFormDefinitionServerResource.class ) );
 
-        // Qi4j
-        Router qi4jRouter = new Router(getContext());
-        qi4jRouter.attach("/entity", createServerResourceFinder(EntitiesResource.class));
-        qi4jRouter.attach("/entity/{identity}", createServerResourceFinder(EntityResource.class));
-        qi4jRouter.attach("/query", createServerResourceFinder(SPARQLResource.class));
-        qi4jRouter.attach("/query/index", createServerResourceFinder(IndexResource.class));
-        attach("/qi4j", new ExtensionMediaTypeFilter(getContext(), qi4jRouter));
+      // Events
+      attach( "/events", createServerResourceFinder( EventsServerResource.class ) );
+
+      // Qi4j
+      Router qi4jRouter = new Router( getContext() );
+      qi4jRouter.attach( "/entity", createServerResourceFinder( EntitiesResource.class ) );
+      qi4jRouter.attach( "/entity/{identity}", createServerResourceFinder( EntityResource.class ) );
+      qi4jRouter.attach( "/query", createServerResourceFinder( SPARQLResource.class ) );
+      qi4jRouter.attach( "/query/index", createServerResourceFinder( IndexResource.class ) );
+      attach( "/qi4j", new ExtensionMediaTypeFilter( getContext(), qi4jRouter ) );
 
 
-        attach("/admin/console", createServerResourceFinder( ConsoleServerResource.class));
+      attach( "/admin/console", createServerResourceFinder( ConsoleServerResource.class ) );
 
-        // Version info
-        Directory directory = new Directory(getContext(), "clap://class/static/");
-        directory.setListingAllowed(true);
-        attach("/static", directory);
-    }
+      // Version info
+      Directory directory = new Directory( getContext(), "clap://class/static/" );
+      directory.setListingAllowed( true );
+      attach( "/static", directory );
+   }
 
-    private Restlet createServerResourceFinder(Class<? extends ServerResource> resource)
-    {
-        return createServerResourceFinder(resource, true);
-    }
+   private Restlet createServerResourceFinder( Class<? extends ServerResource> resource )
+   {
+      return createServerResourceFinder( resource, true );
+   }
 
-    private Restlet createServerResourceFinder(Class<? extends ServerResource> resource, boolean secure)
-    {
-        ResourceFinder finder = factory.newObject(ResourceFinder.class);
-        finder.setTargetClass(resource);
+   private Restlet createServerResourceFinder( Class<? extends ServerResource> resource, boolean secure )
+   {
+      ResourceFinder finder = factory.newObject( ResourceFinder.class );
+      finder.setTargetClass( resource );
 
-        if (secure)
-        {
-            Authenticator auth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "StreamFlow");
-            auth.setNext(finder);
-            return auth;
-        } else
-            return finder;
-    }
+      if (secure)
+      {
+         Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "StreamFlow" );
+         auth.setNext( finder );
+         return auth;
+      } else
+         return finder;
+   }
 
-    private Restlet createServerCompositeFinder(Class<? extends TransientComposite> resource)
-    {
-        CompositeFinder finder = factory.newObject(CompositeFinder.class);
-        finder.setTargetClass(resource);
+   private Restlet createServerCompositeFinder( Class<? extends TransientComposite> resource )
+   {
+      CompositeFinder finder = factory.newObject( CompositeFinder.class );
+      finder.setTargetClass( resource );
 
-        return finder;
-    }
+      return finder;
+   }
 
 }

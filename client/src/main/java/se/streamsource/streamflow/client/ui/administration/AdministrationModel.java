@@ -24,7 +24,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 
 import javax.swing.tree.DefaultTreeModel;
 import java.util.logging.Logger;
@@ -38,7 +37,6 @@ public class AdministrationModel
 {
     @Structure
     ObjectBuilderFactory obf;
-    private EventSourceListener subscriber;
 
     WeakModelMap<Account, AccountAdministrationNode> nodes = new WeakModelMap<Account, AccountAdministrationNode>()
     {
@@ -68,7 +66,7 @@ public class AdministrationModel
         reload(getRoot());
     }
 
-    public void createOrganizationalUnit(OrganizationalStructureAdministrationNode orgNode, String name)
+    public void createOrganizationalUnit( OrganizationalUnitAdministrationNode orgNode, String name)
     {
         orgNode.model().createOrganizationalUnit(name);
     }

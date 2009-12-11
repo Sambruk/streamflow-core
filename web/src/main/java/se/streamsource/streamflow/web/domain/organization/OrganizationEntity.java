@@ -18,35 +18,56 @@ import org.qi4j.api.entity.Lifecycle;
 import org.qi4j.api.entity.LifecycleException;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.web.domain.form.*;
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.roles.Removable;
+import se.streamsource.streamflow.web.domain.DomainEntity;
+import se.streamsource.streamflow.web.domain.label.Labels;
+import se.streamsource.streamflow.web.domain.form.FieldDefinitionsQueries;
+import se.streamsource.streamflow.web.domain.form.FieldTemplates;
+import se.streamsource.streamflow.web.domain.form.FormQueries;
+import se.streamsource.streamflow.web.domain.form.FormTemplates;
 import se.streamsource.streamflow.web.domain.project.IdGenerator;
+import se.streamsource.streamflow.web.domain.project.ProjectRoles;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.role.Roles;
+import se.streamsource.streamflow.web.domain.role.UserPermissions;
+import se.streamsource.streamflow.web.domain.tasktype.TaskTypes;
 
 /**
  * A root organization.
  */
 @Mixins(OrganizationEntity.LifecycleConcern.class)
 public interface OrganizationEntity
-        extends OrganizationalUnitEntity,
+        extends DomainEntity,
+
         // Roles
         Organization,
 
         // Data
-        IdGenerator.Data,
-        Roles.Data,
-        FormTemplates.Data,
-        FormQueries,
+        Describable.Data,
         FieldTemplates.Data,
-        FieldDefinitionsQueries,
+        FormTemplates.Data,
+        IdGenerator.Data,
+        Labels.Data,
+        OrganizationalUnits.Data,
+        OwningOrganization,
+        ProjectRoles.Data,
+        Removable.Data,
+        RolePolicy.Data,
+        Roles.Data,
+        UserPermissions,
+        TaskTypes.Data,
 
         //Queries
+        FieldDefinitionsQueries,
+        FormQueries,
         OrganizationParticipationsQueries,
         OrganizationQueries
     
 {
     abstract class LifecycleConcern
             extends OrganizationalUnitRefactoring.Mixin
-            implements Lifecycle
+            implements Lifecycle, OwningOrganization
     {
         @This
         Organization org;

@@ -29,12 +29,12 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 @Mixins(DescribableResource.DescribableMixin.class)
 public interface DescribableResource
 {
-    void describe(StringDTO stringValue, @Name("entity") Describable describable);
+    void changedescription(StringDTO stringValue, @Name("entity") Describable describable);
 
     class DescribableMixin
         implements DescribableResource
     {
-        public void describe(StringDTO stringValue, Describable describable)
+        public void changedescription(StringDTO stringValue, Describable describable)
         {
             describable.changeDescription(stringValue.string().get());
         }

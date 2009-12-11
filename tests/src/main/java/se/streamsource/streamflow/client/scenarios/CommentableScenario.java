@@ -28,6 +28,7 @@ import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSt
 import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
+import se.streamsource.streamflow.client.application.shared.steps.TaskTypesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
@@ -57,6 +58,7 @@ public class CommentableScenario
                 new AssignmentsSteps(),
                 new MembersSteps(),
                 new ProjectsSteps(),
+              new TaskTypesSteps(),
                 new ParticipantsSteps(),
                 new GroupsSteps(),
                 new UserSteps(),

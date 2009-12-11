@@ -14,17 +14,13 @@
 
 package se.streamsource.streamflow.client.infrastructure.events;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionCollector;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 
 import java.io.Reader;
 import java.lang.ref.Reference;
@@ -39,10 +35,10 @@ import java.util.List;
  */
 @Mixins(ClientEventSourceService.Mixin.class)
 public interface ClientEventSourceService
-        extends EventSource, EventSourceListener, ServiceComposite
+        extends EventSource, TransactionHandler, ServiceComposite
 {
     class Mixin
-            implements EventSource, EventSourceListener, Activatable, EventStore
+            implements EventSource, TransactionHandler, Activatable
     {
         Date after = new Date();
 
@@ -58,28 +54,22 @@ public interface ClientEventSourceService
         {
         }
 
-        private List<Reference<EventSourceListener>> listeners = new ArrayList<Reference<EventSourceListener>>();
+        private List<Reference<TransactionHandler>> listeners = new ArrayList<Reference<TransactionHandler>>();
 
         // EventSource implementation
 
-        public void registerListener(EventSourceListener subscriber, boolean asynchronous)
+        public void registerListener(TransactionHandler handler)
         {
-            // Ignore asynch for now
-            listeners.add(new WeakReference<EventSourceListener>(subscriber));
+            listeners.add(new WeakReference<TransactionHandler>(handler));
         }
 
-        public void registerListener(EventSourceListener listener)
+        public void unregisterListener(TransactionHandler subscriber)
         {
-            registerListener(listener, false);
-        }
-
-        public void unregisterListener(EventSourceListener subscriber)
-        {
-            Iterator<Reference<EventSourceListener>> referenceIterator = listeners.iterator();
+            Iterator<Reference<TransactionHandler>> referenceIterator = listeners.iterator();
             while (referenceIterator.hasNext())
             {
-                Reference<EventSourceListener> eventSourceListenerReference = referenceIterator.next();
-                EventSourceListener lstnr = eventSourceListenerReference.get();
+                Reference<TransactionHandler> eventSourceListenerReference = referenceIterator.next();
+                TransactionHandler lstnr = eventSourceListenerReference.get();
                 if (lstnr == null || lstnr.equals(subscriber))
                 {
                     referenceIterator.remove();
@@ -88,37 +78,24 @@ public interface ClientEventSourceService
             }
         }
 
-        // EventSourceListener implementation
-        public void eventsAvailable(EventStore source)
-        {
-            transactionCollector = new TransactionCollector();
-            TransactionTimestampFilter transactionTimestampFilter = new TransactionTimestampFilter( after.getTime(), transactionCollector);
-            source.transactions(after, transactionTimestampFilter );
-
-            after = new Date(transactionTimestampFilter.lastTimestamp());
-
-            Iterator<Reference<EventSourceListener>> referenceIterator = listeners.iterator();
+        // TransactionHandler implementation
+       public boolean handleTransaction( TransactionEvents transaction )
+       {
+            Iterator<Reference<TransactionHandler>> referenceIterator = listeners.iterator();
             while (referenceIterator.hasNext())
             {
-                Reference<EventSourceListener> eventSourceListenerReference = referenceIterator.next();
-                EventSourceListener lstnr = eventSourceListenerReference.get();
+                Reference<TransactionHandler> eventSourceListenerReference = referenceIterator.next();
+                TransactionHandler lstnr = eventSourceListenerReference.get();
                 if (lstnr == null)
                 {
                     referenceIterator.remove();
                 } else
                 {
-                    lstnr.eventsAvailable(this);
+                    lstnr.handleTransaction( transaction );
                 }
             }
-        }
 
-        // EventStore implementation
-        public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
-        {
-            for (TransactionEvents transactionEvents : transactionCollector.transactions())
-            {
-                handler.handleTransaction( transactionEvents );
-            }
+          return true;
         }
     }
 }

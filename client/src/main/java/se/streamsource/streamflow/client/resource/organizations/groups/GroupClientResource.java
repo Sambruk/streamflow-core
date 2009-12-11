@@ -42,9 +42,9 @@ public class GroupClientResource
         return getSubResource("participants", ParticipantsClientResource.class);
     }
 
-    public void describe(StringDTO stringDTO) throws ResourceException
+    public void changeDescription(StringDTO stringDTO) throws ResourceException
     {
-        putCommand("describe", stringDTO);
+        putCommand("changedescription", stringDTO);
     }
 
     public ListValue findUsers(String query) throws ResourceException

@@ -17,11 +17,11 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
+import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 
 public class FormsListModel
@@ -31,7 +31,7 @@ public class FormsListModel
     private List<ListItemValue> forms;
 
     @Uses
-    TaskFormDefinitionsClientResource resource;
+    TaskSubmittedFormsClientResource resource;
 
     public void refresh() throws OperationException
     {

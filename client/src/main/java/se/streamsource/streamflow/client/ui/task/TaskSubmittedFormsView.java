@@ -82,7 +82,7 @@ public class TaskSubmittedFormsView
     {
         FormSubmissionWizardView dialog =
                 obf.newObjectBuilder(FormSubmissionWizardView.class).
-                        use(model.getTaskFormDefinitionsResource(), model.getTaskSubmittedFormsClientResource()).newInstance();
+                        use(model.getTaskSubmittedFormsClientResource()).newInstance();
 
         JFrame frame = new JFrame(i18n.text(WorkspaceResources.form_submit_wizard));
 

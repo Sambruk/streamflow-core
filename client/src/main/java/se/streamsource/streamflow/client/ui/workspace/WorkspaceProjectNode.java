@@ -30,8 +30,6 @@ public class WorkspaceProjectNode
         extends DefaultMutableTreeNode
     implements EventListener
 {
-    private LabelsModel labelsModel;
-
     @Uses
     String projectName;
 
@@ -39,8 +37,7 @@ public class WorkspaceProjectNode
                                 @Uses WorkspaceProjectInboxNode inbox,
                                 @Uses WorkspaceProjectAssignmentsNode assignments,
                                 @Uses WorkspaceProjectDelegationsNode delegations,
-                                @Uses WorkspaceProjectWaitingForNode waitingFor,
-                                @Uses LabelsModel labels)
+                                @Uses WorkspaceProjectWaitingForNode waitingFor)
     {
         super(workspaceProjectClientResource);
 
@@ -48,8 +45,6 @@ public class WorkspaceProjectNode
         add(assignments);
         add(delegations);
         add(waitingFor);
-
-        labelsModel = labels;
     }
 
     public String projectName()
@@ -61,11 +56,6 @@ public class WorkspaceProjectNode
     public WorkspaceProjectsNode getParent()
     {
         return (WorkspaceProjectsNode) super.getParent();
-    }
-
-    public LabelsModel labelsModel()
-    {
-        return labelsModel;
     }
 
     public ListValue findUsers(String name) throws ResourceException

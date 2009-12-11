@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.domain.project.ProjectAssembler;
 import se.streamsource.streamflow.web.domain.role.RoleAssembler;
 import se.streamsource.streamflow.web.domain.task.TaskAssembler;
+import se.streamsource.streamflow.web.domain.tasktype.TaskTypeAssembler;
 import se.streamsource.streamflow.web.domain.user.UserAssembler;
 
 /**
@@ -43,6 +44,7 @@ public class WebDomainAssembler
         new ProjectAssembler().assemble(domainLayer.moduleAssembly("Projects"));
         new RoleAssembler().assemble(domainLayer.moduleAssembly("Roles"));
         new TaskAssembler().assemble(domainLayer.moduleAssembly("Tasks"));
+        new TaskTypeAssembler().assemble(domainLayer.moduleAssembly("Task types"));
         new UserAssembler().assemble(domainLayer.moduleAssembly("Users"));
     }
 }

@@ -15,29 +15,43 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import java.awt.BorderLayout;
 
 
 /**
  * JAVADOC
  */
 public class TaskFormsAdminView
-        extends JTabbedPane
+        extends JPanel
 {
 
     private TaskSubmittedFormsAdminView submittedFormsView;
     private TaskEffectiveFieldsValueView effectiveFieldsValueView;
+    public RefreshWhenVisible refresher;
+    public JTabbedPane tabs;
+    private TaskFormsModel model;
 
     public TaskFormsAdminView(@Uses TaskEffectiveFieldsValueView effectiveFieldsValueView,
                               @Uses TaskSubmittedFormsAdminView submittedFormsView)
     {
+        setLayout(new BorderLayout());
+
+        tabs = new JTabbedPane();
+        add( tabs, BorderLayout.CENTER );
+
         this.submittedFormsView = submittedFormsView;
         this.effectiveFieldsValueView = effectiveFieldsValueView;
-        addTab(i18n.text(WorkspaceResources.effective_fields_tab), effectiveFieldsValueView);
-        addTab(i18n.text(WorkspaceResources.submitted_forms_tab), submittedFormsView);
+        tabs.addTab(i18n.text(WorkspaceResources.effective_fields_tab), effectiveFieldsValueView);
+        tabs.addTab(i18n.text(WorkspaceResources.submitted_forms_tab), submittedFormsView);
+
+        refresher = new RefreshWhenVisible( this );
+        addAncestorListener( refresher );
     }
 
     public TaskSubmittedFormsAdminView getSubmittedFormsView()
@@ -45,16 +59,17 @@ public class TaskFormsAdminView
         return submittedFormsView;
     }
 
-    @Override
-    public void setVisible(boolean b)
-    {
-        super.setVisible(b);
-        submittedFormsView.setVisible(b);
-        effectiveFieldsValueView.setVisible(b);
-    }
-
     public TaskEffectiveFieldsValueView getEffectiveFieldsValueView()
     {
         return effectiveFieldsValueView;
+    }
+
+    public void setModel(TaskFormsModel model)
+    {
+        this.model = model;
+        refresher.setRefreshable( model );
+
+        submittedFormsView.setModel( model.submittedForms() );
+        effectiveFieldsValueView.setModel( model.effectiveValues() );
     }
 }

@@ -14,14 +14,13 @@
 
 package se.streamsource.streamflow.web.resource.task.forms;
 
-import org.qi4j.api.entity.EntityReference;
+import static org.qi4j.api.entity.EntityReference.*;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
-import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -30,8 +29,8 @@ import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.task.TaskQueries;
+import se.streamsource.streamflow.web.domain.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -70,7 +69,7 @@ public class TaskSubmittedFormsServerResource
 
         ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder(SubmittedFormValue.class);
 
-        formBuilder.prototype().submitter().set(EntityReference.getEntityReference(user));
+        formBuilder.prototype().submitter().set( getEntityReference(user));
         formBuilder.prototype().form().set(submitDTO.form().get());
         formBuilder.prototype().submissionDate().set(new Date());
         formBuilder.prototype().values().set(submitDTO.values().get());
@@ -78,19 +77,19 @@ public class TaskSubmittedFormsServerResource
         forms.submitForm(formBuilder.newInstance());
     }
 
-    public ListValue applicableFormDefinitionList()
+    public ListValue applicableforms()
     {
         String taskId = getRequest().getAttributes().get("task").toString();
         UnitOfWork uow = uowf.currentUnitOfWork();
 
-        TaskQueries taskQueries = uow.get(TaskQueries.class, taskId);
+        TypedTask.Data typedTask = uow.get( TypedTask.Data.class, taskId);
 
-        ProjectEntity project = taskQueries.ownerProject();
+        TaskType taskType = typedTask.taskType().get();
 
         ListValue formsList;
-        if (project != null)
+        if (taskType != null)
         {
-            FormsQueries forms = uow.get( FormsQueries.class, project.identity().get());
+            FormsQueries forms = uow.get( FormsQueries.class, getEntityReference( taskType ).identity());
             formsList = forms.applicableFormDefinitionList();
         } else
         {
@@ -108,11 +107,6 @@ public class TaskSubmittedFormsServerResource
         return fields.effectiveFields();
     }
     
-
-    public void add(ContactValue newContact)
-    {
-    }
-
     @Override
     protected String getConditionalIdentityAttribute()
     {

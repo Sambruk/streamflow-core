@@ -15,67 +15,62 @@
 package se.streamsource.streamflow.client.resource.organizations;
 
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
+import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
+import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
  */
 public class OrganizationClientResource
-        extends OrganizationalUnitClientResource
+        extends CommandQueryClientResource
 {
     public OrganizationClientResource(@Uses Context context, @Uses Reference reference)
     {
         super(context, reference);
     }
 
-    public void describe(StringDTO stringValue) throws ResourceException
+    public Reference labels() throws ResourceException
     {
-        putCommand("describe", stringValue);
+        return getReference().clone().addSegment("labels");
     }
 
-    public ListValue findUsers(String participantName) throws ResourceException
+    public Reference taskTypes() throws ResourceException
     {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(participantName);
-        return query("findUsers", builder.newInstance(), ListValue.class);
+        return getReference().clone().addSegment("tasktypes");
     }
 
-    public ListValue findGroups(String groupName) throws ResourceException
+    public RolesClientResource roles() throws ResourceException
     {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(groupName);
-        return query("findGroups", builder.newInstance(), ListValue.class);
+        return getSubResource("roles", RolesClientResource.class);
     }
 
-    public ListValue findProjects(String projectName) throws ResourceException
+    public FormDefinitionsClientResource forms() throws ResourceException
     {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(projectName);
-        return query("findProjects", builder.newInstance(), ListValue.class);
+        return getSubResource("forms", FormDefinitionsClientResource.class);
     }
 
-    public ListValue findTasks(String search) throws ResourceException
+    public AdministratorsClientResource administrators() throws ResourceException
     {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(search);
-        return query("findTasks", builder.newInstance(), ListValue.class);
+        return getSubResource("administrators", AdministratorsClientResource.class);
     }
 
-    public void move(EntityReferenceDTO moveCommand) throws ResourceException
+    public OrganizationalUnitsClientResource organizationalUnits() throws ResourceException
     {
-        postCommand("move", moveCommand);
+        return getSubResource("organizationalunits", OrganizationalUnitsClientResource.class);
     }
 
-    public void merge(EntityReferenceDTO mergeCommand) throws ResourceException
+    public void changeDescription(StringDTO stringValue) throws ResourceException
     {
-        postCommand("merge", mergeCommand);
+        putCommand("changedescription", stringValue);
     }
 
     public ListValue formDefinitions() throws ResourceException
@@ -91,6 +86,11 @@ public class OrganizationClientResource
     public ListValue nonParticipatingUsers() throws ResourceException
     {
         return query("nonParticipatingUsers", ListValue.class);
+    }
+
+    public SearchClientResource search()
+    {
+        return getSubResource("search", SearchClientResource.class);
     }
 
     public void join(ListValue users) throws ResourceException

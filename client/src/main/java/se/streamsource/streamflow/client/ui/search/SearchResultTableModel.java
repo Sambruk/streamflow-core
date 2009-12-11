@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.search;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.assigned_to_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.title_column_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.project_column_header;
 
 import java.util.Date;
@@ -47,7 +47,7 @@ public class SearchResultTableModel
     public SearchResultTableModel(@Uses SearchClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(project_column_header), text(assigned_to_header), text(created_column_header), ""};
+        columnNames = new String[]{text( title_column_header ), text(project_column_header), text(assigned_to_header), text(created_column_header), ""};
         columnClasses = new Class[]{String.class, String.class, String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false, false};
     }

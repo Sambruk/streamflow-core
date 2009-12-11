@@ -24,6 +24,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
 
@@ -31,45 +32,47 @@ import org.qi4j.test.EntityTestAssembler;
  * JAVADOC
  */
 public class EventPropertyChangeMixinTest
-        extends AbstractQi4jTest
+      extends AbstractQi4jTest
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addValues(DomainEvent.class, TransactionEvents.class);
-        module.addEntities(TestEntity.class);
-        module.addServices( DomainEventFactoryService.class, MemoryEventStoreService.class );
-        new EntityTestAssembler().assemble(module);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addValues( DomainEvent.class, TransactionEvents.class );
+      module.addEntities( TestEntity.class );
+      module.addObjects( TimeService.class );
+      module.importServices( Time.class ).importedBy( NewObjectImporter.class );
+      module.addServices( DomainEventFactoryService.class, MemoryEventStoreService.class );
+      new EntityTestAssembler().assemble( module );
+   }
 
-    @Test
-    public void testEventMixin()
-    {
-        UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-        TestEntity entity = uow.newEntity(TestEntity.class);
-        entity.changeFoo("New foo");
-        Assert.assertEquals("New foo", entity.foo().get());
-        entity.changeFoo("New erfoo");
-        Assert.assertEquals("New erfoo", entity.foo().get());
-        uow.discard();
-    }
+   @Test
+   public void testEventMixin()
+   {
+      UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+      TestEntity entity = uow.newEntity( TestEntity.class );
+      entity.changeFoo( "New foo" );
+      Assert.assertEquals( "New foo", entity.foo().get() );
+      entity.changeFoo( "New erfoo" );
+      Assert.assertEquals( "New erfoo", entity.foo().get() );
+      uow.discard();
+   }
 
-    interface TestDomain
-    {
-        void changeFoo(String foo);
+   interface TestDomain
+   {
+      void changeFoo( String foo );
 
-        interface TestDomainState
-        {
-            @UseDefaults
-            Property<String> foo();
+      interface TestDomainState
+      {
+         @UseDefaults
+         Property<String> foo();
 
-            void changedFoo(DomainEvent event, String newFoo);
-        }
-    }
+         void changedFoo( DomainEvent event, String newFoo );
+      }
+   }
 
-    @Concerns(EventCreationConcern.class)
-    @Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class})
-    interface TestEntity
-            extends TestDomain, TestDomain.TestDomainState, EntityComposite
-    {
-    }
+   @Concerns(EventCreationConcern.class)
+   @Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class})
+   interface TestEntity
+         extends TestDomain, TestDomain.TestDomainState, EntityComposite
+   {
+   }
 }

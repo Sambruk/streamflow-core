@@ -26,7 +26,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /organizations/{organization}/groups/{group}/participants
+ * /organizations/{organization}/organizationalunits/{ou}/groups/{group}/participants
  */
 public class ParticipantsServerResource
         extends CommandQueryServerResource
@@ -34,7 +34,7 @@ public class ParticipantsServerResource
     public ListValue participants()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
-        String identity = getRequest().getAttributes().get("organization").toString();
+        String identity = getRequest().getAttributes().get("ou").toString();
         Groups.Data groups = uow.get( Groups.Data.class, identity);
 
         ListValueBuilder builder = new ListValueBuilder(vbf);

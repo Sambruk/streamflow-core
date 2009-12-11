@@ -65,10 +65,10 @@ public interface DomainEventPlayerService
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 
-        public void replayEvents(Date afterDate) throws EventReplayException
+        public void replayEvents(long afterDate) throws EventReplayException
         {
             final EventReplayException[] ex = new EventReplayException[1];
-            eventStore.transactions( afterDate, new TransactionHandler()
+            eventStore.transactionsAfter( afterDate, new TransactionHandler()
             {
                 public boolean handleTransaction( TransactionEvents transaction )
                 {

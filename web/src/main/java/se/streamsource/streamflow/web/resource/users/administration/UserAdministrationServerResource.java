@@ -18,12 +18,13 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.organization.AdministrationType;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
@@ -52,15 +53,16 @@ public class UserAdministrationServerResource
         return listBuilder.newInstance();
     }
 
-    private void addOrganizationalUnits(Iterable<? extends OrganizationalUnitRefactoring> organizations, List<TreeNodeValue> list, Participant participant)
+    private void addOrganizationalUnits(Iterable<? extends OrganizationalUnits> organizations, List<TreeNodeValue> list, Participant participant)
     {
-        for (OrganizationalUnitRefactoring organization : organizations)
+        for (OrganizationalUnits organization : organizations)
         {
             OrganizationalUnits.Data ou = (OrganizationalUnits.Data) organization;
             ValueBuilder<TreeNodeValue> valueBuilder = vbf.newValueBuilder(TreeNodeValue.class);
             TreeNodeValue itemValue = valueBuilder.prototype();
             itemValue.description().set(((Describable) organization).getDescription());
             itemValue.entity().set(EntityReference.getEntityReference(organization));
+            itemValue.nodeType().set( organization instanceof OrganizationEntity ? AdministrationType.organization.name() : AdministrationType.organizationalunit.name() );
             List<TreeNodeValue> subOrgs = itemValue.children().get();
 
             RolePolicy.Data rolePolicy = (RolePolicy.Data) ou;

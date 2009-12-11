@@ -23,6 +23,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsModel;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
+import se.streamsource.streamflow.domain.organization.AdministrationType;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -48,22 +49,25 @@ public class AccountAdministrationNode
     private UsersAdministrationModel usersModel;
     private OrganizationsModel organizationsModel;
 
-    WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalStructureAdministrationNode>()
+    WeakModelMap<TreeNodeValue, TreeNode> models = new WeakModelMap<TreeNodeValue, TreeNode>()
     {
-        protected OrganizationalStructureAdministrationNode newModel(TreeNodeValue key)
+        protected TreeNode newModel( TreeNodeValue key )
         {
-            return obf.newObjectBuilder(OrganizationalStructureAdministrationNode.class).use(AccountAdministrationNode.this, accountModel.serverResource().organizations(), key).newInstance();
+            if (key.nodeType().get().equals( AdministrationType.organization.name()))
+                return obf.newObjectBuilder( OrganizationAdministrationNode.class).use(AccountAdministrationNode.this, accountModel.serverResource().organizations(), key).newInstance();
+            else
+                return obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class).use(AccountAdministrationNode.this, accountModel.serverResource().organizations(), key).newInstance();
         }
     };
 
     private TreeNode parent;
     private TreeValue organizations;
 
-    public AccountAdministrationNode(@Uses TreeNode parent, @Uses AccountModel accountModel) throws ResourceException
+    public AccountAdministrationNode( @Uses TreeNode parent, @Uses AccountModel accountModel ) throws ResourceException
     {
         this.parent = parent;
         this.accountModel = accountModel;
-        accountModel.addObserver(this);
+        accountModel.addObserver( this );
     }
 
     public TreeNode getParent()
@@ -71,16 +75,16 @@ public class AccountAdministrationNode
         return parent;
     }
 
-    public int getIndex(TreeNode node)
+    public int getIndex( TreeNode node )
     {
         if (organizations == null)
             return -1;
 
         for (int idx = 0; idx < organizations.roots().get().size(); idx++)
         {
-            TreeNodeValue treeNodeValue = organizations.roots().get().get(idx);
-            OrganizationalStructureAdministrationNode child = models.get(treeNodeValue);
-            if (child.equals(node))
+            TreeNodeValue treeNodeValue = organizations.roots().get().get( idx );
+            TreeNode child = models.get( treeNodeValue );
+            if (child.equals( node ))
                 return idx;
         }
 
@@ -104,9 +108,9 @@ public class AccountAdministrationNode
 
     public OrganizationsModel organizationsModel()
     {
-        if(organizationsModel == null)
+        if (organizationsModel == null)
         {
-            organizationsModel = obf.newObjectBuilder(OrganizationsModel.class).use(accountModel.serverResource().organizations()).newInstance();
+            organizationsModel = obf.newObjectBuilder( OrganizationsModel.class ).use( accountModel.serverResource().organizations() ).newInstance();
         }
 
         return organizationsModel;
@@ -114,16 +118,16 @@ public class AccountAdministrationNode
 
     public Enumeration children()
     {
-        return Collections.enumeration(Collections.emptyList());
+        return Collections.enumeration( Collections.emptyList() );
     }
 
-    public TreeNode getChildAt(int index)
+    public TreeNode getChildAt( int index )
     {
         if (organizations == null)
             return null;
 
-        TreeNodeValue treeNode = organizations.roots().get().get(index);
-        return models.get(treeNode);
+        TreeNodeValue treeNode = organizations.roots().get().get( index );
+        return models.get( treeNode );
     }
 
     public int getChildCount()
@@ -149,18 +153,18 @@ public class AccountAdministrationNode
             organizations = accountModel.organizations();
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
+            throw new OperationException( AdministrationResources.could_not_refresh, e );
         }
     }
 
-    public void update(Observable o, Object arg)
+    public void update( Observable o, Object arg )
     {
         try
         {
             refresh();
         } catch (Exception e)
         {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
+            throw new OperationException( AdministrationResources.could_not_refresh, e );
         }
     }
 
@@ -169,12 +173,12 @@ public class AccountAdministrationNode
         if (usersModel != null)
             usersModel.notifyEvent( event );
 
-        if(organizationsModel != null)
-            organizationsModel.notifyEvent(event);
+        if (organizationsModel != null)
+            organizationsModel.notifyEvent( event );
 
-        for (OrganizationalStructureAdministrationNode model : models)
+        for (TreeNode model : models)
         {
-            model.notifyEvent(event);
+            ((EventListener)model).notifyEvent( event );
         }
     }
 }

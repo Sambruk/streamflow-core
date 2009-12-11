@@ -24,7 +24,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /organizations/{organization}/groups
+ * /organizations/{organization}/organizationalunits/{ou}/groups
  */
 public class GroupsServerResource
         extends CommandQueryServerResource
@@ -32,7 +32,7 @@ public class GroupsServerResource
 
     public ListValue groups()
     {
-        String identity = getRequest().getAttributes().get("organization").toString();
+        String identity = getRequest().getAttributes().get("ou").toString();
         Groups.Data groups = uowf.currentUnitOfWork().get( Groups.Data.class, identity);
 
         return new ListValueBuilder(vbf).addDescribableItems( groups.groups() ).newList();
@@ -40,7 +40,7 @@ public class GroupsServerResource
 
     public void createGroup(StringDTO name) throws ResourceException
     {
-        String identity = getRequest().getAttributes().get("organization").toString();
+        String identity = getRequest().getAttributes().get("ou").toString();
 
         UnitOfWork uow = uowf.currentUnitOfWork();
 

@@ -50,8 +50,8 @@ public class ProjectClientResource
         return getSubResource("forms", ProjectFormDefinitionsClientResource.class);
     }
 
-    public void describe(StringDTO stringValue) throws ResourceException
+    public void changeDescription(StringDTO stringValue) throws ResourceException
     {
-        putCommand("describe", stringValue);
+        putCommand("changedescription", stringValue);
     }
 }

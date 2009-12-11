@@ -26,19 +26,28 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
+import org.restlet.data.Status;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
 
-import javax.accessibility.AccessibleContext;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
+import javax.swing.JTree;
+import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -89,8 +98,10 @@ public class AdministrationOutlineView
                     {
                         if (o instanceof AccountAdministrationNode)
                             return i18n.icon(Icons.account, i18n.ICON_24);
-                        else if (o instanceof OrganizationalStructureAdministrationNode)
+                        else if (o instanceof OrganizationalUnitAdministrationNode)
                             return i18n.icon(Icons.organization, i18n.ICON_24);
+                        else if (o instanceof OrganizationAdministrationNode)
+                            return i18n.icon(Icons.account, i18n.ICON_24);
                         else
                             return NULL_ICON;
                     }
@@ -103,8 +114,10 @@ public class AdministrationOutlineView
                             return "                            ";
                         else if (o instanceof AccountAdministrationNode)
                             return ((AccountAdministrationNode) o).accountModel().settings().name().get();
-                        else if (o instanceof OrganizationalStructureAdministrationNode)
-                            return ((OrganizationalStructureAdministrationNode) o).toString();
+                        else if (o instanceof OrganizationalUnitAdministrationNode)
+                            return o.toString();
+                        else if (o instanceof OrganizationAdministrationNode)
+                            return o.toString();
                         else
                             return "Unknown";
                     }
@@ -119,33 +132,56 @@ public class AdministrationOutlineView
         add(BorderLayout.CENTER, tree);
 
         final ActionMap am = context.getActionMap(this);
-        JPopupMenu popup = new JPopupMenu();
-        popup.add(am.get("createOrganizationalUnit"));
-        popup.add(am.get("removeOrganizationalUnit"));
-        popup.add(new JSeparator());
-        popup.add(am.get("moveOrganizationalUnit"));
-        popup.add(am.get("mergeOrganizationalUnit"));
 
-        AccessibleContext a = popup.getAccessibleContext();
-
-        tree.addMouseListener(new PopupMenuTrigger(popup)
+        //Organization Popup
         {
-            @Override
-            protected void showPopup(MouseEvent e)
+            JPopupMenu orgPopup = new JPopupMenu();
+            orgPopup.add(am.get("createOrganizationalUnit"));
+            orgPopup.add(am.get("removeOrganizationalUnit"));
+
+            tree.addMouseListener(new PopupMenuTrigger(orgPopup)
             {
-
-                if (tree.getSelectionPath() != null &&
-                        tree.getSelectionPath().getLastPathComponent() instanceof OrganizationalStructureAdministrationNode)
+                @Override
+                protected void showPopup(MouseEvent e)
                 {
-                    boolean enabled = (tree.getSelectionPath().getParentPath().getLastPathComponent() instanceof OrganizationalStructureAdministrationNode);
-                    am.get("moveOrganizationalUnit").setEnabled(enabled);
-                    am.get("mergeOrganizationalUnit").setEnabled(enabled);
-                    super.showPopup(e);
-                }
-            }
-        });
 
-        refreshWhenVisible = new RefreshWhenVisible(model);
+                    if (tree.getSelectionPath() != null &&
+                            tree.getSelectionPath().getLastPathComponent() instanceof OrganizationAdministrationNode)
+                    {
+                        super.showPopup(e);
+                    }
+                }
+            });
+        }
+
+        //OU Popup
+        {
+            JPopupMenu ouPopup = new JPopupMenu();
+            ouPopup.add(am.get("createOrganizationalUnit"));
+            ouPopup.add(am.get("removeOrganizationalUnit"));
+            ouPopup.add(new JSeparator());
+            ouPopup.add(am.get("moveOrganizationalUnit"));
+            ouPopup.add(am.get("mergeOrganizationalUnit"));
+
+            tree.addMouseListener(new PopupMenuTrigger(ouPopup)
+            {
+                @Override
+                protected void showPopup(MouseEvent e)
+                {
+
+                    if (tree.getSelectionPath() != null &&
+                            tree.getSelectionPath().getLastPathComponent() instanceof OrganizationalUnitAdministrationNode)
+                    {
+                        boolean enabled = (tree.getSelectionPath().getParentPath().getLastPathComponent() instanceof OrganizationalUnitAdministrationNode);
+                        am.get("moveOrganizationalUnit").setEnabled(enabled);
+                        am.get("mergeOrganizationalUnit").setEnabled(enabled);
+                        super.showPopup(e);
+                    }
+                }
+            });
+        }
+
+        refreshWhenVisible = new RefreshWhenVisible(model, this);
         addRefreshWhenVisible();
         //addAncestorListener(refreshWhenVisible);
     }
@@ -160,9 +196,9 @@ public class AdministrationOutlineView
     public void createOrganizationalUnit()
     {
         Object node = tree.getSelectionPath().getLastPathComponent();
-        if (node instanceof OrganizationalStructureAdministrationNode)
+        if (node instanceof OrganizationalUnitAdministrationNode)
         {
-            OrganizationalStructureAdministrationNode orgNode = (OrganizationalStructureAdministrationNode) node;
+            OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) node;
 
             NameDialog dialog = nameDialogs.iterator().next();
             dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.create_ou_title));
@@ -191,20 +227,33 @@ public class AdministrationOutlineView
     public void removeOrganizationalUnit()
     {
         Object node = tree.getSelectionPath().getLastPathComponent();
-        if (node instanceof OrganizationalStructureAdministrationNode)
+        if (node instanceof OrganizationalUnitAdministrationNode)
         {
-            OrganizationalStructureAdministrationNode orgNode = (OrganizationalStructureAdministrationNode) node;
+            OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) node;
 
             Object parent = orgNode.getParent();
-            if (parent instanceof OrganizationalStructureAdministrationNode)
+            if (parent instanceof OrganizationalUnitAdministrationNode)
             {
-                OrganizationalStructureAdministrationNode orgParent = (OrganizationalStructureAdministrationNode) parent;
+                OrganizationalUnitAdministrationNode orgParent = (OrganizationalUnitAdministrationNode) parent;
 
                 ConfirmationDialog dialog = confirmationDialog.iterator().next();
                 dialogs.showOkCancelHelpDialog(this, dialog, text(StreamFlowResources.confirmation));
                 if(dialog.isConfirmed())
                 {
-                    orgParent.model().removeOrganizationalUnit(orgNode.ou().entity().get());
+                    try
+                    {
+                        orgParent.model().removeOrganizationalUnit(orgNode.ou().entity().get());
+                    } catch (OperationException e)
+                    {
+                        ResourceException ex = (ResourceException) e.getCause();
+                        if (ex.getStatus().equals( Status.CLIENT_ERROR_CONFLICT))
+                        {
+                            dialogs.showOkCancelHelpDialog(this,
+                                    new JLabel(i18n.text(AdministrationResources.could_not_remove_organisation_with_open_projects)));
+                        } else
+                            throw e;
+
+                    }
                     model.refresh();
                 }
 
@@ -215,8 +264,8 @@ public class AdministrationOutlineView
     @Action
     public void moveOrganizationalUnit()
     {
-        OrganizationalStructureAdministrationNode moved =
-                        (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
+        OrganizationalUnitAdministrationNode moved =
+                        (OrganizationalUnitAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
         SelectOrganizationalUnitDialog moveAndMergeDialog = obf.newObjectBuilder(SelectOrganizationalUnitDialog.class).use(model).newInstance();
 
@@ -225,7 +274,19 @@ public class AdministrationOutlineView
         if( moveAndMergeDialog.target() != null
                 && !moved.ou().entity().get().equals(moveAndMergeDialog.target()))
         {
-            moved.model().moveOrganizationalUnit(moveAndMergeDialog.target());
+            try
+            {
+                moved.model().moveOrganizationalUnit(moveAndMergeDialog.target());
+            } catch (OperationException e)
+            {
+                ResourceException ex = (ResourceException) e.getCause();
+                if (ex.getStatus().equals( Status.CLIENT_ERROR_CONFLICT))
+                {
+                    dialogs.showOkCancelHelpDialog(this,
+                            new JLabel(i18n.text(AdministrationResources.could_not_remove_organisation_with_open_projects)));
+                } else
+                    throw e;
+            }
         } else
         {
             dialogs.showOkDialog(WindowUtils.findWindow(this), new JLabel(i18n.text(AdministrationResources.could_not_move_organization)));
@@ -236,8 +297,8 @@ public class AdministrationOutlineView
     @Action
     public void mergeOrganizationalUnit()
     {
-        OrganizationalStructureAdministrationNode moved =
-                        (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
+        OrganizationalUnitAdministrationNode moved =
+                        (OrganizationalUnitAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
         SelectOrganizationalUnitDialog moveAndMergeDialog = obf.newObjectBuilder(SelectOrganizationalUnitDialog.class).use(model).newInstance();
 
@@ -246,7 +307,19 @@ public class AdministrationOutlineView
         if(moveAndMergeDialog.target() != null
                 && !moved.ou().entity().get().equals(moveAndMergeDialog.target()))
         {
-            moved.model().mergeOrganizationalUnit(moveAndMergeDialog.target());
+            try
+            {
+                moved.model().mergeOrganizationalUnit(moveAndMergeDialog.target());
+            } catch (OperationException e)
+            {
+                ResourceException ex = (ResourceException) e.getCause();
+                if (ex.getStatus().equals( Status.CLIENT_ERROR_CONFLICT))
+                {
+                    dialogs.showOkCancelHelpDialog(this,
+                            new JLabel(i18n.text(AdministrationResources.could_not_remove_organisation_with_open_projects)));
+                } else
+                    throw e;
+            }
         } else
         {
             dialogs.showOkDialog(WindowUtils.findWindow(this), new JLabel(i18n.text(AdministrationResources.could_not_merge_organization)));
@@ -263,5 +336,14 @@ public class AdministrationOutlineView
     public void addRefreshWhenVisible()
     {
         addAncestorListener(refreshWhenVisible);
+    }
+
+    @Override
+    public void setVisible( boolean aFlag )
+    {
+        super.setVisible( aFlag );
+
+        if (aFlag)
+            model.refresh();
     }
 }

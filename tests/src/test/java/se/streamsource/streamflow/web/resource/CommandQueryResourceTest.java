@@ -45,11 +45,11 @@ import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.MemoryEventStoreService;
+import se.streamsource.streamflow.infrastructure.event.TimeService;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.application.security.AccessPolicy;
 import se.streamsource.streamflow.web.infrastructure.event.CommandEventListenerService;
@@ -79,13 +79,13 @@ public class CommandQueryResourceTest
     {
         new EntityTestAssembler().assemble( moduleAssembly );
         moduleAssembly.addServices( CommandEventListenerService.class, MemoryEventStoreService.class, EventSourceService.class, DomainEventFactoryService.class);
-        moduleAssembly.importServices( EventSourceListener.class );
-        moduleAssembly.importServices( AccessPolicy.class ).importedBy( NewObjectImporter.class );
-        moduleAssembly.addObjects( ResourceFinder.class, TestEventListener.class, TestAccessPolicy.class, TestClientResource.class, TestServerResource.class );
+        moduleAssembly.importServices( TransactionHandler.class );
+        moduleAssembly.importServices( AccessPolicy.class, TimeService.class ).importedBy( NewObjectImporter.class );
+        moduleAssembly.addObjects( TimeService.class, ResourceFinder.class, TestTransactionHandler.class, TestAccessPolicy.class, TestClientResource.class, TestServerResource.class );
         moduleAssembly.addValues( StringDTO.class, TransactionEvents.class, DomainEvent.class );
         moduleAssembly.addEntities( TestEntity.class );
 
-        moduleAssembly.layerAssembly().applicationAssembly().setMetaInfo( new TestEventListener() );
+        moduleAssembly.layerAssembly().applicationAssembly().setMetaInfo( new TestTransactionHandler() );
     }
 
     @Before
@@ -107,7 +107,8 @@ public class CommandQueryResourceTest
     @After
     public void shutdown() throws Exception
     {
-        component.stop();
+       if (component != null)
+           component.stop();
     }
 
     @Test
@@ -187,19 +188,20 @@ public class CommandQueryResourceTest
         }
     }
 
-    public static class TestEventListener
-        implements EventSourceListener
+    public static class TestTransactionHandler
+        implements TransactionHandler
     {
-        public void eventsAvailable( EventStore source )
-        {
-            source.transactions( null, new TransactionEventAdapter(new EventHandler()
+       public boolean handleTransaction( TransactionEvents transaction )
+       {
+            new TransactionEventAdapter(new EventHandler()
             {
                 public boolean handleEvent( DomainEvent event )
                 {
                     System.out.println(event);
                     return true;
                 }
-            }) );
+            }).handleTransaction( transaction );
+          return true;
         }
     }
 

@@ -16,7 +16,7 @@ package se.streamsource.streamflow.web.resource.organizations.roles;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
+import se.streamsource.streamflow.web.domain.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.role.RoleEntity;
 import se.streamsource.streamflow.web.domain.role.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -33,9 +33,9 @@ public class RoleServerResource
         UnitOfWork uow = uowf.currentUnitOfWork();
 
         String identity = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnitRefactoring.Data ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.Data.class, identity);
+        OwningOrganization organization = uowf.currentUnitOfWork().get( OwningOrganization.class, identity);
 
-        Roles roles = ou.organization().get();
+        Roles roles = organization.organization().get();
         checkPermission( roles );
 
         String role = getRequest().getAttributes().get("role").toString();

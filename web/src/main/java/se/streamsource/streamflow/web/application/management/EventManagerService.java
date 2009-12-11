@@ -19,13 +19,13 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
@@ -48,7 +48,7 @@ public interface EventManagerService
     extends Activatable, ServiceComposite
 {
     class Mixin
-        implements Activatable, EventSourceListener
+        implements Activatable, TransactionHandler
     {
         @Service
         EventSource source;
@@ -89,9 +89,9 @@ public interface EventManagerService
             source.unregisterListener(this);
         }
 
-        public synchronized void eventsAvailable(EventStore source)
-        {
-            source.transactions(null, new TransactionEventAdapter(new EventHandler()
+       public synchronized boolean handleTransaction( TransactionEvents transaction )
+       {
+          new TransactionEventAdapter(new EventHandler()
             {
                 public boolean handleEvent( DomainEvent event )
                 {
@@ -113,8 +113,10 @@ public interface EventManagerService
                     });
                     return true;
                 }
-            }));
-        }
+            }).handleTransaction( transaction );
+
+          return true;
+       }
     }
 
 }

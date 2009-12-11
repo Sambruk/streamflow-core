@@ -39,6 +39,7 @@ public class FormTemplatesScenario
                 new ProjectsSteps(),
                 new GroupsSteps(),
                 new MembersSteps(),
+                new TaskTypesSteps(),
                 new FormsSteps(),
                 new FormTemplatesSteps(),
                 new FormTemplateSteps());

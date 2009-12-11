@@ -29,7 +29,7 @@ import java.util.List;
  * JAVADOC
  */
 public class WorkspaceUserDelegationsClientResource
-        extends TaskListClientResource
+        extends TaskListClientResource<WorkspaceUserDelegatedTaskClientResource>
 {
     public WorkspaceUserDelegationsClientResource(@Uses Context context, @Uses Reference reference)
     {

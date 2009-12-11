@@ -23,6 +23,8 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
+import java.util.List;
+
 /**
  * JAVADOC
  */
@@ -51,6 +53,13 @@ public class OrganizationalUnitsClientResource
 
     public OrganizationalUnitClientResource organizationalUnit(String id)
     {
-        return getResource(new Reference(getReference(), "../../" + id), OrganizationalUnitClientResource.class);
+        List<String> segments = getReference().getSegments();
+        if (segments.get( segments.size()-3 ).equals("organizations"))
+            return getResource(getReference().clone().addSegment(id), OrganizationalUnitClientResource.class);
+        else
+        {
+            Reference ref = new Reference( getReference(), "../../" + id );
+            return getResource( ref, OrganizationalUnitClientResource.class);
+        }
     }
 }

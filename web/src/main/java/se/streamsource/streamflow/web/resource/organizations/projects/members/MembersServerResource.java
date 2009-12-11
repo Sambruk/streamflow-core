@@ -16,17 +16,17 @@ package se.streamsource.streamflow.web.resource.organizations.projects.members;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.domain.group.Group;
+import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.project.Members;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
-import se.streamsource.streamflow.web.domain.organization.OrganizationQueries;
-import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * Mapped to:
@@ -50,10 +50,10 @@ public class MembersServerResource
 
          String orgId = getRequest().getAttributes().get("organization").toString();
 
-         OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
-         checkPermission(ouq);
+         OwningOrganization organization  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
+         checkPermission(organization);
 
-         ListValue list = ((OrganizationQueries)ouq.organization().get()).findUsers(query.string().get());
+         ListValue list = ((OrganizationQueries)organization.organization().get()).findUsers(query.string().get());
 
          String projectId = getRequest().getAttributes().get("project").toString();
          ProjectEntity project = uow.get(ProjectEntity.class,projectId);
@@ -77,10 +77,10 @@ public class MembersServerResource
 
          String orgId = getRequest().getAttributes().get("organization").toString();
 
-         OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
-         checkPermission(ouq);
+         OwningOrganization organization  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
+         checkPermission(organization);
 
-         ListValue list = ((OrganizationQueries)ouq.organization().get()).findGroups(query.string().get());
+         ListValue list = ((OrganizationQueries)organization.organization().get()).findGroups(query.string().get());
 
          String projectId = getRequest().getAttributes().get("project").toString();
          ProjectEntity group = uow.get(ProjectEntity.class,projectId);

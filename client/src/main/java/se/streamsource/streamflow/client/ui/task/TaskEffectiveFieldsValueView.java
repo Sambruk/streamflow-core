@@ -15,15 +15,17 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 /**
  * JAVADOC
@@ -35,6 +37,7 @@ public class TaskEffectiveFieldsValueView
 
     public ValueBuilder<ContactValue> valueBuilder;
     private JXTable effectiveValueTable;
+    public RefreshWhenVisible refresher;
 
     public TaskEffectiveFieldsValueView(@Service ApplicationContext context)
     {       super(new BorderLayout());
@@ -49,6 +52,9 @@ public class TaskEffectiveFieldsValueView
         submittedFormsScollPane.setViewportView(effectiveValueTable);
 
         add(submittedFormsScollPane, BorderLayout.CENTER);
+
+        refresher = new RefreshWhenVisible( this );
+        addAncestorListener( refresher );
     }
 
 
@@ -56,6 +62,7 @@ public class TaskEffectiveFieldsValueView
     {
         this.model = model;
         effectiveValueTable.setModel(model);
+        refresher.setRefreshable( model );
     }
 
 

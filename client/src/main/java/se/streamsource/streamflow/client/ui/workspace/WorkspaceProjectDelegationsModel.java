@@ -15,10 +15,9 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_done_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_from_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_on_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.title_column_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.task_status_header;
 
 import java.util.Date;
@@ -45,7 +44,7 @@ public class WorkspaceProjectDelegationsModel
     public WorkspaceProjectDelegationsModel(@Uses WorkspaceProjectDelegationsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(delegated_from_header), text(delegated_on_header), text(task_status_header)};
+        columnNames = new String[]{text( title_column_header ), text(delegated_from_header), text(delegated_on_header), text(task_status_header)};
         columnClasses = new Class[]{String.class, String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false};
     }

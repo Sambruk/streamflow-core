@@ -45,7 +45,6 @@ import java.util.Observer;
  */
 public class AccountsModel
         extends AbstractListModel
-//        implements EventListener
 {
     @Structure
     ValueBuilderFactory vbf;

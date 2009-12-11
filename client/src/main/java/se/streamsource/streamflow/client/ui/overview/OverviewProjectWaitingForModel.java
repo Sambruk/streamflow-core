@@ -18,7 +18,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.assigned_to_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_on_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_to_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.title_column_header;
 
 import java.util.Date;
 
@@ -43,7 +43,7 @@ public class OverviewProjectWaitingForModel
     public OverviewProjectWaitingForModel(@Uses OverviewProjectWaitingForClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), ""};
+        columnNames = new String[]{text( title_column_header ), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), ""};
         columnClasses = new Class[]{String.class, String.class, String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false};
     }

@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.resource;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -39,13 +38,10 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 /**
  * Base class for client-side Command/Query resources
@@ -63,7 +59,7 @@ public class CommandQueryClientResource
     protected Module module;
 
     @Service
-    protected EventSourceListener eventListener;
+    protected TransactionHandler eventListener;
 
     public CommandQueryClientResource(@Uses org.restlet.Context context, @Uses Reference reference)
     {
@@ -351,13 +347,7 @@ public class CommandQueryClientResource
 
                     final TransactionEvents transactionEvents = vbf.newValueFromJSON(TransactionEvents.class,  source);
 
-                    eventListener.eventsAvailable(new EventStore()
-                    {
-                        public void transactions( @Optional Date afterTimestamp, TransactionHandler handler )
-                        {
-                            handler.handleTransaction( transactionEvents );
-                        }
-                    });
+                    eventListener.handleTransaction( transactionEvents );
                 }
             } catch (Exception e)
             {

@@ -116,7 +116,9 @@ public interface Organizations
 
         public OrganizationEntity createdOrganization(DomainEvent event, String id)
         {
-            return uowf.currentUnitOfWork().newEntity(OrganizationEntity.class, id);
+            EntityBuilder<OrganizationEntity> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( OrganizationEntity.class, id );
+            entityBuilder.instance().organization().set( entityBuilder.instance() );
+            return entityBuilder.newInstance();
         }
 
         public UserEntity createdUser(DomainEvent event, String username, String password)

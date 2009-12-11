@@ -19,6 +19,7 @@ import se.streamsource.streamflow.domain.roles.Notable;
 import se.streamsource.streamflow.web.domain.comment.Commentable;
 import se.streamsource.streamflow.web.domain.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.label.Labelable;
+import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
 
 /**
  * Task entity.
@@ -36,6 +37,7 @@ public interface Task
         Ownable,
         SubmittedForms,
         TaskId,
-        TaskStatus
+        TaskStatus,
+        TypedTask
 {
 }

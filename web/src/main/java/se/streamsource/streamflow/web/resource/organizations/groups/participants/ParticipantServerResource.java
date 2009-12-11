@@ -25,7 +25,7 @@ import java.security.AccessControlException;
 
 /**
  * Mapped to:
- * /organizations/{organization}/groups/{group}/participants/{participant}
+ * /organizations/{organization}/organizationalunits/{ou}/groups/{group}/participants/{participant}
  */
 public class ParticipantServerResource
         extends CommandQueryServerResource

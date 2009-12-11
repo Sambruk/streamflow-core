@@ -80,9 +80,21 @@ public class TaskGeneralClientResource
         builder.prototype().entity().set(EntityReference.parseEntityReference(labelId));
         putCommand("removelabel", builder.newInstance());
     }
+
+    public void changeTaskType(EntityReference taskTypeId) throws ResourceException
+    {
+        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+        builder.prototype().entity().set( taskTypeId);
+        postCommand("changetasktype", builder.newInstance());
+    }
     
     public ListValue possibleLabels() throws ResourceException
     {
     	return query("possiblelabels", ListValue.class);
+    }
+
+    public ListValue possibleTaskTypes() throws ResourceException
+    {
+    	return query("possibletasktypes", ListValue.class);
     }
 }

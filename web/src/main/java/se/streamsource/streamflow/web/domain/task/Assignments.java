@@ -21,11 +21,13 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import static se.streamsource.streamflow.domain.task.TaskStates.*;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.user.User;
 
 /**
  * JAVADOC
@@ -92,7 +94,15 @@ public interface Assignments
         {
             EntityBuilder<TaskEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class, id);
             builder.instance().createdOn().set( event.on().get() );
-            return builder.newInstance();
+           try
+           {
+              User user = uowf.currentUnitOfWork().get( User.class, event.by().get() );
+              builder.instance().createdBy().set( user );
+           } catch (NoSuchEntityException e)
+           {
+              // Ignore
+           } 
+           return builder.newInstance();
         }
 
         public void completeAssignedTask(Task task)

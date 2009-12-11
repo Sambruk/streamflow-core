@@ -45,11 +45,6 @@ public class ProjectFormDefinitionsClientResource
         return query("forms", ListValue.class);
     }
 
-    public ListValue nonApplicableForms() throws ResourceException
-    {
-        return query("nonApplicableForms", ListValue.class);
-    }
-
     public void addForm(EntityReferenceDTO formDTO) throws ResourceException
     {
         putCommand("addForm", formDTO);

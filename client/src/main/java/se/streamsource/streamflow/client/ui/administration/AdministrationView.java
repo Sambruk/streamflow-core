@@ -113,16 +113,23 @@ public class AdministrationView
 
 
 
-                    } else if (node instanceof OrganizationalStructureAdministrationNode)
+                    } else if (node instanceof OrganizationAdministrationNode)
                     {
-                        OrganizationalStructureAdministrationNode ouNode = (OrganizationalStructureAdministrationNode) node;
+                        OrganizationAdministrationNode orgNode = (OrganizationAdministrationNode) node;
+                        OrganizationAdministrationModel organizationAdministrationModel = orgNode.model();
+                        view = obf.newObjectBuilder(OrganizationAdministrationView.class).use(organizationAdministrationModel,
+                                organizationAdministrationModel.administratorsModel(),
+                                organizationAdministrationModel.rolesModel(),
+                                organizationAdministrationModel.taskTypesModel(),
+                                organizationAdministrationModel.labelsModel(),
+                                AdministrationView.this).newInstance();
+                    } else if (node instanceof OrganizationalUnitAdministrationNode)
+                    {
+                        OrganizationalUnitAdministrationNode ouNode = (OrganizationalUnitAdministrationNode) node;
                         OrganizationalUnitAdministrationModel ouAdminModel = ouNode.model();
-                        ouAdminModel.refresh();
                         view = obf.newObjectBuilder(OrganizationalUnitAdministrationView.class).use(ouAdminModel,
                                 ouAdminModel.groupsModel(),
                                 ouAdminModel.projectsModel(),
-                                ouAdminModel.rolesModel(),
-                                ouAdminModel.formsModel(),
                                 ouAdminModel.administratorsModel(),
                                 AdministrationView.this).newInstance();
                     }

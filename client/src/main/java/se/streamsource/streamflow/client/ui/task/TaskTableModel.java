@@ -217,52 +217,6 @@ public abstract class TaskTableModel<T extends TaskListDTO>
         return null;
     }
 
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int column)
-    {
-        try
-        {
-            switch (column)
-            {
-                case 0:
-                {
-                    String description = (String) aValue;
-                    TaskDTO taskValue = tasks.get(rowIndex);
-                    if (!description.equals(taskValue.description().get()))
-                    {
-                        taskValue.description().set(description);
-                        fireTableCellUpdated(rowIndex, column);
-                    }
-                    break;
-                }
-                case 2:
-                {
-                    Boolean completed = (Boolean) aValue;
-                    if (completed)
-                    {
-
-                        TaskDTO taskValue = tasks.get(rowIndex);
-                        if (taskValue.status().get() == TaskStates.ACTIVE)
-                        {
-                            EntityReference task = taskValue.task().get();
-                            getResource().task(task.identity()).complete();
-
-                            taskValue.status().set(TaskStates.COMPLETED);
-                            fireTableCellUpdated(rowIndex, column);
-                        }
-                    }
-                    break;
-                }
-            }
-        } catch (ResourceException e)
-        {
-            // TODO Better error handling
-            e.printStackTrace();
-        }
-
-        return; // Skip if don't know what is going on
-    }
-
     public void refresh()
     {
         try
@@ -314,7 +268,23 @@ public abstract class TaskTableModel<T extends TaskListDTO>
 
     public void completeTask(int idx)
     {
-        setValueAt(true, idx, columnNames.length-1);
+        try
+        {
+            TaskDTO taskValue = tasks.get(idx);
+            if (taskValue.status().get() == TaskStates.ACTIVE)
+            {
+                EntityReference task = taskValue.task().get();
+                getResource().task(task.identity()).complete();
+
+                taskValue.status().set(TaskStates.COMPLETED);
+                fireTableCellUpdated(idx, 2);
+            }
+
+            setValueAt(true, idx, columnNames.length-1);
+        } catch (ResourceException e)
+        {
+            throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+        }
     }
 
     public void removeTask(int idx) throws ResourceException

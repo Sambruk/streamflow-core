@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import org.qi4j.api.injection.scope.Service;
+import ca.odell.glazedlists.BasicEventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -23,25 +23,24 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
+import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
-import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
+import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-
-import javax.swing.*;
-import java.util.List;
 
 /**
  * List of projects in a OU
  */
 public class ProjectsModel
-        extends AbstractListModel
+    implements Refreshable
 {
     @Structure
     ObjectBuilderFactory obf;
@@ -52,51 +51,30 @@ public class ProjectsModel
     @Uses
     OrganizationalUnitAdministrationModel organizationModel;
 
-    @Service
-    DialogService dialogs;
+    @Uses
+    CommandQueryClient client;
 
-    ProjectsClientResource projects;
-    private List<ListItemValue> list;
+    BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>( );
 
-    WeakModelMap<String, ProjectMembersModel> projectMembersModels = new WeakModelMap<String, ProjectMembersModel>()
+    WeakModelMap<String, ProjectModel> projectModels = new WeakModelMap<String, ProjectModel>()
     {
-        @Override
-        protected ProjectMembersModel newModel(String key)
+        protected ProjectModel newModel( String key )
         {
-            return obf.newObjectBuilder(ProjectMembersModel.class).use(projects.project(key).members(), organizationModel).newInstance();
+            CommandQueryClient projectClient = client.getSubClient( key );
+            SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder(SelectedLabelsModel.class ).use( projectClient.getSubClient("labels" )).newInstance();
+            SelectedTaskTypesModel selectedTaskTypesModel = obf.newObjectBuilder(SelectedTaskTypesModel.class ).use( projectClient.getSubClient("tasktypes" )).newInstance();
+
+            return obf.newObjectBuilder(ProjectModel.class).use(project(key).members(),
+                    selectedLabelsModel,
+                    selectedTaskTypesModel,
+                    project(key).forms(),
+                    organizationModel).newInstance();
         }
     };
 
-    WeakModelMap<String, LabelsModel> projectLabelsModels = new WeakModelMap<String, LabelsModel>()
+    public BasicEventList<ListItemValue> getProjectList()
     {
-        @Override
-        protected LabelsModel newModel(String key)
-        {
-            return obf.newObjectBuilder(LabelsModel.class).use(projects.project(key).labels()).newInstance();
-        }
-    };
-
-    WeakModelMap<String, FormsModel> projectFormsModels = new WeakModelMap<String, FormsModel>()
-    {
-        protected FormsModel newModel(String key)
-        {
-            return obf.newObjectBuilder(FormsModel.class).use(projects.project(key).forms()).newInstance();
-        }
-    };
-
-    public ProjectsModel(@Uses ProjectsClientResource projects)
-    {
-        this.projects = projects;
-    }
-
-    public int getSize()
-    {
-        return list == null ? 0 : list.size();
-    }
-
-    public Object getElementAt(int index)
-    {
-        return list.get(index);
+        return eventList;
     }
 
     public void refresh()
@@ -104,9 +82,8 @@ public class ProjectsModel
         try
         {
             // Get Project list
-            list = projects.projects().items().get();
-
-            fireContentsChanged(this, 0, list.size());
+            eventList.clear();
+            eventList.addAll(client.query("projects", ListValue.class).items().get());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_refresh, e);
@@ -117,36 +94,21 @@ public class ProjectsModel
     {
         try
         {
-            projects.project(id).deleteCommand();
+            project(id).deleteCommand();
             refresh();
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_remove_project, e);
         }
     }
-
-    public ProjectMembersModel getProjectMembersModel(String id)
-    {
-        return projectMembersModels.get(id);
-    }
-
-    public LabelsModel getLabelsModel(String id)
-    {
-        return projectLabelsModels.get(id);
-    }
-
-    public FormsModel getFormsModel(String id)
-    {
-        return projectFormsModels.get(id);
-    }
-
+    
     public void newProject(String projectName)
     {
         try
         {
             ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
             builder.prototype().string().set(projectName);
-            projects.createProject(builder.newInstance());
+            client.postCommand("createProject",builder.newInstance());
             refresh();
         } catch (ResourceException e)
         {
@@ -158,14 +120,14 @@ public class ProjectsModel
         }
     }
 
-    public void describe(int selectedIndex, String newName)
+    public void changeDescription(int selectedIndex, String newName)
     {
         ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
         builder.prototype().string().set(newName);
 
         try
         {
-            projects.project(list.get(selectedIndex).entity().get().identity()).describe(builder.newInstance());
+            project(eventList.get(selectedIndex).entity().get().identity()).changeDescription(builder.newInstance());
         } catch(ResourceException e)
         {
             if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
@@ -179,19 +141,19 @@ public class ProjectsModel
 
     public void notifyEvent( DomainEvent event )
     {
-        for (FormsModel projectFormsModel : projectFormsModels)
+        for (ProjectModel projectModel : projectModels)
         {
-            projectFormsModel.notifyEvent(event);
+            projectModel.notifyEvent( event );
         }
+    }
 
-        for (LabelsModel projectLabelsModel : projectLabelsModels)
-        {
-            projectLabelsModel.notifyEvent(event);
-        }
+    public ProjectClientResource project(String id)
+    {
+        return client.getSubResource(id, ProjectClientResource.class);
+    }
 
-        for (ProjectMembersModel projectMembersModel : projectMembersModels)
-        {
-            projectMembersModel.notifyEvent(event);
-        }
+    public ProjectModel getProjectModel( String id )
+    {
+        return projectModels.get( id );
     }
 }

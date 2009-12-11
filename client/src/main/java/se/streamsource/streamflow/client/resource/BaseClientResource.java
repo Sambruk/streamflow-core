@@ -20,17 +20,22 @@ import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.Conditions;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.NodeSet;
+import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.w3c.dom.Node;
 import org.xml.sax.helpers.DefaultHandler;
-import se.streamsource.streamflow.client.StreamFlowResources;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 import javax.xml.xpath.XPathConstants;
 import java.io.IOException;
@@ -111,15 +116,7 @@ public class BaseClientResource
 
         if (!getResponse().getStatus().isSuccess())
         {
-            String errorMsg = "";
-            try
-            {
-                errorMsg = getResponse().getEntity().getText();
-            } catch (IOException e)
-            {
-                throw new ResourceException(getResponse().getStatus(), text(StreamFlowResources.could_not_extract_response));
-            }
-            throw new ResourceException(getResponse().getStatus(),errorMsg);
+            handleError( getRequestEntity() );
         }
 
         return rep;
@@ -136,6 +133,11 @@ public class BaseClientResource
         Representation rep = super.put(representation);
         setTag(null);
 
+        if (!getResponse().getStatus().isSuccess())
+        {
+            handleError( getRequestEntity() );
+        }
+        
         return rep;
     }
 
@@ -273,6 +275,51 @@ public class BaseClientResource
         Reference reference = new Reference(getReference(), ref);
         return getResource(reference, resourceClass);
     }
+
+    private Object handleError( Representation result )
+            throws ResourceException
+    {
+        if (getResponse().getStatus().equals( Status.SERVER_ERROR_INTERNAL))
+        {
+            if (getResponse().getEntity().getMediaType().equals( MediaType.APPLICATION_JAVA_OBJECT))
+            {
+                try
+                {
+                    Object exception = new ObjectRepresentation(result).getObject();
+                    throw new ResourceException((Throwable) exception);
+                } catch (IOException e)
+                {
+                    throw new ResourceException(e);
+                } catch (ClassNotFoundException e)
+                {
+                    throw new ResourceException(e);
+                }
+            }
+
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, getResponse().getEntityAsText());
+        } else if (getResponse().getStatus().equals(Status.CLIENT_ERROR_CONFLICT))
+        {
+            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
+        }
+        else
+        {
+            try
+            {
+                if (getResponseEntity() != null)
+                {
+                    String text = getResponseEntity().getText();
+                    throw new ResourceException(getResponse().getStatus(), text);
+                } else
+                {
+                    throw new ResourceException(getResponse().getStatus());
+                }
+            } catch (IOException e)
+            {
+                throw new ResourceException(e);
+            }
+        }
+    }
+
 
     public DomRepresentation getResponseEntityAsDom()
     {

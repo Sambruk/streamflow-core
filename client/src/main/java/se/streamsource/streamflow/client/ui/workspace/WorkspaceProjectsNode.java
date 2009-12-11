@@ -21,7 +21,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.LabelsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
@@ -90,14 +89,12 @@ public class WorkspaceProjectsNode
                 WorkspaceProjectAssignmentsClientResource projectAssignmentsClientResource = workspaceProjectClientResource.assignments();
                 WorkspaceProjectDelegationsClientResource projectDelegationsClientResource = workspaceProjectClientResource.delegations();
                 WorkspaceProjectWaitingforClientResource projectWaitingforClientResource = workspaceProjectClientResource.waitingFor();
-                LabelsClientResource labels = workspaceProjectClientResource.labels();
 
                 add(obf.newObjectBuilder(WorkspaceProjectNode.class).use(workspaceProjectClientResource,
                         projectInboxClientResource,
                         projectAssignmentsClientResource,
                         projectDelegationsClientResource,
                         projectWaitingforClientResource,
-                        labels,
                         account.tasks(),
                         project.description().get()).newInstance());
             }

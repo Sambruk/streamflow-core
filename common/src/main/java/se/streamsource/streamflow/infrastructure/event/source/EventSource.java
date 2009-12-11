@@ -19,9 +19,7 @@ package se.streamsource.streamflow.infrastructure.event.source;
  */
 public interface EventSource
 {
-    void registerListener(EventSourceListener subscriber, boolean asynchronous);
+    void registerListener(TransactionHandler subscriber);
 
-    void registerListener(EventSourceListener subscriber);
-
-    void unregisterListener(EventSourceListener subscriber);
+    void unregisterListener(TransactionHandler subscriber);
 }

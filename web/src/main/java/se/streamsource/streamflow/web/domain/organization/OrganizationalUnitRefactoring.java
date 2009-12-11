@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
-import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
@@ -39,8 +38,6 @@ public interface OrganizationalUnitRefactoring
 
     interface Data
     {
-        Association<Organization> organization();
-
         OrganizationalUnits getParent();
     }
 
@@ -64,6 +61,9 @@ public interface OrganizationalUnitRefactoring
 
         @This
         OrganizationalUnit organizationalUnit;
+
+        @This
+        OwningOrganization organization;
 
 
         public void deleteOrganizationalUnit() throws OpenProjectExistsException
@@ -124,7 +124,7 @@ public interface OrganizationalUnitRefactoring
 
         public OrganizationalUnits getParent()
         {
-            OrganizationalUnits.Data ous = (OrganizationalUnits.Data) organization().get();
+            OrganizationalUnits.Data ous = (OrganizationalUnits.Data) organization.organization().get();
             return ous.getParent(organizationalUnit);
         }
     }

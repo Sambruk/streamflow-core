@@ -33,7 +33,7 @@ public class WorkspaceUserAssignmentsModel
     public WorkspaceUserAssignmentsModel(@Uses WorkspaceUserAssignmentsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(created_column_header), text(task_status_header)};
+        columnNames = new String[]{text( title_column_header ), text(created_column_header), text(task_status_header)};
         columnClasses = new Class[]{String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false};
     }

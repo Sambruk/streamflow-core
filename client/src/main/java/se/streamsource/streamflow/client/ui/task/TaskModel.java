@@ -14,9 +14,15 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.task.TaskClientResource;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -24,7 +30,7 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
  * Model for task details.
  */
 public class TaskModel
-        implements Refreshable, EventListener
+        implements EventListener
 {
     @Uses
     private TaskClientResource resource;
@@ -39,10 +45,7 @@ public class TaskModel
     private TaskContactsModel contacts;
 
     @Uses
-    private TaskSubmittedFormsModel forms;
-
-    @Uses
-    private TaskEffectiveFieldsValueModel effectiveValues;
+    private TaskFormsModel forms;
 
     public TaskClientResource resource()
     {
@@ -64,24 +67,9 @@ public class TaskModel
         return contacts;
     }
 
-    public TaskSubmittedFormsModel forms()
+    public TaskFormsModel forms()
     {
         return forms;
-    }
-
-    public TaskEffectiveFieldsValueModel effectiveValues()
-    {
-        return effectiveValues;
-    }
-
-
-    public void refresh()
-    {
-        general.refresh();
-        comments.refresh();
-        contacts.refresh();
-        forms.refresh();
-        effectiveValues.refresh();
     }
 
     public void notifyEvent( DomainEvent event )
@@ -90,6 +78,21 @@ public class TaskModel
         general.notifyEvent(event);
         contacts.notifyEvent( event );
         forms.notifyEvent(event);
-        effectiveValues.notifyEvent(event);
+    }
+
+    public EventList<ListItemValue> getPossibleProjects()
+    {
+        try
+        {
+            BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+
+            ListValue listValue = resource.possibleProjects();
+            list.addAll(listValue.items().get());
+
+            return list;
+        } catch (ResourceException e)
+        {
+            throw new OperationException( WorkspaceResources.could_not_refresh, e);
+        }
     }
 }

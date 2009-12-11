@@ -14,10 +14,14 @@
 
 package se.streamsource.streamflow.web.domain.label;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -27,6 +31,8 @@ public interface Labelable
 {
     void addLabel(Label label);
     void removeLabel(Label label);
+
+    void retainLabels(@Optional SelectedLabels currentSelection, @Optional SelectedLabels nextSelection);
 
     interface Data
     {
@@ -52,6 +58,35 @@ public interface Labelable
             if (state.labels().contains((LabelEntity) label))
             {
                 removedLabel(DomainEvent.CREATE, label);
+            }
+        }
+
+        public void retainLabels( SelectedLabels currentSelection, SelectedLabels nextSelection )
+        {
+            List<Label> removedLabels = new ArrayList<Label>( );
+            if (nextSelection == null)
+            {
+                for (LabelEntity labelEntity : labels())
+                {
+                    if (currentSelection.hasLabel( labelEntity ))
+                        removedLabels.add( labelEntity );
+                }
+            } else if (currentSelection == null)
+            {
+                // Do nothing
+            } else
+            {
+                for (LabelEntity labelEntity : labels())
+                {
+                    if (currentSelection.hasLabel( labelEntity ) && !nextSelection.hasLabel( labelEntity ))
+                        removedLabels.add( labelEntity );
+                }
+            }
+
+            // Remove any labels that should not be retained
+            for (Label removedLabel : removedLabels)
+            {
+                removeLabel(removedLabel);
             }
         }
 

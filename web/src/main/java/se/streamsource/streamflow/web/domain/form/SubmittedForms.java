@@ -66,13 +66,15 @@ public interface SubmittedForms
 
         public void submittedForm( DomainEvent event, SubmittedFormValue form )
         {
-            submittedForms().get().add( form );
+           List<SubmittedFormValue> forms = submittedForms().get();
+           forms.add( form );
+           submittedForms().set( forms );
 
             //Recalculate effective values
             ValueBuilder<EffectiveFieldValue> fieldBuilder = vbf.newValueBuilder( EffectiveFieldValue.class );
 
             LinkedHashMap<EntityReference, EffectiveFieldValue> effectiveValues = new LinkedHashMap<EntityReference, EffectiveFieldValue>( );
-            for (SubmittedFormValue submittedFormValue : submittedForms().get())
+            for (SubmittedFormValue submittedFormValue : forms)
             {
                 fieldBuilder.prototype().submissionDate().set( submittedFormValue.submissionDate().get() );
                 fieldBuilder.prototype().submitter().set( submittedFormValue.submitter().get() );

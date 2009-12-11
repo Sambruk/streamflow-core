@@ -17,19 +17,20 @@ package se.streamsource.streamflow.web.resource.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
-import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.form.FormQueries;
-import se.streamsource.streamflow.web.domain.organization.*;
+import se.streamsource.streamflow.web.domain.organization.Organization;
+import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.organization.OrganizationParticipationsQueries;
+import se.streamsource.streamflow.web.domain.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.tasktype.TaskTypes;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -41,7 +42,7 @@ public class OrganizationServerResource
     @Structure
     ValueBuilderFactory vbf;
 
-    public void describe(StringDTO stringValue)
+    public void changedescription(StringDTO stringValue)
     {
         String orgId = (String) getRequest().getAttributes().get("organization");
         Describable describable = uowf.currentUnitOfWork().get(Describable.class, orgId);
@@ -64,7 +65,7 @@ public class OrganizationServerResource
     {
         String orgId = getRequest().getAttributes().get("organization").toString();
 
-        OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
+        OwningOrganization ouq  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
         checkPermission(ouq);
 
         return ((OrganizationQueries)ouq.organization().get()).findUsers(query.string().get());
@@ -75,7 +76,7 @@ public class OrganizationServerResource
     {
         String orgId = getRequest().getAttributes().get("organization").toString();
 
-        OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
+        OwningOrganization ouq  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
         checkPermission(ouq);
 
         return ((OrganizationQueries)ouq.organization().get()).findGroups(query.string().get());
@@ -85,52 +86,17 @@ public class OrganizationServerResource
     {
         String orgId = getRequest().getAttributes().get("organization").toString();
 
-        OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
+        OwningOrganization ouq  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
         checkPermission(ouq);
 
         return ((OrganizationQueries)ouq.organization().get()).findProjects(query.string().get());
     }
 
-    public void move(EntityReferenceDTO moveValue) throws ResourceException
-    {
-        String ouId = (String) getRequest().getAttributes().get("organization");
-        OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
-        OrganizationalUnits toEntity = uowf.currentUnitOfWork().get(OrganizationalUnits.class, moveValue.entity().get().identity());
-
-        checkPermission(ou);
-
-        try
-        {
-            ou.moveOrganizationalUnit(toEntity);
-        } catch (MoveOrganizationalUnitException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
-        }
-    }
-
-    public void merge(EntityReferenceDTO moveValue) throws ResourceException
-    {
-        String ouId = (String) getRequest().getAttributes().get("organization");
-        OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
-        OrganizationalUnitRefactoring toEntity = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.class, moveValue.entity().get().identity());
-
-        checkPermission(ou);
-
-        try
-        {
-            ou.mergeOrganizationalUnit(toEntity);
-        } catch (MergeOrganizationalUnitException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
-        }
-    }
-
-
     public ListValue formDefinitions()
     {
         String ouId = (String) getRequest().getAttributes().get("organization");
 
-        OrganizationalUnitRefactoring.Data ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.Data.class, ouId);
+        OwningOrganization ou = uowf.currentUnitOfWork().get( OwningOrganization.class, ouId);
 
         FormQueries forms = (FormQueries) ou.organization().get();
 
@@ -157,6 +123,17 @@ public class OrganizationServerResource
         checkPermission(participants);
 
         return participants.nonParticipatingUsers();       
+    }
+
+    public ListValue taskTypes()
+    {
+        String orgId = (String) getRequest().getAttributes().get("organization");
+
+       TaskTypes taskTypes = uowf.currentUnitOfWork().get(TaskTypes.class, orgId);
+
+       checkPermission(taskTypes);
+
+       return taskTypes.taskTypeList();       
     }
 
     public void join(ListValue users)

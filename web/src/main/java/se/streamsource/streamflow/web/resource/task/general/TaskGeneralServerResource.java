@@ -34,6 +34,9 @@ import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.domain.task.DueOn;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskLabelsQueries;
+import se.streamsource.streamflow.web.domain.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.tasktype.TaskTypeQueries;
+import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -54,6 +57,7 @@ public class TaskGeneralServerResource
         setNegotiated(true);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
+
     public TaskGeneralDTO general()
     {
         UnitOfWork uow = uowf.currentUnitOfWork();
@@ -69,6 +73,15 @@ public class TaskGeneralServerResource
             labelsItemBuilder.prototype().description().set( label.getDescription());
             labelsBuilder.prototype().items().get().add( labelsItemBuilder.newInstance() );
 		}
+
+        TaskType taskType = task.taskType().get();
+        if (taskType != null)
+        {
+            ValueBuilder<ListItemValue> taskTypeBuilder = vbf.newValueBuilder( ListItemValue.class);
+            taskTypeBuilder.prototype().description().set( taskType.getDescription() );
+            taskTypeBuilder.prototype().entity().set( EntityReference.getEntityReference( taskType ) );
+            builder.prototype().taskType().set( taskTypeBuilder.newInstance() );
+        }
 
 		builder.prototype().labels().set(labelsBuilder.newInstance());
         builder.prototype().note().set(task.note().get());
@@ -129,5 +142,29 @@ public class TaskGeneralServerResource
         TaskLabelsQueries labels = uow.get(TaskLabelsQueries.class, id);
 
         return labels.possibleLabels();
+    }
+
+    public ListValue possibletasktypes()
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String id = (String) getRequest().getAttributes().get("task");
+        TaskTypeQueries task = uow.get( TaskTypeQueries.class, id );
+
+        return task.taskTypes();
+    }
+
+    public void changetasktype(EntityReferenceDTO dto)
+    {
+        UnitOfWork uow = uowf.currentUnitOfWork();
+        String id = (String) getRequest().getAttributes().get("task");
+        TypedTask task = uow.get( TypedTask.class, id );
+
+        EntityReference entityReference = dto.entity().get();
+        if (entityReference != null)
+        {
+            TaskType taskType = uow.get( TaskType.class, entityReference.identity() );
+            task.changeTaskType( taskType );
+        } else
+            task.changeTaskType( null );
     }
 }

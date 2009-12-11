@@ -21,8 +21,8 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.Icon;
@@ -84,7 +84,7 @@ public class TasksDetailView
 
     @Structure
     ObjectBuilderFactory obf;
-    private EventSourceListener subscriber;
+    private TransactionHandler subscriber;
 
     public TasksDetailView(@Service EventSource events)
     {
@@ -135,7 +135,11 @@ public class TasksDetailView
 
         tasks.put( task, detailView );
 
-        addTab( getTaskDescription( task ), detailView );
+        int currentIdx = indexOfComponent( detailView );
+        if (currentIdx != -1)
+            setTitleAt( currentIdx, getTaskDescription(task) );
+        else
+            addTab( getTaskDescription( task ), detailView );
     }
 
     private TaskDetailView getCurrentDetailView()

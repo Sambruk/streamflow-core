@@ -19,12 +19,10 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
-import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -32,43 +30,43 @@ import se.streamsource.streamflow.client.resource.users.search.SearchClientResou
 public class OrganizationalUnitClientResource
         extends CommandQueryClientResource
 {
-    public OrganizationalUnitClientResource(@Uses Context context, @Uses Reference reference)
+    public OrganizationalUnitClientResource( @Uses Context context, @Uses Reference reference )
     {
-        super(context, reference);
+        super( context, reference );
     }
 
-    public ProjectsClientResource projects() throws ResourceException
+    public Reference projects() throws ResourceException
     {
-        return getSubResource("projects", ProjectsClientResource.class);
+        return getReference().clone().addSegment( "projects" );
     }
 
     public GroupsClientResource groups() throws ResourceException
     {
-        return getSubResource("groups", GroupsClientResource.class);
-    }
-
-    public RolesClientResource roles() throws ResourceException
-    {
-        return getSubResource("roles", RolesClientResource.class);
-    }
-
-    public FormDefinitionsClientResource forms() throws ResourceException
-    {
-        return getSubResource("forms", FormDefinitionsClientResource.class);
+        return getSubResource( "groups", GroupsClientResource.class );
     }
 
     public AdministratorsClientResource administrators() throws ResourceException
     {
-        return getSubResource("administrators", AdministratorsClientResource.class);
+        return getSubResource( "administrators", AdministratorsClientResource.class );
     }
 
-    public OrganizationalUnitsClientResource organizationalUnits() throws ResourceException
+    public OrganizationalUnitsClientResource organizationalUnits()
     {
-        return getSubResource("organizationalunits", OrganizationalUnitsClientResource.class);
+        return getSubResource( "organizationalunits", OrganizationalUnitsClientResource.class );
     }
 
-    public SearchClientResource search()
+    public void changeDescription( StringDTO stringValue ) throws ResourceException
     {
-        return getSubResource("search", SearchClientResource.class);
+        putCommand( "changedescription", stringValue );
+    }
+
+    public void move( EntityReferenceDTO moveCommand ) throws ResourceException
+    {
+        postCommand( "move", moveCommand );
+    }
+
+    public void merge( EntityReferenceDTO mergeCommand ) throws ResourceException
+    {
+        postCommand( "merge", mergeCommand );
     }
 }

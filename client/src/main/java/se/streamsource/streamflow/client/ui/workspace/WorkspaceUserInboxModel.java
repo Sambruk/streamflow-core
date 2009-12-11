@@ -53,7 +53,7 @@ public class WorkspaceUserInboxModel
     public WorkspaceUserInboxModel(@Uses WorkspaceUserInboxClientResource resource, @Structure ObjectBuilderFactory obf)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(project_column_header), text(created_column_header), text(task_status_header)};
+        columnNames = new String[]{text( title_column_header ), text(project_column_header), text(created_column_header), text(task_status_header)};
         columnClasses = new Class[]{String.class, JComboBox.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, true, false, false};
 

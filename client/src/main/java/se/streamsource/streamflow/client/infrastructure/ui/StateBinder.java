@@ -49,6 +49,8 @@ public class StateBinder
     Map<Class<? extends Component>, Binder> binders = new HashMap<Class<? extends Component>, Binder>();
     Set<Binding> bindings = new HashSet<Binding>();
 
+    Set<Converter> converters = new HashSet<Converter>( );
+
     public StateBinder()
     {
         Binder defaultBinder = new DefaultBinder(this);
@@ -79,6 +81,11 @@ public class StateBinder
                 return Collections.enumeration(resourceMap.keySet());
             }
         };
+    }
+
+    public void addConverter(Converter converter)
+    {
+        converters.add( converter );
     }
 
     public void registerBinder(Binder binder, Class<? extends Component>... componentTypes)
@@ -239,8 +246,24 @@ public class StateBinder
 
             try
             {
-                Object value = property().get();
-                binder.updateComponent(component, value);
+                Object newValue = property().get();
+
+                if (newValue != null)
+                {
+                    // Try all converters
+                    Object convertedValue;
+                    for (Converter converter : converters)
+                    {
+                        convertedValue = converter.toComponent( newValue );
+                        if (convertedValue != newValue)
+                        {
+                            newValue = convertedValue;
+                            break;
+                        }
+                    }
+                }
+
+                binder.updateComponent(component, newValue);
             } catch (Exception e)
             {
                 stateBinder.handleException(component, e);
@@ -254,7 +277,20 @@ public class StateBinder
             if (objectProperty == null)
                 return;
 
-            // TODO Value conversion
+            if (newValue != null)
+            {
+                // Try all converters
+                Object convertedValue;
+                for (Converter converter : converters)
+                {
+                    convertedValue = converter.fromComponent( newValue );
+                    if (convertedValue != newValue)
+                    {
+                        newValue = convertedValue;
+                        break;
+                    }
+                }
+            }
 
             if (objectProperty.get() == null && newValue == null)
                 return;
@@ -300,7 +336,6 @@ public class StateBinder
 
         public Binding bind(Component component, Object property)
         {
-            // TODO Pluggable handlers
             final Binding binding = new Binding(this, component, property, stateBinder);
             if (component instanceof JTextField)
             {
@@ -481,5 +516,11 @@ public class StateBinder
 
             return result;
         }
+    }
+
+    public interface Converter
+    {
+        Object toComponent(Object value);
+        Object fromComponent(Object value);
     }
 }

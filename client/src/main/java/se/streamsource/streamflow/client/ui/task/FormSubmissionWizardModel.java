@@ -18,14 +18,13 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionsClientResource;
-import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 
-import javax.swing.*;
+import javax.swing.JButton;
 
 /**
  * JAVADOC
@@ -35,9 +34,6 @@ public class FormSubmissionWizardModel
 
     @Structure
     ObjectBuilderFactory obf;
-
-    @Uses
-    TaskFormDefinitionsClientResource resource;
 
     @Uses
     TaskSubmittedFormsClientResource submittedFormsResource;
@@ -50,7 +46,7 @@ public class FormSubmissionWizardModel
         protected FormSubmitModel newModel(String key)
         {
             return obf.newObjectBuilder(FormSubmitModel.class).
-                    use(resource.formDefinition(key)).newInstance();
+                    use(submittedFormsResource.formDefinition(key)).newInstance();
         }
     };
 

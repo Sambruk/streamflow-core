@@ -229,7 +229,9 @@ public class AccountModel
     public AdministrationModel administration()
     {
         if (administrationModel == null)
+        {
             administrationModel = obf.newObjectBuilder( AdministrationModel.class ).use( this, tasks() ).newInstance();
+        }
 
         return administrationModel;
     }

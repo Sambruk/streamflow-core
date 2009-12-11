@@ -21,6 +21,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -36,7 +37,7 @@ import java.util.List;
  */
 public class RolesModel
         extends AbstractListModel
-    implements EventListener
+    implements EventListener, Refreshable
 {
     @Structure
     ValueBuilderFactory vbf;

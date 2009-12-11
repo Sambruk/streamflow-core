@@ -28,7 +28,6 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Date;
 
 /**
  * Get events since a given date
@@ -49,13 +48,13 @@ public class EventsServerResource
     {
         String after = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "after" );
 
-        final Date afterDate = after == null ? null : new Date(Long.parseLong(after ));
+        final long afterDate = after == null ? 0 : Long.parseLong(after );
 
         WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_PLAIN )
         {
             public void write( final Writer writer ) throws IOException
             {
-                store.transactions( afterDate, new TransactionHandler()
+                store.transactionsAfter( afterDate, new TransactionHandler()
                 {
                     public boolean handleTransaction( TransactionEvents transaction )
                     {

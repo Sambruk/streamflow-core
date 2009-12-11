@@ -23,7 +23,6 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.form.Fields;
 import se.streamsource.streamflow.web.domain.form.FormTemplate;
 import se.streamsource.streamflow.web.domain.form.FormTemplates;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -39,9 +38,8 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
         UnitOfWork uow = uowf.currentUnitOfWork();
 
         String identity = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnitRefactoring.Data ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.Data.class, identity);
+        FormTemplates templates = uowf.currentUnitOfWork().get( FormTemplates.class, identity);
 
-        FormTemplates templates = ou.organization().get();
         checkPermission( templates );
 
         String formId = getRequest().getAttributes().get("template").toString();
@@ -66,7 +64,4 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
         return new ListValueBuilder(vbf).addDescribableItems( fields.fields()).newList();
     }
-
-
-
 }

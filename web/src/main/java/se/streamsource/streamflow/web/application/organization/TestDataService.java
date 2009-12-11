@@ -22,7 +22,7 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.FieldValue;
@@ -32,11 +32,16 @@ import se.streamsource.streamflow.web.domain.form.Field;
 import se.streamsource.streamflow.web.domain.form.Form;
 import se.streamsource.streamflow.web.domain.form.FormTemplates;
 import se.streamsource.streamflow.web.domain.group.Group;
+import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.organization.Organizations;
+import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.task.Task;
+import se.streamsource.streamflow.web.domain.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 import java.util.Date;
@@ -67,72 +72,115 @@ public interface TestDataService
 
             UserEntity user = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
 
-            OrganizationEntity ou = (OrganizationEntity) user.organizations().iterator().next();
-            ou.changeDescription("WayGroup");
+            Organizations orgs = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+
+            User testUser = orgs.createUser( "testuser", "testuser" );
+            User someUser = orgs.createUser( "someuser", "someuser" );
+
+            OrganizationEntity organization = (OrganizationEntity) user.organizations().iterator().next();
+            organization.changeDescription("WayGroup");
+
+            Label question = organization.createLabel( "Question" );
+            Label issueChase = organization.createLabel( "Issue chase" );
+            Label suggestion = organization.createLabel( "Suggestion" );
+
+            Label minor = organization.createLabel( "Minor" );
+            Label major = organization.createLabel( "Major" );
+            Label critical = organization.createLabel( "Critical" );
+
+            // Create task types
+            TaskType newFeature = organization.createTaskType( "New feature" );
+            TaskType bug = organization.createTaskType( "Bug" );
+            bug.addLabel( minor );
+            bug.addLabel( major );
+            bug.addLabel( critical );
+            TaskType improvement = organization.createTaskType( "Improvement" );
+            improvement.addLabel( minor );
+            improvement.addLabel( major );
+            TaskType passwordReset = organization.createTaskType( "Reset password" );
 
             // Create suborganizations
-            OrganizationalUnitRefactoring jayway = ou.createOrganizationalUnit("Jayway");
-            ou.createOrganizationalUnit("Dotway");
-            ou.createOrganizationalUnit("Realway");
+            OrganizationalUnit jayway = organization.createOrganizationalUnit("Jayway");
+            organization.createOrganizationalUnit("Dotway");
+            organization.createOrganizationalUnit("Realway");
 
             // Create groups
-            Group cc = ou.createGroup("Contact center");
-            ou.createGroup("Park management");
+            Group cc = jayway.createGroup("Contact center");
+            Group pm = jayway.createGroup("Park management");
 
             cc.addParticipant(user);
+            cc.addParticipant( someUser );
 
-            FormTemplates forms = (FormTemplates) ou;
+            pm.addParticipant( testUser );
+            pm.addParticipant( someUser );
 
-            ProjectRole agent = ou.createProjectRole("Agent");
-            ProjectRole manager = ou.createProjectRole("Manager");
+            FormTemplates forms = (FormTemplates) organization;
+
+            ProjectRole agent = organization.createProjectRole("Agent");
+            ProjectRole manager = organization.createProjectRole("Manager");
 
             // Create tasks
             for (int i = 0; i < 30; i++)
                 user.createTask().changeDescription("Arbetsuppgift " + i);
 
             // Create project
-            Project project = ou.createProject("Information query");
+            Project project = jayway.createProject("StreamFlow");
 
-            Form commentForm = project.createForm();
+            project.addSelectedTaskType( newFeature );
+            project.addSelectedTaskType( bug );
+            project.addSelectedTaskType( improvement );
+
+            Form commentForm = bug.createForm();
             commentForm.changeDescription( "CommentForm" );
             commentForm.changeNote("This is a comment form. Use it to capture any comments related to the current task.");
             ValueBuilder<FieldValue> builder = vbf.newValueBuilder(FieldValue.class);
             Field commentField = commentForm.createField( "Comment", builder.newInstance());
 
-            Form statusForm = project.createForm();
+            Form statusForm = bug.createForm();
             statusForm.changeDescription("StatusForm");
             statusForm.changeNote("This is the Status form. \nWhen urgencies occur please upgrade the status of the current task");
             Field statusField = statusForm.createField( "Status", builder.newInstance() );
 
-            ou.createFormTemplate( commentForm );
+            organization.createFormTemplate( commentForm );
 
-            Form addressForm = project.createForm();
+            Form addressForm = improvement.createForm();
             addressForm.changeDescription( "Address form" );
             addressForm.changeNote("Address form of the task");
             addressForm.createField( "Street", builder.newInstance() ).changeNote("Street of the address. Note that it must only be the the street name of the address not the number");
             addressForm.createField( "Zip code", builder.newInstance() ).changeNote("This is the ZIP code of the resident");
             addressForm.createField( "Town", builder.newInstance() ).changeNote("Town of the address.");
 
+           Form emailForm = passwordReset.createForm();
+           emailForm.changeDescription( "Reset password" );
+           emailForm.changeNote( "Reset password for a user" );
+           emailForm.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
+
             // Create labels
-            project.createLabel().changeDescription("Question");
-            project.createLabel().changeDescription("Issue chase");
-            project.createLabel().changeDescription("Suggestion");
+            project.addLabel( question );
+            project.addLabel(issueChase);
+            project.addLabel(suggestion);
 
             for (int i = 0; i < 50; i++)
-                project.createLabel().changeDescription("Label "+i);
+            {
+                Label label = organization.createLabel( "Label "+i  );
+                project.addLabel( label );
+            }
 
             project.addMember(user);
 
             // Create project
-            Project info2 = ou.createProject("Info query");
+            Project info2 = jayway.createProject("StreamForm");
+            info2.addSelectedTaskType( newFeature );
+            info2.addSelectedTaskType( bug );
+            info2.addSelectedTaskType( improvement );
 
             info2.addMember(cc);
             info2.addMember(user);
 
-            Project parks = ou.createProject("City parks");
-
-            parks.addMember(cc);
-            parks.addMember(user);
+            Project itSupport = jayway.createProject("IT support");
+            itSupport.addSelectedTaskType( passwordReset );
+            itSupport.addMember(cc);
+            itSupport.addMember(user);
 
             // Create tasks
             Task task = project.createTask();
@@ -154,7 +202,7 @@ public interface TestDataService
 
             // Create labels
             for (int i = 1; i < 10; i++)
-            user.createLabel().changeDescription("Label " + i);
+            user.createLabel( "Label " + i);
 
 
             uow.complete();

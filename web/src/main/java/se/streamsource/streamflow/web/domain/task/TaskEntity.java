@@ -23,6 +23,8 @@ import se.streamsource.streamflow.web.domain.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 import se.streamsource.streamflow.web.domain.project.AssignTaskIdSideEffect;
+import se.streamsource.streamflow.web.domain.tasktype.TaskTypeQueries;
+import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
 
 /**
  * JAVADOC
@@ -42,11 +44,16 @@ public interface TaskEntity
         Notable.Data,
         Ownable.Data,
         SubmittedForms.Data,
-        SubmittedFormsQueries,
         TaskStatus.Data,
         TaskId.Data,
         TaskQueries,
+        TypedTask.Data,
+
+        // Queries
+        SubmittedFormsQueries,
         TaskLabelsQueries,
+        TaskTypeQueries,
+
         DomainEntity
 {
 }

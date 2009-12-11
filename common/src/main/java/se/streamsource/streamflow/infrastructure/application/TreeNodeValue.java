@@ -24,7 +24,10 @@ import java.util.List;
 /**
  * Generic node in a tree. Each node
  * has a description, a reference to the entity,
- * and a list of childnodes.
+ * and a list of childnodes. A type also needs to be specified,
+ * since nodes can be of many different types in a tree, and the client
+ * may have to know which type it is. The type should typically come from
+ * an enumeration, rather than being a classname.
  */
 public interface TreeNodeValue
         extends ValueComposite
@@ -35,4 +38,6 @@ public interface TreeNodeValue
 
     @UseDefaults
     Property<List<TreeNodeValue>> children();
+
+    Property<String> nodeType();
 }

@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.task.TaskCommentsClientResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -32,7 +33,7 @@ import java.util.List;
  */
 public class TaskCommentsModel
         extends AbstractListModel
-    implements EventListener
+        implements EventListener, Refreshable
 {
     @Uses
     TaskCommentsClientResource commentsClientResource;

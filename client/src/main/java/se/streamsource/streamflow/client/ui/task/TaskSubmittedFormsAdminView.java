@@ -17,12 +17,14 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
 
-import javax.swing.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 
 /**
@@ -35,6 +37,7 @@ public class TaskSubmittedFormsAdminView
     ObjectBuilderFactory obf;
 
     private TaskSubmittedFormsView formsView;
+    public RefreshWhenVisible refresher;
 
     public TaskSubmittedFormsAdminView(@Uses final TaskSubmittedFormsView submittedFormsView,
                                        @Uses final TaskSubmittedFormView submittedFormView)

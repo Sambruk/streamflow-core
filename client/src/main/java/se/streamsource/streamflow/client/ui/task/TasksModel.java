@@ -43,13 +43,16 @@ public class TasksModel
         protected TaskModel newModel(String key)
         {
             TaskClientResource taskResource = tasksResource.task( key );
+
+            PossibleTaskTypesModel taskTypes = obf.newObjectBuilder( PossibleTaskTypesModel.class ).use( taskResource.general().getNext(), taskResource.general().getReference()).newInstance();
+
             return obf.newObjectBuilder( TaskModel.class).
                     use( taskResource,
                             taskResource.general(),
                             taskResource.comments(),
                             taskResource.contacts(),
                             taskResource.forms(),
-                            taskResource.formDefinitions()).newInstance();
+                            taskTypes).newInstance();
         }
     };
 

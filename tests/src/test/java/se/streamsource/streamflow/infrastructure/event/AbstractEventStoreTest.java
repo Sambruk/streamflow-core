@@ -27,13 +27,12 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
-
-import java.sql.Date;
 
 /**
  * JAVADOC
@@ -48,8 +47,9 @@ public abstract class AbstractEventStoreTest
         new EntityTestAssembler().assemble(module);
         module.addValues(TransactionEvents.class, DomainEvent.class);
         module.addServices( DomainEventFactoryService.class);
-        module.addObjects(getClass());
+        module.addObjects(getClass(), TimeService.class);
         module.addEntities(TestEntity.class);
+        module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
     }
 
     @Service
@@ -82,7 +82,7 @@ public abstract class AbstractEventStoreTest
     {
         final int[] count = new int[1];
 
-        eventStore.transactions(null, new TransactionHandler()
+        eventStore.transactionsAfter(0, new TransactionHandler()
         {
             public boolean handleTransaction( TransactionEvents transaction )
             {
@@ -101,7 +101,7 @@ public abstract class AbstractEventStoreTest
     {
         final int[] count = new int[1];
 
-        eventStore.transactions(null, new TransactionHandler()
+        eventStore.transactionsAfter(0, new TransactionHandler()
         {
             public boolean handleTransaction( TransactionEvents transaction )
             {
@@ -118,7 +118,7 @@ public abstract class AbstractEventStoreTest
     public void getEventsAfterDate()
     {
         TransactionTimestampFilter timestamp;
-        eventStore.transactions(null, timestamp = new TransactionTimestampFilter(0, new TransactionHandler()
+        eventStore.transactionsAfter(0, timestamp = new TransactionTimestampFilter(0, new TransactionHandler()
         {
             int count = 0;
             public boolean handleTransaction( TransactionEvents transaction )
@@ -132,7 +132,7 @@ public abstract class AbstractEventStoreTest
         final long lastTimeStamp = timestamp.lastTimestamp();
 
         final int[] count = new int[1];
-        eventStore.transactions(new Date(lastTimeStamp),new TransactionHandler()
+        eventStore.transactionsAfter(lastTimeStamp,new TransactionHandler()
         {
             public boolean handleTransaction( TransactionEvents transaction )
             {

@@ -43,7 +43,9 @@ public class AdministrationNode
         @Override
         protected AccountAdministrationNode newModel(AccountModel key)
         {
-            return obf.newObjectBuilder(AccountAdministrationNode.class).use(AdministrationNode.this, key).newInstance();
+            AccountAdministrationNode administrationNode = obf.newObjectBuilder( AccountAdministrationNode.class ).use( AdministrationNode.this, key ).newInstance();
+            administrationNode.refresh();
+            return administrationNode;
         }
     };
 

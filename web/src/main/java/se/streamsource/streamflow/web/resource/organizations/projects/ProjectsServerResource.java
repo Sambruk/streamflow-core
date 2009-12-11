@@ -24,14 +24,14 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /organizations/{organization}/projects
+ * /organizations/{organization}/organizationalunits/{ou}/projects
  */
 public class ProjectsServerResource
         extends CommandQueryServerResource
 {
     public ListValue projects()
     {
-        String identity = getRequest().getAttributes().get("organization").toString();
+        String identity = getRequest().getAttributes().get("ou").toString();
         Projects.Data projectsState = uowf.currentUnitOfWork().get( Projects.Data.class, identity);
 
         return new ListValueBuilder(vbf).addDescribableItems( projectsState.projects() ).newList();
@@ -39,7 +39,7 @@ public class ProjectsServerResource
 
     public void createProject(StringDTO name) throws ResourceException
     {
-        String identity = getRequest().getAttributes().get("organization").toString();
+        String identity = getRequest().getAttributes().get("ou").toString();
 
         UnitOfWork uow = uowf.currentUnitOfWork();
 

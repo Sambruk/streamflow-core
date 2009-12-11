@@ -16,17 +16,14 @@ package se.streamsource.streamflow.web.domain.task;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.domain.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.label.Labelable;
-import se.streamsource.streamflow.web.domain.label.Labels;
+import se.streamsource.streamflow.web.domain.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
 
 @Mixins(TaskLabelsQueries.Mixin.class)
 public interface TaskLabelsQueries
@@ -38,28 +35,23 @@ public interface TaskLabelsQueries
 	{
 		@This 
 		Ownable.Data ownable;
-		
+
+		@This
+		TypedTask.Data type;
+
 		@This 
 		Labelable.Data labelable;
 		
-		@Structure 
-		QueryBuilderFactory qbf;
-		
-		@Structure 
+		@Structure
 		ValueBuilderFactory vbf;
-		
-		@Structure 
-		UnitOfWorkFactory uowf;
 		
 		public ListValue possibleLabels()
         {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
             ListValueBuilder listBuilder = new ListValueBuilder(vbf);
 
-
-            if (ownable.owner().get() instanceof Labels)
+            if (ownable.owner().get() instanceof SelectedLabels)
             {
-                for (Label label : ((Labels.Data) ownable.owner().get()).labels())
+                for (Label label : ((SelectedLabels.Data) ownable.owner().get()).selectedLabels())
                 {
                     if (!labelable.labels().contains((LabelEntity) label))
                     {
@@ -67,6 +59,20 @@ public interface TaskLabelsQueries
                     }
                 }
             }
+
+            if (type.taskType().get() != null)
+            {
+                SelectedLabels.Data taskType = (SelectedLabels.Data) type.taskType().get();
+                for (Label label : taskType.selectedLabels())
+                {
+                    if (!labelable.labels().contains((LabelEntity) label))
+                    {
+                        listBuilder.addDescribable(label);
+                    }
+                }
+            }
+
+            // TODO Add from OU if owner is a Project
 
             return listBuilder.newList();
         }

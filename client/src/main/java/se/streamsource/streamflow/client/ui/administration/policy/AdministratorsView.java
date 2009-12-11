@@ -70,7 +70,7 @@ public class AdministratorsView
         toolbar.add(new JButton(getActionMap().get("remove")));
         add(toolbar, BorderLayout.SOUTH);
 
-        addAncestorListener(new RefreshWhenVisible(model));
+        addAncestorListener(new RefreshWhenVisible(model, this));
     }
 
     @Action

@@ -21,17 +21,22 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.IOException;
 
 /**
@@ -52,6 +57,7 @@ public class TaskCommentsView
 
     private TaskCommentsModel model;
     public JPanel comments;
+    public RefreshWhenVisible refresher;
 
     public TaskCommentsView(@Service ApplicationContext context)
     {
@@ -64,25 +70,10 @@ public class TaskCommentsView
 
         add(addComments, BorderLayout.NORTH);
         add(new JScrollPane(comments), BorderLayout.CENTER);
+
+        refresher = new RefreshWhenVisible( this );
+        addAncestorListener( refresher );
     }
-
-    @Override
-    public void setVisible(boolean aFlag)
-    {
-        super.setVisible(aFlag);
-
-        if (aFlag)
-        {
-            try
-            {
-                model.refresh();
-            } catch (Exception e)
-            {
-                throw new OperationException(TaskResources.could_not_refresh_comments, e);
-            }
-        }
-    }
-
 
     @Action
     public void addTaskComment() throws ResourceException, IOException
@@ -110,6 +101,8 @@ public class TaskCommentsView
 
             contentsChanged(null);
         }
+
+        refresher.setRefreshable( model );
     }
 
     public void intervalAdded(ListDataEvent e)

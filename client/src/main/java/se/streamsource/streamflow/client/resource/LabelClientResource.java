@@ -31,8 +31,8 @@ public class LabelClientResource
         super(context, reference);
     }
 
-    public void describe(StringDTO stringValue) throws ResourceException
+    public void changeDescription(StringDTO stringValue) throws ResourceException
     {
-        putCommand("describe", stringValue);
+        putCommand("changedescription", stringValue);
     }
 }

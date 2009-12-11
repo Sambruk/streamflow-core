@@ -53,9 +53,9 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionCollector;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
@@ -69,6 +69,7 @@ import java.security.AccessControlException;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.logging.Logger;
 
 /**
@@ -90,7 +91,7 @@ import java.util.logging.Logger;
  */
 public class CompositeCommandQueryServerResource
         extends BaseServerResource
-        implements EventSourceListener
+        implements TransactionHandler
 {
     @Uses
     TransientComposite composite;
@@ -278,7 +279,7 @@ public class CompositeCommandQueryServerResource
     {
         String operation = getOperation();
         UnitOfWork uow = null;
-        source.registerListener(this, false);
+        source.registerListener(this);
         try
         {
             Method method = getResourceMethod(operation);
@@ -423,12 +424,12 @@ public class CompositeCommandQueryServerResource
         return post(representation, variant);
     }
 
-    public void eventsAvailable(EventStore source)
-    {
-        TransactionCollector collector = new TransactionCollector();
-        source.transactions(null, collector);
-        transactions = collector.transactions();
-    }
+   public boolean handleTransaction( TransactionEvents transaction )
+   {
+      transactions = Collections.singletonList( transaction );
+
+      return true;
+   }
 
     private Method getResourceMethod(String operation)
             throws ResourceException

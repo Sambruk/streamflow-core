@@ -63,7 +63,7 @@ public class SelectOrganizationalUnitDialog
                     {
                         if (o instanceof AccountAdministrationNode)
                             return i18n.icon(Icons.account, i18n.ICON_24);
-                        else if (o instanceof OrganizationalStructureAdministrationNode)
+                        else if (o instanceof OrganizationalUnitAdministrationNode)
                             return i18n.icon(Icons.organization, i18n.ICON_24);
                         else
                             return NULL_ICON;
@@ -77,8 +77,8 @@ public class SelectOrganizationalUnitDialog
                             return "                            ";
                         else if (o instanceof AccountAdministrationNode)
                             return ((AccountAdministrationNode) o).accountModel().settings().name().get();
-                        else if (o instanceof OrganizationalStructureAdministrationNode)
-                            return ((OrganizationalStructureAdministrationNode) o).toString();
+                        else if (o instanceof OrganizationalUnitAdministrationNode)
+                            return ((OrganizationalUnitAdministrationNode) o).toString();
                         else
                             return "Unknown";
                     }
@@ -113,8 +113,8 @@ public class SelectOrganizationalUnitDialog
             }
         }
         
-        OrganizationalStructureAdministrationNode selected =
-                   (OrganizationalStructureAdministrationNode)tree.getSelectionPath().getLastPathComponent();
+        OrganizationalUnitAdministrationNode selected =
+                   (OrganizationalUnitAdministrationNode)tree.getSelectionPath().getLastPathComponent();
 
         target = selected.ou().entity().get();
 

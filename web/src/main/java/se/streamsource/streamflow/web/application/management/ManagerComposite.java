@@ -40,7 +40,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
@@ -130,7 +129,7 @@ public interface ManagerComposite
         public File exports;
         public File backup;
 
-        public EventSourceListener failedLoginListener;
+        public TransactionHandler failedLoginListener;
 
         public void activate() throws Exception
         {
@@ -265,7 +264,7 @@ public interface ManagerComposite
                 to = parseFormat.parse( toDate );
             }
 
-            File exportFile = exportEventsRange( compress, from, to );
+            File exportFile = exportEventsRange( compress, from.getTime(), to.getTime() );
 
             return "Events exported to:" + exportFile.getAbsolutePath();
         }
@@ -332,7 +331,7 @@ public interface ManagerComposite
                 if (eventReplayDate == null)
                     eventReplayDate = new Date(0);
 
-                eventPlayer.replayEvents( eventReplayDate );
+                eventPlayer.replayEvents( eventReplayDate.getTime() );
 
                 return "Backup restored successfully";
             } catch (Exception ex)
@@ -371,7 +370,7 @@ public interface ManagerComposite
             {
                 // Export events since last backup
                 Date lastBackup = getEventBackupDate(eventBackups[eventBackups.length-1]);
-                File exportFile = moveToBackup(exportEventsRange( true,  lastBackup, new Date() ));
+                File exportFile = moveToBackup(exportEventsRange( true,  lastBackup.getTime(), System.currentTimeMillis() ));
 
                 return "Event diff backup created:" + exportFile.getAbsolutePath();
             }
@@ -577,7 +576,7 @@ public interface ManagerComposite
             
             final IOException[] ex = new IOException[0];
 
-            eventStore.transactions( null, new TransactionHandler()
+            eventStore.transactionsAfter( 0, new TransactionHandler()
                 {
                     public boolean handleTransaction( TransactionEvents transaction )
                     {
@@ -605,7 +604,7 @@ public interface ManagerComposite
             return exportFile;
         }
 
-        private File exportEventsRange( boolean compress, Date from, final Date to )
+        private File exportEventsRange( boolean compress, long from, final long to )
                 throws IOException
         {
             SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
@@ -621,11 +620,11 @@ public interface ManagerComposite
 
             final IOException[] ex = new IOException[0];
 
-            eventStore.transactions( from , new TransactionHandler()
+            eventStore.transactionsAfter( from , new TransactionHandler()
             {
                 public boolean handleTransaction( TransactionEvents transaction )
                 {
-                    if (transaction.timestamp().get() > to.getTime())
+                    if (transaction.timestamp().get() > to)
                         return false;
 
                     try

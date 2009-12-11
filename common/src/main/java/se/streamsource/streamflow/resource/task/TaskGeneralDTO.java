@@ -17,6 +17,7 @@ package se.streamsource.streamflow.resource.task;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import java.util.Date;
@@ -29,6 +30,9 @@ public interface TaskGeneralDTO
 {
     @Optional
     Property<String> taskId();
+
+    @Optional
+    Property<ListItemValue> taskType();
 
     Property<ListValue> labels();
 

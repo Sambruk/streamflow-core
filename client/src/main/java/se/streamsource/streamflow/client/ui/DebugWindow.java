@@ -21,10 +21,9 @@ import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSourceListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 
@@ -38,7 +37,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class DebugWindow
     extends FrameView
-    implements EventSourceListener, EventHandler
+    implements TransactionHandler, EventHandler
 {
     public JXTable eventTable;
     public DefaultTableModel eventModel;
@@ -72,10 +71,12 @@ public class DebugWindow
         handler = new TransactionEventAdapter(this);
     }
 
-    public void eventsAvailable(EventStore source)
-    {
-        source.transactions( null, handler);
-    }
+   public boolean handleTransaction( TransactionEvents transaction )
+   {
+      handler.handleTransaction( transaction );
+
+      return true;
+   }
 
     public boolean handleEvent( DomainEvent event )
     {

@@ -25,7 +25,7 @@ import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
+import se.streamsource.streamflow.web.domain.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.role.Role;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -44,11 +44,11 @@ public class AdministratorsServerResource
         UnitOfWork unitOfWork = uowf.currentUnitOfWork();
 
         String identity = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnitRefactoring.Data ouState = unitOfWork.get( OrganizationalUnitRefactoring.Data.class, identity);
-        OrganizationEntity organization = (OrganizationEntity) ouState.organization().get();
+        OwningOrganization org = unitOfWork.get( OwningOrganization.class, identity);
+        OrganizationEntity organization = (OrganizationEntity) org.organization().get();
         Role adminRole = organization.roles().get(0);
 
-        RolePolicy.Data rolePolicy = (RolePolicy.Data) ouState;
+        RolePolicy.Data rolePolicy = (RolePolicy.Data) organization;
         List<EntityReference> admins = rolePolicy.participantsWithRole(adminRole);
         ListValueBuilder builder = new ListValueBuilder(vbf);
         for (EntityReference admin : admins)
@@ -81,10 +81,10 @@ public class AdministratorsServerResource
 
          String orgId = getRequest().getAttributes().get("organization").toString();
 
-         OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
-         checkPermission(ouq);
+         OwningOrganization organization  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
+         checkPermission(organization);
 
-         ListValue list = ((OrganizationQueries)ouq.organization().get()).findUsers(query.string().get());
+         ListValue list = ((OrganizationQueries)organization.organization().get()).findUsers(query.string().get());
 
          ListValue administrators = administrators();
 
@@ -103,14 +103,12 @@ public class AdministratorsServerResource
 
      public ListValue findGroups(StringDTO query) throws ResourceException
      {
-         UnitOfWork uow = uowf.currentUnitOfWork();
-
          String orgId = getRequest().getAttributes().get("organization").toString();
 
-         OrganizationalUnitRefactoring.Data ouq  = uowf.currentUnitOfWork().get(OrganizationalUnitRefactoring.Data.class, orgId);
-         checkPermission(ouq);
+         OwningOrganization organization  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
+         checkPermission(organization);
 
-         ListValue list = ((OrganizationQueries)ouq.organization().get()).findGroups(query.string().get());
+         ListValue list = ((OrganizationQueries)organization.organization().get()).findGroups(query.string().get());
 
          ListValue administrators = administrators();
 

@@ -14,17 +14,23 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.web.domain.user.User;
 
 import java.util.Date;
 
 /**
- * Role for recording the date of creation of the entity. The property should be
+ * Role for recording the date of creation and creator of the entity. These should be
  * set as a part of creating the entity.
  */
 public interface CreatedOn
 {
     @Immutable
     Property<Date> createdOn();
+
+    @Immutable @Optional
+    Association<User> createdBy();
 }

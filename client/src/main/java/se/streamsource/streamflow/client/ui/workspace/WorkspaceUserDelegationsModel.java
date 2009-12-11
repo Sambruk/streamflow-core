@@ -14,27 +14,21 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_done_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_from_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_on_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.description_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.task_status_header;
-
-import java.util.Date;
-
-import javax.swing.ImageIcon;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-
+import se.streamsource.streamflow.client.OperationException;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.WorkspaceUserDelegatedTaskClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.delegations.WorkspaceUserDelegationsClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
+
+import javax.swing.ImageIcon;
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -45,7 +39,7 @@ public class WorkspaceUserDelegationsModel
     public WorkspaceUserDelegationsModel(@Uses WorkspaceUserDelegationsClientResource resource)
     {
         super(resource);
-        columnNames = new String[]{text(description_column_header), text(delegated_from_header), text(delegated_on_header), text(task_status_header)};
+        columnNames = new String[]{text( title_column_header ), text(delegated_from_header), text(delegated_on_header), text(task_status_header)};
         columnClasses = new Class[]{String.class, String.class, Date.class, ImageIcon.class};
         columnEditable = new boolean[]{false, false, false, false};
     }
@@ -123,6 +117,27 @@ public class WorkspaceUserDelegationsModel
         }
 
         return; // Skip if don't know what is going on
+    }
+
+    public void completeTask(int idx)
+    {
+        try
+        {
+            TaskDTO taskValue = (TaskDTO) tasks.get(idx);
+            if (taskValue.status().get() == TaskStates.ACTIVE)
+            {
+                EntityReference task = taskValue.task().get();
+                getResource().task(task.identity()).done();
+
+                taskValue.status().set(TaskStates.COMPLETED);
+                fireTableCellUpdated(idx, 2);
+            }
+
+            setValueAt(true, idx, columnNames.length-1);
+        } catch (ResourceException e)
+        {
+            throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+        }
     }
 
     public void reject(int idx) throws ResourceException

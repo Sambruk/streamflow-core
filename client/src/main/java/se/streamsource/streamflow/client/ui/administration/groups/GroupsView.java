@@ -110,7 +110,7 @@ public class GroupsView
 
         if (dialog.name() != null)
         {
-            model.describe(groupList.getSelectedIndex(), dialog.name());
+            model.changeDescription(groupList.getSelectedIndex(), dialog.name());
         }
     }
 

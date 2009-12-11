@@ -21,10 +21,12 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.form.FormDefinitionsAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsAssembler;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.roles.RoleAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypeAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 
@@ -40,13 +42,18 @@ public class AdministrationAssembler
 
         module.addObjects(AdministrationNode.class,
                 AccountAdministrationNode.class,
-                OrganizationalStructureAdministrationNode.class);
+                OrganizationAdministrationNode.class,
+                OrganizationalUnitAdministrationNode.class,
+                OrganizationAdministrationModel.class);
 
         UIAssemblers.addViews(module,
                 AdministrationView.class);
         UIAssemblers.addMV(module,
                 OrganizationalUnitAdministrationModel.class,
                 OrganizationalUnitAdministrationView.class);
+        UIAssemblers.addMV(module,
+                OrganizationAdministrationModel.class,
+                OrganizationAdministrationView.class);
         UIAssemblers.addMV(module,
                 AdministrationModel.class,
                 AdministrationOutlineView.class);
@@ -63,10 +70,12 @@ public class AdministrationAssembler
         UIAssemblers.addModels(module, SelectOrganizationUsersDialogModel.class);
 
         // Other administration modules
+        new LabelsAssembler().assemble(module.layerAssembly().moduleAssembly("Labels"));
         new UserAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Users"));
         new OrganizationsAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Organizations"));
         new GroupAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Groups"));
         new ProjectAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Projects"));
+        new TaskTypeAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Task types"));
         new RoleAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Roles"));
         new FormDefinitionsAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Forms"));
         new AdministratorAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Administrators"));

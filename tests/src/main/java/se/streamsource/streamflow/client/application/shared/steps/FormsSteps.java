@@ -43,17 +43,17 @@ public class FormsSteps
     FormTemplatesSteps formTemplatesSteps;
 
     @Uses
-    ProjectsSteps projectSetupSteps;
+    TaskTypesSteps taskTypesSetupSteps;
 
     @Structure
     ValueBuilderFactory vbf;
 
     public FormEntity givenForm;
 
-    @Given("form named $form")
+   @Given("form named $form")
     public void givenForm(String form)
     {
-        givenForm = projectSetupSteps.givenProject.getFormByName( form );
+        givenForm = taskTypesSetupSteps.givenTaskType.getFormByName( form );
     }
 
     @When("a form named $name is created")
@@ -61,9 +61,9 @@ public class FormsSteps
     {
         try
         {
-            Forms projectForms = projectSetupSteps.givenProject;
+            Forms forms = taskTypesSetupSteps.givenTaskType;
 
-            givenForm = (FormEntity) projectForms.createForm( );
+            givenForm = (FormEntity) forms.createForm( );
             givenForm.changeDescription(name);
         } catch(Exception e)
         {
@@ -76,9 +76,9 @@ public class FormsSteps
     {
         try
         {
-            Forms projectForms = projectSetupSteps.givenProject;
+            Forms forms = taskTypesSetupSteps.givenTaskType;
 
-            projectForms.removeForm( givenForm );
+            forms.removeForm( givenForm );
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);

@@ -48,7 +48,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.labels.LabelsServerResource;
+import se.streamsource.streamflow.web.resource.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
@@ -78,7 +78,7 @@ public class UsersRouter
         attach("/workspace/projects/{project}/delegations/{task}", createServerResourceFinder(WorkspaceProjectDelegationsTaskServerResource.class));
         attach("/workspace/projects/{project}/waitingfor", createServerResourceFinder(WorkspaceProjectWaitingForServerResource.class));
         attach("/workspace/projects/{project}/waitingfor/{task}", createServerResourceFinder(WorkspaceProjectWaitingForTaskServerResource.class));
-        attach("/workspace/projects/{labels}/labels", createServerResourceFinder(LabelsServerResource.class));
+        attach("/workspace/projects/{labels}/labels", createServerResourceFinder( LabelsServerResource.class));
         attach("/workspace/user/inbox", createServerResourceFinder( WorkspaceUserInboxServerResource.class));
         attach("/workspace/user/inbox/{task}", createServerResourceFinder( WorkspaceUserInboxTaskServerResource.class));
         attach("/workspace/user/assignments", createServerResourceFinder( WorkspaceUserAssignmentsServerResource.class));

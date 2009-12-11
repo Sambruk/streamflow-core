@@ -16,8 +16,10 @@ package se.streamsource.streamflow.client.resource.task;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
+import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * Mapped to /task/<id>
@@ -54,10 +56,8 @@ public class TaskClientResource
         return forms;
     }
 
-    public TaskFormDefinitionsClientResource formDefinitions()
+    public ListValue possibleProjects() throws ResourceException
     {
-        TaskFormDefinitionsClientResource formDefinitions = getSubResource("formdefinitions", TaskFormDefinitionsClientResource.class);
-        formDefinitions.setRoot(this);
-        return formDefinitions;
+        return query( "possibleprojects", ListValue.class );
     }
 }

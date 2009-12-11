@@ -14,14 +14,10 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
-import org.qi4j.api.common.Optional;
-
-import java.util.Date;
-
 /**
  * Factory for DomainEvents
  */
 public interface DomainEventPlayer
 {
-    void replayEvents( @Optional Date afterDate) throws EventReplayException;
+    void replayEvents( long afterDate) throws EventReplayException;
 }

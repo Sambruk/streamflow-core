@@ -14,20 +14,31 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.StreamFlowResources;
-import se.streamsource.streamflow.client.infrastructure.ui.*;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
 
 /**
  * JAVADOC
@@ -60,7 +71,7 @@ public class ProjectsView
         popup.add(am.get("rename"));
 
         JScrollPane scrollPane = new JScrollPane();
-        projectList = new JListPopup(model, popup);
+        projectList = new JListPopup(new EventListModel<ListItemValue>(model.getProjectList()), popup);
         projectList.setCellRenderer(new ListItemListCellRenderer());
         scrollPane.setViewportView(projectList);
         add(scrollPane, BorderLayout.CENTER);
@@ -71,6 +82,8 @@ public class ProjectsView
         add(toolbar, BorderLayout.SOUTH);
 
         projectList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+
+        addAncestorListener( new RefreshWhenVisible(model, this) );
     }
 
     @Action
@@ -106,7 +119,7 @@ public class ProjectsView
 
         if (dialog.name() != null)
         {
-            model.describe(projectList.getSelectedIndex(), dialog.name());
+            model.changeDescription(projectList.getSelectedIndex(), dialog.name());
         }
     }
 

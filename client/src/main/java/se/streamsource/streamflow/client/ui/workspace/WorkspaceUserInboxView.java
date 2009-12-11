@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -25,11 +26,13 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemTableCellRenderer;
+import se.streamsource.streamflow.client.ui.task.TaskModel;
 import se.streamsource.streamflow.client.ui.task.TaskStatusTableCellRenderer;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
 import se.streamsource.streamflow.client.ui.task.TasksDetailView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -37,6 +40,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.table.TableColumn;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -46,6 +50,9 @@ public class WorkspaceUserInboxView
 {
     @Uses
     protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+
+    @Uses
+    protected ObjectBuilder<SelectUserOrProjectDialog2> userOrProjectSelectionDialog2;
 
     public void init(@Service ApplicationContext context,
             @Uses final TaskTableModel model,
@@ -130,10 +137,27 @@ public class WorkspaceUserInboxView
     @org.jdesktop.application.Action
     public void forwardTasks() throws ResourceException
     {
-        SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+        try
+        {
+            List<Integer> selected = getReverseSelectedTasks();
+            for (Integer row : selected)
+            {
+                TaskDTO dto = model.getTask( row );
+                TaskModel taskModel = model.task( dto.task().get().identity() );
 
-        dialogSelection = dialog.getSelected();
-        super.forwardTasks();
+                SelectUserOrProjectDialog2 dialog = userOrProjectSelectionDialog2.use( taskModel ).newInstance();
+                dialogs.showOkCancelHelpDialog(this, dialog);
+
+                EntityReference project = dialog.getSelected();
+                if (project != null)
+                {
+                    model.forward(row, project.identity());
+                    model.refresh();
+                }
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }

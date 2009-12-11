@@ -24,8 +24,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -36,7 +36,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -49,7 +49,7 @@ public class FormsModel
 
 {
     @Uses
-    ProjectFormDefinitionsClientResource formsResource;
+    CommandQueryClient client;
 
     @Structure
     ObjectBuilderFactory obf;
@@ -72,7 +72,7 @@ public class FormsModel
         {
             try
             {
-                ListValue value = formsResource.forms();
+                ListValue value = client.query( "forms", ListValue.class );
                 int index = 0;
                 for (ListItemValue listItemValue : value.items().get())
                 {
@@ -82,7 +82,8 @@ public class FormsModel
                     }
                     index++;
                 }
-                ProjectFormDefinitionClientResource resource = formsResource.form(index);
+
+                ProjectFormDefinitionClientResource resource = client.getSubResource( ""+index, ProjectFormDefinitionClientResource.class );
                 return obf.newObjectBuilder(FormModel.class).use(resource).newInstance();
             } catch (ResourceException e)
             {
@@ -106,7 +107,7 @@ public class FormsModel
     {
         try
         {
-            formsList = formsResource.forms().items().get();
+            formsList = client.query( "forms", ListValue.class ).items().get();
             fireContentsChanged( this, 0, getSize() );
         } catch (ResourceException e)
         {
@@ -120,7 +121,7 @@ public class FormsModel
         builder.prototype().string().set(formName);
         try
         {
-            formsResource.createForm(builder.newInstance());
+            client.postCommand( "createForm", builder.newInstance());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_add_form_definition, e);
@@ -133,7 +134,7 @@ public class FormsModel
         builder.prototype().entity().set(form);
         try
         {
-            formsResource.addForm(builder.newInstance());
+           client.postCommand( "addForm", builder.newInstance());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_add_form_definition, e);
@@ -146,7 +147,7 @@ public class FormsModel
         builder.prototype().entity().set(form);
         try
         {
-            formsResource.removeForm(builder.newInstance());
+           client.postCommand( "removeForm", builder.newInstance());
         } catch (ResourceException e)
         {
             throw new OperationException(AdministrationResources.could_not_remove_form_definition, e);

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
@@ -26,12 +27,11 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.util.Date;
-import java.util.Observable;
 
 /**
  * Model for the general info about a task.
  */
-public class TaskGeneralModel extends Observable implements Refreshable, EventListener,
+public class TaskGeneralModel implements Refreshable, EventListener,
 		EventHandler
 
 {
@@ -41,15 +41,20 @@ public class TaskGeneralModel extends Observable implements Refreshable, EventLi
 
 	TaskGeneralDTO general;
 
-    @Uses LabelsModel labelsModel;
+    @Uses
+    PossibleTaskTypesModel taskTypesModel;
 
-    @Uses LabelSelectionModel selectionModel;
+    @Uses
+    TaskLabelsModel taskLabelsModel;
+
+    @Uses
+    TaskLabelSelectionModel selectionModel;
 
     public TaskGeneralModel(@Uses TaskGeneralClientResource generalClientResource)
     {
         this.generalClientResource = generalClientResource;
         eventFilter = new EventHandlerFilter(generalClientResource.getRequest().getResourceRef().getParentRef().getLastSegment(), this, "addedLabel",
-                "removedLabel", "changedOwner");
+                "removedLabel", "changedOwner", "changedTaskType");
     }
 
     public TaskGeneralDTO getGeneral()
@@ -60,7 +65,7 @@ public class TaskGeneralModel extends Observable implements Refreshable, EventLi
 		return general;
 	}
 
-	public void describe(String newDescription)
+	public void changeDescription(String newDescription)
 	{
 		try
 		{
@@ -118,14 +123,31 @@ public class TaskGeneralModel extends Observable implements Refreshable, EventLi
 					e);
 		}
 	}
-	
-    public LabelsModel labelsModel()
+
+    public void changeTaskType( EntityReference taskType )
     {
-        return labelsModel;
+        try
+        {
+            generalClientResource.changeTaskType( taskType );
+        } catch (ResourceException e)
+        {
+            throw new OperationException(TaskResources.could_not_remove_label,
+                    e);
+        }
+    }
+
+    public PossibleTaskTypesModel taskTypesModel()
+    {
+        return taskTypesModel;
+    }
+
+    public TaskLabelsModel labelsModel()
+    {
+        return taskLabelsModel;
     }
 
 
-    public LabelSelectionModel selectionModel()
+    public TaskLabelSelectionModel selectionModel()
     {
         return selectionModel;
     }
@@ -137,7 +159,9 @@ public class TaskGeneralModel extends Observable implements Refreshable, EventLi
 			general = (TaskGeneralDTO) generalClientResource.general()
 					.buildWith().prototype();
 
-            labelsModel.setLabels(general.labels().get());
+            taskLabelsModel.setLabels(general.labels().get());
+
+            taskTypesModel.refresh();
 
             selectionModel.refresh();
             
@@ -151,7 +175,8 @@ public class TaskGeneralModel extends Observable implements Refreshable, EventLi
 	{
         eventFilter.handleEvent(event);
 
-        labelsModel.notifyEvent(event);
+        taskLabelsModel.notifyEvent(event);
+        selectionModel.notifyEvent(event);
 	}
 
 	public boolean handleEvent(DomainEvent event)
@@ -159,4 +184,5 @@ public class TaskGeneralModel extends Observable implements Refreshable, EventLi
         refresh();
 		return true;
 	}
+
 }

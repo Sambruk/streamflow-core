@@ -203,11 +203,9 @@ public class WorkspaceView
                     {
                         WorkspaceUserInboxNode userInboxNode = (WorkspaceUserInboxNode) node;
                         final WorkspaceUserInboxModel inboxModel = userInboxNode.inboxModel();
-                        final LabelsModel labelsModel = userInboxNode.getParent().labelsModel();
                         TasksModel tasksModel = model.getRoot().getUserObject().tasks();
                         view = obf.newObjectBuilder(WorkspaceUserInboxView.class).use(inboxModel,
                                 userInboxNode.getParent(),
-                                labelsModel,
                                 tasksModel ).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
@@ -215,7 +213,6 @@ public class WorkspaceView
                             protected Object doInBackground() throws Exception
                             {
                                 inboxModel.refresh();
-                                labelsModel.refresh();
 
                                 return null;
                             }
@@ -224,11 +221,9 @@ public class WorkspaceView
                     {
                         WorkspaceUserAssignmentsNode userAssignmentsNode = (WorkspaceUserAssignmentsNode) node;
                         final WorkspaceUserAssignmentsModel assignmentsModel = userAssignmentsNode.assignmentsModel();
-                        final LabelsModel labelsModel = userAssignmentsNode.getParent().labelsModel();
                         TasksModel tasksModel = model.getRoot().getUserObject().tasks();
                         view = obf.newObjectBuilder(WorkspaceUserAssignmentsView.class).use(assignmentsModel,
                                 userAssignmentsNode.getParent(),
-                                labelsModel,
                                 tasksModel ).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
@@ -236,7 +231,6 @@ public class WorkspaceView
                             protected Object doInBackground() throws Exception
                             {
                                 assignmentsModel.refresh();
-                                labelsModel.refresh();
 
                                 return null;
                             }
@@ -245,11 +239,9 @@ public class WorkspaceView
                     {
                         WorkspaceUserDelegationsNode userDelegationsNode = (WorkspaceUserDelegationsNode) node;
                         final WorkspaceUserDelegationsModel delegationsModel = userDelegationsNode.delegationsModel();
-                        final LabelsModel labelsModel = userDelegationsNode.getParent().labelsModel();
                         TasksModel tasksModel = model.getRoot().getUserObject().tasks();
                         view = obf.newObjectBuilder(WorkspaceUserDelegationsView.class).use(delegationsModel,
                                 userDelegationsNode.getParent(),
-                                labelsModel,
                                 tasksModel ).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
@@ -257,7 +249,6 @@ public class WorkspaceView
                             protected Object doInBackground() throws Exception
                             {
                                 delegationsModel.refresh();
-                                labelsModel.refresh();
 
                                 return null;
                             }
@@ -266,11 +257,9 @@ public class WorkspaceView
                     {
                         WorkspaceUserWaitingForNode userWaitingForNode = (WorkspaceUserWaitingForNode) node;
                         final WorkspaceUserWaitingForModel waitingForModel = userWaitingForNode.waitingForModel();
-                        final LabelsModel labelsModel = userWaitingForNode.getParent().labelsModel();
                         TasksModel tasksModel = model.getRoot().getUserObject().tasks();
                         view = obf.newObjectBuilder(WorkspaceUserWaitingForView.class).use(waitingForModel,
                                 userWaitingForNode.getParent(),
-                                labelsModel,
                                 tasksModel ).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
@@ -278,7 +267,6 @@ public class WorkspaceView
                             protected Object doInBackground() throws Exception
                             {
                                 waitingForModel.refresh();
-                                labelsModel.refresh();
 
                                 return null;
                             }
@@ -287,11 +275,9 @@ public class WorkspaceView
                     {
                         WorkspaceProjectInboxNode projectInboxNode = (WorkspaceProjectInboxNode) node;
                         final WorkspaceProjectInboxModel inboxModel = projectInboxNode.inboxModel();
-                        final LabelsModel labelsModel = projectInboxNode.getParent().labelsModel();
                         TasksModel tasksModel = model.getRoot().getUserObject().tasks();
                         view = obf.newObjectBuilder(WorkspaceProjectInboxView.class).use(inboxModel,
                                 projectInboxNode.getParent(),
-                                labelsModel,
                                 tasksModel ).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
@@ -299,7 +285,6 @@ public class WorkspaceView
                             protected Object doInBackground() throws Exception
                             {
                                 inboxModel.refresh();
-                                labelsModel.refresh();
 
                                 return null;
                             }
@@ -308,11 +293,9 @@ public class WorkspaceView
                     {
                         WorkspaceProjectAssignmentsNode projectAssignmentsNode = (WorkspaceProjectAssignmentsNode) node;
                         final WorkspaceProjectAssignmentsModel assignmentsModel = projectAssignmentsNode.assignmentsModel();
-                        final LabelsModel labelsModel = projectAssignmentsNode.getParent().labelsModel();
                         TasksModel tasksModel = model.getRoot().getUserObject().tasks();
                         view = obf.newObjectBuilder(WorkspaceProjectAssignmentsView.class).use(assignmentsModel,
                                 projectAssignmentsNode.getParent(),
-                                labelsModel,
                                 tasksModel ).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
@@ -320,7 +303,6 @@ public class WorkspaceView
                             protected Object doInBackground() throws Exception
                             {
                                 assignmentsModel.refresh();
-                                labelsModel.refresh();
 
                                 return null;
                             }
@@ -330,11 +312,9 @@ public class WorkspaceView
                     {
                         WorkspaceProjectDelegationsNode projectDelegationsNode = (WorkspaceProjectDelegationsNode) node;
                         final WorkspaceProjectDelegationsModel delegationsModel = projectDelegationsNode.delegationsModel();
-                        final LabelsModel labelsModel = projectDelegationsNode.getParent().labelsModel();
                         TasksModel tasksModel = model.getRoot().getUserObject().tasks();
                         view = obf.newObjectBuilder(WorkspaceProjectDelegationsView.class).use(delegationsModel,
                                 projectDelegationsNode.getParent(),
-                                labelsModel,
                                 tasksModel ).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
@@ -342,7 +322,6 @@ public class WorkspaceView
                             protected Object doInBackground() throws Exception
                             {
                                 delegationsModel.refresh();
-                                labelsModel.refresh();
 
                                 return null;
                             }
@@ -351,11 +330,9 @@ public class WorkspaceView
                     {
                         WorkspaceProjectWaitingForNode projectWaitingForNode = (WorkspaceProjectWaitingForNode) node;
                         final WorkspaceProjectWaitingForModel waitingForModel = projectWaitingForNode.waitingForModel();
-                        final LabelsModel labelsModel = projectWaitingForNode.getParent().labelsModel();
                         TasksModel tasksModel = model.getRoot().getUserObject().tasks();
                         view = obf.newObjectBuilder(WorkspaceProjectWaitingForView.class).use(waitingForModel,
                                 projectWaitingForNode.getParent(),
-                                labelsModel,
                                 tasksModel ).newInstance();
 
                         context.getTaskService().execute(new Task(context.getApplication())
@@ -363,7 +340,6 @@ public class WorkspaceView
                             protected Object doInBackground() throws Exception
                             {
                                 waitingForModel.refresh();
-                                labelsModel.refresh();
 
                                 return null;
                             }

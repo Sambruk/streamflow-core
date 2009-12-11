@@ -17,10 +17,12 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
  * JAVADOC
@@ -44,9 +46,7 @@ public class WorkspaceProjectAssignmentsView
         popup.add(dropAction);
         Action removeTaskAction = am.get("removeTasks");
         popup.add(removeTaskAction);
-        Action forwardTasks = am.get( "forwardTasks" );
-        popup.add( forwardTasks );
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, markTasksAsRead, markTasksAsUnread, forwardTasks, dropAction, removeTaskAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, markTasksAsRead, markTasksAsUnread, dropAction, removeTaskAction));
     }
 
     @Override
@@ -54,9 +54,10 @@ public class WorkspaceProjectAssignmentsView
     {
         addToolbarButton(toolbar, "createTask");
         Action acceptAction = addToolbarButton(toolbar, "completeTasks");
+        Action forwardTasks = addToolbarButton(toolbar, "forwardTasks");
         Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
         addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, delegateTasks, acceptAction));
+        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, forwardTasks, delegateTasks, acceptAction));
     }
 
     @Override

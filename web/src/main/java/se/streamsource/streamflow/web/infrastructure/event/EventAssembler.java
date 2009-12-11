@@ -19,9 +19,11 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.event.MemoryEventStoreService;
+import se.streamsource.streamflow.infrastructure.event.TimeService;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
@@ -36,6 +38,8 @@ public class EventAssembler
         module.addServices(EventSourceService.class).identifiedBy("eventsource").visibleIn(Visibility.application);
         module.addServices( DomainEventFactoryService.class).visibleIn( Visibility.application );
         module.addServices( CommandEventListenerService.class).visibleIn( Visibility.application );
+        module.addObjects( TimeService.class );
+        module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
 
         if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
             module.addServices(JdbmEventStoreService.class).identifiedBy("eventstore").visibleIn(Visibility.application);

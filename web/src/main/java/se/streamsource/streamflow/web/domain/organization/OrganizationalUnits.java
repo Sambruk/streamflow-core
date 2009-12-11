@@ -72,7 +72,7 @@ public interface OrganizationalUnits
         Roles.Data roles;
 
         @This
-        OrganizationalUnitRefactoring.Data ouState;
+        OwningOrganization orgOwner;
 
         @This
         OrganizationalUnits organizationalUnits;
@@ -108,7 +108,7 @@ public interface OrganizationalUnits
         public OrganizationalUnitEntity createdOrganizationalUnit(DomainEvent event, @Name("id") String id)
         {
             EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class, id);
-            ouBuilder.instance().organization().set(ouState.organization().get());
+            ouBuilder.instance().organization().set(orgOwner.organization().get());
             OrganizationalUnitEntity ou = ouBuilder.newInstance();
             return ou;
         }

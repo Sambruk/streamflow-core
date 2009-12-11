@@ -33,7 +33,6 @@ import se.streamsource.streamflow.infrastructure.json.JSONWriter;
 import javax.security.auth.Subject;
 import java.security.AccessController;
 import java.security.Principal;
-import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -56,8 +55,9 @@ public interface DomainEventFactoryService
         @Service
         IdentityGenerator idGenerator;
 
-        String
-        version;
+        @Service Time time;
+
+        String version;
 
         public void init(@Structure Application application)
         {
@@ -71,7 +71,7 @@ public interface DomainEventFactoryService
             DomainEvent prototype = builder.prototype();
             prototype.name().set( name );
             prototype.entityType().set( entity.type().getName() );
-            prototype.on().set( new Date() );
+            prototype.on().set( time.dateNow() );
             prototype.entity().set( entity.identity().get() );
 
             Subject subject = Subject.getSubject( AccessController.getContext() );

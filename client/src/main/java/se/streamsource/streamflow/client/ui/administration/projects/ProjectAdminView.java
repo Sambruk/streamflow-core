@@ -19,8 +19,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
-import se.streamsource.streamflow.client.ui.workspace.LabelsModel;
+import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JList;
@@ -65,16 +65,14 @@ public class ProjectAdminView
                     if (idx < list.getModel().getSize() && idx >= 0)
                     {
                         ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        ProjectMembersModel projectMembersModel = projectsModel.getProjectMembersModel(projectValue.entity().get().identity());
-                        LabelsModel projectLabelsModel = projectsModel.getLabelsModel(projectValue.entity().get().identity());
-                        FormsModel formsModel = projectsModel.getFormsModel(projectValue.entity().get().identity());
-                        projectMembersModel.refresh();
-                        projectLabelsModel.refresh();
-                        formsModel.refresh();
+                        ProjectModel projectModel = projectsModel.getProjectModel(projectValue.entity().get().identity());
+                        ProjectMembersModel membersModel = projectModel.getMembersModel();
+                        SelectedLabelsModel labelsModel = projectModel.getSelectedLabelsModel();
+                        SelectedTaskTypesModel selectedTaskTypes = projectModel.getSelectedTaskTypes();
                         ProjectView view = obf.newObjectBuilder(ProjectView.class).use(
-                                projectMembersModel,
-                                projectLabelsModel,
-                                formsModel,
+                                membersModel,
+                                labelsModel,
+                                selectedTaskTypes,
                                 organizationModel,
                                 adminView).newInstance();
                         setRightComponent(view);

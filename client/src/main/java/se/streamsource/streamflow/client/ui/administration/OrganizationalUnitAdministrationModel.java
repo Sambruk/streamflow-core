@@ -25,57 +25,43 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
-import se.streamsource.streamflow.client.ui.administration.form.FormDefinitionsModel;
+import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
-import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.JLabel;
-
 /**
  * JAVADOC
  */
 public class OrganizationalUnitAdministrationModel
-        implements Refreshable, EventListener
+        implements EventListener
 {
     @Structure
     ValueBuilderFactory vbf;
-
-    @Service
-    DialogService dialogs;
 
     @Service
     Application application;
 
     private GroupsModel groupsModel;
     private ProjectsModel projectsModel;
-    private RolesModel rolesModel;
-    private FormDefinitionsModel formsModel;
     private AdministratorsModel administratorsModel;
-    private OrganizationClientResource organization;
+    private OrganizationalUnitClientResource ou;
 
-    public OrganizationalUnitAdministrationModel(@Structure ObjectBuilderFactory obf, @Uses OrganizationClientResource organization) throws ResourceException
+    public OrganizationalUnitAdministrationModel( @Structure ObjectBuilderFactory obf, @Uses OrganizationalUnitClientResource ou ) throws ResourceException
     {
-        this.organization = organization;
-        groupsModel = obf.newObjectBuilder(GroupsModel.class).use(organization.groups()).newInstance();
-        projectsModel = obf.newObjectBuilder(ProjectsModel.class).use(organization.projects(), this).newInstance();
-        rolesModel = obf.newObjectBuilder(RolesModel.class).use(organization.roles()).newInstance();
-        formsModel = obf.newObjectBuilder(FormDefinitionsModel.class).use(organization.forms()).newInstance();
-        administratorsModel = obf.newObjectBuilder(AdministratorsModel.class).use(organization.administrators()).newInstance();
+        this.ou = ou;
+        groupsModel = obf.newObjectBuilder( GroupsModel.class ).use( ou.groups() ).newInstance();
+        projectsModel = obf.newObjectBuilder( ProjectsModel.class ).use( ou.getNext(), ou.projects(), this ).newInstance();
+        administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( ou.administrators() ).newInstance();
     }
 
-    public OrganizationClientResource getOrganization()
+    public OrganizationalUnitClientResource getOrganizationalUnit()
     {
-        return organization;
+        return ou;
     }
 
     public GroupsModel groupsModel()
@@ -88,116 +74,99 @@ public class OrganizationalUnitAdministrationModel
         return projectsModel;
     }
 
-    public RolesModel rolesModel()
-    {
-        return rolesModel;
-    }
-
-    public FormDefinitionsModel formsModel()
-    {
-        return formsModel;
-    }
-
     public AdministratorsModel administratorsModel()
     {
         return administratorsModel;
     }
 
-    public void refresh()
-    {
-        groupsModel.refresh();
-        projectsModel.refresh();
-        rolesModel.refresh();
-        formsModel.refresh();
-    }
-
-    public void describe(String newDescription)
+    public void changeDescription( String newDescription )
     {
         try
         {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(newDescription);
-            organization.describe(builder.newInstance());
+            ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+            builder.prototype().string().set( newDescription );
+            ou.changeDescription( builder.newInstance() );
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_rename_organization, e);
+            throw new OperationException( AdministrationResources.could_not_rename_organization, e );
         }
     }
 
-    public void createOrganizationalUnit(String name)
+    public void createOrganizationalUnit( String name )
     {
         try
         {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(name);
-            organization.organizationalUnits().createOrganizationalUnit(builder.newInstance());
+            ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+            builder.prototype().string().set( name );
+            ou.organizationalUnits().createOrganizationalUnit( builder.newInstance() );
         } catch (ResourceException e)
         {
-            throw new OperationException(AdministrationResources.could_not_create_new_organization, e);
+            throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
         }
     }
 
-    public void removeOrganizationalUnit(EntityReference id)
+    public void removeOrganizationalUnit( EntityReference id )
     {
         try
         {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-            builder.prototype().entity().set(id);
-            organization.organizationalUnits().removeOrganizationalUnit(builder.newInstance());
+            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+            builder.prototype().entity().set( id );
+            ou.organizationalUnits().removeOrganizationalUnit( builder.newInstance() );
         } catch (ResourceException e)
         {
-            if(Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
+            if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
             {
-                dialogs.showOkCancelHelpDialog(application.getContext().getFocusOwner(),
-                        new JLabel(i18n.text(AdministrationResources.could_not_remove_organisation_with_open_projects)));
+                throw new OperationException( AdministrationResources.could_not_remove_organisation_with_open_projects, e );
 
             } else
             {
-                throw new OperationException(AdministrationResources.could_not_remove_organization, e);
+                throw new OperationException( AdministrationResources.could_not_remove_organization, e );
             }
 
         }
     }
 
-    public void moveOrganizationalUnit(EntityReference toID)
+    public void moveOrganizationalUnit( EntityReference toID )
     {
-        try {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+        try
+        {
+            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
             EntityReferenceDTO dto = builder.prototype();
-            dto.entity().set(toID);
+            dto.entity().set( toID );
 
-            organization.move(builder.newInstance());
-        } catch (ResourceException e) {
-           if(Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
+            ou.move( builder.newInstance() );
+        } catch (ResourceException e)
+        {
+            if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
             {
-                dialogs.showOkCancelHelpDialog(application.getContext().getFocusOwner(),
-                        new JLabel(i18n.text(AdministrationResources.could_not_move_organisation_with_conflicts)));
+                throw new OperationException( AdministrationResources.could_not_move_organisation_with_conflicts, e );
 
             } else
             {
-                throw new OperationException(AdministrationResources.could_not_move_organization, e);
+                throw new OperationException( AdministrationResources.could_not_move_organization, e );
             }
         }
 
     }
 
-    public void mergeOrganizationalUnit(EntityReference toID)
+    public void mergeOrganizationalUnit( EntityReference toID )
     {
-        try {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+        try
+        {
+            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
             EntityReferenceDTO dto = builder.prototype();
-            dto.entity().set(toID);
+            dto.entity().set( toID );
 
-            organization.merge(builder.newInstance());
-        } catch (ResourceException e) {
-           if(Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
+            ou.merge( builder.newInstance() );
+        } catch (ResourceException e)
+        {
+            if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
             {
-                dialogs.showOkCancelHelpDialog(application.getContext().getFocusOwner(),
-                        new JLabel(i18n.text(AdministrationResources.could_not_merge_organisation_with_conflicts)));
+                throw new OperationException( AdministrationResources.could_not_merge_organisation_with_conflicts, e );
 
             } else
             {
-                throw new OperationException(AdministrationResources.could_not_merge_organization, e);
+                throw new OperationException( AdministrationResources.could_not_merge_organization, e );
             }
         }
 
@@ -205,11 +174,8 @@ public class OrganizationalUnitAdministrationModel
 
     public void notifyEvent( DomainEvent event )
     {
-        groupsModel.notifyEvent(event);
-        projectsModel.notifyEvent(event);
-        rolesModel.notifyEvent(event);
-        formsModel.notifyEvent(event);
-        administratorsModel.notifyEvent(event);
-
+        groupsModel.notifyEvent( event );
+        projectsModel.notifyEvent( event );
+        administratorsModel.notifyEvent( event );
     }
 }

@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 
 /**
  * JAVADOC
@@ -34,18 +35,20 @@ public class OrganizationalUnitsSteps
     @Uses
     OrganizationsSteps organizationsSteps;
 
+    public OrganizationalUnits givenOrganizationalUnits;
+
     public OrganizationalUnitEntity givenOu;
 
     @Given("the organization")
     public void givenOrganization()
     {
-        givenOu = organizationsSteps.givenOrganization;
+        givenOrganizationalUnits = organizationsSteps.givenOrganization;
     }
 
     @Given("organizational unit named $name")
     public void givenOU(String name)
     {
-        givenOu = (OrganizationalUnitEntity) givenOu.getOrganizationalUnitByName(name);
+        givenOu = (OrganizationalUnitEntity) ((OrganizationalUnits.Data)givenOrganizationalUnits).getOrganizationalUnitByName(name);
     }
 
     @When("an organizational unit named $name is created")
@@ -53,7 +56,7 @@ public class OrganizationalUnitsSteps
     {
         try
         {
-            givenOu = (OrganizationalUnitEntity) givenOu.createOrganizationalUnit(name);
+            givenOu = (OrganizationalUnitEntity) givenOrganizationalUnits.createOrganizationalUnit(name);
         } catch(Exception e)
         {
             genericSteps.setThrowable(e);
