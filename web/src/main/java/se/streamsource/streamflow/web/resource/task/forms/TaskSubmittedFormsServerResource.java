@@ -53,7 +53,7 @@ public class TaskSubmittedFormsServerResource
       getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
    }
 
-   public SubmittedFormsListDTO taskSubmittedForms()
+   public SubmittedFormsListDTO tasksubmittedforms()
    {
       String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
       SubmittedFormsQueries forms = uowf.currentUnitOfWork().get( SubmittedFormsQueries.class, formsQueryId );
@@ -61,7 +61,7 @@ public class TaskSubmittedFormsServerResource
       return forms.getSubmittedForms();
    }
 
-   public void submitForm( SubmitFormDTO submitDTO )
+   public void submitform( SubmitFormDTO submitDTO )
    {
       String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
       SubmittedForms forms = uowf.currentUnitOfWork().get( SubmittedForms.class, formsQueryId );
@@ -99,7 +99,7 @@ public class TaskSubmittedFormsServerResource
       return formsList;
    }
 
-   public EffectiveFieldsDTO effectiveFields()
+   public EffectiveFieldsDTO effectivefields()
    {
       String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
 

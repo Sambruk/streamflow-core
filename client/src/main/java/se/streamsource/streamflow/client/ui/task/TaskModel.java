@@ -18,6 +18,7 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.task.TaskClientResource;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -70,6 +71,11 @@ public class TaskModel
    public TaskFormsModel forms()
    {
       return forms;
+   }
+
+   public Reference formsReference()
+   {
+      return resource.forms();
    }
 
    public void notifyEvent( DomainEvent event )

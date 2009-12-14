@@ -33,50 +33,50 @@ import java.util.Map;
  * JAVADOC
  */
 public class FormsWizardPage
-    extends WizardPage
+      extends WizardPage
 {
-    public final static String SELECTED_FORM = "SELECTED_FORM";
+   public final static String SELECTED_FORM = "SELECTED_FORM";
 
-    public JList getFormList()
-    {
-        return formList;
-    }
+   public JList getFormList()
+   {
+      return formList;
+   }
 
-    private JList formList;
-    FormsListModel model;
+   private JList formList;
+   FormsListModel model;
 
-    public FormsWizardPage(@Service ApplicationContext context,
-                               @Uses FormsListModel model)
-    {
-        super(FormSubmitWizardController.FORMS_SELECTION_STEP
-              ,i18n.text(WorkspaceResources.form_select_description));
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
-        this.model = model;
-        model.refresh();
-        setLayout(new BorderLayout());
-        formList = new JList(model);
-        formList.setName(SELECTED_FORM);
-        formList.setCellRenderer(new ListItemListCellRenderer());
-        JScrollPane scroll = new JScrollPane();
-        scroll.setViewportView(formList);
-        add(scroll, BorderLayout.CENTER);
-        addAncestorListener(new RefreshWhenVisible(model, this));
-    }
+   public FormsWizardPage(@Service ApplicationContext context,
+                          @Uses FormsListModel model)
+   {
+      super(FormSubmitWizardController.FORMS_SELECTION_STEP
+            ,i18n.text(WorkspaceResources.form_select_description));
+      ActionMap am = context.getActionMap(this);
+      setActionMap(am);
+      this.model = model;
+      model.refresh();
+      setLayout(new BorderLayout());
+      formList = new JList(model);
+      formList.setName(SELECTED_FORM);
+      formList.setCellRenderer(new ListItemListCellRenderer());
+      JScrollPane scroll = new JScrollPane();
+      scroll.setViewportView(formList);
+      add(scroll, BorderLayout.CENTER);
+      addAncestorListener(new RefreshWhenVisible(model, this));
+   }
 
-    public FormsListModel getModel()
-    {
-        return model;
-    }
+   public FormsListModel getModel()
+   {
+      return model;
+   }
 
-    @Override
-    public WizardPanelNavResult allowNext(String s, Map map, Wizard wizard)
-    {
-        if (formList.getSelectedValue() == null)
-        {
-            setProblem(i18n.text(WorkspaceResources.select_form));
-            return WizardPanelNavResult.REMAIN_ON_PAGE;
-        }
-        return WizardPanelNavResult.PROCEED;
-    }
+   @Override
+   public WizardPanelNavResult allowNext(String s, Map map, Wizard wizard)
+   {
+      if (formList.getSelectedValue() == null)
+      {
+         setProblem(i18n.text(WorkspaceResources.select_form));
+         return WizardPanelNavResult.REMAIN_ON_PAGE;
+      }
+      return WizardPanelNavResult.PROCEED;
+   }
 }

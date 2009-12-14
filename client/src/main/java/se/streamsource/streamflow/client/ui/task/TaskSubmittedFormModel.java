@@ -18,7 +18,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.FieldDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
@@ -33,11 +33,11 @@ public class TaskSubmittedFormModel
 
    private SubmittedFormDTO form;
 
-   public TaskSubmittedFormModel( @Uses TaskSubmittedFormClientResource resource )
+   public TaskSubmittedFormModel( @Uses CommandQueryClient client )
    {
       try
       {
-         form = resource.form();
+         form = client.query( "form", SubmittedFormDTO.class );
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_get_submitted_form, e );

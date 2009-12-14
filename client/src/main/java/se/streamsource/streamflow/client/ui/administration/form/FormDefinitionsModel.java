@@ -24,8 +24,10 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionClientResource;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -47,14 +49,13 @@ public class FormDefinitionsModel
    ObjectBuilderFactory obf;
 
    @Uses
-   private FormDefinitionsClientResource forms;
+   CommandQueryClient client;
 
    WeakModelMap<String, FormDefinitionModel> formModels = new WeakModelMap<String, FormDefinitionModel>()
    {
       protected FormDefinitionModel newModel( String key )
       {
-         FormDefinitionClientResource formResource = forms.form( key );
-         return obf.newObjectBuilder( FormDefinitionModel.class ).use( formResource ).newInstance();
+         return obf.newObjectBuilder( FormDefinitionModel.class ).use( client.getSubClient( key ) ).newInstance();
       }
    };
 
@@ -76,7 +77,8 @@ public class FormDefinitionsModel
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( description );
-         forms.createForm( builder.newInstance() );
+
+         client.postCommand( "createForm", builder.newInstance() );
 
       } catch (ResourceException e)
       {
@@ -88,7 +90,7 @@ public class FormDefinitionsModel
    {
       try
       {
-         forms.form( id ).deleteCommand();
+         client.getSubClient( id ).deleteCommand();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_form, e );
@@ -99,7 +101,7 @@ public class FormDefinitionsModel
    {
       try
       {
-         list = forms.forms().items().get();
+         list = client.query( "forms", ListValue.class ).items().get();
          fireContentsChanged( this, 0, list.size() );
       } catch (ResourceException e)
       {

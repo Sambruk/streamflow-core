@@ -53,9 +53,9 @@ public class OrganizationClientResource
       return getSubResource( "roles", RolesClientResource.class );
    }
 
-   public FormDefinitionsClientResource forms() throws ResourceException
+   public Reference forms() throws ResourceException
    {
-      return getSubResource( "forms", FormDefinitionsClientResource.class );
+      return getReference().clone().addSegment( "forms" );
    }
 
    public AdministratorsClientResource administrators() throws ResourceException

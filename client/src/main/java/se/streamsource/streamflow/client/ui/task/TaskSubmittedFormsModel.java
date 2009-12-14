@@ -17,14 +17,16 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 
 import javax.swing.AbstractListModel;
 import java.util.Collections;
@@ -43,7 +45,7 @@ public class TaskSubmittedFormsModel
    ValueBuilderFactory vbf;
 
    @Uses
-   TaskSubmittedFormsClientResource taskSubmittedForms;
+   CommandQueryClient client;
 
    List<SubmittedFormListDTO> submittedForms = Collections.emptyList();
 
@@ -53,17 +55,12 @@ public class TaskSubmittedFormsModel
    {
       try
       {
-         submittedForms = taskSubmittedForms.taskSubmittedForms().forms().get();
+         submittedForms = client.query( "tasksubmittedforms", SubmittedFormsListDTO.class ).forms().get();
          fireContentsChanged( this, 0, getSize() );
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );
       }
-   }
-
-   public TaskSubmittedFormsClientResource getTaskSubmittedFormsClientResource()
-   {
-      return taskSubmittedForms;
    }
 
    public int getSize()
@@ -84,7 +81,7 @@ public class TaskSubmittedFormsModel
 
    public boolean handleEvent( DomainEvent event )
    {
-      if (taskSubmittedForms.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get() ))
+      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {
          Logger.getLogger( "workspace" ).info( "Refresh submitted forms" );
          refresh();
@@ -93,4 +90,9 @@ public class TaskSubmittedFormsModel
       return false;
    }
 
+   public Reference getReference()
+   {
+      
+      return client.getReference().clone();
+   }
 }

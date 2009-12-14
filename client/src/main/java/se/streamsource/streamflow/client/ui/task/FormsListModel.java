@@ -16,13 +16,17 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
+import org.restlet.data.Reference;
+import org.restlet.Context;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.AbstractListModel;
 import java.util.List;
@@ -33,54 +37,69 @@ public class FormsListModel
 {
    private List<ListItemValue> forms;
 
-    WeakModelMap<String, FormSubmitModel> formSubmitModels = new WeakModelMap<String, FormSubmitModel>()
-    {
-        @Override
-        protected FormSubmitModel newModel(String key)
-        {
-            return obf.newObjectBuilder(FormSubmitModel.class)
-                    .use(submittedFormsResource, resource.formDefinition(key)).newInstance();
-        }
-    };
+   WeakModelMap<String, FormSubmitModel> formSubmitModels = new WeakModelMap<String, FormSubmitModel>()
+   {
+      @Override
+      protected FormSubmitModel newModel(String key)
+      {
+         Reference ref = client.getReference().clone();
+         List<String> segments = ref.getSegments();
+         segments.remove( ref.getSegments().size() - 1 );
+         ref.setSegments( segments );
+         ref.addSegment( "formdefinitions" ).addSegment( key );
 
-    @Uses
-    TaskSubmittedFormsClientResource resource;
+         CommandQueryClient formDefinition = obf.newObjectBuilder( CommandQueryClient.class )
+               .use( client.getClient(), new Context(), ref ).newInstance();
 
-    @Uses
-    TaskSubmittedFormsClientResource submittedFormsResource;
+         List<ListItemValue> itemValues;
+         try
+         {
+            itemValues = formDefinition.query( "fields", ListValue.class ).items().get();
+         } catch (ResourceException e)
+         {
+            throw new OperationException(WorkspaceResources.could_not_get_form, e);
+         }
 
-    @Structure
-    ObjectBuilderFactory obf;
+         return obf.newObjectBuilder(FormSubmitModel.class)
+               .use(client, itemValues, EntityReference.parseEntityReference( key )).newInstance();
+      }
+   };
 
-    public void refresh() throws OperationException
-    {
-        try
-        {
-            forms = resource.applicableFormDefinitionList().items().get();
-            fireContentsChanged(this, 0, forms.size());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(WorkspaceResources.could_not_get_submitted_form, e);
-        }
-    }
+   @Uses
+   CommandQueryClient client;
+
+   @Structure
+   ObjectBuilderFactory obf;
+
+   public void refresh() throws OperationException
+   {
+      try
+      {
+         forms = client.query( "applicableforms", ListValue.class ).items().get();
+         fireContentsChanged(this, 0, forms.size());
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_get_submitted_form, e);
+      }
+   }
 
    public int getSize()
    {
       return forms.size();
    }
 
-    public Object getElementAt(int i)
-    {
-        return forms.get(i);
-    }
+   public Object getElementAt(int i)
+   {
+      return forms.get(i);
+   }
 
-    public List<ListItemValue> formsList()
-    {
-        return forms;
-    }
+   public List<ListItemValue> formsList()
+   {
+      return forms;
+   }
 
-    public FormSubmitModel getFormSubmitModel(String key)
-    {
-        return formSubmitModels.get(key);
-    }
+   public FormSubmitModel getFormSubmitModel(String key)
+   {
+      return formSubmitModels.get(key);
+   }
 }

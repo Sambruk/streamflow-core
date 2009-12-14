@@ -33,8 +33,6 @@ import java.awt.Dimension;
 public class TaskEffectiveFieldsValueView
       extends JPanel
 {
-   TaskEffectiveFieldsValueModel model;
-
    public ValueBuilder<ContactValue> valueBuilder;
    private JXTable effectiveValueTable;
    public RefreshWhenVisible refresher;
@@ -61,22 +59,7 @@ public class TaskEffectiveFieldsValueView
 
    public void setModel( TaskEffectiveFieldsValueModel model )
    {
-      this.model = model;
       effectiveValueTable.setModel( model );
       refresher.setRefreshable( model );
-   }
-
-
-   @Override
-   public void setVisible( boolean b )
-   {
-      super.setVisible( b );
-      if (b)
-      {
-         if (model != null)
-         {
-            model.refresh();
-         }
-      }
    }
 }

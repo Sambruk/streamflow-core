@@ -45,8 +45,7 @@ public class TaskDetailView
                           @Uses TaskGeneralView generalView,
                           @Uses TaskCommentsView commentsView,
                           @Uses TaskContactsAdminView contactsView,
-                          @Uses TaskFormsAdminView formsAdminView,
-                          @Structure ObjectBuilderFactory obf )
+                          @Uses TaskFormsAdminView formsAdminView )
    {
       super( JTabbedPane.BOTTOM );
 

@@ -59,7 +59,7 @@ public class OrganizationAdministrationModel
       rolesModel = obf.newObjectBuilder( RolesModel.class ).use( organization.roles() ).newInstance();
       labelsModel = obf.newObjectBuilder( LabelsModel.class ).use( organization.getNext(), organization.labels() ).newInstance();
       taskTypesModel = obf.newObjectBuilder( TaskTypesModel.class ).use( organization.getNext(), organization.taskTypes() ).newInstance();
-      formsModel = obf.newObjectBuilder( FormDefinitionsModel.class ).use( organization.forms() ).newInstance();
+      formsModel = obf.newObjectBuilder( FormDefinitionsModel.class ).use( organization.getNext(), organization.forms() ).newInstance();
       administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( organization.administrators() ).newInstance();
    }
 

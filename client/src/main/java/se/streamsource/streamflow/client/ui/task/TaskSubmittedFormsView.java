@@ -18,26 +18,25 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import org.netbeans.spi.wizard.Wizard;
 import org.netbeans.api.wizard.WizardDisplayer;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
 import javax.swing.ActionMap;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -93,7 +92,7 @@ public class TaskSubmittedFormsView
     public void add() throws IOException, ResourceException
     {
         FormsListModel formsListModel = obf.newObjectBuilder(FormsListModel.class)
-                .use(model.getTaskSubmittedFormsClientResource(), getResource()).newInstance();
+                .use(model.client).newInstance();
         FormSubmitWizardController wizardController = obf.newObjectBuilder(FormSubmitWizardController.class).
                 use(formsListModel).newInstance();
         Wizard wizard = wizardController.createWizard();
@@ -109,11 +108,6 @@ public class TaskSubmittedFormsView
    public JList getSubmittedFormsList()
    {
       return submittedForms;
-   }
-
-   public TaskSubmittedFormsClientResource getResource()
-   {
-      return model.getTaskSubmittedFormsClientResource();
    }
 
    @Override

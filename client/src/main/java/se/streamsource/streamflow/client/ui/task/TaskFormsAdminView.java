@@ -35,7 +35,6 @@ public class TaskFormsAdminView
    private TaskEffectiveFieldsValueView effectiveFieldsValueView;
    public RefreshWhenVisible refresher;
    public JTabbedPane tabs;
-   private TaskFormsModel model;
 
    public TaskFormsAdminView( @Uses TaskEffectiveFieldsValueView effectiveFieldsValueView,
                               @Uses TaskSubmittedFormsAdminView submittedFormsView )
@@ -66,7 +65,6 @@ public class TaskFormsAdminView
 
    public void setModel( TaskFormsModel model )
    {
-      this.model = model;
       refresher.setRefreshable( model );
 
       submittedFormsView.setModel( model.submittedForms() );

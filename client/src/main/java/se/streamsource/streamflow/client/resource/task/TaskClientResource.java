@@ -49,11 +49,9 @@ public class TaskClientResource
       return contacts;
    }
 
-   public TaskSubmittedFormsClientResource forms()
+   public Reference forms()
    {
-      TaskSubmittedFormsClientResource forms = getSubResource( "forms", TaskSubmittedFormsClientResource.class );
-      forms.setRoot( this );
-      return forms;
+      return getReference().clone().addSegment( "forms" );
    }
 
    public ListValue possibleProjects() throws ResourceException

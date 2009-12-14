@@ -20,13 +20,14 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
+import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.SimpleDateFormat;
@@ -56,7 +57,7 @@ public class TaskEffectiveFieldsValueModel
    ValueBuilderFactory vbf;
 
    @Uses
-   TaskSubmittedFormsClientResource taskSubmittedForms;
+   CommandQueryClient client;
 
    List<EffectiveFieldDTO> effectiveFields = Collections.emptyList();
 
@@ -66,16 +67,11 @@ public class TaskEffectiveFieldsValueModel
    {
       try
       {
-         effectiveFields = taskSubmittedForms.effectiveFields().effectiveFields().get();
+         effectiveFields = client.query( "effectivefields", EffectiveFieldsDTO.class ).effectiveFields().get();
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );
       }
-   }
-
-   public TaskSubmittedFormsClientResource getTaskSubmittedFormsClientResource()
-   {
-      return taskSubmittedForms;
    }
 
    public int getRowCount()
@@ -125,7 +121,7 @@ public class TaskEffectiveFieldsValueModel
 
    public boolean handleEvent( DomainEvent event )
    {
-      if (taskSubmittedForms.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get() ))
+      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {
          Logger.getLogger( "workspace" ).info( "Refresh effective field" );
          refresh();

@@ -18,7 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -35,6 +35,9 @@ public class TaskSubmittedFormsAdminView
 {
    @Structure
    ObjectBuilderFactory obf;
+
+   @Uses
+   CommandQueryClient client;
 
    private TaskSubmittedFormsView formsView;
    public RefreshWhenVisible refresher;
@@ -57,9 +60,8 @@ public class TaskSubmittedFormsAdminView
                int idx = submittedForms.getSelectedIndex();
                if (idx != -1)
                {
-                  TaskSubmittedFormsClientResource resource = submittedFormsView.getResource();
                   TaskSubmittedFormModel submittedFormModel = obf.newObjectBuilder(
-                        TaskSubmittedFormModel.class ).use( resource.taskSubmittedForm( idx ) ).newInstance();
+                        TaskSubmittedFormModel.class ).use( client.getSubClient( ""+idx ) ).newInstance();
                   submittedFormView.setModel( submittedFormModel );
                } else
                {

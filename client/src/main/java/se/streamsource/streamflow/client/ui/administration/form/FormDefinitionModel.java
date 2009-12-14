@@ -22,6 +22,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -41,7 +42,7 @@ public class FormDefinitionModel
    ValueBuilderFactory vbf;
 
    @Uses
-   private FormDefinitionClientResource form;
+   CommandQueryClient client;
 
    private List<ListItemValue> list;
 
@@ -62,8 +63,7 @@ public class FormDefinitionModel
          ValueBuilder<ListItemValue> builder = vbf.newValueBuilder( ListItemValue.class );
          builder.prototype().description().set( description );
          builder.prototype().entity().set( valueType );
-         form.createField( builder.newInstance() );
-
+         client.postCommand( "createfield", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_create_field, e );
@@ -74,7 +74,7 @@ public class FormDefinitionModel
    {
       try
       {
-         form.field( idx ).deleteCommand();
+         client.getSubClient(""+idx ).deleteCommand();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );

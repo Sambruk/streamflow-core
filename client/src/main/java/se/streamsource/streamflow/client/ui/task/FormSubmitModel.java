@@ -14,13 +14,11 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-            import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.task.TaskFormDefinitionClientResource;
-import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -32,48 +30,39 @@ import java.util.List;
  */
 public class FormSubmitModel
 {
-    private List<ListItemValue> fieldValues;
-    private EntityReference formEntityReference;
+   @Uses
+   List<ListItemValue> fieldValues;
 
-    @Uses
-    TaskSubmittedFormsClientResource submittedFormsResource;
+   @Uses
+   EntityReference formEntityReference;
 
-    public FormSubmitModel(@Uses TaskFormDefinitionClientResource form)
-    {
-        try
-        {
-            fieldValues = form.fields().items().get();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(WorkspaceResources.could_not_get_form, e);
-        }
-        formEntityReference = form.formEntityReference();
-    }
+   @Uses
+   CommandQueryClient client;
 
-    public List<ListItemValue> fieldsForPage(String pageId)
-    {
-        // find field in page with id
-        return fieldValues;
-    }
+   public List<ListItemValue> fieldsForPage(String pageId)
+   {
+      // find field in page with id
+      return fieldValues;
+   }
 
-    public List<ListItemValue> fields()
-    {
-        return fieldValues;
-    }
+   public List<ListItemValue> fields()
+   {
+      return fieldValues;
+   }
 
-    public EntityReference formEntityReference()
-    {
-        return formEntityReference;
-    }
+   public EntityReference formEntityReference()
+   {
+      return formEntityReference;
+   }
 
-    public void submit(SubmitFormDTO submitFormDTO)
-    {
-        try
-        {
-            submittedFormsResource.submitForm(submitFormDTO);
-        } catch (ResourceException e)
-        {
-            throw new OperationException(WorkspaceResources.could_not_submit_form, e);
-        }
-    }
+   public void submit(SubmitFormDTO submitFormDTO)
+   {
+      try
+      {
+         client.postCommand( "submitform", submitFormDTO);
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_submit_form, e);
+      }
+   }
 }
