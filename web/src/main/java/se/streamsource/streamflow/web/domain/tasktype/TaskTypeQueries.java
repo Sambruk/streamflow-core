@@ -35,75 +35,75 @@ import se.streamsource.streamflow.web.domain.task.Owner;
 @Mixins(TaskTypeQueries.Mixin.class)
 public interface TaskTypeQueries
 {
-    ListValue taskTypes();
+   ListValue taskTypes();
 
-    ListValue possibleProjects();
+   ListValue possibleProjects();
 
-    class Mixin
-        implements TaskTypeQueries
-    {
-        @Structure
-        ValueBuilderFactory vbf;
+   class Mixin
+         implements TaskTypeQueries
+   {
+      @Structure
+      ValueBuilderFactory vbf;
 
-        @This
-        Ownable.Data ownable;
+      @This
+      Ownable.Data ownable;
 
-        @This
-        TypedTask.Data typedTask;
+      @This
+      TypedTask.Data typedTask;
 
-        public ListValue taskTypes()
-        {
-            Owner owner = ownable.owner().get();
-            if (owner instanceof OrganizationParticipations)
+      public ListValue taskTypes()
+      {
+         Owner owner = ownable.owner().get();
+         if (owner instanceof OrganizationParticipations)
+         {
+            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
+
+            ValueBuilder<ListValue> builder = vbf.newValueBuilder( ListValue.class );
+
+            for (Organization organization : orgs.organizations())
             {
-                OrganizationParticipations.Data orgs = (OrganizationParticipations.Data)owner;
-
-                ValueBuilder<ListValue> builder = vbf.newValueBuilder( ListValue.class );
-
-                for (Organization organization : orgs.organizations())
-                {
-                    builder.prototype().items().get().addAll( organization.taskTypeList().items().get() );
-                }
-
-                return builder.newInstance();
-            } else if (owner instanceof OwningOrganizationalUnit.Data)
-            {
-                OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
-                OrganizationalUnit ou = ouOwner.organizationalUnit().get();
-                Organization org = ((OwningOrganization)ou).organization().get();
-                return org.taskTypeList();
-            } else
-            {
-                return vbf.newValue( ListValue.class );
+               builder.prototype().items().get().addAll( organization.taskTypeList().items().get() );
             }
-        }
 
-        public ListValue possibleProjects()
-        {
-            Owner owner = ownable.owner().get();
-            if (owner instanceof OrganizationParticipations)
+            return builder.newInstance();
+         } else if (owner instanceof OwningOrganizationalUnit.Data)
+         {
+            OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
+            OrganizationalUnit ou = ouOwner.organizationalUnit().get();
+            Organization org = ((OwningOrganization) ou).organization().get();
+            return org.taskTypeList();
+         } else
+         {
+            return vbf.newValue( ListValue.class );
+         }
+      }
+
+      public ListValue possibleProjects()
+      {
+         Owner owner = ownable.owner().get();
+         if (owner instanceof OrganizationParticipations)
+         {
+            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
+
+            ValueBuilder<ListValue> builder = vbf.newValueBuilder( ListValue.class );
+
+            for (Organization organization : orgs.organizations())
             {
-                OrganizationParticipations.Data orgs = (OrganizationParticipations.Data)owner;
-
-                ValueBuilder<ListValue> builder = vbf.newValueBuilder( ListValue.class );
-
-                for (Organization organization : orgs.organizations())
-                {
-                    builder.prototype().items().get().addAll( organization.possibleProjects( typedTask.taskType().get() ).items().get() );
-                }
-
-                return builder.newInstance();
-            } else if (owner instanceof OwningOrganizationalUnit.Data)
-            {
-                OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
-                OrganizationalUnit ou = ouOwner.organizationalUnit().get();
-                Organization org = ((OwningOrganization)ou).organization().get();
-
-                return org.possibleProjects( typedTask.taskType().get());
-            } else
-            {
-                return vbf.newValue( ListValue.class );
+               builder.prototype().items().get().addAll( organization.possibleProjects( typedTask.taskType().get() ).items().get() );
             }
-        }
-    }
+
+            return builder.newInstance();
+         } else if (owner instanceof OwningOrganizationalUnit.Data)
+         {
+            OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
+            OrganizationalUnit ou = ouOwner.organizationalUnit().get();
+            Organization org = ((OwningOrganization) ou).organization().get();
+
+            return org.possibleProjects( typedTask.taskType().get() );
+         } else
+         {
+            return vbf.newValue( ListValue.class );
+         }
+      }
+   }
 }

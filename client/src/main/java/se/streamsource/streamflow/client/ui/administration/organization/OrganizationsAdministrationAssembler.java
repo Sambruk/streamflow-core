@@ -20,16 +20,16 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 public class OrganizationsAdministrationAssembler
-    implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        UIAssemblers.addViews(module, OrganizationsTabbedView.class,
-                OrganizationsAdminView.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addViews( module, OrganizationsTabbedView.class,
+            OrganizationsAdminView.class );
 
-        UIAssemblers.addMV(module, OrganizationsModel.class,
-                OrganizationsView.class);
-        UIAssemblers.addMV(module, OrganizationUsersModel.class,
-                OrganizationUsersView.class);
-    }
+      UIAssemblers.addMV( module, OrganizationsModel.class,
+            OrganizationsView.class );
+      UIAssemblers.addMV( module, OrganizationUsersModel.class,
+            OrganizationUsersView.class );
+   }
 }

@@ -18,15 +18,15 @@ package se.streamsource.streamflow.client.ui.menu;
  * Tasks menu
  */
 public class EditMenu
-        extends AbstractMenu
+      extends AbstractMenu
 {
-    protected void init()
-    {
-        menu("editMenu",
-                "cut",
-                "copy",
-                "paste",
-                "---",
-                "find");
-    }
+   protected void init()
+   {
+      menu( "editMenu",
+            "cut",
+            "copy",
+            "paste",
+            "---",
+            "find" );
+   }
 }

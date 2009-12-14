@@ -14,76 +14,76 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.HTML;
 import javax.swing.text.MutableAttributeSet;
-import java.io.StringReader;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLEditorKit;
 import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * This class is able to extract the first h3 heading from a html body tag.
  */
 public class HtmlErrorMessageExtractor extends HTMLEditorKit.ParserCallback
 {
-    boolean body = false;
-    boolean grabHeading = false;
+   boolean body = false;
+   boolean grabHeading = false;
 
-    String heading = "";
+   String heading = "";
 
-    public static String parse(String msg)
-    {
-        HTMLEditorKit.Parser parser = new HtmlParserGetter().getParser();
-        HtmlErrorMessageExtractor extractor = new HtmlErrorMessageExtractor();
-        try
-        {
-            parser.parse(new StringReader(msg), extractor, true);
-        } catch (IOException e1)
-        {
-            // do nothing
-        }
+   public static String parse( String msg )
+   {
+      HTMLEditorKit.Parser parser = new HtmlParserGetter().getParser();
+      HtmlErrorMessageExtractor extractor = new HtmlErrorMessageExtractor();
+      try
+      {
+         parser.parse( new StringReader( msg ), extractor, true );
+      } catch (IOException e1)
+      {
+         // do nothing
+      }
 
-        return extractor.getHeading();
-    }
+      return extractor.getHeading();
+   }
 
-    @Override
-    public void handleText(char[] data, int pos)
-    {
-        if(body && grabHeading)
-        {
-            heading = new String(data);
-        }
-    }
+   @Override
+   public void handleText( char[] data, int pos )
+   {
+      if (body && grabHeading)
+      {
+         heading = new String( data );
+      }
+   }
 
-    @Override
-    public void handleStartTag(HTML.Tag t, MutableAttributeSet a, int pos)
-    {
-        if(t == HTML.Tag.BODY)
-        {
-            body = true;
-        }
+   @Override
+   public void handleStartTag( HTML.Tag t, MutableAttributeSet a, int pos )
+   {
+      if (t == HTML.Tag.BODY)
+      {
+         body = true;
+      }
 
-        if(body && t == HTML.Tag.H3)
-        {
-            grabHeading = true;
-        }
-    }
+      if (body && t == HTML.Tag.H3)
+      {
+         grabHeading = true;
+      }
+   }
 
-    @Override
-    public void handleEndTag(HTML.Tag t, int pos)
-    {
-        if(t == HTML.Tag.BODY)
-        {
-            body = false;
-        }
+   @Override
+   public void handleEndTag( HTML.Tag t, int pos )
+   {
+      if (t == HTML.Tag.BODY)
+      {
+         body = false;
+      }
 
-        if(body && t == HTML.Tag.H3)
-        {
-            grabHeading = false;
-        }
-    }
+      if (body && t == HTML.Tag.H3)
+      {
+         grabHeading = false;
+      }
+   }
 
-    public String getHeading()
-    {
-        return heading;
-    }
+   public String getHeading()
+   {
+      return heading;
+   }
 }

@@ -28,8 +28,17 @@ import se.streamsource.streamflow.client.resource.task.TaskSubmittedFormsClientR
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
@@ -37,47 +46,48 @@ import java.text.SimpleDateFormat;
  * JAVADOC
  */
 public class TaskSubmittedFormsView
-        extends JPanel
+      extends JPanel
 {
-    private TaskSubmittedFormsModel model;
-    private JXList submittedForms;
+   private TaskSubmittedFormsModel model;
+   private JXList submittedForms;
 
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    private SimpleDateFormat formatter = new SimpleDateFormat(i18n.text(WorkspaceResources.date_format));
+   private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_format ) );
 
-    public TaskSubmittedFormsView(@Service ApplicationContext context)
-    {
-        super(new BorderLayout());
+   public TaskSubmittedFormsView( @Service ApplicationContext context )
+   {
+      super( new BorderLayout() );
 
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
-        setMinimumSize(new Dimension(150, 0));
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
+      setMinimumSize( new Dimension( 150, 0 ) );
 
-        submittedForms = new JXList();
-        submittedForms.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)
-            {
-                SubmittedFormListDTO listDTO = (SubmittedFormListDTO) o;
-                String dateString = formatter.format(listDTO.submissionDate().get());
-                String listItem = dateString + ":" + listDTO.form().get() + " (" + listDTO.submitter().get() +")";
-                return super.getListCellRendererComponent(jList, listItem, i, b, b1);
-            }
-        });
-        JScrollPane submittedFormsScollPane = new JScrollPane();
-        submittedFormsScollPane.setViewportView(submittedForms);
+      submittedForms = new JXList();
+      submittedForms.setCellRenderer( new DefaultListCellRenderer()
+      {
+         @Override
+         public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
+         {
+            SubmittedFormListDTO listDTO = (SubmittedFormListDTO) o;
+            String dateString = formatter.format( listDTO.submissionDate().get() );
+            String listItem = dateString + ":" + listDTO.form().get() + " (" + listDTO.submitter().get() + ")";
+            return super.getListCellRendererComponent( jList, listItem, i, b, b1 );
+         }
+      } );
+      JScrollPane submittedFormsScollPane = new JScrollPane();
+      submittedFormsScollPane.setViewportView( submittedForms );
 
-        add(submittedFormsScollPane, BorderLayout.CENTER);
+      add( submittedFormsScollPane, BorderLayout.CENTER );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("add")));
-        add(toolbar, BorderLayout.SOUTH);
-    }
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( am.get( "add" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
+   }
 
     @org.jdesktop.application.Action
     public void add() throws IOException, ResourceException
@@ -90,32 +100,32 @@ public class TaskSubmittedFormsView
         WizardDisplayer.showWizard(wizard);
     }
 
-    public void setModel(TaskSubmittedFormsModel model)
-    {
-        this.model = model;
-        submittedForms.setModel(model);
-    }
+   public void setModel( TaskSubmittedFormsModel model )
+   {
+      this.model = model;
+      submittedForms.setModel( model );
+   }
 
-    public JList getSubmittedFormsList()
-    {
-        return submittedForms;
-    }
+   public JList getSubmittedFormsList()
+   {
+      return submittedForms;
+   }
 
-    public TaskSubmittedFormsClientResource getResource()
-    {
-        return model.getTaskSubmittedFormsClientResource();
-    }
+   public TaskSubmittedFormsClientResource getResource()
+   {
+      return model.getTaskSubmittedFormsClientResource();
+   }
 
-    @Override
-    public void setVisible(boolean b)
-    {
-        super.setVisible(b);
-        if (b)
-        {
-            if (model != null)
-            {
-                model.refresh();
-            }
-        }
-    }
+   @Override
+   public void setVisible( boolean b )
+   {
+      super.setVisible( b );
+      if (b)
+      {
+         if (model != null)
+         {
+            model.refresh();
+         }
+      }
+   }
 }

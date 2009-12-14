@@ -32,36 +32,36 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @AppliesTo(EventPropertyChangedMixin.EventPropertyChangeAppliesTo.class)
 public class EventPropertyChangedMixin
-        implements InvocationHandler
+      implements InvocationHandler
 {
-    private static Map<Method, Method> methodMappings = new ConcurrentHashMap<Method, Method>();
+   private static Map<Method, Method> methodMappings = new ConcurrentHashMap<Method, Method>();
 
-    @State
-    StateHolder state;
+   @State
+   StateHolder state;
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-    {
-        Method propertyMethod = methodMappings.get(method);
-        if (propertyMethod == null)
-        {
-            // Find property method
-            String propName = Introspector.decapitalize( method.getName().substring( "changed".length() ));
-            propertyMethod = method.getDeclaringClass().getMethod( propName );
-            methodMappings.put(method, propertyMethod);
-        }
+   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   {
+      Method propertyMethod = methodMappings.get( method );
+      if (propertyMethod == null)
+      {
+         // Find property method
+         String propName = Introspector.decapitalize( method.getName().substring( "changed".length() ) );
+         propertyMethod = method.getDeclaringClass().getMethod( propName );
+         methodMappings.put( method, propertyMethod );
+      }
 
-        // Update property
-        state.getProperty(propertyMethod).set(args[1]);
+      // Update property
+      state.getProperty( propertyMethod ).set( args[1] );
 
-        return null;
-    }
+      return null;
+   }
 
-    public static class EventPropertyChangeAppliesTo
-            implements AppliesToFilter
-    {
-        public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
-        {
-            return method.getParameterTypes().length == 2 && method.getParameterTypes()[0].equals(DomainEvent.class) && method.getName().startsWith("changed");
-        }
-    }
+   public static class EventPropertyChangeAppliesTo
+         implements AppliesToFilter
+   {
+      public boolean appliesTo( Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass )
+      {
+         return method.getParameterTypes().length == 2 && method.getParameterTypes()[0].equals( DomainEvent.class ) && method.getName().startsWith( "changed" );
+      }
+   }
 }

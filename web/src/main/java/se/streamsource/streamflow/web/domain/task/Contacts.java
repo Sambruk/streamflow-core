@@ -31,72 +31,74 @@ import java.util.List;
 @Mixins(Contacts.Mixin.class)
 public interface Contacts
 {
-    public void addContact(ContactValue newContact);
+   public void addContact( ContactValue newContact );
 
-    public void updateContact(int index, ContactValue contact);
+   public void updateContact( int index, ContactValue contact );
 
-    public void deleteContact(int index);
+   public void deleteContact( int index );
 
-    interface Data
-    {
-        @UseDefaults
-        Property<List<ContactValue>> contacts();
+   interface Data
+   {
+      @UseDefaults
+      Property<List<ContactValue>> contacts();
 
-        void addedContact(DomainEvent event, ContactValue newContact);
-        void updatedContact(DomainEvent event, int index, ContactValue contact);
-        void deletedContact(DomainEvent event, int index);
-    }
+      void addedContact( DomainEvent event, ContactValue newContact );
 
-    abstract class Mixin
-            implements Contacts, Data
-    {
-        @This
-        Data state;
+      void updatedContact( DomainEvent event, int index, ContactValue contact );
 
-        @Structure
-        ValueBuilderFactory vbf;
+      void deletedContact( DomainEvent event, int index );
+   }
 
-        public void addContact(ContactValue newContact)
-        {
-            addedContact(DomainEvent.CREATE, newContact);
-        }
+   abstract class Mixin
+         implements Contacts, Data
+   {
+      @This
+      Data state;
 
-        public void updateContact(int index, ContactValue contact)
-        {
-            if (contacts().get().size() > index)
-            {
-                updatedContact(DomainEvent.CREATE, index, contact);
-            }
-        }
+      @Structure
+      ValueBuilderFactory vbf;
 
-        public void deleteContact(int index)
-        {
-            if (contacts().get().size() > index)
-            {
-                deletedContact(DomainEvent.CREATE, index);
-            }
-        }
+      public void addContact( ContactValue newContact )
+      {
+         addedContact( DomainEvent.CREATE, newContact );
+      }
 
-        public void addedContact(DomainEvent event, ContactValue newContact)
-        {
-            List<ContactValue> contacts = state.contacts().get();
-            contacts.add(newContact);
-            state.contacts().set(contacts);
-        }
+      public void updateContact( int index, ContactValue contact )
+      {
+         if (contacts().get().size() > index)
+         {
+            updatedContact( DomainEvent.CREATE, index, contact );
+         }
+      }
 
-        public void updatedContact(DomainEvent event, int index, ContactValue contact)
-        {
-            List<ContactValue> contacts = state.contacts().get();
-            contacts.set(index, contact);
-            state.contacts().set(contacts);
-        }
+      public void deleteContact( int index )
+      {
+         if (contacts().get().size() > index)
+         {
+            deletedContact( DomainEvent.CREATE, index );
+         }
+      }
 
-        public void deletedContact(DomainEvent event, int index)
-        {
-            List<ContactValue> contacts = state.contacts().get();
-            contacts.remove(index);
-            state.contacts().set(contacts);
-        }
-    }
+      public void addedContact( DomainEvent event, ContactValue newContact )
+      {
+         List<ContactValue> contacts = state.contacts().get();
+         contacts.add( newContact );
+         state.contacts().set( contacts );
+      }
+
+      public void updatedContact( DomainEvent event, int index, ContactValue contact )
+      {
+         List<ContactValue> contacts = state.contacts().get();
+         contacts.set( index, contact );
+         state.contacts().set( contacts );
+      }
+
+      public void deletedContact( DomainEvent event, int index )
+      {
+         List<ContactValue> contacts = state.contacts().get();
+         contacts.remove( index );
+         state.contacts().set( contacts );
+      }
+   }
 
 }

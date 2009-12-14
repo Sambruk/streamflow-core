@@ -26,15 +26,15 @@ import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
  * Mapped to /task/{id}/forms/{index}
  */
 public class TaskSubmittedFormClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public TaskSubmittedFormClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public TaskSubmittedFormClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public SubmittedFormDTO form() throws ResourceException
-    {
-        return query("form", SubmittedFormDTO.class);
-    }
+   public SubmittedFormDTO form() throws ResourceException
+   {
+      return query( "form", SubmittedFormDTO.class );
+   }
 }

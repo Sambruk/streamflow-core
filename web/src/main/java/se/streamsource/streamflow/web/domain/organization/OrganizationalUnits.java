@@ -36,122 +36,125 @@ import se.streamsource.streamflow.web.domain.role.Roles;
 @Mixins(OrganizationalUnits.Mixin.class)
 public interface OrganizationalUnits
 {
-    OrganizationalUnit createOrganizationalUnit(@MaxLength(50) String name);
+   OrganizationalUnit createOrganizationalUnit( @MaxLength(50) String name );
 
-    void addOrganizationalUnit( OrganizationalUnit ou);
+   void addOrganizationalUnit( OrganizationalUnit ou );
 
-    void removeOrganizationalUnit( OrganizationalUnit ou);
+   void removeOrganizationalUnit( OrganizationalUnit ou );
 
-    interface Data
-    {
-        @Aggregated
-        ManyAssociation<OrganizationalUnit> organizationalUnits();
+   interface Data
+   {
+      @Aggregated
+      ManyAssociation<OrganizationalUnit> organizationalUnits();
 
-        OrganizationalUnitEntity createdOrganizationalUnit(DomainEvent event, @Name("id") String id);
-        void removedOrganizationalUnit(DomainEvent create, OrganizationalUnit ou);
-        void addedOrganizationalUnit(DomainEvent event, OrganizationalUnit ou);
+      OrganizationalUnitEntity createdOrganizationalUnit( DomainEvent event, @Name("id") String id );
 
-        OrganizationalUnits getParent( OrganizationalUnit ou);
+      void removedOrganizationalUnit( DomainEvent create, OrganizationalUnit ou );
 
-        OrganizationalUnit getOrganizationalUnitByName(String name);
-    }
+      void addedOrganizationalUnit( DomainEvent event, OrganizationalUnit ou );
 
-    abstract class Mixin
-            implements OrganizationalUnits, Data
-    {
-        @Service
-        IdentityGenerator idGenerator;
+      OrganizationalUnits getParent( OrganizationalUnit ou );
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      OrganizationalUnit getOrganizationalUnitByName( String name );
+   }
 
-        @This
-        RolePolicy policy;
+   abstract class Mixin
+         implements OrganizationalUnits, Data
+   {
+      @Service
+      IdentityGenerator idGenerator;
 
-        @This
-        Roles.Data roles;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @This
-        OwningOrganization orgOwner;
+      @This
+      RolePolicy policy;
 
-        @This
-        OrganizationalUnits organizationalUnits;
-        
-        public OrganizationalUnit createOrganizationalUnit(String name)
-        {
-            OrganizationalUnitEntity ou = createdOrganizationalUnit(DomainEvent.CREATE, idGenerator.generate(OrganizationalUnitEntity.class));
-            addOrganizationalUnit(ou);
-            ou.changeDescription(name);
+      @This
+      Roles.Data roles;
 
-            // Add current user as administrator
-            ou.grantAdministratorToCurrentUser();
+      @This
+      OwningOrganization orgOwner;
 
-            return ou;
-        }
+      @This
+      OrganizationalUnits organizationalUnits;
 
-        public void addOrganizationalUnit( OrganizationalUnit ou)
-        {
-            if (organizationalUnits().contains(ou)) {
-                return;
-            }
-            addedOrganizationalUnit(DomainEvent.CREATE, ou);
-        }
+      public OrganizationalUnit createOrganizationalUnit( String name )
+      {
+         OrganizationalUnitEntity ou = createdOrganizationalUnit( DomainEvent.CREATE, idGenerator.generate( OrganizationalUnitEntity.class ) );
+         addOrganizationalUnit( ou );
+         ou.changeDescription( name );
 
-        public void removeOrganizationalUnit( OrganizationalUnit ou)
-        {
-            if (!organizationalUnits().contains(ou))
-                return; // OU is not a sub-OU of this OU
+         // Add current user as administrator
+         ou.grantAdministratorToCurrentUser();
 
-            removedOrganizationalUnit(DomainEvent.CREATE, ou);
-        }
+         return ou;
+      }
 
-        public OrganizationalUnitEntity createdOrganizationalUnit(DomainEvent event, @Name("id") String id)
-        {
-            EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder(OrganizationalUnitEntity.class, id);
-            ouBuilder.instance().organization().set(orgOwner.organization().get());
-            OrganizationalUnitEntity ou = ouBuilder.newInstance();
-            return ou;
-        }
+      public void addOrganizationalUnit( OrganizationalUnit ou )
+      {
+         if (organizationalUnits().contains( ou ))
+         {
+            return;
+         }
+         addedOrganizationalUnit( DomainEvent.CREATE, ou );
+      }
 
-        public void removedOrganizationalUnit(DomainEvent create, OrganizationalUnit ou)
-        {
-            organizationalUnits().remove(ou);
-        }
+      public void removeOrganizationalUnit( OrganizationalUnit ou )
+      {
+         if (!organizationalUnits().contains( ou ))
+            return; // OU is not a sub-OU of this OU
 
-        public void addedOrganizationalUnit(DomainEvent event, OrganizationalUnit ou)
-        {
-            organizationalUnits().add(organizationalUnits().count(), ou);
-        }
+         removedOrganizationalUnit( DomainEvent.CREATE, ou );
+      }
+
+      public OrganizationalUnitEntity createdOrganizationalUnit( DomainEvent event, @Name("id") String id )
+      {
+         EntityBuilder<OrganizationalUnitEntity> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder( OrganizationalUnitEntity.class, id );
+         ouBuilder.instance().organization().set( orgOwner.organization().get() );
+         OrganizationalUnitEntity ou = ouBuilder.newInstance();
+         return ou;
+      }
+
+      public void removedOrganizationalUnit( DomainEvent create, OrganizationalUnit ou )
+      {
+         organizationalUnits().remove( ou );
+      }
+
+      public void addedOrganizationalUnit( DomainEvent event, OrganizationalUnit ou )
+      {
+         organizationalUnits().add( organizationalUnits().count(), ou );
+      }
 
 
-        public OrganizationalUnits getParent( OrganizationalUnit ou)
-        {
-            if (organizationalUnits().contains(ou))
-            {
-                return organizationalUnits;
-            } else
-            {
-                for (OrganizationalUnit organizationalUnit : organizationalUnits())
-                {
-                    Data state = (Data) organizationalUnit;
-                    OrganizationalUnits parent = state.getParent(ou);
-                    if (parent != null)
-                    {
-                        return parent;
-                    }
-                }
-            }
-            return null;
-        }
-
-        public OrganizationalUnit getOrganizationalUnitByName( String name )
-        {
+      public OrganizationalUnits getParent( OrganizationalUnit ou )
+      {
+         if (organizationalUnits().contains( ou ))
+         {
+            return organizationalUnits;
+         } else
+         {
             for (OrganizationalUnit organizationalUnit : organizationalUnits())
             {
-                if (((Describable.Data)organizationalUnit).description().get().equals(name))
-                    return organizationalUnit;
+               Data state = (Data) organizationalUnit;
+               OrganizationalUnits parent = state.getParent( ou );
+               if (parent != null)
+               {
+                  return parent;
+               }
             }
-            throw new IllegalArgumentException(name);
-        }
-    }
+         }
+         return null;
+      }
+
+      public OrganizationalUnit getOrganizationalUnitByName( String name )
+      {
+         for (OrganizationalUnit organizationalUnit : organizationalUnits())
+         {
+            if (((Describable.Data) organizationalUnit).description().get().equals( name ))
+               return organizationalUnit;
+         }
+         throw new IllegalArgumentException( name );
+      }
+   }
 }

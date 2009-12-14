@@ -19,14 +19,14 @@ package se.streamsource.streamflow.infrastructure.event.source;
  */
 public interface EventStore
 {
-    /**
-     * Get list of event transactions after the given timestamp. If they are on the exact same timestamp, they will not be included.
-     *
-     * The method uses the visitor pattern, so a handler is sent in which is given each transaction, one at a time.
-     *
-     * @param afterTimestamp
-     * @param handler
-     * @return
-     */
-    void transactionsAfter(long afterTimestamp, TransactionHandler handler);
+   /**
+    * Get list of event transactions after the given timestamp. If they are on the exact same timestamp, they will not be included.
+    * <p/>
+    * The method uses the visitor pattern, so a handler is sent in which is given each transaction, one at a time.
+    *
+    * @param afterTimestamp
+    * @param handler
+    * @return
+    */
+   void transactionsAfter( long afterTimestamp, TransactionHandler handler );
 }

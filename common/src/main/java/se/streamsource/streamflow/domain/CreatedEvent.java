@@ -21,5 +21,5 @@ import org.qi4j.api.property.Property;
  */
 public interface CreatedEvent
 {
-    Property<String> createdId();
+   Property<String> createdId();
 }

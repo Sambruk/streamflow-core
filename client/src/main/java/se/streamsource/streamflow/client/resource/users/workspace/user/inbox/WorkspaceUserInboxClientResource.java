@@ -30,20 +30,20 @@ import java.util.List;
  * JAVADOC
  */
 public class WorkspaceUserInboxClientResource
-        extends TaskListClientResource<WorkspaceUserInboxTaskClientResource>
+      extends TaskListClientResource<WorkspaceUserInboxTaskClientResource>
 {
-    public WorkspaceUserInboxClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference, WorkspaceUserInboxTaskClientResource.class);
-    }
+   public WorkspaceUserInboxClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference, WorkspaceUserInboxTaskClientResource.class );
+   }
 
-    public List<InboxTaskDTO> tasks(TasksQuery query) throws ResourceException
-    {
-        return query("tasks", query, InboxTaskListDTO.class).<InboxTaskListDTO>buildWith().prototype().tasks().get();
-    }
-    
-    public ListValue projects() throws ResourceException 
-    {
-    	return query("projects", ListValue.class);
-    }
+   public List<InboxTaskDTO> tasks( TasksQuery query ) throws ResourceException
+   {
+      return query( "tasks", query, InboxTaskListDTO.class ).<InboxTaskListDTO>buildWith().prototype().tasks().get();
+   }
+
+   public ListValue projects() throws ResourceException
+   {
+      return query( "projects", ListValue.class );
+   }
 }

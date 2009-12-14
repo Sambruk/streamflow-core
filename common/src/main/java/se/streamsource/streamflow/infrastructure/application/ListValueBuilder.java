@@ -24,42 +24,42 @@ import se.streamsource.streamflow.domain.roles.Describable;
  */
 public class ListValueBuilder
 {
-    private ValueBuilder<ListValue> listBuilder;
-    private ValueBuilder<ListItemValue> itemBuilder;
+   private ValueBuilder<ListValue> listBuilder;
+   private ValueBuilder<ListItemValue> itemBuilder;
 
-    public ListValueBuilder(ValueBuilderFactory vbf)
-    {
-        listBuilder = vbf.newValueBuilder(ListValue.class);
-        itemBuilder = vbf.newValueBuilder(ListItemValue.class);
-    }
+   public ListValueBuilder( ValueBuilderFactory vbf )
+   {
+      listBuilder = vbf.newValueBuilder( ListValue.class );
+      itemBuilder = vbf.newValueBuilder( ListItemValue.class );
+   }
 
-    public ListValueBuilder addListItem(String description, EntityReference ref)
-    {
-        itemBuilder.prototype().description().set(description);
-        itemBuilder.prototype().entity().set(ref);
+   public ListValueBuilder addListItem( String description, EntityReference ref )
+   {
+      itemBuilder.prototype().description().set( description );
+      itemBuilder.prototype().entity().set( ref );
 
-        listBuilder.prototype().items().get().add(itemBuilder.newInstance());
+      listBuilder.prototype().items().get().add( itemBuilder.newInstance() );
 
-        return this;
-    }
+      return this;
+   }
 
-    public ListValueBuilder addDescribableItems(Iterable<? extends Describable> items)
-    {
-        for (Describable item : items)
-        {
-            addListItem( item.getDescription(), EntityReference.getEntityReference(item));
-        }
+   public ListValueBuilder addDescribableItems( Iterable<? extends Describable> items )
+   {
+      for (Describable item : items)
+      {
+         addListItem( item.getDescription(), EntityReference.getEntityReference( item ) );
+      }
 
-        return this;
-    }
+      return this;
+   }
 
-    public ListValueBuilder addDescribable(Describable item)
-    {
-        return addListItem( item.getDescription(), EntityReference.getEntityReference(item));
-    }
-    
-    public ListValue newList()
-    {
-        return listBuilder.newInstance();
-    }
+   public ListValueBuilder addDescribable( Describable item )
+   {
+      return addListItem( item.getDescription(), EntityReference.getEntityReference( item ) );
+   }
+
+   public ListValue newList()
+   {
+      return listBuilder.newInstance();
+   }
 }

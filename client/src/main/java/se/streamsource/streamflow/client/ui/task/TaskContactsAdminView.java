@@ -24,91 +24,92 @@ import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
-import javax.swing.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 
 /**
  * JAVADOC
  */
 public class TaskContactsAdminView
-        extends JPanel
+      extends JPanel
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private TaskContactsView taskContactsView;
+   private TaskContactsView taskContactsView;
 
-    public TaskContactsAdminView(@Uses final TaskContactsView taskContactsView)
-    {
-        super(new BorderLayout());
+   public TaskContactsAdminView( @Uses final TaskContactsView taskContactsView )
+   {
+      super( new BorderLayout() );
 
-        this.taskContactsView = taskContactsView;
-        add(taskContactsView, BorderLayout.WEST);
-        add(taskContactsView.getContactView(), BorderLayout.CENTER);
+      this.taskContactsView = taskContactsView;
+      add( taskContactsView, BorderLayout.WEST );
+      add( taskContactsView.getContactView(), BorderLayout.CENTER );
 
-        final JList list = taskContactsView.getContactsList();
-        list.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      final JList list = taskContactsView.getContactsList();
+      list.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    int idx = list.getSelectedIndex();
-                    if (idx != -1)
-                    {
-                        ContactValue contactValue = (ContactValue) list.getModel().getElementAt(idx);
-                        // Set empty initial values for phoneNumber, email and address.
-                        if (contactValue.phoneNumbers().get().isEmpty())
-                        {
-                            ContactPhoneValue phone = vbf.newValue(ContactPhoneValue.class).<ContactPhoneValue>buildWith().prototype();
-                            contactValue.phoneNumbers().get().add(phone);
+               int idx = list.getSelectedIndex();
+               if (idx != -1)
+               {
+                  ContactValue contactValue = (ContactValue) list.getModel().getElementAt( idx );
+                  // Set empty initial values for phoneNumber, email and address.
+                  if (contactValue.phoneNumbers().get().isEmpty())
+                  {
+                     ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class ).<ContactPhoneValue>buildWith().prototype();
+                     contactValue.phoneNumbers().get().add( phone );
 
-                        }
+                  }
 
-                        if (contactValue.addresses().get().isEmpty())
-                        {
-                            ContactAddressValue address = vbf.newValue(ContactAddressValue.class).<ContactAddressValue>buildWith().prototype();
-                            contactValue.addresses().get().add(address);
+                  if (contactValue.addresses().get().isEmpty())
+                  {
+                     ContactAddressValue address = vbf.newValue( ContactAddressValue.class ).<ContactAddressValue>buildWith().prototype();
+                     contactValue.addresses().get().add( address );
 
-                        }
+                  }
 
-                        if (contactValue.emailAddresses().get().isEmpty())
-                        {
-                            ContactEmailValue email = vbf.newValue(ContactEmailValue.class).<ContactEmailValue>buildWith().prototype();
-                            contactValue.emailAddresses().get().add(email);
+                  if (contactValue.emailAddresses().get().isEmpty())
+                  {
+                     ContactEmailValue email = vbf.newValue( ContactEmailValue.class ).<ContactEmailValue>buildWith().prototype();
+                     contactValue.emailAddresses().get().add( email );
 
-                        }
+                  }
 
-                        TaskContactsClientResource taskContactsClientResource = taskContactsView.getTaskContactsResource();
-                        TaskContactModel taskContactModel = obf.newObjectBuilder(TaskContactModel.class).use(contactValue, taskContactsClientResource.taskContact(idx)).newInstance();
-                        taskContactsView.getContactView().setModel(taskContactModel);
-                    } else
-                    {
-                        taskContactsView.getContactView().setModel(null);
-                    }
-                }
+                  TaskContactsClientResource taskContactsClientResource = taskContactsView.getTaskContactsResource();
+                  TaskContactModel taskContactModel = obf.newObjectBuilder( TaskContactModel.class ).use( contactValue, taskContactsClientResource.taskContact( idx ) ).newInstance();
+                  taskContactsView.getContactView().setModel( taskContactModel );
+               } else
+               {
+                  taskContactsView.getContactView().setModel( null );
+               }
             }
-        });
+         }
+      } );
 
-    }
+   }
 
-    @Override
-    public void setVisible(boolean aFlag)
-    {
-        super.setVisible(aFlag);
-        taskContactsView.setVisible(aFlag);
-    }
+   @Override
+   public void setVisible( boolean aFlag )
+   {
+      super.setVisible( aFlag );
+      taskContactsView.setVisible( aFlag );
+   }
 
-    public void setModel(TaskContactsModel taskContactsModel)
-    {
-        taskContactsView.setModel(taskContactsModel);
-    }
+   public void setModel( TaskContactsModel taskContactsModel )
+   {
+      taskContactsView.setModel( taskContactsModel );
+   }
 
 
 }

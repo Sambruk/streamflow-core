@@ -19,7 +19,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRende
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 
-import javax.swing.*;
+import javax.swing.JList;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -27,40 +27,40 @@ import javax.swing.event.ListDataListener;
  * Selection of active account
  */
 public class AccountSelector
-        extends JList
-        implements ListDataListener
+      extends JList
+      implements ListDataListener
 {
-    private AccountsModel dataModel;
+   private AccountsModel dataModel;
 
-    public AccountSelector(@Uses final AccountsModel dataModel)
-    {
-        super(dataModel);
-        this.dataModel = dataModel;
-        setCellRenderer(new ListItemListCellRenderer());
+   public AccountSelector( @Uses final AccountsModel dataModel )
+   {
+      super( dataModel );
+      this.dataModel = dataModel;
+      setCellRenderer( new ListItemListCellRenderer() );
 
-        dataModel.addListDataListener(this);
-    }
+      dataModel.addListDataListener( this );
+   }
 
-    public AccountModel getSelectedAccount()
-    {
-        return getSelectedIndex() == -1 ? null : dataModel.accountModel(getSelectedIndex());
-    }
+   public AccountModel getSelectedAccount()
+   {
+      return getSelectedIndex() == -1 ? null : dataModel.accountModel( getSelectedIndex() );
+   }
 
-    public void intervalAdded(ListDataEvent e)
-    {
-        contentsChanged(e);
-    }
+   public void intervalAdded( ListDataEvent e )
+   {
+      contentsChanged( e );
+   }
 
-    public void intervalRemoved(ListDataEvent e)
-    {
-        contentsChanged(e);
-    }
+   public void intervalRemoved( ListDataEvent e )
+   {
+      contentsChanged( e );
+   }
 
-    public void contentsChanged(ListDataEvent e)
-    {
-        if (isSelectionEmpty() && dataModel.getSize() == 1)
-        {
-            setSelectedIndex(0);
-        }
-    }
+   public void contentsChanged( ListDataEvent e )
+   {
+      if (isSelectionEmpty() && dataModel.getSize() == 1)
+      {
+         setSelectedIndex( 0 );
+      }
+   }
 }

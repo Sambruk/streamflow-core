@@ -21,9 +21,9 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface CreateFieldDTO
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<String> name();
+   Property<String> name();
 
-    Property<FieldTypes> fieldType();
+   Property<FieldTypes> fieldType();
 }

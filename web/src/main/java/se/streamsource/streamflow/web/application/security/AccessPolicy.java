@@ -24,5 +24,5 @@ import java.util.List;
  */
 public interface AccessPolicy
 {
-    AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject);
+   AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject );
 }

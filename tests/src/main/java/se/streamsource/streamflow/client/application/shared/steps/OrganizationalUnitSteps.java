@@ -25,57 +25,57 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
  * JAVADOC
  */
 public class OrganizationalUnitSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    @Uses
-    OrganizationalUnitsSteps ouSteps;
+   @Uses
+   OrganizationalUnitsSteps ouSteps;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @When("organizational unit is moved to organizational unit named $ou2")
-    public void move(String ou2) throws Exception
-    {
-        try
-        {
-            OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
-            OrganizationalUnits orgUnit2 = (OrganizationalUnits) orgsSteps.givenOrganization.getOrganizationalUnitByName(ou2);
-            orgUnit1.moveOrganizationalUnit(orgUnit2);
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+   @When("organizational unit is moved to organizational unit named $ou2")
+   public void move( String ou2 ) throws Exception
+   {
+      try
+      {
+         OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
+         OrganizationalUnits orgUnit2 = (OrganizationalUnits) orgsSteps.givenOrganization.getOrganizationalUnitByName( ou2 );
+         orgUnit1.moveOrganizationalUnit( orgUnit2 );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
-    @When("organizational unit is merged to organizational unit named $ou2")
-    public void merge(String ou2) throws Exception
-    {
-        try
-        {
-            OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
-            OrganizationalUnitRefactoring orgUnit2 = orgsSteps.givenOrganization.getOrganizationalUnitByName(ou2);
-            orgUnit1.mergeOrganizationalUnit(orgUnit2);
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+   @When("organizational unit is merged to organizational unit named $ou2")
+   public void merge( String ou2 ) throws Exception
+   {
+      try
+      {
+         OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
+         OrganizationalUnitRefactoring orgUnit2 = orgsSteps.givenOrganization.getOrganizationalUnitByName( ou2 );
+         orgUnit1.mergeOrganizationalUnit( orgUnit2 );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
-    @When("organizational unit is deleted")
-    public void delete() throws Exception
-    {
-        try
-        {
-            OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
-            orgUnit1.deleteOrganizationalUnit();
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+   @When("organizational unit is deleted")
+   public void delete() throws Exception
+   {
+      try
+      {
+         OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
+         orgUnit1.deleteOrganizationalUnit();
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
 
 }

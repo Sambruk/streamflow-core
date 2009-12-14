@@ -18,32 +18,32 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsView;
 import se.streamsource.streamflow.client.ui.administration.projects.forms.FormModel;
 import se.streamsource.streamflow.client.ui.administration.projects.forms.FormView;
+import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
+import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsView;
 
 /**
  * JAVADOC
  */
 public class TaskTypeAdministrationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        UIAssemblers.addViews(module, TaskTypesAdminView.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addViews( module, TaskTypesAdminView.class );
 
-        UIAssemblers.addDialogs( module, SelectTaskTypesDialog.class );
+      UIAssemblers.addDialogs( module, SelectTaskTypesDialog.class );
 
-        UIAssemblers.addMV( module, SelectedTaskTypesModel.class, SelectedTaskTypesView.class );
+      UIAssemblers.addMV( module, SelectedTaskTypesModel.class, SelectedTaskTypesView.class );
 
-       UIAssemblers.addMV(module, FormsModel.class, FormsView.class);
+      UIAssemblers.addMV( module, FormsModel.class, FormsView.class );
 
-       UIAssemblers.addMV(module, FormModel.class, FormView.class);
+      UIAssemblers.addMV( module, FormModel.class, FormView.class );
 
-        UIAssemblers.addMV(module, TaskTypesModel.class,
-                TaskTypesView.class);
+      UIAssemblers.addMV( module, TaskTypesModel.class,
+            TaskTypesView.class );
 
-        UIAssemblers.addMV(module, TaskTypeModel.class, TaskTypeView.class);
-    }
+      UIAssemblers.addMV( module, TaskTypeModel.class, TaskTypeView.class );
+   }
 }

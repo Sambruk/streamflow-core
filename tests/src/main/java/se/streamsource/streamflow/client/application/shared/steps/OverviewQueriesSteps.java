@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.hamcrest.CoreMatchers;
-import static org.jbehave.Ensure.*;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
@@ -26,42 +25,44 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 
+import static org.jbehave.Ensure.*;
+
 public class OverviewQueriesSteps
-    extends Steps
+      extends Steps
 {
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    private ProjectSummaryListDTO summaryList;
-    private ProjectSummaryDTO summary;
+   private ProjectSummaryListDTO summaryList;
+   private ProjectSummaryDTO summary;
 
-    @When("overview is requested")
-    public void requestOverview() throws UnitOfWorkCompletionException
-    {
-        uowf.currentUnitOfWork().apply();
-        summaryList = orgsSteps.givenUser.getProjectsSummary();
-    }
+   @When("overview is requested")
+   public void requestOverview() throws UnitOfWorkCompletionException
+   {
+      uowf.currentUnitOfWork().apply();
+      summaryList = orgsSteps.givenUser.getProjectsSummary();
+   }
 
-    @Then("summaryList contains one project named $projectName")
-    public void checkProjectCount(String projectName)
-    {
-        ensureThat(summaryList.projectOverviews().get().size(), CoreMatchers.equalTo(1));
-        summary = summaryList.projectOverviews().get().get(0);
-        ensureThat(summary.project().get(), CoreMatchers.equalTo(projectName));
-    }
+   @Then("summaryList contains one project named $projectName")
+   public void checkProjectCount( String projectName )
+   {
+      ensureThat( summaryList.projectOverviews().get().size(), CoreMatchers.equalTo( 1 ) );
+      summary = summaryList.projectOverviews().get().get( 0 );
+      ensureThat( summary.project().get(), CoreMatchers.equalTo( projectName ) );
+   }
 
-    @Then("overview contains $count $column tasks")
-    public void checkResult(long count, String column)
-    {
-        if("inbox".equals(column))
-        {
-            ensureThat(summary.inboxCount().get(), CoreMatchers.equalTo(count));
-        } else if("assigned".equals(column))
-        {
-            ensureThat(summary.assignedCount().get(), CoreMatchers.equalTo(count));
-        } 
-    }
+   @Then("overview contains $count $column tasks")
+   public void checkResult( long count, String column )
+   {
+      if ("inbox".equals( column ))
+      {
+         ensureThat( summary.inboxCount().get(), CoreMatchers.equalTo( count ) );
+      } else if ("assigned".equals( column ))
+      {
+         ensureThat( summary.assignedCount().get(), CoreMatchers.equalTo( count ) );
+      }
+   }
 }

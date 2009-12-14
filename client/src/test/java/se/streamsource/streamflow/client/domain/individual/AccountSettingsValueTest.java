@@ -25,81 +25,81 @@ import org.qi4j.test.AbstractQi4jTest;
  * Test of AccountSettingsValue
  */
 public class AccountSettingsValueTest
-        extends AbstractQi4jTest
+      extends AbstractQi4jTest
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addValues(AccountSettingsValue.class);
-        module.addObjects(getClass());
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addValues( AccountSettingsValue.class );
+      module.addObjects( getClass() );
+   }
 
-    @Test
-    public void testDefaultValues()
-    {
-        objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
+   @Test
+   public void testDefaultValues()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
 
-        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
-        settings.newInstance();
-    }
-
-
-    @Test(expected = ConstraintViolationException.class)
-    public void testServerConstraintViolation()
-    {
-        objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
-
-        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
-        settings.prototype().server().set("###Illegal###");
-        settings.newInstance();
-
-    }
-
-    @Test
-    public void testServer()
-    {
-        objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
-
-        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
-        settings.prototype().server().set("http://ec2-79-125-55-249.eu-west-1.compute.amazonaws.com:8040/streamflow");
-        settings.newInstance();
-    }
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.newInstance();
+   }
 
 
-    @Test
-    public void testUserName()
-    {
-        objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
+   @Test(expected = ConstraintViolationException.class)
+   public void testServerConstraintViolation()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
 
-        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
-        settings.prototype().userName().set("madsenevoldsen");
-    }
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.prototype().server().set( "###Illegal###" );
+      settings.newInstance();
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testUserNameConstraintViolation()
-    {
-        objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
+   }
 
-        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
-        settings.prototype().userName().set("mads.enevoldsen");
-    }
+   @Test
+   public void testServer()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
+
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.prototype().server().set( "http://ec2-79-125-55-249.eu-west-1.compute.amazonaws.com:8040/streamflow" );
+      settings.newInstance();
+   }
 
 
-    @Test
-    public void testPassword()
-    {
-        objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
+   @Test
+   public void testUserName()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
 
-        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
-        settings.prototype().password().set("secret");
-    }
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.prototype().userName().set( "madsenevoldsen" );
+   }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testPasswordConstraintViolation()
-    {
-        objectBuilderFactory.newObjectBuilder(AccountSettingsValueTest.class).injectTo(this);
+   @Test(expected = ConstraintViolationException.class)
+   public void testUserNameConstraintViolation()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
 
-        ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder(AccountSettingsValue.class);
-        settings.prototype().password().set("mySecret#!()%#");
-    }
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.prototype().userName().set( "mads.enevoldsen" );
+   }
+
+
+   @Test
+   public void testPassword()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
+
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.prototype().password().set( "secret" );
+   }
+
+   @Test(expected = ConstraintViolationException.class)
+   public void testPasswordConstraintViolation()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
+
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.prototype().password().set( "mySecret#!()%#" );
+   }
 
 }

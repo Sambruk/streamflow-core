@@ -28,29 +28,29 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
  */
 @Mixins(ApplicationInitializationService.Mixin.class)
 public interface ApplicationInitializationService
-        extends ServiceComposite, Activatable
+      extends ServiceComposite, Activatable
 {
-    class Mixin
-            implements Activatable
-    {
-        @Structure
-        private ObjectBuilderFactory obf;
+   class Mixin
+         implements Activatable
+   {
+      @Structure
+      private ObjectBuilderFactory obf;
 
-        @Structure
-        private UnitOfWorkFactory uowf;
+      @Structure
+      private UnitOfWorkFactory uowf;
 
-        @Service
-        private SingleFrameApplication main;
+      @Service
+      private SingleFrameApplication main;
 
-        public void activate() throws Exception
-        {
-            obf.newObjectBuilder(SingleFrameApplication.class).injectTo(main);
-        }
+      public void activate() throws Exception
+      {
+         obf.newObjectBuilder( SingleFrameApplication.class ).injectTo( main );
+      }
 
-        public void passivate() throws Exception
-        {
-        }
+      public void passivate() throws Exception
+      {
+      }
 
-    }
+   }
 
 }

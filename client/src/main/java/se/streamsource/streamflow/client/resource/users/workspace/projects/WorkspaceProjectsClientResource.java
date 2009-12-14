@@ -29,32 +29,32 @@ import java.util.List;
  * JAVADOC
  */
 public class WorkspaceProjectsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public WorkspaceProjectsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public WorkspaceProjectsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public WorkspaceProjectClientResource project(String project)
-    {
-        return getSubResource(project, WorkspaceProjectClientResource.class);
-    }
+   public WorkspaceProjectClientResource project( String project )
+   {
+      return getSubResource( project, WorkspaceProjectClientResource.class );
+   }
 
-    public ListValue listProjects() throws ResourceException
-    {
-        return query("listProjects", ListValue.class);
-    }
+   public ListValue listProjects() throws ResourceException
+   {
+      return query( "listProjects", ListValue.class );
+   }
 
-    public List<WorkspaceProjectClientResource> projects() throws ResourceException
-    {
-        List<WorkspaceProjectClientResource> projectResources = new ArrayList<WorkspaceProjectClientResource>();
-        ListValue projects = listProjects();
-        for (ListItemValue project : projects.items().get())
-        {
-            WorkspaceProjectClientResource workspaceProjectResource = project(project.entity().get().identity());
-            projectResources.add(workspaceProjectResource);
-        }
-        return projectResources;
-    }
+   public List<WorkspaceProjectClientResource> projects() throws ResourceException
+   {
+      List<WorkspaceProjectClientResource> projectResources = new ArrayList<WorkspaceProjectClientResource>();
+      ListValue projects = listProjects();
+      for (ListItemValue project : projects.items().get())
+      {
+         WorkspaceProjectClientResource workspaceProjectResource = project( project.entity().get().identity() );
+         projectResources.add( workspaceProjectResource );
+      }
+      return projectResources;
+   }
 }

@@ -35,37 +35,37 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * Mapped to /users
  */
 public class UsersServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Override
-    protected Representation get(Variant variant) throws ResourceException
-    {
-        Form form = getRequest().getResourceRef().getQueryAsForm();
-        if (form.getFirst("findbyusername") != null)
-        {
-            // Find users
-            String id = form.getFirstValue("username");
-            UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Find user by name" ));
-            try
-            {
-                UserEntity user = uow.get(UserEntity.class, id);
-                Reference userRef = getRequest().getResourceRef().clone().addSegment(id).addSegment("");
-                userRef.setQuery("");
-                getResponse().redirectPermanent(userRef);
-                return new EmptyRepresentation();
-            } catch (NoSuchEntityException e)
-            {
-                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-            } finally
-            {
-                uow.discard();
-            }
-        } else
-        {
-            return new InputRepresentation(getClass().getResourceAsStream("resources/usersearch.html"), MediaType.TEXT_HTML);
-        }
-    }
+   @Override
+   protected Representation get( Variant variant ) throws ResourceException
+   {
+      Form form = getRequest().getResourceRef().getQueryAsForm();
+      if (form.getFirst( "findbyusername" ) != null)
+      {
+         // Find users
+         String id = form.getFirstValue( "username" );
+         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Find user by name" ) );
+         try
+         {
+            UserEntity user = uow.get( UserEntity.class, id );
+            Reference userRef = getRequest().getResourceRef().clone().addSegment( id ).addSegment( "" );
+            userRef.setQuery( "" );
+            getResponse().redirectPermanent( userRef );
+            return new EmptyRepresentation();
+         } catch (NoSuchEntityException e)
+         {
+            throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+         } finally
+         {
+            uow.discard();
+         }
+      } else
+      {
+         return new InputRepresentation( getClass().getResourceAsStream( "resources/usersearch.html" ), MediaType.TEXT_HTML );
+      }
+   }
 }

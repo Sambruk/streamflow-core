@@ -30,22 +30,22 @@ import java.lang.annotation.RetentionPolicy;
 @Constraints(HasStatus.HasStatusConstraint.class)
 public @interface HasStatus
 {
-    TaskStates[] value();
+   TaskStates[] value();
 
-    public class HasStatusConstraint
-        implements Constraint<HasStatus, TaskStatus>
-    {
-        public boolean isValid( HasStatus hasStatus, TaskStatus value )
-        {
-            TaskStates taskStatus = ((TaskStatus.Data) value).status().get();
+   public class HasStatusConstraint
+         implements Constraint<HasStatus, TaskStatus>
+   {
+      public boolean isValid( HasStatus hasStatus, TaskStatus value )
+      {
+         TaskStates taskStatus = ((TaskStatus.Data) value).status().get();
 
-            for (TaskStates taskStates : hasStatus.value())
-            {
-                if (taskStates.equals( taskStatus ))
-                    return true;
-            }
+         for (TaskStates taskStates : hasStatus.value())
+         {
+            if (taskStates.equals( taskStatus ))
+               return true;
+         }
 
-            return false;
-        }
-    }
+         return false;
+      }
+   }
 }

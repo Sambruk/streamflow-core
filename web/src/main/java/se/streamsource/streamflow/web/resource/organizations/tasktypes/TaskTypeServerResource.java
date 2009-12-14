@@ -33,43 +33,43 @@ import java.security.AccessControlException;
  * /organizations/{organization}/tasktype/{tasktype}
  */
 public class TaskTypeServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    protected UnitOfWorkFactory uowf;
+   @Structure
+   protected UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public void changedescription(StringDTO stringValue) throws ResourceException
-    {
-        String projectId = (String) getRequest().getAttributes().get("tasktype");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, projectId);
+   public void changedescription( StringDTO stringValue ) throws ResourceException
+   {
+      String projectId = (String) getRequest().getAttributes().get( "tasktype" );
+      Describable describable = uowf.currentUnitOfWork().get( Describable.class, projectId );
 
-        String newName = stringValue.string().get();
+      String newName = stringValue.string().get();
 
-        checkPermission(describable);
-        describable.changeDescription(newName);
-    }
+      checkPermission( describable );
+      describable.changeDescription( newName );
+   }
 
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String org = getRequest().getAttributes().get("organization").toString();
+      String org = getRequest().getAttributes().get( "organization" ).toString();
 
-        TaskTypes taskTypes = uow.get(TaskTypes.class, org);
+      TaskTypes taskTypes = uow.get( TaskTypes.class, org );
 
-        String identity = getRequest().getAttributes().get("tasktype").toString();
-        TaskType taskType = uow.get(TaskType.class, identity);
+      String identity = getRequest().getAttributes().get( "tasktype" ).toString();
+      TaskType taskType = uow.get( TaskType.class, identity );
 
-        try
-        {
-            checkPermission(taskTypes);
-            taskTypes.removeTaskType( taskType);
-        } catch(AccessControlException ae)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
-    }
+      try
+      {
+         checkPermission( taskTypes );
+         taskTypes.removeTaskType( taskType );
+      } catch (AccessControlException ae)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
+      }
+   }
 }

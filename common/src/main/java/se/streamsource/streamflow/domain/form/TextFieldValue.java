@@ -20,7 +20,7 @@ import org.qi4j.api.property.Property;
  * JAVADOC
  */
 public interface TextFieldValue
-    extends FieldValue
+      extends FieldValue
 {
-    Property<Integer> width();
+   Property<Integer> width();
 }

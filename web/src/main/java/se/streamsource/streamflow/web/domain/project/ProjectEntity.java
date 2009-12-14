@@ -47,90 +47,90 @@ import se.streamsource.streamflow.web.domain.tasktype.SelectedTaskTypes;
 @Mixins(ProjectEntity.ProjectIdGeneratorMixin.class)
 @Concerns(ProjectEntity.RemovableConcern.class)
 public interface ProjectEntity
-        extends DomainEntity,
-        Project,
+      extends DomainEntity,
+      Project,
 
-        // Data
-        Inbox.Data,
-        Assignments.Data,
-        Delegations.Data,
-        WaitingFor.Data,
-        Members.Data,
-        Describable.Data,
-        OwningOrganizationalUnit.Data,
-        SelectedLabels.Data,
-        Removable.Data,
-        SelectedTaskTypes.Data,
+      // Data
+      Inbox.Data,
+      Assignments.Data,
+      Delegations.Data,
+      WaitingFor.Data,
+      Members.Data,
+      Describable.Data,
+      OwningOrganizationalUnit.Data,
+      SelectedLabels.Data,
+      Removable.Data,
+      SelectedTaskTypes.Data,
 
-        // Queries
-        AssignmentsQueries,
-        DelegationsQueries,
-        InboxQueries,
-        WaitingForQueries
+      // Queries
+      AssignmentsQueries,
+      DelegationsQueries,
+      InboxQueries,
+      WaitingForQueries
 {
-    class ProjectIdGeneratorMixin
-            implements IdGenerator
-    {
-        @This
-        OwningOrganizationalUnit.Data state;
+   class ProjectIdGeneratorMixin
+         implements IdGenerator
+   {
+      @This
+      OwningOrganizationalUnit.Data state;
 
-        public void assignId(TaskId task)
-        {
-            ((OwningOrganization)state.organizationalUnit().get()).organization().get().assignId(task);
-        }
-    }
+      public void assignId( TaskId task )
+      {
+         ((OwningOrganization) state.organizationalUnit().get()).organization().get().assignId( task );
+      }
+   }
 
-    abstract class RemovableConcern
-        extends ConcernOf<Removable>
-        implements Removable
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
+   abstract class RemovableConcern
+         extends ConcernOf<Removable>
+         implements Removable
+   {
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @Structure
-        ValueBuilderFactory vbf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-        @Structure
-        QueryBuilderFactory qbf;
+      @Structure
+      QueryBuilderFactory qbf;
 
-        @This
-        Identity id;
+      @This
+      Identity id;
 
-        @This
-        Members members;
+      @This
+      Members members;
 
-        @This
-        InboxQueries inbox;
+      @This
+      InboxQueries inbox;
 
-        @This
-        AssignmentsQueries assignments;
+      @This
+      AssignmentsQueries assignments;
 
-        @This
-        WaitingForQueries waitingFor;
+      @This
+      WaitingForQueries waitingFor;
 
-        @This
-        DelegationsQueries delegationsQueries;
+      @This
+      DelegationsQueries delegationsQueries;
 
-        @This
-        Delegations delegations;
+      @This
+      Delegations delegations;
 
-        public boolean removeEntity()
-        {
-            if(inbox.inboxHasActiveTasks()
+      public boolean removeEntity()
+      {
+         if (inbox.inboxHasActiveTasks()
                || assignments.assignmentsHaveActiveTasks()
-               || waitingFor.hasActiveOrDoneAndUnreadTasks() )
-            {
-                throw new IllegalStateException("Cannot remove project with ACTIVE tasks.");
+               || waitingFor.hasActiveOrDoneAndUnreadTasks())
+         {
+            throw new IllegalStateException( "Cannot remove project with ACTIVE tasks." );
 
-            } else
+         } else
+         {
+            for (TaskDTO taskDTO : delegationsQueries.delegationsTasks().tasks().get())
             {
-                for(TaskDTO taskDTO : delegationsQueries.delegationsTasks().tasks().get())
-                {
-                    delegations.reject( uowf.currentUnitOfWork().get(Task.class, taskDTO.task().get().identity()));
-                }
-                members.removeAllMembers();
-                return next.removeEntity();
+               delegations.reject( uowf.currentUnitOfWork().get( Task.class, taskDTO.task().get().identity() ) );
             }
-        }
-    }
+            members.removeAllMembers();
+            return next.removeEntity();
+         }
+      }
+   }
 }

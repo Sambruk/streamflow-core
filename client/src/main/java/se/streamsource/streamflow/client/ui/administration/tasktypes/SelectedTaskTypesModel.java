@@ -36,81 +36,81 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
  * Management of selected tasktypes on a project
  */
 public class SelectedTaskTypesModel
-        implements EventListener, Refreshable
+      implements EventListener, Refreshable
 {
-    @Uses
-    CommandQueryClient client;
+   @Uses
+   CommandQueryClient client;
 
-    BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>( );
+   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private ListValue list;
+   private ListValue list;
 
-    public EventList<ListItemValue> getTaskTypeList()
-    {
-        return eventList;
-    }
+   public EventList<ListItemValue> getTaskTypeList()
+   {
+      return eventList;
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            // Get tasktype list
-            ListValue newList = client.query( "selectedtasktypes", ListValue.class );
+   public void refresh()
+   {
+      try
+      {
+         // Get tasktype list
+         ListValue newList = client.query( "selectedtasktypes", ListValue.class );
 
-            if (list == null || !newList.equals( list ))
-            {
-                eventList.clear();
-                eventList.addAll( newList.items().get() );
-                list = newList;
-            }
+         if (list == null || !newList.equals( list ))
+         {
+            eventList.clear();
+            eventList.addAll( newList.items().get() );
+            list = newList;
+         }
 
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_tasktypes, e);
-        }
-    }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh_list_of_tasktypes, e );
+      }
+   }
 
-    public EventList<ListItemValue> getPossibleTaskTypes()
-    {
-        try
-        {
-            BasicEventList<ListItemValue> possibleTaskTypes = new BasicEventList<ListItemValue>();
-            possibleTaskTypes.addAll( client.query( "possibletasktypes", ListValue.class ).items().get() );
-            return possibleTaskTypes;
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
-        }
-    }
+   public EventList<ListItemValue> getPossibleTaskTypes()
+   {
+      try
+      {
+         BasicEventList<ListItemValue> possibleTaskTypes = new BasicEventList<ListItemValue>();
+         possibleTaskTypes.addAll( client.query( "possibletasktypes", ListValue.class ).items().get() );
+         return possibleTaskTypes;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
 
-    public void addTaskType( EntityReference identity)
-    {
-        try
-        {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class);
-            builder.prototype().entity().set(identity);
-            client.postCommand( "addtasktype",  builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_add_tasktype, e);
-        }
-    }
+   public void addTaskType( EntityReference identity )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( identity );
+         client.postCommand( "addtasktype", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_add_tasktype, e );
+      }
+   }
 
-    public void removeTaskType( EntityReference identity)
-    {
-        try
-        {
-            client.getSubClient( identity.identity() ).deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException( AdministrationResources.could_not_remove_tasktype, e);
-        }
-    }
+   public void removeTaskType( EntityReference identity )
+   {
+      try
+      {
+         client.getSubClient( identity.identity() ).deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_tasktype, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+   }
 }

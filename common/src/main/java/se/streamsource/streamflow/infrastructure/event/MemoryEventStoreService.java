@@ -40,110 +40,112 @@ import java.util.logging.Level;
  */
 @Mixins(MemoryEventStoreService.MemoryEventStoreMixin.class)
 public interface MemoryEventStoreService
-    extends EventStore, EventListener, Activatable, ServiceComposite
+      extends EventStore, EventListener, Activatable, ServiceComposite
 {
-    public List<DomainEvent> getEvents();
+   public List<DomainEvent> getEvents();
 
-    public void clearEvents();
+   public void clearEvents();
 
-    abstract class MemoryEventStoreMixin
-        extends AbstractEventStoreMixin
-        implements EventListener, MemoryEventStoreService
-    {
-        private TreeMap<Long, String> store = new TreeMap<Long, String>();
+   abstract class MemoryEventStoreMixin
+         extends AbstractEventStoreMixin
+         implements EventListener, MemoryEventStoreService
+   {
+      private TreeMap<Long, String> store = new TreeMap<Long, String>();
 
-        public void activate() throws IOException
-        {
-            super.activate();
-        }
+      public void activate() throws IOException
+      {
+         super.activate();
+      }
 
-        public void passivate() throws Exception
-        {
-        }
+      public void passivate() throws Exception
+      {
+      }
 
-        public void transactionsAfter( long afterTimestamp, TransactionHandler handler )
-        {
-            // Lock datastore first
-            lock.lock();
-            try
+      public void transactionsAfter( long afterTimestamp, TransactionHandler handler )
+      {
+         // Lock datastore first
+         lock.lock();
+         try
+         {
+            Long startTime = afterTimestamp + 1;
+            Collection<String> txsAfterDate = store.tailMap( startTime ).values();
+
+            for (String txJson : txsAfterDate)
             {
-                Long startTime = afterTimestamp+1;
-                Collection<String> txsAfterDate = store.tailMap(startTime).values();
+               JSONTokener tokener = new JSONTokener( txJson );
+               JSONObject json = (JSONObject) tokener.nextValue();
+               TransactionEvents tx = (TransactionEvents) transactionEventsType.fromJSON( json, module );
 
-                for (String txJson : txsAfterDate)
-                {
-                    JSONTokener tokener = new JSONTokener(txJson);
-                    JSONObject json = (JSONObject) tokener.nextValue();
-                    TransactionEvents tx = (TransactionEvents) transactionEventsType.fromJSON(json, module);
-
-                    if (!handler.handleTransaction( tx ))
-                    {
-                        return;
-                    }
-                }
-            } catch (JSONException e)
-            {
-                logger.log(Level.WARNING, "Could not deserialize events", e);
-            } finally
-            {
-                lock.unlock();
+               if (!handler.handleTransaction( tx ))
+               {
+                  return;
+               }
             }
-        }
+         } catch (JSONException e)
+         {
+            logger.log( Level.WARNING, "Could not deserialize events", e );
+         } finally
+         {
+            lock.unlock();
+         }
+      }
 
-        protected void rollback()
-                throws IOException
-        {
-        }
+      protected void rollback()
+            throws IOException
+      {
+      }
 
-        protected void commit()
-                throws IOException
-        {
-        }
+      protected void commit()
+            throws IOException
+      {
+      }
 
-        protected void storeEvents(TransactionEvents transaction)
-                throws IOException
-        {
-            String jsonString = transaction.toString();
-            store.put(transaction.timestamp().get(), jsonString);
-        }
+      protected void storeEvents( TransactionEvents transaction )
+            throws IOException
+      {
+         String jsonString = transaction.toString();
+         store.put( transaction.timestamp().get(), jsonString );
+      }
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @Override
-        public void notifyEvent(DomainEvent event)
-        {
-            super.notifyEvent(event);
-            if (events == null)
+      @Override
+      public void notifyEvent( DomainEvent event )
+      {
+         super.notifyEvent( event );
+         if (events == null)
+         {
+            events = new ArrayList<DomainEvent>();
+            UnitOfWork uow = uowf.currentUnitOfWork();
+            uow.addUnitOfWorkCallback( new UnitOfWorkCallback()
             {
-                events = new ArrayList<DomainEvent>();
-                UnitOfWork uow = uowf.currentUnitOfWork();
-                uow.addUnitOfWorkCallback(new UnitOfWorkCallback()
-                {
 
-                    public void beforeCompletion() throws UnitOfWorkCompletionException
-                    {
-                        events = null;
-                    }
+               public void beforeCompletion() throws UnitOfWorkCompletionException
+               {
+                  events = null;
+               }
 
-                    public void afterCompletion(UnitOfWorkCallback.UnitOfWorkStatus status) { }
-                });
-            }
+               public void afterCompletion( UnitOfWorkCallback.UnitOfWorkStatus status )
+               {
+               }
+            } );
+         }
 
-            events.add(event);
-        }
+         events.add( event );
+      }
 
-        public List<DomainEvent> getEvents()
-        {
-            return events;
-        }
+      public List<DomainEvent> getEvents()
+      {
+         return events;
+      }
 
-        public void clearEvents()
-        {
-            events = null;
-        }
+      public void clearEvents()
+      {
+         events = null;
+      }
 
-        private List<DomainEvent> events;
+      private List<DomainEvent> events;
 
-    }
+   }
 }

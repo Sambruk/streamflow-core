@@ -17,85 +17,85 @@ import java.awt.event.ActionListener;
 
 public class TaskLabelsView extends JPanel implements ListDataListener, ActionListener, ListSelectionListener
 {
-	private TaskLabelsModel modelTask;
+   private TaskLabelsModel modelTask;
 
-    private JPanel labelPanel;
+   private JPanel labelPanel;
 
-    TaskLabelSelectionView labelSelection;
+   TaskLabelSelectionView labelSelection;
 
-    public TaskLabelsView(@Uses TaskLabelSelectionView labelSelection)
-	{
-        this.labelSelection = labelSelection;
-        setLayout(new BorderLayout());
+   public TaskLabelsView( @Uses TaskLabelSelectionView labelSelection )
+   {
+      this.labelSelection = labelSelection;
+      setLayout( new BorderLayout() );
 
-        labelPanel = new JPanel(new ModifiedFlowLayout(FlowLayout.LEFT));
-        //labelPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
-        //setBorder(BorderFactory.createLineBorder(Color.BLUE, 1));
+      labelPanel = new JPanel( new ModifiedFlowLayout( FlowLayout.LEFT ) );
+      //labelPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
+      //setBorder(BorderFactory.createLineBorder(Color.BLUE, 1));
 
-        add(labelSelection,BorderLayout.NORTH);
-        add(labelPanel, BorderLayout.SOUTH);
+      add( labelSelection, BorderLayout.NORTH );
+      add( labelPanel, BorderLayout.SOUTH );
 
-        labelSelection.getList().addListSelectionListener( this);
-	}
+      labelSelection.getList().addListSelectionListener( this );
+   }
 
-    public void setLabelsModel( TaskLabelsModel modelTask )
-    {
-        this.modelTask = modelTask;
-        modelTask.addListDataListener(this);
-        initComponents();
-    }
+   public void setLabelsModel( TaskLabelsModel modelTask )
+   {
+      this.modelTask = modelTask;
+      modelTask.addListDataListener( this );
+      initComponents();
+   }
 
-	private void initComponents()
-	{
-		labelPanel.removeAll();
+   private void initComponents()
+   {
+      labelPanel.removeAll();
 
-		for (int i = 0; i < modelTask.getSize(); i++)
-		{
-			ListItemValue itemValue = modelTask.getElementAt(i);
-			TaskLabelView labelView = new TaskLabelView(itemValue);
-			labelView.addActionListener(this);
-			labelPanel.add(labelView);
-		}
-        
-        labelPanel.revalidate();
-        labelPanel.repaint();
-        
-	}
+      for (int i = 0; i < modelTask.getSize(); i++)
+      {
+         ListItemValue itemValue = modelTask.getElementAt( i );
+         TaskLabelView labelView = new TaskLabelView( itemValue );
+         labelView.addActionListener( this );
+         labelPanel.add( labelView );
+      }
 
-	public void contentsChanged(ListDataEvent e)
-	{
-		initComponents();
-	}
+      labelPanel.revalidate();
+      labelPanel.repaint();
 
-	public void intervalAdded(ListDataEvent e)
-	{
-		initComponents();
-	}
+   }
 
-	public void intervalRemoved(ListDataEvent e)
-	{
-		initComponents();
-	}
+   public void contentsChanged( ListDataEvent e )
+   {
+      initComponents();
+   }
 
-    public void valueChanged( ListSelectionEvent e )
-    {
-        ListItemValue labelItem = (ListItemValue) labelSelection.getList().getSelectedValue();
-        if (labelItem != null)
-        {
-            labelSelection.getList().clearSelection();
-            modelTask.addLabel(labelItem.entity().get());
-        }
-    }
+   public void intervalAdded( ListDataEvent e )
+   {
+      initComponents();
+   }
 
-    public void actionPerformed(ActionEvent e)
-	{
-		Component component = ((Component) e.getSource());
-        TaskLabelView labelView = (TaskLabelView) component.getParent();
-        modelTask.removeLabel(labelView.label().entity().get());
-	}
+   public void intervalRemoved( ListDataEvent e )
+   {
+      initComponents();
+   }
 
-    public TaskLabelSelectionView labelSelection()
-    {
-        return labelSelection;
-    }
+   public void valueChanged( ListSelectionEvent e )
+   {
+      ListItemValue labelItem = (ListItemValue) labelSelection.getList().getSelectedValue();
+      if (labelItem != null)
+      {
+         labelSelection.getList().clearSelection();
+         modelTask.addLabel( labelItem.entity().get() );
+      }
+   }
+
+   public void actionPerformed( ActionEvent e )
+   {
+      Component component = ((Component) e.getSource());
+      TaskLabelView labelView = (TaskLabelView) component.getParent();
+      modelTask.removeLabel( labelView.label().entity().get() );
+   }
+
+   public TaskLabelSelectionView labelSelection()
+   {
+      return labelSelection;
+   }
 }

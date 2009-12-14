@@ -34,55 +34,55 @@ import java.util.List;
  * JAVADOC
  */
 public class FormDefinitionModel
-        extends AbstractListModel
-    implements EventListener
+      extends AbstractListModel
+      implements EventListener
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Uses
-    private FormDefinitionClientResource form;
+   @Uses
+   private FormDefinitionClientResource form;
 
-    private List<ListItemValue> list;
+   private List<ListItemValue> list;
 
-    public int getSize()
-    {
-        return list == null ? 0 : list.size();
-    }
+   public int getSize()
+   {
+      return list == null ? 0 : list.size();
+   }
 
-    public Object getElementAt(int index)
-    {
-        return list == null ? null : list.get(index);
-    }
+   public Object getElementAt( int index )
+   {
+      return list == null ? null : list.get( index );
+   }
 
-    public void createField(String description, EntityReference valueType)
-    {
-        try
-        {
-            ValueBuilder<ListItemValue> builder = vbf.newValueBuilder(ListItemValue.class);
-            builder.prototype().description().set( description );
-            builder.prototype().entity().set( valueType );
-            form.createField(  builder.newInstance());
+   public void createField( String description, EntityReference valueType )
+   {
+      try
+      {
+         ValueBuilder<ListItemValue> builder = vbf.newValueBuilder( ListItemValue.class );
+         builder.prototype().description().set( description );
+         builder.prototype().entity().set( valueType );
+         form.createField( builder.newInstance() );
 
-        } catch (ResourceException e)
-        {
-            throw new OperationException( AdministrationResources.could_not_create_field, e);
-        }
-    }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_create_field, e );
+      }
+   }
 
-    public void removeForm(int idx)
-    {
-        try
-        {
-            form.field(idx).deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_field, e);
-        }
-    }
+   public void removeForm( int idx )
+   {
+      try
+      {
+         form.field( idx ).deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_field, e );
+      }
+   }
 
-    public void refresh()
-    {
+   public void refresh()
+   {
 /*
         try
         {
@@ -93,15 +93,15 @@ public class FormDefinitionModel
             throw new OperationException(AdministrationResources.could_not_refresh, e);
         }
 */
-    }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
+   public void notifyEvent( DomainEvent event )
+   {
 
-    }
+   }
 
-    public FormDefinitionModel getFormFieldModel( int index )
-    {
-        return null;
-    }
+   public FormDefinitionModel getFormFieldModel( int index )
+   {
+      return null;
+   }
 }

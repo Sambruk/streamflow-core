@@ -24,25 +24,25 @@ import org.qi4j.api.service.ServiceComposite;
  */
 @Mixins(ExceptionHandlerService.Mixin.class)
 public interface ExceptionHandlerService
-        extends ServiceComposite, Activatable
+      extends ServiceComposite, Activatable
 {
-    class Mixin
-            implements Activatable
-    {
-        @Service
-        UncaughtExceptionHandler handler;
+   class Mixin
+         implements Activatable
+   {
+      @Service
+      UncaughtExceptionHandler handler;
 
-        public void activate() throws Exception
-        {
-            Thread.setDefaultUncaughtExceptionHandler(handler);
-        }
+      public void activate() throws Exception
+      {
+         Thread.setDefaultUncaughtExceptionHandler( handler );
+      }
 
-        public void passivate() throws Exception
-        {
-            Thread.setDefaultUncaughtExceptionHandler(null);
-        }
+      public void passivate() throws Exception
+      {
+         Thread.setDefaultUncaughtExceptionHandler( null );
+      }
 
 
-    }
+   }
 
 }

@@ -16,29 +16,29 @@ package se.streamsource.streamflow.client.ui.menu;
 
 import org.qi4j.api.injection.scope.Uses;
 
-import javax.swing.*;
+import javax.swing.JMenuBar;
 
 /**
  * Menu bar for the Workspace window
  */
 public class WorkspaceMenuBar
-        extends JMenuBar
+      extends JMenuBar
 {
-    public WorkspaceMenuBar(@Uses FileMenu fileMenu,
+   public WorkspaceMenuBar( @Uses FileMenu fileMenu,
                             @Uses EditMenu editMenu,
                             @Uses ViewMenu viewMenu,
                             @Uses AccountMenu accountMenu,
                             @Uses TaskMenu taskMenu,
                             @Uses WindowMenu windowMenu,
                             @Uses HelpMenu helpMenu
-                            )
-    {
-        add(fileMenu);
-        add(editMenu);
-        add(viewMenu);
-        add(accountMenu);
-        add(taskMenu);
-        add(windowMenu);
-        add(helpMenu);
-    }
+   )
+   {
+      add( fileMenu );
+      add( editMenu );
+      add( viewMenu );
+      add( accountMenu );
+      add( taskMenu );
+      add( windowMenu );
+      add( helpMenu );
+   }
 }

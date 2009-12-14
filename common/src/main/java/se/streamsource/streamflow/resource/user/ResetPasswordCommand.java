@@ -14,16 +14,17 @@
 
 package se.streamsource.streamflow.resource.user;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.api.entity.EntityReference;
 
 /**
  * Command for resetting Password
  */
 public interface ResetPasswordCommand
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> entity();
-    Property<String> password();
+   Property<EntityReference> entity();
+
+   Property<String> password();
 }

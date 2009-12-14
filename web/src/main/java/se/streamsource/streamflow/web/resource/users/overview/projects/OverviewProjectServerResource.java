@@ -23,11 +23,11 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /users/{id}/overview/projects/{project}
  */
 public class OverviewProjectServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Override
-    protected Representation listOperations() throws ResourceException
-    {
-        return getHtml("resources/overviewproject.html");
-    }
+   @Override
+   protected Representation listOperations() throws ResourceException
+   {
+      return getHtml( "resources/overviewproject.html" );
+   }
 }

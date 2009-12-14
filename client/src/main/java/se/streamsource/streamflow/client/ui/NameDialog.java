@@ -21,48 +21,50 @@ import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
 
 /**
  * Select a name for something.
  */
 public class NameDialog
-        extends JPanel
+      extends JPanel
 {
-    public JTextField nameField;
+   public JTextField nameField;
 
-    String name;
+   String name;
 
-    public NameDialog(@Service ApplicationContext context)
-    {
-        super(new BorderLayout());
+   public NameDialog( @Service ApplicationContext context )
+   {
+      super( new BorderLayout() );
 
-        setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-        JPanel dialog = new JPanel(new BorderLayout());
-        dialog.add(new JLabel(i18n.text(AdministrationResources.name_label)), BorderLayout.WEST);
-        nameField = new JTextField();
-        dialog.add(nameField, BorderLayout.CENTER);
-        add(dialog, BorderLayout.NORTH);
-    }
+      JPanel dialog = new JPanel( new BorderLayout() );
+      dialog.add( new JLabel( i18n.text( AdministrationResources.name_label ) ), BorderLayout.WEST );
+      nameField = new JTextField();
+      dialog.add( nameField, BorderLayout.CENTER );
+      add( dialog, BorderLayout.NORTH );
+   }
 
-    public String name()
-    {
-        return name;
-    }
+   public String name()
+   {
+      return name;
+   }
 
-    @Action
-    public void execute()
-    {
-        name = nameField.getText();
+   @Action
+   public void execute()
+   {
+      name = nameField.getText();
 
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 }

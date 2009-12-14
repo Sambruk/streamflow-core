@@ -46,118 +46,118 @@ import java.util.List;
  * JAVADOC
  */
 public class WorkspaceUserInboxView
-        extends TaskTableView
+      extends TaskTableView
 {
-    @Uses
-    protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+   @Uses
+   protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
 
-    @Uses
-    protected ObjectBuilder<SelectUserOrProjectDialog2> userOrProjectSelectionDialog2;
+   @Uses
+   protected ObjectBuilder<SelectUserOrProjectDialog2> userOrProjectSelectionDialog2;
 
-    public void init(@Service ApplicationContext context,
-            @Uses final TaskTableModel model,
-            final @Uses TasksDetailView detailsView,
-            @Structure final ObjectBuilderFactory obf,
-            @Structure ValueBuilderFactory vbf)
-    {
-    	super.init(context, model, detailsView, obf, vbf);
-        taskTable.putClientProperty("terminateEditOnFocusLost", Boolean.FALSE);
-        taskTable.setEditingColumn( 1 );
+   public void init( @Service ApplicationContext context,
+                     @Uses final TaskTableModel model,
+                     final @Uses TasksDetailView detailsView,
+                     @Structure final ObjectBuilderFactory obf,
+                     @Structure ValueBuilderFactory vbf )
+   {
+      super.init( context, model, detailsView, obf, vbf );
+      taskTable.putClientProperty( "terminateEditOnFocusLost", Boolean.FALSE );
+      taskTable.setEditingColumn( 1 );
 
-        TableColumn column = taskTable.getColumnModel().getColumn(1);
-                
-        final AutoCompleteSupport.AutoCompleteCellEditor editor = AutoCompleteSupport.createTableCellEditor(new TableFormat<ListItemValue>()
-        {
-            public int getColumnCount()
+      TableColumn column = taskTable.getColumnModel().getColumn( 1 );
+
+      final AutoCompleteSupport.AutoCompleteCellEditor editor = AutoCompleteSupport.createTableCellEditor( new TableFormat<ListItemValue>()
+      {
+         public int getColumnCount()
+         {
+            return 0;
+         }
+
+         public String getColumnName( int i )
+         {
+            return "";
+         }
+
+         public Object getColumnValue( ListItemValue listItemValue, int i )
+         {
+            return listItemValue.description().get();
+         }
+      }, ((WorkspaceUserInboxModel) model).getProjectsModel().getList(), 1 );
+      editor.getAutoCompleteSupport().setStrict( true );
+      editor.getAutoCompleteSupport().setSelectsTextOnFocusGain( true );
+      editor.setClickCountToStart( 1 );
+      final JComboBox combo = (JComboBox) editor.getComponent();
+
+      column.setCellEditor( editor );
+      column.setCellRenderer( new ListItemTableCellRenderer() );
+
+      column = taskTable.getColumnModel().getColumn( 3 );
+      column.setCellRenderer( new TaskStatusTableCellRenderer() );
+
+   }
+
+   protected void buildPopupMenu( JPopupMenu popup )
+   {
+      ActionMap am = getActionMap();
+      Action markTasksAsUnread = am.get( "markTasksAsUnread" );
+      popup.add( markTasksAsUnread );
+      Action markTasksAsRead = am.get( "markTasksAsRead" );
+      popup.add( markTasksAsRead );
+      Action dropAction = am.get( "dropTasks" );
+      popup.add( dropAction );
+      Action removeTaskAction = am.get( "removeTasks" );
+      popup.add( removeTaskAction );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 3, taskTable, markTasksAsRead, markTasksAsUnread, dropAction, removeTaskAction ) );
+   }
+
+   @Override
+   protected void buildToolbar( JPanel toolbar )
+   {
+      addToolbarButton( toolbar, "createTask" );
+      Action completeAction = addToolbarButton( toolbar, "completeTasks" );
+      Action assignAction = addToolbarButton( toolbar, "assignTasksToMe" );
+      Action forwardTasksFromInbox = addToolbarButton( toolbar, "forwardTasks" );
+      Action delegateTasksFromInbox = addToolbarButton( toolbar, "delegateTasks" );
+      addToolbarButton( toolbar, "refresh" );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 3, taskTable, assignAction, forwardTasksFromInbox, delegateTasksFromInbox, completeAction ) );
+   }
+
+   @Override
+   @org.jdesktop.application.Action
+   public void delegateTasks() throws ResourceException
+   {
+      SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
+
+      dialogSelection = dialog.getSelected();
+      super.delegateTasks();
+   }
+
+   @Override
+   @org.jdesktop.application.Action
+   public void forwardTasks() throws ResourceException
+   {
+      try
+      {
+         List<Integer> selected = getReverseSelectedTasks();
+         for (Integer row : selected)
+         {
+            TaskDTO dto = model.getTask( row );
+            TaskModel taskModel = model.task( dto.task().get().identity() );
+
+            SelectUserOrProjectDialog2 dialog = userOrProjectSelectionDialog2.use( taskModel ).newInstance();
+            dialogs.showOkCancelHelpDialog( this, dialog );
+
+            EntityReference project = dialog.getSelected();
+            if (project != null)
             {
-                return 0;
+               model.forward( row, project.identity() );
+               model.refresh();
             }
-
-            public String getColumnName( int i )
-            {
-                return "";
-            }
-
-            public Object getColumnValue( ListItemValue listItemValue, int i )
-            {
-                return listItemValue.description().get();
-            }
-        }, ((WorkspaceUserInboxModel)model).getProjectsModel().getList(), 1);
-        editor.getAutoCompleteSupport().setStrict( true );
-        editor.getAutoCompleteSupport().setSelectsTextOnFocusGain( true );
-        editor.setClickCountToStart( 1 );
-        final JComboBox combo = (JComboBox) editor.getComponent();
-
-        column.setCellEditor( editor );
-        column.setCellRenderer(new ListItemTableCellRenderer());
-        
-        column = taskTable.getColumnModel().getColumn(3);
-        column.setCellRenderer(new TaskStatusTableCellRenderer());
-        
-    }
-    
-    protected void buildPopupMenu(JPopupMenu popup)
-    {
-        ActionMap am = getActionMap();
-        Action markTasksAsUnread = am.get( "markTasksAsUnread" );
-        popup.add( markTasksAsUnread );
-        Action markTasksAsRead = am.get( "markTasksAsRead" );
-        popup.add( markTasksAsRead );
-        Action dropAction = am.get("dropTasks");
-        popup.add(dropAction);
-        Action removeTaskAction = am.get("removeTasks");
-        popup.add(removeTaskAction);
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(3, taskTable, markTasksAsRead, markTasksAsUnread, dropAction, removeTaskAction));
-    }
-
-    @Override
-    protected void buildToolbar(JPanel toolbar)
-    {
-        addToolbarButton(toolbar, "createTask");
-        Action completeAction = addToolbarButton(toolbar, "completeTasks");
-        Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
-        Action forwardTasksFromInbox = addToolbarButton(toolbar, "forwardTasks");
-        Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
-        addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(3, taskTable, assignAction, forwardTasksFromInbox, delegateTasksFromInbox, completeAction));
-    }
-
-    @Override
-    @org.jdesktop.application.Action
-    public void delegateTasks() throws ResourceException
-    {
-        SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
-
-        dialogSelection = dialog.getSelected();
-        super.delegateTasks();
-    }
-
-    @Override
-    @org.jdesktop.application.Action
-    public void forwardTasks() throws ResourceException
-    {
-        try
-        {
-            List<Integer> selected = getReverseSelectedTasks();
-            for (Integer row : selected)
-            {
-                TaskDTO dto = model.getTask( row );
-                TaskModel taskModel = model.task( dto.task().get().identity() );
-
-                SelectUserOrProjectDialog2 dialog = userOrProjectSelectionDialog2.use( taskModel ).newInstance();
-                dialogs.showOkCancelHelpDialog(this, dialog);
-
-                EntityReference project = dialog.getSelected();
-                if (project != null)
-                {
-                    model.forward(row, project.identity());
-                    model.refresh();
-                }
-            }
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
+         }
+      } catch (Exception e)
+      {
+         e.printStackTrace();
+      }
+   }
 }

@@ -19,5 +19,5 @@ package se.streamsource.streamflow.client.resource;
  */
 public interface CommandNotification
 {
-    void notifyCommandExecuted();
+   void notifyCommandExecuted();
 }

@@ -22,14 +22,14 @@ import org.qi4j.api.property.Property;
  * Configuration of the startup migration service
  */
 public interface StartupMigrationConfiguration
-    extends ConfigurationComposite
+      extends ConfigurationComposite
 {
-    /**
-     * Keep track of the version the application had during the last startup.
-     * Only perform migration if the version was different from the current one.
-     *
-     * @return the last startup version
-     */
-    @Optional
-    Property<String> lastStartupVersion();
+   /**
+    * Keep track of the version the application had during the last startup.
+    * Only perform migration if the version was different from the current one.
+    *
+    * @return the last startup version
+    */
+   @Optional
+   Property<String> lastStartupVersion();
 }

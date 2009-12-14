@@ -27,25 +27,25 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/organizationalunits/{ou}/projects
  */
 public class ProjectsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue projects()
-    {
-        String identity = getRequest().getAttributes().get("ou").toString();
-        Projects.Data projectsState = uowf.currentUnitOfWork().get( Projects.Data.class, identity);
+   public ListValue projects()
+   {
+      String identity = getRequest().getAttributes().get( "ou" ).toString();
+      Projects.Data projectsState = uowf.currentUnitOfWork().get( Projects.Data.class, identity );
 
-        return new ListValueBuilder(vbf).addDescribableItems( projectsState.projects() ).newList();
-    }
+      return new ListValueBuilder( vbf ).addDescribableItems( projectsState.projects() ).newList();
+   }
 
-    public void createProject(StringDTO name) throws ResourceException
-    {
-        String identity = getRequest().getAttributes().get("ou").toString();
+   public void createProject( StringDTO name ) throws ResourceException
+   {
+      String identity = getRequest().getAttributes().get( "ou" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        Projects projects = uow.get(Projects.class, identity);
+      Projects projects = uow.get( Projects.class, identity );
 
-        checkPermission(projects);
-        projects.createProject(name.string().get());
-    }
+      checkPermission( projects );
+      projects.createProject( name.string().get() );
+   }
 }

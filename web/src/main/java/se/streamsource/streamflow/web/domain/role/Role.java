@@ -21,6 +21,6 @@ import se.streamsource.streamflow.domain.roles.Removable;
  * JAVADOC
  */
 public interface Role
-        extends Describable, Removable
+      extends Describable, Removable
 {
 }

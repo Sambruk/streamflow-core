@@ -38,79 +38,79 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class FieldValueEditModel
-    implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventHandler
 {
-    private FieldDefinitionValue value;
+   private FieldDefinitionValue value;
 
-    @Uses
-    ProjectFormDefinitionFieldClientResource fieldResource;
+   @Uses
+   ProjectFormDefinitionFieldClientResource fieldResource;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private EventHandlerFilter eventFilter;
+   private EventHandlerFilter eventFilter;
 
-    public FieldValueEditModel()
-    {
-        eventFilter = new EventHandlerFilter( this, "changedNote");
-    }
+   public FieldValueEditModel()
+   {
+      eventFilter = new EventHandlerFilter( this, "changedNote" );
+   }
 
-    public FieldDefinitionValue getField()
-    {
-        return value;
-    }
+   public FieldDefinitionValue getField()
+   {
+      return value;
+   }
 
-    public void changeMandatory(boolean mandatory) throws ResourceException
-    {
-        ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder(BooleanDTO.class);
-        builder.prototype().bool().set(mandatory);
-        fieldResource.updateMandatory(builder.newInstance());
-    }
+   public void changeMandatory( boolean mandatory ) throws ResourceException
+   {
+      ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
+      builder.prototype().bool().set( mandatory );
+      fieldResource.updateMandatory( builder.newInstance() );
+   }
 
-    public void changeDescription(String newDescription) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newDescription);
-        fieldResource.changeDescription(builder.newInstance());
-    }
+   public void changeDescription( String newDescription ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newDescription );
+      fieldResource.changeDescription( builder.newInstance() );
+   }
 
-    public void changeNote(String newNote) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newNote);
-        fieldResource.changeNote(builder.newInstance());
-    }
+   public void changeNote( String newNote ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newNote );
+      fieldResource.changeNote( builder.newInstance() );
+   }
 
-    public void refresh() throws OperationException
-    {
-        try
-        {
-            FieldDefinitionValue fieldDefinitionValue = fieldResource.field();
-            value = vbf.newValueBuilder(FieldDefinitionValue.class).withPrototype(fieldDefinitionValue).prototype();
+   public void refresh() throws OperationException
+   {
+      try
+      {
+         FieldDefinitionValue fieldDefinitionValue = fieldResource.field();
+         value = vbf.newValueBuilder( FieldDefinitionValue.class ).withPrototype( fieldDefinitionValue ).prototype();
 
-            value.fieldValue().set(
-                vbf.newValueBuilder(FieldValue.class).withPrototype(fieldDefinitionValue.fieldValue().get()).prototype()
-            );
+         value.fieldValue().set(
+               vbf.newValueBuilder( FieldValue.class ).withPrototype( fieldDefinitionValue.fieldValue().get() ).prototype()
+         );
 
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_get_field, e);
-        }
-    }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_get_field, e );
+      }
+   }
 
-    public void notifyEvent(DomainEvent event)
-    {
-        eventFilter.handleEvent( event );
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
+   }
 
-    public boolean handleEvent(DomainEvent event)
-    {
-        if ( value.field().get().identity().equals( event.entity().get() ))
-        {
-            Logger.getLogger("administration").info("Refresh the field values");
-            refresh();
-        }
-        return false;
-    }
+   public boolean handleEvent( DomainEvent event )
+   {
+      if (value.field().get().identity().equals( event.entity().get() ))
+      {
+         Logger.getLogger( "administration" ).info( "Refresh the field values" );
+         refresh();
+      }
+      return false;
+   }
 
 }

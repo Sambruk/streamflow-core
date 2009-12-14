@@ -37,92 +37,92 @@ import java.util.logging.Logger;
  * List of contacts for a task
  */
 public class TaskContactsModel
-        extends AbstractListModel
-        implements Refreshable, EventListener, EventHandler
+      extends AbstractListModel
+      implements Refreshable, EventListener, EventHandler
 
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Uses
-    private TaskContactsClientResource contactsClientResource;
+   @Uses
+   private TaskContactsClientResource contactsClientResource;
 
-    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "addedContact", "deletedContact", "updatedContact");
+   EventHandlerFilter eventFilter = new EventHandlerFilter( this, "addedContact", "deletedContact", "updatedContact" );
 
-    public TaskContactsModel()
-    {
-    }
+   public TaskContactsModel()
+   {
+   }
 
-    List<ContactValue> contacts = Collections.emptyList();
+   List<ContactValue> contacts = Collections.emptyList();
 
-    public void refresh()
-    {
-        try
-        {
-            TaskContactsDTO contactsDTO = (TaskContactsDTO) contactsClientResource.contacts().buildWith().prototype();
-            contacts = contactsDTO.contacts().get();
-            fireContentsChanged(this, 0, getSize());
-        } catch (Exception e)
-        {
-            throw new OperationException(TaskResources.could_not_refresh, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         TaskContactsDTO contactsDTO = (TaskContactsDTO) contactsClientResource.contacts().buildWith().prototype();
+         contacts = contactsDTO.contacts().get();
+         fireContentsChanged( this, 0, getSize() );
+      } catch (Exception e)
+      {
+         throw new OperationException( TaskResources.could_not_refresh, e );
+      }
+   }
 
-    public List<ContactValue> getContacts()
-    {
-        return contacts;
-    }
+   public List<ContactValue> getContacts()
+   {
+      return contacts;
+   }
 
-    public TaskContactsClientResource getTaskContactsClientResource()
-    {
-        return contactsClientResource;
-    }
+   public TaskContactsClientResource getTaskContactsClientResource()
+   {
+      return contactsClientResource;
+   }
 
-    public int getSize()
-    {
-        return contacts.size();
-    }
+   public int getSize()
+   {
+      return contacts.size();
+   }
 
-    public Object getElementAt(int i)
-    {
-        return contacts.get(i);
-    }
+   public Object getElementAt( int i )
+   {
+      return contacts.get( i );
+   }
 
-    public void createContact()
-    {
-        try
-        {
-            contactsClientResource.add();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_create_contact, e);
-        }
-    }
+   public void createContact()
+   {
+      try
+      {
+         contactsClientResource.add();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_create_contact, e );
+      }
+   }
 
-    public void removeElement(int selectedIndex)
-    {
-        try
-        {
-            contactsClientResource.taskContact(selectedIndex).deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_remove_contact, e);
-        }
-    }
+   public void removeElement( int selectedIndex )
+   {
+      try
+      {
+         contactsClientResource.taskContact( selectedIndex ).deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_remove_contact, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        eventFilter.handleEvent( event );
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
+   }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        if (contactsClientResource.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get()))
-        {
-            Logger.getLogger("workspace").info("Refresh task contacts");
-            refresh();
-        }
+   public boolean handleEvent( DomainEvent event )
+   {
+      if (contactsClientResource.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get() ))
+      {
+         Logger.getLogger( "workspace" ).info( "Refresh task contacts" );
+         refresh();
+      }
 
-        return false;
-    }
+      return false;
+   }
 }

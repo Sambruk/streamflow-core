@@ -20,6 +20,6 @@ import se.streamsource.streamflow.domain.roles.Describable;
  * JAVADOC
  */
 public interface Assignee
-        extends Describable
+      extends Describable
 {
 }

@@ -24,35 +24,35 @@ import se.streamsource.streamflow.web.domain.project.ProjectEntity;
  * JAVADOC
  */
 public class ProjectsSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    OrganizationalUnitsSteps ouSteps;
+   @Uses
+   OrganizationalUnitsSteps ouSteps;
 
-    public ProjectEntity givenProject;
+   public ProjectEntity givenProject;
 
 
-    @Given("project named $project")
-    public void givenProject(String name)
-    {
-        givenProject = ouSteps.givenOu.getProjectByName( name );
-    }
+   @Given("project named $project")
+   public void givenProject( String name )
+   {
+      givenProject = ouSteps.givenOu.getProjectByName( name );
+   }
 
-    @When("a project named $name is created")
-    public void createProject(String name)
-    {
-        givenProject = ouSteps.givenOu.createProject(name);
-    }
+   @When("a project named $name is created")
+   public void createProject( String name )
+   {
+      givenProject = ouSteps.givenOu.createProject( name );
+   }
 
-    @When("project is added")
-    public void addProject()
-    {
-        ouSteps.givenOu.addProject(givenProject);
-    }
+   @When("project is added")
+   public void addProject()
+   {
+      ouSteps.givenOu.addProject( givenProject );
+   }
 
-    @When("project is removed")
-    public void removeProject()
-    {
-        ouSteps.givenOu.removeProject(givenProject);
-    }
+   @When("project is removed")
+   public void removeProject()
+   {
+      ouSteps.givenOu.removeProject( givenProject );
+   }
 }

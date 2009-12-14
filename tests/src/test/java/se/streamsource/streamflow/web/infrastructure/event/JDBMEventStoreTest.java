@@ -23,15 +23,15 @@ import se.streamsource.streamflow.infrastructure.event.AbstractEventStoreTest;
  * JAVADOC
  */
 public class JDBMEventStoreTest
-    extends AbstractEventStoreTest
+      extends AbstractEventStoreTest
 {
-    public void assemble( ModuleAssembly module) throws AssemblyException
-    {
-        super.assemble( module );
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      super.assemble( module );
 
-        module.layerAssembly().applicationAssembly().setName( "jdbmeventstoretest" );
+      module.layerAssembly().applicationAssembly().setName( "jdbmeventstoretest" );
 
-        module.addServices( FileConfiguration.class );
-        module.addServices( JdbmEventStoreService.class);
-    }
+      module.addServices( FileConfiguration.class );
+      module.addServices( JdbmEventStoreService.class );
+   }
 }

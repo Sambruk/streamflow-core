@@ -33,66 +33,66 @@ import java.util.List;
  * /organizations/{organization}/tasktypes/{forms}/forms/{index}/fields
  */
 public class FormDefinitionFieldsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue fields()
-    {
-        String identity = getRequest().getAttributes().get("forms").toString();
-        String index = getRequest().getAttributes().get("index").toString();
+   public ListValue fields()
+   {
+      String identity = getRequest().getAttributes().get( "forms" ).toString();
+      String index = getRequest().getAttributes().get( "index" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormsQueries forms = uow.get( FormsQueries.class, identity);
+      FormsQueries forms = uow.get( FormsQueries.class, identity );
 
-        checkPermission(forms);
+      checkPermission( forms );
 
-        List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
+      List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
 
-        ListItemValue value = itemValues.get(Integer.parseInt(index));
+      ListItemValue value = itemValues.get( Integer.parseInt( index ) );
 
-        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
 
-        return new ListValueBuilder(vbf).addDescribableItems( form.fields()).newList();
-    }
+      return new ListValueBuilder( vbf ).addDescribableItems( form.fields() ).newList();
+   }
 
-    public void addField(CreateFieldDTO createFieldDTO)
-    {
-        String identity = getRequest().getAttributes().get("forms").toString();
+   public void addField( CreateFieldDTO createFieldDTO )
+   {
+      String identity = getRequest().getAttributes().get( "forms" ).toString();
 
-        String index = getRequest().getAttributes().get("index").toString();
+      String index = getRequest().getAttributes().get( "index" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormsQueries forms = uow.get( FormsQueries.class, identity);
+      FormsQueries forms = uow.get( FormsQueries.class, identity );
 
-        checkPermission(forms);
+      checkPermission( forms );
 
-        List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
+      List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
 
-        ListItemValue value = itemValues.get(Integer.parseInt(index));
+      ListItemValue value = itemValues.get( Integer.parseInt( index ) );
 
-        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
 
-        form.createField(createFieldDTO.name().get(), getFieldValue(createFieldDTO.fieldType().get()));
-    }
+      form.createField( createFieldDTO.name().get(), getFieldValue( createFieldDTO.fieldType().get() ) );
+   }
 
-    private FieldValue getFieldValue(FieldTypes fieldType)
-    {
-        FieldValue value = null;
-        switch (fieldType)
-        {
-            case text:
-                ValueBuilder<FieldValue> valueBuilder = vbf.newValueBuilder(FieldValue.class);
-                value = valueBuilder.newInstance();
-                break;
-            case number:
-            case date:
-            case single_selection:
-            case multi_selection:
-            case comment:
-            case page_break:
+   private FieldValue getFieldValue( FieldTypes fieldType )
+   {
+      FieldValue value = null;
+      switch (fieldType)
+      {
+         case text:
+            ValueBuilder<FieldValue> valueBuilder = vbf.newValueBuilder( FieldValue.class );
+            value = valueBuilder.newInstance();
+            break;
+         case number:
+         case date:
+         case single_selection:
+         case multi_selection:
+         case comment:
+         case page_break:
 
-        }
-        return value;
-    }
+      }
+      return value;
+   }
 }

@@ -20,6 +20,6 @@ import se.streamsource.streamflow.domain.roles.Describable;
  * JAVADOC
  */
 public interface Contact
-        extends Contactable, Describable
+      extends Contactable, Describable
 {
 }

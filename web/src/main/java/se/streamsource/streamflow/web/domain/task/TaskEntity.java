@@ -31,29 +31,29 @@ import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
  */
 @SideEffects(AssignTaskIdSideEffect.class)
 public interface TaskEntity
-        extends Task,
-        // Data
-        Assignable.Data,
-        Commentable.Data,
-        Contacts.Data,
-        CreatedOn,
-        Delegatable.Data,
-        Describable.Data,
-        DueOn.Data,
-        Labelable.Data,
-        Notable.Data,
-        Ownable.Data,
-        SubmittedForms.Data,
-        TaskStatus.Data,
-        TaskId.Data,
-        TaskQueries,
-        TypedTask.Data,
+      extends Task,
+      // Data
+      Assignable.Data,
+      Commentable.Data,
+      Contacts.Data,
+      CreatedOn,
+      Delegatable.Data,
+      Describable.Data,
+      DueOn.Data,
+      Labelable.Data,
+      Notable.Data,
+      Ownable.Data,
+      SubmittedForms.Data,
+      TaskStatus.Data,
+      TaskId.Data,
+      TaskQueries,
+      TypedTask.Data,
 
-        // Queries
-        SubmittedFormsQueries,
-        TaskLabelsQueries,
-        TaskTypeQueries,
+      // Queries
+      SubmittedFormsQueries,
+      TaskLabelsQueries,
+      TaskTypeQueries,
 
-        DomainEntity
+      DomainEntity
 {
 }

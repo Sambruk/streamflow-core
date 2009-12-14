@@ -19,6 +19,6 @@ package se.streamsource.streamflow.domain.organization;
  */
 public enum AdministrationType
 {
-    organization,
-    organizationalunit
+   organization,
+   organizationalunit
 }

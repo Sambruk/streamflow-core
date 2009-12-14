@@ -25,8 +25,11 @@ import org.jdesktop.swingx.search.Searchable;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.LoggerCategories;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
+import java.awt.FlowLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.logging.Handler;
@@ -37,156 +40,156 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class StatusBarView
-        extends JXStatusBar
+      extends JXStatusBar
 {
-    public JXFindBar searchField;
+   public JXFindBar searchField;
 
-    public StatusBarView(final @Service ApplicationContext context)
-    {
-        final ResourceMap resources = context.getResourceMap(StatusResources.class);
+   public StatusBarView( final @Service ApplicationContext context )
+   {
+      final ResourceMap resources = context.getResourceMap( StatusResources.class );
 
-        searchField = new JXFindBar()
-        {
-            JComboBox box = new JComboBox();
+      searchField = new JXFindBar()
+      {
+         JComboBox box = new JComboBox();
 
-            /*
-                        @Override
-                        protected void initComponents()
-                        {
-                            super.initComponents();
-                            searchField = (JTextField) box.getEditor().getEditorComponent();
-                        }
+         /*
+                     @Override
+                     protected void initComponents()
+                     {
+                         super.initComponents();
+                         searchField = (JTextField) box.getEditor().getEditorComponent();
+                     }
 
-            */
-            @Override
-            protected void build()
-            {
-                setLayout(new FlowLayout(SwingConstants.LEADING));
-                add(searchField);
-                add(findNext);
-                add(findPrevious);
+         */
+         @Override
+         protected void build()
+         {
+            setLayout( new FlowLayout( SwingConstants.LEADING ) );
+            add( searchField );
+            add( findNext );
+            add( findPrevious );
 
 //                AutoCompleteDecorator.decorate(searchField, searchable.);
-            }
+         }
 
-            @Override
-            public void setSearchable(Searchable searchable)
-            {
-                super.setSearchable(searchable);
+         @Override
+         public void setSearchable( Searchable searchable )
+         {
+            super.setSearchable( searchable );
 
-                if (searchField != null)
-                    searchField.setText("");
-            }
-        };
-        JXStatusBar.Constraint c1 = new JXStatusBar.Constraint();
-        c1.setFixedWidth(600);
+            if (searchField != null)
+               searchField.setText( "" );
+         }
+      };
+      JXStatusBar.Constraint c1 = new JXStatusBar.Constraint();
+      c1.setFixedWidth( 600 );
 //        add(searchField, c1);     // Fixed width of 400 with no inserts
 
-        final JLabel statusLabel = new JLabel();
-        statusLabel.setOpaque(true);
-        JXStatusBar.Constraint c2 = new JXStatusBar.Constraint();
-        c2.setFixedWidth(200);
-        add(statusLabel, JXStatusBar.Constraint.ResizeBehavior.FILL);
-        JXStatusBar.Constraint c3 = new JXStatusBar.Constraint(
-                JXStatusBar.Constraint.ResizeBehavior.FILL); // Fill with no inserts
-        final JProgressBar pbar = new JProgressBar();
-        add(pbar, JXStatusBar.Constraint.ResizeBehavior.FIXED);            // Fill with no inserts - will use remaining space
+      final JLabel statusLabel = new JLabel();
+      statusLabel.setOpaque( true );
+      JXStatusBar.Constraint c2 = new JXStatusBar.Constraint();
+      c2.setFixedWidth( 200 );
+      add( statusLabel, JXStatusBar.Constraint.ResizeBehavior.FILL );
+      JXStatusBar.Constraint c3 = new JXStatusBar.Constraint(
+            JXStatusBar.Constraint.ResizeBehavior.FILL ); // Fill with no inserts
+      final JProgressBar pbar = new JProgressBar();
+      add( pbar, JXStatusBar.Constraint.ResizeBehavior.FIXED );            // Fill with no inserts - will use remaining space
 
-        Logger.getLogger(LoggerCategories.STATUS).addHandler(new Handler()
-        {
-            public void publish(LogRecord record)
-            {
-                String status = record.getMessage();
+      Logger.getLogger( LoggerCategories.STATUS ).addHandler( new Handler()
+      {
+         public void publish( LogRecord record )
+         {
+            String status = record.getMessage();
 
-                String localizedStatus = resources.getString(status);
-                if (localizedStatus != null)
-                    status = localizedStatus;
+            String localizedStatus = resources.getString( status );
+            if (localizedStatus != null)
+               status = localizedStatus;
 
-                final String text = status;
+            final String text = status;
 
-                statusLabel.setText(text);
+            statusLabel.setText( text );
 /*
                 statusLabel.repaint();
                 StatusBarView.this.repaint();
                 StatusBarView.this.revalidate();
 */
-            }
+         }
 
-            public void flush()
+         public void flush()
+         {
+         }
+
+         public void close() throws SecurityException
+         {
+         }
+      } );
+
+      Logger.getLogger( LoggerCategories.PROGRESS ).addHandler( new StatusLogHandler( pbar ) );
+
+      Logger.getLogger( LoggerCategories.STATUS ).info( StatusResources.ready.name() );
+
+      context.getTaskMonitor().addPropertyChangeListener( new PropertyChangeListener()
+      {
+         public void propertyChange( PropertyChangeEvent evt )
+         {
+            if (context.getTaskMonitor().getForegroundTask() == null)
             {
-            }
-
-            public void close() throws SecurityException
-            {
-            }
-        });
-
-        Logger.getLogger(LoggerCategories.PROGRESS).addHandler(new StatusLogHandler(pbar));
-
-        Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.ready.name());
-
-        context.getTaskMonitor().addPropertyChangeListener(new PropertyChangeListener()
-        {
-            public void propertyChange(PropertyChangeEvent evt)
-            {
-                if (context.getTaskMonitor().getForegroundTask() == null)
-                {
-                    Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.ready.name());
-                    Logger.getLogger(LoggerCategories.PROGRESS).info(LoggerCategories.DONE);
-                } else
-                {
-                    Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.loading.name());
-                    Logger.getLogger(LoggerCategories.PROGRESS).info("loading");
-                }
-            }
-        });
-    }
-
-    public JXFindBar getSearchField()
-    {
-        return searchField;
-    }
-
-    private static class StatusLogHandler extends Handler
-    {
-        private final JProgressBar pbar;
-
-        public StatusLogHandler(JProgressBar pbar)
-        {
-            this.pbar = pbar;
-        }
-
-        public void publish(LogRecord record)
-        {
-            JXFrame frame = (JXFrame) ((SingleFrameApplication) Application.getInstance()).getMainFrame();
-
-            String[] message = record.getMessage().split("/");
-            if (message.length == 1)
-            {
-                if (message[0].equals(LoggerCategories.DONE))
-                {
-                    pbar.setIndeterminate(false);
-                    frame.setWaiting(false);
-                } else
-                {
-                    pbar.setIndeterminate(true);
-                    frame.setWaiting(true);
-                }
+               Logger.getLogger( LoggerCategories.STATUS ).info( StatusResources.ready.name() );
+               Logger.getLogger( LoggerCategories.PROGRESS ).info( LoggerCategories.DONE );
             } else
             {
-                int max = Integer.parseInt(message[1]);
-                int current = Integer.parseInt(message[0]);
-                pbar.setMaximum(max);
-                pbar.setValue(current);
+               Logger.getLogger( LoggerCategories.STATUS ).info( StatusResources.loading.name() );
+               Logger.getLogger( LoggerCategories.PROGRESS ).info( "loading" );
             }
-        }
+         }
+      } );
+   }
 
-        public void flush()
-        {
-        }
+   public JXFindBar getSearchField()
+   {
+      return searchField;
+   }
 
-        public void close() throws SecurityException
-        {
-        }
-    }
+   private static class StatusLogHandler extends Handler
+   {
+      private final JProgressBar pbar;
+
+      public StatusLogHandler( JProgressBar pbar )
+      {
+         this.pbar = pbar;
+      }
+
+      public void publish( LogRecord record )
+      {
+         JXFrame frame = (JXFrame) ((SingleFrameApplication) Application.getInstance()).getMainFrame();
+
+         String[] message = record.getMessage().split( "/" );
+         if (message.length == 1)
+         {
+            if (message[0].equals( LoggerCategories.DONE ))
+            {
+               pbar.setIndeterminate( false );
+               frame.setWaiting( false );
+            } else
+            {
+               pbar.setIndeterminate( true );
+               frame.setWaiting( true );
+            }
+         } else
+         {
+            int max = Integer.parseInt( message[1] );
+            int current = Integer.parseInt( message[0] );
+            pbar.setMaximum( max );
+            pbar.setValue( current );
+         }
+      }
+
+      public void flush()
+      {
+      }
+
+      public void close() throws SecurityException
+      {
+      }
+   }
 }

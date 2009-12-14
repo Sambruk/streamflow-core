@@ -23,10 +23,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
  * {@link i18n} class to get the actual message. This ensures that all messages use i18n properly.
  */
 public class OperationException
-        extends RuntimeException
+      extends RuntimeException
 {
-    public OperationException(Enum messageEnum, Throwable cause)
-    {
-        super(i18n.text(messageEnum), cause);
-    }
+   public OperationException( Enum messageEnum, Throwable cause )
+   {
+      super( i18n.text( messageEnum ), cause );
+   }
 }

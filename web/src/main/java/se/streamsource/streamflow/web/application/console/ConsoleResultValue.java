@@ -26,13 +26,13 @@ import java.util.logging.LogRecord;
  * JAVADOC
  */
 public interface ConsoleResultValue
-    extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<Map> bindings();
+   @UseDefaults
+   Property<Map> bindings();
 
-    @UseDefaults
-    Property<List<LogRecord>> log();
+   @UseDefaults
+   Property<List<LogRecord>> log();
 
-    Property<String> out();
+   Property<String> out();
 }

@@ -22,8 +22,8 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface IntegerDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<Integer> integer();
+   @UseDefaults
+   Property<Integer> integer();
 }

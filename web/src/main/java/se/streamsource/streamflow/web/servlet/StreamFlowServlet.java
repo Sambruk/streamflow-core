@@ -23,36 +23,36 @@ import se.streamsource.streamflow.web.rest.StreamFlowRestApplication;
  * JAVADOC
  */
 public class StreamFlowServlet
-        extends ServerServlet
+      extends ServerServlet
 {
-    @Override
-    protected Application createApplication( Context context )
-    {
-        try
-        {
-            return new StreamFlowRestApplication( context.createChildContext() );
-        } catch (Exception e)
-        {
-            // TODO This sucks
-            e.printStackTrace();
-            return null;
-        }
-    }
+   @Override
+   protected Application createApplication( Context context )
+   {
+      try
+      {
+         return new StreamFlowRestApplication( context.createChildContext() );
+      } catch (Exception e)
+      {
+         // TODO This sucks
+         e.printStackTrace();
+         return null;
+      }
+   }
 
-    @Override
-    public void destroy()
-    {
-        if ((getApplication() != null) && (getApplication().isStarted()))
-        {
-            try
-            {
-                getApplication().stop();
-            } catch (Exception e)
-            {
-                log( "Error during the stopping of the Restlet Application", e );
-            }
-        }
+   @Override
+   public void destroy()
+   {
+      if ((getApplication() != null) && (getApplication().isStarted()))
+      {
+         try
+         {
+            getApplication().stop();
+         } catch (Exception e)
+         {
+            log( "Error during the stopping of the Restlet Application", e );
+         }
+      }
 
-        super.destroy();
-    }
+      super.destroy();
+   }
 }

@@ -26,17 +26,17 @@ import java.util.Date;
  * JAVADOC
  */
 public interface TaskDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> task();
+   Property<EntityReference> task();
 
-    Property<String> description();
+   Property<String> description();
 
-    Property<Date> creationDate();
+   Property<Date> creationDate();
 
-    Property<TaskStates> status();
+   Property<TaskStates> status();
 
-    Property<ListValue> labels();
+   Property<ListValue> labels();
 
-    Property<Boolean> isRead();
+   Property<Boolean> isRead();
 }

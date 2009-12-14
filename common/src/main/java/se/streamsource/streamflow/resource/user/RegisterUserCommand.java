@@ -22,11 +22,11 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
  * JAVADOC
  */
 public interface RegisterUserCommand
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<String> username();
+   Property<String> username();
 
-    Property<String> password();
+   Property<String> password();
 
-    Property<ContactValue> contact();
+   Property<ContactValue> contact();
 }

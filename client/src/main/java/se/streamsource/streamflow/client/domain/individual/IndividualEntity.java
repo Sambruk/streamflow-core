@@ -20,8 +20,8 @@ import org.qi4j.api.entity.EntityComposite;
  * JAVADOC
  */
 public interface IndividualEntity
-        extends Individual,
-        Accounts.Data,
-        EntityComposite
+      extends Individual,
+      Accounts.Data,
+      EntityComposite
 {
 }

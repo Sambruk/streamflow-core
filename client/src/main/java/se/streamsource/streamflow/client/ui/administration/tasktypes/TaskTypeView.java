@@ -26,14 +26,14 @@ import javax.swing.JTabbedPane;
  * JAVADOC
  */
 public class TaskTypeView
-        extends JTabbedPane
+      extends JTabbedPane
 {
-    public TaskTypeView(@Uses SelectedLabelsView selectedLabelsView)
+   public TaskTypeView( @Uses SelectedLabelsView selectedLabelsView )
 //                       @Uses FormsAdminView formsView)
-    {
-        super();
+   {
+      super();
 
-        addTab( i18n.text( AdministrationResources.labels_tab), selectedLabelsView );
-        addTab(i18n.text( AdministrationResources.forms_tab ), new JLabel("Forms TODO"));
-    }
+      addTab( i18n.text( AdministrationResources.labels_tab ), selectedLabelsView );
+      addTab( i18n.text( AdministrationResources.forms_tab ), new JLabel( "Forms TODO" ) );
+   }
 }

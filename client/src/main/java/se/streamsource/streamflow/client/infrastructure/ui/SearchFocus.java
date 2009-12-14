@@ -31,23 +31,23 @@ import java.awt.event.FocusListener;
  */
 public class SearchFocus implements FocusListener
 {
-    @Uses
-    Searchable searchable;
-    @Service
-    SingleFrameApplication app;
+   @Uses
+   Searchable searchable;
+   @Service
+   SingleFrameApplication app;
 
-    public void focusGained(FocusEvent e)
-    {
-        StatusBarView statusBarView = (StatusBarView) ((JXFrame) app.getMainFrame()).getStatusBar();
-        statusBarView.getSearchField().setSearchable(searchable);
-    }
+   public void focusGained( FocusEvent e )
+   {
+      StatusBarView statusBarView = (StatusBarView) ((JXFrame) app.getMainFrame()).getStatusBar();
+      statusBarView.getSearchField().setSearchable( searchable );
+   }
 
-    public void focusLost(FocusEvent e)
-    {
+   public void focusLost( FocusEvent e )
+   {
 /*
         StatusBarView statusBarView = (StatusBarView) ((JXFrame) app.getMainFrame()).getStatusBar();
         if (statusBarView.getSearchField().)
         statusBarView.getSearchField().setSearchable(null);
 */
-    }
+   }
 }

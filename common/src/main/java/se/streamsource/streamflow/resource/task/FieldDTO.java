@@ -14,15 +14,16 @@
 
 package se.streamsource.streamflow.resource.task;
 
-import org.qi4j.api.value.ValueComposite;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC
  */
 public interface FieldDTO
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<String> field();
-    Property<String> value();
+   Property<String> field();
+
+   Property<String> value();
 }

@@ -33,82 +33,84 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEnti
 @Mixins(Projects.Mixin.class)
 public interface Projects
 {
-    ProjectEntity createProject(String name);
+   ProjectEntity createProject( String name );
 
-    boolean removeProject(Project project);
+   boolean removeProject( Project project );
 
-    void addProject(Project project);
+   void addProject( Project project );
 
-    interface Data
-    {
-        @Aggregated
-        ManyAssociation<Project> projects();
+   interface Data
+   {
+      @Aggregated
+      ManyAssociation<Project> projects();
 
-        ProjectEntity createdProject(DomainEvent event, String id);
-        void removedProject(DomainEvent event, Project project);
-        void addedProject(DomainEvent event, Project project);
+      ProjectEntity createdProject( DomainEvent event, String id );
 
-        void mergeProjects(Projects projects);
+      void removedProject( DomainEvent event, Project project );
 
-        ProjectEntity getProjectByName(String name);
-    }
+      void addedProject( DomainEvent event, Project project );
 
-    abstract class Mixin
-            implements Projects, Data
-    {
-        @This
-        OrganizationalUnitEntity ou;
+      void mergeProjects( Projects projects );
 
-        @Service
-        IdentityGenerator idgen;
+      ProjectEntity getProjectByName( String name );
+   }
 
-        @Structure
-        UnitOfWorkFactory uowf;
+   abstract class Mixin
+         implements Projects, Data
+   {
+      @This
+      OrganizationalUnitEntity ou;
 
-        public ProjectEntity createProject(String name)
-        {
-            String id = idgen.generate(ProjectEntity.class);
+      @Service
+      IdentityGenerator idgen;
 
-            ProjectEntity project = createdProject(DomainEvent.CREATE, id);
-            addedProject(DomainEvent.CREATE, project);
-            project.changeDescription(name);
+      @Structure
+      UnitOfWorkFactory uowf;
 
-            return project;
-        }
+      public ProjectEntity createProject( String name )
+      {
+         String id = idgen.generate( ProjectEntity.class );
 
-        public ProjectEntity createdProject(DomainEvent event, String id)
-        {
-            EntityBuilder<ProjectEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(ProjectEntity.class, id);
-            builder.instance().organizationalUnit().set(ou);
-            return builder.newInstance();
-        }
+         ProjectEntity project = createdProject( DomainEvent.CREATE, id );
+         addedProject( DomainEvent.CREATE, project );
+         project.changeDescription( name );
 
-        public void mergeProjects(Projects projects)
-        {
-            while (this.projects().count() >0)
-            {
-                Project project = this.projects().get(0);
-                removeProject(project);
-                projects.addProject(project);
-            }
+         return project;
+      }
 
-        }
+      public ProjectEntity createdProject( DomainEvent event, String id )
+      {
+         EntityBuilder<ProjectEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( ProjectEntity.class, id );
+         builder.instance().organizationalUnit().set( ou );
+         return builder.newInstance();
+      }
 
-        public void addProject(Project project)
-        {
+      public void mergeProjects( Projects projects )
+      {
+         while (this.projects().count() > 0)
+         {
+            Project project = this.projects().get( 0 );
+            removeProject( project );
+            projects.addProject( project );
+         }
 
-            if (projects().contains(project))
-            {
-                return;
-            }
-            addedProject(DomainEvent.CREATE, project);
-        }
+      }
 
-        public ProjectEntity getProjectByName( String name )
-        {
-            return (ProjectEntity) Describable.Mixin.getDescribable( projects(), name );
-        }
-    }
+      public void addProject( Project project )
+      {
+
+         if (projects().contains( project ))
+         {
+            return;
+         }
+         addedProject( DomainEvent.CREATE, project );
+      }
+
+      public ProjectEntity getProjectByName( String name )
+      {
+         return (ProjectEntity) Describable.Mixin.getDescribable( projects(), name );
+      }
+   }
 
 
 }

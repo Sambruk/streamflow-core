@@ -16,21 +16,22 @@ package se.streamsource.streamflow.client.ui.overview;
 
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
  * JAVADOC
  */
 public class OverviewProjectWaitingForView
-        extends TaskTableView
+      extends TaskTableView
 {
 
-    protected void buildPopupMenu(JPopupMenu popup)
-    {
-    }
+   protected void buildPopupMenu( JPopupMenu popup )
+   {
+   }
 
-    @Override
-    protected void buildToolbar(JPanel toolbar)
-    {
-    }
+   @Override
+   protected void buildToolbar( JPanel toolbar )
+   {
+   }
 }

@@ -39,184 +39,184 @@ import java.util.logging.Logger;
  */
 @Mixins(FileConfiguration.Mixin.class)
 public interface FileConfiguration
-        extends ServiceComposite, Activatable
+      extends ServiceComposite, Activatable
 {
-    public enum OS
-    {
-        windows, unix, mac
-    }
+   public enum OS
+   {
+      windows, unix, mac
+   }
 
-    OS os();
+   OS os();
 
-    File configurationDirectory();
+   File configurationDirectory();
 
-    File dataDirectory();
+   File dataDirectory();
 
-    File temporaryDirectory();
+   File temporaryDirectory();
 
-    File cacheDirectory();
+   File cacheDirectory();
 
-    File logDirectory();
+   File logDirectory();
 
-    interface Data
-    {
-        Property<OS> os();
+   interface Data
+   {
+      Property<OS> os();
 
-        Property<String> application();
+      Property<String> application();
 
-        Property<File> configuration();
+      Property<File> configuration();
 
-        Property<File> data();
+      Property<File> data();
 
-        Property<File> temporary();
+      Property<File> temporary();
 
-        Property<File> cache();
+      Property<File> cache();
 
-        Property<File> log();
-    }
+      Property<File> log();
+   }
 
-    abstract class Mixin
-            implements FileConfiguration, Activatable
-    {
-        @This
-        Data data;
+   abstract class Mixin
+         implements FileConfiguration, Activatable
+   {
+      @This
+      Data data;
 
-        @Uses
-        ServiceDescriptor descriptor;
+      @Uses
+      ServiceDescriptor descriptor;
 
-        @Structure
-        Application app;
+      @Structure
+      Application app;
 
-        public void activate() throws Exception
-        {
-            OS os = detectOS();
+      public void activate() throws Exception
+      {
+         OS os = detectOS();
 
-            data.os().set(os);
-            Logger.getLogger(getClass().getName()).info("Operating system:" + os.name());
+         data.os().set( os );
+         Logger.getLogger( getClass().getName() ).info( "Operating system:" + os.name() );
 
-            // Get bundle with application name and configured directories
-            String user = System.getenv( "USERPROFILE" ); // On Windows we use this instead of user.home
-            if (user == null)
-                user = System.getProperty("user.home");
-            ResourceBundle bundle = ResourceBundle.getBundle(FileConfiguration.class.getName(), new Locale(os.name()));
+         // Get bundle with application name and configured directories
+         String user = System.getenv( "USERPROFILE" ); // On Windows we use this instead of user.home
+         if (user == null)
+            user = System.getProperty( "user.home" );
+         ResourceBundle bundle = ResourceBundle.getBundle( FileConfiguration.class.getName(), new Locale( os.name() ) );
 
-            // Set application name. This is taken from the Qi4j application but can be overriden by a system property
-            String application = System.getProperty("application", app.name() );
-            data.application().set(application);
+         // Set application name. This is taken from the Qi4j application but can be overriden by a system property
+         String application = System.getProperty( "application", app.name() );
+         data.application().set( application );
 
-            // Temp dir
-            String temp = System.getProperty("java.io.tmpdir");
+         // Temp dir
+         String temp = System.getProperty( "java.io.tmpdir" );
 
-            // Arguments available to use in directory specifications
-            String[] args = new String[]{application, user, os.name(), temp};
+         // Arguments available to use in directory specifications
+         String[] args = new String[]{application, user, os.name(), temp};
 
-            data.configuration().set(new File(MessageFormat.format(bundle.getString("configuration"), args)));
-            data.data().set(new File(MessageFormat.format(bundle.getString("data"), args)));
-            data.temporary().set(new File(MessageFormat.format(bundle.getString("temporary"), args)));
-            data.cache().set(new File(MessageFormat.format(bundle.getString("cache"), args)));
-            data.log().set(new File(MessageFormat.format(bundle.getString("log"), args)));
+         data.configuration().set( new File( MessageFormat.format( bundle.getString( "configuration" ), args ) ) );
+         data.data().set( new File( MessageFormat.format( bundle.getString( "data" ), args ) ) );
+         data.temporary().set( new File( MessageFormat.format( bundle.getString( "temporary" ), args ) ) );
+         data.cache().set( new File( MessageFormat.format( bundle.getString( "cache" ), args ) ) );
+         data.log().set( new File( MessageFormat.format( bundle.getString( "log" ), args ) ) );
 
-            autoCreateDirectories();
+         autoCreateDirectories();
 
-            testCleanup();
-        }
+         testCleanup();
+      }
 
-        public void passivate() throws Exception
-        {
-            testCleanup();
-        }
+      public void passivate() throws Exception
+      {
+         testCleanup();
+      }
 
-        public OS os()
-        {
-            return data.os().get();
-        }
+      public OS os()
+      {
+         return data.os().get();
+      }
 
-        public File configurationDirectory()
-        {
-            return data.configuration().get();
-        }
+      public File configurationDirectory()
+      {
+         return data.configuration().get();
+      }
 
-        public File dataDirectory()
-        {
-            return data.data().get();
-        }
+      public File dataDirectory()
+      {
+         return data.data().get();
+      }
 
-        public File temporaryDirectory()
-        {
-            return data.temporary().get();
-        }
+      public File temporaryDirectory()
+      {
+         return data.temporary().get();
+      }
 
-        public File cacheDirectory()
-        {
-            return data.cache().get();
-        }
+      public File cacheDirectory()
+      {
+         return data.cache().get();
+      }
 
-        public File logDirectory()
-        {
-            return data.log().get();
-        }
+      public File logDirectory()
+      {
+         return data.log().get();
+      }
 
-        private void testCleanup()
-        {
-            if (app.mode().equals(Application.Mode.test))
+      private void testCleanup()
+      {
+         if (app.mode().equals( Application.Mode.test ))
+         {
+            // Delete test data
+            delete( configurationDirectory() );
+            delete( dataDirectory() );
+            delete( temporaryDirectory() );
+            delete( cacheDirectory() );
+            delete( logDirectory() );
+         }
+      }
+
+
+      private boolean delete( File file )
+      {
+         if (!file.exists())
+            return true;
+
+         if (file.isFile())
+         {
+            return file.delete();
+         } else
+         {
+            for (File childFile : file.listFiles())
             {
-                // Delete test data
-                delete(configurationDirectory());
-                delete(dataDirectory());
-                delete(temporaryDirectory());
-                delete(cacheDirectory());
-                delete(logDirectory());
+               if (!delete( childFile ))
+                  return false;
             }
-        }
 
+            return file.delete();
+         }
+      }
 
-        private boolean delete(File file)
-        {
-            if (!file.exists())
-                return true;
+      private OS detectOS()
+      {
+         String osName = System.getProperty( "os.name" ).toLowerCase();
+         OS os;
+         if (osName.indexOf( "win" ) != -1)
+            os = OS.windows;
+         else if (osName.indexOf( "mac" ) != -1)
+            os = OS.mac;
+         else
+            os = OS.unix;
+         return os;
+      }
 
-            if (file.isFile())
-            {
-                return file.delete();
-            } else
-            {
-                for (File childFile : file.listFiles())
-                {
-                    if (!delete(childFile))
-                        return false;
-                }
+      private void autoCreateDirectories()
+      {
+         // Create directories
+         if (!configurationDirectory().exists() && !configurationDirectory().mkdirs())
+            throw new IllegalStateException( "Could not create configuration directory(" + configurationDirectory() + ")" );
+         if (!dataDirectory().exists() && !dataDirectory().mkdirs())
+            throw new IllegalStateException( "Could not create data directory(" + dataDirectory() + ")" );
+         if (!temporaryDirectory().exists() && !temporaryDirectory().mkdirs())
+            throw new IllegalStateException( "Could not create temporary directory(" + temporaryDirectory() + ")" );
+         if (!cacheDirectory().exists() && !cacheDirectory().mkdirs())
+            throw new IllegalStateException( "Could not create cache directory(" + cacheDirectory() + ")" );
+         if (!logDirectory().exists() && !logDirectory().mkdirs())
+            throw new IllegalStateException( "Could not create log directory(" + logDirectory() + ")" );
+      }
 
-                return file.delete();
-            }
-        }
-
-        private OS detectOS()
-        {
-            String osName = System.getProperty("os.name").toLowerCase();
-            OS os;
-            if (osName.indexOf("win") != -1)
-                os = OS.windows;
-            else if (osName.indexOf("mac") != -1)
-                os = OS.mac;
-            else
-                os = OS.unix;
-            return os;
-        }
-
-        private void autoCreateDirectories()
-        {
-            // Create directories
-            if (!configurationDirectory().exists() && !configurationDirectory().mkdirs())
-                throw new IllegalStateException("Could not create configuration directory(" + configurationDirectory() + ")");
-            if (!dataDirectory().exists() && !dataDirectory().mkdirs())
-                throw new IllegalStateException("Could not create data directory(" + dataDirectory() + ")");
-            if (!temporaryDirectory().exists() && !temporaryDirectory().mkdirs())
-                throw new IllegalStateException("Could not create temporary directory(" + temporaryDirectory() + ")");
-            if (!cacheDirectory().exists() && !cacheDirectory().mkdirs())
-                throw new IllegalStateException("Could not create cache directory(" + cacheDirectory() + ")");
-            if (!logDirectory().exists() && !logDirectory().mkdirs())
-                throw new IllegalStateException("Could not create log directory(" + logDirectory() + ")");
-        }
-
-    }
+   }
 }

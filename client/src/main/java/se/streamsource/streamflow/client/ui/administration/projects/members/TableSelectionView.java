@@ -20,53 +20,56 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
 
 /**
  * JAVADOC
  */
 public class TableSelectionView
-        extends JPanel
+      extends JPanel
 {
 
-    public String searchText()
-    {
-        return nameField.getText();
-    }
+   public String searchText()
+   {
+      return nameField.getText();
+   }
 
-    protected AbstractTableSelectionModel model;
-    private JTextField nameField;
+   protected AbstractTableSelectionModel model;
+   private JTextField nameField;
 
-    public TableSelectionView(@Structure ValueBuilderFactory vbf,
+   public TableSelectionView( @Structure ValueBuilderFactory vbf,
                               @Uses AbstractTableSelectionModel model,
-                              @Uses String searchLineString)
-    {
-        super(new BorderLayout());
-        this.model = model;
+                              @Uses String searchLineString )
+   {
+      super( new BorderLayout() );
+      this.model = model;
 
-        model.setModel(vbf.newValueBuilder(ListValue.class).newInstance());
-        nameField = new JTextField();
-        nameField.setColumns(10);
-        JPanel searchLine = new JPanel(new BorderLayout());
-        searchLine.add(new JLabel(searchLineString), BorderLayout.CENTER);
-        searchLine.add(nameField, BorderLayout.LINE_END);
-        add(searchLine, BorderLayout.NORTH);
+      model.setModel( vbf.newValueBuilder( ListValue.class ).newInstance() );
+      nameField = new JTextField();
+      nameField.setColumns( 10 );
+      JPanel searchLine = new JPanel( new BorderLayout() );
+      searchLine.add( new JLabel( searchLineString ), BorderLayout.CENTER );
+      searchLine.add( nameField, BorderLayout.LINE_END );
+      add( searchLine, BorderLayout.NORTH );
 
-        JXTable projectsTable = new JXTable(getModel());
-        projectsTable.getColumn(0).setMaxWidth(40);
-        projectsTable.getColumn(0).setResizable(false);
-        JScrollPane projectsScrollPane = new JScrollPane(projectsTable);
-        add(projectsScrollPane);
-    }
+      JXTable projectsTable = new JXTable( getModel() );
+      projectsTable.getColumn( 0 ).setMaxWidth( 40 );
+      projectsTable.getColumn( 0 ).setResizable( false );
+      JScrollPane projectsScrollPane = new JScrollPane( projectsTable );
+      add( projectsScrollPane );
+   }
 
-    public JTextField getSearchInputField()
-    {
-        return nameField;
-    }
+   public JTextField getSearchInputField()
+   {
+      return nameField;
+   }
 
-    public AbstractTableSelectionModel getModel()
-    {
-        return model;
-    }
+   public AbstractTableSelectionModel getModel()
+   {
+      return model;
+   }
 }

@@ -22,24 +22,24 @@ import org.qi4j.api.value.ValueComposite;
  * Query for Inbox.
  */
 public interface TasksQuery
-        extends ValueComposite
+      extends ValueComposite
 {
-    public enum InboxSorting
-    {
-        CREATED_ON, DESCRIPTION
-    }
+   public enum InboxSorting
+   {
+      CREATED_ON, DESCRIPTION
+   }
 
-    public enum InboxStatus
-    {
-        ACTIVE
-    }
+   public enum InboxStatus
+   {
+      ACTIVE
+   }
 
-    @UseDefaults
-    Property<InboxSorting> sort();
+   @UseDefaults
+   Property<InboxSorting> sort();
 
-    @UseDefaults
-    Property<InboxStatus> status();
+   @UseDefaults
+   Property<InboxStatus> status();
 
-    @UseDefaults
-    Property<Integer> start();
+   @UseDefaults
+   Property<Integer> start();
 }

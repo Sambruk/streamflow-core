@@ -25,12 +25,14 @@ import java.util.List;
  * JAVADOC
  */
 public interface SubmittedFormDTO
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<Date> submissionDate();
-    Property<String> submitter();
-    Property<String> form();
+   Property<Date> submissionDate();
 
-    @UseDefaults
-    Property<List<FieldDTO>> values();
+   Property<String> submitter();
+
+   Property<String> form();
+
+   @UseDefaults
+   Property<List<FieldDTO>> values();
 }

@@ -17,57 +17,60 @@ package se.streamsource.streamflow.client.ui.menu;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.ResourceMap;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import static se.streamsource.streamflow.infrastructure.configuration.FileConfiguration.OS.mac;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
 import java.util.logging.Logger;
 
 /**
  * Base class for menus
  */
 public abstract class AbstractMenu
-        extends JMenu
+      extends JMenu
 {
-    private ApplicationContext context;
+   private ApplicationContext context;
 
-    public void init(@Service ApplicationContext context)
-    {
-        setActionMap(context.getActionMap());
-        this.context = context;
-        init();
-    }
+   public void init( @Service ApplicationContext context )
+   {
+      setActionMap( context.getActionMap() );
+      this.context = context;
+      init();
+   }
 
-    abstract protected void init();
+   abstract protected void init();
 
-    protected void menu(String menuName, String... menuItems)
-    {
-        ActionMap am = getActionMap();
+   protected void menu( String menuName, String... menuItems )
+   {
+      ActionMap am = getActionMap();
 
-        ResourceMap resourceMap = context.getResourceMap(getClass(), AbstractMenu.class);
-        String menuTitle = resourceMap.getString(menuName);
-        setText(menuTitle);
-        setMnemonic(menuTitle.charAt(0));
-        for (String menuItem : menuItems)
-        {
-            if (menuItem.equals("---"))
+      ResourceMap resourceMap = context.getResourceMap( getClass(), AbstractMenu.class );
+      String menuTitle = resourceMap.getString( menuName );
+      setText( menuTitle );
+      setMnemonic( menuTitle.charAt( 0 ) );
+      for (String menuItem : menuItems)
+      {
+         if (menuItem.equals( "---" ))
+         {
+            add( new JSeparator() );
+         } else
+         {
+            String actionName = menuItem.startsWith( "*" ) ? menuItem.substring( 1 ) : menuItem;
+            Action menuItemAction = am.get( actionName );
+
+            if (menuItemAction == null)
             {
-                add(new JSeparator());
-            } else
-            {
-                String actionName = menuItem.startsWith("*") ? menuItem.substring(1) : menuItem;
-                Action menuItemAction = am.get(actionName);
-
-                if (menuItemAction == null)
-                {
-                    Logger.getLogger("menu").warning("Could not find menu action:"+actionName);
-                    continue;
-                }
-                JMenuItem item = menuItem.startsWith("*") ? new JCheckBoxMenuItem() : new JMenuItem();
-                item.setAction(menuItemAction);
-                item.setIcon(null);
-                add(item);
+               Logger.getLogger( "menu" ).warning( "Could not find menu action:" + actionName );
+               continue;
             }
-        }
-    }
+            JMenuItem item = menuItem.startsWith( "*" ) ? new JCheckBoxMenuItem() : new JMenuItem();
+            item.setAction( menuItemAction );
+            item.setIcon( null );
+            add( item );
+         }
+      }
+   }
 }

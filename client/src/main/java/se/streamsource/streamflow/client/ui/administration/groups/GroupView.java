@@ -20,85 +20,88 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 import java.util.Set;
 
 /**
  * JAVADOC
  */
 public class GroupView
-        extends JPanel
+      extends JPanel
 {
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    @Uses
-    Iterable<ConfirmationDialog> confirmationDialog;
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
 
-    @Uses
-    ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
+   @Uses
+   ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
 
-    public JList participantList;
+   public JList participantList;
 
-    private GroupModel model;
+   private GroupModel model;
 
-    public GroupView(@Service ApplicationContext context, @Uses GroupModel model)
-    {
-        super(new BorderLayout());
-        this.model = model;
+   public GroupView( @Service ApplicationContext context, @Uses GroupModel model )
+   {
+      super( new BorderLayout() );
+      this.model = model;
 
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
 
-        participantList = new JList(model);
+      participantList = new JList( model );
 
-        participantList.setCellRenderer(new ListItemListCellRenderer());
+      participantList.setCellRenderer( new ListItemListCellRenderer() );
 
-        add(participantList, BorderLayout.CENTER);
+      add( participantList, BorderLayout.CENTER );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("add")));
-        toolbar.add(new JButton(am.get("remove")));
-        add(toolbar, BorderLayout.SOUTH);
-    }
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( am.get( "add" ) ) );
+      toolbar.add( new JButton( am.get( "remove" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
+   }
 
-    @Action
-    public void add() throws ResourceException
-    {
-        SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use(model.getFilterResource()).newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
-        Set<String> participants = dialog.getUsersAndGroups();
-        if (participants != null)
-        {
-            model.addParticipants(participants);
-            model.refresh();
-        }
-    }
+   @Action
+   public void add() throws ResourceException
+   {
+      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( model.getFilterResource() ).newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
+      Set<String> participants = dialog.getUsersAndGroups();
+      if (participants != null)
+      {
+         model.addParticipants( participants );
+         model.refresh();
+      }
+   }
 
-    @Action
-    public void remove() throws ResourceException
-    {
-        ConfirmationDialog dialog = confirmationDialog.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
-        if(dialog.isConfirmed())
-        {
-            ListItemValue value = (ListItemValue) participantList.getSelectedValue();
-            model.removeParticipant(value.entity().get().identity());
-            model.refresh();
-        }
-    }
+   @Action
+   public void remove() throws ResourceException
+   {
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         ListItemValue value = (ListItemValue) participantList.getSelectedValue();
+         model.removeParticipant( value.entity().get().identity() );
+         model.refresh();
+      }
+   }
 
-    public JList getParticipantList()
-    {
-        return participantList;
-    }
+   public JList getParticipantList()
+   {
+      return participantList;
+   }
 }

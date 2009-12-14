@@ -31,51 +31,52 @@ import java.awt.Dimension;
  * JAVADOC
  */
 public class TaskEffectiveFieldsValueView
-        extends JPanel
+      extends JPanel
 {
-    TaskEffectiveFieldsValueModel model;
+   TaskEffectiveFieldsValueModel model;
 
-    public ValueBuilder<ContactValue> valueBuilder;
-    private JXTable effectiveValueTable;
-    public RefreshWhenVisible refresher;
+   public ValueBuilder<ContactValue> valueBuilder;
+   private JXTable effectiveValueTable;
+   public RefreshWhenVisible refresher;
 
-    public TaskEffectiveFieldsValueView(@Service ApplicationContext context)
-    {       super(new BorderLayout());
+   public TaskEffectiveFieldsValueView( @Service ApplicationContext context )
+   {
+      super( new BorderLayout() );
 
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
-        setMinimumSize(new Dimension(150, 0));
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
+      setMinimumSize( new Dimension( 150, 0 ) );
 
-        effectiveValueTable = new JXTable();
+      effectiveValueTable = new JXTable();
 
-        JScrollPane submittedFormsScollPane = new JScrollPane();
-        submittedFormsScollPane.setViewportView(effectiveValueTable);
+      JScrollPane submittedFormsScollPane = new JScrollPane();
+      submittedFormsScollPane.setViewportView( effectiveValueTable );
 
-        add(submittedFormsScollPane, BorderLayout.CENTER);
+      add( submittedFormsScollPane, BorderLayout.CENTER );
 
-        refresher = new RefreshWhenVisible( this );
-        addAncestorListener( refresher );
-    }
-
-
-    public void setModel(TaskEffectiveFieldsValueModel model)
-    {
-        this.model = model;
-        effectiveValueTable.setModel(model);
-        refresher.setRefreshable( model );
-    }
+      refresher = new RefreshWhenVisible( this );
+      addAncestorListener( refresher );
+   }
 
 
-    @Override
-    public void setVisible(boolean b)
-    {
-        super.setVisible(b);
-        if (b)
-        {
-            if (model != null)
-            {
-                model.refresh();
-            }
-        }
-    }
+   public void setModel( TaskEffectiveFieldsValueModel model )
+   {
+      this.model = model;
+      effectiveValueTable.setModel( model );
+      refresher.setRefreshable( model );
+   }
+
+
+   @Override
+   public void setVisible( boolean b )
+   {
+      super.setVisible( b );
+      if (b)
+      {
+         if (model != null)
+         {
+            model.refresh();
+         }
+      }
+   }
 }

@@ -23,8 +23,8 @@ import org.qi4j.api.value.ValueComposite;
  * DTO which only has an optional reference to an entity
  */
 public interface EntityReferenceDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    @Optional
-    Property<EntityReference> entity();
+   @Optional
+   Property<EntityReference> entity();
 }

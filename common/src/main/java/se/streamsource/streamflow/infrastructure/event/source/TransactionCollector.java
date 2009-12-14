@@ -23,18 +23,18 @@ import java.util.List;
  * JAVADOC
  */
 public class TransactionCollector
-    implements TransactionHandler
+      implements TransactionHandler
 {
-    List<TransactionEvents> transactions = new ArrayList<TransactionEvents>( );
+   List<TransactionEvents> transactions = new ArrayList<TransactionEvents>();
 
-    public boolean handleTransaction( TransactionEvents transaction )
-    {
-        transactions.add( transaction );
-        return true;
-    }
+   public boolean handleTransaction( TransactionEvents transaction )
+   {
+      transactions.add( transaction );
+      return true;
+   }
 
-    public Iterable<TransactionEvents> transactions()
-    {
-        return transactions;
-    }
+   public Iterable<TransactionEvents> transactions()
+   {
+      return transactions;
+   }
 }

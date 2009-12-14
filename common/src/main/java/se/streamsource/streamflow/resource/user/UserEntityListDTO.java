@@ -24,8 +24,8 @@ import java.util.List;
  * List of users
  */
 public interface UserEntityListDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<UserEntityDTO>> users();
+   @UseDefaults
+   Property<List<UserEntityDTO>> users();
 }

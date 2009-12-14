@@ -5,94 +5,106 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class TaskLabelView extends JPanel
-    implements FocusListener, KeyListener, MouseListener
+      implements FocusListener, KeyListener, MouseListener
 {
-	ListItemValue itemValue;
-	JButton button;
+   ListItemValue itemValue;
+   JButton button;
 
-	public TaskLabelView(ListItemValue itemValue)
-	{
-		super(new FlowLayout(FlowLayout.LEFT,2,1));
-		this.itemValue = itemValue;
+   public TaskLabelView( ListItemValue itemValue )
+   {
+      super( new FlowLayout( FlowLayout.LEFT, 2, 1 ) );
+      this.itemValue = itemValue;
 
-        setFocusable(true);
-        this.setRequestFocusEnabled(true);
-        
-		JXLabel label = new JXLabel(itemValue.description().get());
-		button = new JButton(i18n.icon(Icons.deleteLabel, 16));
-		button.setBorder(new EmptyBorder(new Insets(0,0,0,0)));
-        button.setFocusable(false);
-        
-		this.add(label);
-		this.add(button);
-        setBorder(BorderFactory.createEtchedBorder());
+      setFocusable( true );
+      this.setRequestFocusEnabled( true );
 
-        addFocusListener(this);
-        addKeyListener(this);
-        addMouseListener(this);
-	}
+      JXLabel label = new JXLabel( itemValue.description().get() );
+      button = new JButton( i18n.icon( Icons.deleteLabel, 16 ) );
+      button.setBorder( new EmptyBorder( new Insets( 0, 0, 0, 0 ) ) );
+      button.setFocusable( false );
 
-    public ListItemValue label()
-	{
-		return itemValue;
-	}
+      this.add( label );
+      this.add( button );
+      setBorder( BorderFactory.createEtchedBorder() );
 
-	public void addActionListener(ActionListener listener)
-	{
-		button.addActionListener(listener);
-	}
+      addFocusListener( this );
+      addKeyListener( this );
+      addMouseListener( this );
+   }
 
-    public void focusGained(FocusEvent e) {
-        setBorder(BorderFactory.createEtchedBorder(Color.LIGHT_GRAY ,Color.BLUE));
-        repaint();
-    }
+   public ListItemValue label()
+   {
+      return itemValue;
+   }
 
-    public void focusLost(FocusEvent e) {
-        setBorder(BorderFactory.createEtchedBorder());
-        repaint();
-    }
+   public void addActionListener( ActionListener listener )
+   {
+      button.addActionListener( listener );
+   }
 
-    public void keyTyped(KeyEvent e)
-    {
-    }
+   public void focusGained( FocusEvent e )
+   {
+      setBorder( BorderFactory.createEtchedBorder( Color.LIGHT_GRAY, Color.BLUE ) );
+      repaint();
+   }
 
-    public void keyPressed(KeyEvent e)
-    {
-        if(e.getKeyChar() == KeyEvent.VK_BACK_SPACE
-                || e.getKeyChar() == KeyEvent.VK_DELETE)
-        {
-            button.doClick();
-        }
-    }
+   public void focusLost( FocusEvent e )
+   {
+      setBorder( BorderFactory.createEtchedBorder() );
+      repaint();
+   }
 
-    public void keyReleased(KeyEvent e)
-    {
-    }
+   public void keyTyped( KeyEvent e )
+   {
+   }
 
-    public void mouseClicked(MouseEvent e)
-    {
-        this.requestFocusInWindow();
-    }
+   public void keyPressed( KeyEvent e )
+   {
+      if (e.getKeyChar() == KeyEvent.VK_BACK_SPACE
+            || e.getKeyChar() == KeyEvent.VK_DELETE)
+      {
+         button.doClick();
+      }
+   }
 
-    public void mousePressed(MouseEvent e)
-    {
-    }
+   public void keyReleased( KeyEvent e )
+   {
+   }
 
-    public void mouseReleased(MouseEvent e)
-    {
-    }
+   public void mouseClicked( MouseEvent e )
+   {
+      this.requestFocusInWindow();
+   }
 
-    public void mouseEntered(MouseEvent e)
-    {
-    }
+   public void mousePressed( MouseEvent e )
+   {
+   }
 
-    public void mouseExited(MouseEvent e)
-    {
-    }
+   public void mouseReleased( MouseEvent e )
+   {
+   }
+
+   public void mouseEntered( MouseEvent e )
+   {
+   }
+
+   public void mouseExited( MouseEvent e )
+   {
+   }
 }

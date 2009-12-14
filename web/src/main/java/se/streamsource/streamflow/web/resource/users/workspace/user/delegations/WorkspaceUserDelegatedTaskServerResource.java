@@ -25,58 +25,58 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /users/{user}/workspace/user/delegations/{task}
  */
 public class WorkspaceUserDelegatedTaskServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
 
-    public void complete()
-    {
-        String id = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        Delegations delegations = uow.get(Delegations.class, id);
-        Assignee assignee = uow.get(Assignee.class, id);
-        delegations.finishDelegatedTask(task, assignee);
-    }
+   public void complete()
+   {
+      String id = (String) getRequest().getAttributes().get( "user" );
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Task task = uow.get( Task.class, taskId );
+      Delegations delegations = uow.get( Delegations.class, id );
+      Assignee assignee = uow.get( Assignee.class, id );
+      delegations.finishDelegatedTask( task, assignee );
+   }
 
-    public void assignToMe()
-    {
-        String id = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Delegations delegations = uow.get(Delegations.class, id);
-        Assignee assignee = uow.get(Assignee.class, id);
-        Task task = uow.get(Task.class, taskId);
-        delegations.accept(task, assignee);
-    }
+   public void assignToMe()
+   {
+      String id = (String) getRequest().getAttributes().get( "user" );
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Delegations delegations = uow.get( Delegations.class, id );
+      Assignee assignee = uow.get( Assignee.class, id );
+      Task task = uow.get( Task.class, taskId );
+      delegations.accept( task, assignee );
+   }
 
-    public void reject()
-    {
-        String id = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        Delegations user = uow.get(Delegations.class, id);
-        user.reject(task);
-    }
+   public void reject()
+   {
+      String id = (String) getRequest().getAttributes().get( "user" );
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Task task = uow.get( Task.class, taskId );
+      Delegations user = uow.get( Delegations.class, id );
+      user.reject( task );
+   }
 
-    public void markAsRead()
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        Delegations delegations = uow.get(Delegations.class, userId);
-        delegations.markDelegatedTaskAsRead(task);
-    }
+   public void markAsRead()
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Task task = uow.get( Task.class, taskId );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Delegations delegations = uow.get( Delegations.class, userId );
+      delegations.markDelegatedTaskAsRead( task );
+   }
 
-    public void markAsUnread()
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        Delegations delegations = uow.get(Delegations.class, userId);
-        delegations.markDelegatedTaskAsUnread(task);
-    }
+   public void markAsUnread()
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Task task = uow.get( Task.class, taskId );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Delegations delegations = uow.get( Delegations.class, userId );
+      delegations.markDelegatedTaskAsUnread( task );
+   }
 }

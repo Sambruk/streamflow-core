@@ -23,6 +23,6 @@ import se.streamsource.streamflow.client.OperationException;
  */
 public interface Refreshable
 {
-    public void refresh()
-        throws OperationException;
+   public void refresh()
+         throws OperationException;
 }

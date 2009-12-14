@@ -24,15 +24,15 @@ import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskCl
  * JAVADOC
  */
 public class WorkspaceProjectDelegationsTaskClientResource
-        extends AbstractTaskClientResource
+      extends AbstractTaskClientResource
 {
-    public WorkspaceProjectDelegationsTaskClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public WorkspaceProjectDelegationsTaskClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void reject() throws ResourceException
-    {
-        putCommand("reject");
-    }
+   public void reject() throws ResourceException
+   {
+      putCommand( "reject" );
+   }
 }

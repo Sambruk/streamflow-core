@@ -26,30 +26,30 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Ownable.Mixin.class)
 public interface Ownable
 {
-    void changeOwner(Owner owner);
+   void changeOwner( Owner owner );
 
-    interface Data
-    {
-        @Optional
-        Association<Owner> owner();
+   interface Data
+   {
+      @Optional
+      Association<Owner> owner();
 
-        void changedOwner(DomainEvent event, Owner newOwner);
-    }
+      void changedOwner( DomainEvent event, Owner newOwner );
+   }
 
-    abstract class Mixin
-            implements Ownable, Data
-    {
-        @This
-        Data state;
+   abstract class Mixin
+         implements Ownable, Data
+   {
+      @This
+      Data state;
 
-        public void changeOwner(Owner owner)
-        {
-            changedOwner(DomainEvent.CREATE, owner);
-        }
+      public void changeOwner( Owner owner )
+      {
+         changedOwner( DomainEvent.CREATE, owner );
+      }
 
-        public void changedOwner(DomainEvent event, Owner newOwner)
-        {
-            state.owner().set(newOwner);
-        }
-    }
+      public void changedOwner( DomainEvent event, Owner newOwner )
+      {
+         state.owner().set( newOwner );
+      }
+   }
 }

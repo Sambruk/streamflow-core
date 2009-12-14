@@ -16,8 +16,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -25,43 +25,43 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * JAVADOC
  */
 public class WorkspaceNode
-        extends DefaultMutableTreeNode
-    implements EventListener
+      extends DefaultMutableTreeNode
+      implements EventListener
 {
-    private WorkspaceUserNode userNode;
-    private WorkspaceProjectsNode projectsNode;
+   private WorkspaceUserNode userNode;
+   private WorkspaceProjectsNode projectsNode;
 
-    public WorkspaceNode(@Uses WorkspaceUserNode userNode,
+   public WorkspaceNode( @Uses WorkspaceUserNode userNode,
                          @Uses WorkspaceProjectsNode projectsNode,
-                         @Uses AccountModel accountModel)
-    {
-        super(accountModel);
-        this.userNode = userNode;
-        this.projectsNode = projectsNode;
+                         @Uses AccountModel accountModel )
+   {
+      super( accountModel );
+      this.userNode = userNode;
+      this.projectsNode = projectsNode;
 
-        add(userNode);
-        add(projectsNode);
-    }
+      add( userNode );
+      add( projectsNode );
+   }
 
-    @Override
-    public AccountModel getUserObject()
-    {
-        return (AccountModel) super.getUserObject();
-    }
+   @Override
+   public AccountModel getUserObject()
+   {
+      return (AccountModel) super.getUserObject();
+   }
 
-    public WorkspaceUserNode getUserNode()
-    {
-        return userNode;
-    }
+   public WorkspaceUserNode getUserNode()
+   {
+      return userNode;
+   }
 
-    public WorkspaceProjectsNode getProjectsNode()
-    {
-        return projectsNode;
-    }
+   public WorkspaceProjectsNode getProjectsNode()
+   {
+      return projectsNode;
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        userNode.notifyEvent(event);
-        projectsNode.notifyEvent(event);
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      userNode.notifyEvent( event );
+      projectsNode.notifyEvent( event );
+   }
 }

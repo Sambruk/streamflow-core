@@ -24,15 +24,15 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class LabelClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public LabelClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public LabelClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void changeDescription(StringDTO stringValue) throws ResourceException
-    {
-        putCommand("changedescription", stringValue);
-    }
+   public void changeDescription( StringDTO stringValue ) throws ResourceException
+   {
+      putCommand( "changedescription", stringValue );
+   }
 }

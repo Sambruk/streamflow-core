@@ -44,113 +44,116 @@ import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
  */
 @Mixins({AccountEntity.Mixin.class})
 public interface AccountEntity
-        extends Account, EntityComposite
+      extends Account, EntityComposite
 {
-    interface Data
-            extends Describable
-    {
-        // Settings
-        Property<AccountSettingsValue> settings();
+   interface Data
+         extends Describable
+   {
+      // Settings
 
-    }
+      Property<AccountSettingsValue> settings();
 
-    class Mixin
-            implements AccountSettings, AccountConnection
-    {
-        @Structure
-        ValueBuilderFactory vbf;
+   }
 
-        @Structure
-        ObjectBuilderFactory obf;
+   class Mixin
+         implements AccountSettings, AccountConnection
+   {
+      @Structure
+      ValueBuilderFactory vbf;
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      @Structure
+      ObjectBuilderFactory obf;
 
-        @This
-        Account account;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @This
-        Data state;
+      @This
+      Account account;
 
-        @This
-        Describable description;
+      @This
+      Data state;
 
-        @Service
-        IndividualRepository repo;
+      @This
+      Describable description;
 
-        // AccountSettings
-        public AccountSettingsValue accountSettings()
-        {
-            return state.settings().get();
-        }
+      @Service
+      IndividualRepository repo;
 
-        public void updateSettings(AccountSettingsValue newAccountSettings)
-        {
-            state.settings().set(newAccountSettings);
-            description.changeDescription(newAccountSettings.name().get());
-        }
+      // AccountSettings
 
-        public void changePassword(Uniform client, ChangePasswordCommand changePassword) throws ResourceException
-        {
-            user(client).changePassword(changePassword);
+      public AccountSettingsValue accountSettings()
+      {
+         return state.settings().get();
+      }
 
-            AccountSettingsValue settings = state.settings().get().<AccountSettingsValue>buildWith().prototype();
-            settings.password().set(changePassword.newPassword().get());
+      public void updateSettings( AccountSettingsValue newAccountSettings )
+      {
+         state.settings().set( newAccountSettings );
+         description.changeDescription( newAccountSettings.name().get() );
+      }
 
-            updateSettings(settings);
-        }
+      public void changePassword( Uniform client, ChangePasswordCommand changePassword ) throws ResourceException
+      {
+         user( client ).changePassword( changePassword );
 
-        // AccountConnection
-        public StreamFlowClientResource server(Uniform client)
-        {
-            AccountSettingsValue settings = accountSettings();
-            Reference serverRef = new Reference(settings.server().get());
-            serverRef.addSegment("streamflow").addSegment("v1").addSegment("");
+         AccountSettingsValue settings = state.settings().get().<AccountSettingsValue>buildWith().prototype();
+         settings.password().set( changePassword.newPassword().get() );
 
-            AuthenticationFilter filter = new AuthenticationFilter(uowf, account);
-            filter.setNext((Restlet) client);
+         updateSettings( settings );
+      }
 
-            Context childContext = new Context();
-            StreamFlowClientResource flowClientResource = obf.newObjectBuilder(StreamFlowClientResource.class).use(childContext, serverRef).newInstance();
-            flowClientResource.setNext(filter);
-            return flowClientResource;
-        }
+      // AccountConnection
 
-        public UserClientResource user(Uniform client)
-        {
-            return server(client).users().user(accountSettings().userName().get());
-        }
-    }
+      public StreamFlowClientResource server( Uniform client )
+      {
+         AccountSettingsValue settings = accountSettings();
+         Reference serverRef = new Reference( settings.server().get() );
+         serverRef.addSegment( "streamflow" ).addSegment( "v1" ).addSegment( "" );
 
-    class AuthenticationFilter extends Filter
-    {
-        private UnitOfWorkFactory uowf;
-        private AccountSettings account;
+         AuthenticationFilter filter = new AuthenticationFilter( uowf, account );
+         filter.setNext( (Restlet) client );
 
-        public AuthenticationFilter(UnitOfWorkFactory uowf, AccountSettings account)
-        {
-            this.uowf = uowf;
-            this.account = account;
-        }
+         Context childContext = new Context();
+         StreamFlowClientResource flowClientResource = obf.newObjectBuilder( StreamFlowClientResource.class ).use( childContext, serverRef ).newInstance();
+         flowClientResource.setNext( filter );
+         return flowClientResource;
+      }
 
-        @Override
-        protected int beforeHandle(Request request, Response response)
-        {
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            AccountSettingsValue settings;
-            if (uow == null)
-            {
-                uow = uowf.newUnitOfWork();
-                settings = uow.get(account).accountSettings();
-                uow.discard();
-            } else
-            {
-                settings = uow.get(account).accountSettings();
-            }
+      public UserClientResource user( Uniform client )
+      {
+         return server( client ).users().user( accountSettings().userName().get() );
+      }
+   }
 
-            request.setChallengeResponse(new ChallengeResponse(ChallengeScheme.HTTP_BASIC, settings.userName().get(), settings.password().get()));
+   class AuthenticationFilter extends Filter
+   {
+      private UnitOfWorkFactory uowf;
+      private AccountSettings account;
 
-            return super.beforeHandle(request, response);
-        }
-    }
+      public AuthenticationFilter( UnitOfWorkFactory uowf, AccountSettings account )
+      {
+         this.uowf = uowf;
+         this.account = account;
+      }
+
+      @Override
+      protected int beforeHandle( Request request, Response response )
+      {
+         UnitOfWork uow = uowf.currentUnitOfWork();
+         AccountSettingsValue settings;
+         if (uow == null)
+         {
+            uow = uowf.newUnitOfWork();
+            settings = uow.get( account ).accountSettings();
+            uow.discard();
+         } else
+         {
+            settings = uow.get( account ).accountSettings();
+         }
+
+         request.setChallengeResponse( new ChallengeResponse( ChallengeScheme.HTTP_BASIC, settings.userName().get(), settings.password().get() ) );
+
+         return super.beforeHandle( request, response );
+      }
+   }
 }

@@ -39,50 +39,50 @@ import java.util.Locale;
  */
 public class OverviewServerResource extends CommandQueryServerResource
 {
-	@Structure
-	protected ObjectBuilderFactory obf;
+   @Structure
+   protected ObjectBuilderFactory obf;
 
-    public ProjectSummaryListDTO projectSummary() throws ResourceException
-    {
-		UnitOfWork uow = uowf.currentUnitOfWork();
-		String id = (String) getRequest().getAttributes().get("user");
-		OverviewQueries queries = uow.get(OverviewQueries.class, id);
+   public ProjectSummaryListDTO projectSummary() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "user" );
+      OverviewQueries queries = uow.get( OverviewQueries.class, id );
 
-        return queries.getProjectsSummary();
-	}
+      return queries.getProjectsSummary();
+   }
 
-    public OutputRepresentation generateExcelProjectSummary() throws IOException 
-    {
-    	List<Language> languages = new ArrayList();
-    	languages.add(new Language("en-gov"));
-    	languages.add(new Language("sv-gov"));
-    	languages.add(Language.ENGLISH);
-    	languages.add(new Language("sv"));
-    	Language language = getRequest().getClientInfo().getPreferredLanguage(languages);
-    	if (language == null) 
-    	{
-    		language = new Language("sv-gov");
-    	}
-    	Locale locale = new Locale(language.getName());
-    	
-    	final Workbook workbook = new HSSFWorkbook();
+   public OutputRepresentation generateExcelProjectSummary() throws IOException
+   {
+      List<Language> languages = new ArrayList();
+      languages.add( new Language( "en-gov" ) );
+      languages.add( new Language( "sv-gov" ) );
+      languages.add( Language.ENGLISH );
+      languages.add( new Language( "sv" ) );
+      Language language = getRequest().getClientInfo().getPreferredLanguage( languages );
+      if (language == null)
+      {
+         language = new Language( "sv-gov" );
+      }
+      Locale locale = new Locale( language.getName() );
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("user");
-        OverviewQueries queries = uow.get(OverviewQueries.class, id);
+      final Workbook workbook = new HSSFWorkbook();
 
-        queries.generateExcelProjectSummary(locale, workbook);
-        
-        OutputRepresentation representation = new OutputRepresentation(MediaType.APPLICATION_EXCEL)
-		{
-			@Override
-			public void write(OutputStream outputStream) throws IOException
-			{
-		        workbook.write(outputStream);
-			}
-		};
-		
-		representation.write(new ByteArrayOutputStream()); 
-		return representation;
-    }
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "user" );
+      OverviewQueries queries = uow.get( OverviewQueries.class, id );
+
+      queries.generateExcelProjectSummary( locale, workbook );
+
+      OutputRepresentation representation = new OutputRepresentation( MediaType.APPLICATION_EXCEL )
+      {
+         @Override
+         public void write( OutputStream outputStream ) throws IOException
+         {
+            workbook.write( outputStream );
+         }
+      };
+
+      representation.write( new ByteArrayOutputStream() );
+      return representation;
+   }
 }

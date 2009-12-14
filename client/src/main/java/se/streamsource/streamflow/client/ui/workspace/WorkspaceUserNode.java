@@ -19,8 +19,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -28,44 +28,45 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * JAVADOC
  */
 public class WorkspaceUserNode
-        extends DefaultMutableTreeNode
-    implements EventListener
+      extends DefaultMutableTreeNode
+      implements EventListener
 {
-    @Uses private UserClientResource user;
+   @Uses
+   private UserClientResource user;
 
-    public WorkspaceUserNode(@Uses AccountModel account,
+   public WorkspaceUserNode( @Uses AccountModel account,
                              @Uses WorkspaceUserInboxNode inbox,
                              @Uses WorkspaceUserAssignmentsNode assignments,
                              @Uses WorkspaceUserDelegationsNode delegations,
-                             @Uses WorkspaceUserWaitingForNode waitingFor) throws ResourceException
-    {
-        super(account);
+                             @Uses WorkspaceUserWaitingForNode waitingFor ) throws ResourceException
+   {
+      super( account );
 
-        add(inbox);
+      add( inbox );
 
-        add(assignments);
+      add( assignments );
 
-        add(delegations);
+      add( delegations );
 
-        add(waitingFor);
-    }
+      add( waitingFor );
+   }
 
-    public ListValue findUsers(String name) throws ResourceException
-    {
-        return user.findUsers(name);
-    }
+   public ListValue findUsers( String name ) throws ResourceException
+   {
+      return user.findUsers( name );
+   }
 
-    public ListValue findProjects(String name) throws ResourceException
-    {
-        return user.findProjects(name);
-    }
+   public ListValue findProjects( String name ) throws ResourceException
+   {
+      return user.findProjects( name );
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        for (Object child : children)
-        {
-            EventListener listener = (EventListener) child;
-            listener.notifyEvent( event );
-        }
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      for (Object child : children)
+      {
+         EventListener listener = (EventListener) child;
+         listener.notifyEvent( event );
+      }
+   }
 }

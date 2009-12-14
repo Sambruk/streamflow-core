@@ -14,7 +14,10 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import javax.swing.*;
+import javax.swing.JList;
+import javax.swing.JPopupMenu;
+import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -22,26 +25,26 @@ import java.awt.event.MouseEvent;
  * JList with popup menu
  */
 public class JListPopup
-        extends JList
+      extends JList
 {
-    public JListPopup(ListModel dataModel, final JPopupMenu menu)
-    {
-        super(dataModel);
+   public JListPopup( ListModel dataModel, final JPopupMenu menu )
+   {
+      super( dataModel );
 
-        addMouseListener(new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent me)
+      addMouseListener( new MouseAdapter()
+      {
+         public void mouseClicked( MouseEvent me )
+         {
+            // if right mouse button clicked (or me.isPopupTrigger())
+            if (SwingUtilities.isRightMouseButton( me )
+                  && !isSelectionEmpty()
+                  && locationToIndex( me.getPoint() )
+                  == getSelectedIndex())
             {
-                // if right mouse button clicked (or me.isPopupTrigger())
-                if (SwingUtilities.isRightMouseButton(me)
-                        && !isSelectionEmpty()
-                        && locationToIndex(me.getPoint())
-                        == getSelectedIndex())
-                {
-                    menu.show(JListPopup.this, me.getX(), me.getY());
-                }
+               menu.show( JListPopup.this, me.getX(), me.getY() );
             }
-        }
-        );
-    }
+         }
+      }
+      );
+   }
 }

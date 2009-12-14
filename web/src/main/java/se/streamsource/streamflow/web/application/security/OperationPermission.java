@@ -19,20 +19,20 @@ import java.security.BasicPermission;
 /**
  * Permission implementation for StreamFlow. The name has a two-level structure:
  * the first part is what kind of object is being invoked, and the second is the operation to be performed.
- *
+ * <p/>
  * Example:
  * organizationalUnits.createOrganizationalUnit
  */
 public class OperationPermission
-    extends BasicPermission
+      extends BasicPermission
 {
-    public OperationPermission(String object, String operation)
-    {
-        super(object+"."+operation);
-    }
+   public OperationPermission( String object, String operation )
+   {
+      super( object + "." + operation );
+   }
 
-    public OperationPermission(String name)
-    {
-        super(name);
-    }
+   public OperationPermission( String name )
+   {
+      super( name );
+   }
 }

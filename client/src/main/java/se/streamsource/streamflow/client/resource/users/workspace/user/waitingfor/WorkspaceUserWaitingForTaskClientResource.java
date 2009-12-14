@@ -24,26 +24,26 @@ import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskCl
  * JAVADOC
  */
 public class WorkspaceUserWaitingForTaskClientResource
-        extends AbstractTaskClientResource
+      extends AbstractTaskClientResource
 {
-    public WorkspaceUserWaitingForTaskClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public WorkspaceUserWaitingForTaskClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void reject() throws ResourceException
-    {
-        postCommand("reject");
-    }
+   public void reject() throws ResourceException
+   {
+      postCommand( "reject" );
+   }
 
-    public void completeFinishedTask() throws ResourceException
-    {
-        postCommand("completeFinishedTask");
-    }
+   public void completeFinishedTask() throws ResourceException
+   {
+      postCommand( "completeFinishedTask" );
+   }
 
-    public void completeWaitingForTask() throws ResourceException
-    {
-        postCommand("completeWaitingForTask");
-    }
+   public void completeWaitingForTask() throws ResourceException
+   {
+      postCommand( "completeWaitingForTask" );
+   }
 
 }

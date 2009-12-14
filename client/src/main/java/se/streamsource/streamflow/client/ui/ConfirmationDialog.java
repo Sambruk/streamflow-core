@@ -20,44 +20,45 @@ import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 /**
  * A general confirmation dialog
  */
 public class ConfirmationDialog
-    extends JPanel
+      extends JPanel
 {
-    boolean confirm;
+   boolean confirm;
 
-    public ConfirmationDialog(@Service ApplicationContext context)
-    {
-        super(new BorderLayout());
+   public ConfirmationDialog( @Service ApplicationContext context )
+   {
+      super( new BorderLayout() );
 
-        setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-        JPanel dialog = new JPanel(new BorderLayout());
-        dialog.add(new JLabel(i18n.text(StreamFlowResources.proceed_label)), BorderLayout.CENTER);
-        add(dialog, BorderLayout.NORTH);
-    }
+      JPanel dialog = new JPanel( new BorderLayout() );
+      dialog.add( new JLabel( i18n.text( StreamFlowResources.proceed_label ) ), BorderLayout.CENTER );
+      add( dialog, BorderLayout.NORTH );
+   }
 
-    public boolean isConfirmed()
-    {
-        return confirm;
-    }
+   public boolean isConfirmed()
+   {
+      return confirm;
+   }
 
-    @org.jdesktop.application.Action
-    public void execute()
-    {
-        confirm = true;
+   @org.jdesktop.application.Action
+   public void execute()
+   {
+      confirm = true;
 
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @org.jdesktop.application.Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @org.jdesktop.application.Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 }

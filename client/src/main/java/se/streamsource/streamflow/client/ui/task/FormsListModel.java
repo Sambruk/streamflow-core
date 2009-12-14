@@ -28,10 +28,10 @@ import javax.swing.AbstractListModel;
 import java.util.List;
 
 public class FormsListModel
-    extends AbstractListModel
-    implements Refreshable
+      extends AbstractListModel
+      implements Refreshable
 {
-    private List<ListItemValue> forms;
+   private List<ListItemValue> forms;
 
     WeakModelMap<String, FormSubmitModel> formSubmitModels = new WeakModelMap<String, FormSubmitModel>()
     {
@@ -64,10 +64,10 @@ public class FormsListModel
         }
     }
 
-    public int getSize()
-    {
-        return forms.size();
-    }
+   public int getSize()
+   {
+      return forms.size();
+   }
 
     public Object getElementAt(int i)
     {

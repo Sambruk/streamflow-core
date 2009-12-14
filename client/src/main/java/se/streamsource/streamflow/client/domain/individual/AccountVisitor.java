@@ -20,5 +20,5 @@ package se.streamsource.streamflow.client.domain.individual;
  */
 public interface AccountVisitor
 {
-    public void visitAccount(Account account);
+   public void visitAccount( Account account );
 }

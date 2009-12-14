@@ -33,45 +33,45 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
  * List of possible task types for a task.
  */
 public class PossibleTaskTypesModel
-    implements Refreshable
+      implements Refreshable
 {
-    @Uses
-    CommandQueryClient client;
+   @Uses
+   CommandQueryClient client;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private BasicEventList<ListItemValue> taskTypeList = new BasicEventList<ListItemValue>( );
+   private BasicEventList<ListItemValue> taskTypeList = new BasicEventList<ListItemValue>();
 
-    public EventList<ListItemValue> getTaskTypeList()
-    {
-        return taskTypeList;
-    }
+   public EventList<ListItemValue> getTaskTypeList()
+   {
+      return taskTypeList;
+   }
 
-    public void refresh() throws OperationException
-    {
-        try
-        {
-            ListValue taskTypes = client.query( "possibletasktypes", ListValue.class );
+   public void refresh() throws OperationException
+   {
+      try
+      {
+         ListValue taskTypes = client.query( "possibletasktypes", ListValue.class );
 
-            taskTypeList.clear();
-            taskTypeList.addAll( taskTypes.items().get() );
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_refresh, e);
-        }
-    }
+         taskTypeList.clear();
+         taskTypeList.addAll( taskTypes.items().get() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_refresh, e );
+      }
+   }
 
-    public void changeTaskType( EntityReference taskType )
-    {
-        try
-        {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-            builder.prototype().entity().set( taskType );
-            client.putCommand( "changetasktype", builder.newInstance() );
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_change_type, e);
-        }
-    }
+   public void changeTaskType( EntityReference taskType )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( taskType );
+         client.putCommand( "changetasktype", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_change_type, e );
+      }
+   }
 }

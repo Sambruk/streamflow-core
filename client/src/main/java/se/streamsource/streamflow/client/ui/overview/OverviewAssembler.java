@@ -14,43 +14,43 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.api.common.Visibility;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 /**
  * JAVADOC
  */
 public class OverviewAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addObjects(OverviewWindow.class).visibleIn(Visibility.layer);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addObjects( OverviewWindow.class ).visibleIn( Visibility.layer );
 
-        module.addObjects(
-                OverviewNode.class,
-                OverviewProjectsNode.class,
-                OverviewProjectNode.class,
-                OverviewProjectAssignmentsNode.class,
-                OverviewProjectWaitingForNode.class);
+      module.addObjects(
+            OverviewNode.class,
+            OverviewProjectsNode.class,
+            OverviewProjectNode.class,
+            OverviewProjectAssignmentsNode.class,
+            OverviewProjectWaitingForNode.class );
 
-        UIAssemblers.addMV(module,
-                OverviewModel.class,
-                OverviewView.class);
+      UIAssemblers.addMV( module,
+            OverviewModel.class,
+            OverviewView.class );
 
-        UIAssemblers.addMV(module,
-                OverviewSummaryModel.class,
-                OverviewSummaryView.class);
+      UIAssemblers.addMV( module,
+            OverviewSummaryModel.class,
+            OverviewSummaryView.class );
 
-        // Project
-        UIAssemblers.addMV(module,
-                OverviewProjectAssignmentsModel.class,
-                OverviewProjectAssignmentsView.class);
-        UIAssemblers.addMV(module,
-                OverviewProjectWaitingForModel.class,
-                OverviewProjectWaitingForView.class);
-    }
+      // Project
+      UIAssemblers.addMV( module,
+            OverviewProjectAssignmentsModel.class,
+            OverviewProjectAssignmentsView.class );
+      UIAssemblers.addMV( module,
+            OverviewProjectWaitingForModel.class,
+            OverviewProjectWaitingForView.class );
+   }
 }

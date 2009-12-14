@@ -23,10 +23,10 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * Assembler for statistics module
  */
 public class StatisticsAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addServices(StatisticsService.class).identifiedBy("statistics").instantiateOnStartup().visibleIn(Visibility.layer);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( StatisticsService.class ).identifiedBy( "statistics" ).instantiateOnStartup().visibleIn( Visibility.layer );
+   }
 }

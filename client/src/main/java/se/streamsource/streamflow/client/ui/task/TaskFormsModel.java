@@ -17,40 +17,40 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 /**
  * JAVADOC
  */
 public class TaskFormsModel
-    implements Refreshable, EventListener
+      implements Refreshable, EventListener
 {
-    @Uses
-    private TaskSubmittedFormsModel submittedForms;
+   @Uses
+   private TaskSubmittedFormsModel submittedForms;
 
-    @Uses
-    private TaskEffectiveFieldsValueModel effectiveValues;
+   @Uses
+   private TaskEffectiveFieldsValueModel effectiveValues;
 
-    public TaskSubmittedFormsModel submittedForms()
-    {
-        return submittedForms;
-    }
+   public TaskSubmittedFormsModel submittedForms()
+   {
+      return submittedForms;
+   }
 
-    public TaskEffectiveFieldsValueModel effectiveValues()
-    {
-        return effectiveValues;
-    }
+   public TaskEffectiveFieldsValueModel effectiveValues()
+   {
+      return effectiveValues;
+   }
 
-    public void refresh() throws OperationException
-    {
-        submittedForms.refresh();
-        effectiveValues.refresh();
-    }
+   public void refresh() throws OperationException
+   {
+      submittedForms.refresh();
+      effectiveValues.refresh();
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        submittedForms.notifyEvent( event );
-        effectiveValues.notifyEvent( event );
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      submittedForms.notifyEvent( event );
+      effectiveValues.notifyEvent( event );
+   }
 }

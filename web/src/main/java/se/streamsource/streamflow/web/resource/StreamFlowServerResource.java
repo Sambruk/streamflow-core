@@ -21,11 +21,11 @@ import org.restlet.resource.ResourceException;
  * Mapped to /.
  */
 public class StreamFlowServerResource
-        extends BaseServerResource
+      extends BaseServerResource
 {
-    @Override
-    protected Representation get() throws ResourceException
-    {
-        return getHtml("resources/index.html");
-    }
+   @Override
+   protected Representation get() throws ResourceException
+   {
+      return getHtml( "resources/index.html" );
+   }
 }

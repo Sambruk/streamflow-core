@@ -21,21 +21,22 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
  * File menu
  */
 public class HelpMenu
-        extends AbstractMenu
+      extends AbstractMenu
 {
-    @Service FileConfiguration config;
+   @Service
+   FileConfiguration config;
 
-    protected void init()
-    {
-        if (config.os() == FileConfiguration.OS.mac)
-        {
-            menu("helpMenu",
-                    "showHelp");
-        } else
-        {
-            menu("helpMenu",
-                    "showHelp",
-                    "showAbout");
-        }
-    }
+   protected void init()
+   {
+      if (config.os() == FileConfiguration.OS.mac)
+      {
+         menu( "helpMenu",
+               "showHelp" );
+      } else
+      {
+         menu( "helpMenu",
+               "showHelp",
+               "showAbout" );
+      }
+   }
 }

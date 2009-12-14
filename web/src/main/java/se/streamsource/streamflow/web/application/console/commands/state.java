@@ -27,35 +27,35 @@ import org.qi4j.spi.Qi4jSPI;
  */
 public class state
 {
-    public static void invoke( final Interpreter env, CallStack callstack, Object entity)
-    {
-        try
-        {
-            Qi4jSPI qi4j = (Qi4jSPI) env.get( "qi4j" );
+   public static void invoke( final Interpreter env, CallStack callstack, Object entity )
+   {
+      try
+      {
+         Qi4jSPI qi4j = (Qi4jSPI) env.get( "qi4j" );
 
-            env.println( entity.toString() );
+         env.println( entity.toString() );
 
-            EntityStateHolder state = qi4j.getState( (EntityComposite)entity);
+         EntityStateHolder state = qi4j.getState( (EntityComposite) entity );
 
-            state.visitState( new EntityStateHolder.EntityStateVisitor()
+         state.visitState( new EntityStateHolder.EntityStateVisitor()
+         {
+            public void visitAssociation( QualifiedName name, Object association )
             {
-                public void visitAssociation( QualifiedName name, Object association )
-                {
-                    env.println( name.name()+": "+association );
-                }
+               env.println( name.name() + ": " + association );
+            }
 
-                public void visitManyAssociation( QualifiedName name, ManyAssociation association )
-                {
-                }
+            public void visitManyAssociation( QualifiedName name, ManyAssociation association )
+            {
+            }
 
-                public void visitProperty( QualifiedName name, Object value )
-                {
-                    env.println( name.name()+": "+value );
-                }
-            });
-        } catch (Throwable throwable)
-        {
-            throwable.printStackTrace();
-        }
-    }
+            public void visitProperty( QualifiedName name, Object value )
+            {
+               env.println( name.name() + ": " + value );
+            }
+         } );
+      } catch (Throwable throwable)
+      {
+         throwable.printStackTrace();
+      }
+   }
 }

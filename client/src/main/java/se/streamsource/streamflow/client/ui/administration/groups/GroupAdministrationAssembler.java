@@ -23,16 +23,16 @@ import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
  * JAVADOC
  */
 public class GroupAdministrationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        UIAssemblers.addViews(module, GroupAdminView.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addViews( module, GroupAdminView.class );
 
-        UIAssemblers.addMV(module, GroupsModel.class,
-                GroupsView.class);
+      UIAssemblers.addMV( module, GroupsModel.class,
+            GroupsView.class );
 
-        UIAssemblers.addMV(module, GroupModel.class,
-                GroupView.class);
-    }
+      UIAssemblers.addMV( module, GroupModel.class,
+            GroupView.class );
+   }
 }

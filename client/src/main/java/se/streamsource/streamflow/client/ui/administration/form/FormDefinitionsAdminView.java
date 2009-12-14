@@ -31,50 +31,50 @@ import javax.swing.event.ListSelectionListener;
  * JAVADOC
  */
 public class FormDefinitionsAdminView
-        extends JSplitPane
+      extends JSplitPane
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Uses
-    FormDefinitionsModel formsModel;
+   @Uses
+   FormDefinitionsModel formsModel;
 
-    @Uses
-    OrganizationalUnitAdministrationModel organizationModel;
+   @Uses
+   OrganizationalUnitAdministrationModel organizationModel;
 
-    public FormDefinitionsAdminView(@Uses final FormDefinitionsView formDefinitionsView)
-    {
-        super();
+   public FormDefinitionsAdminView( @Uses final FormDefinitionsView formDefinitionsView )
+   {
+      super();
 
-        setLeftComponent(formDefinitionsView);
-        setRightComponent(new JPanel());
+      setLeftComponent( formDefinitionsView );
+      setRightComponent( new JPanel() );
 
-        setDividerLocation(200);
-        setOneTouchExpandable( true );
+      setDividerLocation( 200 );
+      setOneTouchExpandable( true );
 
-        final JList list = formDefinitionsView.getFormList();
-        list.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      final JList list = formDefinitionsView.getFormList();
+      list.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    int idx = list.getSelectedIndex();
-                    if (idx < list.getModel().getSize() && idx >= 0)
-                    {
-                        ListItemValue formValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        FormDefinitionModel formModel = formsModel.getFormModel(formValue.entity().get().identity());
-                        FormDefinitionView view = obf.newObjectBuilder(FormDefinitionView.class).use(
-                                formModel,
-                                organizationModel).newInstance();
-                        setRightComponent(view);
-                    } else
-                    {
-                        setRightComponent(new JPanel());
-                    }
-                }
+               int idx = list.getSelectedIndex();
+               if (idx < list.getModel().getSize() && idx >= 0)
+               {
+                  ListItemValue formValue = (ListItemValue) list.getModel().getElementAt( idx );
+                  FormDefinitionModel formModel = formsModel.getFormModel( formValue.entity().get().identity() );
+                  FormDefinitionView view = obf.newObjectBuilder( FormDefinitionView.class ).use(
+                        formModel,
+                        organizationModel ).newInstance();
+                  setRightComponent( view );
+               } else
+               {
+                  setRightComponent( new JPanel() );
+               }
             }
-        });
-    }
+         }
+      } );
+   }
 
 }

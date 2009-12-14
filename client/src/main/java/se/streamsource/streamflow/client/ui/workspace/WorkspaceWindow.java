@@ -38,62 +38,61 @@ import java.awt.Dimension;
  * Workspace window
  */
 public class WorkspaceWindow
-    extends FrameView
+      extends FrameView
 {
-    public CardLayout cardLayout;
+   public CardLayout cardLayout;
 
-    public WorkspaceWindow(@Service Application application,
+   public WorkspaceWindow( @Service Application application,
                            @Service JavaHelp javaHelp,
                            @Uses WorkspaceMenuBar menu,
                            @Uses final WorkspaceView workspaceView,
                            @Uses AccountSelectionView view,
                            @Uses final AccountSelector accountSelector,
-                           @Structure final ObjectBuilderFactory obf)
-    {
-        super(application);
+                           @Structure final ObjectBuilderFactory obf )
+   {
+      super( application );
 
-        final JXFrame frame = new JXFrame(i18n.text(WorkspaceResources.window_name));
-        frame.setLocationByPlatform(true);
+      final JXFrame frame = new JXFrame( i18n.text( WorkspaceResources.window_name ) );
+      frame.setLocationByPlatform( true );
 
-        cardLayout = new CardLayout();
-        frame.getContentPane().setLayout( cardLayout );
-        frame.getContentPane().add(view, "selector");
-        frame.getContentPane().add(workspaceView, "workspace");
-        frame.getRootPane().setOpaque(true);
-        setFrame(frame);
-        setMenuBar(menu);
+      cardLayout = new CardLayout();
+      frame.getContentPane().setLayout( cardLayout );
+      frame.getContentPane().add( view, "selector" );
+      frame.getContentPane().add( workspaceView, "workspace" );
+      frame.getRootPane().setOpaque( true );
+      setFrame( frame );
+      setMenuBar( menu );
 
-        JXStatusBar bar = new StatusBarView(getContext());
-        setStatusBar(bar);
+      JXStatusBar bar = new StatusBarView( getContext() );
+      setStatusBar( bar );
 
-        frame.setPreferredSize(new Dimension(1000, 600));
-        frame.pack();
-        javaHelp.enableHelp(this.getRootPane(),"workspace");
+      frame.setPreferredSize( new Dimension( 1000, 600 ) );
+      frame.pack();
+      javaHelp.enableHelp( this.getRootPane(), "workspace" );
 
-        ListSelectionListener workspaceListener = new ListSelectionListener()
-        {
-            public void valueChanged( ListSelectionEvent e)
+      ListSelectionListener workspaceListener = new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    if (accountSelector.isSelectionEmpty())
-                    {
-                        cardLayout.show(frame.getContentPane(), "selector");
-                    }
-                    else
-                    {
-                        AccountModel accountModel = accountSelector.getSelectedAccount();
+               if (accountSelector.isSelectionEmpty())
+               {
+                  cardLayout.show( frame.getContentPane(), "selector" );
+               } else
+               {
+                  AccountModel accountModel = accountSelector.getSelectedAccount();
 
-                        workspaceView.setModel( accountModel.workspace() );
+                  workspaceView.setModel( accountModel.workspace() );
 
-                        cardLayout.show(frame.getContentPane(), "workspace");
-                    }
-                }
+                  cardLayout.show( frame.getContentPane(), "workspace" );
+               }
             }
-        };
+         }
+      };
 
-        accountSelector.addListSelectionListener(workspaceListener);
-    }
+      accountSelector.addListSelectionListener( workspaceListener );
+   }
 
-    
+
 }

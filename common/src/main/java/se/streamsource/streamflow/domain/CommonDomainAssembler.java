@@ -24,9 +24,9 @@ import se.streamsource.streamflow.domain.form.FormAssembler;
  */
 public class CommonDomainAssembler
 {
-    public void assemble(LayerAssembly domainLayer) throws AssemblyException
-    {
-        new ContactAssembler().assemble(domainLayer.moduleAssembly("Contact"));
-        new FormAssembler().assemble(domainLayer.moduleAssembly("Form"));
-    }
+   public void assemble( LayerAssembly domainLayer ) throws AssemblyException
+   {
+      new ContactAssembler().assemble( domainLayer.moduleAssembly( "Contact" ) );
+      new FormAssembler().assemble( domainLayer.moduleAssembly( "Form" ) );
+   }
 }

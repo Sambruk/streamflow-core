@@ -28,58 +28,60 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(ProjectRoles.Mixin.class)
 public interface ProjectRoles
 {
-    ProjectRoleEntity createProjectRole(String name);
+   ProjectRoleEntity createProjectRole( String name );
 
-    boolean removeProjectRole(ProjectRole projectRole);
+   boolean removeProjectRole( ProjectRole projectRole );
 
-    void addProjectRole(ProjectRole projectRole);
+   void addProjectRole( ProjectRole projectRole );
 
-    void mergeProjectRoles(ProjectRoles projectRoles);
+   void mergeProjectRoles( ProjectRoles projectRoles );
 
-    interface Data
-    {
-        @Aggregated
-        ManyAssociation<ProjectRole> projectRoles();
+   interface Data
+   {
+      @Aggregated
+      ManyAssociation<ProjectRole> projectRoles();
 
-        ProjectRoleEntity createdProjectRole(DomainEvent event, String id);
-        void addedProjectRole(DomainEvent event, ProjectRoleEntity role);
-        void removedProjectRole(DomainEvent event, ProjectRole role);
-    }
+      ProjectRoleEntity createdProjectRole( DomainEvent event, String id );
 
-    abstract class Mixin
-        implements ProjectRoles, Data
-    {
+      void addedProjectRole( DomainEvent event, ProjectRoleEntity role );
 
-        public void mergeProjectRoles(ProjectRoles projectRoles)
-        {
-            while (this.projectRoles().count() > 0)
-            {
-                ProjectRole role = this.projectRoles().get(0);
-                removeProjectRole(role);
-                projectRoles.addProjectRole(role);
-            }
-        }
+      void removedProjectRole( DomainEvent event, ProjectRole role );
+   }
 
-        public void addProjectRole(ProjectRole projectRole)
-        {
-            if (projectRoles().contains(projectRole))
-            {
-                return;
-            }
-            addedProjectRole(DomainEvent.CREATE, (ProjectRoleEntity) projectRole);
-        }
-    }
+   abstract class Mixin
+         implements ProjectRoles, Data
+   {
+
+      public void mergeProjectRoles( ProjectRoles projectRoles )
+      {
+         while (this.projectRoles().count() > 0)
+         {
+            ProjectRole role = this.projectRoles().get( 0 );
+            removeProjectRole( role );
+            projectRoles.addProjectRole( role );
+         }
+      }
+
+      public void addProjectRole( ProjectRole projectRole )
+      {
+         if (projectRoles().contains( projectRole ))
+         {
+            return;
+         }
+         addedProjectRole( DomainEvent.CREATE, (ProjectRoleEntity) projectRole );
+      }
+   }
 
 
-    abstract class DescribeCreatedRoleConcern
-        extends ConcernOf<ProjectRoles>
-        implements ProjectRoles
-    {
-        public ProjectRoleEntity createProjectRole(String name)
-        {
-            ProjectRoleEntity role = next.createProjectRole(name);
-            role.changeDescription(name);
-            return role;
-        }
-    }
+   abstract class DescribeCreatedRoleConcern
+         extends ConcernOf<ProjectRoles>
+         implements ProjectRoles
+   {
+      public ProjectRoleEntity createProjectRole( String name )
+      {
+         ProjectRoleEntity role = next.createProjectRole( name );
+         role.changeDescription( name );
+         return role;
+      }
+   }
 }

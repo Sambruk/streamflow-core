@@ -23,13 +23,13 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * JAVADOC
  */
 public class ContactAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addValues(ContactAddressValue.class,
-                ContactEmailValue.class,
-                ContactPhoneValue.class,
-                ContactValue.class).visibleIn(Visibility.application);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addValues( ContactAddressValue.class,
+            ContactEmailValue.class,
+            ContactPhoneValue.class,
+            ContactValue.class ).visibleIn( Visibility.application );
+   }
 }

@@ -23,13 +23,13 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  */
 public interface Notable
 {
-    void changeNote(String newNote);
+   void changeNote( String newNote );
 
-    interface Data
-    {
-        @UseDefaults
-        Property<String> note();
+   interface Data
+   {
+      @UseDefaults
+      Property<String> note();
 
-        void changedNote(DomainEvent event, String newNote);
-    }
+      void changedNote( DomainEvent event, String newNote );
+   }
 }

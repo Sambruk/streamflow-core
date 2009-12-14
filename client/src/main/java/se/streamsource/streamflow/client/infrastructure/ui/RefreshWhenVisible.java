@@ -22,40 +22,40 @@ import java.awt.Component;
  * Refresh a Refreshable when a component becomes visible.
  */
 public class RefreshWhenVisible
-    implements AncestorListener
+      implements AncestorListener
 {
-    private Refreshable refreshable;
-    private Component component;
+   private Refreshable refreshable;
+   private Component component;
 
-    public RefreshWhenVisible( Component component )
-    {
-        this.component = component;
-    }
+   public RefreshWhenVisible( Component component )
+   {
+      this.component = component;
+   }
 
-    public RefreshWhenVisible(Refreshable refreshable, Component component)
-    {
-        this.refreshable = refreshable;
-        this.component = component;
-    }
+   public RefreshWhenVisible( Refreshable refreshable, Component component )
+   {
+      this.refreshable = refreshable;
+      this.component = component;
+   }
 
-    public void setRefreshable( Refreshable refreshable )
-    {
-        this.refreshable = refreshable;
-    }
+   public void setRefreshable( Refreshable refreshable )
+   {
+      this.refreshable = refreshable;
+   }
 
-    public void ancestorAdded(AncestorEvent event)
-    {
-        if (refreshable != null && event.getAncestor().equals(component))
-        {
-            refreshable.refresh();
-        }
-    }
+   public void ancestorAdded( AncestorEvent event )
+   {
+      if (refreshable != null && event.getAncestor().equals( component ))
+      {
+         refreshable.refresh();
+      }
+   }
 
-    public void ancestorRemoved(AncestorEvent event)
-    {
-    }
+   public void ancestorRemoved( AncestorEvent event )
+   {
+   }
 
-    public void ancestorMoved(AncestorEvent event)
-    {
-    }
+   public void ancestorMoved( AncestorEvent event )
+   {
+   }
 }

@@ -40,82 +40,82 @@ import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
  * JAVADOC
  */
 public class StreamFlowWebAssembler
-        implements ApplicationAssembler
+      implements ApplicationAssembler
 {
-    private Object[] serviceObjects;
+   private Object[] serviceObjects;
 
-    public StreamFlowWebAssembler(Object... serviceObjects)
-    {
-        this.serviceObjects = serviceObjects;
-    }
+   public StreamFlowWebAssembler( Object... serviceObjects )
+   {
+      this.serviceObjects = serviceObjects;
+   }
 
-    public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory) throws AssemblyException
-    {
-        ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
-        assembly.setName("StreamFlowServer");
-        assembly.setVersion("0.2.18.0");
-        LayerAssembly configurationLayer = assembly.layerAssembly("Configuration");
-        LayerAssembly domainInfrastructureLayer = assembly.layerAssembly("Domain infrastructure");
-        LayerAssembly domainLayer = assembly.layerAssembly("Domain");
-        LayerAssembly appLayer = assembly.layerAssembly("Application");
-        LayerAssembly webLayer = assembly.layerAssembly("Web");
+   public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
+   {
+      ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
+      assembly.setName( "StreamFlowServer" );
+      assembly.setVersion( "0.2.18.0" );
+      LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
+      LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );
+      LayerAssembly domainLayer = assembly.layerAssembly( "Domain" );
+      LayerAssembly appLayer = assembly.layerAssembly( "Application" );
+      LayerAssembly webLayer = assembly.layerAssembly( "Web" );
 
-        webLayer.uses(appLayer, domainLayer, domainInfrastructureLayer);
-        appLayer.uses(domainLayer, domainInfrastructureLayer, configurationLayer);
-        domainLayer.uses(domainInfrastructureLayer);
-        domainInfrastructureLayer.uses(configurationLayer);
+      webLayer.uses( appLayer, domainLayer, domainInfrastructureLayer );
+      appLayer.uses( domainLayer, domainInfrastructureLayer, configurationLayer );
+      domainLayer.uses( domainInfrastructureLayer );
+      domainInfrastructureLayer.uses( configurationLayer );
 
-        assembleWebLayer(webLayer);
+      assembleWebLayer( webLayer );
 
-        assembleApplicationLayer(appLayer);
+      assembleApplicationLayer( appLayer );
 
-        assembleDomainLayer(domainLayer);
+      assembleDomainLayer( domainLayer );
 
-        assembleDomainInfrastructureLayer(domainInfrastructureLayer);
+      assembleDomainInfrastructureLayer( domainInfrastructureLayer );
 
-        assembleConfigurationLayer(configurationLayer);
+      assembleConfigurationLayer( configurationLayer );
 
-        for (Object serviceObject : serviceObjects)
-        {
-            assembly.setMetaInfo(serviceObject);
-        }
+      for (Object serviceObject : serviceObjects)
+      {
+         assembly.setMetaInfo( serviceObject );
+      }
 
-        return assembly;
-    }
+      return assembly;
+   }
 
-    private void assembleConfigurationLayer(LayerAssembly configurationlayer) throws AssemblyException
-    {
-        new ConfigurationAssembler().assemble(configurationlayer.moduleAssembly("Configuration"));
-    }
+   private void assembleConfigurationLayer( LayerAssembly configurationlayer ) throws AssemblyException
+   {
+      new ConfigurationAssembler().assemble( configurationlayer.moduleAssembly( "Configuration" ) );
+   }
 
-    private void assembleDomainInfrastructureLayer(LayerAssembly domainInfrastructureLayer) throws AssemblyException
-    {
-        new DatabaseAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Database"));
-        new ServerEntityStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Store"));
-        new EntityFinderAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Entity Finder"));
-        new EventAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Events"));
-    }
+   private void assembleDomainInfrastructureLayer( LayerAssembly domainInfrastructureLayer ) throws AssemblyException
+   {
+      new DatabaseAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Database" ) );
+      new ServerEntityStoreAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Entity Store" ) );
+      new EntityFinderAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Entity Finder" ) );
+      new EventAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Events" ) );
+   }
 
-    protected void assembleWebLayer(LayerAssembly webLayer) throws AssemblyException
-    {
-        ModuleAssembly restModule = webLayer.moduleAssembly("REST");
-        new StreamFlowRestAssembler().assemble(restModule);
-        new ServerResourceAssembler().assemble(restModule);
-    }
+   protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
+   {
+      ModuleAssembly restModule = webLayer.moduleAssembly( "REST" );
+      new StreamFlowRestAssembler().assemble( restModule );
+      new ServerResourceAssembler().assemble( restModule );
+   }
 
-    protected void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
-    {
-        new ConsoleAssembler().assemble( appLayer.moduleAssembly( "Console" ));
-        new MigrationAssembler().assemble(appLayer.moduleAssembly("Migration"));
-        new ManagementAssembler().assemble(appLayer.moduleAssembly("Management"));
-        new SecurityAssembler().assemble(appLayer.moduleAssembly("Security"));
-        new BootstrapAssembler().assemble(appLayer.moduleAssembly("Organization"));
-        new StatisticsAssembler().assemble(appLayer.moduleAssembly("Statistics"));
-    }
+   protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException
+   {
+      new ConsoleAssembler().assemble( appLayer.moduleAssembly( "Console" ) );
+      new MigrationAssembler().assemble( appLayer.moduleAssembly( "Migration" ) );
+      new ManagementAssembler().assemble( appLayer.moduleAssembly( "Management" ) );
+      new SecurityAssembler().assemble( appLayer.moduleAssembly( "Security" ) );
+      new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Organization" ) );
+      new StatisticsAssembler().assemble( appLayer.moduleAssembly( "Statistics" ) );
+   }
 
-    protected void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException
-    {
-        new CommonDomainAssembler().assemble(domainLayer);
-        new WebDomainAssembler().assemble(domainLayer);
-    }
+   protected void assembleDomainLayer( LayerAssembly domainLayer ) throws AssemblyException
+   {
+      new CommonDomainAssembler().assemble( domainLayer );
+      new WebDomainAssembler().assemble( domainLayer );
+   }
 }

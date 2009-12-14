@@ -23,29 +23,29 @@ import java.util.Date;
  */
 public interface EventManagement
 {
-    /**
-     * Remove all events from the EventStore.
-     *
-     * @throws IOException
-     */
-    void removeAll() throws IOException;
+   /**
+    * Remove all events from the EventStore.
+    *
+    * @throws IOException
+    */
+   void removeAll() throws IOException;
 
-    /**
-     * Remove all events up to and including the given date. This is used
-     * to clean out old events that are no longer needed.
-     *
-     * @param date
-     * @throws IOException
-     */
-    void removeTo( Date date ) throws IOException;
+   /**
+    * Remove all events up to and including the given date. This is used
+    * to clean out old events that are no longer needed.
+    *
+    * @param date
+    * @throws IOException
+    */
+   void removeTo( Date date ) throws IOException;
 
-    /**
-     * Import events from the given reader. Note that the transaction dates
-     * of the imported events will be updated to the current date. The actual
-     * events will retain their dates though.
-     *
-     * @param in
-     * @throws IOException
-     */
-    void importEvents(Reader in) throws IOException;
+   /**
+    * Import events from the given reader. Note that the transaction dates
+    * of the imported events will be updated to the current date. The actual
+    * events will retain their dates though.
+    *
+    * @param in
+    * @throws IOException
+    */
+   void importEvents( Reader in ) throws IOException;
 }

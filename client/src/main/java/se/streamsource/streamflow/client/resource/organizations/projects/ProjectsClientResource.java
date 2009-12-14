@@ -26,25 +26,25 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class ProjectsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public ProjectsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public ProjectsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ListValue projects() throws ResourceException
-    {
-        return query("projects", ListValue.class);
-    }
+   public ListValue projects() throws ResourceException
+   {
+      return query( "projects", ListValue.class );
+   }
 
-    public ProjectClientResource project(String id)
-    {
-        return getSubResource(id, ProjectClientResource.class);
-    }
+   public ProjectClientResource project( String id )
+   {
+      return getSubResource( id, ProjectClientResource.class );
+   }
 
-    public void createProject(StringDTO name) throws ResourceException
-    {
-        postCommand("createProject",name);
-    }
+   public void createProject( StringDTO name ) throws ResourceException
+   {
+      postCommand( "createProject", name );
+   }
 }

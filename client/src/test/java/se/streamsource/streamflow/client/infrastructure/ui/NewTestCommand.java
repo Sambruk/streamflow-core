@@ -19,13 +19,13 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 public interface NewTestCommand
-        extends ValueComposite
+      extends ValueComposite
 {
 
-    @UseDefaults
-    Property<String> text();
+   @UseDefaults
+   Property<String> text();
 
-    @UseDefaults
-    Property<Boolean> isChecked();
+   @UseDefaults
+   Property<Boolean> isChecked();
 
 }

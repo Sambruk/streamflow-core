@@ -28,55 +28,55 @@ import se.streamsource.streamflow.client.ui.menu.AdministrationMenuBar;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.Dimension;
 
 /**
  * Administration window
  */
 public class AdministrationWindow
-        extends FrameView
+      extends FrameView
 {
-    public AdministrationWindow(
-            @Service Application application,
-            @Service JavaHelp javaHelp,
-            @Uses AdministrationMenuBar menu,
-            @Uses final AccountSelector accountSelector,
-            @Structure final ObjectBuilderFactory obf)
-    {
-        super(application);
+   public AdministrationWindow(
+         @Service Application application,
+         @Service JavaHelp javaHelp,
+         @Uses AdministrationMenuBar menu,
+         @Uses final AccountSelector accountSelector,
+         @Structure final ObjectBuilderFactory obf )
+   {
+      super( application );
 
-        final JXFrame frame = new JXFrame(i18n.text(AdministrationResources.window_name));
-        frame.setLocationByPlatform(true);
+      final JXFrame frame = new JXFrame( i18n.text( AdministrationResources.window_name ) );
+      frame.setLocationByPlatform( true );
 
-        setFrame(frame);
-        setMenuBar(menu);
+      setFrame( frame );
+      setMenuBar( menu );
 
-        frame.setPreferredSize(new Dimension(1000, 600));
-        frame.pack();
+      frame.setPreferredSize( new Dimension( 1000, 600 ) );
+      frame.pack();
 
-        accountSelector.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      accountSelector.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    if (accountSelector.isSelectionEmpty())
-                    {
-                        frame.getContentPane().removeAll();
-                    } else
-                    {
-                        frame.getContentPane().removeAll();
+               if (accountSelector.isSelectionEmpty())
+               {
+                  frame.getContentPane().removeAll();
+               } else
+               {
+                  frame.getContentPane().removeAll();
 
-                        AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                        AdministrationView administrationView = obf.newObjectBuilder(AdministrationView.class).use(selectedAccount.administration()).newInstance();
+                  AccountModel selectedAccount = accountSelector.getSelectedAccount();
+                  AdministrationView administrationView = obf.newObjectBuilder( AdministrationView.class ).use( selectedAccount.administration() ).newInstance();
 
-                        frame.getContentPane().add(administrationView);
-                    }
-                    frame.pack();
-                }
+                  frame.getContentPane().add( administrationView );
+               }
+               frame.pack();
             }
-        });
-        javaHelp.enableHelp(this.getRootPane(),"admin");
-    }
+         }
+      } );
+      javaHelp.enableHelp( this.getRootPane(), "admin" );
+   }
 
 }

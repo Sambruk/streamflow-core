@@ -23,13 +23,13 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * Bootstrap and testdata assembler.
  */
 public class BootstrapAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addServices(BootstrapDataService.class).instantiateOnStartup();
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( BootstrapDataService.class ).instantiateOnStartup();
 
-        if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.development)
-            module.addServices(TestDataService.class).instantiateOnStartup();
-    }
+      if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.development)
+         module.addServices( TestDataService.class ).instantiateOnStartup();
+   }
 }

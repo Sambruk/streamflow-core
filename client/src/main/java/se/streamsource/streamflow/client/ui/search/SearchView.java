@@ -18,81 +18,84 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.FocusListener;
-import java.awt.event.FocusEvent;
-
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * JAVADOC
  */
 public class SearchView
-        extends JPanel
+      extends JPanel
 {
-    public JTextField searchField;
-    private SearchResultTableModel model;
+   public JTextField searchField;
+   private SearchResultTableModel model;
 
-    public SearchView(@Service ApplicationContext context,
+   public SearchView( @Service ApplicationContext context,
                       @Uses final SearchResultTableView resultView,
-                      @Uses SearchResultTableModel model)
-    {
-        super(new BorderLayout());
-        this.model = model;
+                      @Uses SearchResultTableModel model )
+   {
+      super( new BorderLayout() );
+      this.model = model;
 
-        ActionMap am = context.getActionMap(this);
+      ActionMap am = context.getActionMap( this );
 
-        searchField = new JTextField(100);
-        final String searchText = i18n.text(SearchResources.enter_search_text);
-        searchField.setText(searchText);
-        searchField.setForeground(Color.gray);
-        setMinimumSize(new Dimension(500, 0));
-        add(searchField, BorderLayout.NORTH);
-        add(resultView, BorderLayout.CENTER);
+      searchField = new JTextField( 100 );
+      final String searchText = i18n.text( SearchResources.enter_search_text );
+      searchField.setText( searchText );
+      searchField.setForeground( Color.gray );
+      setMinimumSize( new Dimension( 500, 0 ) );
+      add( searchField, BorderLayout.NORTH );
+      add( resultView, BorderLayout.CENTER );
 
-        searchField.setAction(am.get("search"));
+      searchField.setAction( am.get( "search" ) );
 
-        searchField.addFocusListener(new FocusListener()
-        {
-            public void focusGained(FocusEvent e)
+      searchField.addFocusListener( new FocusListener()
+      {
+         public void focusGained( FocusEvent e )
+         {
+            if (searchField.getText().equals( searchText ))
             {
-                if (searchField.getText().equals(searchText))
-                {
-                    searchField.setText("");
-                    searchField.setForeground(Color.black);
-                }
+               searchField.setText( "" );
+               searchField.setForeground( Color.black );
             }
+         }
 
-            public void focusLost(FocusEvent e)
+         public void focusLost( FocusEvent e )
+         {
+            if (searchField.getText().equals( "" ))
             {
-                if (searchField.getText().equals(""))
-                {
-                    searchField.setText(searchText);
-                    searchField.setForeground(Color.gray);
-                }
+               searchField.setText( searchText );
+               searchField.setForeground( Color.gray );
             }
-        });
-    }
+         }
+      } );
+   }
 
-    @org.jdesktop.application.Action
-    public void search() throws ResourceException
-    {
-        model.search(searchField.getText());
-    }
+   @org.jdesktop.application.Action
+   public void search() throws ResourceException
+   {
+      model.search( searchField.getText() );
+   }
 
-    @Override
-    public void setSize(int width, int height)
-    {
-        super.setSize(width, height);
-    }
+   @Override
+   public void setSize( int width, int height )
+   {
+      super.setSize( width, height );
+   }
 
-    @Override
-    public void setSize(Dimension d)
-    {
-        super.setSize(d);
-    }
+   @Override
+   public void setSize( Dimension d )
+   {
+      super.setSize( d );
+   }
 
 
 }

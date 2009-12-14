@@ -41,54 +41,54 @@ import java.util.List;
  * /users/{user}/workspace/user/{view}/{task}/comments
  */
 public class TaskCommentsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public TaskCommentsServerResource()
-    {
-        setNegotiated(true);
-        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-    }
+   public TaskCommentsServerResource()
+   {
+      setNegotiated( true );
+      getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
+   }
 
-    @Override
-    protected Representation get(Variant variant) throws ResourceException
-    {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Get task comments"));
-        ValueBuilder<CommentsDTO> builder = vbf.newValueBuilder(CommentsDTO.class);
-        ValueBuilder<CommentDTO> commentBuilder = vbf.newValueBuilder(CommentDTO.class);
-        List<CommentDTO> list = builder.prototype().comments().get();
-        TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
-        for (CommentValue commentValue : task.comments().get())
-        {
-            commentBuilder.prototype().creationDate().set(commentValue.creationDate().get());
-            Commenter commenter = uow.get(Commenter.class, commentValue.commenter().get().identity());
-            commentBuilder.prototype().commenter().set(commenter.getDescription());
-            commentBuilder.prototype().text().set(commentValue.text().get());
-            commentBuilder.prototype().isPublic().set(commentValue.isPublic().get());
-            list.add(commentBuilder.newInstance());
-        }
-        uow.discard();
+   @Override
+   protected Representation get( Variant variant ) throws ResourceException
+   {
+      UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Get task comments" ) );
+      ValueBuilder<CommentsDTO> builder = vbf.newValueBuilder( CommentsDTO.class );
+      ValueBuilder<CommentDTO> commentBuilder = vbf.newValueBuilder( CommentDTO.class );
+      List<CommentDTO> list = builder.prototype().comments().get();
+      TaskEntity task = uow.get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+      for (CommentValue commentValue : task.comments().get())
+      {
+         commentBuilder.prototype().creationDate().set( commentValue.creationDate().get() );
+         Commenter commenter = uow.get( Commenter.class, commentValue.commenter().get().identity() );
+         commentBuilder.prototype().commenter().set( commenter.getDescription() );
+         commentBuilder.prototype().text().set( commentValue.text().get() );
+         commentBuilder.prototype().isPublic().set( commentValue.isPublic().get() );
+         list.add( commentBuilder.newInstance() );
+      }
+      uow.discard();
 
-        return new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
-    }
+      return new StringRepresentation( builder.newInstance().toJSON(), MediaType.APPLICATION_JSON );
+   }
 
-    public void addComment(NewCommentCommand comment) throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void addComment( NewCommentCommand comment ) throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        //NewCommentCommand comment = vbf.newValueFromJSON(NewCommentCommand.class, representation.getText());
-        Commentable commentable = uow.get(Commentable.class, getRequest().getAttributes().get("task").toString());
-        ValueBuilder<CommentValue> builder = vbf.newValueBuilder(CommentValue.class);
-        CommentValue prototype = builder.prototype();
-        prototype.commenter().set(comment.commenter().get());
-        prototype.creationDate().set(comment.creationDate().get());
-        prototype.text().set(comment.text().get());
-        prototype.isPublic().set(comment.isPublic().get());
-        commentable.addComment(builder.newInstance());
-    }
+      //NewCommentCommand comment = vbf.newValueFromJSON(NewCommentCommand.class, representation.getText());
+      Commentable commentable = uow.get( Commentable.class, getRequest().getAttributes().get( "task" ).toString() );
+      ValueBuilder<CommentValue> builder = vbf.newValueBuilder( CommentValue.class );
+      CommentValue prototype = builder.prototype();
+      prototype.commenter().set( comment.commenter().get() );
+      prototype.creationDate().set( comment.creationDate().get() );
+      prototype.text().set( comment.text().get() );
+      prototype.isPublic().set( comment.isPublic().get() );
+      commentable.addComment( builder.newInstance() );
+   }
 }

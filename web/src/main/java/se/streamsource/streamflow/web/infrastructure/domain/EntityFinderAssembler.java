@@ -30,23 +30,23 @@ import org.qi4j.library.rdf.repository.NativeRepositoryService;
  * JAVADOC
  */
 public class EntityFinderAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
-        if (mode.equals(Application.Mode.development) || mode.equals(Application.Mode.test))
-        {
-            // In-memory store
-            module.addServices(MemoryRepositoryService.class).instantiateOnStartup().visibleIn(Visibility.application).identifiedBy("rdf-repository");
-        } else if (mode.equals(Application.Mode.production))
-        {
-            // Native storage
-            module.addServices(NativeRepositoryService.class).visibleIn(Visibility.application).instantiateOnStartup().identifiedBy("rdf-repository");
-        }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
+      {
+         // In-memory store
+         module.addServices( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
+      } else if (mode.equals( Application.Mode.production ))
+      {
+         // Native storage
+         module.addServices( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
+      }
 
-        module.addObjects(EntityStateSerializer.class, EntityTypeSerializer.class);
-        module.addServices(RdfQueryService.class).instantiateOnStartup().visibleIn(Visibility.application);
-        module.addServices(RdfFactoryService.class);
-    }
+      module.addObjects( EntityStateSerializer.class, EntityTypeSerializer.class );
+      module.addServices( RdfQueryService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.addServices( RdfFactoryService.class );
+   }
 }

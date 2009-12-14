@@ -25,15 +25,15 @@ import java.util.Date;
  * New comment command
  */
 public interface NewCommentCommand
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> commenter();
+   Property<EntityReference> commenter();
 
-    Property<Date> creationDate();
+   Property<Date> creationDate();
 
-    @UseDefaults
-    Property<String> text();
+   @UseDefaults
+   Property<String> text();
 
-    @UseDefaults
-    Property<Boolean> isPublic();
+   @UseDefaults
+   Property<Boolean> isPublic();
 }

@@ -29,80 +29,80 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 
 /**
  * JAVADOC
  */
 public class AdministratorsModel
-        extends AbstractListModel
-    implements Refreshable, EventListener
+      extends AbstractListModel
+      implements Refreshable, EventListener
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Uses
-    private AdministratorsClientResource administrators;
+   @Uses
+   private AdministratorsClientResource administrators;
 
-    private List<ListItemValue> list;
+   private List<ListItemValue> list;
 
-    public int getSize()
-    {
-        return list == null ? 0 : list.size();
-    }
+   public int getSize()
+   {
+      return list == null ? 0 : list.size();
+   }
 
-    public Object getElementAt(int index)
-    {
-        return list == null ? null : list.get(index);
-    }
+   public Object getElementAt( int index )
+   {
+      return list == null ? null : list.get( index );
+   }
 
-    public void addAdministrator(String description)
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(description);
-            administrators.addAdministrator(builder.newInstance());
-            refresh();
+   public void addAdministrator( String description )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( description );
+         administrators.addAdministrator( builder.newInstance() );
+         refresh();
 
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_add_administrator, e);
-        }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_add_administrator, e );
+      }
 
-    }
+   }
 
-    public void removeAdministrator(String id)
-    {
-        try
-        {
-            administrators.role(id).deleteCommand();
-            refresh();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_administrator, e);
-        }
-    }
+   public void removeAdministrator( String id )
+   {
+      try
+      {
+         administrators.role( id ).deleteCommand();
+         refresh();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_administrator, e );
+      }
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            list = administrators.administrators().items().get();
-            fireContentsChanged(this, 0, list.size());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         list = administrators.administrators().items().get();
+         fireContentsChanged( this, 0, list.size() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+   }
 
-    public UsersAndGroupsFilter getFilterResource()
-    {
-        return administrators;
-    }
+   public UsersAndGroupsFilter getFilterResource()
+   {
+      return administrators;
+   }
 }

@@ -28,41 +28,42 @@ import java.security.AccessControlException;
  * /organizations/{organization}/organizationalunits/{ou}/groups/{group}/participants/{participant}
  */
 public class ParticipantServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    //TODO do a check if the orgunit actually contains the project
-    public void putOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   //TODO do a check if the orgunit actually contains the project
 
-        String participantId = getRequest().getAttributes().get("participant").toString();
-        Participant participant = uow.get(Participant.class, participantId);
+   public void putOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String id = getRequest().getAttributes().get("group").toString();
-        Group group = uow.get(Group.class, id);
-        try
-        {
-            checkPermission(group);
-        } catch(AccessControlException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
+      String participantId = getRequest().getAttributes().get( "participant" ).toString();
+      Participant participant = uow.get( Participant.class, participantId );
 
-        group.addParticipant(participant);
-    }
+      String id = getRequest().getAttributes().get( "group" ).toString();
+      Group group = uow.get( Group.class, id );
+      try
+      {
+         checkPermission( group );
+      } catch (AccessControlException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
+      }
 
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      group.addParticipant( participant );
+   }
 
-        String participantId = getRequest().getAttributes().get("participant").toString();
-        Participant participant = uow.get(Participant.class, participantId);
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String id = getRequest().getAttributes().get("group").toString();
-        Group group = uow.get(Group.class, id);
+      String participantId = getRequest().getAttributes().get( "participant" ).toString();
+      Participant participant = uow.get( Participant.class, participantId );
 
-        checkPermission(group);
-        group.removeParticipant(participant);
-    }
+      String id = getRequest().getAttributes().get( "group" ).toString();
+      Group group = uow.get( Group.class, id );
+
+      checkPermission( group );
+      group.removeParticipant( participant );
+   }
 
 }

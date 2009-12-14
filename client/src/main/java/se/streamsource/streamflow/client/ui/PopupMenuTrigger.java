@@ -14,7 +14,8 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import javax.swing.*;
+import javax.swing.JPopupMenu;
+import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -23,39 +24,39 @@ import java.awt.event.MouseEvent;
  */
 public class PopupMenuTrigger extends MouseAdapter
 {
-    private final JPopupMenu popup;
-    private ListSelectionModel selectionModel;
+   private final JPopupMenu popup;
+   private ListSelectionModel selectionModel;
 
-    public PopupMenuTrigger(JPopupMenu popup)
-    {
-        this.popup = popup;
-    }
+   public PopupMenuTrigger( JPopupMenu popup )
+   {
+      this.popup = popup;
+   }
 
-    public PopupMenuTrigger(JPopupMenu popup, ListSelectionModel selectionModel)
-    {
-        this(popup);
-        this.selectionModel = selectionModel;
-    }
+   public PopupMenuTrigger( JPopupMenu popup, ListSelectionModel selectionModel )
+   {
+      this( popup );
+      this.selectionModel = selectionModel;
+   }
 
-    public void mousePressed(MouseEvent e)
-    {
-        mouseReleased(e);
-    }
+   public void mousePressed( MouseEvent e )
+   {
+      mouseReleased( e );
+   }
 
-    public void mouseReleased(MouseEvent e)
-    {
-        if (e.isPopupTrigger())
-        {
-            if (selectionModel != null && selectionModel.isSelectionEmpty())
-                return;
+   public void mouseReleased( MouseEvent e )
+   {
+      if (e.isPopupTrigger())
+      {
+         if (selectionModel != null && selectionModel.isSelectionEmpty())
+            return;
 
-            showPopup(e);
-        }
-    }
+         showPopup( e );
+      }
+   }
 
-    protected void showPopup(MouseEvent e)
-    {
-        popup.show(e.getComponent(),
-                    e.getX(), e.getY());
-    }
+   protected void showPopup( MouseEvent e )
+   {
+      popup.show( e.getComponent(),
+            e.getX(), e.getY() );
+   }
 }

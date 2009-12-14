@@ -23,7 +23,7 @@ import se.streamsource.streamflow.web.domain.label.SelectedLabels;
  * JAVADOC
  */
 public interface TaskType
-   extends
+      extends
       Describable,
       Forms,
       Notable,

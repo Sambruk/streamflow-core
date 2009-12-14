@@ -27,23 +27,23 @@ import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
  * JAVADOC
  */
 public class ClientEntityStoreAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
-        if (mode.equals(Application.Mode.development))
-        {
-            // In-memory store
-            module.addServices(MemoryEntityStoreService.class, UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
-        } else if (mode.equals(Application.Mode.test))
-        {
-            // In-memory store
-            module.addServices(MemoryEntityStoreService.class, UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
-        } else if (mode.equals(Application.Mode.production))
-        {
-            // JDBM storage
-            module.addServices(JdbmEntityStoreService.class, UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
-        }
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.development ))
+      {
+         // In-memory store
+         module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+      } else if (mode.equals( Application.Mode.test ))
+      {
+         // In-memory store
+         module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+      } else if (mode.equals( Application.Mode.production ))
+      {
+         // JDBM storage
+         module.addServices( JdbmEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+      }
+   }
 }

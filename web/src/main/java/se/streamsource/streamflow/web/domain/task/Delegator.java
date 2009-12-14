@@ -20,6 +20,6 @@ import se.streamsource.streamflow.domain.roles.Describable;
  * JAVADOC
  */
 public interface Delegator
-        extends Describable
+      extends Describable
 {
 }

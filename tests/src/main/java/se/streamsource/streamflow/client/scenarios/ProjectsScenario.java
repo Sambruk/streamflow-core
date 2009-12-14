@@ -26,22 +26,22 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
  * JAVADOC
  */
 public class ProjectsScenario
-        extends AbstractWebDomainApplicationScenario
+      extends AbstractWebDomainApplicationScenario
 {
 
-    public ProjectsScenario()
-    {
-        this(Thread.currentThread().getContextClassLoader());
-    }
+   public ProjectsScenario()
+   {
+      this( Thread.currentThread().getContextClassLoader() );
+   }
 
-    public ProjectsScenario(ClassLoader classLoader)
-    {
-        super(classLoader, new TestSetupSteps(),
-                new ProjectsSteps(),
-                new OrganizationsSteps(),
-                new OrganizationalUnitsSteps(),
-                new MembersSteps(),
-                new UserSteps() 
-                );
-    }
+   public ProjectsScenario( ClassLoader classLoader )
+   {
+      super( classLoader, new TestSetupSteps(),
+            new ProjectsSteps(),
+            new OrganizationsSteps(),
+            new OrganizationalUnitsSteps(),
+            new MembersSteps(),
+            new UserSteps()
+      );
+   }
 }

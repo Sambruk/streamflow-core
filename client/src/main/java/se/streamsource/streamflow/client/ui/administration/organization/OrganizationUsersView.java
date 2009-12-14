@@ -22,106 +22,111 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.SelectOrganizationUsersDialog;
 import se.streamsource.streamflow.client.ui.administration.SelectOrganizationUsersDialogModel;
-import se.streamsource.streamflow.client.ui.ConfirmationDialog;
-import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class OrganizationUsersView
-    extends JPanel
+      extends JPanel
 {
-    @Uses
-    Iterable<ConfirmationDialog> confirmationDialog;
-    
-    @Structure
-    ObjectBuilderFactory obf;
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Service
-    DialogService dialogs;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public JList participantList;
+   @Service
+   DialogService dialogs;
 
-    private OrganizationUsersModel model;
+   public JList participantList;
 
-    public OrganizationUsersView(@Service ApplicationContext context, @Uses OrganizationUsersModel model)
-    {
-        super(new BorderLayout());
-        this.model = model;
+   private OrganizationUsersModel model;
 
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
+   public OrganizationUsersView( @Service ApplicationContext context, @Uses OrganizationUsersModel model )
+   {
+      super( new BorderLayout() );
+      this.model = model;
 
-        participantList = new JList(model);
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
 
-        participantList.setCellRenderer(new ListItemListCellRenderer());
+      participantList = new JList( model );
 
-        JScrollPane scrollPane = new JScrollPane(participantList);
-        add(scrollPane, BorderLayout.CENTER);
+      participantList.setCellRenderer( new ListItemListCellRenderer() );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("add")));
-        toolbar.add(new JButton(am.get("remove")));
-        add(toolbar, BorderLayout.SOUTH);
+      JScrollPane scrollPane = new JScrollPane( participantList );
+      add( scrollPane, BorderLayout.CENTER );
 
-        participantList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
-    }
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( am.get( "add" ) ) );
+      toolbar.add( new JButton( am.get( "remove" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
 
-    @org.jdesktop.application.Action
-    public void add() throws ResourceException
-    {
-        SelectOrganizationUsersDialogModel dialogModel = obf.newObjectBuilder(SelectOrganizationUsersDialogModel.class)
-                .use(model.getResource()).newInstance();
-        SelectOrganizationUsersDialog dialog = obf.newObjectBuilder(SelectOrganizationUsersDialog.class)
-                .use(dialogModel).newInstance();
-        dialogs.showOkCancelHelpDialog(
-                WindowUtils.findWindow(this),
-                dialog,
-                text(AdministrationResources.join_organization));
+      participantList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+   }
 
-        if(dialog.getSelectedUsers() != null)
-        {
-            model.getResource().join(dialog.getSelectedUsers());
-            model.refresh();
-        }
-    }
+   @org.jdesktop.application.Action
+   public void add() throws ResourceException
+   {
+      SelectOrganizationUsersDialogModel dialogModel = obf.newObjectBuilder( SelectOrganizationUsersDialogModel.class )
+            .use( model.getResource() ).newInstance();
+      SelectOrganizationUsersDialog dialog = obf.newObjectBuilder( SelectOrganizationUsersDialog.class )
+            .use( dialogModel ).newInstance();
+      dialogs.showOkCancelHelpDialog(
+            WindowUtils.findWindow( this ),
+            dialog,
+            text( AdministrationResources.join_organization ) );
 
-    @org.jdesktop.application.Action
-    public void remove() throws ResourceException
-    {
-        ConfirmationDialog dialog = confirmationDialog.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
-        if(dialog.isConfirmed())
-        {
-            ListValueBuilder userList = new ListValueBuilder(vbf);
-            for( int index : participantList.getSelectedIndices())
-            {
-                ListItemValue user = (ListItemValue) model.getElementAt(index);
-                userList.addListItem(user.description().get(), user.entity().get());
-            }
+      if (dialog.getSelectedUsers() != null)
+      {
+         model.getResource().join( dialog.getSelectedUsers() );
+         model.refresh();
+      }
+   }
 
-            model.getResource().leave(userList.newList());
-            model.refresh();
+   @org.jdesktop.application.Action
+   public void remove() throws ResourceException
+   {
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         ListValueBuilder userList = new ListValueBuilder( vbf );
+         for (int index : participantList.getSelectedIndices())
+         {
+            ListItemValue user = (ListItemValue) model.getElementAt( index );
+            userList.addListItem( user.description().get(), user.entity().get() );
+         }
 
-            participantList.clearSelection();
-        }
-    }
+         model.getResource().leave( userList.newList() );
+         model.refresh();
 
-    public JList getParticipantList()
-    {
-        return participantList;
-    }
+         participantList.clearSelection();
+      }
+   }
+
+   public JList getParticipantList()
+   {
+      return participantList;
+   }
 }

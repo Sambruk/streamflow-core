@@ -16,16 +16,17 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
 
 /**
  * JAVADOC
  */
 public interface ContainerUnitOfWork
 {
-    void register(Container container, UnitOfWork uow);
+   void register( Container container, UnitOfWork uow );
 
-    void discard(Container container);
+   void discard( Container container );
 
-    UnitOfWork get(Component component);
+   UnitOfWork get( Component component );
 }

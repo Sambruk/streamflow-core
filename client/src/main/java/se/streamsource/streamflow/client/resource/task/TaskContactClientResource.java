@@ -29,47 +29,47 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * Mapped to /task/{id}/contacts/{index}
  */
 public class TaskContactClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public TaskContactClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public TaskContactClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void changeName(StringDTO name) throws ResourceException
-    {
-        putCommand("changeName", name);
-    }
+   public void changeName( StringDTO name ) throws ResourceException
+   {
+      putCommand( "changeName", name );
+   }
 
-    public void changeNote(StringDTO note) throws ResourceException
-    {
-        putCommand("changeNote", note);
-    }
+   public void changeNote( StringDTO note ) throws ResourceException
+   {
+      putCommand( "changeNote", note );
+   }
 
-    public void changeContactId(StringDTO name) throws ResourceException
-    {
-        putCommand("changeContactId", name);
-    }
+   public void changeContactId( StringDTO name ) throws ResourceException
+   {
+      putCommand( "changeContactId", name );
+   }
 
-    public void changeCompany(StringDTO company) throws ResourceException
-    {
-        putCommand("changeCompany", company);
-    }
+   public void changeCompany( StringDTO company ) throws ResourceException
+   {
+      putCommand( "changeCompany", company );
+   }
 
-    public void changePhoneNumber(ContactPhoneValue phoneNumber) throws ResourceException
-    {
-        putCommand("changePhoneNumber", phoneNumber);
-    }
+   public void changePhoneNumber( ContactPhoneValue phoneNumber ) throws ResourceException
+   {
+      putCommand( "changePhoneNumber", phoneNumber );
+   }
 
-    public void changeAddress(ContactAddressValue address) throws ResourceException
-    {
-        putCommand("changeAddress", address);
-    }
+   public void changeAddress( ContactAddressValue address ) throws ResourceException
+   {
+      putCommand( "changeAddress", address );
+   }
 
-    public void changeEmailAddress(ContactEmailValue emailAddress) throws ResourceException
-    {
-        putCommand("changeEmailAddress", emailAddress);
-    }
+   public void changeEmailAddress( ContactEmailValue emailAddress ) throws ResourceException
+   {
+      putCommand( "changeEmailAddress", emailAddress );
+   }
 
 
 }

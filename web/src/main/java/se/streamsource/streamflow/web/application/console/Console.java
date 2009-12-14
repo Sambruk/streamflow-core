@@ -19,10 +19,10 @@ package se.streamsource.streamflow.web.application.console;
  */
 public interface Console
 {
-    enum Language
-    {
-        BEANSHELL
-    }
+   enum Language
+   {
+      BEANSHELL
+   }
 
-    public ConsoleResultValue executeScript(ConsoleScriptValue script) throws Exception;
+   public ConsoleResultValue executeScript( ConsoleScriptValue script ) throws Exception;
 }

@@ -19,32 +19,32 @@ package se.streamsource.streamflow.resource.organization.search;
  */
 public enum DateSearchKeyword
 {
-    TODAY
+   TODAY
+         {
+            public String toString()
             {
-                public String toString()
-                {
-                    return "TODAY";
-                }
-            },
-    YESTERDAY
-            {
-                public String toString()
-                {
-                    return "YESTERDAY";
-                }
-            },
-    HOUR
-            {
-                public String toString()
-                {
-                    return "HOUR";
-                }
-            },
-    WEEK
-            {
-                public String toString()
-                {
-                    return "WEEK";
-                }
+               return "TODAY";
             }
+         },
+   YESTERDAY
+         {
+            public String toString()
+            {
+               return "YESTERDAY";
+            }
+         },
+   HOUR
+         {
+            public String toString()
+            {
+               return "HOUR";
+            }
+         },
+   WEEK
+         {
+            public String toString()
+            {
+               return "WEEK";
+            }
+         }
 }

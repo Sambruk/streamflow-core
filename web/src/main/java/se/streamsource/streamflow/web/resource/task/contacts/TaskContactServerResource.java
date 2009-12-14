@@ -36,170 +36,170 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /users/{user}/workspace/user/{view}/{task}/contacts/{index}
  */
 public class TaskContactServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Structure
-    Qi4jSPI spi;
+   @Structure
+   Qi4jSPI spi;
 
-    public TaskContactServerResource()
-    {
-        setNegotiated(true);
-        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-    }
+   public TaskContactServerResource()
+   {
+      setNegotiated( true );
+      getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
+   }
 
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
-        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+      TaskEntity task = uow.get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+      String taskContactIndex = getRequest().getAttributes().get( "index" ).toString();
 
-        task.deleteContact(Integer.parseInt(taskContactIndex));
-    }
+      task.deleteContact( Integer.parseInt( taskContactIndex ) );
+   }
 
-    public void changeName(StringDTO name)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
-        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+   public void changeName( StringDTO name )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
+      String taskContactIndex = getRequest().getAttributes().get( "index" ).toString();
 
-        int idx = Integer.parseInt(taskContactIndex);
-        ContactValue contact = task.contacts().get().get(idx);
+      int idx = Integer.parseInt( taskContactIndex );
+      ContactValue contact = task.contacts().get().get( idx );
 
-        ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class).withPrototype(contact);
-        builder.prototype().name().set(name.string().get());
+      ValueBuilder<ContactValue> builder = vbf.newValueBuilder( ContactValue.class ).withPrototype( contact );
+      builder.prototype().name().set( name.string().get() );
 
-        task.updateContact(idx, builder.newInstance());
-    }
+      task.updateContact( idx, builder.newInstance() );
+   }
 
-    public void changeNote(StringDTO note)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
-        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+   public void changeNote( StringDTO note )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
+      String taskContactIndex = getRequest().getAttributes().get( "index" ).toString();
 
-        int idx = Integer.parseInt(taskContactIndex);
-        ContactValue contact = task.contacts().get().get(idx);
+      int idx = Integer.parseInt( taskContactIndex );
+      ContactValue contact = task.contacts().get().get( idx );
 
-        ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class).withPrototype(contact);
-        builder.prototype().note().set(note.string().get());
+      ValueBuilder<ContactValue> builder = vbf.newValueBuilder( ContactValue.class ).withPrototype( contact );
+      builder.prototype().note().set( note.string().get() );
 
-        task.updateContact(idx, builder.newInstance());
-    }
+      task.updateContact( idx, builder.newInstance() );
+   }
 
-    public void changeContactId(StringDTO contactId)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
-        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+   public void changeContactId( StringDTO contactId )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
+      String taskContactIndex = getRequest().getAttributes().get( "index" ).toString();
 
-        int idx = Integer.parseInt(taskContactIndex);
-        ContactValue contact = task.contacts().get().get(idx);
+      int idx = Integer.parseInt( taskContactIndex );
+      ContactValue contact = task.contacts().get().get( idx );
 
-        ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class).withPrototype(contact);
-        builder.prototype().contactId().set(contactId.string().get());
+      ValueBuilder<ContactValue> builder = vbf.newValueBuilder( ContactValue.class ).withPrototype( contact );
+      builder.prototype().contactId().set( contactId.string().get() );
 
-        task.updateContact(idx, builder.newInstance());
-    }
+      task.updateContact( idx, builder.newInstance() );
+   }
 
-    public void changeCompany(StringDTO company)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+   public void changeCompany( StringDTO company )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
 
-        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+      String taskContactIndex = getRequest().getAttributes().get( "index" ).toString();
 
-        int idx = Integer.parseInt(taskContactIndex);
-        ContactValue contact = task.contacts().get().get(idx);
+      int idx = Integer.parseInt( taskContactIndex );
+      ContactValue contact = task.contacts().get().get( idx );
 
-        ValueBuilder<ContactValue> builder = vbf.newValueBuilder(ContactValue.class).withPrototype(contact);
-        builder.prototype().company().set(company.string().get());
+      ValueBuilder<ContactValue> builder = vbf.newValueBuilder( ContactValue.class ).withPrototype( contact );
+      builder.prototype().company().set( company.string().get() );
 
-        task.updateContact(idx, builder.newInstance());
-    }
+      task.updateContact( idx, builder.newInstance() );
+   }
 
-    public void changePhoneNumber(ContactPhoneValue phoneValue)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+   public void changePhoneNumber( ContactPhoneValue phoneValue )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
 
-        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+      String taskContactIndex = getRequest().getAttributes().get( "index" ).toString();
 
-        int idx = Integer.parseInt(taskContactIndex);
-        ContactValue contact = task.contacts().get().get(idx).<ContactValue>buildWith().prototype();
+      int idx = Integer.parseInt( taskContactIndex );
+      ContactValue contact = task.contacts().get().get( idx ).<ContactValue>buildWith().prototype();
 
-        // Create an empty phone value if it doesnt exist already
-        if (contact.phoneNumbers().get().isEmpty())
-        {
-            ContactPhoneValue phone = vbf.newValue(ContactPhoneValue.class).<ContactPhoneValue>buildWith().prototype();
-            phone.phoneNumber().set(phoneValue.phoneNumber().get());
-            contact.phoneNumbers().get().add(phone);
-        } else
-        {
-            contact.phoneNumbers().get().get(0).phoneNumber().set(phoneValue.phoneNumber().get());
-        }
+      // Create an empty phone value if it doesnt exist already
+      if (contact.phoneNumbers().get().isEmpty())
+      {
+         ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class ).<ContactPhoneValue>buildWith().prototype();
+         phone.phoneNumber().set( phoneValue.phoneNumber().get() );
+         contact.phoneNumbers().get().add( phone );
+      } else
+      {
+         contact.phoneNumbers().get().get( 0 ).phoneNumber().set( phoneValue.phoneNumber().get() );
+      }
 
-        task.updateContact(idx, contact.<ContactValue>buildWith().newInstance());
-    }
+      task.updateContact( idx, contact.<ContactValue>buildWith().newInstance() );
+   }
 
-    public void changeAddress(ContactAddressValue addressValue)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+   public void changeAddress( ContactAddressValue addressValue )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
 
-        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+      String taskContactIndex = getRequest().getAttributes().get( "index" ).toString();
 
-        int idx = Integer.parseInt(taskContactIndex);
-        ContactValue contact = task.contacts().get().get(idx).<ContactValue>buildWith().prototype();
+      int idx = Integer.parseInt( taskContactIndex );
+      ContactValue contact = task.contacts().get().get( idx ).<ContactValue>buildWith().prototype();
 
-        // Create an empty phone value if it doesnt exist already
-        if (contact.addresses().get().isEmpty())
-        {
-            ContactAddressValue address = vbf.newValue(ContactAddressValue.class).<ContactAddressValue>buildWith().prototype();
-            address.address().set(addressValue.address().get());
-            contact.addresses().get().add(address);
-        } else
-        {
-            contact.addresses().get().get(0).address().set(addressValue.address().get());
-        }
+      // Create an empty phone value if it doesnt exist already
+      if (contact.addresses().get().isEmpty())
+      {
+         ContactAddressValue address = vbf.newValue( ContactAddressValue.class ).<ContactAddressValue>buildWith().prototype();
+         address.address().set( addressValue.address().get() );
+         contact.addresses().get().add( address );
+      } else
+      {
+         contact.addresses().get().get( 0 ).address().set( addressValue.address().get() );
+      }
 
-        task.updateContact(idx, contact.<ContactValue>buildWith().newInstance());
-    }
+      task.updateContact( idx, contact.<ContactValue>buildWith().newInstance() );
+   }
 
-    public void changeEmailAddress(ContactEmailValue emailValue)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        TaskEntity task = uowf.currentUnitOfWork().get(TaskEntity.class, taskId);
+   public void changeEmailAddress( ContactEmailValue emailValue )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
 
-        String taskContactIndex = getRequest().getAttributes().get("index").toString();
+      String taskContactIndex = getRequest().getAttributes().get( "index" ).toString();
 
-        int idx = Integer.parseInt(taskContactIndex);
-        ContactValue contact = task.contacts().get().get(idx).<ContactValue>buildWith().prototype();
+      int idx = Integer.parseInt( taskContactIndex );
+      ContactValue contact = task.contacts().get().get( idx ).<ContactValue>buildWith().prototype();
 
-        // Create an empty phone value if it doesnt exist already
-        if (contact.emailAddresses().get().isEmpty())
-        {
-            ContactEmailValue email = vbf.newValue(ContactEmailValue.class).<ContactEmailValue>buildWith().prototype();
-            email.emailAddress().set(emailValue.emailAddress().get());
-            contact.emailAddresses().get().add(email);
-        } else
-        {
-            contact.emailAddresses().get().get(0).emailAddress().set(emailValue.emailAddress().get());
-        }
+      // Create an empty phone value if it doesnt exist already
+      if (contact.emailAddresses().get().isEmpty())
+      {
+         ContactEmailValue email = vbf.newValue( ContactEmailValue.class ).<ContactEmailValue>buildWith().prototype();
+         email.emailAddress().set( emailValue.emailAddress().get() );
+         contact.emailAddresses().get().add( email );
+      } else
+      {
+         contact.emailAddresses().get().get( 0 ).emailAddress().set( emailValue.emailAddress().get() );
+      }
 
-        task.updateContact(idx, contact.<ContactValue>buildWith().newInstance());
-    }
+      task.updateContact( idx, contact.<ContactValue>buildWith().newInstance() );
+   }
 
 
-    @Override
-    protected String getConditionalIdentityAttribute()
-    {
-        return "task";
-    }
+   @Override
+   protected String getConditionalIdentityAttribute()
+   {
+      return "task";
+   }
 }

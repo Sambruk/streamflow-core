@@ -21,7 +21,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  */
 public class UnitOfWorkEvents
 {
-    private String id; // UnitOfWork id
-    private String previous; // Previous UnitOfWork id
-    private Iterable<DomainEvent> events;
+   private String id; // UnitOfWork id
+   private String previous; // Previous UnitOfWork id
+   private Iterable<DomainEvent> events;
 }

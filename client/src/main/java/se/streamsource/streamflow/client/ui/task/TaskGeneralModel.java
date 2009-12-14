@@ -32,157 +32,157 @@ import java.util.Date;
  * Model for the general info about a task.
  */
 public class TaskGeneralModel implements Refreshable, EventListener,
-		EventHandler
+      EventHandler
 
 {
-	EventHandlerFilter eventFilter;
+   EventHandlerFilter eventFilter;
 
-	private TaskGeneralClientResource generalClientResource;
+   private TaskGeneralClientResource generalClientResource;
 
-	TaskGeneralDTO general;
+   TaskGeneralDTO general;
 
-    @Uses
-    PossibleTaskTypesModel taskTypesModel;
+   @Uses
+   PossibleTaskTypesModel taskTypesModel;
 
-    @Uses
-    TaskLabelsModel taskLabelsModel;
+   @Uses
+   TaskLabelsModel taskLabelsModel;
 
-    @Uses
-    TaskLabelSelectionModel selectionModel;
+   @Uses
+   TaskLabelSelectionModel selectionModel;
 
-    public TaskGeneralModel(@Uses TaskGeneralClientResource generalClientResource)
-    {
-        this.generalClientResource = generalClientResource;
-        eventFilter = new EventHandlerFilter(generalClientResource.getRequest().getResourceRef().getParentRef().getLastSegment(), this, "addedLabel",
-                "removedLabel", "changedOwner", "changedTaskType");
-    }
+   public TaskGeneralModel( @Uses TaskGeneralClientResource generalClientResource )
+   {
+      this.generalClientResource = generalClientResource;
+      eventFilter = new EventHandlerFilter( generalClientResource.getRequest().getResourceRef().getParentRef().getLastSegment(), this, "addedLabel",
+            "removedLabel", "changedOwner", "changedTaskType" );
+   }
 
-    public TaskGeneralDTO getGeneral()
-	{
-		if (general == null)
-			refresh();
+   public TaskGeneralDTO getGeneral()
+   {
+      if (general == null)
+         refresh();
 
-		return general;
-	}
+      return general;
+   }
 
-	public void changeDescription(String newDescription)
-	{
-		try
-		{
-			generalClientResource.changeDescription(newDescription);
-		} catch (ResourceException e)
-		{
-			throw new OperationException(
-					TaskResources.could_not_change_description, e);
-		}
-	}
+   public void changeDescription( String newDescription )
+   {
+      try
+      {
+         generalClientResource.changeDescription( newDescription );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(
+               TaskResources.could_not_change_description, e );
+      }
+   }
 
-	public void changeNote(String newNote)
-	{
-		try
-		{
-			generalClientResource.changeNote(newNote);
-		} catch (ResourceException e)
-		{
-			throw new OperationException(TaskResources.could_not_change_note, e);
-		}
-	}
+   public void changeNote( String newNote )
+   {
+      try
+      {
+         generalClientResource.changeNote( newNote );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_change_note, e );
+      }
+   }
 
-	public void changeDueOn(Date newDueOn)
-	{
-		try
-		{
-			generalClientResource.changeDueOn(newDueOn);
-		} catch (ResourceException e)
-		{
-			throw new OperationException(TaskResources.could_not_change_due_on,
-					e);
-		}
-	}
+   public void changeDueOn( Date newDueOn )
+   {
+      try
+      {
+         generalClientResource.changeDueOn( newDueOn );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_change_due_on,
+               e );
+      }
+   }
 
-	public void addLabel(String labelId)
-	{
-		try
-		{
-			generalClientResource.addLabel(labelId);
-		} catch (ResourceException e)
-		{
-			throw new OperationException(TaskResources.could_not_add_label,
-					e);
-		}
-	}
+   public void addLabel( String labelId )
+   {
+      try
+      {
+         generalClientResource.addLabel( labelId );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_add_label,
+               e );
+      }
+   }
 
-	public void removeLabel(String labelId)
-	{
-		try
-		{
-			generalClientResource.removeLabel(labelId);
-		} catch (ResourceException e)
-		{
-			throw new OperationException(TaskResources.could_not_remove_label,
-					e);
-		}
-	}
+   public void removeLabel( String labelId )
+   {
+      try
+      {
+         generalClientResource.removeLabel( labelId );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_remove_label,
+               e );
+      }
+   }
 
-    public void changeTaskType( EntityReference taskType )
-    {
-        try
-        {
-            generalClientResource.changeTaskType( taskType );
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_remove_label,
-                    e);
-        }
-    }
+   public void changeTaskType( EntityReference taskType )
+   {
+      try
+      {
+         generalClientResource.changeTaskType( taskType );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_remove_label,
+               e );
+      }
+   }
 
-    public PossibleTaskTypesModel taskTypesModel()
-    {
-        return taskTypesModel;
-    }
+   public PossibleTaskTypesModel taskTypesModel()
+   {
+      return taskTypesModel;
+   }
 
-    public TaskLabelsModel labelsModel()
-    {
-        return taskLabelsModel;
-    }
+   public TaskLabelsModel labelsModel()
+   {
+      return taskLabelsModel;
+   }
 
 
-    public TaskLabelSelectionModel selectionModel()
-    {
-        return selectionModel;
-    }
+   public TaskLabelSelectionModel selectionModel()
+   {
+      return selectionModel;
+   }
 
-	public void refresh()
-	{
-		try
-		{
-			general = (TaskGeneralDTO) generalClientResource.general()
-					.buildWith().prototype();
+   public void refresh()
+   {
+      try
+      {
+         general = (TaskGeneralDTO) generalClientResource.general()
+               .buildWith().prototype();
 
-            taskLabelsModel.setLabels(general.labels().get());
+         taskLabelsModel.setLabels( general.labels().get() );
 
-            taskTypesModel.refresh();
+         taskTypesModel.refresh();
 
-            selectionModel.refresh();
-            
-		} catch (Exception e)
-		{
-			throw new OperationException(TaskResources.could_not_refresh, e);
-		}
-	}
+         selectionModel.refresh();
 
-	public void notifyEvent(DomainEvent event)
-	{
-        eventFilter.handleEvent(event);
+      } catch (Exception e)
+      {
+         throw new OperationException( TaskResources.could_not_refresh, e );
+      }
+   }
 
-        taskLabelsModel.notifyEvent(event);
-        selectionModel.notifyEvent(event);
-	}
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
 
-	public boolean handleEvent(DomainEvent event)
-	{
-        refresh();
-		return true;
-	}
+      taskLabelsModel.notifyEvent( event );
+      selectionModel.notifyEvent( event );
+   }
+
+   public boolean handleEvent( DomainEvent event )
+   {
+      refresh();
+      return true;
+   }
 
 }

@@ -24,16 +24,16 @@ import javax.swing.JTabbedPane;
  * JAVADOC
  */
 public class ProjectView
-        extends JTabbedPane
+      extends JTabbedPane
 {
-    public ProjectView(@Uses ProjectMembersView membersView,
+   public ProjectView( @Uses ProjectMembersView membersView,
                        @Uses SelectedLabelsView selectedLabelsView,
-                       @Uses SelectedTaskTypesView selectedTaskTypesView)
-    {
-        super();
+                       @Uses SelectedTaskTypesView selectedTaskTypesView )
+   {
+      super();
 
-        addTab("Members", membersView);
-        addTab("Labels", selectedLabelsView );
-        addTab("Task types", selectedTaskTypesView);
-    }
+      addTab( "Members", membersView );
+      addTab( "Labels", selectedLabelsView );
+      addTab( "Task types", selectedTaskTypesView );
+   }
 }

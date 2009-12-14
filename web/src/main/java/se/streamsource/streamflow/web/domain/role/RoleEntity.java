@@ -22,9 +22,9 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
  * JAVADOC
  */
 public interface RoleEntity
-    extends Role,
-        Describable.Data,
-        Removable.Data,
-        DomainEntity
+      extends Role,
+      Describable.Data,
+      Removable.Data,
+      DomainEntity
 {
 }

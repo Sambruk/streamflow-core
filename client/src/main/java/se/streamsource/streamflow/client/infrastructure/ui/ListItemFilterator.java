@@ -23,10 +23,10 @@ import java.util.List;
  * JAVADOC
  */
 public class ListItemFilterator
-    implements TextFilterator<ListItemValue>
+      implements TextFilterator<ListItemValue>
 {
-    public void getFilterStrings( List<String> strings, ListItemValue listItemValue )
-    {
-        strings.add( listItemValue.description().get() );
-    }
+   public void getFilterStrings( List<String> strings, ListItemValue listItemValue )
+   {
+      strings.add( listItemValue.description().get() );
+   }
 }

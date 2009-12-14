@@ -24,12 +24,12 @@ import java.util.Date;
  * JAVADOC
  */
 public interface WaitingForTaskDTO
-        extends TaskDTO
+      extends TaskDTO
 {
-    Property<String> delegatedTo();
+   Property<String> delegatedTo();
 
-    @UseDefaults
-    Property<String> assignedTo();
+   @UseDefaults
+   Property<String> assignedTo();
 
-    Property<Date> delegatedOn();
+   Property<Date> delegatedOn();
 }

@@ -18,44 +18,45 @@ import org.jdesktop.swingx.decorator.AbstractHighlighter;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Font;
 
 /**
  * JAVADOC
  */
 public class FontHighlighter
-        extends AbstractHighlighter
+      extends AbstractHighlighter
 {
 
-    private Font highlightedFont;
-    private Font normalFont;
+   private Font highlightedFont;
+   private Font normalFont;
 
-    public FontHighlighter(HighlightPredicate predicate, Font highlightedFont, Font normalFont)
-    {
-        super(predicate);
-        this.normalFont = normalFont;
-        setHighlightedFont(highlightedFont);
-    }
+   public FontHighlighter( HighlightPredicate predicate, Font highlightedFont, Font normalFont )
+   {
+      super( predicate );
+      this.normalFont = normalFont;
+      setHighlightedFont( highlightedFont );
+   }
 
-    @Override
-    public Component highlight(Component component, ComponentAdapter componentAdapter)
-    {
-        if (getHighlightPredicate().isHighlighted(component, componentAdapter))
-            component.setFont(highlightedFont);
-        else
-            component.setFont(normalFont);
-        return super.highlight(component, componentAdapter);
-    }
+   @Override
+   public Component highlight( Component component, ComponentAdapter componentAdapter )
+   {
+      if (getHighlightPredicate().isHighlighted( component, componentAdapter ))
+         component.setFont( highlightedFont );
+      else
+         component.setFont( normalFont );
+      return super.highlight( component, componentAdapter );
+   }
 
-    protected Component doHighlight(Component component, ComponentAdapter componentAdapter)
-    {
-        return component;
-    }
+   protected Component doHighlight( Component component, ComponentAdapter componentAdapter )
+   {
+      return component;
+   }
 
-    public final void setHighlightedFont(Font highlightedFont)
-    {
-        if (highlightedFont.equals(this.highlightedFont)) return;
-        this.highlightedFont = highlightedFont;
-        fireStateChanged();
-    }
+   public final void setHighlightedFont( Font highlightedFont )
+   {
+      if (highlightedFont.equals( this.highlightedFont )) return;
+      this.highlightedFont = highlightedFont;
+      fireStateChanged();
+   }
 }

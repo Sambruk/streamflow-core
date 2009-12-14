@@ -22,9 +22,11 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface FormValue
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> form();
-    Property<String> description();
-    Property<String> note();
+   Property<EntityReference> form();
+
+   Property<String> description();
+
+   Property<String> note();
 }

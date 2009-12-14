@@ -37,91 +37,91 @@ import java.util.List;
  * /organizations/{organization}/administrators
  */
 public class AdministratorsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue administrators()
-    {
-        UnitOfWork unitOfWork = uowf.currentUnitOfWork();
+   public ListValue administrators()
+   {
+      UnitOfWork unitOfWork = uowf.currentUnitOfWork();
 
-        String identity = getRequest().getAttributes().get("organization").toString();
-        OwningOrganization org = unitOfWork.get( OwningOrganization.class, identity);
-        OrganizationEntity organization = (OrganizationEntity) org.organization().get();
-        Role adminRole = organization.roles().get(0);
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
+      OwningOrganization org = unitOfWork.get( OwningOrganization.class, identity );
+      OrganizationEntity organization = (OrganizationEntity) org.organization().get();
+      Role adminRole = organization.roles().get( 0 );
 
-        RolePolicy.Data rolePolicy = (RolePolicy.Data) organization;
-        List<EntityReference> admins = rolePolicy.participantsWithRole(adminRole);
-        ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (EntityReference admin : admins)
-        {
-            Participant participant = unitOfWork.get(Participant.class, admin.identity());
-            builder.addListItem(participant.getDescription(), admin);
-        }
-        return builder.newList();
-    }
+      RolePolicy.Data rolePolicy = (RolePolicy.Data) organization;
+      List<EntityReference> admins = rolePolicy.participantsWithRole( adminRole );
+      ListValueBuilder builder = new ListValueBuilder( vbf );
+      for (EntityReference admin : admins)
+      {
+         Participant participant = unitOfWork.get( Participant.class, admin.identity() );
+         builder.addListItem( participant.getDescription(), admin );
+      }
+      return builder.newList();
+   }
 
-    public void addAdministrator(StringDTO participantId) throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void addAdministrator( StringDTO participantId ) throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String identity = getRequest().getAttributes().get("organization").toString();
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
 
-        OrganizationalUnitEntity ou = uow.get(OrganizationalUnitEntity.class, identity);
-        Participant participant = uow.get(Participant.class, participantId.string().get());
+      OrganizationalUnitEntity ou = uow.get( OrganizationalUnitEntity.class, identity );
+      Participant participant = uow.get( Participant.class, participantId.string().get() );
 
-        OrganizationEntity organization = (OrganizationEntity) ou.organization().get();
-        Role adminRole = organization.roles().get(0);
+      OrganizationEntity organization = (OrganizationEntity) ou.organization().get();
+      Role adminRole = organization.roles().get( 0 );
 
-        checkPermission(ou);
-        ou.grantRole(participant, adminRole);
-    }
+      checkPermission( ou );
+      ou.grantRole( participant, adminRole );
+   }
 
-    public ListValue findUsers(StringDTO query) throws ResourceException
-     {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+   public ListValue findUsers( StringDTO query ) throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-         String orgId = getRequest().getAttributes().get("organization").toString();
+      String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
-         OwningOrganization organization  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
-         checkPermission(organization);
+      OwningOrganization organization = uowf.currentUnitOfWork().get( OwningOrganization.class, orgId );
+      checkPermission( organization );
 
-         ListValue list = ((OrganizationQueries)organization.organization().get()).findUsers(query.string().get());
+      ListValue list = ((OrganizationQueries) organization.organization().get()).findUsers( query.string().get() );
 
-         ListValue administrators = administrators();
+      ListValue administrators = administrators();
 
-         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
-         for(ListItemValue user : list.items().get())
+      for (ListItemValue user : list.items().get())
+      {
+         if (!administrators.items().get().contains( user ))
          {
-             if(!administrators.items().get().contains(user))
-             {
-                 listBuilder.addListItem(user.description().get(), user.entity().get());
-             }
+            listBuilder.addListItem( user.description().get(), user.entity().get() );
          }
+      }
 
-         return listBuilder.newList();
-     }
+      return listBuilder.newList();
+   }
 
-     public ListValue findGroups(StringDTO query) throws ResourceException
-     {
-         String orgId = getRequest().getAttributes().get("organization").toString();
+   public ListValue findGroups( StringDTO query ) throws ResourceException
+   {
+      String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
-         OwningOrganization organization  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
-         checkPermission(organization);
+      OwningOrganization organization = uowf.currentUnitOfWork().get( OwningOrganization.class, orgId );
+      checkPermission( organization );
 
-         ListValue list = ((OrganizationQueries)organization.organization().get()).findGroups(query.string().get());
+      ListValue list = ((OrganizationQueries) organization.organization().get()).findGroups( query.string().get() );
 
-         ListValue administrators = administrators();
+      ListValue administrators = administrators();
 
-         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
-         for(ListItemValue grp : list.items().get())
+      for (ListItemValue grp : list.items().get())
+      {
+         if (!administrators.items().get().contains( grp ))
          {
-             if(!administrators.items().get().contains(grp))
-             {
-                 listBuilder.addListItem(grp.description().get(), grp.entity().get());
-             }
+            listBuilder.addListItem( grp.description().get(), grp.entity().get() );
          }
+      }
 
-         return listBuilder.newList();
-     }
+      return listBuilder.newList();
+   }
 }

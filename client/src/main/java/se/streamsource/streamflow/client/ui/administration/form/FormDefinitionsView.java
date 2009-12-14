@@ -18,83 +18,85 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
-import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 /**
  * JAVADOC
  */
 public class FormDefinitionsView
-        extends JPanel
+      extends JPanel
 {
-    FormDefinitionsModel model;
+   FormDefinitionsModel model;
 
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    @Uses
-    Iterable<NameDialog> nameDialogs;
+   @Uses
+   Iterable<NameDialog> nameDialogs;
 
-    @Uses
-    Iterable<ConfirmationDialog> confirmationDialog;
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
 
-    public JList formList;
+   public JList formList;
 
-    public FormDefinitionsView(@Service ApplicationContext context, @Uses final FormDefinitionsModel model)
-    {
-        super(new BorderLayout());
-        this.model = model;
+   public FormDefinitionsView( @Service ApplicationContext context, @Uses final FormDefinitionsModel model )
+   {
+      super( new BorderLayout() );
+      this.model = model;
 
-        setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-        formList = new JList(model);
+      formList = new JList( model );
 
-        formList.setCellRenderer(new ListItemListCellRenderer());
-        add( formList, BorderLayout.CENTER);
+      formList.setCellRenderer( new ListItemListCellRenderer() );
+      add( formList, BorderLayout.CENTER );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(getActionMap().get("add")));
-        toolbar.add(new JButton(getActionMap().get("remove")));
-        add(toolbar, BorderLayout.SOUTH);
-    }
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( getActionMap().get( "add" ) ) );
+      toolbar.add( new JButton( getActionMap().get( "remove" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
+   }
 
-    public JList getFormList()
-    {
-        return formList;
-    }
+   public JList getFormList()
+   {
+      return formList;
+   }
 
-    @Action
-    public void add()
-    {
-        NameDialog dialog = nameDialogs.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog);
-        String name = dialog.name();
-        if (name != null)
-        {
-            model.createForm(name);
-            model.refresh();
-        }
-    }
+   @Action
+   public void add()
+   {
+      NameDialog dialog = nameDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog );
+      String name = dialog.name();
+      if (name != null)
+      {
+         model.createForm( name );
+         model.refresh();
+      }
+   }
 
-    @Action
-    public void remove()
-    {
-        ConfirmationDialog dialog = confirmationDialog.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
-        if(dialog.isConfirmed())
-        {
-            ListItemValue selected = (ListItemValue) formList.getSelectedValue();
-            model.removeForm(selected.entity().get().identity());
-            model.refresh();
-        }
-    }
+   @Action
+   public void remove()
+   {
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         ListItemValue selected = (ListItemValue) formList.getSelectedValue();
+         model.removeForm( selected.entity().get().identity() );
+         model.refresh();
+      }
+   }
 
 }

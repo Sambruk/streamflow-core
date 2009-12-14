@@ -31,50 +31,50 @@ import se.streamsource.streamflow.web.domain.user.UserAuthentication;
  * in the StreamFlow user database.
  */
 public class PasswordVerifierService
-        extends SecretVerifier
+      extends SecretVerifier
 {
-    private static Usecase usecase = UsecaseBuilder.newUsecase( "Verify password" );
+   private static Usecase usecase = UsecaseBuilder.newUsecase( "Verify password" );
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Override
-    public int verify(Request request, Response response)
-    {
-        int result =  super.verify(request, response);
+   @Override
+   public int verify( Request request, Response response )
+   {
+      int result = super.verify( request, response );
 
-        return result;
-    }
+      return result;
+   }
 
-    public boolean verify(String username, char[] password)
-    {
-        UnitOfWork unitOfWork = uowf.newUnitOfWork(usecase);
+   public boolean verify( String username, char[] password )
+   {
+      UnitOfWork unitOfWork = uowf.newUnitOfWork( usecase );
 
-        try
-        {
-            UserAuthentication user = unitOfWork.get( UserAuthentication.class, username);
+      try
+      {
+         UserAuthentication user = unitOfWork.get( UserAuthentication.class, username );
 
-            if (user.login(new String(password)))
-            {
-                unitOfWork.discard();
-                return true;
-            } else
-            {
-                try
-                {
-                    // Save failed login count
-                    unitOfWork.complete();
-                } catch (UnitOfWorkCompletionException e)
-                {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
-        } catch (NoSuchEntityException e)
-        {
+         if (user.login( new String( password ) ))
+         {
             unitOfWork.discard();
+            return true;
+         } else
+         {
+            try
+            {
+               // Save failed login count
+               unitOfWork.complete();
+            } catch (UnitOfWorkCompletionException e)
+            {
+               e.printStackTrace();
+            }
+
             return false;
-        }
-    }
+         }
+      } catch (NoSuchEntityException e)
+      {
+         unitOfWork.discard();
+         return false;
+      }
+   }
 }

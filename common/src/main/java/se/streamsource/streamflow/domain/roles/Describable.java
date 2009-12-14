@@ -19,7 +19,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
+
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 
 /**
  * Role for maintaining descriptions of entities.
@@ -27,46 +28,47 @@ import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE
 @Mixins(Describable.Mixin.class)
 public interface Describable
 {
-    void changeDescription(@MaxLength(50) String newDescription);
+   void changeDescription( @MaxLength(50) String newDescription );
 
-    String getDescription();
+   String getDescription();
 
-    interface Data
-    {
-        @UseDefaults
-        Property<String> description();
+   interface Data
+   {
+      @UseDefaults
+      Property<String> description();
 
-        void changedDescription(DomainEvent event, String description);
-    }
+      void changedDescription( DomainEvent event, String description );
+   }
 
-    public abstract class Mixin
-            implements Describable, Data
-    {
-        public static <T extends Describable> T getDescribable(Iterable<T> collection, String desc)
-        {
-            for (T describable : collection)
-            {
-                if (((Data)describable).description().get().equals( desc ))
-                    return describable;
-            }
+   public abstract class Mixin
+         implements Describable, Data
+   {
+      public static <T extends Describable> T getDescribable( Iterable<T> collection, String desc )
+      {
+         for (T describable : collection)
+         {
+            if (((Data) describable).description().get().equals( desc ))
+               return describable;
+         }
 
-            throw new IllegalArgumentException(desc);
-        }
+         throw new IllegalArgumentException( desc );
+      }
 
-        public void changeDescription(String newDescription)
-        {
-            changedDescription(CREATE, newDescription);
-        }
+      public void changeDescription( String newDescription )
+      {
+         changedDescription( CREATE, newDescription );
+      }
 
-        public String getDescription()
-        {
-            return description().get();
-        }
+      public String getDescription()
+      {
+         return description().get();
+      }
 
-        // State
-        public void changedDescription(DomainEvent event, String description)
-        {
-            description().set(description);
-        }
-    }
+      // State
+
+      public void changedDescription( DomainEvent event, String description )
+      {
+         description().set( description );
+      }
+   }
 }

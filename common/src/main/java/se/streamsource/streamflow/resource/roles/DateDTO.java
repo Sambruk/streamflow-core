@@ -6,7 +6,7 @@ import org.qi4j.api.value.ValueComposite;
 import java.util.Date;
 
 public interface DateDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<Date> date();
+   Property<Date> date();
 }

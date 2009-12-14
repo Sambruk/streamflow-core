@@ -38,99 +38,99 @@ import java.util.logging.Logger;
  * List of contacts for a task
  */
 public class TaskEffectiveFieldsValueModel
-        extends AbstractTableModel
-        implements Refreshable, EventListener, EventHandler
+      extends AbstractTableModel
+      implements Refreshable, EventListener, EventHandler
 
 {
 
-    String[] columnNames = {
-            i18n.text(WorkspaceResources.field_name),
-            i18n.text(WorkspaceResources.field_value),
-            i18n.text(WorkspaceResources.field_submitter),
-            i18n.text(WorkspaceResources.field_date)
-    };
+   String[] columnNames = {
+         i18n.text( WorkspaceResources.field_name ),
+         i18n.text( WorkspaceResources.field_value ),
+         i18n.text( WorkspaceResources.field_submitter ),
+         i18n.text( WorkspaceResources.field_date )
+   };
 
-    private SimpleDateFormat formatter = new SimpleDateFormat(i18n.text(WorkspaceResources.date_time_format));
+   private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) );
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Uses
-    TaskSubmittedFormsClientResource taskSubmittedForms;
+   @Uses
+   TaskSubmittedFormsClientResource taskSubmittedForms;
 
-    List<EffectiveFieldDTO> effectiveFields = Collections.emptyList();
+   List<EffectiveFieldDTO> effectiveFields = Collections.emptyList();
 
-    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "submittedForm");
+   EventHandlerFilter eventFilter = new EventHandlerFilter( this, "submittedForm" );
 
-    public void refresh()
-    {
-        try
-        {
-            effectiveFields = taskSubmittedForms.effectiveFields().effectiveFields().get();
-        } catch (Exception e)
-        {
-            throw new OperationException(TaskResources.could_not_refresh, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         effectiveFields = taskSubmittedForms.effectiveFields().effectiveFields().get();
+      } catch (Exception e)
+      {
+         throw new OperationException( TaskResources.could_not_refresh, e );
+      }
+   }
 
-    public TaskSubmittedFormsClientResource getTaskSubmittedFormsClientResource()
-    {
-        return taskSubmittedForms;
-    }
+   public TaskSubmittedFormsClientResource getTaskSubmittedFormsClientResource()
+   {
+      return taskSubmittedForms;
+   }
 
-    public int getRowCount()
-    {
-        return effectiveFields==null?0:effectiveFields.size();
-    }
+   public int getRowCount()
+   {
+      return effectiveFields == null ? 0 : effectiveFields.size();
+   }
 
-    public int getColumnCount()
-    {
-        return columnNames.length;
-    }
+   public int getColumnCount()
+   {
+      return columnNames.length;
+   }
 
-    public Object getValueAt(int row, int col)
-    {
-        EffectiveFieldDTO value = effectiveFields.get(row);
+   public Object getValueAt( int row, int col )
+   {
+      EffectiveFieldDTO value = effectiveFields.get( row );
 
-        switch(col)
-        {
-            case 0:
-                return value.fieldName().get();
-            case 1:
-                return value.fieldValue().get();
-            case 2:
-                return value.submitter().get();
-            case 3:
-                return formatter.format(value.submissionDate().get());
-        }
-        return null;
-    }
+      switch (col)
+      {
+         case 0:
+            return value.fieldName().get();
+         case 1:
+            return value.fieldValue().get();
+         case 2:
+            return value.submitter().get();
+         case 3:
+            return formatter.format( value.submissionDate().get() );
+      }
+      return null;
+   }
 
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex)
-    {
-        return false;
-    }
+   @Override
+   public boolean isCellEditable( int rowIndex, int columnIndex )
+   {
+      return false;
+   }
 
-    @Override
-    public String getColumnName(int i)
-    {
-        return columnNames[i];
-    }
+   @Override
+   public String getColumnName( int i )
+   {
+      return columnNames[i];
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        eventFilter.handleEvent( event );
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
+   }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        if (taskSubmittedForms.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get()))
-        {
-            Logger.getLogger("workspace").info("Refresh effective field");
-            refresh();
-        }
+   public boolean handleEvent( DomainEvent event )
+   {
+      if (taskSubmittedForms.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get() ))
+      {
+         Logger.getLogger( "workspace" ).info( "Refresh effective field" );
+         refresh();
+      }
 
-        return false;
-    }
+      return false;
+   }
 }

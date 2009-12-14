@@ -27,19 +27,19 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/organizationalunits/{ou}/projects/{labels}/labels/{label}
  */
 public class SelectedLabelServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String labelsId = getRequest().getAttributes().get("labels").toString();
-        String identity = getRequest().getAttributes().get("label").toString();
+      String labelsId = getRequest().getAttributes().get( "labels" ).toString();
+      String identity = getRequest().getAttributes().get( "label" ).toString();
 
-        SelectedLabels labels = uow.get( SelectedLabels.class, labelsId);
-        Label label = uow.get( Label.class, identity);
+      SelectedLabels labels = uow.get( SelectedLabels.class, labelsId );
+      Label label = uow.get( Label.class, identity );
 
-        labels.removeLabel(label);
-    }
+      labels.removeLabel( label );
+   }
 
 }

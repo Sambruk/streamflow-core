@@ -17,8 +17,8 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 
 /**
@@ -26,57 +26,57 @@ import java.awt.event.KeyEvent;
  */
 public class i18n
 {
-    public static final int ICON_16 = 16;
-    public static final int ICON_24 = 24;
+   public static final int ICON_16 = 16;
+   public static final int ICON_24 = 24;
 
-    public static String text(Enum resource)
-    {
-        String string = getResourceMap(resource).getString(resource.name());
-        if (string == null)
-            string = "#" + resource.name();
-        return string;
-    }
+   public static String text( Enum resource )
+   {
+      String string = getResourceMap( resource ).getString( resource.name() );
+      if (string == null)
+         string = "#" + resource.name();
+      return string;
+   }
 
-    public static int mnemonic(Enum resource)
-    {
-        ResourceMap resourceMap = getResourceMap(resource);
-        Integer keycode = resourceMap.getKeyCode(resource.name());
-        if (keycode == null)
-            return KeyEvent.VK_UNDEFINED;
-        return keycode;
-    }
+   public static int mnemonic( Enum resource )
+   {
+      ResourceMap resourceMap = getResourceMap( resource );
+      Integer keycode = resourceMap.getKeyCode( resource.name() );
+      if (keycode == null)
+         return KeyEvent.VK_UNDEFINED;
+      return keycode;
+   }
 
-    public static ImageIcon icon(Enum resource)
-    {
-        return icon(resource, ICON_24);
-    }
+   public static ImageIcon icon( Enum resource )
+   {
+      return icon( resource, ICON_24 );
+   }
 
-    public static ImageIcon icon(Enum resource, int size)
-    {
-        ResourceMap resourceMap = getResourceMap(resource);
-        ImageIcon icon = resourceMap.getImageIcon(resource.name());
-        return icon(icon, size);
-    }
+   public static ImageIcon icon( Enum resource, int size )
+   {
+      ResourceMap resourceMap = getResourceMap( resource );
+      ImageIcon icon = resourceMap.getImageIcon( resource.name() );
+      return icon( icon, size );
+   }
 
-    public static ImageIcon icon(ImageIcon icon, int size)
-    {
-        if (icon == null)
-            return null;
+   public static ImageIcon icon( ImageIcon icon, int size )
+   {
+      if (icon == null)
+         return null;
 
-        Image image = icon.getImage();
-        if (icon.getIconWidth() != size)
-        {
-            image = image.getScaledInstance(size, size, Image.SCALE_SMOOTH);
-            icon = new ImageIcon(image);
-        }
-        return icon;
-    }
+      Image image = icon.getImage();
+      if (icon.getIconWidth() != size)
+      {
+         image = image.getScaledInstance( size, size, Image.SCALE_SMOOTH );
+         icon = new ImageIcon( image );
+      }
+      return icon;
+   }
 
-    private static ResourceMap getResourceMap(Enum resource)
-    {
-        ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap(resource.getClass());
-        if (resourceMap == null)
-            throw new IllegalArgumentException("No resource map found for resource:" + resource);
-        return resourceMap;
-    }
+   private static ResourceMap getResourceMap( Enum resource )
+   {
+      ResourceMap resourceMap = Application.getInstance().getContext().getResourceMap( resource.getClass() );
+      if (resourceMap == null)
+         throw new IllegalArgumentException( "No resource map found for resource:" + resource );
+      return resourceMap;
+   }
 }

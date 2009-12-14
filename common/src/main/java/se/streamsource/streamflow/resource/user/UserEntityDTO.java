@@ -22,11 +22,11 @@ import org.qi4j.api.value.ValueComposite;
  * DTO for User information
  */
 public interface UserEntityDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> entity();
+   Property<EntityReference> entity();
 
-    Property<String> username();
+   Property<String> username();
 
-    Property<Boolean> disabled();
+   Property<Boolean> disabled();
 }

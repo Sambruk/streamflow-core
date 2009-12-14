@@ -23,20 +23,20 @@ import org.qi4j.library.constraints.annotation.Matches;
  * JAVADOC
  */
 public interface AccountSettingsValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<String> name();
+   @UseDefaults
+   Property<String> name();
 
-    @UseDefaults
-    @Matches("[\\w:/\\.\\-]*")
-    Property<String> server();
+   @UseDefaults
+   @Matches("[\\w:/\\.\\-]*")
+   Property<String> server();
 
-    @UseDefaults
-    @Matches("\\w*")
-    Property<String> userName();
+   @UseDefaults
+   @Matches("\\w*")
+   Property<String> userName();
 
-    @UseDefaults
-    @Matches("\\w*")
-    Property<String> password();
+   @UseDefaults
+   @Matches("\\w*")
+   Property<String> password();
 }

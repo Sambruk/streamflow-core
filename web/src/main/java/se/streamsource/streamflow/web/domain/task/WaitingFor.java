@@ -19,8 +19,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static se.streamsource.streamflow.domain.task.TaskStates.*;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import static se.streamsource.streamflow.domain.task.TaskStates.*;
 
 /**
  * JAVADOC
@@ -28,123 +29,126 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(WaitingFor.Mixin.class)
 public interface WaitingFor
 {
-    void completeWaitingForTask(Task task, Assignee assignee);
+   void completeWaitingForTask( Task task, Assignee assignee );
 
-    void completeFinishedTask(@HasStatus(DONE) Task task);
+   void completeFinishedTask( @HasStatus(DONE) Task task );
 
-    void rejectFinishedTask(@HasStatus(DONE) Task task);
+   void rejectFinishedTask( @HasStatus(DONE) Task task );
 
-    void dropWaitingForTask(Task task, Assignee assignee);
+   void dropWaitingForTask( Task task, Assignee assignee );
 
-    void assignWaitingForTask(@HasStatus(ACTIVE) Task task, Assignee assignee);
+   void assignWaitingForTask( @HasStatus(ACTIVE) Task task, Assignee assignee );
 
-    void markWaitingForAsRead(Task task);
+   void markWaitingForAsRead( Task task );
 
-    void markWaitingForAsUnread(Task task);
+   void markWaitingForAsUnread( Task task );
 
-    void rejectTask(Task task);
+   void rejectTask( Task task );
 
-    void deleteWaitingForTask( Task task );
+   void deleteWaitingForTask( Task task );
 
-    interface Data
-    {
-        ManyAssociation<Task> unreadWaitingForTasks();
-        void markedWaitingForTaskAsUnread(DomainEvent event, Task task);
-        void markedWaitingForTaskAsRead(DomainEvent event, Task task);
-        void deletedWaitingForTask(DomainEvent event, Task task);
-    }
+   interface Data
+   {
+      ManyAssociation<Task> unreadWaitingForTasks();
+
+      void markedWaitingForTaskAsUnread( DomainEvent event, Task task );
+
+      void markedWaitingForTaskAsRead( DomainEvent event, Task task );
+
+      void deletedWaitingForTask( DomainEvent event, Task task );
+   }
 
 
-    abstract class Mixin
-            implements WaitingFor, Data
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
+   abstract class Mixin
+         implements WaitingFor, Data
+   {
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @This
-        Owner owner;
+      @This
+      Owner owner;
 
-        @This
-        Inbox inbox;
+      @This
+      Inbox inbox;
 
-        public void completeWaitingForTask(Task task, Assignee assignee)
-        {
-            task.changeOwner(owner);
-            task.assignTo(assignee);
-            task.complete();
-        }
+      public void completeWaitingForTask( Task task, Assignee assignee )
+      {
+         task.changeOwner( owner );
+         task.assignTo( assignee );
+         task.complete();
+      }
 
-        public void completeFinishedTask(Task task)
-        {
-            task.complete();
-        }
+      public void completeFinishedTask( Task task )
+      {
+         task.complete();
+      }
 
-        public void rejectFinishedTask(Task task)
-        {
-            task.activate();
-        }
+      public void rejectFinishedTask( Task task )
+      {
+         task.activate();
+      }
 
-        public void dropWaitingForTask(Task task, Assignee assignee)
-        {
-            task.changeOwner(owner);
-            task.assignTo(assignee);
-            task.drop();
-        }
+      public void dropWaitingForTask( Task task, Assignee assignee )
+      {
+         task.changeOwner( owner );
+         task.assignTo( assignee );
+         task.drop();
+      }
 
-        public void assignWaitingForTask( Task task, Assignee assignee )
-        {
-            task.unassign();
-            task.rejectDelegation();
-            task.changeOwner(owner);
-            task.assignTo( assignee );
-        }
+      public void assignWaitingForTask( Task task, Assignee assignee )
+      {
+         task.unassign();
+         task.rejectDelegation();
+         task.changeOwner( owner );
+         task.assignTo( assignee );
+      }
 
-        public void markWaitingForAsRead(Task task)
-        {
-            if (!unreadWaitingForTasks().contains(task))
-            {
-                return;
-            }
-            markedWaitingForTaskAsRead(DomainEvent.CREATE, task);
-        }
+      public void markWaitingForAsRead( Task task )
+      {
+         if (!unreadWaitingForTasks().contains( task ))
+         {
+            return;
+         }
+         markedWaitingForTaskAsRead( DomainEvent.CREATE, task );
+      }
 
-        public void markWaitingForAsUnread(Task task)
-        {
-            if (unreadWaitingForTasks().contains(task))
-            {
-                return;
-            }
-            markedWaitingForTaskAsUnread(DomainEvent.CREATE, task);
-        }
+      public void markWaitingForAsUnread( Task task )
+      {
+         if (unreadWaitingForTasks().contains( task ))
+         {
+            return;
+         }
+         markedWaitingForTaskAsUnread( DomainEvent.CREATE, task );
+      }
 
-        public void rejectTask(Task task)
-        {
-            markWaitingForAsUnread( task );
-            inbox.receiveTask( task );
-        }
+      public void rejectTask( Task task )
+      {
+         markWaitingForAsUnread( task );
+         inbox.receiveTask( task );
+      }
 
-        public void deleteWaitingForTask( Task task )
-        {
-            if (((TaskStatus.Data)task).status().get().equals( ACTIVE))
-            {
-                markWaitingForAsRead( task );
-                deletedWaitingForTask( DomainEvent.CREATE, task );
-            }
-        }
+      public void deleteWaitingForTask( Task task )
+      {
+         if (((TaskStatus.Data) task).status().get().equals( ACTIVE ))
+         {
+            markWaitingForAsRead( task );
+            deletedWaitingForTask( DomainEvent.CREATE, task );
+         }
+      }
 
-        public void deletedWaitingForTask( DomainEvent event, Task task )
-        {
-            uowf.currentUnitOfWork().remove( task );
-        }
+      public void deletedWaitingForTask( DomainEvent event, Task task )
+      {
+         uowf.currentUnitOfWork().remove( task );
+      }
 
-        public void markedWaitingForTaskAsUnread(DomainEvent event, Task task)
-        {
-            unreadWaitingForTasks().add(task);
-        }
+      public void markedWaitingForTaskAsUnread( DomainEvent event, Task task )
+      {
+         unreadWaitingForTasks().add( task );
+      }
 
-        public void markedWaitingForTaskAsRead(DomainEvent event, Task task)
-        {
-            unreadWaitingForTasks().remove(task);
-        }
-    }
+      public void markedWaitingForTaskAsRead( DomainEvent event, Task task )
+      {
+         unreadWaitingForTasks().remove( task );
+      }
+   }
 }

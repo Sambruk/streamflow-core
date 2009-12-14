@@ -56,214 +56,215 @@ import java.util.regex.Pattern;
  * Mapped to /organizations.
  */
 public class OrganizationsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    QueryBuilderFactory qbf;
+   @Structure
+   QueryBuilderFactory qbf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
 
-    @Override
-    protected Representation get() throws ResourceException
-    {
-        Form form = getRequest().getResourceRef().getQueryAsForm();
-        if (form.getFirst("findbyid") != null)
-        {
-            // Find organizations
-            String id = form.getFirstValue("id");
-            UnitOfWork uow = uowf.newUnitOfWork();
-            try
+   @Override
+   protected Representation get() throws ResourceException
+   {
+      Form form = getRequest().getResourceRef().getQueryAsForm();
+      if (form.getFirst( "findbyid" ) != null)
+      {
+         // Find organizations
+         String id = form.getFirstValue( "id" );
+         UnitOfWork uow = uowf.newUnitOfWork();
+         try
+         {
+            Reference orgRef = getRequest().getResourceRef().clone().addSegment( id ).addSegment( "" );
+            orgRef.setQuery( "" );
+            getResponse().redirectPermanent( orgRef );
+            return new EmptyRepresentation();
+         } catch (NoSuchEntityException e)
+         {
+            throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+         } finally
+         {
+            uow.discard();
+         }
+      } else
+      {
+         return new InputRepresentation( getClass().getResourceAsStream( "resources/organizationsearch.html" ), MediaType.TEXT_HTML );
+      }
+   }
+
+
+   public UserEntityListDTO users()
+   {
+      OrganizationsQueries orgs = uowf.currentUnitOfWork().get( OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID );
+
+      checkPermission( orgs );
+
+      return orgs.users();
+   }
+
+   public void createUser( NewUserCommand userCommand ) throws ResourceException
+   {
+      Organizations organizations = uowf.currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+
+      checkPermission( organizations );
+
+      try
+      {
+         organizations.createUser( userCommand.username().get(), userCommand.password().get() );
+      } catch (ConstraintViolationException cve)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, ErrorResources.username_password_cviolation.toString() );
+      } catch (IllegalArgumentException iae)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, ErrorResources.user_already_exists.toString() );
+      }
+   }
+
+   public void changeDisabled( UserEntityDTO user )
+   {
+      UserEntity userEntity = uowf.currentUnitOfWork().get( UserEntity.class, user.entity().get().identity() );
+
+      checkPermission( userEntity );
+
+      userEntity.changeEnabled( userEntity.disabled().get() );
+   }
+
+   public void importUsers( Representation representation ) throws ResourceException
+   {
+      boolean badRequest = false;
+      String errors = "<html>";
+      Locale locale = resolveRequestLocale();
+
+      ResourceBundle bundle = ResourceBundle.getBundle(
+            OrganizationsServerResource.class.getName(), locale );
+
+      UnitOfWork uow = uowf.currentUnitOfWork();
+
+      Organizations organizations = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+
+      checkPermission( organizations );
+
+      try
+      {
+         List<String> users = new ArrayList<String>();
+
+         if (representation.getMediaType().equals( MediaType.APPLICATION_EXCEL ))
+         {
+            HSSFWorkbook workbook = new HSSFWorkbook( representation.getStream() );
+
+            //extract a user list
+            Sheet sheet1 = workbook.getSheetAt( 0 );
+            StringBuilder builder;
+            for (Row row : sheet1)
             {
-                Reference orgRef = getRequest().getResourceRef().clone().addSegment(id).addSegment("");
-                orgRef.setQuery("");
-                getResponse().redirectPermanent(orgRef);
-                return new EmptyRepresentation();
+               builder = new StringBuilder();
+               builder.append( row.getCell( 0 ).getStringCellValue() );
+               builder.append( "," );
+               builder.append( row.getCell( 1 ).getStringCellValue() );
+
+               ((List<String>) users).add( builder.toString() );
+            }
+
+         } else if (representation.getMediaType().equals( MediaType.TEXT_CSV ))
+         {
+            StringReader reader = new StringReader( representation.getText() );
+            BufferedReader bufReader = new BufferedReader( reader );
+            String line = null;
+            while ((line = bufReader.readLine()) != null)
+            {
+               users.add( line );
+            }
+         } else
+         {
+            throw new ResourceException( Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE );
+         }
+
+         for (String userNamePwd : users)
+         {
+            if (userNamePwd.startsWith( "#" ))
+            {
+               continue;
+            }
+            Pattern pattern = Pattern.compile( "\\t|," );
+            String[] usrPwdPair = userNamePwd.split( pattern.pattern() );
+
+            if (usrPwdPair.length < 2)
+            {
+               badRequest = true;
+               errors += userNamePwd + " - " + bundle.getString( "missing_user_password" ) + "<br></br>";
+               continue;
+            }
+
+            String name = usrPwdPair[0].trim();
+            String pwd = usrPwdPair[1].trim();
+
+            // Check for empty pwd!!! and log an error for that
+            if ("".equals( pwd.trim() ))
+            {
+               badRequest = true;
+               errors += name + " - " + bundle.getString( "missing_password" ) + "<br></br>";
+            }
+
+            try
+            {   // Check if user already exists
+               UserEntity existingUser = uow.get( UserEntity.class, name );
+               if (existingUser.isCorrectPassword( pwd ))
+               {
+                  //nothing to do here
+                  continue;
+               } else
+               {
+                  existingUser.resetPassword( pwd );
+                  continue;
+               }
+
             } catch (NoSuchEntityException e)
             {
-                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-            } finally
-            {
-                uow.discard();
-            }
-        } else
-        {
-            return new InputRepresentation(getClass().getResourceAsStream("resources/organizationsearch.html"), MediaType.TEXT_HTML);
-        }
-    }
-
-
-    public UserEntityListDTO users()
-    {
-        OrganizationsQueries orgs = uowf.currentUnitOfWork().get(OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID);
-
-        checkPermission(orgs);
-        
-        return orgs.users();
-    }
-
-    public void createUser(NewUserCommand userCommand) throws ResourceException
-    {
-        Organizations organizations = uowf.currentUnitOfWork().get(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
-
-        checkPermission(organizations);
-
-        try
-        {
-            organizations.createUser(userCommand.username().get(), userCommand.password().get());
-        } catch (ConstraintViolationException cve)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ErrorResources.username_password_cviolation.toString());
-        } catch (IllegalArgumentException iae)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, ErrorResources.user_already_exists.toString());
-        }
-    }
-
-    public void changeDisabled(UserEntityDTO user)
-    {
-        UserEntity userEntity = uowf.currentUnitOfWork().get(UserEntity.class, user.entity().get().identity());
-
-        checkPermission(userEntity);
-
-        userEntity.changeEnabled(userEntity.disabled().get());
-    }
-
-    public void importUsers(Representation representation) throws ResourceException
-    {
-        boolean badRequest = false;
-        String errors = "<html>";
-        Locale locale = resolveRequestLocale();
-
-        ResourceBundle bundle = ResourceBundle.getBundle(
-					OrganizationsServerResource.class.getName(), locale);
-
-        UnitOfWork uow = uowf.currentUnitOfWork();
-
-        Organizations organizations = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
-
-        checkPermission(organizations);
-
-        try
-        {
-            List<String> users = new ArrayList<String>();
-
-            if(representation.getMediaType().equals(MediaType.APPLICATION_EXCEL))
-            {
-                HSSFWorkbook workbook = new HSSFWorkbook(representation.getStream());
-
-                //extract a user list
-                Sheet sheet1 = workbook.getSheetAt(0);
-                StringBuilder builder;
-                for (Row row : sheet1)
-                {   builder = new StringBuilder();
-                    builder.append(row.getCell(0).getStringCellValue());
-                    builder.append(",");
-                    builder.append(row.getCell(1).getStringCellValue());
-
-                    ((List<String>)users).add(builder.toString());
-                }
-
-            } else if(representation.getMediaType().equals(MediaType.TEXT_CSV))
-            {
-                StringReader reader = new StringReader(representation.getText());
-                BufferedReader bufReader = new BufferedReader( reader);
-                String line = null;
-                while ((line = bufReader.readLine()) != null)
-                {
-                    users.add( line );
-                }
-            } else
-            {
-                throw new ResourceException(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+               //Ok user doesnt exist
             }
 
-            for(String userNamePwd : users)
+            try
             {
-                if(userNamePwd.startsWith("#"))
-                {
-                    continue;
-                }
-                Pattern pattern = Pattern.compile("\\t|,");
-                String[] usrPwdPair = userNamePwd.split(pattern.pattern());
+               organizations.createUser( name, pwd );
 
-                if(usrPwdPair.length < 2)
-                {
-                    badRequest = true;
-                    errors += userNamePwd + " - " + bundle.getString("missing_user_password") + "<br></br>";
-                    continue;
-                }
+            } catch (ConstraintViolationException e)
+            {
+               // catch constraint violation and collect errors for the entire transaction
+               badRequest = true;
+               errors += name + " - " + bundle.getString( "user_name_not_valid" ) + "<br></br>";
+            }
+         }
+      } catch (IOException ioe)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
+      }
 
-                String name = usrPwdPair[0].trim();
-                String pwd = usrPwdPair[1].trim();
+      // Check for errors and rollback
+      if (badRequest)
+      {
+         errors += "</html>";
+         throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, errors );
+      }
 
-                // Check for empty pwd!!! and log an error for that
-                if("".equals(pwd.trim()))
-                {
-                    badRequest = true;
-                    errors += name + " - " + bundle.getString("missing_password") + "<br></br>";
-                }
+   }
 
-                try
-                {   // Check if user already exists
-                    UserEntity existingUser = uow.get(UserEntity.class, name);
-                    if(existingUser.isCorrectPassword(pwd))
-                    {
-                        //nothing to do here
-                        continue;
-                    } else
-                    {
-                        existingUser.resetPassword(pwd);
-                        continue;
-                    }
+   public ListValue organizations() throws ResourceException
+   {
+      OrganizationsQueries organizations = uowf.currentUnitOfWork()
+            .get( OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID );
 
-                } catch (NoSuchEntityException e)
-                {
-                    //Ok user doesnt exist
-                }
+      checkPermission( organizations );
 
-                try
-                {
-                    organizations.createUser(name, pwd);
+      return organizations.organizations();
+   }
 
-                } catch (ConstraintViolationException e)
-                {
-                    // catch constraint violation and collect errors for the entire transaction
-                    badRequest = true;
-                    errors += name + " - " + bundle.getString("user_name_not_valid") + "<br></br>";
-                }
-             }
-        } catch(IOException ioe)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
-        }
+   public void resetPassword( ResetPasswordCommand command )
+   {
+      UserEntity userEntity = uowf.currentUnitOfWork().get( UserEntity.class, command.entity().get().identity() );
 
-        // Check for errors and rollback
-        if(badRequest)
-        {
-            errors += "</html>";
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, errors);
-        }
+      checkPermission( userEntity );
 
-    }
-
-    public ListValue organizations() throws ResourceException
-    {
-        OrganizationsQueries organizations = uowf.currentUnitOfWork()
-                .get(OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID);
-
-        checkPermission(organizations);
-        
-        return organizations.organizations();
-    }
-
-    public void resetPassword(ResetPasswordCommand command)
-    {
-        UserEntity userEntity = uowf.currentUnitOfWork().get(UserEntity.class, command.entity().get().identity());
-
-        checkPermission(userEntity);
-
-        userEntity.resetPassword(command.password().get());
-    }
+      userEntity.resetPassword( command.password().get() );
+   }
 }

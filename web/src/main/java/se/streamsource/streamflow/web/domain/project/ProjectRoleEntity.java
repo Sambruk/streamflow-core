@@ -26,11 +26,11 @@ import java.util.Set;
  * JAVADOC
  */
 public interface ProjectRoleEntity
-        extends ProjectRole,
-        Describable.Data,
-        Removable.Data,
-        DomainEntity
+      extends ProjectRole,
+      Describable.Data,
+      Removable.Data,
+      DomainEntity
 {
-    @UseDefaults
-    Property<Set<PermissionValue>> permissions();
+   @UseDefaults
+   Property<Set<PermissionValue>> permissions();
 }

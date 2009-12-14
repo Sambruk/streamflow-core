@@ -24,20 +24,20 @@ import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskCl
  * JAVADOC
  */
 public class WorkspaceUserDelegatedTaskClientResource
-        extends AbstractTaskClientResource
+      extends AbstractTaskClientResource
 {
-    public WorkspaceUserDelegatedTaskClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public WorkspaceUserDelegatedTaskClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void done() throws ResourceException
-    {
-        putCommand("done");
-    }
+   public void done() throws ResourceException
+   {
+      putCommand( "done" );
+   }
 
-    public void reject() throws ResourceException
-    {
-        putCommand("reject");
-    }
+   public void reject() throws ResourceException
+   {
+      putCommand( "reject" );
+   }
 }

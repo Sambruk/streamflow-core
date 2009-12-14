@@ -30,7 +30,6 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
@@ -42,184 +41,177 @@ import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.task.Assignable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
+import se.streamsource.streamflow.web.domain.task.Delegatable;
+import se.streamsource.streamflow.web.domain.task.Delegatee;
 import se.streamsource.streamflow.web.domain.task.Ownable;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.Delegatable;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(OverviewQueries.Mixin.class)
 public interface OverviewQueries
 {
 
-	public void generateExcelProjectSummary(Locale locale, Workbook workbook);
-	public ProjectSummaryListDTO getProjectsSummary();
+   public void generateExcelProjectSummary( Locale locale, Workbook workbook );
 
-	class Mixin implements OverviewQueries
-	{
-		@Structure
-		QueryBuilderFactory qbf;
+   public ProjectSummaryListDTO getProjectsSummary();
 
-		@Structure
-		ValueBuilderFactory vbf;
+   class Mixin implements OverviewQueries
+   {
+      @Structure
+      QueryBuilderFactory qbf;
 
-		@Structure
-		UnitOfWorkFactory uowf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-		@This
-		Identity id;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @This
-        Participation.Data participant;
+      @This
+      Identity id;
 
-        public ProjectSummaryListDTO getProjectsSummary()
-        {
-            UnitOfWork uow =  uowf.currentUnitOfWork();
+      @This
+      Participation.Data participant;
 
-            ValueBuilder<ProjectSummaryDTO> builder = vbf.newValueBuilder(ProjectSummaryDTO.class);
-            ProjectSummaryDTO builderPrototype = builder.prototype();
+      public ProjectSummaryListDTO getProjectsSummary()
+      {
+         UnitOfWork uow = uowf.currentUnitOfWork();
 
-            ValueBuilder<ProjectSummaryListDTO> listBuilder = vbf.newValueBuilder(ProjectSummaryListDTO.class);
-            ProjectSummaryListDTO listBuilderPrototype = listBuilder.prototype();
+         ValueBuilder<ProjectSummaryDTO> builder = vbf.newValueBuilder( ProjectSummaryDTO.class );
+         ProjectSummaryDTO builderPrototype = builder.prototype();
 
-            for (Project project : participant.allProjects())
-            {
-                Association<Assignee> assigneeAssociation = templateFor( Assignable.Data.class).assignedTo();
-                Property<String> ownableId = templateFor( Ownable.Data.class).owner().get().identity();
+         ValueBuilder<ProjectSummaryListDTO> listBuilder = vbf.newValueBuilder( ProjectSummaryListDTO.class );
+         ProjectSummaryListDTO listBuilderPrototype = listBuilder.prototype();
 
-                QueryBuilder<TaskEntity> ownerQueryBuilder = qbf.newQueryBuilder(TaskEntity.class).where(
-                        eq(ownableId, ((ProjectEntity)project).identity().get()));
+         for (Project project : participant.allProjects())
+         {
+            Association<Assignee> assigneeAssociation = templateFor( Assignable.Data.class ).assignedTo();
+            Property<String> ownableId = templateFor( Ownable.Data.class ).owner().get().identity();
 
-                Association<Assignee> assignee = templateFor( Assignable.Data.class).assignedTo();
-                Association<Delegatee> delegatee = templateFor( Delegatable.Data.class).delegatedTo();
+            QueryBuilder<TaskEntity> ownerQueryBuilder = qbf.newQueryBuilder( TaskEntity.class ).where(
+                  eq( ownableId, ((ProjectEntity) project).identity().get() ) );
 
-                QueryBuilder<TaskEntity> inboxQueryBuilder = ownerQueryBuilder.where(and(
-                    isNull(assigneeAssociation),
-                    isNull(delegatee),
-                    eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE)));
-                Query<TaskEntity> inboxQuery = inboxQueryBuilder.newQuery(uow);
+            Association<Assignee> assignee = templateFor( Assignable.Data.class ).assignedTo();
+            Association<Delegatee> delegatee = templateFor( Delegatable.Data.class ).delegatedTo();
 
-                
-                QueryBuilder<TaskEntity> assignedQueryBuilder = ownerQueryBuilder.where(and(
-                        isNotNull(assigneeAssociation),
-                        eq(templateFor( TaskStatus.Data.class).status(), TaskStates.ACTIVE)));
-                Query<TaskEntity> assignedQuery = assignedQueryBuilder.newQuery(uow);
+            QueryBuilder<TaskEntity> inboxQueryBuilder = ownerQueryBuilder.where( and(
+                  isNull( assigneeAssociation ),
+                  isNull( delegatee ),
+                  eq( templateFor( TaskStatus.Data.class ).status(), TaskStates.ACTIVE ) ) );
+            Query<TaskEntity> inboxQuery = inboxQueryBuilder.newQuery( uow );
 
-                builderPrototype.project().set(project.getDescription());
-                builderPrototype.inboxCount().set(inboxQuery.count());
-                builderPrototype.assignedCount().set(assignedQuery.count());
 
-                listBuilderPrototype.projectOverviews().get().add(builder.newInstance());
+            QueryBuilder<TaskEntity> assignedQueryBuilder = ownerQueryBuilder.where( and(
+                  isNotNull( assigneeAssociation ),
+                  eq( templateFor( TaskStatus.Data.class ).status(), TaskStates.ACTIVE ) ) );
+            Query<TaskEntity> assignedQuery = assignedQueryBuilder.newQuery( uow );
 
-            }
-            return listBuilder.newInstance();
-        }
-        
-		public void generateExcelProjectSummary(Locale locale, Workbook workbook)
-		{
-			ProjectSummaryListDTO summaryListDTO = getProjectsSummary();
-			ResourceBundle bundle = ResourceBundle.getBundle(
-					OverviewQueries.class.getName(), locale);
-			Sheet sheet = createSheet(bundle.getString("projects_summary"),
-					workbook);
+            builderPrototype.project().set( project.getDescription() );
+            builderPrototype.inboxCount().set( inboxQuery.count() );
+            builderPrototype.assignedCount().set( assignedQuery.count() );
 
-			// Create header cells
-			Row headerRow = sheet.createRow((short) 0);
-			headerRow.setHeightInPoints(30);
+            listBuilderPrototype.projectOverviews().get().add( builder.newInstance() );
 
-			createHeaderCell(bundle.getString("project_column_header"), workbook,
-					headerRow, (short) 0, HSSFCellStyle.ALIGN_CENTER,
-					HSSFCellStyle.VERTICAL_CENTER);
-			createHeaderCell(bundle.getString("inbox_column_header"), workbook,
-					headerRow, (short) 1, HSSFCellStyle.ALIGN_CENTER,
-					HSSFCellStyle.VERTICAL_CENTER);
-			createHeaderCell(bundle.getString("assigned_column_header"), workbook,
-					headerRow, (short) 2, HSSFCellStyle.ALIGN_CENTER,
-					HSSFCellStyle.VERTICAL_CENTER);
-			createHeaderCell(bundle.getString("total_column_header"), workbook,
-					headerRow, (short) 3, HSSFCellStyle.ALIGN_CENTER,
-					HSSFCellStyle.VERTICAL_CENTER);
-			short rowCounter = 0;
-			for (ProjectSummaryDTO summaryDTO : summaryListDTO
-					.projectOverviews().get())
-			{
-				Row contentRow = sheet.createRow(++rowCounter);
-				// contentRow.setHeightInPoints(30);
+         }
+         return listBuilder.newInstance();
+      }
 
-				// Project
-				createCell(summaryDTO.project().get(), workbook, contentRow,
-						(short) 0, HSSFCellStyle.ALIGN_LEFT,
-						HSSFCellStyle.VERTICAL_TOP);
-				// Inbox
-				createCell(String.valueOf(summaryDTO.inboxCount().get()),
-						workbook, contentRow, (short) 1,
-						HSSFCellStyle.ALIGN_RIGHT, HSSFCellStyle.VERTICAL_TOP);
-				// Assigned
-				createCell(String.valueOf(summaryDTO.assignedCount().get()),
-						workbook, contentRow, (short) 2,
-						HSSFCellStyle.ALIGN_RIGHT, HSSFCellStyle.VERTICAL_TOP);
-				// Total
-				createCell(String.valueOf(summaryDTO.inboxCount().get()
-						+ summaryDTO.assignedCount().get()), workbook,
-						contentRow, (short) 3, HSSFCellStyle.ALIGN_RIGHT,
-						HSSFCellStyle.VERTICAL_TOP);
-			}
-		}
+      public void generateExcelProjectSummary( Locale locale, Workbook workbook )
+      {
+         ProjectSummaryListDTO summaryListDTO = getProjectsSummary();
+         ResourceBundle bundle = ResourceBundle.getBundle(
+               OverviewQueries.class.getName(), locale );
+         Sheet sheet = createSheet( bundle.getString( "projects_summary" ),
+               workbook );
 
-		/**
-		 * Creates a header cell and aligns it a certain way.
-		 * 
-		 * @param wb
-		 *            the workbook
-		 * @param row
-		 *            the row to create the cell in
-		 * @param column
-		 *            the column number to create the cell in
-		 * @param halign
-		 *            the horizontal alignment for the cell.
-		 * @param valign
-		 *            the vertical alignment for the cell.
-		 */
-		private static void createHeaderCell(String cellValue, Workbook wb,
-				Row row, short column, short halign, short valign)
-		{
-			Cell cell = row.createCell(column);
-			cell.setCellValue(new HSSFRichTextString(cellValue));
-			CellStyle cellStyle = wb.createCellStyle();
-			cellStyle.setAlignment(halign);
-			cellStyle.setVerticalAlignment(valign);
-			cell.setCellStyle(cellStyle);
-		}
+         // Create header cells
+         Row headerRow = sheet.createRow( (short) 0 );
+         headerRow.setHeightInPoints( 30 );
 
-		/**
-		 * Creates a cell and aligns it a certain way.
-		 * 
-		 * @param wb
-		 *            the workbook
-		 * @param row
-		 *            the row to create the cell in
-		 * @param column
-		 *            the column number to create the cell in
-		 * @param halign
-		 *            the horizontal alignment for the cell.
-		 * @param valign
-		 *            the vertical alignment for the cell.
-		 */
-		private static void createCell(String cellValue, Workbook wb, Row row,
-				short column, short halign, short valign)
-		{
-			Cell cell = row.createCell(column);
-			cell.setCellValue(new HSSFRichTextString(cellValue));
-			CellStyle cellStyle = wb.createCellStyle();
-			cellStyle.setAlignment(halign);
-			cellStyle.setVerticalAlignment(valign);
-			cell.setCellStyle(cellStyle);
-		}
+         createHeaderCell( bundle.getString( "project_column_header" ), workbook,
+               headerRow, (short) 0, HSSFCellStyle.ALIGN_CENTER,
+               HSSFCellStyle.VERTICAL_CENTER );
+         createHeaderCell( bundle.getString( "inbox_column_header" ), workbook,
+               headerRow, (short) 1, HSSFCellStyle.ALIGN_CENTER,
+               HSSFCellStyle.VERTICAL_CENTER );
+         createHeaderCell( bundle.getString( "assigned_column_header" ), workbook,
+               headerRow, (short) 2, HSSFCellStyle.ALIGN_CENTER,
+               HSSFCellStyle.VERTICAL_CENTER );
+         createHeaderCell( bundle.getString( "total_column_header" ), workbook,
+               headerRow, (short) 3, HSSFCellStyle.ALIGN_CENTER,
+               HSSFCellStyle.VERTICAL_CENTER );
+         short rowCounter = 0;
+         for (ProjectSummaryDTO summaryDTO : summaryListDTO
+               .projectOverviews().get())
+         {
+            Row contentRow = sheet.createRow( ++rowCounter );
+            // contentRow.setHeightInPoints(30);
 
-		protected Sheet createSheet(String name, Workbook workbook)
+            // Project
+            createCell( summaryDTO.project().get(), workbook, contentRow,
+                  (short) 0, HSSFCellStyle.ALIGN_LEFT,
+                  HSSFCellStyle.VERTICAL_TOP );
+            // Inbox
+            createCell( String.valueOf( summaryDTO.inboxCount().get() ),
+                  workbook, contentRow, (short) 1,
+                  HSSFCellStyle.ALIGN_RIGHT, HSSFCellStyle.VERTICAL_TOP );
+            // Assigned
+            createCell( String.valueOf( summaryDTO.assignedCount().get() ),
+                  workbook, contentRow, (short) 2,
+                  HSSFCellStyle.ALIGN_RIGHT, HSSFCellStyle.VERTICAL_TOP );
+            // Total
+            createCell( String.valueOf( summaryDTO.inboxCount().get()
+                  + summaryDTO.assignedCount().get() ), workbook,
+                  contentRow, (short) 3, HSSFCellStyle.ALIGN_RIGHT,
+                  HSSFCellStyle.VERTICAL_TOP );
+         }
+      }
+
+      /**
+       * Creates a header cell and aligns it a certain way.
+       *
+       * @param wb     the workbook
+       * @param row    the row to create the cell in
+       * @param column the column number to create the cell in
+       * @param halign the horizontal alignment for the cell.
+       * @param valign the vertical alignment for the cell.
+       */
+      private static void createHeaderCell( String cellValue, Workbook wb,
+                                            Row row, short column, short halign, short valign )
+      {
+         Cell cell = row.createCell( column );
+         cell.setCellValue( new HSSFRichTextString( cellValue ) );
+         CellStyle cellStyle = wb.createCellStyle();
+         cellStyle.setAlignment( halign );
+         cellStyle.setVerticalAlignment( valign );
+         cell.setCellStyle( cellStyle );
+      }
+
+      /**
+       * Creates a cell and aligns it a certain way.
+       *
+       * @param wb     the workbook
+       * @param row    the row to create the cell in
+       * @param column the column number to create the cell in
+       * @param halign the horizontal alignment for the cell.
+       * @param valign the vertical alignment for the cell.
+       */
+      private static void createCell( String cellValue, Workbook wb, Row row,
+                                      short column, short halign, short valign )
+      {
+         Cell cell = row.createCell( column );
+         cell.setCellValue( new HSSFRichTextString( cellValue ) );
+         CellStyle cellStyle = wb.createCellStyle();
+         cellStyle.setAlignment( halign );
+         cellStyle.setVerticalAlignment( valign );
+         cell.setCellStyle( cellStyle );
+      }
+
+      protected Sheet createSheet( String name, Workbook workbook)
 		{
 			return workbook.createSheet(name);
 		}

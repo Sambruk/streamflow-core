@@ -16,8 +16,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -25,40 +25,40 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * JAVADOC
  */
 public class WorkspaceUserInboxNode
-        extends DefaultMutableTreeNode
-    implements EventListener
+      extends DefaultMutableTreeNode
+      implements EventListener
 {
-    @Uses
-    private WorkspaceUserInboxModel model;
+   @Uses
+   private WorkspaceUserInboxModel model;
 
-    public String toString()
-    {
-        String text = i18n.text(WorkspaceResources.inboxes_node);
-        int unread = model.count();
-        if (unread > 0)
-        {
-            text += " (" + unread + ")";
-        } else
-        {
-            text += "                ";
-        }
+   public String toString()
+   {
+      String text = i18n.text( WorkspaceResources.inboxes_node );
+      int unread = model.count();
+      if (unread > 0)
+      {
+         text += " (" + unread + ")";
+      } else
+      {
+         text += "                ";
+      }
 
-        return text;
-    }
+      return text;
+   }
 
-    @Override
-    public WorkspaceUserNode getParent()
-    {
-        return (WorkspaceUserNode) super.getParent();
-    }
+   @Override
+   public WorkspaceUserNode getParent()
+   {
+      return (WorkspaceUserNode) super.getParent();
+   }
 
-    public WorkspaceUserInboxModel inboxModel()
-    {
-        return model;
-    }
+   public WorkspaceUserInboxModel inboxModel()
+   {
+      return model;
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        model.notifyEvent(event);
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      model.notifyEvent( event );
+   }
 }

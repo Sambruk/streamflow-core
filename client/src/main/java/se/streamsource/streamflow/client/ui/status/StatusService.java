@@ -27,16 +27,16 @@ import java.util.logging.Logger;
  */
 @Mixins(StatusService.Mixin.class)
 public interface StatusService
-        extends ServiceComposite
+      extends ServiceComposite
 {
-    void status(StatusResources status);
+   void status( StatusResources status );
 
-    abstract class Mixin
-            implements StatusService
-    {
-        public void status(StatusResources status)
-        {
-            Logger.getLogger(LoggerCategories.STATUS).info(status.name());
-        }
-    }
+   abstract class Mixin
+         implements StatusService
+   {
+      public void status( StatusResources status )
+      {
+         Logger.getLogger( LoggerCategories.STATUS ).info( status.name() );
+      }
+   }
 }

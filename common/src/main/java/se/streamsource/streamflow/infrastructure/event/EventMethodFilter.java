@@ -23,10 +23,10 @@ import java.lang.reflect.Method;
  * have DomainEvent as their first method parameter.
  */
 public class EventMethodFilter
-    implements AppliesToFilter
+      implements AppliesToFilter
 {
-    public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
-    {
-        return method.getParameterTypes().length > 0 && method.getParameterTypes()[0].equals(DomainEvent.class);
-    }
+   public boolean appliesTo( Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass )
+   {
+      return method.getParameterTypes().length > 0 && method.getParameterTypes()[0].equals( DomainEvent.class );
+   }
 }

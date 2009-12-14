@@ -31,75 +31,75 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class OrganizationClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public OrganizationClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public OrganizationClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public Reference labels() throws ResourceException
-    {
-        return getReference().clone().addSegment("labels");
-    }
+   public Reference labels() throws ResourceException
+   {
+      return getReference().clone().addSegment( "labels" );
+   }
 
-    public Reference taskTypes() throws ResourceException
-    {
-        return getReference().clone().addSegment("tasktypes");
-    }
+   public Reference taskTypes() throws ResourceException
+   {
+      return getReference().clone().addSegment( "tasktypes" );
+   }
 
-    public RolesClientResource roles() throws ResourceException
-    {
-        return getSubResource("roles", RolesClientResource.class);
-    }
+   public RolesClientResource roles() throws ResourceException
+   {
+      return getSubResource( "roles", RolesClientResource.class );
+   }
 
-    public FormDefinitionsClientResource forms() throws ResourceException
-    {
-        return getSubResource("forms", FormDefinitionsClientResource.class);
-    }
+   public FormDefinitionsClientResource forms() throws ResourceException
+   {
+      return getSubResource( "forms", FormDefinitionsClientResource.class );
+   }
 
-    public AdministratorsClientResource administrators() throws ResourceException
-    {
-        return getSubResource("administrators", AdministratorsClientResource.class);
-    }
+   public AdministratorsClientResource administrators() throws ResourceException
+   {
+      return getSubResource( "administrators", AdministratorsClientResource.class );
+   }
 
-    public OrganizationalUnitsClientResource organizationalUnits() throws ResourceException
-    {
-        return getSubResource("organizationalunits", OrganizationalUnitsClientResource.class);
-    }
+   public OrganizationalUnitsClientResource organizationalUnits() throws ResourceException
+   {
+      return getSubResource( "organizationalunits", OrganizationalUnitsClientResource.class );
+   }
 
-    public void changeDescription(StringDTO stringValue) throws ResourceException
-    {
-        putCommand("changedescription", stringValue);
-    }
+   public void changeDescription( StringDTO stringValue ) throws ResourceException
+   {
+      putCommand( "changedescription", stringValue );
+   }
 
-    public ListValue formDefinitions() throws ResourceException
-    {
-        return query("formDefinitions", ListValue.class);
-    }
+   public ListValue formDefinitions() throws ResourceException
+   {
+      return query( "formDefinitions", ListValue.class );
+   }
 
-    public ListValue participatingUsers() throws ResourceException
-    {
-        return query("participatingUsers", ListValue.class);
-    }
+   public ListValue participatingUsers() throws ResourceException
+   {
+      return query( "participatingUsers", ListValue.class );
+   }
 
-    public ListValue nonParticipatingUsers() throws ResourceException
-    {
-        return query("nonParticipatingUsers", ListValue.class);
-    }
+   public ListValue nonParticipatingUsers() throws ResourceException
+   {
+      return query( "nonParticipatingUsers", ListValue.class );
+   }
 
-    public SearchClientResource search()
-    {
-        return getSubResource("search", SearchClientResource.class);
-    }
+   public SearchClientResource search()
+   {
+      return getSubResource( "search", SearchClientResource.class );
+   }
 
-    public void join(ListValue users) throws ResourceException
-    {
-        postCommand("join", users);
-    }
+   public void join( ListValue users ) throws ResourceException
+   {
+      postCommand( "join", users );
+   }
 
-    public void leave(ListValue users) throws ResourceException
-    {
-        postCommand("leave", users);
-    }
+   public void leave( ListValue users ) throws ResourceException
+   {
+      postCommand( "leave", users );
+   }
 }

@@ -31,51 +31,51 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class WorkspaceProjectClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public WorkspaceProjectClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public WorkspaceProjectClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public WorkspaceProjectInboxClientResource inbox()
-    {
-        return getSubResource("inbox", WorkspaceProjectInboxClientResource.class);
-    }
+   public WorkspaceProjectInboxClientResource inbox()
+   {
+      return getSubResource( "inbox", WorkspaceProjectInboxClientResource.class );
+   }
 
-    public WorkspaceProjectAssignmentsClientResource assignments()
-    {
-        return getSubResource("assignments", WorkspaceProjectAssignmentsClientResource.class);
-    }
+   public WorkspaceProjectAssignmentsClientResource assignments()
+   {
+      return getSubResource( "assignments", WorkspaceProjectAssignmentsClientResource.class );
+   }
 
-    public WorkspaceProjectDelegationsClientResource delegations()
-    {
-        return getSubResource("delegations", WorkspaceProjectDelegationsClientResource.class);
-    }
+   public WorkspaceProjectDelegationsClientResource delegations()
+   {
+      return getSubResource( "delegations", WorkspaceProjectDelegationsClientResource.class );
+   }
 
-    public WorkspaceProjectWaitingforClientResource waitingFor()
-    {
-        return getSubResource("waitingfor", WorkspaceProjectWaitingforClientResource.class);
-    }
+   public WorkspaceProjectWaitingforClientResource waitingFor()
+   {
+      return getSubResource( "waitingfor", WorkspaceProjectWaitingforClientResource.class );
+   }
 
-    public ListValue findUsers(String participantName) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(participantName);
-        return query("findUsers", builder.newInstance(), ListValue.class);
-    }
+   public ListValue findUsers( String participantName ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( participantName );
+      return query( "findUsers", builder.newInstance(), ListValue.class );
+   }
 
-    public ListValue findGroups(String groupName) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(groupName);
-        return query("findGroups", builder.newInstance(), ListValue.class);
-    }
+   public ListValue findGroups( String groupName ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( groupName );
+      return query( "findGroups", builder.newInstance(), ListValue.class );
+   }
 
-    public ListValue findProjects(String projectName) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(projectName);
-        return query("findProjects", builder.newInstance(), ListValue.class);
-    }
+   public ListValue findProjects( String projectName ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( projectName );
+      return query( "findProjects", builder.newInstance(), ListValue.class );
+   }
 }

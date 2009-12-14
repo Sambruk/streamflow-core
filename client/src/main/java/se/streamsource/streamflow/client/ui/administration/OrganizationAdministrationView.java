@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
@@ -23,21 +22,23 @@ import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesAd
 
 import javax.swing.JTabbedPane;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+
 /**
  * JAVADOC
  */
 public class OrganizationAdministrationView
-        extends JTabbedPane
+      extends JTabbedPane
 {
-    public OrganizationAdministrationView( @Uses LabelsView labelsView,
-                                           @Uses RolesView rolesView,
-                                           @Uses TaskTypesAdminView taskTypesView,
-                                           @Uses AdministratorsView administratorsAdmin
-                                           )
-    {
-        addTab( text( AdministrationResources.labels_tab ), labelsView );
-        addTab( text( AdministrationResources.tasktypes_tab ), taskTypesView );
+   public OrganizationAdministrationView( @Uses LabelsView labelsView,
+                                          @Uses RolesView rolesView,
+                                          @Uses TaskTypesAdminView taskTypesView,
+                                          @Uses AdministratorsView administratorsAdmin
+   )
+   {
+      addTab( text( AdministrationResources.labels_tab ), labelsView );
+      addTab( text( AdministrationResources.tasktypes_tab ), taskTypesView );
 //        addTab( text( AdministrationResources.roles_tab ), rolesView );
-        addTab( text( AdministrationResources.administrators_tab ), administratorsAdmin );
-    }
+      addTab( text( AdministrationResources.administrators_tab ), administratorsAdmin );
+   }
 }

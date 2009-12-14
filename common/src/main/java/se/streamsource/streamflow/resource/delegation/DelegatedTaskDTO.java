@@ -23,9 +23,9 @@ import java.util.Date;
  * JAVADOC
  */
 public interface DelegatedTaskDTO
-        extends TaskDTO
+      extends TaskDTO
 {
-    Property<String> delegatedFrom();
+   Property<String> delegatedFrom();
 
-    Property<Date> delegatedOn();
+   Property<Date> delegatedOn();
 }

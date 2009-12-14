@@ -31,54 +31,54 @@ import java.awt.BorderLayout;
  * JAVADOC
  */
 public class TaskSubmittedFormsAdminView
-        extends JPanel
+      extends JPanel
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    private TaskSubmittedFormsView formsView;
-    public RefreshWhenVisible refresher;
+   private TaskSubmittedFormsView formsView;
+   public RefreshWhenVisible refresher;
 
-    public TaskSubmittedFormsAdminView(@Uses final TaskSubmittedFormsView submittedFormsView,
-                                       @Uses final TaskSubmittedFormView submittedFormView)
-    {
-        super(new BorderLayout());
-        add(submittedFormsView, BorderLayout.WEST);
-        add(submittedFormView, BorderLayout.CENTER);
+   public TaskSubmittedFormsAdminView( @Uses final TaskSubmittedFormsView submittedFormsView,
+                                       @Uses final TaskSubmittedFormView submittedFormView )
+   {
+      super( new BorderLayout() );
+      add( submittedFormsView, BorderLayout.WEST );
+      add( submittedFormView, BorderLayout.CENTER );
 
-        this.formsView = submittedFormsView;
-        final JList submittedForms = submittedFormsView.getSubmittedFormsList();
-        submittedForms.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      this.formsView = submittedFormsView;
+      final JList submittedForms = submittedFormsView.getSubmittedFormsList();
+      submittedForms.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    int idx = submittedForms.getSelectedIndex();
-                    if (idx != -1)
-                    {
-                        TaskSubmittedFormsClientResource resource = submittedFormsView.getResource();
-                        TaskSubmittedFormModel submittedFormModel = obf.newObjectBuilder(
-                                TaskSubmittedFormModel.class).use(resource.taskSubmittedForm(idx)).newInstance();
-                        submittedFormView.setModel(submittedFormModel);
-                    } else
-                    {
-                        submittedFormView.setModel(null);
-                    }
-                }
+               int idx = submittedForms.getSelectedIndex();
+               if (idx != -1)
+               {
+                  TaskSubmittedFormsClientResource resource = submittedFormsView.getResource();
+                  TaskSubmittedFormModel submittedFormModel = obf.newObjectBuilder(
+                        TaskSubmittedFormModel.class ).use( resource.taskSubmittedForm( idx ) ).newInstance();
+                  submittedFormView.setModel( submittedFormModel );
+               } else
+               {
+                  submittedFormView.setModel( null );
+               }
             }
-        });
-    }
-    
-    public void setModel(TaskSubmittedFormsModel model)
-    {
-        formsView.setModel(model);
-    }
+         }
+      } );
+   }
 
-    @Override
-    public void setVisible(boolean b)
-    {
-        super.setVisible(b);
-        formsView.setVisible(b);
-    }
+   public void setModel( TaskSubmittedFormsModel model )
+   {
+      formsView.setModel( model );
+   }
+
+   @Override
+   public void setVisible( boolean b )
+   {
+      super.setVisible( b );
+      formsView.setVisible( b );
+   }
 }

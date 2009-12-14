@@ -23,8 +23,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
@@ -39,161 +37,163 @@ import java.awt.CardLayout;
 import java.util.Observable;
 import java.util.Observer;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+
 /**
  * JAVADOC
  */
 public class TaskContactView
-        extends JPanel
-        implements Observer
+      extends JPanel
+      implements Observer
 {
-    private StateBinder contactBinder;
-    private StateBinder phoneNumberBinder;
-    private StateBinder emailBinder;
-    private StateBinder addressBinder;
+   private StateBinder contactBinder;
+   private StateBinder phoneNumberBinder;
+   private StateBinder emailBinder;
+   private StateBinder addressBinder;
 
-    TaskContactModel model;
+   TaskContactModel model;
 
-    public ValueBuilder<ContactValue> valueBuilder;
-    private CardLayout layout = new CardLayout();
-    JTextField defaultFocusField;
-    public JPanel form;
+   public ValueBuilder<ContactValue> valueBuilder;
+   private CardLayout layout = new CardLayout();
+   JTextField defaultFocusField;
+   public JPanel form;
 
-    public TaskContactView(@Service ApplicationContext appContext)
-    {
-        setLayout(layout);
+   public TaskContactView( @Service ApplicationContext appContext )
+   {
+      setLayout( layout );
 
-        setActionMap(appContext.getActionMap(this));
-        FormLayout formLayout = new FormLayout(
-                "200dlu",
-                "");
-        form = new JPanel();
-        JScrollPane scrollPane = new JScrollPane(form);
-        DefaultFormBuilder builder = new DefaultFormBuilder(formLayout, form);
-        builder.setDefaultDialogBorder();
+      setActionMap( appContext.getActionMap( this ) );
+      FormLayout formLayout = new FormLayout(
+            "200dlu",
+            "" );
+      form = new JPanel();
+      JScrollPane scrollPane = new JScrollPane( form );
+      DefaultFormBuilder builder = new DefaultFormBuilder( formLayout, form );
+      builder.setDefaultDialogBorder();
 
-        contactBinder = new StateBinder();
-        contactBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        ContactValue template = contactBinder.bindingTemplate(ContactValue.class);
+      contactBinder = new StateBinder();
+      contactBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      ContactValue template = contactBinder.bindingTemplate( ContactValue.class );
 
-        phoneNumberBinder = new StateBinder();
-        phoneNumberBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        ContactPhoneValue phoneTemplate = phoneNumberBinder.bindingTemplate(ContactPhoneValue.class);
+      phoneNumberBinder = new StateBinder();
+      phoneNumberBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      ContactPhoneValue phoneTemplate = phoneNumberBinder.bindingTemplate( ContactPhoneValue.class );
 
-        addressBinder = new StateBinder();
-        addressBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        ContactAddressValue addressTemplate = addressBinder.bindingTemplate(ContactAddressValue.class);
+      addressBinder = new StateBinder();
+      addressBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      ContactAddressValue addressTemplate = addressBinder.bindingTemplate( ContactAddressValue.class );
 
-        emailBinder = new StateBinder();
-        emailBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        ContactEmailValue emailTemplate = emailBinder.bindingTemplate(ContactEmailValue.class);
+      emailBinder = new StateBinder();
+      emailBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      ContactEmailValue emailTemplate = emailBinder.bindingTemplate( ContactEmailValue.class );
 
-        BindingFormBuilder bb = new BindingFormBuilder(builder, contactBinder);
-        bb
-                .appendLine(WorkspaceResources.name_label, defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name())
-                .appendLine(WorkspaceResources.phone_label, TEXTFIELD, phoneTemplate.phoneNumber(), phoneNumberBinder)
-                .appendLine(WorkspaceResources.address_label, TEXTFIELD, addressTemplate.address(), addressBinder)
-                .appendLine(WorkspaceResources.email_label, TEXTFIELD, emailTemplate.emailAddress(), emailBinder)
-                .appendLine(WorkspaceResources.contact_id_label, TEXTFIELD, template.contactId())
-                .appendLine(WorkspaceResources.company_label, TEXTFIELD, template.company())
-                .appendLine(WorkspaceResources.note_label, TEXTAREA, template.note());
-
-
-        contactBinder.addObserver(this);
-        phoneNumberBinder.addObserver(this);
-        addressBinder.addObserver(this);
-        emailBinder.addObserver(this);
-
-        add(new JPanel(), "EMPTY");
-        add(scrollPane, "CONTACT");
-
-    }
+      BindingFormBuilder bb = new BindingFormBuilder( builder, contactBinder );
+      bb
+            .appendLine( WorkspaceResources.name_label, defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name() )
+            .appendLine( WorkspaceResources.phone_label, TEXTFIELD, phoneTemplate.phoneNumber(), phoneNumberBinder )
+            .appendLine( WorkspaceResources.address_label, TEXTFIELD, addressTemplate.address(), addressBinder )
+            .appendLine( WorkspaceResources.email_label, TEXTFIELD, emailTemplate.emailAddress(), emailBinder )
+            .appendLine( WorkspaceResources.contact_id_label, TEXTFIELD, template.contactId() )
+            .appendLine( WorkspaceResources.company_label, TEXTFIELD, template.company() )
+            .appendLine( WorkspaceResources.note_label, TEXTAREA, template.note() );
 
 
-    public void setModel(TaskContactModel model)
-    {
-        this.model = model;
-        if (model != null)
-        {
-            contactBinder.updateWith(model.getContact());
-            phoneNumberBinder.updateWith(model.getPhoneNumber());
-            addressBinder.updateWith(model.getAddress());
-            emailBinder.updateWith(model.getEmailAddress());
+      contactBinder.addObserver( this );
+      phoneNumberBinder.addObserver( this );
+      addressBinder.addObserver( this );
+      emailBinder.addObserver( this );
 
-            layout.show(this, "CONTACT");
+      add( new JPanel(), "EMPTY" );
+      add( scrollPane, "CONTACT" );
 
-        } else
-        {
-            layout.show(this, "EMPTY");
-        }
+   }
 
-    }
 
-    public void update(Observable observable, Object arg)
-    {
-        Property property = (Property) arg;
-        if (property.qualifiedName().name().equals("name"))
-        {
-            try
-            {
-                model.changeName((String) property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_name, e);
-            }
-        } else if (property.qualifiedName().name().equals("note"))
-        {
-            try
-            {
-                model.changeNote((String) property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_note, e);
-            }
-        } else if (property.qualifiedName().name().equals("company"))
-        {
-            try
-            {
-                model.changeCompany((String) property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_company, e);
-            }
-        } else if (property.qualifiedName().name().equals("phoneNumber"))
-        {
-            try
-            {
-                model.changePhoneNumber((String) property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_phone_number, e);
-            }
-        } else if (property.qualifiedName().name().equals("address"))
-        {
-            try
-            {
-                model.changeAddress((String) property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_address, e);
-            }
-        } else if (property.qualifiedName().name().equals("emailAddress"))
-        {
-            try
-            {
-                model.changeEmailAddress((String) property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_email_address, e);
-            }
-        } else if (property.qualifiedName().name().equals("contactId"))
-        {
-            try
-            {
-                model.changeContactId((String) property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_contact_id, e);
-            }
-        }
-    }
+   public void setModel( TaskContactModel model )
+   {
+      this.model = model;
+      if (model != null)
+      {
+         contactBinder.updateWith( model.getContact() );
+         phoneNumberBinder.updateWith( model.getPhoneNumber() );
+         addressBinder.updateWith( model.getAddress() );
+         emailBinder.updateWith( model.getEmailAddress() );
+
+         layout.show( this, "CONTACT" );
+
+      } else
+      {
+         layout.show( this, "EMPTY" );
+      }
+
+   }
+
+   public void update( Observable observable, Object arg )
+   {
+      Property property = (Property) arg;
+      if (property.qualifiedName().name().equals( "name" ))
+      {
+         try
+         {
+            model.changeName( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_name, e );
+         }
+      } else if (property.qualifiedName().name().equals( "note" ))
+      {
+         try
+         {
+            model.changeNote( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_note, e );
+         }
+      } else if (property.qualifiedName().name().equals( "company" ))
+      {
+         try
+         {
+            model.changeCompany( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_company, e );
+         }
+      } else if (property.qualifiedName().name().equals( "phoneNumber" ))
+      {
+         try
+         {
+            model.changePhoneNumber( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_phone_number, e );
+         }
+      } else if (property.qualifiedName().name().equals( "address" ))
+      {
+         try
+         {
+            model.changeAddress( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_address, e );
+         }
+      } else if (property.qualifiedName().name().equals( "emailAddress" ))
+      {
+         try
+         {
+            model.changeEmailAddress( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_email_address, e );
+         }
+      } else if (property.qualifiedName().name().equals( "contactId" ))
+      {
+         try
+         {
+            model.changeContactId( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_contact_id, e );
+         }
+      }
+   }
 }

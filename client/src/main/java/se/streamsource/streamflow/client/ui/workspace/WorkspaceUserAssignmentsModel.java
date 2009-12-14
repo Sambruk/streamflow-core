@@ -15,32 +15,32 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.users.workspace.user.assignments.WorkspaceUserAssignmentsClientResource;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-
-import java.util.Date;
 
 import javax.swing.ImageIcon;
+import java.util.Date;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 /**
  * JAVADOC
  */
 public class WorkspaceUserAssignmentsModel
-        extends TaskTableModel
+      extends TaskTableModel
 {
-    public WorkspaceUserAssignmentsModel(@Uses WorkspaceUserAssignmentsClientResource resource)
-    {
-        super(resource);
-        columnNames = new String[]{text( title_column_header ), text(created_column_header), text(task_status_header)};
-        columnClasses = new Class[]{String.class, Date.class, ImageIcon.class};
-        columnEditable = new boolean[]{false, false, false};
-    }
+   public WorkspaceUserAssignmentsModel( @Uses WorkspaceUserAssignmentsClientResource resource )
+   {
+      super( resource );
+      columnNames = new String[]{text( title_column_header ), text( created_column_header ), text( task_status_header )};
+      columnClasses = new Class[]{String.class, Date.class, ImageIcon.class};
+      columnEditable = new boolean[]{false, false, false};
+   }
 
-    @Override
-    public WorkspaceUserAssignmentsClientResource getResource()
-    {
-        return (WorkspaceUserAssignmentsClientResource) super.getResource();
-    }
+   @Override
+   public WorkspaceUserAssignmentsClientResource getResource()
+   {
+      return (WorkspaceUserAssignmentsClientResource) super.getResource();
+   }
 }

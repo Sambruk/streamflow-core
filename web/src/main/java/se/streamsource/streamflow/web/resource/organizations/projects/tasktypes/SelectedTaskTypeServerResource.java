@@ -25,19 +25,19 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/organizationalunits/{ou}/projects/{tasktypes}/labels/{tasktype}
  */
 public class SelectedTaskTypeServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String labelsId = getRequest().getAttributes().get("tasktypes").toString();
-        String identity = getRequest().getAttributes().get("tasktype").toString();
+      String labelsId = getRequest().getAttributes().get( "tasktypes" ).toString();
+      String identity = getRequest().getAttributes().get( "tasktype" ).toString();
 
-        SelectedTaskTypes taskTypes = uow.get( SelectedTaskTypes.class, labelsId);
-        TaskType taskType = uow.get( TaskType.class, identity);
+      SelectedTaskTypes taskTypes = uow.get( SelectedTaskTypes.class, labelsId );
+      TaskType taskType = uow.get( TaskType.class, identity );
 
-        taskTypes.removeSelectedTaskType( taskType);
-    }
+      taskTypes.removeSelectedTaskType( taskType );
+   }
 
 }

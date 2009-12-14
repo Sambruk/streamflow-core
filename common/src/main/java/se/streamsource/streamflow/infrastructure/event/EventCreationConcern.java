@@ -27,23 +27,23 @@ import java.lang.reflect.Method;
  */
 @AppliesTo(EventMethodFilter.class)
 public class EventCreationConcern
-        extends GenericConcern
+      extends GenericConcern
 {
-    @This
-    EntityComposite entity;
+   @This
+   EntityComposite entity;
 
-    @Service
-    DomainEventFactory domainEventFactory;
+   @Service
+   DomainEventFactory domainEventFactory;
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-    {
-        if (args[0] == DomainEvent.CREATE)
-        {
-            // Create event
-            DomainEvent event = domainEventFactory.createEvent(entity, method.getName(), args);
-            args[0] = event;
-        }
+   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   {
+      if (args[0] == DomainEvent.CREATE)
+      {
+         // Create event
+         DomainEvent event = domainEventFactory.createEvent( entity, method.getName(), args );
+         args[0] = event;
+      }
 
-        return next.invoke(proxy, method, args);
-    }
+      return next.invoke( proxy, method, args );
+   }
 }

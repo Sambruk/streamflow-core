@@ -20,124 +20,124 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import static org.qi4j.api.query.QueryExpressions.*;
-import static org.qi4j.api.query.QueryExpressions.eq;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.group.GroupEntity;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
-import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.user.UserEntity;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(OrganizationQueries.Mixin.class)
 public interface OrganizationQueries
 {
-    public ListValue findUsers(String query);
+   public ListValue findUsers( String query );
 
-    public ListValue findGroups(String query);
+   public ListValue findGroups( String query );
 
-    public ListValue findProjects(String query);
+   public ListValue findProjects( String query );
 
-    class Mixin
-        implements OrganizationQueries
-    {
+   class Mixin
+         implements OrganizationQueries
+   {
 
-        @Structure
-        ModuleSPI module;
-        
-        @This
-        Organization org;
+      @Structure
+      ModuleSPI module;
 
-        public ListValue findUsers(String query)
-        {
-            ValueBuilder<EntityReferenceDTO> builder = module.valueBuilderFactory().newValueBuilder(EntityReferenceDTO.class);
-            ListValueBuilder listBuilder = new ListValueBuilder(module.valueBuilderFactory());
+      @This
+      Organization org;
 
-            if (query.length() > 0)
+      public ListValue findUsers( String query )
+      {
+         ValueBuilder<EntityReferenceDTO> builder = module.valueBuilderFactory().newValueBuilder( EntityReferenceDTO.class );
+         ListValueBuilder listBuilder = new ListValueBuilder( module.valueBuilderFactory() );
+
+         if (query.length() > 0)
+         {
+            QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( UserEntity.class );
+            Query<UserEntity> users = queryBuilder.where(
+                  and(
+                        matches( templateFor( UserEntity.class ).userName(), "^" + query ),
+                        contains( templateFor( UserEntity.class ).organizations(), org )
+                  )
+            )
+                  .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+            try
             {
-                QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
-                Query<UserEntity> users = queryBuilder.where(
-                        and(
-                                matches(templateFor(UserEntity.class).userName(), "^" + query),
-                                contains(templateFor(UserEntity.class).organizations(), org)
-                            )
-                        )
-                        .newQuery(module.unitOfWorkFactory().currentUnitOfWork());
-
-                try
-                {
-                    for (Participant participant : users)
-                    {
-                        builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                        listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
-                    }
-                } catch (Exception e)
-                {
-                    //e.printStackTrace();
-                }
-            }
-            return listBuilder.newList();
-        }
-
-        public ListValue findGroups(String query)
-        {
-            ValueBuilder<EntityReferenceDTO> builder = module.valueBuilderFactory().newValueBuilder(EntityReferenceDTO.class);
-            ListValueBuilder listBuilder = new ListValueBuilder(module.valueBuilderFactory());
-
-            if (query.length() > 0)
+               for (Participant participant : users)
+               {
+                  builder.prototype().entity().set( EntityReference.getEntityReference( participant ) );
+                  listBuilder.addListItem( participant.getDescription(), builder.newInstance().entity().get() );
+               }
+            } catch (Exception e)
             {
-                QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
-                Query<GroupEntity> groups = queryBuilder.where(
-                        and(
-                                eq(templateFor(GroupEntity.class).removed(), false),
-                                matches(templateFor(GroupEntity.class).description(), "^" + query))).
-                        newQuery(module.unitOfWorkFactory().currentUnitOfWork());
-
-                try
-                {
-                    for (Participant participant : groups)
-                    {
-                        builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                        listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
-                    }
-                } catch (Exception e)
-                {
-                    //e.printStackTrace();
-                }
+               //e.printStackTrace();
             }
-            return listBuilder.newList();
-        }
+         }
+         return listBuilder.newList();
+      }
 
-        public ListValue findProjects(String query)
-        {
-            ValueBuilder<EntityReferenceDTO> builder = module.valueBuilderFactory().newValueBuilder(EntityReferenceDTO.class);
-            ListValueBuilder listBuilder = new ListValueBuilder(module.valueBuilderFactory());
+      public ListValue findGroups( String query )
+      {
+         ValueBuilder<EntityReferenceDTO> builder = module.valueBuilderFactory().newValueBuilder( EntityReferenceDTO.class );
+         ListValueBuilder listBuilder = new ListValueBuilder( module.valueBuilderFactory() );
 
-            if (query.length() > 0)
+         if (query.length() > 0)
+         {
+            QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( GroupEntity.class );
+            Query<GroupEntity> groups = queryBuilder.where(
+                  and(
+                        eq( templateFor( GroupEntity.class ).removed(), false ),
+                        matches( templateFor( GroupEntity.class ).description(), "^" + query ) ) ).
+                  newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+            try
             {
-                QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-                Query<ProjectEntity> projects = queryBuilder.where(and(
-                        eq(templateFor(ProjectEntity.class).removed(), false),
-                        matches(templateFor(ProjectEntity.class).description(), "^" + query))).
-                        newQuery(module.unitOfWorkFactory().currentUnitOfWork());
-
-                try
-                {
-                    for (Project project : projects)
-                    {
-                        builder.prototype().entity().set(EntityReference.getEntityReference(project));
-                        listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
-                    }
-                } catch (Exception e)
-                {
-                    //e.printStackTrace();
-                }
+               for (Participant participant : groups)
+               {
+                  builder.prototype().entity().set( EntityReference.getEntityReference( participant ) );
+                  listBuilder.addListItem( participant.getDescription(), builder.newInstance().entity().get() );
+               }
+            } catch (Exception e)
+            {
+               //e.printStackTrace();
             }
-            return listBuilder.newList();
-        }
-    }
+         }
+         return listBuilder.newList();
+      }
+
+      public ListValue findProjects( String query )
+      {
+         ValueBuilder<EntityReferenceDTO> builder = module.valueBuilderFactory().newValueBuilder( EntityReferenceDTO.class );
+         ListValueBuilder listBuilder = new ListValueBuilder( module.valueBuilderFactory() );
+
+         if (query.length() > 0)
+         {
+            QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class );
+            Query<ProjectEntity> projects = queryBuilder.where( and(
+                  eq( templateFor( ProjectEntity.class ).removed(), false ),
+                  matches( templateFor( ProjectEntity.class ).description(), "^" + query ) ) ).
+                  newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+            try
+            {
+               for (Project project : projects)
+               {
+                  builder.prototype().entity().set( EntityReference.getEntityReference( project ) );
+                  listBuilder.addListItem( project.getDescription(), builder.newInstance().entity().get() );
+               }
+            } catch (Exception e)
+            {
+               //e.printStackTrace();
+            }
+         }
+         return listBuilder.newList();
+      }
+   }
 }

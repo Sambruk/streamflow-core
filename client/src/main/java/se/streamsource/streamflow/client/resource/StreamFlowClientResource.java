@@ -29,36 +29,36 @@ import java.io.IOException;
  * /
  */
 public class StreamFlowClientResource
-        extends BaseClientResource
+      extends BaseClientResource
 {
-    public StreamFlowClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public StreamFlowClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public String version() throws ResourceException, IOException
-    {
-        StreamFlowClientResource flowClientResource = getResource(getReference().clone().addSegment("static").addSegment("version.html"), StreamFlowClientResource.class);
-        return flowClientResource.get().getText();
-    }
+   public String version() throws ResourceException, IOException
+   {
+      StreamFlowClientResource flowClientResource = getResource( getReference().clone().addSegment( "static" ).addSegment( "version.html" ), StreamFlowClientResource.class );
+      return flowClientResource.get().getText();
+   }
 
-    public UsersClientResource users()
-    {
-        return getSubResource("users", UsersClientResource.class);
-    }
+   public UsersClientResource users()
+   {
+      return getSubResource( "users", UsersClientResource.class );
+   }
 
-    public OrganizationsClientResource organizations()
-    {
-        return getSubResource("organizations", OrganizationsClientResource.class);
-    }
+   public OrganizationsClientResource organizations()
+   {
+      return getSubResource( "organizations", OrganizationsClientResource.class );
+   }
 
-    public TasksClientResource tasks()
-    {
-        return getSubResource("tasks", TasksClientResource.class);
-    }
+   public TasksClientResource tasks()
+   {
+      return getSubResource( "tasks", TasksClientResource.class );
+   }
 
-    public EventsClientResource events()
-    {
-        return getSubResource("events", EventsClientResource.class);
-    }
+   public EventsClientResource events()
+   {
+      return getSubResource( "events", EventsClientResource.class );
+   }
 }

@@ -28,57 +28,56 @@ import javax.swing.JPopupMenu;
  * JAVADOC
  */
 public class WorkspaceProjectAssignmentsView
-        extends TaskTableView
+      extends TaskTableView
 {
-    @Uses
-    protected ObjectBuilder<ProjectSelectionDialog> projectSelectionDialog;
+   @Uses
+   protected ObjectBuilder<ProjectSelectionDialog> projectSelectionDialog;
 
 
+   protected void buildPopupMenu( JPopupMenu popup )
+   {
+      ActionMap am = getActionMap();
+      Action markTasksAsUnread = am.get( "markTasksAsUnread" );
+      popup.add( markTasksAsUnread );
+      Action markTasksAsRead = am.get( "markTasksAsRead" );
+      popup.add( markTasksAsRead );
+      Action dropAction = am.get( "dropTasks" );
+      popup.add( dropAction );
+      Action removeTaskAction = am.get( "removeTasks" );
+      popup.add( removeTaskAction );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 2, taskTable, markTasksAsRead, markTasksAsUnread, dropAction, removeTaskAction ) );
+   }
 
-    protected void buildPopupMenu(JPopupMenu popup)
-    {
-        ActionMap am = getActionMap();
-        Action markTasksAsUnread = am.get( "markTasksAsUnread" );
-        popup.add( markTasksAsUnread );
-        Action markTasksAsRead = am.get( "markTasksAsRead" );
-        popup.add( markTasksAsRead );
-        Action dropAction = am.get("dropTasks");
-        popup.add(dropAction);
-        Action removeTaskAction = am.get("removeTasks");
-        popup.add(removeTaskAction);
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, markTasksAsRead, markTasksAsUnread, dropAction, removeTaskAction));
-    }
+   @Override
+   protected void buildToolbar( JPanel toolbar )
+   {
+      addToolbarButton( toolbar, "createTask" );
+      Action acceptAction = addToolbarButton( toolbar, "completeTasks" );
+      Action forwardTasks = addToolbarButton( toolbar, "forwardTasks" );
+      Action delegateTasks = addToolbarButton( toolbar, "delegateTasks" );
+      addToolbarButton( toolbar, "refresh" );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 2, taskTable, forwardTasks, delegateTasks, acceptAction ) );
+   }
 
-    @Override
-    protected void buildToolbar(JPanel toolbar)
-    {
-        addToolbarButton(toolbar, "createTask");
-        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
-        Action forwardTasks = addToolbarButton(toolbar, "forwardTasks");
-        Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
-        addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, forwardTasks, delegateTasks, acceptAction));
-    }
+   @Override
+   @org.jdesktop.application.Action
+   public void delegateTasks() throws ResourceException
+   {
+      ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
 
-    @Override
-    @org.jdesktop.application.Action
-    public void delegateTasks() throws ResourceException
-    {
-        ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+      dialogSelection = dialog.getSelected();
+      super.delegateTasks();
+   }
 
-        dialogSelection = dialog.getSelected();
-        super.delegateTasks();
-    }
+   @Override
+   @org.jdesktop.application.Action
+   public void forwardTasks() throws ResourceException
+   {
+      ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
 
-    @Override
-    @org.jdesktop.application.Action
-    public void forwardTasks() throws ResourceException
-    {
-        ProjectSelectionDialog dialog = projectSelectionDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
-
-        dialogSelection = dialog.getSelected();
-        super.forwardTasks();
-    }
+      dialogSelection = dialog.getSelected();
+      super.forwardTasks();
+   }
 }

@@ -20,32 +20,32 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * JAVADOC
  */
 public class EventMatcher
-    implements EventHandler, Runnable
+      implements EventHandler, Runnable
 {
-    private boolean match;
-    private EventSpecification specification;
+   private boolean match;
+   private EventSpecification specification;
 
-    public EventMatcher( EventSpecification specification )
-    {
-        this.specification = specification;
-    }
+   public EventMatcher( EventSpecification specification )
+   {
+      this.specification = specification;
+   }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        if (specification.accept( event ))
-        {
-            match = true;
-            return false;
-        } else
-            return true;
-    }
+   public boolean handleEvent( DomainEvent event )
+   {
+      if (specification.accept( event ))
+      {
+         match = true;
+         return false;
+      } else
+         return true;
+   }
 
-    public boolean matches()
-    {
-        return match;
-    }
+   public boolean matches()
+   {
+      return match;
+   }
 
-    public void run()
-    {
-    }
+   public void run()
+   {
+   }
 }

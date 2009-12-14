@@ -23,13 +23,13 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * JAVADOC
  */
 public class IndividualAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addServices(IndividualRepositoryService.class).visibleIn(Visibility.application);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( IndividualRepositoryService.class ).visibleIn( Visibility.application );
 
-        module.addValues(AccountSettingsValue.class).visibleIn(Visibility.application);
-        module.addEntities(IndividualEntity.class, AccountEntity.class).visibleIn(Visibility.application);
-    }
+      module.addValues( AccountSettingsValue.class ).visibleIn( Visibility.application );
+      module.addEntities( IndividualEntity.class, AccountEntity.class ).visibleIn( Visibility.application );
+   }
 }

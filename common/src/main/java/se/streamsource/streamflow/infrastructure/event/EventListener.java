@@ -19,5 +19,5 @@ package se.streamsource.streamflow.infrastructure.event;
  */
 public interface EventListener
 {
-    void notifyEvent(DomainEvent event);
+   void notifyEvent( DomainEvent event );
 }

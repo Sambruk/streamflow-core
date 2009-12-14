@@ -24,8 +24,8 @@ import java.util.List;
  * JAVADOC
  */
 public interface EffectiveFormFieldsValue
-    extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<EffectiveFieldValue>> fields();
+   @UseDefaults
+   Property<List<EffectiveFieldValue>> fields();
 }

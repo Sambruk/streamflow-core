@@ -24,7 +24,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.roles.Describable;
@@ -34,84 +33,91 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 
+import static org.qi4j.api.query.QueryExpressions.*;
+
 /**
  * JAVADOC
  */
 @Mixins(TaskTypes.Mixin.class)
 public interface TaskTypes
 {
-    // Commands
-    TaskTypeEntity createTaskType(String name);
-    boolean removeTaskType( TaskType taskType );
+   // Commands
 
-    // Queries
-    ListValue taskTypeList();
-    ListValue possibleProjects(@Optional TaskType taskType);
+   TaskTypeEntity createTaskType( String name );
 
-    interface Data
-    {
-        @Aggregated
-        ManyAssociation<TaskType> taskTypes();
+   boolean removeTaskType( TaskType taskType );
 
-        TaskTypeEntity createdTaskType(DomainEvent event, String id);
-        void removedTaskType(DomainEvent event, TaskType taskType );
+   // Queries
 
-        TaskTypeEntity getTaskTypeByName(String name);
-    }
+   ListValue taskTypeList();
 
-    abstract class Mixin
-        implements TaskTypes, Data
-    {
-        @Service
-        IdentityGenerator idGen;
+   ListValue possibleProjects( @Optional TaskType taskType );
 
-        @Structure
-        UnitOfWorkFactory uowf;
+   interface Data
+   {
+      @Aggregated
+      ManyAssociation<TaskType> taskTypes();
 
-        @Structure
-        ValueBuilderFactory vbf;
+      TaskTypeEntity createdTaskType( DomainEvent event, String id );
 
-        @Structure
-        QueryBuilderFactory qbf;
+      void removedTaskType( DomainEvent event, TaskType taskType );
 
-        public TaskTypeEntity createTaskType( String name )
-        {
-            TaskTypeEntity taskType = createdTaskType(DomainEvent.CREATE, idGen.generate( TaskTypeEntity.class ));
-            taskType.changeDescription( name );
+      TaskTypeEntity getTaskTypeByName( String name );
+   }
 
-            return taskType;
-        }
+   abstract class Mixin
+         implements TaskTypes, Data
+   {
+      @Service
+      IdentityGenerator idGen;
 
-        public TaskTypeEntity getTaskTypeByName( String name )
-        {
-            return (TaskTypeEntity) Describable.Mixin.getDescribable( taskTypes(), name );
-        }
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public TaskTypeEntity createdTaskType( DomainEvent event, String id )
-        {
-            TaskTypeEntity taskType = uowf.currentUnitOfWork().newEntity( TaskTypeEntity.class, id );
-            taskTypes().add( taskType );
+      @Structure
+      ValueBuilderFactory vbf;
 
-            return taskType;
-        }
+      @Structure
+      QueryBuilderFactory qbf;
 
-        public ListValue taskTypeList()
-        {
-            return new ListValueBuilder(vbf).addDescribableItems( taskTypes() ).newList();
-        }
+      public TaskTypeEntity createTaskType( String name )
+      {
+         TaskTypeEntity taskType = createdTaskType( DomainEvent.CREATE, idGen.generate( TaskTypeEntity.class ) );
+         taskType.changeDescription( name );
 
-        public ListValue possibleProjects( TaskType taskType )
-        {
-            QueryBuilder<Project> projects = qbf.newQueryBuilder( Project.class );
+         return taskType;
+      }
 
-            ProjectEntity template = templateFor( ProjectEntity.class );
+      public TaskTypeEntity getTaskTypeByName( String name )
+      {
+         return (TaskTypeEntity) Describable.Mixin.getDescribable( taskTypes(), name );
+      }
 
-            if (taskType != null)
-               projects = projects.where( contains( template.selectedTaskTypes(), taskType ));
+      public TaskTypeEntity createdTaskType( DomainEvent event, String id )
+      {
+         TaskTypeEntity taskType = uowf.currentUnitOfWork().newEntity( TaskTypeEntity.class, id );
+         taskTypes().add( taskType );
 
-            Query<Project> query = projects.newQuery( uowf.currentUnitOfWork() );
+         return taskType;
+      }
 
-            return new ListValueBuilder(vbf).addDescribableItems( query ).newList();
-        }
-    }
+      public ListValue taskTypeList()
+      {
+         return new ListValueBuilder( vbf ).addDescribableItems( taskTypes() ).newList();
+      }
+
+      public ListValue possibleProjects( TaskType taskType )
+      {
+         QueryBuilder<Project> projects = qbf.newQueryBuilder( Project.class );
+
+         ProjectEntity template = templateFor( ProjectEntity.class );
+
+         if (taskType != null)
+            projects = projects.where( contains( template.selectedTaskTypes(), taskType ) );
+
+         Query<Project> query = projects.newQuery( uowf.currentUnitOfWork() );
+
+         return new ListValueBuilder( vbf ).addDescribableItems( query ).newList();
+      }
+   }
 }

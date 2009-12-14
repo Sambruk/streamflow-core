@@ -23,7 +23,6 @@ import org.qi4j.api.property.Property;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -31,93 +30,97 @@ import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.Observer;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
  */
 public class FieldValueTextEditView
-    extends JScrollPane
-    implements Observer
+      extends JScrollPane
+      implements Observer
 {
 
-    private StateBinder fieldDefinitionBinder;
-    private StateBinder fieldValueBinder;
-    private FieldValueEditModel model;
+   private StateBinder fieldDefinitionBinder;
+   private StateBinder fieldValueBinder;
+   private FieldValueEditModel model;
 
-    public FieldValueTextEditView(@Service ApplicationContext context,
-                                  @Uses FieldValueEditModel model)
-    {
-        JPanel panel = new JPanel(new BorderLayout());
+   public FieldValueTextEditView( @Service ApplicationContext context,
+                                  @Uses FieldValueEditModel model )
+   {
+      JPanel panel = new JPanel( new BorderLayout() );
 
-        JPanel fieldPanel = new JPanel();
-        model.refresh();
-        this.model = model;
-        FormLayout formLayout = new FormLayout(
-                "200dlu","");
+      JPanel fieldPanel = new JPanel();
+      model.refresh();
+      this.model = model;
+      FormLayout formLayout = new FormLayout(
+            "200dlu", "" );
 
-        DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, fieldPanel);
-        formBuilder.setDefaultDialogBorder();
-        fieldDefinitionBinder = new StateBinder();
-        fieldDefinitionBinder.setResourceMap(context.getResourceMap(getClass()));
-        FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate(FieldDefinitionValue.class);
+      DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
+      formBuilder.setDefaultDialogBorder();
+      fieldDefinitionBinder = new StateBinder();
+      fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
+      FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );
 
-        fieldValueBinder = new StateBinder();
-        fieldValueBinder.setResourceMap(context.getResourceMap(getClass()));
-        FieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate(FieldValue.class);
+      fieldValueBinder = new StateBinder();
+      fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
+      FieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( FieldValue.class );
 
-        BindingFormBuilder bb = new BindingFormBuilder(formBuilder, fieldDefinitionBinder);
+      BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
-        formBuilder.append(i18n.text(AdministrationResources.type_label), new JLabel(i18n.text(AdministrationResources.text_field_type)));
+      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text_field_type ) ) );
 
-        bb.appendLine(AdministrationResources.mandatory, CHECKBOX, fieldValueTemplate.mandatory(), fieldValueBinder).
-                appendLine(AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description()).
-                appendLine(AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note());
+      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldValueTemplate.mandatory(), fieldValueBinder ).
+            appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
+            appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() );
 
-        fieldValueBinder.addObserver(this);
-        fieldDefinitionBinder.addObserver(this);
+      fieldValueBinder.addObserver( this );
+      fieldDefinitionBinder.addObserver( this );
 
-        fieldValueBinder.updateWith(model.getField().fieldValue().get());
-        fieldDefinitionBinder.updateWith(model.getField());
+      fieldValueBinder.updateWith( model.getField().fieldValue().get() );
+      fieldDefinitionBinder.updateWith( model.getField() );
 
-        panel.add(fieldPanel, BorderLayout.CENTER);
+      panel.add( fieldPanel, BorderLayout.CENTER );
 
-        setViewportView(panel);
-    }
+      setViewportView( panel );
+   }
 
-    public void update(Observable observable, Object arg)
-    {
-        Property property = (Property) arg;
-        if (property.qualifiedName().name().equals("mandatory"))
-        {
-            try
-            {
-                model.changeMandatory((Boolean)property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_mandatory, e);
-            }
-        } else if (property.qualifiedName().name().equals("description"))
-        {
-            try
-            {
-                model.changeDescription((String) property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_name, e);
-            }
-        } else if (property.qualifiedName().name().equals("note"))
-        {
-            try
-            {
-                model.changeNote((String) property.get());
-            } catch (ResourceException e)
-            {
-                throw new OperationException(TaskResources.could_not_change_note, e);
-            }
-        }
-    }
+   public void update( Observable observable, Object arg )
+   {
+      Property property = (Property) arg;
+      if (property.qualifiedName().name().equals( "mandatory" ))
+      {
+         try
+         {
+            model.changeMandatory( (Boolean) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_mandatory, e );
+         }
+      } else if (property.qualifiedName().name().equals( "description" ))
+      {
+         try
+         {
+            model.changeDescription( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_name, e );
+         }
+      } else if (property.qualifiedName().name().equals( "note" ))
+      {
+         try
+         {
+            model.changeNote( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_note, e );
+         }
+      }
+   }
 }

@@ -16,26 +16,27 @@ package se.streamsource.streamflow.client.ui.overview;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
-import se.streamsource.streamflow.client.ui.workspace.ProjectSelectionDialog;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
+import se.streamsource.streamflow.client.ui.workspace.ProjectSelectionDialog;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
  * JAVADOC
  */
 public class OverviewProjectAssignmentsView
-        extends TaskTableView
+      extends TaskTableView
 {
-    @Uses
-    protected ObjectBuilder<ProjectSelectionDialog> projectSelectionDialog;
+   @Uses
+   protected ObjectBuilder<ProjectSelectionDialog> projectSelectionDialog;
 
-    protected void buildPopupMenu(JPopupMenu popup)
-    {
-    }
+   protected void buildPopupMenu( JPopupMenu popup )
+   {
+   }
 
-    @Override
-    protected void buildToolbar(JPanel toolbar)
-    {
-    }
+   @Override
+   protected void buildToolbar( JPanel toolbar )
+   {
+   }
 }

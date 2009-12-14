@@ -21,16 +21,16 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
  * JAVADOC
  */
 public class OrganizationsScenario
-        extends AbstractWebDomainApplicationScenario
+      extends AbstractWebDomainApplicationScenario
 {
 
-    public OrganizationsScenario()
-    {
-        this(Thread.currentThread().getContextClassLoader());
-    }
+   public OrganizationsScenario()
+   {
+      this( Thread.currentThread().getContextClassLoader() );
+   }
 
-    public OrganizationsScenario(ClassLoader classLoader)
-    {
-        super(classLoader, new OrganizationsSteps());
-    }
+   public OrganizationsScenario( ClassLoader classLoader )
+   {
+      super( classLoader, new OrganizationsSteps() );
+   }
 }

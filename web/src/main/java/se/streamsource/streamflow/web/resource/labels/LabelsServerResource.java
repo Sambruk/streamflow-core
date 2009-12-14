@@ -36,42 +36,42 @@ import java.util.List;
  * /organizations/{labels}/labels
  */
 public class LabelsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public ListValue labels()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("labels");
-        Labels labels = uow.get(Labels.class, id);
+   public ListValue labels()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "labels" );
+      Labels labels = uow.get( Labels.class, id );
 
-        ValueBuilder<ListItemValue> builder = vbf.newValueBuilder(ListItemValue.class);
-        ListItemValue prototype = builder.prototype();
+      ValueBuilder<ListItemValue> builder = vbf.newValueBuilder( ListItemValue.class );
+      ListItemValue prototype = builder.prototype();
 
-        ValueBuilder<ListValue> listBuilder = vbf.newValueBuilder(ListValue.class);
-        List<ListItemValue> list = listBuilder.prototype().items().get();
-        for (Label label : labels.getLabels())
-        {
-            prototype.entity().set(EntityReference.getEntityReference(label));
-            prototype.description().set(label.getDescription());
-            list.add(builder.newInstance());
-        }
-        return listBuilder.newInstance();
-    }
+      ValueBuilder<ListValue> listBuilder = vbf.newValueBuilder( ListValue.class );
+      List<ListItemValue> list = listBuilder.prototype().items().get();
+      for (Label label : labels.getLabels())
+      {
+         prototype.entity().set( EntityReference.getEntityReference( label ) );
+         prototype.description().set( label.getDescription() );
+         list.add( builder.newInstance() );
+      }
+      return listBuilder.newInstance();
+   }
 
-    public void createlabel(StringDTO name) throws ResourceException
-    {
-        String identity = getRequest().getAttributes().get("labels").toString();
+   public void createlabel( StringDTO name ) throws ResourceException
+   {
+      String identity = getRequest().getAttributes().get( "labels" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        Labels labels = uow.get(Labels.class, identity);
+      Labels labels = uow.get( Labels.class, identity );
 
-        labels.createLabel(name.string().get());
-    }
+      labels.createLabel( name.string().get() );
+   }
 }

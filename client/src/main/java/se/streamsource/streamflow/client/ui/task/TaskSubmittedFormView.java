@@ -16,42 +16,43 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.jdesktop.swingx.JXTable;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.CardLayout;
 
 /**
  * JAVADOC
  */
 public class TaskSubmittedFormView
-        extends JPanel
+      extends JPanel
 {
-    private JXTable fieldValues;
-    private CardLayout layout = new CardLayout();
+   private JXTable fieldValues;
+   private CardLayout layout = new CardLayout();
 
-    public TaskSubmittedFormView()
-    {
-        setLayout(layout);
+   public TaskSubmittedFormView()
+   {
+      setLayout( layout );
 
-        JScrollPane scroll = new JScrollPane();
+      JScrollPane scroll = new JScrollPane();
 
-        fieldValues = new JXTable();
-        scroll.setViewportView(fieldValues);
+      fieldValues = new JXTable();
+      scroll.setViewportView( fieldValues );
 
-        add(new JPanel(), "EMPTY");
-        add(scroll, "FORM");
-    }
+      add( new JPanel(), "EMPTY" );
+      add( scroll, "FORM" );
+   }
 
-    public void setModel(TaskSubmittedFormModel model)
-    {
-        if (model != null)
-        {
-            fieldValues.setModel(model);
+   public void setModel( TaskSubmittedFormModel model )
+   {
+      if (model != null)
+      {
+         fieldValues.setModel( model );
 
-            layout.show(this, "FORM");
-        } else
-        {
-            layout.show(this, "EMPTY");
-        }
-    }
+         layout.show( this, "FORM" );
+      } else
+      {
+         layout.show( this, "EMPTY" );
+      }
+   }
 
 }

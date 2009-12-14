@@ -37,42 +37,42 @@ import java.util.List;
  */
 @Mixins(CommandEventListenerService.Mixin.class)
 public interface CommandEventListenerService
-    extends EventListener, CommandEvents, ServiceComposite
+      extends EventListener, CommandEvents, ServiceComposite
 {
-    class Mixin
-        implements EventListener, CommandEvents
-    {
-        @Structure
-        ValueBuilderFactory vbf;
+   class Mixin
+         implements EventListener, CommandEvents
+   {
+      @Structure
+      ValueBuilderFactory vbf;
 
-        ThreadLocal<List<DomainEvent>> events = new ThreadLocal<List<DomainEvent>>()
-        {
-            @Override
-            protected List<DomainEvent> initialValue()
-            {
-                return new ArrayList<DomainEvent>( );
-            }
-        };
+      ThreadLocal<List<DomainEvent>> events = new ThreadLocal<List<DomainEvent>>()
+      {
+         @Override
+         protected List<DomainEvent> initialValue()
+         {
+            return new ArrayList<DomainEvent>();
+         }
+      };
 
-        public void notifyEvent( DomainEvent event )
-        {
-            events.get().add( event );
-        }
+      public void notifyEvent( DomainEvent event )
+      {
+         events.get().add( event );
+      }
 
-        public void reset()
-        {
-            events.get().clear();
-        }
+      public void reset()
+      {
+         events.get().clear();
+      }
 
-        public TransactionEvents commandEvents()
-        {
-            List<DomainEvent> list = events.get();
+      public TransactionEvents commandEvents()
+      {
+         List<DomainEvent> list = events.get();
 
-            ValueBuilder<TransactionEvents> builder =  vbf.newValueBuilder( TransactionEvents.class );
-            builder.prototype().timestamp().set( System.currentTimeMillis() );
-            builder.prototype().events().get().addAll( list );
+         ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
+         builder.prototype().timestamp().set( System.currentTimeMillis() );
+         builder.prototype().events().get().addAll( list );
 
-            return builder.newInstance();
-        }
-    }
+         return builder.newInstance();
+      }
+   }
 }

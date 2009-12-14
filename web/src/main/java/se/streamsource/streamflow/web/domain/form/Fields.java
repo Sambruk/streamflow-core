@@ -33,89 +33,93 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Fields.Mixin.class)
 public interface Fields
 {
-    FieldEntity createField( String name, FieldValue fieldValue );
-    void removeField( Field field);
-    void moveField( Field field, @GreaterThan(-1) Integer toIdx);
+   FieldEntity createField( String name, FieldValue fieldValue );
 
-    interface Data
-    {
-        ManyAssociation<Field> fields();
+   void removeField( Field field );
 
-        FieldEntity createdField( DomainEvent event, String id, FieldValue value );
-        void removedField(DomainEvent event, Field field);
-        void movedField(DomainEvent event, Field field, int toIdx);
+   void moveField( Field field, @GreaterThan(-1) Integer toIdx );
 
-        FieldEntity getFieldByName(String name);
-    }
+   interface Data
+   {
+      ManyAssociation<Field> fields();
 
-    abstract class Mixin
-        implements Fields, Data
-    {
-        @Service
-        IdentityGenerator idGen;
+      FieldEntity createdField( DomainEvent event, String id, FieldValue value );
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      void removedField( DomainEvent event, Field field );
 
-        @Structure
-        ValueBuilderFactory vbf;
+      void movedField( DomainEvent event, Field field, int toIdx );
 
-        public FieldEntity createField( String name, FieldValue fieldValue )
-        {
-            FieldEntity field = createdField(DomainEvent.CREATE, idGen.generate( FieldEntity.class ), fieldValue);
-            field.changeDescription( name );
-            return field;
-        }
+      FieldEntity getFieldByName( String name );
+   }
 
-        public void removeField( Field field )
-        {
-            if (!fields().contains( field ))
-                return;
+   abstract class Mixin
+         implements Fields, Data
+   {
+      @Service
+      IdentityGenerator idGen;
 
-            removedField( DomainEvent.CREATE, field );
-        }
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public void moveField( Field field, Integer toIdx )
-        {
-            if (!fields().contains( field ) || fields().count() < toIdx)
-                return;
+      @Structure
+      ValueBuilderFactory vbf;
 
-            movedField( DomainEvent.CREATE, field, toIdx );
-        }
+      public FieldEntity createField( String name, FieldValue fieldValue )
+      {
+         FieldEntity field = createdField( DomainEvent.CREATE, idGen.generate( FieldEntity.class ), fieldValue );
+         field.changeDescription( name );
+         return field;
+      }
 
-        public FieldEntity getFieldByName( String name )
-        {
-            for (Field field : fields())
-            {
-                if (((Describable.Data) field).description().get().equals(name))
-                    return (FieldEntity) field;
-            }
-            return null;
-        }
+      public void removeField( Field field )
+      {
+         if (!fields().contains( field ))
+            return;
 
-        public FieldEntity createdField( DomainEvent event, String id, FieldValue fieldValue )
-        {
+         removedField( DomainEvent.CREATE, field );
+      }
 
-            EntityBuilder<FieldEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FieldEntity.class, id );
-            builder.instance().fieldValue().set(fieldValue);
+      public void moveField( Field field, Integer toIdx )
+      {
+         if (!fields().contains( field ) || fields().count() < toIdx)
+            return;
 
-            FieldEntity field = builder.newInstance();
+         movedField( DomainEvent.CREATE, field, toIdx );
+      }
 
-            fields().add( field );
+      public FieldEntity getFieldByName( String name )
+      {
+         for (Field field : fields())
+         {
+            if (((Describable.Data) field).description().get().equals( name ))
+               return (FieldEntity) field;
+         }
+         return null;
+      }
 
-            return field;
-        }
+      public FieldEntity createdField( DomainEvent event, String id, FieldValue fieldValue )
+      {
 
-        public void movedField( DomainEvent event, Field field, int toIdx )
-        {
-            fields().remove( field );
+         EntityBuilder<FieldEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FieldEntity.class, id );
+         builder.instance().fieldValue().set( fieldValue );
 
-            fields().add( toIdx, field );
-        }
+         FieldEntity field = builder.newInstance();
 
-        public void removedField( DomainEvent event, Field field )
-        {
-            fields().remove( field );
-        }
-    }
+         fields().add( field );
+
+         return field;
+      }
+
+      public void movedField( DomainEvent event, Field field, int toIdx )
+      {
+         fields().remove( field );
+
+         fields().add( toIdx, field );
+      }
+
+      public void removedField( DomainEvent event, Field field )
+      {
+         fields().remove( field );
+      }
+   }
 }

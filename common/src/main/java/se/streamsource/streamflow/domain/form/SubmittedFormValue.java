@@ -26,12 +26,14 @@ import java.util.List;
  * JAVADOC
  */
 public interface SubmittedFormValue
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> submitter();
-    Property<Date> submissionDate();
-    Property<EntityReference> form();
+   Property<EntityReference> submitter();
 
-    @UseDefaults
-    Property<List<SubmittedFieldValue>> values();
+   Property<Date> submissionDate();
+
+   Property<EntityReference> form();
+
+   @UseDefaults
+   Property<List<SubmittedFieldValue>> values();
 }

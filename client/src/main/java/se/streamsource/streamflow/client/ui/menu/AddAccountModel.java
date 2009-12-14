@@ -5,9 +5,9 @@ import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.client.domain.individual.AccountEntity;
 
 public interface AddAccountModel
-        extends Composite
+      extends Composite
 {
 
-    Property<AccountEntity> account();
+   Property<AccountEntity> account();
 
 }

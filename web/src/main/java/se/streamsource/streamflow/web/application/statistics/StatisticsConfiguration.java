@@ -22,24 +22,24 @@ import org.qi4j.api.property.Property;
  * Configuration for the StatisticsService.
  */
 public interface StatisticsConfiguration
-        extends ConfigurationComposite
+      extends ConfigurationComposite
 {
-    /**
-     * Deterrmine whether statistics should be saved or not.
-     *
-     * @return
-     */
-    @UseDefaults
-    Property<Boolean> enabled();
+   /**
+    * Deterrmine whether statistics should be saved or not.
+    *
+    * @return
+    */
+   @UseDefaults
+   Property<Boolean> enabled();
 
-    /**
-     * Date of last event to have generated statistics. If
-     * there are events available after this date but before
-     * now, then they should be sent to the statistics service
-     * in order to get it "up to date".
-     *
-     * @return
-     */
-    @UseDefaults
-    Property<Long> lastEventDate();
+   /**
+    * Date of last event to have generated statistics. If
+    * there are events available after this date but before
+    * now, then they should be sent to the statistics service
+    * in order to get it "up to date".
+    *
+    * @return
+    */
+   @UseDefaults
+   Property<Long> lastEventDate();
 }

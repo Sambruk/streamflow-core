@@ -21,9 +21,9 @@ import se.streamsource.streamflow.domain.roles.Removable;
  * JAVADOC
  */
 public interface Group
-        extends Participant,
-        Describable,
-        Removable,
-        Participants
+      extends Participant,
+      Describable,
+      Removable,
+      Participants
 {
 }

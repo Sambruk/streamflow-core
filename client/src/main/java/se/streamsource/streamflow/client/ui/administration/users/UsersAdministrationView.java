@@ -24,99 +24,103 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.CreateUserDialog;
 import se.streamsource.streamflow.client.ui.ResetPasswordDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class UsersAdministrationView
       extends JScrollPane
 {
-    private UsersAdministrationModel model;
+   private UsersAdministrationModel model;
 
-    @Uses
-    Iterable<CreateUserDialog> userDialogs;
+   @Uses
+   Iterable<CreateUserDialog> userDialogs;
 
-    @Uses
-    Iterable<ResetPasswordDialog> resetPwdDialogs;
+   @Uses
+   Iterable<ResetPasswordDialog> resetPwdDialogs;
 
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    JXTable usersTable;
+   JXTable usersTable;
 
-    public UsersAdministrationView(@Service ApplicationContext context, @Uses UsersAdministrationModel model)
-    {
-        ApplicationActionMap am = context.getActionMap(this);
-        setActionMap(am);
+   public UsersAdministrationView( @Service ApplicationContext context, @Uses UsersAdministrationModel model )
+   {
+      ApplicationActionMap am = context.getActionMap( this );
+      setActionMap( am );
 
-        this.model = model;
-        usersTable = new JXTable(model);
-        usersTable.getColumn(0).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
-        usersTable.getColumn(0).setMaxWidth(30);
-        usersTable.getColumn(0).setResizable(false);
-        usersTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("resetPassword")));
+      this.model = model;
+      usersTable = new JXTable( model );
+      usersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
+      usersTable.getColumn( 0 ).setMaxWidth( 30 );
+      usersTable.getColumn( 0 ).setResizable( false );
+      usersTable.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "resetPassword" ) ) );
 
-        JPanel usersPanel = new JPanel(new BorderLayout());
-        usersPanel.add(usersTable, BorderLayout.CENTER);
+      JPanel usersPanel = new JPanel( new BorderLayout() );
+      usersPanel.add( usersTable, BorderLayout.CENTER );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("createUser")));
-        toolbar.add(new JButton(am.get("resetPassword")));
-        toolbar.add(new JButton(am.get("importUserList")));
-        usersPanel.add(toolbar, BorderLayout.NORTH);
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( am.get( "createUser" ) ) );
+      toolbar.add( new JButton( am.get( "resetPassword" ) ) );
+      toolbar.add( new JButton( am.get( "importUserList" ) ) );
+      usersPanel.add( toolbar, BorderLayout.NORTH );
 
-        setViewportView(usersPanel);
-    }
+      setViewportView( usersPanel );
+   }
 
 
-    @org.jdesktop.application.Action
-    public void createUser()
-    {
-        CreateUserDialog dialog = userDialogs.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.create_user_title));
+   @org.jdesktop.application.Action
+   public void createUser()
+   {
+      CreateUserDialog dialog = userDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_user_title ) );
 
-        if (dialog.username() != null && dialog.password() != null)
-        {
-            model.createUser(dialog.username(), dialog.password());
-        }
-    }
+      if (dialog.username() != null && dialog.password() != null)
+      {
+         model.createUser( dialog.username(), dialog.password() );
+      }
+   }
 
-    @org.jdesktop.application.Action
-    public void importUserList()
-    {
+   @org.jdesktop.application.Action
+   public void importUserList()
+   {
 
-        // Ask the user for a file to import user/pwd pairs from
-        // Can be either Excels or CVS format
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setMultiSelectionEnabled(false);
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter(
-                text(AdministrationResources.import_files), "xls", "csv", "txt"));
-        fileChooser.setDialogTitle(text(AdministrationResources.import_users));
-        int returnVal = fileChooser.showOpenDialog((UsersAdministrationView.this));
-        if (returnVal != JFileChooser.APPROVE_OPTION)
-        {
-            return;
-        }
+      // Ask the user for a file to import user/pwd pairs from
+      // Can be either Excels or CVS format
+      JFileChooser fileChooser = new JFileChooser();
+      fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
+      fileChooser.setMultiSelectionEnabled( false );
+      fileChooser.addChoosableFileFilter( new FileNameExtensionFilter(
+            text( AdministrationResources.import_files ), "xls", "csv", "txt" ) );
+      fileChooser.setDialogTitle( text( AdministrationResources.import_users ) );
+      int returnVal = fileChooser.showOpenDialog( (UsersAdministrationView.this) );
+      if (returnVal != JFileChooser.APPROVE_OPTION)
+      {
+         return;
+      }
 
-        model.importUsers(fileChooser.getSelectedFile().getAbsoluteFile());
+      model.importUsers( fileChooser.getSelectedFile().getAbsoluteFile() );
 
-    }
+   }
 
-    @org.jdesktop.application.Action
-    public void resetPassword()
-    {
-        ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.reset_password_title) + ": " + model.getValueAt(usersTable.getSelectedRow(), 1));
+   @org.jdesktop.application.Action
+   public void resetPassword()
+   {
+      ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + model.getValueAt( usersTable.getSelectedRow(), 1 ) );
 
-        if (dialog.password() != null)
-        {
-            model.resetPassword(usersTable.getSelectedRow(), dialog.password());
-        }
-    }
+      if (dialog.password() != null)
+      {
+         model.resetPassword( usersTable.getSelectedRow(), dialog.password() );
+      }
+   }
 
 }

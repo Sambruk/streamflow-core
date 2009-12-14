@@ -16,8 +16,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -25,41 +25,41 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * JAVADOC
  */
 public class WorkspaceUserAssignmentsNode
-        extends DefaultMutableTreeNode
-    implements EventListener
+      extends DefaultMutableTreeNode
+      implements EventListener
 {
-    @Uses
-    private WorkspaceUserAssignmentsModel model;
+   @Uses
+   private WorkspaceUserAssignmentsModel model;
 
-    @Override
-    public String toString()
-    {
-        String text = i18n.text(WorkspaceResources.assignments_node);
-        int unread = model.count();
-        if (unread > 0)
-        {
-            text += " (" + unread + ")";
-        } else
-        {
-            text += "                ";
-        }
+   @Override
+   public String toString()
+   {
+      String text = i18n.text( WorkspaceResources.assignments_node );
+      int unread = model.count();
+      if (unread > 0)
+      {
+         text += " (" + unread + ")";
+      } else
+      {
+         text += "                ";
+      }
 
-        return text;
-    }
+      return text;
+   }
 
-    @Override
-    public WorkspaceUserNode getParent()
-    {
-        return (WorkspaceUserNode) super.getParent();
-    }
+   @Override
+   public WorkspaceUserNode getParent()
+   {
+      return (WorkspaceUserNode) super.getParent();
+   }
 
-    public WorkspaceUserAssignmentsModel assignmentsModel()
-    {
-        return model;
-    }
+   public WorkspaceUserAssignmentsModel assignmentsModel()
+   {
+      return model;
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        model.notifyEvent(event);
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      model.notifyEvent( event );
+   }
 }

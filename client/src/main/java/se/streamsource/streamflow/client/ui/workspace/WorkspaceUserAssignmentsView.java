@@ -17,65 +17,67 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
  * JAVADOC
  */
 public class WorkspaceUserAssignmentsView
-        extends TaskTableView
+      extends TaskTableView
 {
-    @Uses
-    protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+   @Uses
+   protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
 
-    protected void buildPopupMenu(JPopupMenu popup)
-    {
-        ActionMap am = getActionMap();
-        Action markTasksAsUnread = am.get( "markTasksAsUnread" );
-        popup.add( markTasksAsUnread );
-        Action markTasksAsRead = am.get( "markTasksAsRead" );
-        popup.add( markTasksAsRead );
-        Action dropAction = am.get("dropTasks");
-        popup.add(dropAction);
-        Action removeTaskAction = am.get("removeTasks");
-        popup.add(removeTaskAction);
-        Action forwardTasks = am.get( "forwardTasks" );
-        popup.add( forwardTasks );
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, markTasksAsUnread, markTasksAsRead, forwardTasks, dropAction, removeTaskAction));
-    }
+   protected void buildPopupMenu( JPopupMenu popup )
+   {
+      ActionMap am = getActionMap();
+      Action markTasksAsUnread = am.get( "markTasksAsUnread" );
+      popup.add( markTasksAsUnread );
+      Action markTasksAsRead = am.get( "markTasksAsRead" );
+      popup.add( markTasksAsRead );
+      Action dropAction = am.get( "dropTasks" );
+      popup.add( dropAction );
+      Action removeTaskAction = am.get( "removeTasks" );
+      popup.add( removeTaskAction );
+      Action forwardTasks = am.get( "forwardTasks" );
+      popup.add( forwardTasks );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 2, taskTable, markTasksAsUnread, markTasksAsRead, forwardTasks, dropAction, removeTaskAction ) );
+   }
 
-    @Override
-    protected void buildToolbar(JPanel toolbar)
-    {
-        addToolbarButton(toolbar, "createTask");
-        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
-        Action delegateTasks = addToolbarButton(toolbar, "delegateTasks");
-        addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(2, taskTable, delegateTasks, acceptAction));
-    }
+   @Override
+   protected void buildToolbar( JPanel toolbar )
+   {
+      addToolbarButton( toolbar, "createTask" );
+      Action acceptAction = addToolbarButton( toolbar, "completeTasks" );
+      Action delegateTasks = addToolbarButton( toolbar, "delegateTasks" );
+      addToolbarButton( toolbar, "refresh" );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 2, taskTable, delegateTasks, acceptAction ) );
+   }
 
-    @Override
-    @org.jdesktop.application.Action
-    public void delegateTasks() throws ResourceException
-    {
-        SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+   @Override
+   @org.jdesktop.application.Action
+   public void delegateTasks() throws ResourceException
+   {
+      SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
 
-        dialogSelection = dialog.getSelected();
-        super.delegateTasks();
-    }
+      dialogSelection = dialog.getSelected();
+      super.delegateTasks();
+   }
 
-    @Override
-    @org.jdesktop.application.Action
-    public void forwardTasks() throws ResourceException
-    {
-        SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+   @Override
+   @org.jdesktop.application.Action
+   public void forwardTasks() throws ResourceException
+   {
+      SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
 
-        dialogSelection = dialog.getSelected();
-        super.forwardTasks();
-    }
+      dialogSelection = dialog.getSelected();
+      super.forwardTasks();
+   }
 }

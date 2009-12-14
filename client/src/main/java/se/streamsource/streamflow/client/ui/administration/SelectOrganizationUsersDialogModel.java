@@ -20,32 +20,32 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 
 public class SelectOrganizationUsersDialogModel
-        extends AbstractListModel
+      extends AbstractListModel
 {
-    private List<ListItemValue> users;
+   private List<ListItemValue> users;
 
-    public SelectOrganizationUsersDialogModel(@Uses OrganizationClientResource resource)
-    {
-        try
-        {
-            users = resource.nonParticipatingUsers().items().get();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_get_users, e);
-        }
-    }
+   public SelectOrganizationUsersDialogModel( @Uses OrganizationClientResource resource )
+   {
+      try
+      {
+         users = resource.nonParticipatingUsers().items().get();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_get_users, e );
+      }
+   }
 
-    public int getSize()
-    {
-        return users == null ? 0 : users.size();
-    }
+   public int getSize()
+   {
+      return users == null ? 0 : users.size();
+   }
 
-    public Object getElementAt(int index)
-    {
-        return users == null ? null : users.get(index);
-    }
+   public Object getElementAt( int index )
+   {
+      return users == null ? null : users.get( index );
+   }
 }

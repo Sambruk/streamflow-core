@@ -30,49 +30,49 @@ import java.awt.BorderLayout;
  * JAVADOC
  */
 public class TaskTypesDialog
-    extends JPanel
+      extends JPanel
 {
-    private FilteredList list;
+   private FilteredList list;
 
-    private ListItemValue selected;
+   private ListItemValue selected;
 
-    public TaskTypesDialog(@Service ApplicationContext context)
-    {
-        setLayout(new BorderLayout());
-        setActionMap(context.getActionMap(this));
+   public TaskTypesDialog( @Service ApplicationContext context )
+   {
+      setLayout( new BorderLayout() );
+      setActionMap( context.getActionMap( this ) );
 
-        list = new FilteredList();
+      list = new FilteredList();
 
-        add(list, BorderLayout.CENTER);
-    }
+      add( list, BorderLayout.CENTER );
+   }
 
-    public JList getTaskTypeSelector()
-    {
-        return list.getList();
-    }
+   public JList getTaskTypeSelector()
+   {
+      return list.getList();
+   }
 
-    public void setModel( PossibleTaskTypesModel model)
-    {
-        model.refresh();
-        list.setEventList( model.getTaskTypeList() );
-    }
+   public void setModel( PossibleTaskTypesModel model )
+   {
+      model.refresh();
+      list.setEventList( model.getTaskTypeList() );
+   }
 
-    public EntityReference getSelected()
-    {
-        return selected == null ? null : selected.entity().get();
-    }
+   public EntityReference getSelected()
+   {
+      return selected == null ? null : selected.entity().get();
+   }
 
-    @Action
-    public void execute()
-    {
-        selected = (ListItemValue) list.getList().getSelectedValue();
+   @Action
+   public void execute()
+   {
+      selected = (ListItemValue) list.getList().getSelectedValue();
 
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 }

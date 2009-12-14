@@ -16,86 +16,86 @@ package se.streamsource.streamflow.infrastructure.event.source;
 
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
-import java.util.Date;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Query that restricts what events to return. Uses fluent API style to build
  * up what criteria is used to accept an event.
  */
 public class EventQuery
-        implements EventSpecification
+      implements EventSpecification
 {
-    private Date afterDate; // Only return events after this date
-    private Date beforeDate; // Only return events before this date
-    private List<String> names; // Only return events with these names
-    private List<String> entities; // Only return events on these entity
-    private List<String> by; // Only return events caused by these users
+   private Date afterDate; // Only return events after this date
+   private Date beforeDate; // Only return events before this date
+   private List<String> names; // Only return events with these names
+   private List<String> entities; // Only return events on these entity
+   private List<String> by; // Only return events caused by these users
 
-    public EventQuery()
-    {
-    }
+   public EventQuery()
+   {
+   }
 
-    public EventQuery afterDate(Date afterDate)
-    {
-        this.afterDate = afterDate;
-        return this;
-    }
+   public EventQuery afterDate( Date afterDate )
+   {
+      this.afterDate = afterDate;
+      return this;
+   }
 
-    public EventQuery beforeDate(Date beforeDate)
-    {
-        this.beforeDate = beforeDate;
-        return this;
-    }
+   public EventQuery beforeDate( Date beforeDate )
+   {
+      this.beforeDate = beforeDate;
+      return this;
+   }
 
-    public EventQuery withNames(String... name)
-    {
-        if (names == null)
-            names = new ArrayList<String>();
+   public EventQuery withNames( String... name )
+   {
+      if (names == null)
+         names = new ArrayList<String>();
 
-        names.addAll(Arrays.asList(name));
+      names.addAll( Arrays.asList( name ) );
 
-        return this;
-    }
+      return this;
+   }
 
-    public EventQuery onEntities(String... entities)
-    {
-        if (this.entities == null)
-            this.entities = new ArrayList<String>();
+   public EventQuery onEntities( String... entities )
+   {
+      if (this.entities == null)
+         this.entities = new ArrayList<String>();
 
-        this.entities.addAll(Arrays.asList(entities));
-        return this;
-    }
+      this.entities.addAll( Arrays.asList( entities ) );
+      return this;
+   }
 
-    public EventQuery by(String... by)
-    {
-        if (this.by == null)
-            this.by = new ArrayList<String>();
+   public EventQuery by( String... by )
+   {
+      if (this.by == null)
+         this.by = new ArrayList<String>();
 
-        this.by.addAll(Arrays.asList(by));
-        return this;
-    }
+      this.by.addAll( Arrays.asList( by ) );
+      return this;
+   }
 
-    public boolean accept(DomainEvent event)
-    {
-        // Check criteria
-        if (afterDate != null && event.on().get().before(afterDate))
-            return false;
+   public boolean accept( DomainEvent event )
+   {
+      // Check criteria
+      if (afterDate != null && event.on().get().before( afterDate ))
+         return false;
 
-        if (beforeDate != null && event.on().get().after(beforeDate))
-            return false;
+      if (beforeDate != null && event.on().get().after( beforeDate ))
+         return false;
 
-        if (names != null && !names.contains(event.name().get()))
-            return false;
+      if (names != null && !names.contains( event.name().get() ))
+         return false;
 
-        if (entities != null && !entities.contains(event.entity().get()))
-            return false;
+      if (entities != null && !entities.contains( event.entity().get() ))
+         return false;
 
-        if (by != null && !by.contains(event.by().get()))
-            return false;
+      if (by != null && !by.contains( event.by().get() ))
+         return false;
 
-        return true; // Event is accepted
-    }
+      return true; // Event is accepted
+   }
 }

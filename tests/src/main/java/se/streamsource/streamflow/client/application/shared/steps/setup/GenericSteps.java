@@ -14,8 +14,6 @@
 package se.streamsource.streamflow.client.application.shared.steps.setup;
 
 import org.hamcrest.CoreMatchers;
-import static org.hamcrest.CoreMatchers.*;
-import static org.jbehave.Ensure.*;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
@@ -29,73 +27,76 @@ import se.streamsource.streamflow.infrastructure.event.MemoryEventStoreService;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.jbehave.Ensure.*;
+
 
 public class GenericSteps
-        extends Steps
+      extends Steps
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Service
-    MemoryEventStoreService eventService;
+   @Service
+   MemoryEventStoreService eventService;
 
-    public void setThrowable(Throwable throwable)
-    {
-        this.throwable = throwable;
-    }
+   public void setThrowable( Throwable throwable )
+   {
+      this.throwable = throwable;
+   }
 
-    private Throwable throwable;
+   private Throwable throwable;
 
-    @Then("events $commaSeparatedList occurred")
-    public void eventsOccured(String expectedEvents)
-    {
-        if (throwable != null)
-        {
-            throwable.printStackTrace();
-            Assert.fail( "Exception was thrown" );
-        }
+   @Then("events $commaSeparatedList occurred")
+   public void eventsOccured( String expectedEvents )
+   {
+      if (throwable != null)
+      {
+         throwable.printStackTrace();
+         Assert.fail( "Exception was thrown" );
+      }
 
-        ensureThat( throwable, CoreMatchers.nullValue() );
-        
-        List<DomainEvent> events = eventService.getEvents();
-        if (events == null)
-            events = Collections.emptyList();
-        String eventNames = "";
-        String comma = "";
-        for (DomainEvent event : events)
-        {
-            eventNames+=comma+event.name().get();
-            comma = ",";
-        }
-        ensureThat(eventNames, CoreMatchers.equalTo( expectedEvents ));
+      ensureThat( throwable, CoreMatchers.nullValue() );
 
-        clearEvents();
-    }
+      List<DomainEvent> events = eventService.getEvents();
+      if (events == null)
+         events = Collections.emptyList();
+      String eventNames = "";
+      String comma = "";
+      for (DomainEvent event : events)
+      {
+         eventNames += comma + event.name().get();
+         comma = ",";
+      }
+      ensureThat( eventNames, CoreMatchers.equalTo( expectedEvents ) );
 
-    @Then("no events occurred")
-    public void noEvents()
-    {
-        ensureThat(eventService.getEvents(), CoreMatchers.nullValue());
-    }
+      clearEvents();
+   }
 
-    @Then("$exceptionName is thrown")
-    public void exceptionThrown(String exceptionName)
-    {
-        ensureThat(throwable, CoreMatchers.notNullValue());
-        ensureThat(throwable.getClass().getSimpleName(), equalTo(exceptionName));
-        throwable = null;
-    }
+   @Then("no events occurred")
+   public void noEvents()
+   {
+      ensureThat( eventService.getEvents(), CoreMatchers.nullValue() );
+   }
+
+   @Then("$exceptionName is thrown")
+   public void exceptionThrown( String exceptionName )
+   {
+      ensureThat( throwable, CoreMatchers.notNullValue() );
+      ensureThat( throwable.getClass().getSimpleName(), equalTo( exceptionName ) );
+      throwable = null;
+   }
 
 
-    @Then("exception is not thrown")
-    public void noExceptionThrown()
-    {
-        ensureThat(throwable, CoreMatchers.nullValue());
-    }
+   @Then("exception is not thrown")
+   public void noExceptionThrown()
+   {
+      ensureThat( throwable, CoreMatchers.nullValue() );
+   }
 
-    @When("events are cleared")
-    public void clearEvents()
-    {
-        eventService.clearEvents();
-    }
+   @When("events are cleared")
+   public void clearEvents()
+   {
+      eventService.clearEvents();
+   }
 }

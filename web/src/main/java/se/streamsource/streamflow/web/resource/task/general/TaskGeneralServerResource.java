@@ -44,127 +44,127 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /task/{task}/general
  */
 public class TaskGeneralServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public TaskGeneralServerResource()
-    {
-        setNegotiated(true);
-        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-    }
+   public TaskGeneralServerResource()
+   {
+      setNegotiated( true );
+      getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
+   }
 
-    public TaskGeneralDTO general()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        ValueBuilder<TaskGeneralDTO> builder = vbf.newValueBuilder(TaskGeneralDTO.class);
-        TaskEntity task = uow.get(TaskEntity.class, getRequest().getAttributes().get("task").toString());
-        builder.prototype().description().set(task.description().get());
+   public TaskGeneralDTO general()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      ValueBuilder<TaskGeneralDTO> builder = vbf.newValueBuilder( TaskGeneralDTO.class );
+      TaskEntity task = uow.get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+      builder.prototype().description().set( task.description().get() );
 
-        ValueBuilder<ListValue> labelsBuilder = vbf.newValueBuilder( ListValue.class);
-        ValueBuilder<ListItemValue> labelsItemBuilder = vbf.newValueBuilder( ListItemValue.class);
-		for (Label label : task.labels())
-		{
-            labelsItemBuilder.prototype().entity().set( EntityReference.getEntityReference(label ));
-            labelsItemBuilder.prototype().description().set( label.getDescription());
-            labelsBuilder.prototype().items().get().add( labelsItemBuilder.newInstance() );
-		}
+      ValueBuilder<ListValue> labelsBuilder = vbf.newValueBuilder( ListValue.class );
+      ValueBuilder<ListItemValue> labelsItemBuilder = vbf.newValueBuilder( ListItemValue.class );
+      for (Label label : task.labels())
+      {
+         labelsItemBuilder.prototype().entity().set( EntityReference.getEntityReference( label ) );
+         labelsItemBuilder.prototype().description().set( label.getDescription() );
+         labelsBuilder.prototype().items().get().add( labelsItemBuilder.newInstance() );
+      }
 
-        TaskType taskType = task.taskType().get();
-        if (taskType != null)
-        {
-            ValueBuilder<ListItemValue> taskTypeBuilder = vbf.newValueBuilder( ListItemValue.class);
-            taskTypeBuilder.prototype().description().set( taskType.getDescription() );
-            taskTypeBuilder.prototype().entity().set( EntityReference.getEntityReference( taskType ) );
-            builder.prototype().taskType().set( taskTypeBuilder.newInstance() );
-        }
+      TaskType taskType = task.taskType().get();
+      if (taskType != null)
+      {
+         ValueBuilder<ListItemValue> taskTypeBuilder = vbf.newValueBuilder( ListItemValue.class );
+         taskTypeBuilder.prototype().description().set( taskType.getDescription() );
+         taskTypeBuilder.prototype().entity().set( EntityReference.getEntityReference( taskType ) );
+         builder.prototype().taskType().set( taskTypeBuilder.newInstance() );
+      }
 
-		builder.prototype().labels().set(labelsBuilder.newInstance());
-        builder.prototype().note().set(task.note().get());
-        builder.prototype().creationDate().set(task.createdOn().get());
-        builder.prototype().taskId().set(task.taskId().get());
-        builder.prototype().dueOn().set(task.dueOn().get());
+      builder.prototype().labels().set( labelsBuilder.newInstance() );
+      builder.prototype().note().set( task.note().get() );
+      builder.prototype().creationDate().set( task.createdOn().get() );
+      builder.prototype().taskId().set( task.taskId().get() );
+      builder.prototype().dueOn().set( task.dueOn().get() );
 
-        return builder.newInstance();
-    }
+      return builder.newInstance();
+   }
 
-    public void changedescription(StringDTO stringValue)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
-        describable.changeDescription(stringValue.string().get());
-    }
+   public void changedescription( StringDTO stringValue )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      Describable describable = uowf.currentUnitOfWork().get( Describable.class, taskId );
+      describable.changeDescription( stringValue.string().get() );
+   }
 
-    public void changenote(StringDTO noteValue)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        Notable notable = uowf.currentUnitOfWork().get(Notable.class, taskId);
-        notable.changeNote(noteValue.string().get());
-    }
+   public void changenote( StringDTO noteValue )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      Notable notable = uowf.currentUnitOfWork().get( Notable.class, taskId );
+      notable.changeNote( noteValue.string().get() );
+   }
 
-    public void changedueon(DateDTO dueOnValue)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        DueOn dueOn = uowf.currentUnitOfWork().get(DueOn.class, taskId);
-        dueOn.dueOn(dueOnValue.date().get());
-    }
+   public void changedueon( DateDTO dueOnValue )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      DueOn dueOn = uowf.currentUnitOfWork().get( DueOn.class, taskId );
+      dueOn.dueOn( dueOnValue.date().get() );
+   }
 
-    public void addlabel( EntityReferenceDTO reference)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String taskId = (String) getRequest().getAttributes().get("task");
+   public void addlabel( EntityReferenceDTO reference )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String taskId = (String) getRequest().getAttributes().get( "task" );
 
-        TaskEntity task = uow.get(TaskEntity.class, taskId);
-        Label label = uow.get(Label.class, reference.entity().get().identity());
+      TaskEntity task = uow.get( TaskEntity.class, taskId );
+      Label label = uow.get( Label.class, reference.entity().get().identity() );
 
-        task.addLabel(label);
-    }
+      task.addLabel( label );
+   }
 
-    public void removelabel(EntityReferenceDTO reference)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String taskId = (String) getRequest().getAttributes().get("task");
+   public void removelabel( EntityReferenceDTO reference )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String taskId = (String) getRequest().getAttributes().get( "task" );
 
-        TaskEntity task = uow.get(TaskEntity.class, taskId);
-        Label label = uow.get(Label.class, reference.entity().get().identity());
+      TaskEntity task = uow.get( TaskEntity.class, taskId );
+      Label label = uow.get( Label.class, reference.entity().get().identity() );
 
-        task.removeLabel(label);
-    }
-    
-    public ListValue possiblelabels()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("task");
-        TaskLabelsQueries labels = uow.get(TaskLabelsQueries.class, id);
+      task.removeLabel( label );
+   }
 
-        return labels.possibleLabels();
-    }
+   public ListValue possiblelabels()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "task" );
+      TaskLabelsQueries labels = uow.get( TaskLabelsQueries.class, id );
 
-    public ListValue possibletasktypes()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("task");
-        TaskTypeQueries task = uow.get( TaskTypeQueries.class, id );
+      return labels.possibleLabels();
+   }
 
-        return task.taskTypes();
-    }
+   public ListValue possibletasktypes()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "task" );
+      TaskTypeQueries task = uow.get( TaskTypeQueries.class, id );
 
-    public void changetasktype(EntityReferenceDTO dto)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("task");
-        TypedTask task = uow.get( TypedTask.class, id );
+      return task.taskTypes();
+   }
 
-        EntityReference entityReference = dto.entity().get();
-        if (entityReference != null)
-        {
-            TaskType taskType = uow.get( TaskType.class, entityReference.identity() );
-            task.changeTaskType( taskType );
-        } else
-            task.changeTaskType( null );
-    }
+   public void changetasktype( EntityReferenceDTO dto )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "task" );
+      TypedTask task = uow.get( TypedTask.class, id );
+
+      EntityReference entityReference = dto.entity().get();
+      if (entityReference != null)
+      {
+         TaskType taskType = uow.get( TaskType.class, entityReference.identity() );
+         task.changeTaskType( taskType );
+      } else
+         task.changeTaskType( null );
+   }
 }

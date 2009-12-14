@@ -22,25 +22,25 @@ import java.util.Locale;
  */
 public class MainClient
 {
-    public static void main(String[] args) throws Exception
-    {
-        new MainClient().start(args);
-    }
+   public static void main( String[] args ) throws Exception
+   {
+      new MainClient().start( args );
+   }
 
-    public void start(String... args) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
-    {
-        // Set system properties
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "StreamFlow");
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
-        System.setProperty("dock:name", "StreamFlow");
-        Locale.setDefault(new Locale("sv", "SE", "gov"));
+   public void start( String... args ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
+   {
+      // Set system properties
+      System.setProperty( "com.apple.mrj.application.apple.menu.about.name", "StreamFlow" );
+      System.setProperty( "apple.laf.useScreenMenuBar", "true" );
+      System.setProperty( "dock:name", "StreamFlow" );
+      Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
 //        Locale.setDefault(Locale.ENGLISH);
 
-        org.jdesktop.application.Application.launch(StreamFlowApplication.class, args);
-    }
+      org.jdesktop.application.Application.launch( StreamFlowApplication.class, args );
+   }
 
-    public void stop()
-    {
-        org.jdesktop.application.Application.getInstance(StreamFlowApplication.class).exit();
-    }
+   public void stop()
+   {
+      org.jdesktop.application.Application.getInstance( StreamFlowApplication.class ).exit();
+   }
 }

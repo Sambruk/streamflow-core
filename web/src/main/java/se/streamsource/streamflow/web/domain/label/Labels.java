@@ -18,8 +18,8 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -28,60 +28,63 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Labels.Mixin.class)
 public interface Labels
 {
-    Label createLabel( String name );
-    void removeLabel(Label label);
-    Iterable<Label> getLabels();
+   Label createLabel( String name );
 
-    interface Data
-    {
-        ManyAssociation<Label> labels();
+   void removeLabel( Label label );
 
-        Label createdLabel(DomainEvent event);
-        void removedLabel(DomainEvent event, Label label);
-    }
+   Iterable<Label> getLabels();
 
-    abstract class Mixin
-            implements Labels, Data
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
+   interface Data
+   {
+      ManyAssociation<Label> labels();
 
-        @This
-        Data state;
+      Label createdLabel( DomainEvent event );
 
-        public Label createLabel( String name )
-        {
-            Label label = createdLabel(DomainEvent.CREATE);
-            label.changeDescription( name );
-            return label;
-        }
+      void removedLabel( DomainEvent event, Label label );
+   }
 
-        public void removeLabel(Label label)
-        {
-            if (state.labels().contains(label))
-            {
-                removedLabel(DomainEvent.CREATE, label);
-                label.removeEntity();
-            }
-        }
+   abstract class Mixin
+         implements Labels, Data
+   {
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public Iterable<Label> getLabels()
-        {
-            return state.labels();
-        }
+      @This
+      Data state;
+
+      public Label createLabel( String name )
+      {
+         Label label = createdLabel( DomainEvent.CREATE );
+         label.changeDescription( name );
+         return label;
+      }
+
+      public void removeLabel( Label label )
+      {
+         if (state.labels().contains( label ))
+         {
+            removedLabel( DomainEvent.CREATE, label );
+            label.removeEntity();
+         }
+      }
+
+      public Iterable<Label> getLabels()
+      {
+         return state.labels();
+      }
 
 
-        public Label createdLabel(DomainEvent event)
-        {
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            Label label = uow.newEntity(Label.class);
-            state.labels().add(state.labels().count(), label);
-            return label;
-        }
+      public Label createdLabel( DomainEvent event )
+      {
+         UnitOfWork uow = uowf.currentUnitOfWork();
+         Label label = uow.newEntity( Label.class );
+         state.labels().add( state.labels().count(), label );
+         return label;
+      }
 
-        public void removedLabel(DomainEvent event, Label label)
-        {
-            state.labels().remove(label);
-        }
-    }
+      public void removedLabel( DomainEvent event, Label label )
+      {
+         state.labels().remove( label );
+      }
+   }
 }

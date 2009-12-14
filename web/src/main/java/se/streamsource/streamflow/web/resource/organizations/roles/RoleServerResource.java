@@ -26,21 +26,21 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/roles/{role}
  */
 public class RoleServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String identity = getRequest().getAttributes().get("organization").toString();
-        OwningOrganization organization = uowf.currentUnitOfWork().get( OwningOrganization.class, identity);
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
+      OwningOrganization organization = uowf.currentUnitOfWork().get( OwningOrganization.class, identity );
 
-        Roles roles = organization.organization().get();
-        checkPermission( roles );
+      Roles roles = organization.organization().get();
+      checkPermission( roles );
 
-        String role = getRequest().getAttributes().get("role").toString();
-        RoleEntity roleEntity = uow.get(RoleEntity.class, role);
+      String role = getRequest().getAttributes().get( "role" ).toString();
+      RoleEntity roleEntity = uow.get( RoleEntity.class, role );
 
-        roles.removeRole( roleEntity);
-    }
+      roles.removeRole( roleEntity );
+   }
 }

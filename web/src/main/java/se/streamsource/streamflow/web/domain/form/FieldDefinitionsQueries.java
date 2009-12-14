@@ -27,20 +27,20 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 @Mixins(FieldDefinitionsQueries.Mixin.class)
 public interface FieldDefinitionsQueries
 {
-    ListValue fieldDefinitionList();
+   ListValue fieldDefinitionList();
 
-    class Mixin
-        implements FieldDefinitionsQueries
-    {
-        @This
-        FieldTemplates.Data state;
+   class Mixin
+         implements FieldDefinitionsQueries
+   {
+      @This
+      FieldTemplates.Data state;
 
-        @Structure
-        ValueBuilderFactory vbf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-        public ListValue fieldDefinitionList()
-        {
-            return new ListValueBuilder(vbf).addDescribableItems( state.fieldDefinitions() ).newList();
-        }
-    }
+      public ListValue fieldDefinitionList()
+      {
+         return new ListValueBuilder( vbf ).addDescribableItems( state.fieldDefinitions() ).newList();
+      }
+   }
 }

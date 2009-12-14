@@ -36,40 +36,40 @@ import javax.swing.table.DefaultTableModel;
  * JAVADOC
  */
 public class DebugWindow
-    extends FrameView
-    implements TransactionHandler, EventHandler
+      extends FrameView
+      implements TransactionHandler, EventHandler
 {
-    public JXTable eventTable;
-    public DefaultTableModel eventModel;
-    public TransactionHandler handler;
+   public JXTable eventTable;
+   public DefaultTableModel eventModel;
+   public TransactionHandler handler;
 
-    public DebugWindow(@Service Application application,
-                       @Service EventSource eventSource)
-    {
-        super(application);
+   public DebugWindow( @Service Application application,
+                       @Service EventSource eventSource )
+   {
+      super( application );
 
-        eventSource.registerListener(this);
+      eventSource.registerListener( this );
 
-        eventModel = new DefaultTableModel(new String[]{"Usecase", "Event", "Entity", "Parameters"}, 0);
+      eventModel = new DefaultTableModel( new String[]{"Usecase", "Event", "Entity", "Parameters"}, 0 );
 
-        eventTable = new JXTable(eventModel);
-        eventTable.setEditable(false);
+      eventTable = new JXTable( eventModel );
+      eventTable.setEditable( false );
 
-        JXFrame frame = new JXFrame("Debug");
-        frame.getContentPane().add(new JScrollPane(eventTable));
+      JXFrame frame = new JXFrame( "Debug" );
+      frame.getContentPane().add( new JScrollPane( eventTable ) );
 
-        setFrame(frame);
+      setFrame( frame );
 
-        JToolBar toolbar = new JToolBar();
-        ActionMap am = application.getContext().getActionMap(this);
-        toolbar.add(am.get("clear"));
+      JToolBar toolbar = new JToolBar();
+      ActionMap am = application.getContext().getActionMap( this );
+      toolbar.add( am.get( "clear" ) );
 
-        setToolBar(toolbar);
+      setToolBar( toolbar );
 
-        frame.setSize(400, 400);
+      frame.setSize( 400, 400 );
 
-        handler = new TransactionEventAdapter(this);
-    }
+      handler = new TransactionEventAdapter( this );
+   }
 
    public boolean handleTransaction( TransactionEvents transaction )
    {
@@ -78,17 +78,17 @@ public class DebugWindow
       return true;
    }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        eventModel.addRow(new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()});
-        return true;
-    }
+   public boolean handleEvent( DomainEvent event )
+   {
+      eventModel.addRow( new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()} );
+      return true;
+   }
 
-    @Action
-    public void clear()
-    {
-        int count = eventModel.getRowCount();
-        for (int i = 0; i < count; i++)
-            eventModel.removeRow(0);
-    }
+   @Action
+   public void clear()
+   {
+      int count = eventModel.getRowCount();
+      for (int i = 0; i < count; i++)
+         eventModel.removeRow( 0 );
+   }
 }

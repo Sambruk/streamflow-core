@@ -22,9 +22,9 @@ import org.restlet.resource.ClientResource;
  * JAVADOC
  */
 public interface ResourceListItem<RESOURCE extends ClientResource>
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<String> description();
+   Property<String> description();
 
-    Property<RESOURCE> resource();
+   Property<RESOURCE> resource();
 }

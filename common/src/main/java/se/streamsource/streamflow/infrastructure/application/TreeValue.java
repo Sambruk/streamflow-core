@@ -25,8 +25,8 @@ import java.util.List;
  * has a description and entity reference.
  */
 public interface TreeValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<TreeNodeValue>> roots();
+   @UseDefaults
+   Property<List<TreeNodeValue>> roots();
 }

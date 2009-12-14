@@ -14,7 +14,19 @@
 
 package se.streamsource.streamflow.client.scenarios;
 
-import se.streamsource.streamflow.client.application.shared.steps.*;
+import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplateSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormTemplatesSteps;
+import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.InboxSteps;
+import se.streamsource.streamflow.client.application.shared.steps.MembersSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationalUnitsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.TaskTypesSteps;
+import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenario;
 
@@ -22,28 +34,29 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
  * JAVADOC
  */
 public class InboxScenario
-        extends AbstractWebDomainApplicationScenario
+      extends AbstractWebDomainApplicationScenario
 {
 
-    public InboxScenario()
-    {
-        this(Thread.currentThread().getContextClassLoader());
-    }
+   public InboxScenario()
+   {
+      this( Thread.currentThread().getContextClassLoader() );
+   }
 
-    public InboxScenario(ClassLoader classLoader)
-    {
-        super(classLoader, new TestSetupSteps(),
-                new FieldDefinitionsSteps(),
-                new FormTemplateSteps(),
-                new FormTemplatesSteps(),
-                new FormsSteps(),
-                new OrganizationsSteps(),
-                new OrganizationalUnitsSteps(),
-                new MembersSteps(),
-                new ProjectsSteps(),
-                new ParticipantsSteps(),
-                new GroupsSteps(),
-                new UserSteps(),
-                new InboxSteps());
-    }
+   public InboxScenario( ClassLoader classLoader )
+   {
+      super( classLoader, new TestSetupSteps(),
+            new FieldDefinitionsSteps(),
+            new FormTemplateSteps(),
+            new FormTemplatesSteps(),
+            new FormsSteps(),
+            new OrganizationsSteps(),
+            new OrganizationalUnitsSteps(),
+            new MembersSteps(),
+            new ProjectsSteps(),
+            new ParticipantsSteps(),
+            new GroupsSteps(),
+            new TaskTypesSteps(),
+            new UserSteps(),
+            new InboxSteps() );
+   }
 }

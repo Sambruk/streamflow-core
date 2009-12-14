@@ -33,71 +33,73 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(FormTemplates.Mixin.class)
 public interface FormTemplates
 {
-    FormTemplateEntity createFormTemplate(Form fromForm);
-    void removeFormTemplate( FormTemplate template);
+   FormTemplateEntity createFormTemplate( Form fromForm );
 
-    interface Data
-    {
-        ManyAssociation<FormTemplateEntity> formTemplates();
-        
-        FormTemplateEntity createdFormTemplate( DomainEvent event, String id);
-        void removedFormTemplate( DomainEvent event, FormTemplate template);
+   void removeFormTemplate( FormTemplate template );
 
-        FormTemplateEntity getTemplateByName(String name);
-    }
+   interface Data
+   {
+      ManyAssociation<FormTemplateEntity> formTemplates();
 
-    abstract class Mixin
-        implements FormTemplates, Data
-    {
-        @Service
-        IdentityGenerator idGen;
+      FormTemplateEntity createdFormTemplate( DomainEvent event, String id );
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      void removedFormTemplate( DomainEvent event, FormTemplate template );
 
-        @Structure
-        QueryBuilderFactory qbf;
+      FormTemplateEntity getTemplateByName( String name );
+   }
 
-        public FormTemplateEntity createFormTemplate( Form fromForm )
-        {
-            FormTemplateEntity template = createdFormTemplate( DomainEvent.CREATE, idGen.generate( FormTemplateEntity.class ));
+   abstract class Mixin
+         implements FormTemplates, Data
+   {
+      @Service
+      IdentityGenerator idGen;
 
-            FormEntity form = (FormEntity) fromForm;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-            template.changeDescription( form.description().get() );
-            template.changeNote( form.note().get() );
+      @Structure
+      QueryBuilderFactory qbf;
 
-            for (Field field : form.fields())
-            {
-                FieldEntity templateField = template.createField( field.getDescription(), ((FieldValueDefinition.Data)field).fieldValue().get() );
-                templateField.copyFromTemplate( field );
-            }
+      public FormTemplateEntity createFormTemplate( Form fromForm )
+      {
+         FormTemplateEntity template = createdFormTemplate( DomainEvent.CREATE, idGen.generate( FormTemplateEntity.class ) );
 
-            return form;
-        }
+         FormEntity form = (FormEntity) fromForm;
 
-        public void removeFormTemplate( FormTemplate template )
-        {
-            QueryBuilder<FormTemplateReference> qb = qbf.newQueryBuilder( FormTemplateReference.class );
-            FormTemplateReference.Data ftr = QueryExpressions.templateFor( FormTemplateReference.Data.class );
-            Query<FormTemplateReference> query = qb.where( QueryExpressions.eq( ftr.template(), template) ).newQuery( uowf.currentUnitOfWork() );
-            for (FormTemplateReference formTemplateReference : query)
-            {
-                ((FormTemplateReference.Data)formTemplateReference).removedTemplateReference(DomainEvent.CREATE);
-            }
+         template.changeDescription( form.description().get() );
+         template.changeNote( form.note().get() );
 
-            removedFormTemplate(DomainEvent.CREATE, template);
-        }
+         for (Field field : form.fields())
+         {
+            FieldEntity templateField = template.createField( field.getDescription(), ((FieldValueDefinition.Data) field).fieldValue().get() );
+            templateField.copyFromTemplate( field );
+         }
 
-        public void removedFormTemplate( DomainEvent event, FormTemplate template )
-        {
-            formTemplates().remove( (FormTemplateEntity) template );
-            uowf.currentUnitOfWork().remove( template );
-        }
+         return form;
+      }
 
-        public FormTemplateEntity getTemplateByName( String name )
-        {
-            return Describable.Mixin.getDescribable( formTemplates(), name );
-        }
-    }
+      public void removeFormTemplate( FormTemplate template )
+      {
+         QueryBuilder<FormTemplateReference> qb = qbf.newQueryBuilder( FormTemplateReference.class );
+         FormTemplateReference.Data ftr = QueryExpressions.templateFor( FormTemplateReference.Data.class );
+         Query<FormTemplateReference> query = qb.where( QueryExpressions.eq( ftr.template(), template ) ).newQuery( uowf.currentUnitOfWork() );
+         for (FormTemplateReference formTemplateReference : query)
+         {
+            ((FormTemplateReference.Data) formTemplateReference).removedTemplateReference( DomainEvent.CREATE );
+         }
+
+         removedFormTemplate( DomainEvent.CREATE, template );
+      }
+
+      public void removedFormTemplate( DomainEvent event, FormTemplate template )
+      {
+         formTemplates().remove( (FormTemplateEntity) template );
+         uowf.currentUnitOfWork().remove( template );
+      }
+
+      public FormTemplateEntity getTemplateByName( String name )
+      {
+         return Describable.Mixin.getDescribable( formTemplates(), name );
+      }
+   }
 }

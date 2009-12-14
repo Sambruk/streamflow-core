@@ -20,6 +20,6 @@ package se.streamsource.streamflow.client.ui.status;
  */
 public enum StatusResources
 {
-    ready,
-    loading
+   ready,
+   loading
 }

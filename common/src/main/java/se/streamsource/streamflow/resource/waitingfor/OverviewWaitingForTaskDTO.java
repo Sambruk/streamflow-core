@@ -21,7 +21,7 @@ import se.streamsource.streamflow.resource.task.TaskDTO;
  * JAVADOC
  */
 public interface OverviewWaitingForTaskDTO
-        extends TaskDTO
+      extends TaskDTO
 {
-    Property<String> assignedTo(); // Assignee name
+   Property<String> assignedTo(); // Assignee name
 }

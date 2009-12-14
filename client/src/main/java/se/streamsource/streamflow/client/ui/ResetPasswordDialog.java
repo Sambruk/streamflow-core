@@ -22,67 +22,69 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import java.awt.BorderLayout;
 
 /**
  * A basic dialog for resetting user passwords.
  */
 public class ResetPasswordDialog
-    extends JPanel
+      extends JPanel
 {
-    public JPasswordField passwordField;
-    public JPasswordField confirmPasswordField;
+   public JPasswordField passwordField;
+   public JPasswordField confirmPasswordField;
 
-    String password;
+   String password;
 
-    @Uses
-    DialogService dialogs;
+   @Uses
+   DialogService dialogs;
 
-    public ResetPasswordDialog(@Service ApplicationContext context)
-    {
-        super(new BorderLayout());
+   public ResetPasswordDialog( @Service ApplicationContext context )
+   {
+      super( new BorderLayout() );
 
-        setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-        JPanel passwordDialog = new JPanel(new BorderLayout());
-        passwordDialog.add(new JLabel(i18n.text(AdministrationResources.new_password)), BorderLayout.NORTH);
-        passwordField = new JPasswordField();
-        passwordDialog.add(passwordField, BorderLayout.CENTER);
+      JPanel passwordDialog = new JPanel( new BorderLayout() );
+      passwordDialog.add( new JLabel( i18n.text( AdministrationResources.new_password ) ), BorderLayout.NORTH );
+      passwordField = new JPasswordField();
+      passwordDialog.add( passwordField, BorderLayout.CENTER );
 
-        JPanel confirmPasswordDialog = new JPanel(new BorderLayout());
-        confirmPasswordDialog.add(new JLabel(i18n.text(AdministrationResources.confirm_password)), BorderLayout.NORTH);
-        confirmPasswordField = new JPasswordField();
-        confirmPasswordDialog.add(confirmPasswordField, BorderLayout.CENTER);
+      JPanel confirmPasswordDialog = new JPanel( new BorderLayout() );
+      confirmPasswordDialog.add( new JLabel( i18n.text( AdministrationResources.confirm_password ) ), BorderLayout.NORTH );
+      confirmPasswordField = new JPasswordField();
+      confirmPasswordDialog.add( confirmPasswordField, BorderLayout.CENTER );
 
-        add(passwordDialog, BorderLayout.CENTER);
-        add(confirmPasswordDialog, BorderLayout.SOUTH);
-    }
+      add( passwordDialog, BorderLayout.CENTER );
+      add( confirmPasswordDialog, BorderLayout.SOUTH );
+   }
 
-    public String password()
-    {
-        return password;
-    }
+   public String password()
+   {
+      return password;
+   }
 
-    @org.jdesktop.application.Action
-    public void execute()
-    {
-        if(new String(passwordField.getPassword()).equals(new String(confirmPasswordField.getPassword())))
-        {
-            password = new String(passwordField.getPassword());
-        } else
-        {
-            passwordField.setText("");
-            confirmPasswordField.setText("");
-            dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this),new JLabel(i18n.text(AdministrationResources.passwords_dont_match)));
-            return;
-        }
-        WindowUtils.findWindow(this).dispose();
-    }
+   @org.jdesktop.application.Action
+   public void execute()
+   {
+      if (new String( passwordField.getPassword() ).equals( new String( confirmPasswordField.getPassword() ) ))
+      {
+         password = new String( passwordField.getPassword() );
+      } else
+      {
+         passwordField.setText( "" );
+         confirmPasswordField.setText( "" );
+         dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( AdministrationResources.passwords_dont_match ) ) );
+         return;
+      }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @org.jdesktop.application.Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @org.jdesktop.application.Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 }

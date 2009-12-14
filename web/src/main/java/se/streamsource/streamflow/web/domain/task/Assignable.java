@@ -32,74 +32,74 @@ import java.util.Date;
 @Mixins(Assignable.Mixin.class)
 public interface Assignable
 {
-    void assignTo(Assignee assignee);
+   void assignTo( Assignee assignee );
 
-    void unassign();
+   void unassign();
 
-    interface Data
-    {
-        @Optional
-        Association<Assignee> assignedTo();
+   interface Data
+   {
+      @Optional
+      Association<Assignee> assignedTo();
 
-        @Optional
-        Property<Date> assignedOn();
-
-
-        void assignedTo(DomainEvent event, Assignee assignee);
+      @Optional
+      Property<Date> assignedOn();
 
 
-        void unassigned(DomainEvent event);
-    }
+      void assignedTo( DomainEvent event, Assignee assignee );
 
-    public abstract class Mixin
-            implements Assignable, Data
-    {
-        public void assignTo(Assignee assignee)
-        {
-            if (!assignee.equals(assignedTo().get()))
-            {
-                assignedTo(DomainEvent.CREATE, assignee);
-            }
-        }
 
-        public void unassign()
-        {
-            if (assignedTo().get() != null)
-                unassigned(DomainEvent.CREATE);
-        }
+      void unassigned( DomainEvent event );
+   }
 
-        public void assignedTo(DomainEvent event, Assignee assignee)
-        {
-            assignedTo().set(assignee);
-            assignedOn().set(event.on().get());
-        }
+   public abstract class Mixin
+         implements Assignable, Data
+   {
+      public void assignTo( Assignee assignee )
+      {
+         if (!assignee.equals( assignedTo().get() ))
+         {
+            assignedTo( DomainEvent.CREATE, assignee );
+         }
+      }
 
-        public void unassigned(DomainEvent event)
-        {
-            assignedTo().set(null);
-            assignedOn().set(null);
-        }
-    }
+      public void unassign()
+      {
+         if (assignedTo().get() != null)
+            unassigned( DomainEvent.CREATE );
+      }
 
-    abstract class AssignOnStatusChangeConcern
-            extends ConcernOf<TaskStatus>
-            implements TaskStatus
-    {
-        @This
-        Data state;
+      public void assignedTo( DomainEvent event, Assignee assignee )
+      {
+         assignedTo().set( assignee );
+         assignedOn().set( event.on().get() );
+      }
 
-        @This
-        Assignable assignable;
-        
-        public void complete()
-        {
-            next.complete();
-        }
+      public void unassigned( DomainEvent event )
+      {
+         assignedTo().set( null );
+         assignedOn().set( null );
+      }
+   }
 
-        public void drop()
-        {
-            next.drop();
-        }
-    }
+   abstract class AssignOnStatusChangeConcern
+         extends ConcernOf<TaskStatus>
+         implements TaskStatus
+   {
+      @This
+      Data state;
+
+      @This
+      Assignable assignable;
+
+      public void complete()
+      {
+         next.complete();
+      }
+
+      public void drop()
+      {
+         next.drop();
+      }
+   }
 
 }

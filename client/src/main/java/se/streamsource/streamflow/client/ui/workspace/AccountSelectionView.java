@@ -27,16 +27,16 @@ import java.awt.Dimension;
  * JAVADOC
  */
 public class AccountSelectionView
-    extends JPanel
+      extends JPanel
 {
-    public AccountSelectionView(@Uses final AccountSelector accountSelector)
-    {
-        JPanel accountSelection = new JPanel(new BorderLayout());
-        accountSelection.add(accountSelector, BorderLayout.CENTER);
-        accountSelection.setMinimumSize(new Dimension(300, 200));
-        accountSelection.setPreferredSize(new Dimension(300, 200));
-        accountSelection.setBorder( BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), i18n.text(WorkspaceResources.select_account)));
-        accountSelection.getInsets();
-        add(accountSelection);
-    }
+   public AccountSelectionView( @Uses final AccountSelector accountSelector )
+   {
+      JPanel accountSelection = new JPanel( new BorderLayout() );
+      accountSelection.add( accountSelector, BorderLayout.CENTER );
+      accountSelection.setMinimumSize( new Dimension( 300, 200 ) );
+      accountSelection.setPreferredSize( new Dimension( 300, 200 ) );
+      accountSelection.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), i18n.text( WorkspaceResources.select_account ) ) );
+      accountSelection.getInsets();
+      add( accountSelection );
+   }
 }

@@ -20,6 +20,6 @@ import se.streamsource.streamflow.resource.task.TaskDTO;
  * JAVADOC
  */
 public interface AssignedTaskDTO
-        extends TaskDTO
+      extends TaskDTO
 {
 }

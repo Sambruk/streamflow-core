@@ -30,54 +30,57 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(TaskStatus.Mixin.class)
 public interface TaskStatus
 {
-    void complete();
-    void done();
-    void activate();
-    void drop();
+   void complete();
 
-    interface Data
-    {
-        @UseDefaults
-        Property<TaskStates> status();
+   void done();
 
-        void changedStatus(DomainEvent event, TaskStates status);
-    }
+   void activate();
 
-    abstract class Mixin
-            implements TaskStatus, Data
-    {
+   void drop();
 
-        public void complete()
-        {
-            if (status().get().equals(TaskStates.ACTIVE) || status().get().equals(TaskStates.DONE))
-            {
-                changedStatus(DomainEvent.CREATE, TaskStates.COMPLETED);
-            }
-        }
+   interface Data
+   {
+      @UseDefaults
+      Property<TaskStates> status();
 
-        public void drop()
-        {
-            if (status().get().equals(TaskStates.ACTIVE)  || status().get().equals(TaskStates.DONE))
-            {
-                changedStatus(DomainEvent.CREATE, TaskStates.DROPPED);
-            }
-        }
+      void changedStatus( DomainEvent event, TaskStates status );
+   }
 
-        public void done()
-        {
-            if (status().get().equals(TaskStates.ACTIVE))
-            {
-                changedStatus(DomainEvent.CREATE, TaskStates.DONE);
-            }
-        }
+   abstract class Mixin
+         implements TaskStatus, Data
+   {
 
-        public void activate()
-        {
-            if (status().get().equals(TaskStates.DONE) || status().get().equals(TaskStates.COMPLETED))
-            {
-                changedStatus(DomainEvent.CREATE, TaskStates.ACTIVE);
-            }
-        }
-    }
+      public void complete()
+      {
+         if (status().get().equals( TaskStates.ACTIVE ) || status().get().equals( TaskStates.DONE ))
+         {
+            changedStatus( DomainEvent.CREATE, TaskStates.COMPLETED );
+         }
+      }
+
+      public void drop()
+      {
+         if (status().get().equals( TaskStates.ACTIVE ) || status().get().equals( TaskStates.DONE ))
+         {
+            changedStatus( DomainEvent.CREATE, TaskStates.DROPPED );
+         }
+      }
+
+      public void done()
+      {
+         if (status().get().equals( TaskStates.ACTIVE ))
+         {
+            changedStatus( DomainEvent.CREATE, TaskStates.DONE );
+         }
+      }
+
+      public void activate()
+      {
+         if (status().get().equals( TaskStates.DONE ) || status().get().equals( TaskStates.COMPLETED ))
+         {
+            changedStatus( DomainEvent.CREATE, TaskStates.ACTIVE );
+         }
+      }
+   }
 
 }

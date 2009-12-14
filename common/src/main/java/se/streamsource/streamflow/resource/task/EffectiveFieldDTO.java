@@ -23,10 +23,13 @@ import java.util.Date;
  * JAVADOC
  */
 public interface EffectiveFieldDTO
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<Date> submissionDate();
-    Property<String> submitter();
-    Property<String> fieldName();
-    Property<String> fieldValue();
+   Property<Date> submissionDate();
+
+   Property<String> submitter();
+
+   Property<String> fieldName();
+
+   Property<String> fieldValue();
 }

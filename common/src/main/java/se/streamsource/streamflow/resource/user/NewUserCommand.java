@@ -21,8 +21,9 @@ import org.qi4j.api.value.ValueComposite;
  * Command for changing password
  */
 public interface NewUserCommand
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<String> username();
-    Property<String> password();
+   Property<String> username();
+
+   Property<String> password();
 }

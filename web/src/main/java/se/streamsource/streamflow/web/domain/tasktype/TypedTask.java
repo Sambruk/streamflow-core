@@ -27,31 +27,31 @@ import se.streamsource.streamflow.web.domain.label.Labelable;
 @Mixins(TypedTask.Mixin.class)
 public interface TypedTask
 {
-    void changeTaskType(@Optional TaskType newTaskType);
+   void changeTaskType( @Optional TaskType newTaskType );
 
-    interface Data
-    {
-        @Optional
-        Association<TaskType> taskType();
+   interface Data
+   {
+      @Optional
+      Association<TaskType> taskType();
 
-        void changedTaskType( DomainEvent event, @Optional TaskType taskType);
-    }
+      void changedTaskType( DomainEvent event, @Optional TaskType taskType );
+   }
 
-    abstract class Mixin
-        implements Data
-    {
-        @This
-        Labelable labelable;
+   abstract class Mixin
+         implements Data
+   {
+      @This
+      Labelable labelable;
 
-        public void changedTaskType( DomainEvent event, @Optional TaskType taskType )
-        {
-            TaskType currentTaskType = taskType().get();
-            if ((currentTaskType == null && taskType !=null) || !currentTaskType.equals(taskType))
-            {
-                labelable.retainLabels( currentTaskType, taskType );
+      public void changedTaskType( DomainEvent event, @Optional TaskType taskType )
+      {
+         TaskType currentTaskType = taskType().get();
+         if ((currentTaskType == null && taskType != null) || !currentTaskType.equals( taskType ))
+         {
+            labelable.retainLabels( currentTaskType, taskType );
 
-                taskType().set( taskType );
-            }
-        }
-    }
+            taskType().set( taskType );
+         }
+      }
+   }
 }

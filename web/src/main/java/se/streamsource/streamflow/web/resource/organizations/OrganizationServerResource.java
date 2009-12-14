@@ -37,136 +37,136 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * Mapped to /organizations/{organization}
  */
 public class OrganizationServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public void changedescription(StringDTO stringValue)
-    {
-        String orgId = (String) getRequest().getAttributes().get("organization");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, orgId);
+   public void changedescription( StringDTO stringValue )
+   {
+      String orgId = (String) getRequest().getAttributes().get( "organization" );
+      Describable describable = uowf.currentUnitOfWork().get( Describable.class, orgId );
 
-        checkPermission(describable);
-        describable.changeDescription(stringValue.string().get());
-    }
+      checkPermission( describable );
+      describable.changeDescription( stringValue.string().get() );
+   }
 
-    @Override
-    protected Representation get(Variant variant) throws ResourceException
-    {
-        if (getRequest().getResourceRef().hasQuery())
-        {
-            return super.get(variant);
-        }
-        return getHtml("resources/organization.html");
-    }
+   @Override
+   protected Representation get( Variant variant ) throws ResourceException
+   {
+      if (getRequest().getResourceRef().hasQuery())
+      {
+         return super.get( variant );
+      }
+      return getHtml( "resources/organization.html" );
+   }
 
-    public ListValue findUsers(StringDTO query)
-    {
-        String orgId = getRequest().getAttributes().get("organization").toString();
+   public ListValue findUsers( StringDTO query )
+   {
+      String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
-        OwningOrganization ouq  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
-        checkPermission(ouq);
+      OwningOrganization ouq = uowf.currentUnitOfWork().get( OwningOrganization.class, orgId );
+      checkPermission( ouq );
 
-        return ((OrganizationQueries)ouq.organization().get()).findUsers(query.string().get());
-    }
+      return ((OrganizationQueries) ouq.organization().get()).findUsers( query.string().get() );
+   }
 
 
-    public ListValue findGroups(StringDTO query)
-    {
-        String orgId = getRequest().getAttributes().get("organization").toString();
+   public ListValue findGroups( StringDTO query )
+   {
+      String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
-        OwningOrganization ouq  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
-        checkPermission(ouq);
+      OwningOrganization ouq = uowf.currentUnitOfWork().get( OwningOrganization.class, orgId );
+      checkPermission( ouq );
 
-        return ((OrganizationQueries)ouq.organization().get()).findGroups(query.string().get());
-    }
+      return ((OrganizationQueries) ouq.organization().get()).findGroups( query.string().get() );
+   }
 
-    public ListValue findProjects(StringDTO query)
-    {
-        String orgId = getRequest().getAttributes().get("organization").toString();
+   public ListValue findProjects( StringDTO query )
+   {
+      String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
-        OwningOrganization ouq  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
-        checkPermission(ouq);
+      OwningOrganization ouq = uowf.currentUnitOfWork().get( OwningOrganization.class, orgId );
+      checkPermission( ouq );
 
-        return ((OrganizationQueries)ouq.organization().get()).findProjects(query.string().get());
-    }
+      return ((OrganizationQueries) ouq.organization().get()).findProjects( query.string().get() );
+   }
 
-    public ListValue formDefinitions()
-    {
-        String ouId = (String) getRequest().getAttributes().get("organization");
+   public ListValue formDefinitions()
+   {
+      String ouId = (String) getRequest().getAttributes().get( "organization" );
 
-        OwningOrganization ou = uowf.currentUnitOfWork().get( OwningOrganization.class, ouId);
+      OwningOrganization ou = uowf.currentUnitOfWork().get( OwningOrganization.class, ouId );
 
-        FormQueries forms = (FormQueries) ou.organization().get();
+      FormQueries forms = (FormQueries) ou.organization().get();
 
-        return forms.getForms();
-    }
+      return forms.getForms();
+   }
 
-    public ListValue participatingUsers()
-    {
-        String orgId = (String) getRequest().getAttributes().get("organization");
+   public ListValue participatingUsers()
+   {
+      String orgId = (String) getRequest().getAttributes().get( "organization" );
 
-        OrganizationParticipationsQueries participants = uowf.currentUnitOfWork().get(OrganizationParticipationsQueries.class, orgId);
+      OrganizationParticipationsQueries participants = uowf.currentUnitOfWork().get( OrganizationParticipationsQueries.class, orgId );
 
-        checkPermission(participants);
+      checkPermission( participants );
 
-        return participants.participatingUsers();
-    }
+      return participants.participatingUsers();
+   }
 
-    public ListValue nonParticipatingUsers()
-    {
-         String orgId = (String) getRequest().getAttributes().get("organization");
+   public ListValue nonParticipatingUsers()
+   {
+      String orgId = (String) getRequest().getAttributes().get( "organization" );
 
-        OrganizationParticipationsQueries participants = uowf.currentUnitOfWork().get(OrganizationParticipationsQueries.class, orgId);
+      OrganizationParticipationsQueries participants = uowf.currentUnitOfWork().get( OrganizationParticipationsQueries.class, orgId );
 
-        checkPermission(participants);
+      checkPermission( participants );
 
-        return participants.nonParticipatingUsers();       
-    }
+      return participants.nonParticipatingUsers();
+   }
 
-    public ListValue taskTypes()
-    {
-        String orgId = (String) getRequest().getAttributes().get("organization");
+   public ListValue taskTypes()
+   {
+      String orgId = (String) getRequest().getAttributes().get( "organization" );
 
-       TaskTypes taskTypes = uowf.currentUnitOfWork().get(TaskTypes.class, orgId);
+      TaskTypes taskTypes = uowf.currentUnitOfWork().get( TaskTypes.class, orgId );
 
-       checkPermission(taskTypes);
+      checkPermission( taskTypes );
 
-       return taskTypes.taskTypeList();       
-    }
+      return taskTypes.taskTypeList();
+   }
 
-    public void join(ListValue users)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void join( ListValue users )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String id = (String) getRequest().getAttributes().get("organization");
-        Organization org = uowf.currentUnitOfWork().get(Organization.class, id);
+      String id = (String) getRequest().getAttributes().get( "organization" );
+      Organization org = uowf.currentUnitOfWork().get( Organization.class, id );
 
-        checkPermission(org);
+      checkPermission( org );
 
-        for(ListItemValue value : users.items().get())
-        {
-            OrganizationParticipations user = uow.get(OrganizationParticipations.class, value.entity().get().identity());
-            user.join(org);
-        }
-    }
+      for (ListItemValue value : users.items().get())
+      {
+         OrganizationParticipations user = uow.get( OrganizationParticipations.class, value.entity().get().identity() );
+         user.join( org );
+      }
+   }
 
-    public void leave(ListValue users)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void leave( ListValue users )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String id = (String) getRequest().getAttributes().get("organization");
-        Organization org = uowf.currentUnitOfWork().get(Organization.class, id);
+      String id = (String) getRequest().getAttributes().get( "organization" );
+      Organization org = uowf.currentUnitOfWork().get( Organization.class, id );
 
-        checkPermission(org);
+      checkPermission( org );
 
-        for(ListItemValue value : users.items().get())
-        {
-            OrganizationParticipations uop = uow.get(OrganizationParticipations.class, value.entity().get().identity());
-            uop.leave(org);
-        }
-    }
+      for (ListItemValue value : users.items().get())
+      {
+         OrganizationParticipations uop = uow.get( OrganizationParticipations.class, value.entity().get().identity() );
+         uop.leave( org );
+      }
+   }
 
 
 }

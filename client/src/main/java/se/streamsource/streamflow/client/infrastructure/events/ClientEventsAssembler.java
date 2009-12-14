@@ -18,19 +18,19 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
  * JAVADOC
  */
 public class ClientEventsAssembler
-    implements Assembler
+      implements Assembler
 {
-    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
-    {
-        moduleAssembly.addValues( TransactionEvents.class, DomainEvent.class).visibleIn(Visibility.application);
+   public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      moduleAssembly.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
 
-        moduleAssembly.addServices( ClientEventSourceService.class).visibleIn( Visibility.application );
-    }
+      moduleAssembly.addServices( ClientEventSourceService.class ).visibleIn( Visibility.application );
+   }
 }

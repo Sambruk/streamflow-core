@@ -26,22 +26,22 @@ import java.util.Date;
  * General information about a task
  */
 public interface TaskGeneralDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    @Optional
-    Property<String> taskId();
+   @Optional
+   Property<String> taskId();
 
-    @Optional
-    Property<ListItemValue> taskType();
+   @Optional
+   Property<ListItemValue> taskType();
 
-    Property<ListValue> labels();
+   Property<ListValue> labels();
 
-    Property<String> description();
+   Property<String> description();
 
-    Property<String> note();
+   Property<String> note();
 
-    Property<Date> creationDate();
+   Property<Date> creationDate();
 
-    @Optional
-    Property<Date> dueOn();
+   @Optional
+   Property<Date> dueOn();
 }

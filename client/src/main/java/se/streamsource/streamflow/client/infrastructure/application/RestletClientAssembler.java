@@ -24,10 +24,10 @@ import org.restlet.Restlet;
  * JAVADOC
  */
 public class RestletClientAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.importServices(Restlet.class).visibleIn(Visibility.application);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.importServices( Restlet.class ).visibleIn( Visibility.application );
+   }
 }

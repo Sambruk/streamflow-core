@@ -32,122 +32,122 @@ import java.security.NoSuchAlgorithmException;
 @Mixins(UserAuthentication.Mixin.class)
 public interface UserAuthentication
 {
-    boolean login(@Password String password);
+   boolean login( @Password String password );
 
-    void changePassword(@Password String currentPassword, @Password String newPassword) throws WrongPasswordException;
+   void changePassword( @Password String currentPassword, @Password String newPassword ) throws WrongPasswordException;
 
-    void resetPassword(@Password String password);
+   void resetPassword( @Password String password );
 
-    void changeEnabled(boolean enabled);
+   void changeEnabled( boolean enabled );
 
-    interface Data
-    {
-        Property<String> userName();
+   interface Data
+   {
+      Property<String> userName();
 
-        Property<String> hashedPassword();
+      Property<String> hashedPassword();
 
-        @UseDefaults
-        Property<Boolean> disabled();
+      @UseDefaults
+      Property<Boolean> disabled();
 
-        boolean isCorrectPassword(String password);
+      boolean isCorrectPassword( String password );
 
-        String hashPassword(String password);
+      String hashPassword( String password );
 
-        boolean isAdministrator();
+      boolean isAdministrator();
 
 
-        void changedPassword(DomainEvent event, String hashedPassword);
+      void changedPassword( DomainEvent event, String hashedPassword );
 
-        void failedLogin(DomainEvent event);
+      void failedLogin( DomainEvent event );
 
-        void changedEnabled(DomainEvent event, boolean enabled);
-    }
+      void changedEnabled( DomainEvent event, boolean enabled );
+   }
 
-    abstract class Mixin
-            implements UserAuthentication, Data
-    {
-        @This
-        Data authenticationState;
+   abstract class Mixin
+         implements UserAuthentication, Data
+   {
+      @This
+      Data authenticationState;
 
-        public boolean login(String password)
-        {
-            if (disabled().get())
-                return false;
+      public boolean login( String password )
+      {
+         if (disabled().get())
+            return false;
 
-            boolean correct = isCorrectPassword(password);
+         boolean correct = isCorrectPassword( password );
 
-            if (!correct)
-                failedLogin(DomainEvent.CREATE);
+         if (!correct)
+            failedLogin( DomainEvent.CREATE );
 
-            return correct;
-        }
+         return correct;
+      }
 
-        public void changeEnabled(boolean enabled)
-        {
-            if (enabled == disabled().get())
-            {
-                changedEnabled(DomainEvent.CREATE, !enabled);
-            }
-        }
+      public void changeEnabled( boolean enabled )
+      {
+         if (enabled == disabled().get())
+         {
+            changedEnabled( DomainEvent.CREATE, !enabled );
+         }
+      }
 
-        public void changePassword(String currentPassword, String newPassword) throws WrongPasswordException
-        {
-            // Check if current password is correct
-            if (!isCorrectPassword(currentPassword))
-            {
-                throw new WrongPasswordException();
-            }
+      public void changePassword( String currentPassword, String newPassword ) throws WrongPasswordException
+      {
+         // Check if current password is correct
+         if (!isCorrectPassword( currentPassword ))
+         {
+            throw new WrongPasswordException();
+         }
 
-            changedPassword(DomainEvent.CREATE, hashPassword(newPassword));
-        }
+         changedPassword( DomainEvent.CREATE, hashPassword( newPassword ) );
+      }
 
-        public void resetPassword(String password)
-        {
-            changedPassword(DomainEvent.CREATE,  hashPassword(password));
-        }
+      public void resetPassword( String password )
+      {
+         changedPassword( DomainEvent.CREATE, hashPassword( password ) );
+      }
 
-        public void changedPassword(DomainEvent event, String hashedPassword)
-        {
-            hashedPassword().set(hashedPassword);
-        }
+      public void changedPassword( DomainEvent event, String hashedPassword )
+      {
+         hashedPassword().set( hashedPassword );
+      }
 
-        public void failedLogin(DomainEvent event)
-        {
-        }
+      public void failedLogin( DomainEvent event )
+      {
+      }
 
-        public void changedEnabled(DomainEvent event, boolean enabled)
-        {
-            authenticationState.disabled().set(enabled);
-        }
+      public void changedEnabled( DomainEvent event, boolean enabled )
+      {
+         authenticationState.disabled().set( enabled );
+      }
 
-        public boolean isCorrectPassword(String password)
-        {
-            return hashedPassword().get().equals(hashPassword(password));
-        }
+      public boolean isCorrectPassword( String password )
+      {
+         return hashedPassword().get().equals( hashPassword( password ) );
+      }
 
-        public String hashPassword(String password)
-        {
-            try
-            {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(password.getBytes("UTF-8"));
-                byte raw[] = md.digest();
-                String hash = (new BASE64Encoder()).encode(raw);
-                return hash;
-            }
-            catch (NoSuchAlgorithmException e)
-            {
-                throw new IllegalStateException("No SHA algorithm founde", e);
-            }
-            catch (UnsupportedEncodingException e)
-            {
-                throw new IllegalStateException(e.getMessage(), e);
-            }
-        }
+      public String hashPassword( String password )
+      {
+         try
+         {
+            MessageDigest md = MessageDigest.getInstance( "SHA" );
+            md.update( password.getBytes( "UTF-8" ) );
+            byte raw[] = md.digest();
+            String hash = (new BASE64Encoder()).encode( raw );
+            return hash;
+         }
+         catch (NoSuchAlgorithmException e)
+         {
+            throw new IllegalStateException( "No SHA algorithm founde", e );
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            throw new IllegalStateException( e.getMessage(), e );
+         }
+      }
 
-        public boolean isAdministrator()
-        {
-            return userName().get().equals("administrator");
-        }
-    }
+      public boolean isAdministrator()
+      {
+         return userName().get().equals( "administrator" );
+      }
+   }
 }

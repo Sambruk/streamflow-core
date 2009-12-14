@@ -15,25 +15,26 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdminView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdminView;
 
 import javax.swing.JTabbedPane;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+
 /**
  * JAVADOC
  */
 public class OrganizationalUnitAdministrationView
-        extends JTabbedPane
+      extends JTabbedPane
 {
-    public OrganizationalUnitAdministrationView(@Uses ProjectAdminView projectAdmin,
+   public OrganizationalUnitAdministrationView( @Uses ProjectAdminView projectAdmin,
                                                 @Uses GroupAdminView groupAdmin,
-                                                @Uses AdministratorsView administratorsAdmin)
-    {
-        addTab(text(AdministrationResources.projects_tab), projectAdmin);
-        addTab(text(AdministrationResources.groups_tab), groupAdmin);
-        addTab(text(AdministrationResources.administrators_tab), administratorsAdmin);
-    }
+                                                @Uses AdministratorsView administratorsAdmin )
+   {
+      addTab( text( AdministrationResources.projects_tab ), projectAdmin );
+      addTab( text( AdministrationResources.groups_tab ), groupAdmin );
+      addTab( text( AdministrationResources.administrators_tab ), administratorsAdmin );
+   }
 }

@@ -28,56 +28,57 @@ import se.streamsource.streamflow.web.domain.project.IdGenerator;
 @Mixins(TaskId.Mixin.class)
 public interface TaskId
 {
-    /**
-     * Set new id for the task. It needs to be on the format:
-     * yyyymmdd-n
-     * such as:
-     * 20090320-123
-     *
-     * @param id
-     */
-    void assignId(@Matches("\\d{8}-\\d*") String id);
+   /**
+    * Set new id for the task. It needs to be on the format:
+    * yyyymmdd-n
+    * such as:
+    * 20090320-123
+    *
+    * @param id
+    */
+   void assignId( @Matches("\\d{8}-\\d*") String id );
 
-    void assignId(IdGenerator idgen);
+   void assignId( IdGenerator idgen );
 
-    interface Data
-    {
-        @Optional
-        Property<String> taskId();
+   interface Data
+   {
+      @Optional
+      Property<String> taskId();
 
 
-        void assignedTaskId(DomainEvent event, String id);
-    }
+      void assignedTaskId( DomainEvent event, String id );
+   }
 
-    abstract class Mixin
-            implements TaskId, Data
-    {
-        @This
-        Data state;
+   abstract class Mixin
+         implements TaskId, Data
+   {
+      @This
+      Data state;
 
-        @This
-        TaskId id;
+      @This
+      TaskId id;
 
-        public void assignId(IdGenerator idgen)
-        {
-            if (state.taskId().get() == null)
-            {
-                idgen.assignId(id);
-            }
-        }
+      public void assignId( IdGenerator idgen )
+      {
+         if (state.taskId().get() == null)
+         {
+            idgen.assignId( id );
+         }
+      }
 
-        public void assignId(String id)
-        {
-            if (state.taskId().get() == null)
-            {
-                state.assignedTaskId(DomainEvent.CREATE, id);
-            }
-        }
+      public void assignId( String id )
+      {
+         if (state.taskId().get() == null)
+         {
+            state.assignedTaskId( DomainEvent.CREATE, id );
+         }
+      }
 
-        // Event
-        public void assignedTaskId(DomainEvent event, String id)
-        {
-            state.taskId().set(id);
-        }
-    }
+      // Event
+
+      public void assignedTaskId( DomainEvent event, String id )
+      {
+         state.taskId().set( id );
+      }
+   }
 }

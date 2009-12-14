@@ -14,8 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.ApplicationActionMap;
+import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -25,136 +25,140 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsTabbedView;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 
 /**
  * JAVADOC
  */
 public class AdministrationView
-        extends JPanel
+      extends JPanel
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    JSplitPane mainView = new JSplitPane();
-    JPanel detailView;
+   JSplitPane mainView = new JSplitPane();
+   JPanel detailView;
 
-    CardLayout viewSwitch = new CardLayout();
-    private ApplicationActionMap am;
-    private AdministrationOutlineView adminOutlineView;
+   CardLayout viewSwitch = new CardLayout();
+   private ApplicationActionMap am;
+   private AdministrationOutlineView adminOutlineView;
 
-    public AdministrationView(@Service ApplicationContext context,
-                              @Uses AdministrationOutlineView adminOutlineView)
-    {
-        am = context.getActionMap(this);
-        setActionMap(am);
-        this.adminOutlineView = adminOutlineView;
+   public AdministrationView( @Service ApplicationContext context,
+                              @Uses AdministrationOutlineView adminOutlineView )
+   {
+      am = context.getActionMap( this );
+      setActionMap( am );
+      this.adminOutlineView = adminOutlineView;
 
-        setLayout( viewSwitch );
+      setLayout( viewSwitch );
 
-        detailView = new JPanel(new BorderLayout());
+      detailView = new JPanel( new BorderLayout() );
 
 
-        add(mainView, "main");
-        add(detailView, "detail");
+      add( mainView, "main" );
+      add( detailView, "detail" );
 
-        viewSwitch.show( this, "main" );
+      viewSwitch.show( this, "main" );
 
-        setMinimumSize(new Dimension(800, 600));
-        setPreferredSize(getMinimumSize());
+      setMinimumSize( new Dimension( 800, 600 ) );
+      setPreferredSize( getMinimumSize() );
 
-        mainView.setOneTouchExpandable( true );
+      mainView.setOneTouchExpandable( true );
 
-        mainView.setLeftComponent(adminOutlineView);
-        adminOutlineView.setMinimumSize(new Dimension(200, 400));
-        mainView.setRightComponent(new JPanel());
+      mainView.setLeftComponent( adminOutlineView );
+      adminOutlineView.setMinimumSize( new Dimension( 200, 400 ) );
+      mainView.setRightComponent( new JPanel() );
 
-        mainView.setDividerLocation(200);
-        mainView.setResizeWeight(0);
-        adminOutlineView.getTree().addTreeSelectionListener(new TreeSelectionListener()
-        {
-            public void valueChanged(TreeSelectionEvent e)
+      mainView.setDividerLocation( 200 );
+      mainView.setResizeWeight( 0 );
+      adminOutlineView.getTree().addTreeSelectionListener( new TreeSelectionListener()
+      {
+         public void valueChanged( TreeSelectionEvent e )
+         {
+            final TreePath path = e.getNewLeadSelectionPath();
+            if (path != null)
             {
-                final TreePath path = e.getNewLeadSelectionPath();
-                if (path != null)
-                {
-                    Object node = path.getLastPathComponent();
+               Object node = path.getLastPathComponent();
 
-                    JComponent view = new JPanel();
+               JComponent view = new JPanel();
 
-                    if (node instanceof AccountAdministrationNode)
-                    {
-                        AccountAdministrationNode accountAdminNode = (AccountAdministrationNode) node;
-                        boolean load = true;
+               if (node instanceof AccountAdministrationNode)
+               {
+                  AccountAdministrationNode accountAdminNode = (AccountAdministrationNode) node;
+                  boolean load = true;
 
-                        try
-                        {
-                            // check if permissions are sufficient
-                            accountAdminNode.accountModel().serverResource().organizations().users();
-                        } catch(ResourceException re)
-                        {
-                            if(Status.CLIENT_ERROR_FORBIDDEN.equals(re.getStatus()))
-                                load = false;
-                        }                   
+                  try
+                  {
+                     // check if permissions are sufficient
+                     accountAdminNode.accountModel().serverResource().organizations().users();
+                  } catch (ResourceException re)
+                  {
+                     if (Status.CLIENT_ERROR_FORBIDDEN.equals( re.getStatus() ))
+                        load = false;
+                  }
 
-                        if(load)
-                        {
-                            view = obf.newObjectBuilder(OrganizationsTabbedView.class).use(
-                                    accountAdminNode.organizationsModel(), accountAdminNode.usersModel())
-                                    .newInstance();
-                        }
+                  if (load)
+                  {
+                     view = obf.newObjectBuilder( OrganizationsTabbedView.class ).use(
+                           accountAdminNode.organizationsModel(), accountAdminNode.usersModel() )
+                           .newInstance();
+                  }
 
 
+               } else if (node instanceof OrganizationAdministrationNode)
+               {
+                  OrganizationAdministrationNode orgNode = (OrganizationAdministrationNode) node;
+                  OrganizationAdministrationModel organizationAdministrationModel = orgNode.model();
+                  view = obf.newObjectBuilder( OrganizationAdministrationView.class ).use( organizationAdministrationModel,
+                        organizationAdministrationModel.administratorsModel(),
+                        organizationAdministrationModel.rolesModel(),
+                        organizationAdministrationModel.taskTypesModel(),
+                        organizationAdministrationModel.labelsModel(),
+                        AdministrationView.this ).newInstance();
+               } else if (node instanceof OrganizationalUnitAdministrationNode)
+               {
+                  OrganizationalUnitAdministrationNode ouNode = (OrganizationalUnitAdministrationNode) node;
+                  OrganizationalUnitAdministrationModel ouAdminModel = ouNode.model();
+                  view = obf.newObjectBuilder( OrganizationalUnitAdministrationView.class ).use( ouAdminModel,
+                        ouAdminModel.groupsModel(),
+                        ouAdminModel.projectsModel(),
+                        ouAdminModel.administratorsModel(),
+                        AdministrationView.this ).newInstance();
+               }
 
-                    } else if (node instanceof OrganizationAdministrationNode)
-                    {
-                        OrganizationAdministrationNode orgNode = (OrganizationAdministrationNode) node;
-                        OrganizationAdministrationModel organizationAdministrationModel = orgNode.model();
-                        view = obf.newObjectBuilder(OrganizationAdministrationView.class).use(organizationAdministrationModel,
-                                organizationAdministrationModel.administratorsModel(),
-                                organizationAdministrationModel.rolesModel(),
-                                organizationAdministrationModel.taskTypesModel(),
-                                organizationAdministrationModel.labelsModel(),
-                                AdministrationView.this).newInstance();
-                    } else if (node instanceof OrganizationalUnitAdministrationNode)
-                    {
-                        OrganizationalUnitAdministrationNode ouNode = (OrganizationalUnitAdministrationNode) node;
-                        OrganizationalUnitAdministrationModel ouAdminModel = ouNode.model();
-                        view = obf.newObjectBuilder(OrganizationalUnitAdministrationView.class).use(ouAdminModel,
-                                ouAdminModel.groupsModel(),
-                                ouAdminModel.projectsModel(),
-                                ouAdminModel.administratorsModel(),
-                                AdministrationView.this).newInstance();
-                    }
-
-                    mainView.setRightComponent(view);
-                }
+               mainView.setRightComponent( view );
             }
-        });
-    }
+         }
+      } );
+   }
 
-    public void show(JComponent view)
-    {
-        detailView.removeAll();
-        detailView.add( view, BorderLayout.CENTER );
-        detailView.add( new JButton(am.get("done")), BorderLayout.SOUTH );
-        detailView.revalidate();
-        detailView.repaint();
-        viewSwitch.show( this, "detail" );
-    }
+   public void show( JComponent view )
+   {
+      detailView.removeAll();
+      detailView.add( view, BorderLayout.CENTER );
+      detailView.add( new JButton( am.get( "done" ) ), BorderLayout.SOUTH );
+      detailView.revalidate();
+      detailView.repaint();
+      viewSwitch.show( this, "detail" );
+   }
 
-    @org.jdesktop.application.Action
-    public void done()
-    {
-        adminOutlineView.removeRefreshWhenVisible();
-        viewSwitch.show(this, "main");
-        adminOutlineView.addRefreshWhenVisible();
-    }
+   @org.jdesktop.application.Action
+   public void done()
+   {
+      adminOutlineView.removeRefreshWhenVisible();
+      viewSwitch.show( this, "main" );
+      adminOutlineView.addRefreshWhenVisible();
+   }
 }

@@ -36,71 +36,71 @@ import java.util.List;
  * JAVADOC
  */
 public class RolesModel
-        extends AbstractListModel
-    implements EventListener, Refreshable
+      extends AbstractListModel
+      implements EventListener, Refreshable
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Uses
-    private RolesClientResource roles;
+   @Uses
+   private RolesClientResource roles;
 
-    private List<ListItemValue> list;
+   private List<ListItemValue> list;
 
-    public int getSize()
-    {
-        return list == null ? 0 : list.size();
-    }
+   public int getSize()
+   {
+      return list == null ? 0 : list.size();
+   }
 
-    public Object getElementAt(int index)
-    {
-        return list == null ? null : list.get(index);
-    }
+   public Object getElementAt( int index )
+   {
+      return list == null ? null : list.get( index );
+   }
 
-    public void createRole(String description)
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(description);
-            roles.createRole(builder.newInstance());
+   public void createRole( String description )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( description );
+         roles.createRole( builder.newInstance() );
 
-        } catch (ResourceException e)
-        {
-            if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
-            {
-                throw new OperationException(AdministrationResources.could_not_create_role_name_already_exists, e);
-            }
-            throw new OperationException(AdministrationResources.could_not_create_role, e);
-        }
+      } catch (ResourceException e)
+      {
+         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
+         {
+            throw new OperationException( AdministrationResources.could_not_create_role_name_already_exists, e );
+         }
+         throw new OperationException( AdministrationResources.could_not_create_role, e );
+      }
 
-    }
+   }
 
-    public void removeRole(String id)
-    {
-        try
-        {
-            roles.role(id).deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_role, e);
-        }
-    }
+   public void removeRole( String id )
+   {
+      try
+      {
+         roles.role( id ).deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_role, e );
+      }
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            list = roles.roles().items().get();
-            fireContentsChanged(this, 0, list.size());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         list = roles.roles().items().get();
+         fireContentsChanged( this, 0, list.size() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
+   public void notifyEvent( DomainEvent event )
+   {
 
-    }
+   }
 }

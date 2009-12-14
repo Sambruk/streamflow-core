@@ -31,56 +31,56 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/tasktypes/{forms}/forms
  */
 public class FormDefinitionsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue forms()
-    {
-        String identity = getRequest().getAttributes().get("forms").toString();
+   public ListValue forms()
+   {
+      String identity = getRequest().getAttributes().get( "forms" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormsQueries forms = uow.get( FormsQueries.class, identity);
+      FormsQueries forms = uow.get( FormsQueries.class, identity );
 
-        checkPermission(forms);
+      checkPermission( forms );
 
-        return forms.applicableFormDefinitionList();
-    }
+      return forms.applicableFormDefinitionList();
+   }
 
-    public void removeForm(EntityReferenceDTO formReference) throws ResourceException
-    {
-        String identity = getRequest().getAttributes().get("forms").toString();
+   public void removeForm( EntityReferenceDTO formReference ) throws ResourceException
+   {
+      String identity = getRequest().getAttributes().get( "forms" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        Form form;
-        try
-        {
-            form = uow.get( Form.class, formReference.entity().get().identity());
+      Form form;
+      try
+      {
+         form = uow.get( Form.class, formReference.entity().get().identity() );
 
-            checkPermission( form );
-        } catch(NoSuchEntityException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
-        }
+         checkPermission( form );
+      } catch (NoSuchEntityException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND, e );
+      }
 
-        Forms forms = uow.get( Forms.class, identity);
+      Forms forms = uow.get( Forms.class, identity );
 
-        forms.removeForm( form );
-    }
+      forms.removeForm( form );
+   }
 
 
-    public void createForm(StringDTO formName)
-    {
-        String identity = getRequest().getAttributes().get("forms").toString();
+   public void createForm( StringDTO formName )
+   {
+      String identity = getRequest().getAttributes().get( "forms" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        Forms forms = uow.get(Forms.class, identity);
+      Forms forms = uow.get( Forms.class, identity );
 
-        checkPermission(forms);
+      checkPermission( forms );
 
-        Form form = forms.createForm();
-        form.changeDescription(formName.string().get());
-    }
-    
+      Form form = forms.createForm();
+      form.changeDescription( formName.string().get() );
+   }
+
 }

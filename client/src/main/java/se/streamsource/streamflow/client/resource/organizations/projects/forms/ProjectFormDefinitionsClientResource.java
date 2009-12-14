@@ -28,35 +28,35 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * /organizations/{organization}/projects/{project}/forms
  */
 public class ProjectFormDefinitionsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public ProjectFormDefinitionsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public ProjectFormDefinitionsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ProjectFormDefinitionClientResource form(int index)
-    {
-        return getSubResource(""+index, ProjectFormDefinitionClientResource.class);
-    }
-    
-    public ListValue forms() throws ResourceException
-    {
-        return query("forms", ListValue.class);
-    }
+   public ProjectFormDefinitionClientResource form( int index )
+   {
+      return getSubResource( "" + index, ProjectFormDefinitionClientResource.class );
+   }
 
-    public void addForm(EntityReferenceDTO formDTO) throws ResourceException
-    {
-        putCommand("addForm", formDTO);
-    }
+   public ListValue forms() throws ResourceException
+   {
+      return query( "forms", ListValue.class );
+   }
 
-    public void removeForm(EntityReferenceDTO formDTO) throws ResourceException
-    {
-        putCommand("removeForm", formDTO);
-    }
+   public void addForm( EntityReferenceDTO formDTO ) throws ResourceException
+   {
+      putCommand( "addForm", formDTO );
+   }
 
-    public void createForm(StringDTO stringDTO) throws ResourceException
-    {
-        putCommand("createForm", stringDTO);
-    }
+   public void removeForm( EntityReferenceDTO formDTO ) throws ResourceException
+   {
+      putCommand( "removeForm", formDTO );
+   }
+
+   public void createForm( StringDTO stringDTO ) throws ResourceException
+   {
+      putCommand( "createForm", stringDTO );
+   }
 }

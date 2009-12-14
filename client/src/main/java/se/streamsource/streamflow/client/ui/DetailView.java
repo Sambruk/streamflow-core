@@ -16,12 +16,12 @@ package se.streamsource.streamflow.client.ui;
 
 import org.restlet.resource.ResourceException;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 /**
  * JAVADOC
  */
 public interface DetailView
 {
-    JComponent detailView() throws ResourceException;
+   JComponent detailView() throws ResourceException;
 }

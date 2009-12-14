@@ -28,58 +28,60 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(SelectedTaskTypes.Mixin.class)
 public interface SelectedTaskTypes
 {
-    void addSelectedTaskType( TaskType taskType );
-    void removeSelectedTaskType( TaskType taskType );
+   void addSelectedTaskType( TaskType taskType );
 
-    interface Data
-    {
-        ManyAssociation<TaskType> selectedTaskTypes();
+   void removeSelectedTaskType( TaskType taskType );
 
-        ListValue possibleTaskTypes(ManyAssociation<TaskType> taskTypes);
+   interface Data
+   {
+      ManyAssociation<TaskType> selectedTaskTypes();
 
-        void selectedTaskTypeAdded( DomainEvent event, TaskType taskType );
-        void selectedTaskTypeRemoved( DomainEvent event, TaskType taskType );
-    }
+      ListValue possibleTaskTypes( ManyAssociation<TaskType> taskTypes );
 
-    abstract class Mixin
-        implements SelectedTaskTypes, Data
-    {
-        @Structure
-        ValueBuilderFactory vbf;
+      void selectedTaskTypeAdded( DomainEvent event, TaskType taskType );
 
-        public void addSelectedTaskType( TaskType taskType )
-        {
-            selectedTaskTypeAdded(DomainEvent.CREATE, taskType );
-        }
+      void selectedTaskTypeRemoved( DomainEvent event, TaskType taskType );
+   }
 
-        public void removeSelectedTaskType( TaskType taskType )
-        {
-            selectedTaskTypeRemoved(DomainEvent.CREATE, taskType );
-        }
+   abstract class Mixin
+         implements SelectedTaskTypes, Data
+   {
+      @Structure
+      ValueBuilderFactory vbf;
 
-        public void selectedTaskTypeAdded( DomainEvent event, TaskType taskType )
-        {
-            selectedTaskTypes().add( taskType );
-        }
+      public void addSelectedTaskType( TaskType taskType )
+      {
+         selectedTaskTypeAdded( DomainEvent.CREATE, taskType );
+      }
 
-        public void selectedTaskTypeRemoved( DomainEvent event, TaskType taskType )
-        {
-            selectedTaskTypes().remove( taskType );
-        }
+      public void removeSelectedTaskType( TaskType taskType )
+      {
+         selectedTaskTypeRemoved( DomainEvent.CREATE, taskType );
+      }
 
-        public ListValue possibleTaskTypes( ManyAssociation<TaskType> taskTypes )
-        {
-            ListValueBuilder builder = new ListValueBuilder(vbf);
+      public void selectedTaskTypeAdded( DomainEvent event, TaskType taskType )
+      {
+         selectedTaskTypes().add( taskType );
+      }
 
-            for (TaskType taskType : taskTypes)
+      public void selectedTaskTypeRemoved( DomainEvent event, TaskType taskType )
+      {
+         selectedTaskTypes().remove( taskType );
+      }
+
+      public ListValue possibleTaskTypes( ManyAssociation<TaskType> taskTypes )
+      {
+         ListValueBuilder builder = new ListValueBuilder( vbf );
+
+         for (TaskType taskType : taskTypes)
+         {
+            if (!selectedTaskTypes().contains( taskType ))
             {
-                if (!selectedTaskTypes().contains( taskType ))
-                {
-                    builder.addDescribable( taskType );
-                }
+               builder.addDescribable( taskType );
             }
+         }
 
-            return builder.newList();
-        }
-    }
+         return builder.newList();
+      }
+   }
 }

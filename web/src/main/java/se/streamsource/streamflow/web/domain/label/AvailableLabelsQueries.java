@@ -21,5 +21,5 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
  */
 public interface AvailableLabelsQueries
 {
-    ListValue availableLabels();
+   ListValue availableLabels();
 }

@@ -21,9 +21,11 @@ import org.qi4j.api.property.Property;
  * Configuration for the MySQL DataSource
  */
 public interface MySQLDatabaseConfiguration
-    extends ConfigurationComposite
+      extends ConfigurationComposite
 {
-    Property<String> host();
-    Property<String> username();
-    Property<String> password();
+   Property<String> host();
+
+   Property<String> username();
+
+   Property<String> password();
 }

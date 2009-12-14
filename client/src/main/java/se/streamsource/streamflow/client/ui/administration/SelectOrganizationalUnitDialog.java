@@ -29,106 +29,112 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 public class SelectOrganizationalUnitDialog
-    extends JPanel {
+      extends JPanel
+{
 
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    private JXTree tree;
+   private JXTree tree;
 
-    private AdministrationModel model;
+   private AdministrationModel model;
 
-    private EntityReference target;
+   private EntityReference target;
 
-    public SelectOrganizationalUnitDialog(@Service ApplicationContext context,
-                              @Uses final AdministrationModel model) throws Exception
-    {
-        super(new BorderLayout());
-        setActionMap(context.getActionMap(this));
-        this.model = model;
+   public SelectOrganizationalUnitDialog( @Service ApplicationContext context,
+                                          @Uses final AdministrationModel model ) throws Exception
+   {
+      super( new BorderLayout() );
+      setActionMap( context.getActionMap( this ) );
+      this.model = model;
 
-        tree = new JXTree(model);
+      tree = new JXTree( model );
 
-        tree.setRootVisible(false);
-        tree.setShowsRootHandles(true);
+      tree.setRootVisible( false );
+      tree.setShowsRootHandles( true );
 
-        DefaultTreeRenderer renderer = new DefaultTreeRenderer(new WrappingProvider(
-                new IconValue()
-                {
-                    public Icon getIcon(Object o)
-                    {
-                        if (o instanceof AccountAdministrationNode)
-                            return i18n.icon(Icons.account, i18n.ICON_24);
-                        else if (o instanceof OrganizationalUnitAdministrationNode)
-                            return i18n.icon(Icons.organization, i18n.ICON_24);
-                        else
-                            return NULL_ICON;
-                    }
-                },
-                new StringValue()
-                {
-                    public String getString(Object o)
-                    {
-                        if (o instanceof AdministrationNode)
-                            return "                            ";
-                        else if (o instanceof AccountAdministrationNode)
-                            return ((AccountAdministrationNode) o).accountModel().settings().name().get();
-                        else if (o instanceof OrganizationalUnitAdministrationNode)
-                            return ((OrganizationalUnitAdministrationNode) o).toString();
-                        else
-                            return "Unknown";
-                    }
-                },
-                false
-        ));
-        tree.setCellRenderer(renderer);
-
-        JPanel toolbar = new JPanel();
-        toolbar.setBorder(BorderFactory.createEtchedBorder());
-
-        add(BorderLayout.CENTER, tree);
-        this.setPreferredSize(new Dimension(100,200));
-    }
-
-    @Action
-    public void execute()
-    {
-        if(tree.getSelectionPath() == null){
-            dialogs.showOkCancelHelpDialog(
-                    WindowUtils.findWindow(this),
-                    new JLabel(i18n.text(AdministrationResources.nothing_selected)));
-            return;
-        } else
-        {
-            if (tree.getSelectionPath().getLastPathComponent() instanceof AccountAdministrationNode)
+      DefaultTreeRenderer renderer = new DefaultTreeRenderer( new WrappingProvider(
+            new IconValue()
             {
-                dialogs.showOkCancelHelpDialog(
-                        WindowUtils.findWindow(this),
-                        new JLabel(i18n.text(AdministrationResources.selection_not_an_organizational_unit)));
-                return;
-            }
-        }
-        
-        OrganizationalUnitAdministrationNode selected =
-                   (OrganizationalUnitAdministrationNode)tree.getSelectionPath().getLastPathComponent();
+               public Icon getIcon( Object o )
+               {
+                  if (o instanceof AccountAdministrationNode)
+                     return i18n.icon( Icons.account, i18n.ICON_24 );
+                  else if (o instanceof OrganizationalUnitAdministrationNode)
+                     return i18n.icon( Icons.organization, i18n.ICON_24 );
+                  else
+                     return NULL_ICON;
+               }
+            },
+            new StringValue()
+            {
+               public String getString( Object o )
+               {
+                  if (o instanceof AdministrationNode)
+                     return "                            ";
+                  else if (o instanceof AccountAdministrationNode)
+                     return ((AccountAdministrationNode) o).accountModel().settings().name().get();
+                  else if (o instanceof OrganizationalUnitAdministrationNode)
+                     return ((OrganizationalUnitAdministrationNode) o).toString();
+                  else
+                     return "Unknown";
+               }
+            },
+            false
+      ) );
+      tree.setCellRenderer( renderer );
 
-        target = selected.ou().entity().get();
+      JPanel toolbar = new JPanel();
+      toolbar.setBorder( BorderFactory.createEtchedBorder() );
 
-        WindowUtils.findWindow(this).dispose();
-    }
+      add( BorderLayout.CENTER, tree );
+      this.setPreferredSize( new Dimension( 100, 200 ) );
+   }
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void execute()
+   {
+      if (tree.getSelectionPath() == null)
+      {
+         dialogs.showOkCancelHelpDialog(
+               WindowUtils.findWindow( this ),
+               new JLabel( i18n.text( AdministrationResources.nothing_selected ) ) );
+         return;
+      } else
+      {
+         if (tree.getSelectionPath().getLastPathComponent() instanceof AccountAdministrationNode)
+         {
+            dialogs.showOkCancelHelpDialog(
+                  WindowUtils.findWindow( this ),
+                  new JLabel( i18n.text( AdministrationResources.selection_not_an_organizational_unit ) ) );
+            return;
+         }
+      }
 
-    public EntityReference target()
-    {
-        return target;
-    }
+      OrganizationalUnitAdministrationNode selected =
+            (OrganizationalUnitAdministrationNode) tree.getSelectionPath().getLastPathComponent();
+
+      target = selected.ou().entity().get();
+
+      WindowUtils.findWindow( this ).dispose();
+   }
+
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
+
+   public EntityReference target()
+   {
+      return target;
+   }
 }

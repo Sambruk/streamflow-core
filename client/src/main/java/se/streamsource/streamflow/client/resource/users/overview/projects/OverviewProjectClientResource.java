@@ -25,20 +25,20 @@ import se.streamsource.streamflow.client.resource.users.overview.projects.waitin
  * JAVADOC
  */
 public class OverviewProjectClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public OverviewProjectClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public OverviewProjectClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public OverviewProjectAssignmentsClientResource assignments()
-    {
-        return getSubResource("assignments", OverviewProjectAssignmentsClientResource.class);
-    }
+   public OverviewProjectAssignmentsClientResource assignments()
+   {
+      return getSubResource( "assignments", OverviewProjectAssignmentsClientResource.class );
+   }
 
-    public OverviewProjectWaitingForClientResource waitingFor()
-    {
-        return getSubResource("waitingfor", OverviewProjectWaitingForClientResource.class);
-    }
+   public OverviewProjectWaitingForClientResource waitingFor()
+   {
+      return getSubResource( "waitingfor", OverviewProjectWaitingForClientResource.class );
+   }
 }

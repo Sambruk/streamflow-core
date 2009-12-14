@@ -19,5 +19,5 @@ package se.streamsource.streamflow.client.ui.status;
  */
 public @interface StatusMessage
 {
-    StatusResources value();
+   StatusResources value();
 }

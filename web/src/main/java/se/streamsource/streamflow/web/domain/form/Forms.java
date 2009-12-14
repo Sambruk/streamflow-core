@@ -31,75 +31,78 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Forms.Mixin.class)
 public interface Forms
 {
-    Form createForm();
-    Form createFormFromTemplate( FormTemplate template);
-    void removeForm( Form form );
+   Form createForm();
 
-    interface Data
-    {
-        ManyAssociation<Form> forms();
+   Form createFormFromTemplate( FormTemplate template );
 
-        FormEntity createdForm(DomainEvent event, String id, @Optional FormTemplate template);
-        void removedForm( DomainEvent event, Form removedForm);
+   void removeForm( Form form );
 
-        FormEntity getFormByName(String name);
-    }
+   interface Data
+   {
+      ManyAssociation<Form> forms();
 
-    abstract class Mixin
-        implements Forms, Data
-    {
-        @Service
-        IdentityGenerator idGen;
+      FormEntity createdForm( DomainEvent event, String id, @Optional FormTemplate template );
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      void removedForm( DomainEvent event, Form removedForm );
 
-        public Form createForm()
-        {
-            FormEntity form = createdForm( DomainEvent.CREATE,  idGen.generate( FormEntity.class ), null);
+      FormEntity getFormByName( String name );
+   }
 
-            return form;
-        }
+   abstract class Mixin
+         implements Forms, Data
+   {
+      @Service
+      IdentityGenerator idGen;
 
-        public Form createFormFromTemplate( FormTemplate template )
-        {
-            FormEntity form = createdForm( DomainEvent.CREATE,  idGen.generate( FormEntity.class ), template);
+      @Structure
+      UnitOfWorkFactory uowf;
 
-            form.synchronizeWithTemplate();
+      public Form createForm()
+      {
+         FormEntity form = createdForm( DomainEvent.CREATE, idGen.generate( FormEntity.class ), null );
 
-            return form;
-        }
+         return form;
+      }
 
-        public void removeForm( Form form )
-        {
-            if (!forms().contains( form ))
-                return;
+      public Form createFormFromTemplate( FormTemplate template )
+      {
+         FormEntity form = createdForm( DomainEvent.CREATE, idGen.generate( FormEntity.class ), template );
 
-            removedForm( DomainEvent.CREATE, form );
-        }
+         form.synchronizeWithTemplate();
 
-        public FormEntity createdForm( DomainEvent event, String id, FormTemplate template )
-        {
-            EntityBuilder<FormEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FormEntity.class, id );
-            builder.instance().template().set( template );
-            FormEntity form = builder.newInstance();
-            forms().add( form );
-            return form;
-        }
+         return form;
+      }
 
-        public void projectFormDefinitionAdded( DomainEvent event, Form addedForm )
-        {
-            forms().add( addedForm );
-        }
+      public void removeForm( Form form )
+      {
+         if (!forms().contains( form ))
+            return;
 
-        public void removedForm( DomainEvent event, Form removedForm )
-        {
-            forms().remove( removedForm );
-        }
+         removedForm( DomainEvent.CREATE, form );
+      }
 
-        public FormEntity getFormByName( String name )
-        {
-            return (FormEntity) Describable.Mixin.getDescribable( forms(), name );
-        }
-    }
+      public FormEntity createdForm( DomainEvent event, String id, FormTemplate template )
+      {
+         EntityBuilder<FormEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FormEntity.class, id );
+         builder.instance().template().set( template );
+         FormEntity form = builder.newInstance();
+         forms().add( form );
+         return form;
+      }
+
+      public void projectFormDefinitionAdded( DomainEvent event, Form addedForm )
+      {
+         forms().add( addedForm );
+      }
+
+      public void removedForm( DomainEvent event, Form removedForm )
+      {
+         forms().remove( removedForm );
+      }
+
+      public FormEntity getFormByName( String name )
+      {
+         return (FormEntity) Describable.Mixin.getDescribable( forms(), name );
+      }
+   }
 }

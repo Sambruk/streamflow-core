@@ -19,31 +19,31 @@ package se.streamsource.streamflow.client;
  */
 public enum Icons
 {
-    // General
-    add,
-    remove,
-    refresh,
+   // General
+   add,
+   remove,
+   refresh,
 
-    user,
-    projects,
-    project,
+   user,
+   projects,
+   project,
 
-    assign,
-    forward,
-    delegate,
-    waitingfor,
+   assign,
+   forward,
+   delegate,
+   waitingfor,
 
-    details,
-    inbox,
+   details,
+   inbox,
 
-    // Tabs
-    general,
-    metadata,
-    comments,
-    attachments,
+   // Tabs
+   general,
+   metadata,
+   comments,
+   attachments,
 
-    // Admin
-    account,
-    deleteLabel, organization,
+   // Admin
+   account,
+   deleteLabel, organization,
 
 }

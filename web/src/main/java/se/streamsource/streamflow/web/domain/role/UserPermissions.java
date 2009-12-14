@@ -23,5 +23,5 @@ import java.security.PermissionCollection;
  */
 public interface UserPermissions
 {
-    PermissionCollection getPermissions( UserAuthentication user);
+   PermissionCollection getPermissions( UserAuthentication user );
 }

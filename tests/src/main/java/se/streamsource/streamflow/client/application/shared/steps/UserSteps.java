@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.hamcrest.CoreMatchers;
-import static org.jbehave.Ensure.ensureThat;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
@@ -23,54 +22,56 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 
+import static org.jbehave.Ensure.*;
+
 /**
  * JAVADOC
  */
 public class UserSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    OrganizationsSteps organizationsSteps;
+   @Uses
+   OrganizationsSteps organizationsSteps;
 
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    @When("user changes password from $oldPassword to $newPassword")
-    public void changePassword(String oldPassword, String newPassword) throws UnitOfWorkCompletionException
-    {
-        UserEntity user = organizationsSteps.givenUser;
-        ensureThat(user, CoreMatchers.notNullValue());
+   @When("user changes password from $oldPassword to $newPassword")
+   public void changePassword( String oldPassword, String newPassword ) throws UnitOfWorkCompletionException
+   {
+      UserEntity user = organizationsSteps.givenUser;
+      ensureThat( user, CoreMatchers.notNullValue() );
 
-        try
-        {
-            user.changePassword(oldPassword, newPassword);
-        } catch (Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
-
-
-    @When("user tries to login with password $password")
-    public void login(String password) throws UnitOfWorkCompletionException
-    {
-        organizationsSteps.givenUser.login(password);
-    }
+      try
+      {
+         user.changePassword( oldPassword, newPassword );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
 
-    @When("user enabled is set to $state")
-    public void setEnabled(String state) throws UnitOfWorkCompletionException
-    {
-        organizationsSteps.givenUser.changeEnabled(Boolean.parseBoolean(state));
-    }
+   @When("user tries to login with password $password")
+   public void login( String password ) throws UnitOfWorkCompletionException
+   {
+      organizationsSteps.givenUser.login( password );
+   }
 
-    @When("user resets password with $newPassword")
-    public void resetPassword(String newPassword) throws UnitOfWorkCompletionException
-    {
-        UserEntity user = organizationsSteps.givenUser;
-        ensureThat(user, CoreMatchers.notNullValue());
 
-        user.resetPassword(newPassword);
-    }
+   @When("user enabled is set to $state")
+   public void setEnabled( String state ) throws UnitOfWorkCompletionException
+   {
+      organizationsSteps.givenUser.changeEnabled( Boolean.parseBoolean( state ) );
+   }
+
+   @When("user resets password with $newPassword")
+   public void resetPassword( String newPassword ) throws UnitOfWorkCompletionException
+   {
+      UserEntity user = organizationsSteps.givenUser;
+      ensureThat( user, CoreMatchers.notNullValue() );
+
+      user.resetPassword( newPassword );
+   }
 
 }

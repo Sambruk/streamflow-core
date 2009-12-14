@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import javax.swing.*;
+import javax.swing.JTree;
 import java.util.ArrayList;
 
 /**
@@ -24,37 +24,37 @@ import java.util.ArrayList;
  */
 public class TreeState
 {
-    ArrayList<Integer> expandedRows = new ArrayList<Integer>();
-    int[] selectedRows;
+   ArrayList<Integer> expandedRows = new ArrayList<Integer>();
+   int[] selectedRows;
 
-    JTree tree;
+   JTree tree;
 
-    public TreeState(JTree tree)
-    {
-        this.tree = tree;
-    }
+   public TreeState( JTree tree )
+   {
+      this.tree = tree;
+   }
 
-    public void save()
-    {
-        expandedRows.clear();
-        for (int i = 0; i < tree.getRowCount(); i++)
-        {
-            if (tree.isExpanded(i))
-                expandedRows.add(i);
-        }
-        selectedRows = tree.getSelectionRows();
-    }
+   public void save()
+   {
+      expandedRows.clear();
+      for (int i = 0; i < tree.getRowCount(); i++)
+      {
+         if (tree.isExpanded( i ))
+            expandedRows.add( i );
+      }
+      selectedRows = tree.getSelectionRows();
+   }
 
-    public void restore()
-    {
-        for (int i = 0; i < tree.getRowCount(); i++)
-        {
-            if (expandedRows.contains(i))
-                tree.expandRow(i);
-            else
-                tree.collapseRow(i);
-        }
+   public void restore()
+   {
+      for (int i = 0; i < tree.getRowCount(); i++)
+      {
+         if (expandedRows.contains( i ))
+            tree.expandRow( i );
+         else
+            tree.collapseRow( i );
+      }
 
-        tree.setSelectionRows(selectedRows);
-    }
+      tree.setSelectionRows( selectedRows );
+   }
 }

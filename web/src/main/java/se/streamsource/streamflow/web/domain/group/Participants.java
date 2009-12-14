@@ -31,86 +31,89 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Participants.Mixin.class)
 public interface Participants
 {
-    void addParticipant(Participant newParticipant);
+   void addParticipant( Participant newParticipant );
 
-    void removeParticipant(Participant participant);
+   void removeParticipant( Participant participant );
 
-    interface Data
-    {
-        ManyAssociation<Participant> participants();
+   interface Data
+   {
+      ManyAssociation<Participant> participants();
 
 
-        void addedParticipant(DomainEvent event, Participant participant);
-        void removedParticipant(DomainEvent event, Participant participant);
-    }
+      void addedParticipant( DomainEvent event, Participant participant );
 
-    abstract class Mixin
-            implements Participants, Data
-    {
-        @Structure
-        ValueBuilderFactory vbf;
+      void removedParticipant( DomainEvent event, Participant participant );
+   }
 
-        @This
-        Group group;
+   abstract class Mixin
+         implements Participants, Data
+   {
+      @Structure
+      ValueBuilderFactory vbf;
 
-        public void addParticipant(Participant participant)
-        {
-            if (!participants().contains(participant))
+      @This
+      Group group;
+
+      public void addParticipant( Participant participant )
+      {
+         if (!participants().contains( participant ))
+         {
+            addedParticipant( DomainEvent.CREATE, participant );
+            participant.joinGroup( group );
+         }
+      }
+
+      public void removeParticipant( Participant participant )
+      {
+         if (participants().contains( participant ))
+         {
+            removedParticipant( DomainEvent.CREATE, participant );
+            participant.leaveGroup( group );
+         }
+      }
+
+      // Events
+
+      public void addedParticipant( DomainEvent event, Participant participant )
+      {
+         participants().add( participant );
+      }
+
+      public void removedParticipant( DomainEvent event, Participant participant )
+      {
+         participants().remove( participant );
+      }
+
+   }
+
+   class RemovableSideEffect
+         extends SideEffectOf<Removable>
+         implements Removable
+   {
+      @This
+      Participants.Data state;
+
+      @This
+      Participants participants;
+
+      public boolean removeEntity()
+      {
+         if (result.removeEntity())
+         {
+            // Make participants leave
+            for (Participant participant : state.participants().toList())
             {
-                addedParticipant(DomainEvent.CREATE, participant);
-                participant.joinGroup(group);
+               participants.removeParticipant( participant );
             }
-        }
+         }
 
-        public void removeParticipant(Participant participant)
-        {
-            if (participants().contains(participant))
-            {
-                removedParticipant(DomainEvent.CREATE, participant);
-                participant.leaveGroup(group);
-            }
-        }
+         return true;
+      }
 
-        // Events
-        public void addedParticipant(DomainEvent event, Participant participant)
-        {
-            participants().add(participant);
-        }
-
-        public void removedParticipant(DomainEvent event, Participant participant)
-        {
-            participants().remove(participant);
-        }
-
-    }
-
-    class RemovableSideEffect
-            extends SideEffectOf<Removable>
-            implements Removable
-    {
-        @This
-        Participants.Data state;
-
-        @This Participants participants;
-
-        public boolean removeEntity()
-        {
-            if (result.removeEntity())
-            {
-                // Make participants leave
-                for (Participant participant : state.participants().toList())
-                {
-                    participants.removeParticipant(participant);
-                }
-            }
-
-            return true;
-        }
-
-        public boolean reinstate()
-        {
-            return result.reinstate();
-        }
-    }
+      public boolean reinstate()
+      {
+         return result.reinstate();
+      }
+   }
 
 }

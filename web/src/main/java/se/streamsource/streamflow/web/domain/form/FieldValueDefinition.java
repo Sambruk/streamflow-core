@@ -16,8 +16,8 @@ package se.streamsource.streamflow.web.domain.form;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -25,21 +25,21 @@ import se.streamsource.streamflow.domain.form.FieldValue;
 @Mixins(FieldValueDefinition.Mixin.class)
 public interface FieldValueDefinition
 {
-    void changeFieldValue(FieldValue fieldValue);
+   void changeFieldValue( FieldValue fieldValue );
 
-    interface Data
-    {
-        Property<FieldValue> fieldValue();
+   interface Data
+   {
+      Property<FieldValue> fieldValue();
 
-        void changedFieldValue( DomainEvent event, FieldValue fieldValue);
-    }
+      void changedFieldValue( DomainEvent event, FieldValue fieldValue );
+   }
 
-    abstract class Mixin
-        implements Data
-    {
-        public void changedFieldValue( DomainEvent event, FieldValue fieldValue )
-        {
-            fieldValue().set( fieldValue );
-        }
-    }
+   abstract class Mixin
+         implements Data
+   {
+      public void changedFieldValue( DomainEvent event, FieldValue fieldValue )
+      {
+         fieldValue().set( fieldValue );
+      }
+   }
 }

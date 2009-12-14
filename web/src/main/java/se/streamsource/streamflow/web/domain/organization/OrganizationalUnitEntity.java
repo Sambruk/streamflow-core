@@ -26,17 +26,17 @@ import se.streamsource.streamflow.web.domain.role.UserPermissions;
  * JAVADOC
  */
 public interface OrganizationalUnitEntity
-        extends
-        OrganizationalUnit,
-        DomainEntity,
-        OwningOrganization,
-        Describable.Data,
-        OrganizationalUnitRefactoring.Data,
-        OrganizationalUnits.Data,
-        Groups.Data,
-        Projects.Data,
-        Removable.Data,
-        RolePolicy.Data,
-        UserPermissions
+      extends
+      OrganizationalUnit,
+      DomainEntity,
+      OwningOrganization,
+      Describable.Data,
+      OrganizationalUnitRefactoring.Data,
+      OrganizationalUnits.Data,
+      Groups.Data,
+      Projects.Data,
+      Removable.Data,
+      RolePolicy.Data,
+      UserPermissions
 {
 }

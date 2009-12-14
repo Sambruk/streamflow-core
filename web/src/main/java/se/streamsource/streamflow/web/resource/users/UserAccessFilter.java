@@ -18,19 +18,19 @@ import org.restlet.Response;
 import org.restlet.routing.Filter;
 
 public class UserAccessFilter
-        extends Filter
+      extends Filter
 {
 
-    @Override
-    protected int beforeHandle(Request request, Response response)
-    {
-        // TODO Fix this, what is it supposed to do??
+   @Override
+   protected int beforeHandle( Request request, Response response )
+   {
+      // TODO Fix this, what is it supposed to do??
 
-        //UserPrincipal userPrincipal = subject.getPrincipals(UserPrincipal.class).iterator().next();
-        //if (!userId.equals(userPrincipal.getName()))
-        //{
-        //    response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-        //}
-        return super.beforeHandle(request, response);
-    }
+      //UserPrincipal userPrincipal = subject.getPrincipals(UserPrincipal.class).iterator().next();
+      //if (!userId.equals(userPrincipal.getName()))
+      //{
+      //    response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+      //}
+      return super.beforeHandle( request, response );
+   }
 }

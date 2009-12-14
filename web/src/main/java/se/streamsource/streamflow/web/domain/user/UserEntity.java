@@ -35,36 +35,36 @@ import se.streamsource.streamflow.web.domain.task.WaitingFor;
  */
 @Mixins(UserEntity.LifecycleMixin.class)
 public interface UserEntity
-        extends DomainEntity, User,
+      extends DomainEntity, User,
 
-        // Data
-        Inbox.Data,
-        Assignments.Data,
-        Delegations.Data,
-        WaitingFor.Data,
-        Contactable.Data,
-        OrganizationParticipations.Data,
-        Describable.Data,
-        Labels.Data,
-        Participation.Data,
-        UserAuthentication.Data
+      // Data
+      Inbox.Data,
+      Assignments.Data,
+      Delegations.Data,
+      WaitingFor.Data,
+      Contactable.Data,
+      OrganizationParticipations.Data,
+      Describable.Data,
+      Labels.Data,
+      Participation.Data,
+      UserAuthentication.Data
 {
-    public static final String ADMINISTRATOR_USERNAME = "administrator";
+   public static final String ADMINISTRATOR_USERNAME = "administrator";
 
-    abstract class LifecycleMixin
-        extends Describable.Mixin
-            implements Lifecycle
-    {
-        @This
-        Identity identity;
+   abstract class LifecycleMixin
+         extends Describable.Mixin
+         implements Lifecycle
+   {
+      @This
+      Identity identity;
 
-        public void create() throws LifecycleException
-        {
-            description().set(identity.identity().get());
-        }
+      public void create() throws LifecycleException
+      {
+         description().set( identity.identity().get() );
+      }
 
-        public void remove() throws LifecycleException
-        {
-        }
-    }
+      public void remove() throws LifecycleException
+      {
+      }
+   }
 }

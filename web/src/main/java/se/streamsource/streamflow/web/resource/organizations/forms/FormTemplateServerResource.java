@@ -28,40 +28,39 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 /**
  * Mapped to:
  * /organizations/{organization}/forms/{template}
- *
-*/
- public class FormTemplateServerResource
-        extends CommandQueryServerResource
+ */
+public class FormTemplateServerResource
+      extends CommandQueryServerResource
 {
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String identity = getRequest().getAttributes().get("organization").toString();
-        FormTemplates templates = uowf.currentUnitOfWork().get( FormTemplates.class, identity);
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
+      FormTemplates templates = uowf.currentUnitOfWork().get( FormTemplates.class, identity );
 
-        checkPermission( templates );
+      checkPermission( templates );
 
-        String formId = getRequest().getAttributes().get("template").toString();
-        FormTemplate template = uow.get( FormTemplate.class, formId);
+      String formId = getRequest().getAttributes().get( "template" ).toString();
+      FormTemplate template = uow.get( FormTemplate.class, formId );
 
-        templates.removeFormTemplate( template );
-    }
+      templates.removeFormTemplate( template );
+   }
 
-    public ListValue fields() throws ResourceException
-    {
-        String formId = getRequest().getAttributes().get("template").toString();
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public ListValue fields() throws ResourceException
+   {
+      String formId = getRequest().getAttributes().get( "template" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        Fields.Data fields;
-        try
-        {
-            fields = uow.get(Fields.Data.class, formId);
-        } catch(NoSuchEntityException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
-        }
+      Fields.Data fields;
+      try
+      {
+         fields = uow.get( Fields.Data.class, formId );
+      } catch (NoSuchEntityException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND, e );
+      }
 
-        return new ListValueBuilder(vbf).addDescribableItems( fields.fields()).newList();
-    }
+      return new ListValueBuilder( vbf ).addDescribableItems( fields.fields() ).newList();
+   }
 }

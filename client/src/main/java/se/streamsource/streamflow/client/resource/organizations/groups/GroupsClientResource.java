@@ -27,31 +27,31 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class GroupsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public GroupsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public GroupsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ListValue groups() throws ResourceException
-    {
-        return query("groups", ListValue.class);
-    }
+   public ListValue groups() throws ResourceException
+   {
+      return query( "groups", ListValue.class );
+   }
 
-    @Override
-    public Representation get() throws ResourceException
-    {
-        return super.get();
-    }
+   @Override
+   public Representation get() throws ResourceException
+   {
+      return super.get();
+   }
 
-    public GroupClientResource group(String id)
-    {
-        return getSubResource(id, GroupClientResource.class);
-    }
+   public GroupClientResource group( String id )
+   {
+      return getSubResource( id, GroupClientResource.class );
+   }
 
-    public void createGroup(StringDTO name) throws ResourceException
-    {
-        postCommand("createGroup",name);
-    }
+   public void createGroup( StringDTO name ) throws ResourceException
+   {
+      postCommand( "createGroup", name );
+   }
 }

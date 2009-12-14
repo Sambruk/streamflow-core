@@ -24,73 +24,72 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 
 /**
  * Model for the list of currently selected labels of a task
- *
  */
 public class TaskLabelsModel
-    extends AbstractListModel
-    implements EventListener
+      extends AbstractListModel
+      implements EventListener
 {
-    @Uses
-    TaskGeneralClientResource resource;
+   @Uses
+   TaskGeneralClientResource resource;
 
-    List<ListItemValue> labels;
+   List<ListItemValue> labels;
 
-    public void setLabels(ListValue labels)
-    {
-        this.labels = labels.items().get();
+   public void setLabels( ListValue labels )
+   {
+      this.labels = labels.items().get();
 
-        fireContentsChanged(this, 0, this.labels.size());
-    }
+      fireContentsChanged( this, 0, this.labels.size() );
+   }
 
-    public int getSize()
-    {
-        return labels == null ? 0 : labels.size();
-    }
+   public int getSize()
+   {
+      return labels == null ? 0 : labels.size();
+   }
 
-    public ListItemValue getElementAt(int index)
-    {
-        return labels == null ? null : labels.get(index);
-    }
+   public ListItemValue getElementAt( int index )
+   {
+      return labels == null ? null : labels.get( index );
+   }
 
-    public void addLabel(EntityReference addLabel)
-    {
-        try
-        {
-            resource.addLabel(addLabel.identity());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_add_label, e);
-        }
-    }
+   public void addLabel( EntityReference addLabel )
+   {
+      try
+      {
+         resource.addLabel( addLabel.identity() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_add_label, e );
+      }
+   }
 
-    public void removeLabel(EntityReference removeLabel)
-    {
-        int idx = -1;
-        for (int i = 0; i < labels.size(); i++)
-        {
-            ListItemValue listItemValue = labels.get(i);
-            if (listItemValue.entity().get().equals(removeLabel))
-                idx = i;
-        }
+   public void removeLabel( EntityReference removeLabel )
+   {
+      int idx = -1;
+      for (int i = 0; i < labels.size(); i++)
+      {
+         ListItemValue listItemValue = labels.get( i );
+         if (listItemValue.entity().get().equals( removeLabel ))
+            idx = i;
+      }
 
-        try
-        {
-            resource.removeLabel(removeLabel.identity());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_remove_label, e);
-        }
+      try
+      {
+         resource.removeLabel( removeLabel.identity() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_remove_label, e );
+      }
 
-        if (idx != -1)
-            fireIntervalRemoved(this, idx, idx);
-    }
+      if (idx != -1)
+         fireIntervalRemoved( this, idx, idx );
+   }
 
-    public void notifyEvent(DomainEvent event)
-    {
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+   }
 }

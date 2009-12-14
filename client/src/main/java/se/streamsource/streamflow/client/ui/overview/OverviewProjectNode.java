@@ -18,8 +18,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -27,41 +27,41 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * JAVADOC
  */
 public class OverviewProjectNode
-        extends DefaultMutableTreeNode
-    implements EventListener
+      extends DefaultMutableTreeNode
+      implements EventListener
 {
-    @Uses
-    String projectName;
+   @Uses
+   String projectName;
 
-    public OverviewProjectNode(@Uses OverviewProjectClientResource projectClientResource,
+   public OverviewProjectNode( @Uses OverviewProjectClientResource projectClientResource,
                                @Uses OverviewProjectAssignmentsNode assignmentsNode,
                                @Uses OverviewProjectWaitingForNode waitingForNode,
-                               @Structure ObjectBuilderFactory obf)
-    {
-        super(projectClientResource);
+                               @Structure ObjectBuilderFactory obf )
+   {
+      super( projectClientResource );
 
-        add(assignmentsNode);
+      add( assignmentsNode );
 
-        add(waitingForNode);
-    }
+      add( waitingForNode );
+   }
 
-    public String projectName()
-    {
-        return projectName;
-    }
+   public String projectName()
+   {
+      return projectName;
+   }
 
-    @Override
-    public OverviewProjectsNode getParent()
-    {
-        return (OverviewProjectsNode) super.getParent();
-    }
+   @Override
+   public OverviewProjectsNode getParent()
+   {
+      return (OverviewProjectsNode) super.getParent();
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        for (Object child : children)
-        {
-            EventListener listener = (EventListener) child;
-            listener.notifyEvent( event );
-        }
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      for (Object child : children)
+      {
+         EventListener listener = (EventListener) child;
+         listener.notifyEvent( event );
+      }
+   }
 }

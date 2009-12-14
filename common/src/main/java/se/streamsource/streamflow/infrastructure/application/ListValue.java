@@ -24,8 +24,8 @@ import java.util.List;
  * A list of items with descriptions
  */
 public interface ListValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<ListItemValue>> items();
+   @UseDefaults
+   Property<List<ListItemValue>> items();
 }

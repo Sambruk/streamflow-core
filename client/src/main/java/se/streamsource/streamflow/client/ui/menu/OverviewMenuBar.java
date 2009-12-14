@@ -22,17 +22,17 @@ import javax.swing.JMenuBar;
  * Menu bar for the Workspace window
  */
 public class OverviewMenuBar
-        extends JMenuBar
+      extends JMenuBar
 {
-    public OverviewMenuBar(@Uses FileMenu fileMenu,
-                            @Uses ViewMenu viewMenu,
-                            @Uses WindowMenu windowMenu,
-                            @Uses HelpMenu helpMenu
-                            )
-    {
-        add(fileMenu);
-        add(viewMenu);
-        add(windowMenu);
-        add(helpMenu);
-    }
+   public OverviewMenuBar( @Uses FileMenu fileMenu,
+                           @Uses ViewMenu viewMenu,
+                           @Uses WindowMenu windowMenu,
+                           @Uses HelpMenu helpMenu
+   )
+   {
+      add( fileMenu );
+      add( viewMenu );
+      add( windowMenu );
+      add( helpMenu );
+   }
 }

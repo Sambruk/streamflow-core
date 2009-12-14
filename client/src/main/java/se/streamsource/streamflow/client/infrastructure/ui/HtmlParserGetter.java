@@ -21,8 +21,8 @@ import javax.swing.text.html.HTMLEditorKit;
  */
 public class HtmlParserGetter extends HTMLEditorKit
 {
-    public HTMLEditorKit.Parser getParser()
-    {
-        return super.getParser();
-    }
+   public HTMLEditorKit.Parser getParser()
+   {
+      return super.getParser();
+   }
 }

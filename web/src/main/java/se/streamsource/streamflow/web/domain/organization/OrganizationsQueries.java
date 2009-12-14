@@ -20,8 +20,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -34,57 +32,59 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 import java.util.List;
 
+import static org.qi4j.api.query.QueryExpressions.*;
+
 @Mixins(OrganizationsQueries.Mixin.class)
 public interface OrganizationsQueries
 {
-    public ListValue organizations();
+   public ListValue organizations();
 
-    public UserEntityListDTO users();
+   public UserEntityListDTO users();
 
-    class Mixin
-        implements OrganizationsQueries
-    {
-        @Structure
-        ValueBuilderFactory vbf;
+   class Mixin
+         implements OrganizationsQueries
+   {
+      @Structure
+      ValueBuilderFactory vbf;
 
-        @Structure
-        QueryBuilderFactory qbf;
+      @Structure
+      QueryBuilderFactory qbf;
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @This
-        Organizations.Data state;
+      @This
+      Organizations.Data state;
 
-        public ListValue organizations()
-        {
-            return new ListValueBuilder(vbf).addDescribableItems( state.getAllOrganizations() ).newList();
-        }
+      public ListValue organizations()
+      {
+         return new ListValueBuilder( vbf ).addDescribableItems( state.getAllOrganizations() ).newList();
+      }
 
-        public UserEntityListDTO users()
-        {
-            Query<UserEntity> usersQuery = qbf.newQueryBuilder(UserEntity.class).
-                    newQuery(uowf.currentUnitOfWork());
+      public UserEntityListDTO users()
+      {
+         Query<UserEntity> usersQuery = qbf.newQueryBuilder( UserEntity.class ).
+               newQuery( uowf.currentUnitOfWork() );
 
-            usersQuery.orderBy(orderBy(templateFor( UserAuthentication.Data.class).userName()));
+         usersQuery.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
 
 
-            ValueBuilder<UserEntityListDTO> listBuilder = vbf.newValueBuilder(UserEntityListDTO.class);
-            List<UserEntityDTO> userlist = listBuilder.prototype().users().get();
+         ValueBuilder<UserEntityListDTO> listBuilder = vbf.newValueBuilder( UserEntityListDTO.class );
+         List<UserEntityDTO> userlist = listBuilder.prototype().users().get();
 
-            ValueBuilder<UserEntityDTO> builder = vbf.newValueBuilder(UserEntityDTO.class);
+         ValueBuilder<UserEntityDTO> builder = vbf.newValueBuilder( UserEntityDTO.class );
 
-            for(UserEntity user : usersQuery)
-            {
-                builder.prototype().entity().set(EntityReference.getEntityReference(user));
-                builder.prototype().username().set(user.userName().get());
-                builder.prototype().disabled().set(user.disabled().get());
+         for (UserEntity user : usersQuery)
+         {
+            builder.prototype().entity().set( EntityReference.getEntityReference( user ) );
+            builder.prototype().username().set( user.userName().get() );
+            builder.prototype().disabled().set( user.disabled().get() );
 
-                userlist.add(builder.newInstance());
-            }
+            userlist.add( builder.newInstance() );
+         }
 
-            return listBuilder.newInstance();
+         return listBuilder.newInstance();
 
-        }
-    }
+      }
+   }
 }

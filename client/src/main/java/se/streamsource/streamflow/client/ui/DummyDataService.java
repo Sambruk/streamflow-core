@@ -22,7 +22,6 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Uniform;
@@ -36,72 +35,74 @@ import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import java.util.logging.Logger;
 
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
+
 /**
  * JAVADOC
  */
 @Mixins(DummyDataService.Mixin.class)
 public interface DummyDataService
-        extends ServiceComposite, Activatable
+      extends ServiceComposite, Activatable
 {
-    class Mixin
-            implements Activatable
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
+   class Mixin
+         implements Activatable
+   {
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @Structure
-        ValueBuilderFactory vbf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-        @Service
-        IndividualRepository individualRepository;
+      @Service
+      IndividualRepository individualRepository;
 
-        @Service
-        Uniform client;
+      @Service
+      Uniform client;
 
-        @Structure
-        Application app;
+      @Structure
+      Application app;
 
-        public void activate() throws Exception
-        {
-            if (!app.mode().equals(Application.Mode.development))
-                return;
+      public void activate() throws Exception
+      {
+         if (!app.mode().equals( Application.Mode.development ))
+            return;
 
-            try
-            {
-                UnitOfWork uow = uowf.newUnitOfWork(newUsecase("Create account"));
+         try
+         {
+            UnitOfWork uow = uowf.newUnitOfWork( newUsecase( "Create account" ) );
 
-                Individual individual = individualRepository.individual();
+            Individual individual = individualRepository.individual();
 
-                ValueBuilder<AccountSettingsValue> builder = vbf.newValueBuilder(AccountSettingsValue.class);
-                builder.prototype().name().set("Test server");
-                builder.prototype().server().set("http://localhost:8040/streamflow");
-                builder.prototype().userName().set("administrator");
-                builder.prototype().password().set("administrator");
+            ValueBuilder<AccountSettingsValue> builder = vbf.newValueBuilder( AccountSettingsValue.class );
+            builder.prototype().name().set( "Test server" );
+            builder.prototype().server().set( "http://localhost:8040/streamflow" );
+            builder.prototype().userName().set( "administrator" );
+            builder.prototype().password().set( "administrator" );
 
-                final Account account = individual.newAccount();
-                account.updateSettings(builder.newInstance());
+            final Account account = individual.newAccount();
+            account.updateSettings( builder.newInstance() );
 
 
-                StreamFlowClientResource server = account.server(client);
-                String response = server.version();
-                System.out.println(response);
-                UserClientResource user = account.server(client).users().user("administrator");
-                TasksQuery query = vbf.newValue(TasksQuery.class);
-                System.out.println(user.workspace().user().inbox().tasks(query).size());
+            StreamFlowClientResource server = account.server( client );
+            String response = server.version();
+            System.out.println( response );
+            UserClientResource user = account.server( client ).users().user( "administrator" );
+            TasksQuery query = vbf.newValue( TasksQuery.class );
+            System.out.println( user.workspace().user().inbox().tasks( query ).size() );
 
-                uow.complete();
+            uow.complete();
 
-            } catch (Exception e)
-            {
-                Logger.getLogger(getClass().getName()).warning("Could not create dummy account");
-                e.printStackTrace();
-            }
-        }
+         } catch (Exception e)
+         {
+            Logger.getLogger( getClass().getName() ).warning( "Could not create dummy account" );
+            e.printStackTrace();
+         }
+      }
 
-        public void passivate() throws Exception
-        {
-        }
+      public void passivate() throws Exception
+      {
+      }
 
-    }
+   }
 
 }

@@ -22,8 +22,8 @@ import org.qi4j.library.constraints.annotation.NotEmpty;
  * JAVADOC
  */
 public interface PermissionValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    @NotEmpty
-    Property<String> name();
+   @NotEmpty
+   Property<String> name();
 }

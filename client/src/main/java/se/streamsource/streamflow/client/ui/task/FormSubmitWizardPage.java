@@ -97,10 +97,10 @@ public class FormSubmitWizardPage
             fields.add(fieldBuilder.newInstance());
         }
 
-        submittedFormBuilder.prototype().values().set(fields);
-        submittedFormBuilder.prototype().form().set(model.formEntityReference());
-        return submittedFormBuilder.newInstance();
-    }
+      submittedFormBuilder.prototype().values().set( fields );
+      submittedFormBuilder.prototype().form().set( model.formEntityReference() );
+      return submittedFormBuilder.newInstance();
+   }
 
     public Map<EntityReference, TextField> getEnteredFields()
     {

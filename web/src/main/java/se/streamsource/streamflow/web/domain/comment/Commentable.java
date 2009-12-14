@@ -28,31 +28,32 @@ import java.util.List;
 @Mixins(Commentable.Mixin.class)
 public interface Commentable
 {
-    public void addComment(CommentValue comment);
+   public void addComment( CommentValue comment );
 
-    interface Data
-    {
-        @UseDefaults
-        Property<List<CommentValue>> comments();
-        void addedComment(DomainEvent event, CommentValue comment);
-    }
+   interface Data
+   {
+      @UseDefaults
+      Property<List<CommentValue>> comments();
 
-    abstract class Mixin
-            implements Commentable, Data
-    {
-        @This
-        Data state;
+      void addedComment( DomainEvent event, CommentValue comment );
+   }
 
-        public void addComment(CommentValue comment)
-        {
-            addedComment(DomainEvent.CREATE, comment);
-        }
+   abstract class Mixin
+         implements Commentable, Data
+   {
+      @This
+      Data state;
 
-        public void addedComment(DomainEvent event, CommentValue comment)
-        {
-            List<CommentValue> comments = state.comments().get();
-            comments.add(comment);
-            state.comments().set(comments);
-        }
-    }
+      public void addComment( CommentValue comment )
+      {
+         addedComment( DomainEvent.CREATE, comment );
+      }
+
+      public void addedComment( DomainEvent event, CommentValue comment )
+      {
+         List<CommentValue> comments = state.comments().get();
+         comments.add( comment );
+         state.comments().set( comments );
+      }
+   }
 }

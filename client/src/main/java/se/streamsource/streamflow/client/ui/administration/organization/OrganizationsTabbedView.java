@@ -15,19 +15,20 @@
 package se.streamsource.streamflow.client.ui.administration.organization;
 
 import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
 
-import javax.swing.*;
+import javax.swing.JTabbedPane;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class OrganizationsTabbedView
-    extends JTabbedPane
+      extends JTabbedPane
 {
-    public OrganizationsTabbedView(@Uses OrganizationsAdminView orgsUsers,
-                                   @Uses UsersAdministrationView userAdministration)
-    {
-        addTab(text(AdministrationResources.organizations_tab), orgsUsers);
-        addTab(text(AdministrationResources.users_tab), userAdministration);
-    }
+   public OrganizationsTabbedView( @Uses OrganizationsAdminView orgsUsers,
+                                   @Uses UsersAdministrationView userAdministration )
+   {
+      addTab( text( AdministrationResources.organizations_tab ), orgsUsers );
+      addTab( text( AdministrationResources.users_tab ), userAdministration );
+   }
 }

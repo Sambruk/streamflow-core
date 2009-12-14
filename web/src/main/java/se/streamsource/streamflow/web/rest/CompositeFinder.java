@@ -28,21 +28,21 @@ import se.streamsource.streamflow.web.resource.CompositeCommandQueryServerResour
  */
 public class CompositeFinder extends Finder
 {
-    @Structure
-    private ObjectBuilderFactory factory;
+   @Structure
+   private ObjectBuilderFactory factory;
 
-    @Structure
-    private TransientBuilderFactory compositeFactory;
+   @Structure
+   private TransientBuilderFactory compositeFactory;
 
-    public CompositeFinder()
-    {
-    }
+   public CompositeFinder()
+   {
+   }
 
-    @Override
-    public ServerResource create(Request request, Response response)
-    {
-        Object resource = compositeFactory.newTransientBuilder(getTargetClass()).use(request, response).newInstance();
+   @Override
+   public ServerResource create( Request request, Response response )
+   {
+      Object resource = compositeFactory.newTransientBuilder( getTargetClass() ).use( request, response ).newInstance();
 
-        return factory.newObjectBuilder(CompositeCommandQueryServerResource.class).use(resource).newInstance();
-    }
+      return factory.newObjectBuilder( CompositeCommandQueryServerResource.class ).use( resource ).newInstance();
+   }
 }

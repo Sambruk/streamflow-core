@@ -25,9 +25,10 @@ import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import static se.streamsource.streamflow.domain.task.TaskStates.*;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.user.User;
+
+import static se.streamsource.streamflow.domain.task.TaskStates.*;
 
 /**
  * JAVADOC
@@ -35,150 +36,153 @@ import se.streamsource.streamflow.web.domain.user.User;
 @Mixins(Inbox.InboxMixin.class)
 public interface Inbox
 {
-    Task createTask();
+   Task createTask();
 
-    void receiveTask(@HasStatus(ACTIVE) Task task);
+   void receiveTask( @HasStatus(ACTIVE) Task task );
 
-    void completeTask(@HasStatus(ACTIVE) Task task, Assignee assignee);
+   void completeTask( @HasStatus(ACTIVE) Task task, Assignee assignee );
 
-    void dropTask(@HasStatus(ACTIVE) Task task, Assignee assignee);
+   void dropTask( @HasStatus(ACTIVE) Task task, Assignee assignee );
 
-    void assignTo(@HasStatus(ACTIVE) Task task, Assignee assignee);
+   void assignTo( @HasStatus(ACTIVE) Task task, Assignee assignee );
 
-    void forwardTo( @HasStatus(ACTIVE) Task task, Inbox receiverInbox );
+   void forwardTo( @HasStatus(ACTIVE) Task task, Inbox receiverInbox );
 
-    void delegateTo(@HasStatus(ACTIVE) Task task, Delegatee delegatee, Delegator delegator);
+   void delegateTo( @HasStatus(ACTIVE) Task task, Delegatee delegatee, Delegator delegator );
 
-    void markAsRead(Task task);
+   void markAsRead( Task task );
 
-    void markAsUnread(Task task);
+   void markAsUnread( Task task );
 
-    void deleteTask( @HasStatus(ACTIVE) Task task );
+   void deleteTask( @HasStatus(ACTIVE) Task task );
 
-    interface Data
-    {
-        Task createdTask(DomainEvent event, String id);
-        void deletedTask(DomainEvent event, Task task);
-        void markedAsRead(DomainEvent event, Task task);
-        void markedAsUnread(DomainEvent event, Task task);
-        
-        ManyAssociation<Task> unreadInboxTasks();
-    }
+   interface Data
+   {
+      Task createdTask( DomainEvent event, String id );
 
-    abstract class InboxMixin
-            implements Inbox, Data
-    {
-        @This
-        Owner owner;
+      void deletedTask( DomainEvent event, Task task );
 
-        @This
-        WaitingFor waitingFor;
+      void markedAsRead( DomainEvent event, Task task );
 
-        @Structure
-        ValueBuilderFactory vbf;
+      void markedAsUnread( DomainEvent event, Task task );
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      ManyAssociation<Task> unreadInboxTasks();
+   }
 
-        @Service
-        IdentityGenerator idGenerator;
+   abstract class InboxMixin
+         implements Inbox, Data
+   {
+      @This
+      Owner owner;
 
-        public Task createTask()
-        {
-            TaskEntity taskEntity = (TaskEntity) createdTask(DomainEvent.CREATE, idGenerator.generate(TaskEntity.class));
-            taskEntity.changeOwner(owner);
-            taskEntity.addContact(vbf.newValue(ContactValue.class));
+      @This
+      WaitingFor waitingFor;
 
-            return taskEntity;
-        }
+      @Structure
+      ValueBuilderFactory vbf;
 
-        public void receiveTask(Task task)
-        {
-            task.unassign();
-            task.changeOwner(owner);
-            markAsUnread(task);
-        }
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public void completeTask(Task task, Assignee assignee)
-        {
-            task.assignTo(assignee);
-            task.complete();
-        }
+      @Service
+      IdentityGenerator idGenerator;
 
-        public void dropTask(Task task, Assignee assignee)
-        {
-            task.assignTo(assignee);
-            task.drop();
-        }
+      public Task createTask()
+      {
+         TaskEntity taskEntity = (TaskEntity) createdTask( DomainEvent.CREATE, idGenerator.generate( TaskEntity.class ) );
+         taskEntity.changeOwner( owner );
+         taskEntity.addContact( vbf.newValue( ContactValue.class ) );
 
-        public void assignTo(Task task, Assignee assignee)
-        {
-            task.assignTo(assignee);
-        }
+         return taskEntity;
+      }
 
-        public void forwardTo( Task task, Inbox receiverInbox )
-        {
-            markAsRead( task );
-            receiverInbox.receiveTask( task );
-        }
+      public void receiveTask( Task task )
+      {
+         task.unassign();
+         task.changeOwner( owner );
+         markAsUnread( task );
+      }
 
-        public void delegateTo(Task task, Delegatee delegatee, Delegator delegator)
-        {
-            task.delegateTo(delegatee, delegator, waitingFor);
-        }
+      public void completeTask( Task task, Assignee assignee )
+      {
+         task.assignTo( assignee );
+         task.complete();
+      }
 
-        public void markAsRead(Task task)
-        {
-            if (!unreadInboxTasks().contains(task))
-            {
-                return;
-            }
-            markedAsRead(DomainEvent.CREATE, task);
-        }
+      public void dropTask( Task task, Assignee assignee )
+      {
+         task.assignTo( assignee );
+         task.drop();
+      }
 
-        public void markAsUnread(Task task)
-        {
-            if (unreadInboxTasks().contains(task))
-            {
-                return;
-            }
-            markedAsUnread(DomainEvent.CREATE, task);
-        }
+      public void assignTo( Task task, Assignee assignee )
+      {
+         task.assignTo( assignee );
+      }
 
-        public Task createdTask(DomainEvent event, String id)
-        {
-            EntityBuilder<TaskEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(TaskEntity.class, id);
-            builder.instance().createdOn().set( event.on().get() );
-            try
-            {
-                User user = uowf.currentUnitOfWork().get( User.class, event.by().get() );
-                builder.instance().createdBy().set( user );
-            } catch (NoSuchEntityException e)
-            {
-                // Ignore
-            }
-            return builder.newInstance();
-        }
+      public void forwardTo( Task task, Inbox receiverInbox )
+      {
+         markAsRead( task );
+         receiverInbox.receiveTask( task );
+      }
 
-        public void deleteTask( Task task )
-        {
-            markAsRead( task );
-            deletedTask( DomainEvent.CREATE, task );
-        }
+      public void delegateTo( Task task, Delegatee delegatee, Delegator delegator )
+      {
+         task.delegateTo( delegatee, delegator, waitingFor );
+      }
 
-        public void deletedTask( DomainEvent event, Task task )
-        {
-            uowf.currentUnitOfWork().remove( task );
-        }
+      public void markAsRead( Task task )
+      {
+         if (!unreadInboxTasks().contains( task ))
+         {
+            return;
+         }
+         markedAsRead( DomainEvent.CREATE, task );
+      }
 
-        public void markedAsRead(DomainEvent event, Task task)
-        {
-            unreadInboxTasks().remove(task);
-        }
+      public void markAsUnread( Task task )
+      {
+         if (unreadInboxTasks().contains( task ))
+         {
+            return;
+         }
+         markedAsUnread( DomainEvent.CREATE, task );
+      }
 
-        public void markedAsUnread(DomainEvent event, Task task)
-        {
-            unreadInboxTasks().add(task);
-        }
-    }
+      public Task createdTask( DomainEvent event, String id )
+      {
+         EntityBuilder<TaskEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( TaskEntity.class, id );
+         builder.instance().createdOn().set( event.on().get() );
+         try
+         {
+            User user = uowf.currentUnitOfWork().get( User.class, event.by().get() );
+            builder.instance().createdBy().set( user );
+         } catch (NoSuchEntityException e)
+         {
+            // Ignore
+         }
+         return builder.newInstance();
+      }
+
+      public void deleteTask( Task task )
+      {
+         markAsRead( task );
+         deletedTask( DomainEvent.CREATE, task );
+      }
+
+      public void deletedTask( DomainEvent event, Task task )
+      {
+         uowf.currentUnitOfWork().remove( task );
+      }
+
+      public void markedAsRead( DomainEvent event, Task task )
+      {
+         unreadInboxTasks().remove( task );
+      }
+
+      public void markedAsUnread( DomainEvent event, Task task )
+      {
+         unreadInboxTasks().add( task );
+      }
+   }
 }

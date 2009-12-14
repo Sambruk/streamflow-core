@@ -31,54 +31,54 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter
 import java.util.List;
 
 public class TaskLabelSelectionModel
-    implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventHandler
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    TaskGeneralClientResource resource;
+   TaskGeneralClientResource resource;
 
-    List<ListItemValue> possibleLabels;
+   List<ListItemValue> possibleLabels;
 
-    private BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+   private BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
 
-    private EventHandlerFilter eventFilter;
+   private EventHandlerFilter eventFilter;
 
-    public TaskLabelSelectionModel(@Uses TaskGeneralClientResource resource)
-    {
-        this.resource = resource;
-        eventFilter = new EventHandlerFilter(resource.getRequest().getResourceRef().getParentRef().getLastSegment(), this, "changedTaskType");
-    }
+   public TaskLabelSelectionModel( @Uses TaskGeneralClientResource resource )
+   {
+      this.resource = resource;
+      eventFilter = new EventHandlerFilter( resource.getRequest().getResourceRef().getParentRef().getLastSegment(), this, "changedTaskType" );
+   }
 
-    public BasicEventList<ListItemValue> getList()
-    {
-        return list;
-    }
+   public BasicEventList<ListItemValue> getList()
+   {
+      return list;
+   }
 
-    public void refresh() throws OperationException
-    {
-        try
-        {
-            possibleLabels = resource.possibleLabels().items().get();
+   public void refresh() throws OperationException
+   {
+      try
+      {
+         possibleLabels = resource.possibleLabels().items().get();
 
-            list.clear();
-            list.addAll( possibleLabels );
+         list.clear();
+         list.addAll( possibleLabels );
 
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_refresh, e);
-        }
-    }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_refresh, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        eventFilter.handleEvent( event );
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
+   }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        refresh();
+   public boolean handleEvent( DomainEvent event )
+   {
+      refresh();
 
-        return false;
-    }
+      return false;
+   }
 }

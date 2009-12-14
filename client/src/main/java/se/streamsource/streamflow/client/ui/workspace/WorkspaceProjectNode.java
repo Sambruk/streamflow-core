@@ -18,8 +18,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -27,53 +27,53 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * JAVADOC
  */
 public class WorkspaceProjectNode
-        extends DefaultMutableTreeNode
-    implements EventListener
+      extends DefaultMutableTreeNode
+      implements EventListener
 {
-    @Uses
-    String projectName;
+   @Uses
+   String projectName;
 
-    public WorkspaceProjectNode(@Uses WorkspaceProjectClientResource workspaceProjectClientResource,
+   public WorkspaceProjectNode( @Uses WorkspaceProjectClientResource workspaceProjectClientResource,
                                 @Uses WorkspaceProjectInboxNode inbox,
                                 @Uses WorkspaceProjectAssignmentsNode assignments,
                                 @Uses WorkspaceProjectDelegationsNode delegations,
-                                @Uses WorkspaceProjectWaitingForNode waitingFor)
-    {
-        super(workspaceProjectClientResource);
+                                @Uses WorkspaceProjectWaitingForNode waitingFor )
+   {
+      super( workspaceProjectClientResource );
 
-        add(inbox);
-        add(assignments);
-        add(delegations);
-        add(waitingFor);
-    }
+      add( inbox );
+      add( assignments );
+      add( delegations );
+      add( waitingFor );
+   }
 
-    public String projectName()
-    {
-        return projectName;
-    }
+   public String projectName()
+   {
+      return projectName;
+   }
 
-    @Override
-    public WorkspaceProjectsNode getParent()
-    {
-        return (WorkspaceProjectsNode) super.getParent();
-    }
+   @Override
+   public WorkspaceProjectsNode getParent()
+   {
+      return (WorkspaceProjectsNode) super.getParent();
+   }
 
-    public ListValue findUsers(String name) throws ResourceException
-    {
-        return ((WorkspaceProjectClientResource) getUserObject()).findUsers(name);
-    }
+   public ListValue findUsers( String name ) throws ResourceException
+   {
+      return ((WorkspaceProjectClientResource) getUserObject()).findUsers( name );
+   }
 
-    public ListValue findProjects(String name) throws ResourceException
-    {
-        return ((WorkspaceProjectClientResource) getUserObject()).findProjects(name);
-    }
+   public ListValue findProjects( String name ) throws ResourceException
+   {
+      return ((WorkspaceProjectClientResource) getUserObject()).findProjects( name );
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        for (Object child : children)
-        {
-            EventListener listener = (EventListener) child;
-            listener.notifyEvent( event );
-        }
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      for (Object child : children)
+      {
+         EventListener listener = (EventListener) child;
+         listener.notifyEvent( event );
+      }
+   }
 }

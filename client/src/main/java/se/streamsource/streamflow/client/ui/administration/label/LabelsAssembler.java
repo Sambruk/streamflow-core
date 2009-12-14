@@ -23,14 +23,14 @@ import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
  * JAVADOC
  */
 public class LabelsAssembler
-    implements Assembler
+      implements Assembler
 {
-    public void assemble( ModuleAssembly module ) throws AssemblyException
-    {
-        UIAssemblers.addMV( module, LabelsModel.class, LabelsView.class );
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addMV( module, LabelsModel.class, LabelsView.class );
 
-        UIAssemblers.addMV( module, SelectedLabelsModel.class, SelectedLabelsView.class );
+      UIAssemblers.addMV( module, SelectedLabelsModel.class, SelectedLabelsView.class );
 
-        UIAssemblers.addViews( module, SelectLabelsDialog.class );
-    }
+      UIAssemblers.addViews( module, SelectLabelsDialog.class );
+   }
 }

@@ -16,25 +16,25 @@ package se.streamsource.streamflow.infrastructure.event.source;
 
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class EventCollector
-    implements EventHandler
+      implements EventHandler
 {
-    List<DomainEvent> events = new ArrayList<DomainEvent>( );
+   List<DomainEvent> events = new ArrayList<DomainEvent>();
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        events.add( event );
-        return true;
-    }
+   public boolean handleEvent( DomainEvent event )
+   {
+      events.add( event );
+      return true;
+   }
 
-    public List<DomainEvent> events()
-    {
-        return events;
-    }
+   public List<DomainEvent> events()
+   {
+      return events;
+   }
 }

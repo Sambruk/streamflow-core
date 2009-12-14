@@ -26,8 +26,18 @@ import se.streamsource.streamflow.client.resource.task.TaskContactsClientResourc
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.ListSelectionModel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.IOException;
@@ -36,136 +46,136 @@ import java.io.IOException;
  * JAVADOC
  */
 public class TaskContactsView
-        extends JPanel
+      extends JPanel
 {
-    @Service
-    UncaughtExceptionHandler exception;
+   @Service
+   UncaughtExceptionHandler exception;
 
-    TaskContactsModel model;
+   TaskContactsModel model;
 
-    public JList contacts;
-    private TaskContactView contactView;
+   public JList contacts;
+   private TaskContactView contactView;
 
-    public TaskContactsView(@Service ApplicationContext context,
-                            @Structure ObjectBuilderFactory obf)
-    {
-        super(new BorderLayout());
+   public TaskContactsView( @Service ApplicationContext context,
+                            @Structure ObjectBuilderFactory obf )
+   {
+      super( new BorderLayout() );
 
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
-        setMinimumSize(new Dimension(150, 0));
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
+      setMinimumSize( new Dimension( 150, 0 ) );
 
-        contactView = obf.newObject(TaskContactView.class);
+      contactView = obf.newObject( TaskContactView.class );
 
-        contacts = new JList();
-        contacts.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-        JScrollPane contactsScrollPane = new JScrollPane();
-        contactsScrollPane.setViewportView(contacts);
-        contacts.setCellRenderer(new DefaultListCellRenderer()
-        {
+      contacts = new JList();
+      contacts.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      JScrollPane contactsScrollPane = new JScrollPane();
+      contactsScrollPane.setViewportView( contacts );
+      contacts.setCellRenderer( new DefaultListCellRenderer()
+      {
 
-            @Override
-            public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1)
+         @Override
+         public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
+         {
+            ContactValue contact = (ContactValue) o;
+            if ("".equals( contact.name().get() ))
             {
-                ContactValue contact = (ContactValue) o;
-                if ("".equals(contact.name().get()))
-                {
-                    Component cell = super.getListCellRendererComponent(jList, i18n.text(WorkspaceResources.name_label), i, b, b1);
-                    cell.setForeground(Color.GRAY);
-                    return cell;
-                }
-                return super.getListCellRendererComponent(jList, contact.name().get(), i, b, b1);
+               Component cell = super.getListCellRendererComponent( jList, i18n.text( WorkspaceResources.name_label ), i, b, b1 );
+               cell.setForeground( Color.GRAY );
+               return cell;
             }
-        });
-        add(contactsScrollPane, BorderLayout.CENTER);
+            return super.getListCellRendererComponent( jList, contact.name().get(), i, b, b1 );
+         }
+      } );
+      add( contactsScrollPane, BorderLayout.CENTER );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("add")));
-        toolbar.add(new JButton(am.get("remove")));
-        add(toolbar, BorderLayout.SOUTH);
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( am.get( "add" ) ) );
+      toolbar.add( new JButton( am.get( "remove" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
 
-        contacts.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+      contacts.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
-        setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
-        setFocusCycleRoot(true);
-        setFocusable(true);
-        addFocusListener(new FocusListener()
-        {
-            public void focusGained(FocusEvent e)
+      setFocusTraversalPolicy( new LayoutFocusTraversalPolicy() );
+      setFocusCycleRoot( true );
+      setFocusable( true );
+      addFocusListener( new FocusListener()
+      {
+         public void focusGained( FocusEvent e )
+         {
+            Component defaultComp = getFocusTraversalPolicy().getDefaultComponent( contactView );
+            if (defaultComp != null)
             {
-                Component defaultComp = getFocusTraversalPolicy().getDefaultComponent(contactView);
-                if (defaultComp != null)
-                {
-                    defaultComp.requestFocusInWindow();    
-                }
+               defaultComp.requestFocusInWindow();
             }
+         }
 
-            public void focusLost(FocusEvent e)
+         public void focusLost( FocusEvent e )
+         {
+         }
+      } );
+   }
+
+   @org.jdesktop.application.Action
+   public void add() throws IOException, ResourceException
+   {
+      model.createContact();
+      contacts.setSelectedIndex( model.getSize() - 1 );
+   }
+
+   @org.jdesktop.application.Action
+   public void remove() throws IOException, ResourceException
+   {
+      model.removeElement( getContactsList().getSelectedIndex() );
+      contacts.clearSelection();
+   }
+
+   public JList getContactsList()
+   {
+      return contacts;
+   }
+
+   @Override
+   public void setVisible( boolean aFlag )
+   {
+      super.setVisible( aFlag );
+
+      if (aFlag)
+         try
+         {
+            model.refresh();
+            if (model.getSize() > 0 && contacts.getSelectedIndex() == -1)
             {
+               contacts.setSelectedIndex( 0 );
             }
-        });
-    }
+         } catch (Exception e)
+         {
+            exception.uncaughtException( e );
+         }
+   }
 
-    @org.jdesktop.application.Action
-    public void add() throws IOException, ResourceException
-    {
-        model.createContact();
-        contacts.setSelectedIndex(model.getSize() - 1);
-    }
+   public void setModel( TaskContactsModel model )
+   {
+      this.model = model;
+      contacts.setModel( model );
+      if (model.getSize() > 0 && isVisible())
+      {
+         contacts.setSelectedIndex( 0 );
+      }
+      if (isVisible())
+      {
+         setVisible( true );
+      }
 
-    @org.jdesktop.application.Action
-    public void remove() throws IOException, ResourceException
-    {
-        model.removeElement(getContactsList().getSelectedIndex());
-        contacts.clearSelection();
-    }
+   }
 
-    public JList getContactsList()
-    {
-        return contacts;
-    }
+   public TaskContactView getContactView()
+   {
+      return contactView;
+   }
 
-    @Override
-    public void setVisible(boolean aFlag)
-    {
-        super.setVisible(aFlag);
-
-        if (aFlag)
-            try
-            {
-                model.refresh();
-                if (model.getSize() > 0 && contacts.getSelectedIndex()==-1)
-                {
-                    contacts.setSelectedIndex(0);
-                }
-            } catch (Exception e)
-            {
-                exception.uncaughtException(e);
-            }
-    }
-
-    public void setModel(TaskContactsModel model)
-    {
-        this.model = model;
-        contacts.setModel(model);
-        if (model.getSize() > 0 && isVisible())
-        {
-            contacts.setSelectedIndex(0);
-        }
-        if (isVisible())
-        {
-            setVisible(true);
-        }
-
-    }
-
-    public TaskContactView getContactView()
-    {
-        return contactView;
-    }
-
-    public TaskContactsClientResource getTaskContactsResource()
-    {
-        return model.getTaskContactsClientResource();
-    }
+   public TaskContactsClientResource getTaskContactsResource()
+   {
+      return model.getTaskContactsClientResource();
+   }
 }

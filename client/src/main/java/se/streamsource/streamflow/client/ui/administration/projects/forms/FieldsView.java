@@ -25,145 +25,151 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * JAVADOC
  */
 public class FieldsView
-    extends JPanel
+      extends JPanel
 {
-    private JList fieldList;
+   private JList fieldList;
 
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    @Uses
-    Iterable<FieldCreationDialog> fieldCreationDialog;
+   @Uses
+   Iterable<FieldCreationDialog> fieldCreationDialog;
 
-    @Uses
-    Iterable<ConfirmationDialog> confirmationDialog;
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
 
-    private FieldsModel model;
-    private JButton upButton;
-    private JButton downButton;
+   private FieldsModel model;
+   private JButton upButton;
+   private JButton downButton;
 
-    public FieldsView(@Service ApplicationContext context,
-                      @Uses FieldsModel model)
-    {
-        super(new BorderLayout());
-        this.model = model;
-        JScrollPane scrollPanel = new JScrollPane();
-        ActionMap am = context.getActionMap(this);
+   public FieldsView( @Service ApplicationContext context,
+                      @Uses FieldsModel model )
+   {
+      super( new BorderLayout() );
+      this.model = model;
+      JScrollPane scrollPanel = new JScrollPane();
+      ActionMap am = context.getActionMap( this );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("add")));
-        toolbar.add(new JButton(am.get("remove")));
-        upButton = new JButton(am.get("up"));
-        toolbar.add(upButton);
-        downButton = new JButton(am.get("down"));
-        toolbar.add(downButton);
-        upButton.setEnabled(false);
-        downButton.setEnabled(false);
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( am.get( "add" ) ) );
+      toolbar.add( new JButton( am.get( "remove" ) ) );
+      upButton = new JButton( am.get( "up" ) );
+      toolbar.add( upButton );
+      downButton = new JButton( am.get( "down" ) );
+      toolbar.add( downButton );
+      upButton.setEnabled( false );
+      downButton.setEnabled( false );
 
-        model.refresh();
-        fieldList = new JList(model);
-        fieldList.setCellRenderer(new ListItemListCellRenderer());
+      model.refresh();
+      fieldList = new JList( model );
+      fieldList.setCellRenderer( new ListItemListCellRenderer() );
 
-        scrollPanel.setViewportView(fieldList);
+      scrollPanel.setViewportView( fieldList );
 
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.add(new JSeparator(), BorderLayout.NORTH);
-        titlePanel.add(new JLabel(i18n.text(AdministrationResources.fields_label)), BorderLayout.CENTER);
+      JPanel titlePanel = new JPanel( new BorderLayout() );
+      titlePanel.add( new JSeparator(), BorderLayout.NORTH );
+      titlePanel.add( new JLabel( i18n.text( AdministrationResources.fields_label ) ), BorderLayout.CENTER );
 
-        add(titlePanel, BorderLayout.NORTH);
-        add(scrollPanel, BorderLayout.CENTER);
-        add(toolbar, BorderLayout.SOUTH);
+      add( titlePanel, BorderLayout.NORTH );
+      add( scrollPanel, BorderLayout.CENTER );
+      add( toolbar, BorderLayout.SOUTH );
 
-        fieldList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
-        fieldList.addListSelectionListener(new ListSelectionListener()
-        {
+      fieldList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+      fieldList.addListSelectionListener( new ListSelectionListener()
+      {
 
-            public void valueChanged(ListSelectionEvent e)
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    int idx = fieldList.getSelectedIndex();
+               int idx = fieldList.getSelectedIndex();
 
-                    upButton.setEnabled(idx != 0);
-                    downButton.setEnabled(idx != fieldList.getModel().getSize()-1);
-                    if (idx == -1)
-                    {
-                        upButton.setEnabled(false);
-                        downButton.setEnabled(false);
-                    }
-                }
+               upButton.setEnabled( idx != 0 );
+               downButton.setEnabled( idx != fieldList.getModel().getSize() - 1 );
+               if (idx == -1)
+               {
+                  upButton.setEnabled( false );
+                  downButton.setEnabled( false );
+               }
             }
-        });
-    }
+         }
+      } );
+   }
 
-    @org.jdesktop.application.Action
-    public void add()
-    {
-        FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, "Add new field to form");
+   @org.jdesktop.application.Action
+   public void add()
+   {
+      FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, "Add new field to form" );
 
-        if (dialog.name()!=null && !"".equals(dialog.name()))
-        {
-            model.addField(dialog.name(), dialog.getFieldType());
-        }
-    }
+      if (dialog.name() != null && !"".equals( dialog.name() ))
+      {
+         model.addField( dialog.name(), dialog.getFieldType() );
+      }
+   }
 
 
-    @org.jdesktop.application.Action
-    public void remove()
-    {
-        int index = fieldList.getSelectedIndex();
-        if (index != -1)
-        {
-            ConfirmationDialog dialog = confirmationDialog.iterator().next();
-            dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
-            if(dialog.isConfirmed())
-            {
-                model.removeField(index);
-                model.fieldModels.clear();
-                fieldList.clearSelection();
-            }
-        }
-    }
+   @org.jdesktop.application.Action
+   public void remove()
+   {
+      int index = fieldList.getSelectedIndex();
+      if (index != -1)
+      {
+         ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+         if (dialog.isConfirmed())
+         {
+            model.removeField( index );
+            model.fieldModels.clear();
+            fieldList.clearSelection();
+         }
+      }
+   }
 
-    @org.jdesktop.application.Action
-    public void up()
-    {
-        int index = fieldList.getSelectedIndex();
-        if (index>0 && index<fieldList.getModel().getSize())
-        {
-            model.moveField(index, index -1);
-            fieldList.setSelectedIndex(index-1);
-        }
-    }
+   @org.jdesktop.application.Action
+   public void up()
+   {
+      int index = fieldList.getSelectedIndex();
+      if (index > 0 && index < fieldList.getModel().getSize())
+      {
+         model.moveField( index, index - 1 );
+         fieldList.setSelectedIndex( index - 1 );
+      }
+   }
 
-    @org.jdesktop.application.Action
-    public void down()
-    {
-        int index = fieldList.getSelectedIndex();
-        if (index>=0 && index<fieldList.getModel().getSize()-1)
-        {
-            model.moveField(index, index +1);
-            fieldList.setSelectedIndex(index+1);
-        }
-    }
+   @org.jdesktop.application.Action
+   public void down()
+   {
+      int index = fieldList.getSelectedIndex();
+      if (index >= 0 && index < fieldList.getModel().getSize() - 1)
+      {
+         model.moveField( index, index + 1 );
+         fieldList.setSelectedIndex( index + 1 );
+      }
+   }
 
-    public JList getFieldList()
-    {
-        return fieldList;
-    }
+   public JList getFieldList()
+   {
+      return fieldList;
+   }
 
-    public FieldsModel getModel()
-    {
-        return model;
-    }
+   public FieldsModel getModel()
+   {
+      return model;
+   }
 }

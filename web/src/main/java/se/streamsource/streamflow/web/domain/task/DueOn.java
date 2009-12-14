@@ -28,28 +28,28 @@ import java.util.Date;
 @Mixins(DueOn.Mixin.class)
 public interface DueOn
 {
-    void dueOn(@Future Date dueDate);
+   void dueOn( @Future Date dueDate );
 
-    interface Data
-    {
-        @Optional
-        Property<Date> dueOn();
+   interface Data
+   {
+      @Optional
+      Property<Date> dueOn();
 
 
-        void changedDueOn(DomainEvent event, Date dueDate);
-    }
+      void changedDueOn( DomainEvent event, Date dueDate );
+   }
 
-    abstract class Mixin
-            implements DueOn, Data
-    {
-        public void dueOn(Date dueDate)
-        {
-            changedDueOn(DomainEvent.CREATE, dueDate);
-        }
+   abstract class Mixin
+         implements DueOn, Data
+   {
+      public void dueOn( Date dueDate )
+      {
+         changedDueOn( DomainEvent.CREATE, dueDate );
+      }
 
-        public void changedDueOn(DomainEvent event, Date dueDate)
-        {
-            dueOn().set(dueDate);
-        }
-    }
+      public void changedDueOn( DomainEvent event, Date dueDate )
+      {
+         dueOn().set( dueDate );
+      }
+   }
 }

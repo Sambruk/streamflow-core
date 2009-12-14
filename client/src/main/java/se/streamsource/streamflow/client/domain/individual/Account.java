@@ -20,8 +20,8 @@ import se.streamsource.streamflow.domain.roles.Describable;
  * JAVADOC
  */
 public interface Account
-        extends AccountSettings, AccountConnection,
-        Describable
+      extends AccountSettings, AccountConnection,
+      Describable
 {
 }
 

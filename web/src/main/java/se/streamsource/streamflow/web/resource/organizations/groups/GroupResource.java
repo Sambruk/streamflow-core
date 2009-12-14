@@ -20,6 +20,6 @@ import org.qi4j.api.composite.TransientComposite;
  * JAVADOC
  */
 public interface GroupResource
-    extends TransientComposite
+      extends TransientComposite
 {
 }

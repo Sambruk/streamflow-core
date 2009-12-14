@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.hamcrest.CoreMatchers;
-import static org.jbehave.Ensure.ensureThat;
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
@@ -25,53 +24,55 @@ import se.streamsource.streamflow.client.application.shared.steps.setup.GenericS
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
+import static org.jbehave.Ensure.*;
+
 /**
  * JAVADOC
  */
 public class TaskQueriesSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    @Uses
-    OrganizationsSteps organizationsSteps;
+   @Uses
+   OrganizationsSteps organizationsSteps;
 
-    @Uses
-    InboxSteps inboxSteps;
-    private ProjectEntity projectEntity;
-    private TaskEntity task;
+   @Uses
+   InboxSteps inboxSteps;
+   private ProjectEntity projectEntity;
+   private TaskEntity task;
 
-    @Given("project task")
-    public void givenProjectTask()
-    {
-        inboxSteps.createTask();
-        task = inboxSteps.givenTask;
-    }
+   @Given("project task")
+   public void givenProjectTask()
+   {
+      inboxSteps.createTask();
+      task = inboxSteps.givenTask;
+   }
 
-    @Given("user task")
-    public void givenUserTask()
-    {
-        ensureThat(organizationsSteps.givenUser, CoreMatchers.notNullValue());
-        task = (TaskEntity) organizationsSteps.givenUser.createTask();
-    }
+   @Given("user task")
+   public void givenUserTask()
+   {
+      ensureThat( organizationsSteps.givenUser, CoreMatchers.notNullValue() );
+      task = (TaskEntity) organizationsSteps.givenUser.createTask();
+   }
 
-    @When("querying for the owning project")
-    public void owningProject()
-    {
-        projectEntity = task.ownerProject();
-    }
+   @When("querying for the owning project")
+   public void owningProject()
+   {
+      projectEntity = task.ownerProject();
+   }
 
-    @Then("$projectName is returned")
-    public void projectName(String projectName)
-    {
-        if (projectName.equals("null"))
-        {
-            ensureThat(projectEntity, CoreMatchers.nullValue());
-        } else
-        {
-            ensureThat(projectEntity.description().get(), CoreMatchers.equalTo(projectName));
-        }
-    }
+   @Then("$projectName is returned")
+   public void projectName( String projectName )
+   {
+      if (projectName.equals( "null" ))
+      {
+         ensureThat( projectEntity, CoreMatchers.nullValue() );
+      } else
+      {
+         ensureThat( projectEntity.description().get(), CoreMatchers.equalTo( projectName ) );
+      }
+   }
 
 }

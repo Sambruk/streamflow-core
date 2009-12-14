@@ -38,128 +38,129 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionTimesta
  * JAVADOC
  */
 public abstract class AbstractEventStoreTest
-    extends AbstractQi4jTest
+      extends AbstractQi4jTest
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.layerAssembly().applicationAssembly().setMode( Application.Mode.test );
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.layerAssembly().applicationAssembly().setMode( Application.Mode.test );
 
-        new EntityTestAssembler().assemble(module);
-        module.addValues(TransactionEvents.class, DomainEvent.class);
-        module.addServices( DomainEventFactoryService.class);
-        module.addObjects(getClass(), TimeService.class);
-        module.addEntities(TestEntity.class);
-        module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
-    }
+      new EntityTestAssembler().assemble( module );
+      module.addValues( TransactionEvents.class, DomainEvent.class );
+      module.addServices( DomainEventFactoryService.class );
+      module.addObjects( getClass(), TimeService.class );
+      module.addEntities( TestEntity.class );
+      module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
+   }
 
-    @Service
-    EventStore eventStore;
+   @Service
+   EventStore eventStore;
 
-    @Service
-    EventListener listener;
+   @Service
+   EventListener listener;
 
-    @Before
-    public void initStore() throws UnitOfWorkCompletionException
-    {
-        objectBuilderFactory.newObjectBuilder( AbstractEventStoreTest.class).injectTo((this));
+   @Before
+   public void initStore() throws UnitOfWorkCompletionException
+   {
+      objectBuilderFactory.newObjectBuilder( AbstractEventStoreTest.class ).injectTo( (this) );
 
 
-        for (int i = 0; i < 10; i++)
-            addEvent();
-    }
+      for (int i = 0; i < 10; i++)
+         addEvent();
+   }
 
-    protected void addEvent()
-            throws UnitOfWorkCompletionException
-    {
-        UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-        TestEntity entity = uow.newEntity( TestEntity.class);
-        entity.somethingHappened( DomainEvent.CREATE, "foo");
-        uow.complete();
-    }
+   protected void addEvent()
+         throws UnitOfWorkCompletionException
+   {
+      UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+      TestEntity entity = uow.newEntity( TestEntity.class );
+      entity.somethingHappened( DomainEvent.CREATE, "foo" );
+      uow.complete();
+   }
 
-    @Test
-    public void getAllEvents() throws UnitOfWorkCompletionException
-    {
-        final int[] count = new int[1];
+   @Test
+   public void getAllEvents() throws UnitOfWorkCompletionException
+   {
+      final int[] count = new int[1];
 
-        eventStore.transactionsAfter(0, new TransactionHandler()
-        {
-            public boolean handleTransaction( TransactionEvents transaction )
-            {
-                count[0]++;
-                System.out.println(transaction.toJSON());
+      eventStore.transactionsAfter( 0, new TransactionHandler()
+      {
+         public boolean handleTransaction( TransactionEvents transaction )
+         {
+            count[0]++;
+            System.out.println( transaction.toJSON() );
 
-                return true;
-            }
-        });
+            return true;
+         }
+      } );
 
-        Assert.assertThat( count[0], CoreMatchers.equalTo(10 ));
-    }
+      Assert.assertThat( count[0], CoreMatchers.equalTo( 10 ) );
+   }
 
-    @Test
-    public void getHalfOfEvents() throws UnitOfWorkCompletionException
-    {
-        final int[] count = new int[1];
+   @Test
+   public void getHalfOfEvents() throws UnitOfWorkCompletionException
+   {
+      final int[] count = new int[1];
 
-        eventStore.transactionsAfter(0, new TransactionHandler()
-        {
-            public boolean handleTransaction( TransactionEvents transaction )
-            {
-                count[0]++;
+      eventStore.transactionsAfter( 0, new TransactionHandler()
+      {
+         public boolean handleTransaction( TransactionEvents transaction )
+         {
+            count[0]++;
 
-                return count[0] < 5;
-            }
-        });
+            return count[0] < 5;
+         }
+      } );
 
-        Assert.assertThat( count[0], CoreMatchers.equalTo(5 ));
-    }
+      Assert.assertThat( count[0], CoreMatchers.equalTo( 5 ) );
+   }
 
-    @Test
-    public void getEventsAfterDate()
-    {
-        TransactionTimestampFilter timestamp;
-        eventStore.transactionsAfter(0, timestamp = new TransactionTimestampFilter(0, new TransactionHandler()
-        {
-            int count = 0;
-            public boolean handleTransaction( TransactionEvents transaction )
-            {
-                count++;
+   @Test
+   public void getEventsAfterDate()
+   {
+      TransactionTimestampFilter timestamp;
+      eventStore.transactionsAfter( 0, timestamp = new TransactionTimestampFilter( 0, new TransactionHandler()
+      {
+         int count = 0;
 
-                return count < 5;
-            }
-        }));
+         public boolean handleTransaction( TransactionEvents transaction )
+         {
+            count++;
 
-        final long lastTimeStamp = timestamp.lastTimestamp();
+            return count < 5;
+         }
+      } ) );
 
-        final int[] count = new int[1];
-        eventStore.transactionsAfter(lastTimeStamp,new TransactionHandler()
-        {
-            public boolean handleTransaction( TransactionEvents transaction )
-            {
-                Assert.assertThat( transaction.timestamp().get(), CoreMatchers.not(lastTimeStamp ));
+      final long lastTimeStamp = timestamp.lastTimestamp();
 
-                count[0]++;
+      final int[] count = new int[1];
+      eventStore.transactionsAfter( lastTimeStamp, new TransactionHandler()
+      {
+         public boolean handleTransaction( TransactionEvents transaction )
+         {
+            Assert.assertThat( transaction.timestamp().get(), CoreMatchers.not( lastTimeStamp ) );
 
-                return true;
-            }
-        });
+            count[0]++;
 
-        Assert.assertThat( count[0], CoreMatchers.equalTo(5 ));
-    }
+            return true;
+         }
+      } );
 
-    @Concerns(EventCreationConcern.class)
-    @Mixins(TestEntity.TestMixin.class)
-    interface TestEntity
-        extends EntityComposite
-    {
-        void somethingHappened(DomainEvent event, String parameter1);
+      Assert.assertThat( count[0], CoreMatchers.equalTo( 5 ) );
+   }
 
-        abstract class TestMixin
+   @Concerns(EventCreationConcern.class)
+   @Mixins(TestEntity.TestMixin.class)
+   interface TestEntity
+         extends EntityComposite
+   {
+      void somethingHappened( DomainEvent event, String parameter1 );
+
+      abstract class TestMixin
             implements TestEntity
-        {
-            public void somethingHappened(DomainEvent event, String parameter1)
-            {
-            }
-        }
-    }
+      {
+         public void somethingHappened( DomainEvent event, String parameter1 )
+         {
+         }
+      }
+   }
 }

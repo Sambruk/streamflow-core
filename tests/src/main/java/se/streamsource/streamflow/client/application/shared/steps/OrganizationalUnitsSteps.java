@@ -21,59 +21,62 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
+import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 
 /**
  * JAVADOC
  */
 public class OrganizationalUnitsSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    @Uses
-    OrganizationsSteps organizationsSteps;
+   @Uses
+   OrganizationsSteps organizationsSteps;
 
-    public OrganizationalUnits givenOrganizationalUnits;
+   public OrganizationalUnits givenOrganizationalUnits;
 
-    public OrganizationalUnitEntity givenOu;
+   public OrganizationalUnitEntity givenOu;
 
-    @Given("the organization")
-    public void givenOrganization()
-    {
-        givenOrganizationalUnits = organizationsSteps.givenOrganization;
-    }
+   @Given("the organization")
+   public void givenOrganization()
+   {
+      givenOrganizationalUnits = organizationsSteps.givenOrganization;
+   }
 
-    @Given("organizational unit named $name")
-    public void givenOU(String name)
-    {
-        givenOu = (OrganizationalUnitEntity) ((OrganizationalUnits.Data)givenOrganizationalUnits).getOrganizationalUnitByName(name);
-    }
+   @Given("organizational unit named $name")
+   public void givenOU( String name )
+   {
+      givenOrganizationalUnits = ((OrganizationalUnits.Data) givenOrganizationalUnits).getOrganizationalUnitByName( name );
+      givenOu = (OrganizationalUnitEntity) givenOrganizationalUnits;
+   }
 
-    @When("an organizational unit named $name is created")
-    public void createOrganizationalUnit(String name)
-    {
-        try
-        {
-            givenOu = (OrganizationalUnitEntity) givenOrganizationalUnits.createOrganizationalUnit(name);
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+   @When("an organizational unit named $name is created")
+   public void createOrganizationalUnit( String name )
+   {
+      try
+      {
+         givenOrganizationalUnits = givenOrganizationalUnits.createOrganizationalUnit( name );
+         givenOu = (OrganizationalUnitEntity) givenOrganizationalUnits;
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
-    @When("an organizational unit named $name is removed")
-    public void removeOrgUnit(String name)
-    {
-        try
-        {
-            givenOu = (OrganizationalUnitEntity) givenOu.getParent();
-            OrganizationalUnit removeOu = givenOu.getOrganizationalUnitByName( name );
-            givenOu.removeOrganizationalUnit(removeOu);
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+   @When("an organizational unit named $name is removed")
+   public void removeOrgUnit( String name )
+   {
+      try
+      {
+         OrganizationalUnits organizationalUnits = ((OrganizationalUnitRefactoring.Data) givenOrganizationalUnits).getParent();
+         OrganizationalUnit removeOu = ((OrganizationalUnits.Data) organizationalUnits).getOrganizationalUnitByName( name );
+         organizationalUnits.removeOrganizationalUnit( removeOu );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 }

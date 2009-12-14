@@ -25,33 +25,33 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * JAVADOC
  */
 public class OverviewNode
-        extends DefaultMutableTreeNode
-    implements EventListener
+      extends DefaultMutableTreeNode
+      implements EventListener
 {
-    private OverviewProjectsNode projectsNode;
+   private OverviewProjectsNode projectsNode;
 
-    public OverviewNode(@Uses OverviewProjectsNode projectsNode,
-                        @Uses AccountModel accountModel)
-    {
-        super(accountModel);
-        this.projectsNode = projectsNode;
+   public OverviewNode( @Uses OverviewProjectsNode projectsNode,
+                        @Uses AccountModel accountModel )
+   {
+      super( accountModel );
+      this.projectsNode = projectsNode;
 
-        add(projectsNode);
-    }
+      add( projectsNode );
+   }
 
-    @Override
-    public AccountModel getUserObject()
-    {
-        return (AccountModel) super.getUserObject();
-    }
+   @Override
+   public AccountModel getUserObject()
+   {
+      return (AccountModel) super.getUserObject();
+   }
 
-    public OverviewProjectsNode getProjectsNode()
-    {
-        return projectsNode;
-    }
+   public OverviewProjectsNode getProjectsNode()
+   {
+      return projectsNode;
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        projectsNode.notifyEvent(event);
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      projectsNode.notifyEvent( event );
+   }
 }

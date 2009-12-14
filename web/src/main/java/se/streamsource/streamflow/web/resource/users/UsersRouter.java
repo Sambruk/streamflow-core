@@ -23,6 +23,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
+import se.streamsource.streamflow.web.resource.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.administration.UserAdministrationServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.OverviewServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectServerResource;
@@ -48,69 +49,68 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxTaskServerResource;
-import se.streamsource.streamflow.web.resource.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
 public class UsersRouter
-        extends Router
+      extends Router
 {
 
-    @Structure
-    ObjectBuilderFactory factory;
+   @Structure
+   ObjectBuilderFactory factory;
 
-    public UsersRouter(@Uses Context context, @Structure ObjectBuilderFactory factory)
-    {
-        super(context);
-        this.factory = factory;
-        attach("", createServerResourceFinder(UserServerResource.class));
-        attach("/workspace", createServerResourceFinder(WorkspaceServerResource.class));
-        attach("/workspace/user", createServerResourceFinder(WorkspaceUserServerResource.class));
+   public UsersRouter( @Uses Context context, @Structure ObjectBuilderFactory factory )
+   {
+      super( context );
+      this.factory = factory;
+      attach( "", createServerResourceFinder( UserServerResource.class ) );
+      attach( "/workspace", createServerResourceFinder( WorkspaceServerResource.class ) );
+      attach( "/workspace/user", createServerResourceFinder( WorkspaceUserServerResource.class ) );
 
-        attach("/workspace/projects", createServerResourceFinder(WorkspaceProjectsServerResource.class));
-        attach("/workspace/projects/{project}", createServerResourceFinder(WorkspaceProjectServerResource.class));
-        attach("/workspace/projects/{project}/inbox", createServerResourceFinder(WorkspaceProjectInboxServerResource.class));
-        attach("/workspace/projects/{project}/inbox/{task}", createServerResourceFinder(WorkspaceProjectInboxTaskServerResource.class));
-        attach("/workspace/projects/{project}/assignments", createServerResourceFinder(WorkspaceProjectAssignmentsServerResource.class));
-        attach("/workspace/projects/{project}/assignments/{task}", createServerResourceFinder(WorkspaceProjectAssignmentsTaskServerResource.class));
-        attach("/workspace/projects/{project}/delegations", createServerResourceFinder(WorkspaceProjectDelegationsServerResource.class));
-        attach("/workspace/projects/{project}/delegations/{task}", createServerResourceFinder(WorkspaceProjectDelegationsTaskServerResource.class));
-        attach("/workspace/projects/{project}/waitingfor", createServerResourceFinder(WorkspaceProjectWaitingForServerResource.class));
-        attach("/workspace/projects/{project}/waitingfor/{task}", createServerResourceFinder(WorkspaceProjectWaitingForTaskServerResource.class));
-        attach("/workspace/projects/{labels}/labels", createServerResourceFinder( LabelsServerResource.class));
-        attach("/workspace/user/inbox", createServerResourceFinder( WorkspaceUserInboxServerResource.class));
-        attach("/workspace/user/inbox/{task}", createServerResourceFinder( WorkspaceUserInboxTaskServerResource.class));
-        attach("/workspace/user/assignments", createServerResourceFinder( WorkspaceUserAssignmentsServerResource.class));
-        attach("/workspace/user/assignments/{task}", createServerResourceFinder( WorkspaceUserAssignedTaskServerResource.class));
-        attach("/workspace/user/delegations", createServerResourceFinder( WorkspaceUserDelegationsServerResource.class));
-        attach("/workspace/user/delegations/{task}", createServerResourceFinder( WorkspaceUserDelegatedTaskServerResource.class));
-        attach("/workspace/user/waitingfor", createServerResourceFinder( WorkspaceUserWaitingForServerResource.class));
-        attach("/workspace/user/waitingfor/{task}", createServerResourceFinder( WorkspaceUserWaitingForTaskServerResource.class));
-        attach("/administration", createServerResourceFinder(UserAdministrationServerResource.class));
+      attach( "/workspace/projects", createServerResourceFinder( WorkspaceProjectsServerResource.class ) );
+      attach( "/workspace/projects/{project}", createServerResourceFinder( WorkspaceProjectServerResource.class ) );
+      attach( "/workspace/projects/{project}/inbox", createServerResourceFinder( WorkspaceProjectInboxServerResource.class ) );
+      attach( "/workspace/projects/{project}/inbox/{task}", createServerResourceFinder( WorkspaceProjectInboxTaskServerResource.class ) );
+      attach( "/workspace/projects/{project}/assignments", createServerResourceFinder( WorkspaceProjectAssignmentsServerResource.class ) );
+      attach( "/workspace/projects/{project}/assignments/{task}", createServerResourceFinder( WorkspaceProjectAssignmentsTaskServerResource.class ) );
+      attach( "/workspace/projects/{project}/delegations", createServerResourceFinder( WorkspaceProjectDelegationsServerResource.class ) );
+      attach( "/workspace/projects/{project}/delegations/{task}", createServerResourceFinder( WorkspaceProjectDelegationsTaskServerResource.class ) );
+      attach( "/workspace/projects/{project}/waitingfor", createServerResourceFinder( WorkspaceProjectWaitingForServerResource.class ) );
+      attach( "/workspace/projects/{project}/waitingfor/{task}", createServerResourceFinder( WorkspaceProjectWaitingForTaskServerResource.class ) );
+      attach( "/workspace/projects/{labels}/labels", createServerResourceFinder( LabelsServerResource.class ) );
+      attach( "/workspace/user/inbox", createServerResourceFinder( WorkspaceUserInboxServerResource.class ) );
+      attach( "/workspace/user/inbox/{task}", createServerResourceFinder( WorkspaceUserInboxTaskServerResource.class ) );
+      attach( "/workspace/user/assignments", createServerResourceFinder( WorkspaceUserAssignmentsServerResource.class ) );
+      attach( "/workspace/user/assignments/{task}", createServerResourceFinder( WorkspaceUserAssignedTaskServerResource.class ) );
+      attach( "/workspace/user/delegations", createServerResourceFinder( WorkspaceUserDelegationsServerResource.class ) );
+      attach( "/workspace/user/delegations/{task}", createServerResourceFinder( WorkspaceUserDelegatedTaskServerResource.class ) );
+      attach( "/workspace/user/waitingfor", createServerResourceFinder( WorkspaceUserWaitingForServerResource.class ) );
+      attach( "/workspace/user/waitingfor/{task}", createServerResourceFinder( WorkspaceUserWaitingForTaskServerResource.class ) );
+      attach( "/administration", createServerResourceFinder( UserAdministrationServerResource.class ) );
 
-        attach("/search", createServerResourceFinder(SearchTasksServerResource.class));
+      attach( "/search", createServerResourceFinder( SearchTasksServerResource.class ) );
 
-        // Overview
-        attach("/overview", createServerResourceFinder(OverviewServerResource.class));
-        attach("/overview/projects", createServerResourceFinder(OverviewProjectsServerResource.class));
-        attach("/overview/projects/{project}", createServerResourceFinder(OverviewProjectServerResource.class));
-        attach("/overview/projects/{project}/assignments", createServerResourceFinder(OverviewProjectAssignmentsServerResource.class));
-        attach("/overview/projects/{project}/assignments/{task}", createServerResourceFinder(OverviewProjectAssignmentsTaskServerResource.class));
+      // Overview
+      attach( "/overview", createServerResourceFinder( OverviewServerResource.class ) );
+      attach( "/overview/projects", createServerResourceFinder( OverviewProjectsServerResource.class ) );
+      attach( "/overview/projects/{project}", createServerResourceFinder( OverviewProjectServerResource.class ) );
+      attach( "/overview/projects/{project}/assignments", createServerResourceFinder( OverviewProjectAssignmentsServerResource.class ) );
+      attach( "/overview/projects/{project}/assignments/{task}", createServerResourceFinder( OverviewProjectAssignmentsTaskServerResource.class ) );
 /*
         attach("/overview/projects/{project}/waitingfor", createServerResourceFinder(OverviewProjectWaitingForServerResource.class));
         attach("/overview/projects/{project}/waitingfor/{task}", createServerResourceFinder(OverviewProjectWaitingForTaskServerResource.class));
 */
-    }
+   }
 
-    private Restlet createServerResourceFinder(Class<? extends ServerResource> resource)
-    {
-        ResourceFinder finder = factory.newObject(ResourceFinder.class);
-        finder.setTargetClass(resource);
+   private Restlet createServerResourceFinder( Class<? extends ServerResource> resource )
+   {
+      ResourceFinder finder = factory.newObject( ResourceFinder.class );
+      finder.setTargetClass( resource );
 
-        Authenticator auth = new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_BASIC, "StreamFlow");
-        auth.setNext(finder);
-        return auth;
-    }
+      Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "StreamFlow" );
+      auth.setNext( finder );
+      return auth;
+   }
 
 }

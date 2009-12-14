@@ -23,10 +23,10 @@ import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
  * JAVADOC
  */
 public class AdministratorClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public AdministratorClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public AdministratorClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 }

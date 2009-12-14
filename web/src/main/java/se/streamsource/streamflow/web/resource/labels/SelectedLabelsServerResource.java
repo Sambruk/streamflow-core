@@ -35,56 +35,56 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/organizationalunits/{ou}/projects/{labels}/labels
  */
 public class SelectedLabelsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public ListValue selectedlabels()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("labels");
-        SelectedLabels.Data labels = uow.get( SelectedLabels.Data.class, id);
+   public ListValue selectedlabels()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "labels" );
+      SelectedLabels.Data labels = uow.get( SelectedLabels.Data.class, id );
 
-        return new ListValueBuilder(vbf).addDescribableItems( labels.selectedLabels() ).newList();
-    }
+      return new ListValueBuilder( vbf ).addDescribableItems( labels.selectedLabels() ).newList();
+   }
 
-    public ListValue possiblelabels()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("labels");
-        String organization = (String) getRequest().getAttributes().get("organization");
-        SelectedLabels.Data selectedLabels = uow.get( SelectedLabels.Data.class, id);
-        Labels.Data labels = uow.get( Labels.Data.class, organization);
-        
-        return selectedLabels.possibleLabels( labels.labels() );
-    }
+   public ListValue possiblelabels()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "labels" );
+      String organization = (String) getRequest().getAttributes().get( "organization" );
+      SelectedLabels.Data selectedLabels = uow.get( SelectedLabels.Data.class, id );
+      Labels.Data labels = uow.get( Labels.Data.class, organization );
 
-    public void createlabel(StringDTO name) throws ResourceException
-    {
-        String org = getRequest().getAttributes().get("organization").toString();
-        String identity = getRequest().getAttributes().get("labels").toString();
+      return selectedLabels.possibleLabels( labels.labels() );
+   }
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void createlabel( StringDTO name ) throws ResourceException
+   {
+      String org = getRequest().getAttributes().get( "organization" ).toString();
+      String identity = getRequest().getAttributes().get( "labels" ).toString();
 
-        Labels labels = uow.get(Labels.class, org);
-        SelectedLabels selectedLabels = uow.get(SelectedLabels.class, identity);
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        selectedLabels.createLabel(labels, name.string().get());
-    }
+      Labels labels = uow.get( Labels.class, org );
+      SelectedLabels selectedLabels = uow.get( SelectedLabels.class, identity );
 
-    public void addlabel( EntityReferenceDTO labelDTO) throws ResourceException
-    {
-        String identity = getRequest().getAttributes().get("labels").toString();
+      selectedLabels.createLabel( labels, name.string().get() );
+   }
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void addlabel( EntityReferenceDTO labelDTO ) throws ResourceException
+   {
+      String identity = getRequest().getAttributes().get( "labels" ).toString();
 
-        SelectedLabels labels = uow.get(SelectedLabels.class, identity);
-        Label label = uow.get(Label.class, labelDTO.entity().get().identity());
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        labels.addLabel( label );
-    }
+      SelectedLabels labels = uow.get( SelectedLabels.class, identity );
+      Label label = uow.get( Label.class, labelDTO.entity().get().identity() );
+
+      labels.addLabel( label );
+   }
 }

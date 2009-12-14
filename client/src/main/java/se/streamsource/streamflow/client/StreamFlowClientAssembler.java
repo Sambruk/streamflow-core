@@ -41,71 +41,71 @@ import se.streamsource.streamflow.resource.CommonResourceAssembler;
  * JAVADOC
  */
 public class StreamFlowClientAssembler
-        implements ApplicationAssembler
+      implements ApplicationAssembler
 {
-    Object[] serviceObjects;
+   Object[] serviceObjects;
 
-    public StreamFlowClientAssembler(Object... serviceObjects)
-    {
-        this.serviceObjects = serviceObjects;
-    }
+   public StreamFlowClientAssembler( Object... serviceObjects )
+   {
+      this.serviceObjects = serviceObjects;
+   }
 
-    public ApplicationAssembly assemble(ApplicationAssemblyFactory applicationFactory) throws AssemblyException
-    {
-        ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
-        assembly.setName("StreamFlowClient");
-        assembly.setVersion("0.1");
+   public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
+   {
+      ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
+      assembly.setName( "StreamFlowClient" );
+      assembly.setVersion( "0.1" );
 
-        // Create layers
-        LayerAssembly clientDomainInfrastructureLayer = assembly.layerAssembly("Client domain infrastructure");
-        LayerAssembly clientDomainLayer = assembly.layerAssembly("Client domain");
-        LayerAssembly uiLayer = assembly.layerAssembly("UI");
+      // Create layers
+      LayerAssembly clientDomainInfrastructureLayer = assembly.layerAssembly( "Client domain infrastructure" );
+      LayerAssembly clientDomainLayer = assembly.layerAssembly( "Client domain" );
+      LayerAssembly uiLayer = assembly.layerAssembly( "UI" );
 
-        // Define layer usage
-        uiLayer.uses(clientDomainLayer,clientDomainInfrastructureLayer);
-        clientDomainLayer.uses(clientDomainInfrastructureLayer);
+      // Define layer usage
+      uiLayer.uses( clientDomainLayer, clientDomainInfrastructureLayer );
+      clientDomainLayer.uses( clientDomainInfrastructureLayer );
 
-        assembleUILayer(uiLayer);
+      assembleUILayer( uiLayer );
 
-        assembleClientDomainLayer(clientDomainLayer);
-        assembleClientDomainInfrastructureLayer(clientDomainInfrastructureLayer);
+      assembleClientDomainLayer( clientDomainLayer );
+      assembleClientDomainInfrastructureLayer( clientDomainInfrastructureLayer );
 
-        for (Object serviceObject : serviceObjects)
-        {
-            assembly.setMetaInfo(serviceObject);
-        }
+      for (Object serviceObject : serviceObjects)
+      {
+         assembly.setMetaInfo( serviceObject );
+      }
 
-        return assembly;
-    }
+      return assembly;
+   }
 
-    protected void assembleUILayer(LayerAssembly uiLayer) throws AssemblyException
-    {
-        new SearchAssembler().assemble(uiLayer.moduleAssembly("Search"));
-        new AdministrationAssembler().assemble(uiLayer.moduleAssembly("Administration"));
-        new MenuAssembler().assemble(uiLayer.moduleAssembly("Menu"));
-        new WorkspaceAssembler().assemble(uiLayer.moduleAssembly("Workspace"));
-        new TaskAssembler().assemble(uiLayer.moduleAssembly("Tasks"));
-        new OverviewAssembler().assemble(uiLayer.moduleAssembly("Overview"));
-        new UIAssembler().assemble(uiLayer.moduleAssembly("UI View"));
-        new UIInfrastructureAssembler().assemble(uiLayer.moduleAssembly("View infrastructure"));
-        new RestletClientAssembler().assemble(uiLayer.moduleAssembly("REST Client"));
-    }
+   protected void assembleUILayer( LayerAssembly uiLayer ) throws AssemblyException
+   {
+      new SearchAssembler().assemble( uiLayer.moduleAssembly( "Search" ) );
+      new AdministrationAssembler().assemble( uiLayer.moduleAssembly( "Administration" ) );
+      new MenuAssembler().assemble( uiLayer.moduleAssembly( "Menu" ) );
+      new WorkspaceAssembler().assemble( uiLayer.moduleAssembly( "Workspace" ) );
+      new TaskAssembler().assemble( uiLayer.moduleAssembly( "Tasks" ) );
+      new OverviewAssembler().assemble( uiLayer.moduleAssembly( "Overview" ) );
+      new UIAssembler().assemble( uiLayer.moduleAssembly( "UI View" ) );
+      new UIInfrastructureAssembler().assemble( uiLayer.moduleAssembly( "View infrastructure" ) );
+      new RestletClientAssembler().assemble( uiLayer.moduleAssembly( "REST Client" ) );
+   }
 
-    protected void assembleClientDomainLayer(LayerAssembly domainLayer) throws AssemblyException
-    {
-        new CommonDomainAssembler().assemble(domainLayer);
-        new IndividualAssembler().assemble(domainLayer.moduleAssembly("Individual"));
+   protected void assembleClientDomainLayer( LayerAssembly domainLayer ) throws AssemblyException
+   {
+      new CommonDomainAssembler().assemble( domainLayer );
+      new IndividualAssembler().assemble( domainLayer.moduleAssembly( "Individual" ) );
 
-        ModuleAssembly module = domainLayer.moduleAssembly("REST domain model");
-        new CommonResourceAssembler().assemble(module);
-        new ClientResourceAssembler().assemble(module);
-    }
+      ModuleAssembly module = domainLayer.moduleAssembly( "REST domain model" );
+      new CommonResourceAssembler().assemble( module );
+      new ClientResourceAssembler().assemble( module );
+   }
 
-    protected void assembleClientDomainInfrastructureLayer(LayerAssembly domainInfrastructureLayer) throws AssemblyException
-    {
-        new ConfigurationAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Configuration"));
-        new ClientEntityStoreAssembler().assemble(domainInfrastructureLayer.moduleAssembly("Client EntityStore"));
-        new ClientEventsAssembler().assemble( domainInfrastructureLayer.moduleAssembly("Client events" ));
-    }
+   protected void assembleClientDomainInfrastructureLayer( LayerAssembly domainInfrastructureLayer ) throws AssemblyException
+   {
+      new ConfigurationAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Configuration" ) );
+      new ClientEntityStoreAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Client EntityStore" ) );
+      new ClientEventsAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Client events" ) );
+   }
 
 }

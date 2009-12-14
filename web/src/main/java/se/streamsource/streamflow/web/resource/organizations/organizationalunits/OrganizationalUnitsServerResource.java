@@ -15,10 +15,10 @@
 package se.streamsource.streamflow.web.resource.organizations.organizationalunits;
 
 import org.qi4j.api.entity.EntityReference;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Status;
-import se.streamsource.streamflow.domain.roles.Describable;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -32,49 +32,49 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/organizationalunits
  */
 public class OrganizationalUnitsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue organizationalunits()
-    {
-        String identity = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnits.Data ous = uowf.currentUnitOfWork().get( OrganizationalUnits.Data.class, identity);
+   public ListValue organizationalunits()
+   {
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
+      OrganizationalUnits.Data ous = uowf.currentUnitOfWork().get( OrganizationalUnits.Data.class, identity );
 
-        checkPermission(ous);
+      checkPermission( ous );
 
-        ListValueBuilder builder = new ListValueBuilder(vbf);
-        for (OrganizationalUnitRefactoring ou : ous.organizationalUnits())
-        {
-            Describable describable = (Describable) ou;
-            builder.addListItem(describable.getDescription(), EntityReference.getEntityReference(ou));
-        }
-        return builder.newList();
-    }
+      ListValueBuilder builder = new ListValueBuilder( vbf );
+      for (OrganizationalUnitRefactoring ou : ous.organizationalUnits())
+      {
+         Describable describable = (Describable) ou;
+         builder.addListItem( describable.getDescription(), EntityReference.getEntityReference( ou ) );
+      }
+      return builder.newList();
+   }
 
-    public void createOrganizationalUnit(StringDTO value) throws ResourceException
-    {
-        String organization = getRequestAttributes().get("organization").toString();
-        OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
+   public void createOrganizationalUnit( StringDTO value ) throws ResourceException
+   {
+      String organization = getRequestAttributes().get( "organization" ).toString();
+      OrganizationalUnits ous = uowf.currentUnitOfWork().get( OrganizationalUnits.class, organization );
 
-        checkPermission(ous);
+      checkPermission( ous );
 
-        ous.createOrganizationalUnit(value.string().get());
-    }
+      ous.createOrganizationalUnit( value.string().get() );
+   }
 
-    public void removeOrganizationalUnit(EntityReferenceDTO entity) throws ResourceException
-    {
-        String organization = getRequest().getAttributes().get("organization").toString();
-        OrganizationalUnits ous = uowf.currentUnitOfWork().get(OrganizationalUnits.class, organization);
-        OrganizationalUnitRefactoring ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.class, entity.entity().get().identity());
+   public void removeOrganizationalUnit( EntityReferenceDTO entity ) throws ResourceException
+   {
+      String organization = getRequest().getAttributes().get( "organization" ).toString();
+      OrganizationalUnits ous = uowf.currentUnitOfWork().get( OrganizationalUnits.class, organization );
+      OrganizationalUnitRefactoring ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.class, entity.entity().get().identity() );
 
-        try
-        {
-            checkPermission(ous);
+      try
+      {
+         checkPermission( ous );
 
-            ou.deleteOrganizationalUnit();
+         ou.deleteOrganizationalUnit();
 
-        } catch(OpenProjectExistsException pe)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, pe.getMessage());
-        }
-    }
+      } catch (OpenProjectExistsException pe)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT, pe.getMessage() );
+      }
+   }
 }

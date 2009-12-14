@@ -24,21 +24,21 @@ import javax.swing.Action;
  * Action enabler that checks whether the completed flag is set or not
  */
 public class TaskSelectionActionEnabler
-    extends SelectionActionEnabler
+      extends SelectionActionEnabler
 {
-    private int completedColumn;
-    private JXTable table;
+   private int completedColumn;
+   private JXTable table;
 
-    public TaskSelectionActionEnabler( int completedColumn, JXTable table, Action... action)
-    {
-        super( action );
-        this.completedColumn = completedColumn;
-        this.table = table;
-    }
+   public TaskSelectionActionEnabler( int completedColumn, JXTable table, Action... action )
+   {
+      super( action );
+      this.completedColumn = completedColumn;
+      this.table = table;
+   }
 
-    @Override
-    public boolean isSelectedValueValid()
-    {
-        return !((TaskStates)table.getValueAt( table.convertRowIndexToModel( table.getSelectedRow()), completedColumn )).equals(TaskStates.COMPLETED);
-    }
+   @Override
+   public boolean isSelectedValueValid()
+   {
+      return !((TaskStates) table.getValueAt( table.convertRowIndexToModel( table.getSelectedRow() ), completedColumn )).equals( TaskStates.COMPLETED );
+   }
 }

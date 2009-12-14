@@ -17,56 +17,58 @@ import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.KeyStroke;
 
 public class MacOsUIExtension
 {
-    private StreamFlowApplication application;
+   private StreamFlowApplication application;
 
-    public MacOsUIExtension(StreamFlowApplication application)
-    {
-        this.application = application;
-    }
+   public MacOsUIExtension( StreamFlowApplication application )
+   {
+      this.application = application;
+   }
 
-    public void attachMacUIExtension()
-    {
-        Application macApp = Application.getApplication();
-        macApp.setEnabledAboutMenu(true);
-        macApp.addApplicationListener(new ApplicationAdapter()
-        {
-            @Override
-            public void handleAbout(ApplicationEvent applicationEvent)
-            {
-                applicationEvent.setHandled(true);
-                application.showAbout();
-            }
+   public void attachMacUIExtension()
+   {
+      Application macApp = Application.getApplication();
+      macApp.setEnabledAboutMenu( true );
+      macApp.addApplicationListener( new ApplicationAdapter()
+      {
+         @Override
+         public void handleAbout( ApplicationEvent applicationEvent )
+         {
+            applicationEvent.setHandled( true );
+            application.showAbout();
+         }
 
-            @Override
-            public void handleQuit(ApplicationEvent applicationEvent)
-            {
-                applicationEvent.setHandled(true);
-                application.shutdown();
+         @Override
+         public void handleQuit( ApplicationEvent applicationEvent )
+         {
+            applicationEvent.setHandled( true );
+            application.shutdown();
 
-            }
-        });
-    }
+         }
+      } );
+   }
 
-    /**
-     * Replace all "ctrl" keystrokes with "meta" (Apple command) keystrokes.
-     */
-    public void convertAccelerators()
-    {
-        ActionMap actions = application.getContext().getActionMap();
-        Object[] keys = actions.allKeys();
-        for (Object key : keys)
-        {
-            Action action = actions.get(key);
-            KeyStroke keyStroke = (KeyStroke) action.getValue(Action.ACCELERATOR_KEY);
-            if (keyStroke != null && keyStroke.toString().contains("ctrl"))
-            {
-                keyStroke = KeyStroke.getKeyStroke(keyStroke.toString().replace("ctrl", "meta"));
-                action.putValue(Action.ACCELERATOR_KEY, keyStroke);
-            }
-        }
-    }
+   /**
+    * Replace all "ctrl" keystrokes with "meta" (Apple command) keystrokes.
+    */
+   public void convertAccelerators()
+   {
+      ActionMap actions = application.getContext().getActionMap();
+      Object[] keys = actions.allKeys();
+      for (Object key : keys)
+      {
+         Action action = actions.get( key );
+         KeyStroke keyStroke = (KeyStroke) action.getValue( Action.ACCELERATOR_KEY );
+         if (keyStroke != null && keyStroke.toString().contains( "ctrl" ))
+         {
+            keyStroke = KeyStroke.getKeyStroke( keyStroke.toString().replace( "ctrl", "meta" ) );
+            action.putValue( Action.ACCELERATOR_KEY, keyStroke );
+         }
+      }
+   }
 }

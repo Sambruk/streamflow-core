@@ -25,64 +25,64 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
  * JAVADOC
  */
 public class AssignmentsSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @Uses
-    ProjectsSteps projectsSteps;
+   @Uses
+   ProjectsSteps projectsSteps;
 
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    public TaskEntity givenTask;
+   public TaskEntity givenTask;
 
-    @When("an assigned task is created")
-    public void createAssignedTask()
-    {
-        UserEntity user = orgsSteps.givenUser;
-        givenTask = (TaskEntity) projectsSteps.givenProject.createAssignedTask(user);
-    }
+   @When("an assigned task is created")
+   public void createAssignedTask()
+   {
+      UserEntity user = orgsSteps.givenUser;
+      givenTask = (TaskEntity) projectsSteps.givenProject.createAssignedTask( user );
+   }
 
-    @When("an assigned task is marked as $mark")
-    public void markAssignedTaskAs(String mark)
-    {
-        if ("read".equals(mark))
-        {
-            projectsSteps.givenProject.markAssignedTaskAsRead(givenTask);
-        } else
-        {
-            projectsSteps.givenProject.markAssignedTaskAsUnread(givenTask);
-        }
-    }
-
-
-    @When("assigned task is completed")
-    public void complete()
-    {
-        projectsSteps.givenProject.completeAssignedTask(givenTask);
-    }
+   @When("an assigned task is marked as $mark")
+   public void markAssignedTaskAs( String mark )
+   {
+      if ("read".equals( mark ))
+      {
+         projectsSteps.givenProject.markAssignedTaskAsRead( givenTask );
+      } else
+      {
+         projectsSteps.givenProject.markAssignedTaskAsUnread( givenTask );
+      }
+   }
 
 
-    @When("assigned task is dropped")
-    public void drop()
-    {
-        projectsSteps.givenProject.dropAssignedTask(givenTask);
-    }
-
-    @When("assigned task is forwarded to user $name")
-    public void forward(String name)
-    {
-        UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
-        projectsSteps.givenProject.forwardAssignedTaskTo(givenTask, user);
-    }
+   @When("assigned task is completed")
+   public void complete()
+   {
+      projectsSteps.givenProject.completeAssignedTask( givenTask );
+   }
 
 
-    @When("assigned task is delegated to user $name")
-    public void delegate(String name)
-    {
-        UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
-        projectsSteps.givenProject.delegateAssignedTaskTo(givenTask, user);
-    }
+   @When("assigned task is dropped")
+   public void drop()
+   {
+      projectsSteps.givenProject.dropAssignedTask( givenTask );
+   }
+
+   @When("assigned task is forwarded to user $name")
+   public void forward( String name )
+   {
+      UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
+      projectsSteps.givenProject.forwardAssignedTaskTo( givenTask, user );
+   }
+
+
+   @When("assigned task is delegated to user $name")
+   public void delegate( String name )
+   {
+      UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
+      projectsSteps.givenProject.delegateAssignedTaskTo( givenTask, user );
+   }
 }

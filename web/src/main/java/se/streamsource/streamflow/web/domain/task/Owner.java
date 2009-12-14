@@ -21,6 +21,6 @@ import se.streamsource.streamflow.domain.roles.Describable;
  * JAVADOC
  */
 public interface Owner
-        extends Identity, Describable
+      extends Identity, Describable
 {
 }

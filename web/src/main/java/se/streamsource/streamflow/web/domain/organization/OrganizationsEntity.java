@@ -27,29 +27,29 @@ import java.security.PermissionCollection;
  */
 @Mixins(OrganizationsEntity.UserPermissionsMixin.class)
 public interface OrganizationsEntity
-        extends Organizations,
-        OrganizationsQueries,
-        Organizations.Data,
-        UserPermissions,
-        DomainEntity
+      extends Organizations,
+      OrganizationsQueries,
+      Organizations.Data,
+      UserPermissions,
+      DomainEntity
 {
-    public static final String ORGANIZATIONS_ID = "organizations";
+   public static final String ORGANIZATIONS_ID = "organizations";
 
-    class UserPermissionsMixin
-        implements UserPermissions
-    {
-        public PermissionCollection getPermissions( UserAuthentication user)
-        {
-            PermissionCollection permissions = null;
+   class UserPermissionsMixin
+         implements UserPermissions
+   {
+      public PermissionCollection getPermissions( UserAuthentication user )
+      {
+         PermissionCollection permissions = null;
 
-            // If user is administrator
-            if (((UserAuthentication.Data)user).isAdministrator())
-            {
-                permissions = new AllPermission().newPermissionCollection();
-                permissions.add(new AllPermission());
-            }
+         // If user is administrator
+         if (((UserAuthentication.Data) user).isAdministrator())
+         {
+            permissions = new AllPermission().newPermissionCollection();
+            permissions.add( new AllPermission() );
+         }
 
-            return permissions;
-        }
-    }
+         return permissions;
+      }
+   }
 }

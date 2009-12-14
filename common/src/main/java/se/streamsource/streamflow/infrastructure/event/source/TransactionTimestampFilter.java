@@ -20,35 +20,36 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
  * Takes a list of TransactionEvents and filters them according to a given event specification.
  */
 public class TransactionTimestampFilter
-    implements TransactionHandler
+      implements TransactionHandler
 {
-    private TransactionHandler handler;
-    private long lastTimestamp;
+   private TransactionHandler handler;
+   private long lastTimestamp;
 
-    public TransactionTimestampFilter( long lastTimestamp, TransactionHandler handler )
-    {
-        this.lastTimestamp = lastTimestamp;
-        this.handler = handler;
-    }
+   public TransactionTimestampFilter( long lastTimestamp, TransactionHandler handler )
+   {
+      this.lastTimestamp = lastTimestamp;
+      this.handler = handler;
+   }
 
-    public boolean handleTransaction( TransactionEvents transaction )
-    {
-        try
-        {
-            return handler.handleTransaction( transaction );
-        } finally
-        {
-            lastTimestamp = transaction.timestamp().get();
-        }
-    }
-    /**
-     * Timestamp of the last evalutated transaction. This can be used as input
-     * to the next call to {@link se.streamsource.streamflow.infrastructure.event.source.EventStore#transactionsAfter(long, TransactionHandler)} }.
-     *
-     * @return
-     */
-    public long lastTimestamp()
-    {
-        return lastTimestamp;
-    }
+   public boolean handleTransaction( TransactionEvents transaction )
+   {
+      try
+      {
+         return handler.handleTransaction( transaction );
+      } finally
+      {
+         lastTimestamp = transaction.timestamp().get();
+      }
+   }
+
+   /**
+    * Timestamp of the last evalutated transaction. This can be used as input
+    * to the next call to {@link se.streamsource.streamflow.infrastructure.event.source.EventStore#transactionsAfter(long, TransactionHandler)} }.
+    *
+    * @return
+    */
+   public long lastTimestamp()
+   {
+      return lastTimestamp;
+   }
 }

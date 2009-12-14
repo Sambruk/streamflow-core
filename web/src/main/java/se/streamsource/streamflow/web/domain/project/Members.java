@@ -36,86 +36,87 @@ import se.streamsource.streamflow.web.domain.user.User;
 @Mixins(Members.Mixin.class)
 public interface Members
 {
-    void addMember(Participant participant);
+   void addMember( Participant participant );
 
-    void removeMember(Participant participant);
+   void removeMember( Participant participant );
 
-    void removeAllMembers();
+   void removeAllMembers();
 
-    interface Data
-    {
-        ManyAssociation<Participant> members();
+   interface Data
+   {
+      ManyAssociation<Participant> members();
 
-        void addedMember(DomainEvent event, Participant participant);
+      void addedMember( DomainEvent event, Participant participant );
 
-        void removedMember(DomainEvent event, Participant participant);
-    }
+      void removedMember( DomainEvent event, Participant participant );
+   }
 
-    abstract class Mixin
-            implements Members, Data
-    {
-        @This
-        Data state;
+   abstract class Mixin
+         implements Members, Data
+   {
+      @This
+      Data state;
 
-        @Structure
-        ValueBuilderFactory vbf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @This
-        Project project;
+      @This
+      Project project;
 
-        public void addMember(Participant participant)
-        {
-            if (members().contains(participant))
-                return;
+      public void addMember( Participant participant )
+      {
+         if (members().contains( participant ))
+            return;
 
-            addedMember(DomainEvent.CREATE, participant);
+         addedMember( DomainEvent.CREATE, participant );
 
-            participant.joinProject(project);
-        }
+         participant.joinProject( project );
+      }
 
-        public void removeMember(Participant participant)
-        {
-            if (!members().contains(participant))
-            {
-                return;
-            }
-            // Get all active tasks in a project for a particular user and unassign.
-            for(TaskDTO taskDTO : ((ProjectEntity)project).assignmentsTasks((User)participant).tasks().get())
-            {
-               Task task = uowf.currentUnitOfWork().get(Task.class, taskDTO.task().get().identity());
-               task.unassign();
-            }
-            removedMember(DomainEvent.CREATE, participant);
-            participant.leaveProject(project);
-        }
+      public void removeMember( Participant participant )
+      {
+         if (!members().contains( participant ))
+         {
+            return;
+         }
+         // Get all active tasks in a project for a particular user and unassign.
+         for (TaskDTO taskDTO : ((ProjectEntity) project).assignmentsTasks( (User) participant ).tasks().get())
+         {
+            Task task = uowf.currentUnitOfWork().get( Task.class, taskDTO.task().get().identity() );
+            task.unassign();
+         }
+         removedMember( DomainEvent.CREATE, participant );
+         participant.leaveProject( project );
+      }
 
-        public void removeAllMembers()
-        {
-            while (members().count() != 0)
-            {
-                removeMember(members().get(0));
-            }
-        }
-    }
+      public void removeAllMembers()
+      {
+         while (members().count() != 0)
+         {
+            removeMember( members().get( 0 ) );
+         }
+      }
+   }
 
-    abstract class RemovableSideEffect
-        extends SideEffectOf<Removable>
-        implements Removable
-    {
-        @This Members members;
+   abstract class RemovableSideEffect
+         extends SideEffectOf<Removable>
+         implements Removable
+   {
+      @This
+      Members members;
 
-        public boolean removeEntity()
-        {
-            if (result.removeEntity())
-            {
-                // Remove all members from the project
-                members.removeAllMembers();
-            }
+      public boolean removeEntity()
+      {
+         if (result.removeEntity())
+         {
+            // Remove all members from the project
+            members.removeAllMembers();
+         }
 
-            return true;
-        }
-    }
+         return true;
+      }
+   }
 }

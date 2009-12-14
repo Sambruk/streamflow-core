@@ -16,8 +16,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -25,31 +25,31 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * JAVADOC
  */
 public class WorkspaceUserWaitingForNode
-        extends DefaultMutableTreeNode
-    implements EventListener
+      extends DefaultMutableTreeNode
+      implements EventListener
 {
-    @Uses
-    WorkspaceUserWaitingForModel model;
+   @Uses
+   WorkspaceUserWaitingForModel model;
 
-    @Override
-    public WorkspaceUserNode getParent()
-    {
-        return (WorkspaceUserNode) super.getParent();
-    }
+   @Override
+   public WorkspaceUserNode getParent()
+   {
+      return (WorkspaceUserNode) super.getParent();
+   }
 
-    @Override
-    public String toString()
-    {
-        return i18n.text(WorkspaceResources.waitingfor_node);
-    }
+   @Override
+   public String toString()
+   {
+      return i18n.text( WorkspaceResources.waitingfor_node );
+   }
 
-    public WorkspaceUserWaitingForModel waitingForModel()
-    {
-        return model;
-    }
+   public WorkspaceUserWaitingForModel waitingForModel()
+   {
+      return model;
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        model.notifyEvent(event);
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      model.notifyEvent( event );
+   }
 }

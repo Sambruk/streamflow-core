@@ -25,14 +25,14 @@ import java.util.Date;
  * A comment value
  */
 public interface CommentValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> commenter();
+   Property<EntityReference> commenter();
 
-    Property<Date> creationDate();
+   Property<Date> creationDate();
 
-    Property<String> text();
+   Property<String> text();
 
-    @UseDefaults
-    Property<Boolean> isPublic();
+   @UseDefaults
+   Property<Boolean> isPublic();
 }

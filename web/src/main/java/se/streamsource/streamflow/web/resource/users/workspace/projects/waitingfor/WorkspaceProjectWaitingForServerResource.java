@@ -26,16 +26,16 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * /users/{user}/workspace/projects/{project}/waitingfor
  */
 public class WorkspaceProjectWaitingForServerResource
-        extends AbstractTaskListServerResource
+      extends AbstractTaskListServerResource
 {
-    public WaitingForTaskListDTO tasks(TasksQuery query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String userId = (String) getRequest().getAttributes().get("user");
+   public WaitingForTaskListDTO tasks( TasksQuery query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String projectId = (String) getRequest().getAttributes().get( "project" );
+      String userId = (String) getRequest().getAttributes().get( "user" );
 
-        Delegator delegator = uow.get( Delegator.class, userId );
-        WaitingForQueries queries = uow.get( WaitingForQueries.class, projectId );
-        return queries.waitingForTasks( delegator );
-    }
+      Delegator delegator = uow.get( Delegator.class, userId );
+      WaitingForQueries queries = uow.get( WaitingForQueries.class, projectId );
+      return queries.waitingForTasks( delegator );
+   }
 }

@@ -24,63 +24,63 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * Generic interface for removing objects. They are not
  * physically removed, but are instead only marked as removed.
  * All state still exists and can be queried.
- *
+ * <p/>
  * Queries for entities that include this one should ensure that the removed flag is set to false
  * before allowing it to be included.
  */
 @Mixins(Removable.Mixin.class)
 public interface Removable
 {
-    /**
-     * Mark the entity as removed
-     *
-     * @return true if the entity was removed. False if the entity was already marked as removed
-     */
-    boolean removeEntity();
+   /**
+    * Mark the entity as removed
+    *
+    * @return true if the entity was removed. False if the entity was already marked as removed
+    */
+   boolean removeEntity();
 
-    /**
-     * Mark the entity as not-removed
-     *
-     * @return true if the entity was reinstate. False if the entity was already active.
-     */
-    boolean reinstate();
+   /**
+    * Mark the entity as not-removed
+    *
+    * @return true if the entity was reinstate. False if the entity was already active.
+    */
+   boolean reinstate();
 
-    interface Data
-    {
-        @UseDefaults
-        Property<Boolean> removed();
+   interface Data
+   {
+      @UseDefaults
+      Property<Boolean> removed();
 
-        void changedRemoved(DomainEvent event, boolean isRemoved);
-    }
+      void changedRemoved( DomainEvent event, boolean isRemoved );
+   }
 
-    class Mixin
-            implements Removable
-    {
-        @This
-        Data state;
+   class Mixin
+         implements Removable
+   {
+      @This
+      Data state;
 
-        public boolean removeEntity()
-        {
-            if (!state.removed().get())
-            {
-                state.changedRemoved(DomainEvent.CREATE, true);
-                return true;
-            } else
-            {
-                return false;
-            }
-        }
+      public boolean removeEntity()
+      {
+         if (!state.removed().get())
+         {
+            state.changedRemoved( DomainEvent.CREATE, true );
+            return true;
+         } else
+         {
+            return false;
+         }
+      }
 
-        public boolean reinstate()
-        {
-            if (state.removed().get())
-            {
-                state.changedRemoved(DomainEvent.CREATE, false);
-                return true;
-            } else
-            {
-                return false;
-            }
-        }
-    }
+      public boolean reinstate()
+      {
+         if (state.removed().get())
+         {
+            state.changedRemoved( DomainEvent.CREATE, false );
+            return true;
+         } else
+         {
+            return false;
+         }
+      }
+   }
 }

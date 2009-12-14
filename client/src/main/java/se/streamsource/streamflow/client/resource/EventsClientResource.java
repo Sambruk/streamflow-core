@@ -31,53 +31,53 @@ import java.util.Date;
  * JAVADOC
  */
 public class EventsClientResource
-    extends ClientResource
+      extends ClientResource
 {
-    public EventsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public EventsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void registerClient( String id, InputStream in ) throws ResourceException
-    {
-        Reference ref = getRequest().getResourceRef();
+   public void registerClient( String id, InputStream in ) throws ResourceException
+   {
+      Reference ref = getRequest().getResourceRef();
 
-        setResourceRef( ref.clone().addSegment(id ));
-        try
-        {
-            put( new InputRepresentation(in, MediaType.APPLICATION_JAVA_OBJECT) );
-        } finally
-        {
-            setResourceRef( ref );
-        }
-    }
+      setResourceRef( ref.clone().addSegment( id ) );
+      try
+      {
+         put( new InputRepresentation( in, MediaType.APPLICATION_JAVA_OBJECT ) );
+      } finally
+      {
+         setResourceRef( ref );
+      }
+   }
 
-    public void deregisterClient( String id ) throws ResourceException
-    {
-        Reference ref = getRequest().getResourceRef();
+   public void deregisterClient( String id ) throws ResourceException
+   {
+      Reference ref = getRequest().getResourceRef();
 
-        setResourceRef( ref.clone().addSegment(id ));
-        try
-        {
-            delete();
-        } finally
-        {
-            setResourceRef( ref );
-        }
-    }
+      setResourceRef( ref.clone().addSegment( id ) );
+      try
+      {
+         delete();
+      } finally
+      {
+         setResourceRef( ref );
+      }
+   }
 
-    public Representation getEvents( Date afterTimestamp ) throws ResourceException, IOException
-    {
-        Reference originalRef = getRequest().getResourceRef();
-        Reference ref = originalRef.clone();
-        ref.addQueryParameter(  "after", afterTimestamp.getTime()+"");
-        setReference( ref );
-        try
-        {
-            return get();
-        } finally
-        {
-            setReference( originalRef );
-        }
-    }
+   public Representation getEvents( Date afterTimestamp ) throws ResourceException, IOException
+   {
+      Reference originalRef = getRequest().getResourceRef();
+      Reference ref = originalRef.clone();
+      ref.addQueryParameter( "after", afterTimestamp.getTime() + "" );
+      setReference( ref );
+      try
+      {
+         return get();
+      } finally
+      {
+         setReference( originalRef );
+      }
+   }
 }

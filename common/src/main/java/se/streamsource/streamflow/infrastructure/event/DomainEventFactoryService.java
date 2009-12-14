@@ -41,81 +41,81 @@ import java.util.Iterator;
 @SideEffects(EventNotificationSideEffect.class)
 @Mixins(DomainEventFactoryService.DomainEventFactoryMixin.class)
 public interface DomainEventFactoryService
-        extends DomainEventFactory, ServiceComposite
+      extends DomainEventFactory, ServiceComposite
 {
-    class DomainEventFactoryMixin
-            implements DomainEventFactory
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
+   class DomainEventFactoryMixin
+         implements DomainEventFactory
+   {
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @Structure
-        ValueBuilderFactory vbf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-        @Service
-        IdentityGenerator idGenerator;
+      @Service
+      IdentityGenerator idGenerator;
 
-        @Service Time time;
+      @Service
+      Time time;
 
-        String version;
+      String version;
 
-        public void init(@Structure Application application)
-        {
-            version = application.version();
-        }
+      public void init( @Structure Application application )
+      {
+         version = application.version();
+      }
 
-        public DomainEvent createEvent( EntityComposite entity, String name, Object[] args )
-        {
-            ValueBuilder<DomainEvent> builder = vbf.newValueBuilder( DomainEvent.class );
+      public DomainEvent createEvent( EntityComposite entity, String name, Object[] args )
+      {
+         ValueBuilder<DomainEvent> builder = vbf.newValueBuilder( DomainEvent.class );
 
-            DomainEvent prototype = builder.prototype();
-            prototype.name().set( name );
-            prototype.entityType().set( entity.type().getName() );
-            prototype.on().set( time.dateNow() );
-            prototype.entity().set( entity.identity().get() );
+         DomainEvent prototype = builder.prototype();
+         prototype.name().set( name );
+         prototype.entityType().set( entity.type().getName() );
+         prototype.on().set( time.dateNow() );
+         prototype.entity().set( entity.identity().get() );
 
-            Subject subject = Subject.getSubject( AccessController.getContext() );
-            if (subject == null)
-                prototype.by().set( "unknown" );
-            else
+         Subject subject = Subject.getSubject( AccessController.getContext() );
+         if (subject == null)
+            prototype.by().set( "unknown" );
+         else
+         {
+            Iterator<Principal> iterator = subject.getPrincipals().iterator();
+            if (iterator.hasNext())
             {
-                Iterator<Principal> iterator = subject.getPrincipals().iterator();
-                if (iterator.hasNext())
-                {
-                    String userName = iterator.next().getName();
-                    prototype.by().set( userName );
-                }
-                else
-                    prototype.by().set( "unknown" );
+               String userName = iterator.next().getName();
+               prototype.by().set( userName );
+            } else
+               prototype.by().set( "unknown" );
+         }
+
+         prototype.identity().set( idGenerator.generate( DomainEvent.class ) );
+         prototype.usecase().set( uowf.currentUnitOfWork().usecase().name() );
+         prototype.version().set( version );
+
+         // JSON-ify parameters
+         JSONStringer json = new JSONStringer();
+         try
+         {
+            JSONWriter params = json.object();
+            for (int i = 1; i < args.length; i++)
+            {
+               params.key( "param" + i );
+               if (args == null)
+                  params.value( JSONObject.NULL );
+               else
+                  params.value( args[i] );
             }
+            json.endObject();
+         } catch (JSONException e)
+         {
+            throw new IllegalArgumentException( "Could not create event", e );
+         }
 
-            prototype.identity().set( idGenerator.generate( DomainEvent.class ) );
-            prototype.usecase().set( uowf.currentUnitOfWork().usecase().name() );
-            prototype.version().set( version );
+         prototype.parameters().set( json.toString() );
 
-            // JSON-ify parameters
-            JSONStringer json = new JSONStringer();
-            try
-            {
-                JSONWriter params = json.object();
-                for (int i = 1; i < args.length; i++)
-                {
-                    params.key( "param" + i );
-                    if (args == null)
-                        params.value( JSONObject.NULL );
-                    else
-                        params.value( args[i] );
-                }
-                json.endObject();
-            } catch (JSONException e)
-            {
-                throw new IllegalArgumentException("Could not create event", e);
-            }
-
-            prototype.parameters().set( json.toString() );
-
-            DomainEvent event = builder.newInstance();
-            return event;
-        }
-    }
+         DomainEvent event = builder.newInstance();
+         return event;
+      }
+   }
 }

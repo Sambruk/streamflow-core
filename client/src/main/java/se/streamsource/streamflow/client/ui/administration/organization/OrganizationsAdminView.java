@@ -19,7 +19,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -27,43 +29,43 @@ import javax.swing.event.ListSelectionListener;
  * JAVADOC
  */
 public class OrganizationsAdminView
-        extends JSplitPane
+      extends JSplitPane
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    public OrganizationsAdminView(@Uses final OrganizationsView organizationsView)
-    {
-        super();
+   public OrganizationsAdminView( @Uses final OrganizationsView organizationsView )
+   {
+      super();
 
-        setLeftComponent(organizationsView);
-        setRightComponent(new JPanel());
+      setLeftComponent( organizationsView );
+      setRightComponent( new JPanel() );
 
-        setDividerLocation(250);
+      setDividerLocation( 250 );
 
-        final JList list = organizationsView.getOrganizationsList();
+      final JList list = organizationsView.getOrganizationsList();
 
-        list.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      list.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    int idx = list.getSelectedIndex();
-                    if (idx < list.getModel().getSize() && idx >= 0)
-                    {
-                        ListItemValue organizationValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        OrganizationUsersView organizationView = obf.newObjectBuilder(
-                                OrganizationUsersView.class).use(organizationsView.getModel()
-                                .getOrganizationUsersModel(organizationValue.entity().get().identity())).newInstance();
-                        setRightComponent(organizationView);
-                    } else
-                    {
-                        setRightComponent(new JPanel());
-                    }
-                }
+               int idx = list.getSelectedIndex();
+               if (idx < list.getModel().getSize() && idx >= 0)
+               {
+                  ListItemValue organizationValue = (ListItemValue) list.getModel().getElementAt( idx );
+                  OrganizationUsersView organizationView = obf.newObjectBuilder(
+                        OrganizationUsersView.class ).use( organizationsView.getModel()
+                        .getOrganizationUsersModel( organizationValue.entity().get().identity() ) ).newInstance();
+                  setRightComponent( organizationView );
+               } else
+               {
+                  setRightComponent( new JPanel() );
+               }
             }
-        });
-    }
+         }
+      } );
+   }
 
 }

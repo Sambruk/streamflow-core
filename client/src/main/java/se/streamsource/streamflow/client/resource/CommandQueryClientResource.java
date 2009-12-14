@@ -47,312 +47,312 @@ import java.io.InputStream;
  * Base class for client-side Command/Query resources
  */
 public class CommandQueryClientResource
-        extends BaseClientResource
+      extends BaseClientResource
 {
-    @Structure
-    protected UnitOfWorkFactory uowf;
+   @Structure
+   protected UnitOfWorkFactory uowf;
 
-    @Structure
-    protected Qi4jSPI spi;
+   @Structure
+   protected Qi4jSPI spi;
 
-    @Structure
-    protected Module module;
+   @Structure
+   protected Module module;
 
-    @Service
-    protected TransactionHandler eventListener;
+   @Service
+   protected TransactionHandler eventListener;
 
-    public CommandQueryClientResource(@Uses org.restlet.Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public CommandQueryClientResource( @Uses org.restlet.Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    protected <T extends ValueComposite> T query(String operation, Class<T> queryResult) throws ResourceException
-    {
-        return query(operation, null, queryResult);
-    }
+   protected <T extends ValueComposite> T query( String operation, Class<T> queryResult ) throws ResourceException
+   {
+      return query( operation, null, queryResult );
+   }
 
-    protected <T extends ValueComposite> T query(String operation, ValueComposite queryValue, Class<T> queryResult) throws ResourceException
-    {
-        Representation result = invokeQuery( operation, queryValue );
+   protected <T extends ValueComposite> T query( String operation, ValueComposite queryValue, Class<T> queryResult ) throws ResourceException
+   {
+      Representation result = invokeQuery( operation, queryValue );
 
-        if (getResponse().getStatus().isSuccess())
-        {
+      if (getResponse().getStatus().isSuccess())
+      {
+         try
+         {
+            String jsonValue = result.getText();
+            T returnValue = vbf.newValueFromJSON( queryResult, jsonValue );
+            return returnValue;
+         } catch (IOException e)
+         {
+            throw new ResourceException( e );
+         }
+      } else
+      {
+         // This will throw an exception
+         handleError( result );
+         return null;
+      }
+   }
+
+   protected InputStream queryStream( String operation, ValueComposite queryValue ) throws ResourceException, IOException
+   {
+      Representation result = invokeQuery( operation, queryValue );
+
+      if (getResponse().getStatus().isSuccess())
+      {
+         return result.getStream();
+      } else
+      {
+         // This will throw an exception
+         handleError( result );
+         return null;
+      }
+   }
+
+   private void setQueryParameters( final Reference ref, ValueComposite queryValue )
+   {
+      // Value as parameter
+      StateHolder holder = spi.getState( queryValue );
+      final ValueDescriptor descriptor = spi.getValueDescriptor( queryValue );
+
+      ref.setQuery( null );
+
+      holder.visitProperties( new StateHolder.StateVisitor()
+      {
+         public void visitProperty( QualifiedName
+               name, Object value )
+         {
+            if (value != null)
+            {
+               PropertyTypeDescriptor propertyDesc = descriptor.state().getPropertyByQualifiedName( name );
+               String queryParam = propertyDesc.propertyType().type().toQueryParameter( value );
+               ref.addQueryParameter( name.name(), queryParam );
+            }
+         }
+      } );
+   }
+
+   protected void postCommand( String operation ) throws ResourceException
+   {
+      postCommand( operation, new EmptyRepresentation() );
+   }
+
+   protected void postCommand( String operation, ValueComposite command ) throws ResourceException
+   {
+      Representation commandRepresentation;
+      commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
+
+      postCommand( operation, commandRepresentation );
+   }
+
+   protected void postCommand( String operation, Representation commandRepresentation )
+         throws ResourceException
+   {
+      Reference ref = getReference();
+      Reference operationRef = ref.clone().addQueryParameter( "command", operation );
+      setReference( operationRef );
+      try
+      {
+         Representation events = post( commandRepresentation );
+         if (!getStatus().isSuccess())
+         {
+            throw new ResourceException( getStatus() );
+         } else
+         {
+            processEvents( events );
+         }
+      } finally
+      {
+         setReference( ref );
+      }
+   }
+
+   private Object handleError( Representation result )
+         throws ResourceException
+   {
+      if (getResponse().getStatus().equals( Status.SERVER_ERROR_INTERNAL ))
+      {
+         if (getResponse().getEntity().getMediaType().equals( MediaType.APPLICATION_JAVA_OBJECT ))
+         {
             try
             {
-                String jsonValue = result.getText();
-                T returnValue = vbf.newValueFromJSON(queryResult, jsonValue);
-                return returnValue;
+               Object exception = new ObjectRepresentation( result ).getObject();
+               throw new ResourceException( (Throwable) exception );
             } catch (IOException e)
             {
-                throw new ResourceException(e);
-            }
-        } else
-        {
-            // This will throw an exception
-            handleError( result );
-            return null;
-        }
-    }
-
-    protected InputStream queryStream(String operation, ValueComposite queryValue) throws ResourceException, IOException
-    {
-        Representation result = invokeQuery( operation, queryValue );
-
-        if (getResponse().getStatus().isSuccess())
-        {
-            return result.getStream();
-        } else
-        {
-            // This will throw an exception
-            handleError( result );
-            return null;
-        }
-    }
-
-    private void setQueryParameters(final Reference ref, ValueComposite queryValue)
-    {
-        // Value as parameter
-        StateHolder holder = spi.getState(queryValue);
-        final ValueDescriptor descriptor = spi.getValueDescriptor(queryValue);
-
-        ref.setQuery(null);
-
-        holder.visitProperties(new StateHolder.StateVisitor()
-        {
-            public void visitProperty(QualifiedName
-                    name, Object value)
+               throw new ResourceException( e );
+            } catch (ClassNotFoundException e)
             {
-                if (value != null)
-                {
-                    PropertyTypeDescriptor propertyDesc = descriptor.state().getPropertyByQualifiedName(name);
-                    String queryParam = propertyDesc.propertyType().type().toQueryParameter(value);
-                    ref.addQueryParameter(name.name(), queryParam);
-                }
+               throw new ResourceException( e );
             }
-        });
-    }
+         }
 
-    protected void postCommand(String operation) throws ResourceException
-    {
-        postCommand(operation, new EmptyRepresentation());
-    }
-
-    protected void postCommand(String operation, ValueComposite command) throws ResourceException
-    {
-        Representation commandRepresentation;
-        commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
-
-        postCommand( operation, commandRepresentation );
-    }
-
-    protected void postCommand( String operation, Representation commandRepresentation )
-            throws ResourceException
-    {
-        Reference ref = getReference();
-        Reference operationRef = ref.clone().addQueryParameter("command", operation);
-        setReference(operationRef);
-        try
-        {
-            Representation events = post(commandRepresentation);
-            if (!getStatus().isSuccess())
+         throw new ResourceException( Status.SERVER_ERROR_INTERNAL, getResponse().getEntityAsText() );
+      } else
+      {
+         try
+         {
+            if (getResponseEntity() != null)
             {
-                throw new ResourceException(getStatus());
+               String text = getResponseEntity().getText();
+               throw new ResourceException( getResponse().getStatus(), text );
             } else
             {
-                processEvents(events);
+               throw new ResourceException( getResponse().getStatus() );
             }
-        } finally
-        {
-            setReference(ref);
-        }
-    }
+         } catch (IOException e)
+         {
+            throw new ResourceException( e );
+         }
+      }
+   }
 
-    private Object handleError( Representation result )
-            throws ResourceException
-    {
-        if (getResponse().getStatus().equals( Status.SERVER_ERROR_INTERNAL))
-        {
-            if (getResponse().getEntity().getMediaType().equals( MediaType.APPLICATION_JAVA_OBJECT))
-            {
-                try
-                {
-                    Object exception = new ObjectRepresentation(result).getObject();
-                    throw new ResourceException((Throwable) exception);
-                } catch (IOException e)
-                {
-                    throw new ResourceException(e);
-                } catch (ClassNotFoundException e)
-                {
-                    throw new ResourceException(e);
-                }
-            }
+   private Representation invokeQuery( String operation, ValueComposite queryValue )
+         throws ResourceException
+   {
+      Reference ref = getReference();
+      Reference operationRef = ref.clone();
+      if (queryValue != null)
+         setQueryParameters( operationRef, queryValue );
+      operationRef.addQueryParameter( "query", operation );
 
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, getResponse().getEntityAsText());
-        } else
-        {
+      operationRef = new Reference( operationRef.toUrl() );
+      setReference( operationRef );
+      Representation result;
+      try
+      {
+         result = get( MediaType.APPLICATION_JSON );
+      } finally
+      {
+         setReference( ref );
+      }
+      return result;
+   }
+
+   public void create() throws ResourceException
+   {
+      putCommand( null );
+   }
+
+   public void putCommand( String operation ) throws ResourceException
+   {
+      putCommand( operation, null );
+   }
+
+   protected void putCommand( String operation, ValueComposite command ) throws ResourceException
+   {
+      Representation commandRepresentation;
+      if (command != null)
+         commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
+      else
+         commandRepresentation = new EmptyRepresentation();
+
+      Reference ref = getReference();
+      if (operation != null)
+      {
+         Reference operationRef = ref.clone().addQueryParameter( "command", operation );
+         setReference( operationRef );
+      }
+      try
+      {
+         int tries = 3;
+         while (true)
+         {
             try
             {
-                if (getResponseEntity() != null)
-                {
-                    String text = getResponseEntity().getText();
-                    throw new ResourceException(getResponse().getStatus(), text);
-                } else
-                {
-                    throw new ResourceException(getResponse().getStatus());
-                }
-            } catch (IOException e)
-            {
-                throw new ResourceException(e);
-            }
-        }
-    }
-
-    private Representation invokeQuery( String operation, ValueComposite queryValue )
-            throws ResourceException
-    {
-        Reference ref = getReference();
-        Reference operationRef = ref.clone();
-        if (queryValue != null)
-            setQueryParameters(operationRef, queryValue);
-        operationRef.addQueryParameter("query", operation);
-
-        operationRef = new Reference(operationRef.toUrl());
-        setReference(operationRef);
-        Representation result;
-        try
-        {
-            result = get( MediaType.APPLICATION_JSON);
-        } finally
-        {
-            setReference(ref);
-        }
-        return result;
-    }
-
-    public void create() throws ResourceException
-    {
-        putCommand(null);
-    }
-
-    public void putCommand(String operation) throws ResourceException
-    {
-        putCommand(operation, null);
-    }
-
-    protected void putCommand(String operation, ValueComposite command) throws ResourceException
-    {
-        Representation commandRepresentation;
-        if (command != null)
-            commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
-        else
-            commandRepresentation = new EmptyRepresentation();
-
-        Reference ref = getReference();
-        if (operation != null)
-        {
-            Reference operationRef = ref.clone().addQueryParameter("command", operation);
-            setReference(operationRef);
-        }
-        try
-        {
-            int tries = 3;
-            while (true)
-            {
-                try
-                {
-                    Representation events = put(commandRepresentation);
-                    if (!getStatus().isSuccess())
-                    {
-                        throw new ResourceException(getStatus());
-                    } else
-                    {
-                        processEvents(events);
-                    }
-                    break;
-                } catch (ResourceException e)
-                {
-                    if (e.getStatus().equals(Status.CONNECTOR_ERROR_COMMUNICATION) ||
-                            e.getStatus().equals(Status.CONNECTOR_ERROR_CONNECTION))
-                    {
-                        if (tries == 0)
-                            throw e; // Give up
-                        else
-                        {
-                            // Try again
-                            tries--;
-                            continue;
-                        }
-                    } else
-                    {
-                        // Abort
-                        throw e;
-                    }
-                }
-            }
-        } finally
-        {
-            setReference(ref);
-        }
-    }
-
-    public void deleteCommand() throws ResourceException
-    {
-
-        int tries = 3;
-        while (true)
-        {
-            try
-            {
-                Representation events = delete();
-                if (!getStatus().isSuccess())
-                {
-                    throw new ResourceException(getStatus());
-                } else
-                {
-                    processEvents(events);
-                }
-
-                break;
+               Representation events = put( commandRepresentation );
+               if (!getStatus().isSuccess())
+               {
+                  throw new ResourceException( getStatus() );
+               } else
+               {
+                  processEvents( events );
+               }
+               break;
             } catch (ResourceException e)
             {
-                if (e.getStatus().equals(Status.CONNECTOR_ERROR_COMMUNICATION) ||
-                        e.getStatus().equals(Status.CONNECTOR_ERROR_CONNECTION))
-                {
-                    if (tries == 0)
-                        throw e; // Give up
-                    else
-                    {
-                        // Try again
-                        tries--;
-                        continue;
-                    }
-                } else
-                {
-                    // Abort
-                    throw e;
-                }
+               if (e.getStatus().equals( Status.CONNECTOR_ERROR_COMMUNICATION ) ||
+                     e.getStatus().equals( Status.CONNECTOR_ERROR_CONNECTION ))
+               {
+                  if (tries == 0)
+                     throw e; // Give up
+                  else
+                  {
+                     // Try again
+                     tries--;
+                     continue;
+                  }
+               } else
+               {
+                  // Abort
+                  throw e;
+               }
             }
-        }
-    }
+         }
+      } finally
+      {
+         setReference( ref );
+      }
+   }
 
-    private void processEvents(Representation entity)
-    {
-        if (getResponse().getStatus().isSuccess() && (getRequest().getMethod().equals( Method.POST) || getRequest().getMethod().equals(Method.DELETE) || getRequest().getMethod().equals(Method.PUT)))
-        {
-            try
+   public void deleteCommand() throws ResourceException
+   {
+
+      int tries = 3;
+      while (true)
+      {
+         try
+         {
+            Representation events = delete();
+            if (!getStatus().isSuccess())
             {
-                if (entity != null && !(entity instanceof EmptyRepresentation))
-                {
-                    String source = entity.getText();
-
-                    final TransactionEvents transactionEvents = vbf.newValueFromJSON(TransactionEvents.class,  source);
-
-                    eventListener.handleTransaction( transactionEvents );
-                }
-            } catch (Exception e)
+               throw new ResourceException( getStatus() );
+            } else
             {
-                throw new OperationException( StreamFlowResources.could_not_process_events, e);
+               processEvents( events );
             }
-        }
-    }
+
+            break;
+         } catch (ResourceException e)
+         {
+            if (e.getStatus().equals( Status.CONNECTOR_ERROR_COMMUNICATION ) ||
+                  e.getStatus().equals( Status.CONNECTOR_ERROR_CONNECTION ))
+            {
+               if (tries == 0)
+                  throw e; // Give up
+               else
+               {
+                  // Try again
+                  tries--;
+                  continue;
+               }
+            } else
+            {
+               // Abort
+               throw e;
+            }
+         }
+      }
+   }
+
+   private void processEvents( Representation entity )
+   {
+      if (getResponse().getStatus().isSuccess() && (getRequest().getMethod().equals( Method.POST ) || getRequest().getMethod().equals( Method.DELETE ) || getRequest().getMethod().equals( Method.PUT )))
+      {
+         try
+         {
+            if (entity != null && !(entity instanceof EmptyRepresentation))
+            {
+               String source = entity.getText();
+
+               final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
+
+               eventListener.handleTransaction( transactionEvents );
+            }
+         } catch (Exception e)
+         {
+            throw new OperationException( StreamFlowResources.could_not_process_events, e );
+         }
+      }
+   }
 }

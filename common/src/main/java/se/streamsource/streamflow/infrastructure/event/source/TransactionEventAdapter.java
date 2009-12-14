@@ -14,29 +14,29 @@
 
 package se.streamsource.streamflow.infrastructure.event.source;
 
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
  * JAVADOC
  */
 public class TransactionEventAdapter
-    implements TransactionHandler
+      implements TransactionHandler
 {
-    private EventHandler handler;
+   private EventHandler handler;
 
-    public TransactionEventAdapter( EventHandler handler )
-    {
-        this.handler = handler;
-    }
+   public TransactionEventAdapter( EventHandler handler )
+   {
+      this.handler = handler;
+   }
 
-    public boolean handleTransaction( TransactionEvents transaction )
-    {
-        for (DomainEvent domainEvent : transaction.events().get())
-        {
-            if (!handler.handleEvent( domainEvent ))
-                return false;
-        }
-        return true;
-    }
+   public boolean handleTransaction( TransactionEvents transaction )
+   {
+      for (DomainEvent domainEvent : transaction.events().get())
+      {
+         if (!handler.handleEvent( domainEvent ))
+            return false;
+      }
+      return true;
+   }
 }

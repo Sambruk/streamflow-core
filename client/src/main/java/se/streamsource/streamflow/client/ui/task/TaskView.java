@@ -21,36 +21,36 @@ import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
 /**
  * JAVADOC
  */
 public class TaskView
-        extends JPanel
+      extends JPanel
 {
-    private StateBinder taskBinder;
+   private StateBinder taskBinder;
 
 //    @Service
 //    UserInboxTaskDetailModel model;
 
-    public TaskView(@Service ApplicationContext appContext)
-    {
-        FormLayout layout = new FormLayout(
-                "right:max(40dlu;p), 4dlu, 200dlu, 7dlu, " // 1st major column
-                        + "right:max(40dlu;p), 4dlu, 80dlu",        // 2nd major column
-                "");                                      // add rows dynamically
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
-        builder.setDefaultDialogBorder();
+   public TaskView( @Service ApplicationContext appContext )
+   {
+      FormLayout layout = new FormLayout(
+            "right:max(40dlu;p), 4dlu, 200dlu, 7dlu, " // 1st major column
+                  + "right:max(40dlu;p), 4dlu, 80dlu",        // 2nd major column
+            "" );                                      // add rows dynamically
+      DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
+      builder.setDefaultDialogBorder();
 
-        taskBinder = new StateBinder();
-        taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
+      taskBinder = new StateBinder();
+      taskBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
 
-        BindingFormBuilder bb = new BindingFormBuilder(builder, taskBinder);
+      BindingFormBuilder bb = new BindingFormBuilder( builder, taskBinder );
 /*
         bb.appendSeparator(task_separator)
                 .appendLine(title_label, TEXTFIELD, template.description())
                 .appendLine(note_label, TEXTAREA, template.note());
 */
-    }
+   }
 }

@@ -24,61 +24,63 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.TextField;
 
 /**
  * Select a name for something.
  */
 public class FieldCreationDialog
-        extends JPanel
+      extends JPanel
 {
 
-    FormLayout formLayout = new FormLayout(
-            "pref, 4dlu, 150dlu","");
-    private TextField nameField;
-    String name;
-    private JComboBox box;
+   FormLayout formLayout = new FormLayout(
+         "pref, 4dlu, 150dlu", "" );
+   private TextField nameField;
+   String name;
+   private JComboBox box;
 
 
-    public FieldCreationDialog(@Service ApplicationContext context)
-    {
-        super(new BorderLayout());
+   public FieldCreationDialog( @Service ApplicationContext context )
+   {
+      super( new BorderLayout() );
 
-        setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-        JPanel panel = new JPanel();
-        DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, panel);
+      JPanel panel = new JPanel();
+      DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
 
-        nameField = new TextField();
-        formBuilder.append(i18n.text(AdministrationResources.name_label), nameField);
-        //box = new JComboBox(new String[]{"Text","Number","Date","Single selection", "Multi selection", "Comment", "Page break"});
-        box = new JComboBox(new String[]{"Text"});
-        formBuilder.append("Value Type", box);
-        add(panel, BorderLayout.CENTER);
-    }
+      nameField = new TextField();
+      formBuilder.append( i18n.text( AdministrationResources.name_label ), nameField );
+      //box = new JComboBox(new String[]{"Text","Number","Date","Single selection", "Multi selection", "Comment", "Page break"});
+      box = new JComboBox( new String[]{"Text"} );
+      formBuilder.append( "Value Type", box );
+      add( panel, BorderLayout.CENTER );
+   }
 
-    @Action
-    public void execute()
-    {
-        name = nameField.getText();
+   @Action
+   public void execute()
+   {
+      name = nameField.getText();
 
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    public FieldTypes getFieldType()
-    {
-        return FieldTypes.text;
-    }
+   public FieldTypes getFieldType()
+   {
+      return FieldTypes.text;
+   }
 
-    public String name()
-    {
-        return name;
-    }
+   public String name()
+   {
+      return name;
+   }
 }

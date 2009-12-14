@@ -24,30 +24,36 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
  * JAVADOC
  */
 public class ProjectModel
-    implements EventListener
+      implements EventListener
 {
-    private @Uses ProjectMembersModel membersModel;
-    private @Uses SelectedLabelsModel selectedLabelsModel;
-    private @Uses SelectedTaskTypesModel selectedTaskTypesModel;
+   private
+   @Uses
+   ProjectMembersModel membersModel;
+   private
+   @Uses
+   SelectedLabelsModel selectedLabelsModel;
+   private
+   @Uses
+   SelectedTaskTypesModel selectedTaskTypesModel;
 
-    public ProjectMembersModel getMembersModel()
-    {
-        return membersModel;
-    }
+   public ProjectMembersModel getMembersModel()
+   {
+      return membersModel;
+   }
 
-    public SelectedLabelsModel getSelectedLabelsModel()
-    {
-        return selectedLabelsModel;
-    }
+   public SelectedLabelsModel getSelectedLabelsModel()
+   {
+      return selectedLabelsModel;
+   }
 
-    public SelectedTaskTypesModel getSelectedTaskTypes()
-    {
-        return selectedTaskTypesModel;
-    }
+   public SelectedTaskTypesModel getSelectedTaskTypes()
+   {
+      return selectedTaskTypesModel;
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        membersModel.notifyEvent( event );
-        selectedLabelsModel.notifyEvent( event );
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      membersModel.notifyEvent( event );
+      selectedLabelsModel.notifyEvent( event );
+   }
 }

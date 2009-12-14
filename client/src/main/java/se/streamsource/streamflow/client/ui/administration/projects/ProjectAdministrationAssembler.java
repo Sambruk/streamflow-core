@@ -24,37 +24,33 @@ import se.streamsource.streamflow.client.ui.administration.projects.forms.FieldV
 import se.streamsource.streamflow.client.ui.administration.projects.forms.FieldsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.forms.FieldsView;
 import se.streamsource.streamflow.client.ui.administration.projects.forms.FormEditAdminView;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormView;
 import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsAdminView;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsView;
 
 /**
  * JAVADOC
  */
 public class ProjectAdministrationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        UIAssemblers.addViews(module, ProjectAdminView.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addViews( module, ProjectAdminView.class );
 
 
-        UIAssemblers.addMV(module, ProjectsModel.class,
-                ProjectsView.class);
+      UIAssemblers.addMV( module, ProjectsModel.class,
+            ProjectsView.class );
 
-        UIAssemblers.addModels( module, ProjectModel.class);
+      UIAssemblers.addModels( module, ProjectModel.class );
 
-        UIAssemblers.addViews(module, ProjectView.class, FormsAdminView.class, FormEditAdminView.class);
+      UIAssemblers.addViews( module, ProjectView.class, FormsAdminView.class, FormEditAdminView.class );
 
-        UIAssemblers.addMV(module, ProjectMembersModel.class,
-                ProjectMembersView.class);
+      UIAssemblers.addMV( module, ProjectMembersModel.class,
+            ProjectMembersView.class );
 
-        UIAssemblers.addMV(module, FieldsModel.class, FieldsView.class);
+      UIAssemblers.addMV( module, FieldsModel.class, FieldsView.class );
 
-        UIAssemblers.addMV(module, FieldValueEditModel.class, FieldValueTextEditView.class);
+      UIAssemblers.addMV( module, FieldValueEditModel.class, FieldValueTextEditView.class );
 
-        UIAssemblers.addDialogs(module, FieldCreationDialog.class);
-    }
+      UIAssemblers.addDialogs( module, FieldCreationDialog.class );
+   }
 }

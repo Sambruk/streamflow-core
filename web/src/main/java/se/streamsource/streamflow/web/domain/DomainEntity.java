@@ -31,9 +31,9 @@ import se.streamsource.streamflow.infrastructure.event.EventPropertyChangedMixin
  */
 @Concerns(EventCreationConcern.class)
 @Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class,
-        EventEntityCreatedMixin.class, EventEntityAddedMixin.class, EventEntityRemovedMixin.class,
-        CommandEntityCreateMixin.class, CommandEntityRemoveMixin.class})
+      EventEntityCreatedMixin.class, EventEntityAddedMixin.class, EventEntityRemovedMixin.class,
+      CommandEntityCreateMixin.class, CommandEntityRemoveMixin.class})
 public interface DomainEntity
-        extends EntityComposite
+      extends EntityComposite
 {
 }

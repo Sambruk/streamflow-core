@@ -35,48 +35,48 @@ import java.awt.Dimension;
  * Search window
  */
 public class SearchWindow
-    extends FrameView
+      extends FrameView
 {
-    public SearchWindow(@Service Application application,
+   public SearchWindow( @Service Application application,
                         @Service JavaHelp javaHelp,
                         @Uses SearchMenuBar menu,
                         @Uses final AccountSelector accountSelector,
-                        @Structure final ObjectBuilderFactory obf)
-    {
-        super(application);
+                        @Structure final ObjectBuilderFactory obf )
+   {
+      super( application );
 
-        final JXFrame frame = new JXFrame(i18n.text(SearchResources.window_name));
-        frame.setLocationByPlatform(true);
+      final JXFrame frame = new JXFrame( i18n.text( SearchResources.window_name ) );
+      frame.setLocationByPlatform( true );
 
-        accountSelector.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      accountSelector.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    if (accountSelector.isSelectionEmpty())
-                    {
-                        frame.getContentPane().removeAll();
-                    } else
-                    {
-                        frame.getContentPane().removeAll();
+               if (accountSelector.isSelectionEmpty())
+               {
+                  frame.getContentPane().removeAll();
+               } else
+               {
+                  frame.getContentPane().removeAll();
 
-                        AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                        SearchResultTableModel model = selectedAccount.search();
-                        SearchView searchView = obf.newObjectBuilder(SearchView.class).use(model).newInstance();
+                  AccountModel selectedAccount = accountSelector.getSelectedAccount();
+                  SearchResultTableModel model = selectedAccount.search();
+                  SearchView searchView = obf.newObjectBuilder( SearchView.class ).use( model ).newInstance();
 
-                        frame.getContentPane().add(searchView);
-                    }
-                }
+                  frame.getContentPane().add( searchView );
+               }
             }
-        });
+         }
+      } );
 
-        setFrame(frame);
-        setMenuBar(menu);
+      setFrame( frame );
+      setMenuBar( menu );
 
-        frame.setPreferredSize(new Dimension(1000, 600));
-        frame.pack();
-        javaHelp.enableHelp(this.getRootPane(),"search");
-    }
+      frame.setPreferredSize( new Dimension( 1000, 600 ) );
+      frame.pack();
+      javaHelp.enableHelp( this.getRootPane(), "search" );
+   }
 
 }

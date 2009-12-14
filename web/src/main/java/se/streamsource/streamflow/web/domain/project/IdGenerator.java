@@ -31,70 +31,72 @@ import java.util.Calendar;
 @Mixins(IdGenerator.IdGeneratorMixin.class)
 public interface IdGenerator
 {
-    void assignId(TaskId task);
+   void assignId( TaskId task );
 
-    interface Data
-    {
-        @UseDefaults
-        Property<Long> current();
+   interface Data
+   {
+      @UseDefaults
+      Property<Long> current();
 
-        @Optional
-        Property<Long> lastIdDate();
-
-
-        void setCounter(DomainEvent event, long counter);
+      @Optional
+      Property<Long> lastIdDate();
 
 
-        void changedDate(DomainEvent create, long timeInMillis);
-    }
+      void setCounter( DomainEvent event, long counter );
 
-    abstract class IdGeneratorMixin
-            implements IdGenerator, Data
-    {
-        @This
-        Data state;
 
-        // Commands
-        public void assignId(TaskId task)
-        {
-            // Check if we should reset the counter
-            Calendar now = Calendar.getInstance();
-            if (state.lastIdDate().get() != null)
+      void changedDate( DomainEvent create, long timeInMillis );
+   }
+
+   abstract class IdGeneratorMixin
+         implements IdGenerator, Data
+   {
+      @This
+      Data state;
+
+      // Commands
+
+      public void assignId( TaskId task )
+      {
+         // Check if we should reset the counter
+         Calendar now = Calendar.getInstance();
+         if (state.lastIdDate().get() != null)
+         {
+            Calendar lastDate = Calendar.getInstance();
+            lastDate.setTimeInMillis( state.lastIdDate().get() );
+
+            // Day has changed - reset counter
+            if (now.get( Calendar.DAY_OF_YEAR ) != lastDate.get( Calendar.DAY_OF_YEAR ))
             {
-                Calendar lastDate = Calendar.getInstance();
-                lastDate.setTimeInMillis(state.lastIdDate().get());
-
-                // Day has changed - reset counter
-                if (now.get(Calendar.DAY_OF_YEAR) != lastDate.get(Calendar.DAY_OF_YEAR))
-                {
-                    state.setCounter(DomainEvent.CREATE, 0);
-                }
+               state.setCounter( DomainEvent.CREATE, 0 );
             }
-            // Save current date
-            state.changedDate(DomainEvent.CREATE, now.getTimeInMillis());
+         }
+         // Save current date
+         state.changedDate( DomainEvent.CREATE, now.getTimeInMillis() );
 
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+         SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd" );
 
-            long current = state.current().get();
-            current++;
-            setCounter(DomainEvent.CREATE, current);
+         long current = state.current().get();
+         current++;
+         setCounter( DomainEvent.CREATE, current );
 
-            String date = format.format(now.getTime());
+         String date = format.format( now.getTime() );
 
-            String taskId = date + "-" + current;
+         String taskId = date + "-" + current;
 
-            task.assignId(taskId);
-        }
+         task.assignId( taskId );
+      }
 
-        // Events
-        public void changedDate(DomainEvent create, long timeInMillis)
-        {
-            state.lastIdDate().set(timeInMillis);
-        }
+      // Events
 
-        public void setCounter(DomainEvent event, long counter)
-        {
-            state.current().set(counter);
-        }
-    }
+      public void changedDate( DomainEvent create, long timeInMillis )
+      {
+         state.lastIdDate().set( timeInMillis );
+      }
+
+      public void setCounter( DomainEvent event, long counter )
+      {
+         state.current().set( counter );
+      }
+   }
 }

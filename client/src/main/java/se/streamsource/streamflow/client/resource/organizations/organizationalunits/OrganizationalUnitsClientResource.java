@@ -29,37 +29,37 @@ import java.util.List;
  * JAVADOC
  */
 public class OrganizationalUnitsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public OrganizationalUnitsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public OrganizationalUnitsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ListValue organizationalUnits() throws ResourceException
-    {
-        return query("organizationalUnits", ListValue.class);
-    }
+   public ListValue organizationalUnits() throws ResourceException
+   {
+      return query( "organizationalUnits", ListValue.class );
+   }
 
-    public void createOrganizationalUnit(StringDTO value) throws ResourceException
-    {
-        postCommand("createOrganizationalUnit", value);
-    }
+   public void createOrganizationalUnit( StringDTO value ) throws ResourceException
+   {
+      postCommand( "createOrganizationalUnit", value );
+   }
 
-    public void removeOrganizationalUnit(EntityReferenceDTO entity) throws ResourceException
-    {
-        postCommand("removeOrganizationalUnit", entity);
-    }
+   public void removeOrganizationalUnit( EntityReferenceDTO entity ) throws ResourceException
+   {
+      postCommand( "removeOrganizationalUnit", entity );
+   }
 
-    public OrganizationalUnitClientResource organizationalUnit(String id)
-    {
-        List<String> segments = getReference().getSegments();
-        if (segments.get( segments.size()-3 ).equals("organizations"))
-            return getResource(getReference().clone().addSegment(id), OrganizationalUnitClientResource.class);
-        else
-        {
-            Reference ref = new Reference( getReference(), "../../" + id );
-            return getResource( ref, OrganizationalUnitClientResource.class);
-        }
-    }
+   public OrganizationalUnitClientResource organizationalUnit( String id )
+   {
+      List<String> segments = getReference().getSegments();
+      if (segments.get( segments.size() - 3 ).equals( "organizations" ))
+         return getResource( getReference().clone().addSegment( id ), OrganizationalUnitClientResource.class );
+      else
+      {
+         Reference ref = new Reference( getReference(), "../../" + id );
+         return getResource( ref, OrganizationalUnitClientResource.class );
+      }
+   }
 }

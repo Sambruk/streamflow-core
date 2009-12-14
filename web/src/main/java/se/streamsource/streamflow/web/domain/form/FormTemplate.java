@@ -21,8 +21,8 @@ import se.streamsource.streamflow.domain.roles.Notable;
  * JAVADOC
  */
 public interface FormTemplate
-    extends Describable,
-        Notable,
-        Fields
+      extends Describable,
+      Notable,
+      Fields
 {
 }

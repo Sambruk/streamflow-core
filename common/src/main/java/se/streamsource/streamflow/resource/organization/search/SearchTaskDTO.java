@@ -22,11 +22,11 @@ import se.streamsource.streamflow.resource.task.TaskDTO;
  * JAVADOC
  */
 public interface SearchTaskDTO
-        extends TaskDTO
+      extends TaskDTO
 {
 
-    @Optional
-    Property<String> assignedTo();
+   @Optional
+   Property<String> assignedTo();
 
-    Property<String> project();
+   Property<String> project();
 }

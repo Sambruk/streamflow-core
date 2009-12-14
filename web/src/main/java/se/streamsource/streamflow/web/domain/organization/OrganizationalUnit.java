@@ -24,13 +24,13 @@ import se.streamsource.streamflow.web.domain.role.RolePolicy;
  * JAVADOC
  */
 public interface OrganizationalUnit
-    extends
-        Describable,
-        Groups,
-        OrganizationalUnitRefactoring,
-        OrganizationalUnits,
-        Projects,
-        Removable,
-        RolePolicy
+      extends
+      Describable,
+      Groups,
+      OrganizationalUnitRefactoring,
+      OrganizationalUnits,
+      Projects,
+      Removable,
+      RolePolicy
 {
 }

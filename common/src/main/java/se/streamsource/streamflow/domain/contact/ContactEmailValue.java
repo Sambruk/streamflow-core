@@ -22,16 +22,16 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface ContactEmailValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    public enum ContactType
-    {
-        HOME, WORK, OTHER
-    }
+   public enum ContactType
+   {
+      HOME, WORK, OTHER
+   }
 
-    @UseDefaults
-    Property<ContactType> contactType();
+   @UseDefaults
+   Property<ContactType> contactType();
 
-    @UseDefaults
-    Property<String> emailAddress();
+   @UseDefaults
+   Property<String> emailAddress();
 }

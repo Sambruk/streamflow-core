@@ -28,38 +28,38 @@ import java.security.AccessControlException;
  * /organizations/{organization}/projects/{project}/members/{member}
  */
 public class MemberServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public void putOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void putOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String member = getRequest().getAttributes().get("member").toString();
-        Participant participant = uow.get(Participant.class, member);
+      String member = getRequest().getAttributes().get( "member" ).toString();
+      Participant participant = uow.get( Participant.class, member );
 
-        String id = getRequest().getAttributes().get("project").toString();
-        Project project = uow.get(Project.class, id);
+      String id = getRequest().getAttributes().get( "project" ).toString();
+      Project project = uow.get( Project.class, id );
 
-        try
-        {
-            checkPermission(project);
-        } catch(AccessControlException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
-        project.addMember(participant);
-    }
+      try
+      {
+         checkPermission( project );
+      } catch (AccessControlException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
+      }
+      project.addMember( participant );
+   }
 
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String member = getRequest().getAttributes().get("member").toString();
-        Participant participant = uow.get(Participant.class, member);
+      String member = getRequest().getAttributes().get( "member" ).toString();
+      Participant participant = uow.get( Participant.class, member );
 
-        String id = getRequest().getAttributes().get("project").toString();
-        Project project = uow.get(Project.class, id);
-        checkPermission(project);
-        project.removeMember(participant);
-    }
+      String id = getRequest().getAttributes().get( "project" ).toString();
+      Project project = uow.get( Project.class, id );
+      checkPermission( project );
+      project.removeMember( participant );
+   }
 }

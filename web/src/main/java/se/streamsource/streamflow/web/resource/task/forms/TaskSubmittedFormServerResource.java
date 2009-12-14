@@ -30,34 +30,34 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /tasks/{task}/forms/{index}
  */
 public class TaskSubmittedFormServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Structure
-    Qi4jSPI spi;
+   @Structure
+   Qi4jSPI spi;
 
-    public TaskSubmittedFormServerResource()
-    {
-        setNegotiated(true);
-        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-    }
+   public TaskSubmittedFormServerResource()
+   {
+      setNegotiated( true );
+      getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
+   }
 
-    public SubmittedFormDTO form() throws ResourceException
-    {
-        String formsQueryId = getRequest().getAttributes().get("task").toString();
-        String index = getRequest().getAttributes().get("index").toString();
-        SubmittedFormsQueries forms = uowf.currentUnitOfWork().get(SubmittedFormsQueries.class, formsQueryId);
-        return forms.getSubmittedForm(Integer.parseInt(index));
-    }
+   public SubmittedFormDTO form() throws ResourceException
+   {
+      String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
+      String index = getRequest().getAttributes().get( "index" ).toString();
+      SubmittedFormsQueries forms = uowf.currentUnitOfWork().get( SubmittedFormsQueries.class, formsQueryId );
+      return forms.getSubmittedForm( Integer.parseInt( index ) );
+   }
 
-    @Override
-    protected String getConditionalIdentityAttribute()
-    {
-        return "task";
-    }
+   @Override
+   protected String getConditionalIdentityAttribute()
+   {
+      return "task";
+   }
 }

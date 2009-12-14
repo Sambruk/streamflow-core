@@ -24,48 +24,48 @@ import se.streamsource.streamflow.web.domain.form.FormTemplateEntity;
  * JAVADOC
  */
 public class FormTemplateSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @Uses
-    FormTemplatesSteps formTemplatesSteps;
+   @Uses
+   FormTemplatesSteps formTemplatesSteps;
 
-    @Uses
-    FieldDefinitionsSteps fieldDefinitionsSteps;
+   @Uses
+   FieldDefinitionsSteps fieldDefinitionsSteps;
 
-    /*
-    @When("a field named $name is created in form")
-    public void createField(String name) throws Exception
-    {
-        try
-        {
-            FormTemplateEntity form = formTemplatesSteps.givenTemplate;
+   /*
+   @When("a field named $name is created in form")
+   public void createField(String name) throws Exception
+   {
+       try
+       {
+           FormTemplateEntity form = formTemplatesSteps.givenTemplate;
 
-            form.createField( name, valueDefinitionsSteps.givenValue );
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }*/
+           form.createField( name, valueDefinitionsSteps.givenValue );
+       } catch(Exception e)
+       {
+           genericSteps.setThrowable(e);
+       }
+   }*/
 
-    @When("a field is removed from form")
-    public void removeField() throws Exception
-    {
-        try
-        {
-            FormTemplateEntity form = formTemplatesSteps.givenTemplate;
+   @When("a field is removed from form")
+   public void removeField() throws Exception
+   {
+      try
+      {
+         FormTemplateEntity form = formTemplatesSteps.givenTemplate;
 
-            form.removeField( fieldDefinitionsSteps.givenField );
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+         form.removeField( fieldDefinitionsSteps.givenField );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
 
 }

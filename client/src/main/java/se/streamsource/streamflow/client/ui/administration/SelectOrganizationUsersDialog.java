@@ -25,62 +25,65 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 public class SelectOrganizationUsersDialog
-    extends JPanel
+      extends JPanel
 {
 
-    private ValueBuilderFactory vbf;
+   private ValueBuilderFactory vbf;
 
-    private ListValue selectedUsers;
-    private SelectOrganizationUsersDialogModel model;
+   private ListValue selectedUsers;
+   private SelectOrganizationUsersDialogModel model;
 
-    private JList list;
+   private JList list;
 
-    public SelectOrganizationUsersDialog(@Service ApplicationContext context,
-                             @Uses SelectOrganizationUsersDialogModel model,
-                             @Structure ValueBuilderFactory vbf)
-    {
-        super(new BorderLayout());
-        this.model = model;
-        this.vbf = vbf;
+   public SelectOrganizationUsersDialog( @Service ApplicationContext context,
+                                         @Uses SelectOrganizationUsersDialogModel model,
+                                         @Structure ValueBuilderFactory vbf )
+   {
+      super( new BorderLayout() );
+      this.model = model;
+      this.vbf = vbf;
 
-        setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-        list = new JList(model);
-        list.setCellRenderer(new ListItemListCellRenderer());
+      list = new JList( model );
+      list.setCellRenderer( new ListItemListCellRenderer() );
 
-        JScrollPane scrollPane = new JScrollPane(list);
-        add(scrollPane, BorderLayout.CENTER);
-        setPreferredSize(new Dimension(200,300));
-    }
+      JScrollPane scrollPane = new JScrollPane( list );
+      add( scrollPane, BorderLayout.CENTER );
+      setPreferredSize( new Dimension( 200, 300 ) );
+   }
 
 
-    @org.jdesktop.application.Action
-    public void execute()
-    {
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+   @org.jdesktop.application.Action
+   public void execute()
+   {
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
-        for(Object value : list.getSelectedValues())
-        {
-            ListItemValue user = (ListItemValue) value;
-            listBuilder.addListItem(user.description().get(), user.entity().get());
-        }
-        selectedUsers = listBuilder.newList();
-        
-        WindowUtils.findWindow(this).dispose();
-    }
+      for (Object value : list.getSelectedValues())
+      {
+         ListItemValue user = (ListItemValue) value;
+         listBuilder.addListItem( user.description().get(), user.entity().get() );
+      }
+      selectedUsers = listBuilder.newList();
 
-    @org.jdesktop.application.Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    public ListValue getSelectedUsers()
-    {
-        return selectedUsers;
-    }
+   @org.jdesktop.application.Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
+
+   public ListValue getSelectedUsers()
+   {
+      return selectedUsers;
+   }
 }

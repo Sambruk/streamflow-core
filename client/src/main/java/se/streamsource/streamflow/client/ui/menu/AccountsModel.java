@@ -44,109 +44,109 @@ import java.util.Observer;
  * JAVADOC
  */
 public class AccountsModel
-        extends AbstractListModel
+      extends AbstractListModel
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Service
-    IndividualRepository repository;
+   @Service
+   IndividualRepository repository;
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Service
-    Uniform client;
+   @Service
+   Uniform client;
 
-    List<ListItemValue> accounts = new ArrayList<ListItemValue>();
+   List<ListItemValue> accounts = new ArrayList<ListItemValue>();
 
-    WeakModelMap<String, AccountModel> models = new WeakModelMap<String, AccountModel>()
-    {
-        protected AccountModel newModel(String key)
-        {
-            UnitOfWork uow = uowf.newUnitOfWork();
-            Account acc = uow.get(Account.class, key);
-            uow.discard();
-            AccountModel accountModel = obf.newObjectBuilder(AccountModel.class).use(acc).newInstance();
-            accountModel.addObserver(new Observer()
+   WeakModelMap<String, AccountModel> models = new WeakModelMap<String, AccountModel>()
+   {
+      protected AccountModel newModel( String key )
+      {
+         UnitOfWork uow = uowf.newUnitOfWork();
+         Account acc = uow.get( Account.class, key );
+         uow.discard();
+         AccountModel accountModel = obf.newObjectBuilder( AccountModel.class ).use( acc ).newInstance();
+         accountModel.addObserver( new Observer()
+         {
+            public void update( Observable o, Object arg )
             {
-                public void update(Observable o, Object arg)
-                {
-                    refresh();
-                }
-            });
-            return accountModel;
-        }
-    };
-
-    public void init(@Service IndividualRepository repository)
-    {
-        refresh();
-    }
-
-    public int getSize()
-    {
-        return accounts.size();
-    }
-
-    public ListItemValue getElementAt(int index)
-    {
-        return accounts.get(index);
-    }
-
-    public AccountModel accountModel(int index)
-    {
-        String id = accounts.get(index).entity().get().identity();
-        return models.get(id);
-    }
-
-    public void newAccount(AccountSettingsValue accountSettingsValue) throws UnitOfWorkCompletionException, ResourceException
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
-
-        Account account = repository.individual().newAccount();
-        account.updateSettings(accountSettingsValue);
-
-        uow.complete();
-
-        refresh();
-
-        fireIntervalAdded(this, accounts.size(), accounts.size());
-    }
-
-    public void removeAccount(int index) throws UnitOfWorkCompletionException
-    {
-        accountModel(index).remove();
-        accounts.remove(index);
-        fireContentsChanged(this, 0, accounts.size());
-    }
-
-    public void notifyEvent( DomainEvent event )
-    {
-        for (AccountModel model : models)
-        {
-            model.notifyEvent(event);
-        }
-    }
-
-    private void refresh()
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
-        final ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder(ListItemValue.class);
-        accounts.clear();
-        repository.individual().visitAccounts(new AccountVisitor()
-        {
-
-            public void visitAccount(Account account)
-            {
-                itemBuilder.prototype().description().set(account.accountSettings().name().get());
-                itemBuilder.prototype().entity().set(EntityReference.getEntityReference((account)));
-                accounts.add(itemBuilder.newInstance());
+               refresh();
             }
-        });
-        uow.discard();
-    }
+         } );
+         return accountModel;
+      }
+   };
+
+   public void init( @Service IndividualRepository repository )
+   {
+      refresh();
+   }
+
+   public int getSize()
+   {
+      return accounts.size();
+   }
+
+   public ListItemValue getElementAt( int index )
+   {
+      return accounts.get( index );
+   }
+
+   public AccountModel accountModel( int index )
+   {
+      String id = accounts.get( index ).entity().get().identity();
+      return models.get( id );
+   }
+
+   public void newAccount( AccountSettingsValue accountSettingsValue ) throws UnitOfWorkCompletionException, ResourceException
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
+
+      Account account = repository.individual().newAccount();
+      account.updateSettings( accountSettingsValue );
+
+      uow.complete();
+
+      refresh();
+
+      fireIntervalAdded( this, accounts.size(), accounts.size() );
+   }
+
+   public void removeAccount( int index ) throws UnitOfWorkCompletionException
+   {
+      accountModel( index ).remove();
+      accounts.remove( index );
+      fireContentsChanged( this, 0, accounts.size() );
+   }
+
+   public void notifyEvent( DomainEvent event )
+   {
+      for (AccountModel model : models)
+      {
+         model.notifyEvent( event );
+      }
+   }
+
+   private void refresh()
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
+      final ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
+      accounts.clear();
+      repository.individual().visitAccounts( new AccountVisitor()
+      {
+
+         public void visitAccount( Account account )
+         {
+            itemBuilder.prototype().description().set( account.accountSettings().name().get() );
+            itemBuilder.prototype().entity().set( EntityReference.getEntityReference( (account) ) );
+            accounts.add( itemBuilder.newInstance() );
+         }
+      } );
+      uow.discard();
+   }
 }

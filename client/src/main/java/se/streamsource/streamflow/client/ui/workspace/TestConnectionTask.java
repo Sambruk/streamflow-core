@@ -29,29 +29,29 @@ import java.util.logging.Logger;
  */
 public class TestConnectionTask extends Task<String, Void>
 {
-    @Uses
-    AccountModel model;
+   @Uses
+   AccountModel model;
 
-    @Service
-    Restlet client;
+   @Service
+   Restlet client;
 
-    public TestConnectionTask(@Service Application app)
-    {
-        super(app);
-    }
+   public TestConnectionTask( @Service Application app )
+   {
+      super( app );
+   }
 
-    protected String doInBackground() throws Exception
-    {
-        Logger.getLogger(LoggerCategories.STATUS).info("Testing connection...");
-        message("Testing connection");
-        Logger.getLogger(LoggerCategories.PROGRESS).info("50/100");
-        try
-        {
-            return model.test();
-        } finally
-        {
-            Logger.getLogger(LoggerCategories.PROGRESS).info("100/100");
-            Logger.getLogger(LoggerCategories.STATUS).info("Ready");
-        }
-    }
+   protected String doInBackground() throws Exception
+   {
+      Logger.getLogger( LoggerCategories.STATUS ).info( "Testing connection..." );
+      message( "Testing connection" );
+      Logger.getLogger( LoggerCategories.PROGRESS ).info( "50/100" );
+      try
+      {
+         return model.test();
+      } finally
+      {
+         Logger.getLogger( LoggerCategories.PROGRESS ).info( "100/100" );
+         Logger.getLogger( LoggerCategories.STATUS ).info( "Ready" );
+      }
+   }
 }

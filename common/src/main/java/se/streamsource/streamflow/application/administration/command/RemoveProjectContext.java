@@ -23,7 +23,7 @@ import se.streamsource.streamflow.infrastructure.domain.Context;
  * JAVADOC
  */
 public interface RemoveProjectContext
-        extends Context, Describable.Data
+      extends Context, Describable.Data
 {
-    Property<EntityReference> project();
+   Property<EntityReference> project();
 }

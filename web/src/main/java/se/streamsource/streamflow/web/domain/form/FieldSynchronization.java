@@ -24,18 +24,18 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(FieldSynchronization.Mixin.class)
 public interface FieldSynchronization
 {
-    void copyFromTemplate( Field templateField );
+   void copyFromTemplate( Field templateField );
 
-    class Mixin
-        implements FieldSynchronization
-    {
-        @This
-        FieldValueDefinition.Data fieldValue;
+   class Mixin
+         implements FieldSynchronization
+   {
+      @This
+      FieldValueDefinition.Data fieldValue;
 
-        public void copyFromTemplate( Field templateField )
-        {
-            FieldValueDefinition.Data templateFieldValue = (FieldValueDefinition.Data) templateField;
-            fieldValue.changedFieldValue( DomainEvent.CREATE, templateFieldValue.fieldValue().get());
-        }
-    }
+      public void copyFromTemplate( Field templateField )
+      {
+         FieldValueDefinition.Data templateFieldValue = (FieldValueDefinition.Data) templateField;
+         fieldValue.changedFieldValue( DomainEvent.CREATE, templateFieldValue.fieldValue().get() );
+      }
+   }
 }

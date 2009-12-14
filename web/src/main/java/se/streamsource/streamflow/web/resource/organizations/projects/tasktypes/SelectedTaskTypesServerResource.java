@@ -32,43 +32,43 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/organizationalunits/{ou}/projects/{tasktypes}/tasktypes
  */
 public class SelectedTaskTypesServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public ListValue selectedtasktypes()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("tasktypes");
-        SelectedTaskTypes.Data taskTypes = uow.get( SelectedTaskTypes.Data.class, id);
+   public ListValue selectedtasktypes()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "tasktypes" );
+      SelectedTaskTypes.Data taskTypes = uow.get( SelectedTaskTypes.Data.class, id );
 
-        return new ListValueBuilder(vbf).addDescribableItems( taskTypes.selectedTaskTypes() ).newList();
-    }
+      return new ListValueBuilder( vbf ).addDescribableItems( taskTypes.selectedTaskTypes() ).newList();
+   }
 
-    public ListValue possibletasktypes()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("tasktypes");
-        String organization = (String) getRequest().getAttributes().get("organization");
-        SelectedTaskTypes.Data selectedLabels = uow.get( SelectedTaskTypes.Data.class, id);
-        TaskTypes.Data taskTypes = uow.get( TaskTypes.Data.class, organization);
+   public ListValue possibletasktypes()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "tasktypes" );
+      String organization = (String) getRequest().getAttributes().get( "organization" );
+      SelectedTaskTypes.Data selectedLabels = uow.get( SelectedTaskTypes.Data.class, id );
+      TaskTypes.Data taskTypes = uow.get( TaskTypes.Data.class, organization );
 
-        return selectedLabels.possibleTaskTypes( taskTypes.taskTypes() );
-    }
+      return selectedLabels.possibleTaskTypes( taskTypes.taskTypes() );
+   }
 
-    public void addtasktype( EntityReferenceDTO taskTypeDTO) throws ResourceException
-    {
-        String identity = getRequest().getAttributes().get("tasktypes").toString();
+   public void addtasktype( EntityReferenceDTO taskTypeDTO ) throws ResourceException
+   {
+      String identity = getRequest().getAttributes().get( "tasktypes" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        SelectedTaskTypes taskTypes = uow.get(SelectedTaskTypes.class, identity);
-        TaskType taskType = uow.get( TaskType.class, taskTypeDTO.entity().get().identity());
+      SelectedTaskTypes taskTypes = uow.get( SelectedTaskTypes.class, identity );
+      TaskType taskType = uow.get( TaskType.class, taskTypeDTO.entity().get().identity() );
 
-        taskTypes.addSelectedTaskType( taskType );
-    }
+      taskTypes.addSelectedTaskType( taskType );
+   }
 }

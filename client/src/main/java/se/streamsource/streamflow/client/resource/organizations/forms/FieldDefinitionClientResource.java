@@ -23,10 +23,10 @@ import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
  * JAVADOC
  */
 public class FieldDefinitionClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public FieldDefinitionClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public FieldDefinitionClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 }

@@ -14,7 +14,8 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -24,48 +25,48 @@ import javax.swing.event.TreeSelectionListener;
  * Enable actions if a list has a selection
  */
 public class SelectionActionEnabler
-        implements ListSelectionListener, TreeSelectionListener
+      implements ListSelectionListener, TreeSelectionListener
 {
-    private Action[] action;
+   private Action[] action;
 
-    public SelectionActionEnabler(Action... action)
-    {
-        this.action = action;
-        for (int i = 0; i < action.length; i++)
-        {
+   public SelectionActionEnabler( Action... action )
+   {
+      this.action = action;
+      for (int i = 0; i < action.length; i++)
+      {
+         Action action1 = action[i];
+         action1.setEnabled( false );
+      }
+   }
+
+   public void valueChanged( ListSelectionEvent e )
+   {
+      if (!e.getValueIsAdjusting())
+      {
+         for (int i = 0; i < action.length; i++)
+         {
             Action action1 = action[i];
-            action1.setEnabled(false);
-        }
-    }
+            action1.setEnabled( !((ListSelectionModel) e.getSource()).isSelectionEmpty() && isSelectedValueValid() );
+         }
+      }
+   }
 
-    public void valueChanged(ListSelectionEvent e)
-    {
-        if (!e.getValueIsAdjusting())
-        {
-            for (int i = 0; i < action.length; i++)
-            {
-                Action action1 = action[i];
-                action1.setEnabled(!((ListSelectionModel) e.getSource()).isSelectionEmpty() && isSelectedValueValid());
-            }
-        }
-    }
+   public void valueChanged( TreeSelectionEvent e )
+   {
+      for (int i = 0; i < action.length; i++)
+      {
+         Action action1 = action[i];
+         action1.setEnabled( e.getNewLeadSelectionPath() != null );
+      }
+   }
 
-    public void valueChanged(TreeSelectionEvent e)
-    {
-        for (int i = 0; i < action.length; i++)
-        {
-            Action action1 = action[i];
-            action1.setEnabled(e.getNewLeadSelectionPath() != null);
-        }
-    }
-
-    /**
-     * Override this to add logic for whether the currently selected value is valid or not.
-     *
-     * @return
-     */
-    public boolean isSelectedValueValid()
-    {
-        return true;
-    }
+   /**
+    * Override this to add logic for whether the currently selected value is valid or not.
+    *
+    * @return
+    */
+   public boolean isSelectedValueValid()
+   {
+      return true;
+   }
 }

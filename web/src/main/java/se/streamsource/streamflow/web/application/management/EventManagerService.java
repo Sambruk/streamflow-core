@@ -45,78 +45,78 @@ import java.util.concurrent.Executors;
  */
 @Mixins(EventManagerService.Mixin.class)
 public interface EventManagerService
-    extends Activatable, ServiceComposite
+      extends Activatable, ServiceComposite
 {
-    class Mixin
-        implements Activatable, TransactionHandler
-    {
-        @Service
-        EventSource source;
+   class Mixin
+         implements Activatable, TransactionHandler
+   {
+      @Service
+      EventSource source;
 
-        @Service
-        MBeanServer server;
-        public ObjectName objectName;
+      @Service
+      MBeanServer server;
+      public ObjectName objectName;
 
-        long seq = 0;
-        public RequiredModelMBean mbean;
-        ExecutorService executor;
-        public EventFilter filter;
+      long seq = 0;
+      public RequiredModelMBean mbean;
+      ExecutorService executor;
+      public EventFilter filter;
 
-        public void activate() throws Exception
-        {
-            ModelMBeanNotificationInfo[] notificationInfos = new ModelMBeanNotificationInfo[1];
-            notificationInfos[0] = new ModelMBeanNotificationInfo(new String[]{"domainevent"},"Domain events", "Domain events");
-            ModelMBeanInfo info = new ModelMBeanInfoSupport(EventManagerService.class.getName(),
-                    "Domain events",
-                    null, null, null, notificationInfos);
-            mbean = new RequiredModelMBean(info);
+      public void activate() throws Exception
+      {
+         ModelMBeanNotificationInfo[] notificationInfos = new ModelMBeanNotificationInfo[1];
+         notificationInfos[0] = new ModelMBeanNotificationInfo( new String[]{"domainevent"}, "Domain events", "Domain events" );
+         ModelMBeanInfo info = new ModelMBeanInfoSupport( EventManagerService.class.getName(),
+               "Domain events",
+               null, null, null, notificationInfos );
+         mbean = new RequiredModelMBean( info );
 
-            objectName = new ObjectName("StreamFlow:name=domainevents");
-            server.registerMBean(mbean, objectName);
+         objectName = new ObjectName( "StreamFlow:name=domainevents" );
+         server.registerMBean( mbean, objectName );
 
-            source.registerListener(this);
+         source.registerListener( this );
 
-            executor = Executors.newSingleThreadExecutor();
+         executor = Executors.newSingleThreadExecutor();
 
-            filter = new EventFilter(AllEventsSpecification.INSTANCE);
-        }
+         filter = new EventFilter( AllEventsSpecification.INSTANCE );
+      }
 
-        public void passivate() throws Exception
-        {
-            executor.shutdown();
-            
-            server.unregisterMBean(objectName);
-            source.unregisterListener(this);
-        }
+      public void passivate() throws Exception
+      {
+         executor.shutdown();
 
-       public synchronized boolean handleTransaction( TransactionEvents transaction )
-       {
-          new TransactionEventAdapter(new EventHandler()
+         server.unregisterMBean( objectName );
+         source.unregisterListener( this );
+      }
+
+      public synchronized boolean handleTransaction( TransactionEvents transaction )
+      {
+         new TransactionEventAdapter( new EventHandler()
+         {
+            public boolean handleEvent( DomainEvent event )
             {
-                public boolean handleEvent( DomainEvent event )
-                {
-                    final Notification notification = new Notification("domainevent", objectName, seq++, event.on().get().getTime(), event.name().get());
-                    notification.setUserData(event.toJSON());
+               final Notification notification = new Notification( "domainevent", objectName, seq++, event.on().get().getTime(), event.name().get() );
+               notification.setUserData( event.toJSON() );
 
-                    executor.submit(new Runnable()
-                    {
-                        public void run()
-                        {
-                            try
-                            {
-                                mbean.sendNotification(notification);
-                            } catch (MBeanException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    return true;
-                }
-            }).handleTransaction( transaction );
+               executor.submit( new Runnable()
+               {
+                  public void run()
+                  {
+                     try
+                     {
+                        mbean.sendNotification( notification );
+                     } catch (MBeanException e)
+                     {
+                        e.printStackTrace();
+                     }
+                  }
+               } );
+               return true;
+            }
+         } ).handleTransaction( transaction );
 
-          return true;
-       }
-    }
+         return true;
+      }
+   }
 
 }

@@ -23,16 +23,16 @@ import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
  * JAVADOC
  */
 public class FormDefinitionsAdministrationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        UIAssemblers.addMV(module, FormDefinitionsModel.class,
-                FormDefinitionsView.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addMV( module, FormDefinitionsModel.class,
+            FormDefinitionsView.class );
 
-        UIAssemblers.addMV(module, FormDefinitionModel.class,
-                FormDefinitionView.class);
+      UIAssemblers.addMV( module, FormDefinitionModel.class,
+            FormDefinitionView.class );
 
-        UIAssemblers.addViews( module, FormDefinitionsAdminView.class );
-    }
+      UIAssemblers.addViews( module, FormDefinitionsAdminView.class );
+   }
 }

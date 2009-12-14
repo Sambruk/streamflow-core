@@ -23,11 +23,11 @@ import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
  * JAVADOC
  */
 public class AdministratorAdministrationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        UIAssemblers.addMV(module, AdministratorsModel.class,
-                AdministratorsView.class);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addMV( module, AdministratorsModel.class,
+            AdministratorsView.class );
+   }
 }

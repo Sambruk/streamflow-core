@@ -28,9 +28,10 @@ import java.util.Date;
  */
 public interface CreatedOn
 {
-    @Immutable
-    Property<Date> createdOn();
+   @Immutable
+   Property<Date> createdOn();
 
-    @Immutable @Optional
-    Association<User> createdBy();
+   @Immutable
+   @Optional
+   Association<User> createdBy();
 }

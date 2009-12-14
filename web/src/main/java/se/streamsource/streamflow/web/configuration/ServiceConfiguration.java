@@ -35,47 +35,47 @@ import java.io.File;
  */
 @Mixins(ServiceConfiguration.ServiceConfigurationMixin.class)
 public interface ServiceConfiguration
-        extends ServiceComposite, Activatable
+      extends ServiceComposite, Activatable
 {
-    class ServiceConfigurationMixin
-            implements Activatable
-    {
-        @Service
-        FileConfiguration config;
+   class ServiceConfigurationMixin
+         implements Activatable
+   {
+      @Service
+      FileConfiguration config;
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public void activate() throws Exception
-        {
-            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Service configuration"));
-            String jdbmPath = new File(config.dataDirectory(), "data/streamflow.data").getAbsolutePath();
-            try
-            {
-                uow.get(JdbmConfiguration.class, "data");
-            } catch (NoSuchEntityException e)
-            {
-                EntityBuilder<JdbmConfiguration> builder = uow.newEntityBuilder(JdbmConfiguration.class, "data");
-                builder.instance().file().set(jdbmPath);
-                builder.newInstance();
-            }
+      public void activate() throws Exception
+      {
+         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Service configuration" ) );
+         String jdbmPath = new File( config.dataDirectory(), "data/streamflow.data" ).getAbsolutePath();
+         try
+         {
+            uow.get( JdbmConfiguration.class, "data" );
+         } catch (NoSuchEntityException e)
+         {
+            EntityBuilder<JdbmConfiguration> builder = uow.newEntityBuilder( JdbmConfiguration.class, "data" );
+            builder.instance().file().set( jdbmPath );
+            builder.newInstance();
+         }
 
-            try
-            {
-                uow.get(NativeConfiguration.class, "rdf-repository");
-            } catch (NoSuchEntityException e)
-            {
-                String rdfPath = new File(config.dataDirectory(), "rdf-repository").getAbsolutePath();
-                NativeConfiguration nativeConfiguration = uow.newEntity(NativeConfiguration.class, "rdf-repository");
-                nativeConfiguration.dataDirectory().set(rdfPath);
-                nativeConfiguration.tripleIndexes().set("spoc,cspo,ospc");
-            }
+         try
+         {
+            uow.get( NativeConfiguration.class, "rdf-repository" );
+         } catch (NoSuchEntityException e)
+         {
+            String rdfPath = new File( config.dataDirectory(), "rdf-repository" ).getAbsolutePath();
+            NativeConfiguration nativeConfiguration = uow.newEntity( NativeConfiguration.class, "rdf-repository" );
+            nativeConfiguration.dataDirectory().set( rdfPath );
+            nativeConfiguration.tripleIndexes().set( "spoc,cspo,ospc" );
+         }
 
-            uow.complete();
-        }
+         uow.complete();
+      }
 
-        public void passivate() throws Exception
-        {
-        }
-    }
+      public void passivate() throws Exception
+      {
+      }
+   }
 }

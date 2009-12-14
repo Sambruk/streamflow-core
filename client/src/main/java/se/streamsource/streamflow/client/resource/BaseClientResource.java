@@ -47,285 +47,284 @@ import java.util.Locale;
  * Base class for client-side resources.
  */
 public class BaseClientResource
-        extends ClientResource
+      extends ClientResource
 {
-    @Structure
-    protected ObjectBuilderFactory obf;
+   @Structure
+   protected ObjectBuilderFactory obf;
 
-    @Structure
-    protected ValueBuilderFactory vbf;
+   @Structure
+   protected ValueBuilderFactory vbf;
 
-    private BaseClientResource root;
+   private BaseClientResource root;
 
-    public BaseClientResource(Context context, Reference reference)
-    {
-        super(context, reference);
+   public BaseClientResource( Context context, Reference reference )
+   {
+      super( context, reference );
 
-        List<Preference<Language>> preferences = new ArrayList<Preference<Language>>();
-        Preference<Language> preference = new Preference<Language>();
-        Language language = new Language(Locale.getDefault().toString());
-        preference.setMetadata(language);
-        preferences.add(preference);
+      List<Preference<Language>> preferences = new ArrayList<Preference<Language>>();
+      Preference<Language> preference = new Preference<Language>();
+      Language language = new Language( Locale.getDefault().toString() );
+      preference.setMetadata( language );
+      preferences.add( preference );
 
-        this.getClientInfo().setAcceptedLanguages(preferences);
-    }
+      this.getClientInfo().setAcceptedLanguages( preferences );
+   }
 
-    public void setRoot(BaseClientResource root)
-    {
-        this.root = root;
-    }
+   public void setRoot( BaseClientResource root )
+   {
+      this.root = root;
+   }
 
-    public BaseClientResource getRoot()
-    {
-        return root;
-    }
+   public BaseClientResource getRoot()
+   {
+      return root;
+   }
 
-    Tag tag;
+   Tag tag;
 
-    protected Tag getTag()
-    {
-        if (root != null)
-        {
-            return root.getTag();
-        }
-        return tag;
-    }
+   protected Tag getTag()
+   {
+      if (root != null)
+      {
+         return root.getTag();
+      }
+      return tag;
+   }
 
-    protected void setTag(Tag tag)
-    {
-        if (root != null)
-        {
-            root.setTag(tag);
-        } else
-        {
-            this.tag = tag;
-        }
-    }
+   protected void setTag( Tag tag )
+   {
+      if (root != null)
+      {
+         root.setTag( tag );
+      } else
+      {
+         this.tag = tag;
+      }
+   }
 
-    @Override
-    public Representation post(Representation entity) throws ResourceException
-    {
-        clearConditions();
-        if (getTag() != null)
-        {
-            getConditions().getMatch().add(getTag());
-        }
-        
-        Representation rep = super.post(entity);
-        setTag(null);
+   @Override
+   public Representation post( Representation entity ) throws ResourceException
+   {
+      clearConditions();
+      if (getTag() != null)
+      {
+         getConditions().getMatch().add( getTag() );
+      }
 
-        if (!getResponse().getStatus().isSuccess())
-        {
-            handleError( getRequestEntity() );
-        }
+      Representation rep = super.post( entity );
+      setTag( null );
 
-        return rep;
-    }
+      if (!getResponse().getStatus().isSuccess())
+      {
+         handleError( getRequestEntity() );
+      }
 
-    @Override
-    public Representation put(Representation representation) throws ResourceException
-    {
-        clearConditions();
-        if (getTag() != null)
-        {
-            getConditions().getMatch().add(getTag());
-        }
-        Representation rep = super.put(representation);
-        setTag(null);
+      return rep;
+   }
 
-        if (!getResponse().getStatus().isSuccess())
-        {
-            handleError( getRequestEntity() );
-        }
-        
-        return rep;
-    }
+   @Override
+   public Representation put( Representation representation ) throws ResourceException
+   {
+      clearConditions();
+      if (getTag() != null)
+      {
+         getConditions().getMatch().add( getTag() );
+      }
+      Representation rep = super.put( representation );
+      setTag( null );
 
-    @Override
-    public Representation get(MediaType mediaType) throws ResourceException
-    {
-        clearConditions();
-        // TODO Do caching of representations
+      if (!getResponse().getStatus().isSuccess())
+      {
+         handleError( getRequestEntity() );
+      }
 
-        Representation rep = super.get(mediaType);
+      return rep;
+   }
 
-        if (rep != null && getResponse().getStatus().isSuccess())
-            setTag(rep.getTag());
+   @Override
+   public Representation get( MediaType mediaType ) throws ResourceException
+   {
+      clearConditions();
+      // TODO Do caching of representations
 
-        return rep;
-    }
+      Representation rep = super.get( mediaType );
 
-    protected Reference postCommand(ValueComposite command) throws ResourceException
-    {
-        post(new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON));
-        return getLocationRef();
-    }
+      if (rep != null && getResponse().getStatus().isSuccess())
+         setTag( rep.getTag() );
 
-    protected <T extends Value> T getQuery(Class<T> resultValue) throws IOException, ResourceException
-    {
-        Representation result = get(MediaType.APPLICATION_JSON);
+      return rep;
+   }
 
-        if (getStatus().isSuccess())
-            return vbf.newValueFromJSON(resultValue, result.getText());
-        else
-        {
-            throw new ResourceException(getStatus());
-        }
-    }
+   protected Reference postCommand( ValueComposite command ) throws ResourceException
+   {
+      post( new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON ) );
+      return getLocationRef();
+   }
 
-    public void clearTag()
-    {
-        setTag(null);
-    }
+   protected <T extends Value> T getQuery( Class<T> resultValue ) throws IOException, ResourceException
+   {
+      Representation result = get( MediaType.APPLICATION_JSON );
 
-    protected void clearConditions()
-    {
-        Conditions conditions = getConditions();
-        conditions.getMatch().clear();
-        conditions.getNoneMatch().clear();
-    }
+      if (getStatus().isSuccess())
+         return vbf.newValueFromJSON( resultValue, result.getText() );
+      else
+      {
+         throw new ResourceException( getStatus() );
+      }
+   }
 
-    protected <T extends ClientResource> T getSubResource(String pathSegment, Class<T> clientResource)
-    {
-        return getResource(getReference().clone().addSegment(pathSegment), clientResource);
-    }
+   public void clearTag()
+   {
+      setTag( null );
+   }
 
-    protected <T extends ClientResource> T getResource(Reference ref, Class<T> clientResource)
-    {
-        T resource = obf.newObjectBuilder(clientResource).use(getContext(), ref).newInstance();
-        resource.setNext(getNext());
-        return resource;
-    }
+   protected void clearConditions()
+   {
+      Conditions conditions = getConditions();
+      conditions.getMatch().clear();
+      conditions.getNoneMatch().clear();
+   }
 
-    /**
-     * Assume that the resource produces XHTML. Get the resolved reference
-     * for the link with the "rel" attribute set to the given value.
-     *
-     * @param rel the rel name
-     * @return the resolved reference
-     * @throws ResourceException
-     */
-    protected Reference getLink(String rel) throws ResourceException
-    {
-        get();
+   protected <T extends ClientResource> T getSubResource( String pathSegment, Class<T> clientResource )
+   {
+      return getResource( getReference().clone().addSegment( pathSegment ), clientResource );
+   }
 
-        DomRepresentation dom = getResponseEntityAsDom();
-        try
-        {
-            String link = (String) dom.evaluate("//a[@rel=\"" + rel + "\"]/@href", XPathConstants.STRING);
-            return new Reference(getReference(), link);
-        } catch (Exception e)
-        {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not find link", e);
-        }
-    }
+   protected <T extends ClientResource> T getResource( Reference ref, Class<T> clientResource )
+   {
+      T resource = obf.newObjectBuilder( clientResource ).use( getContext(), ref ).newInstance();
+      resource.setNext( getNext() );
+      return resource;
+   }
 
-    /**
-     * Assume that the resource produces XHTML. Get the resolved references
-     * for the links with the "rel" attribute set to the given value.
-     *
-     * @param rel the rel name
-     * @return the resolved reference
-     * @throws ResourceException
-     */
-    protected Iterable<Reference> getLinks(String rel) throws ResourceException
-    {
-        get();
+   /**
+    * Assume that the resource produces XHTML. Get the resolved reference
+    * for the link with the "rel" attribute set to the given value.
+    *
+    * @param rel the rel name
+    * @return the resolved reference
+    * @throws ResourceException
+    */
+   protected Reference getLink( String rel ) throws ResourceException
+   {
+      get();
 
-        DomRepresentation dom = getResponseEntityAsDom();
-        try
-        {
-            NodeSet links = (NodeSet) dom.evaluate("//a[@rel=\"" + rel + "\"]/@href", XPathConstants.NODESET);
-            List<Reference> linkList = new ArrayList<Reference>();
-            for (Node link : links)
-            {
-                linkList.add(new Reference(getReference(), link.getTextContent()));
-            }
+      DomRepresentation dom = getResponseEntityAsDom();
+      try
+      {
+         String link = (String) dom.evaluate( "//a[@rel=\"" + rel + "\"]/@href", XPathConstants.STRING );
+         return new Reference( getReference(), link );
+      } catch (Exception e)
+      {
+         throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Could not find link", e );
+      }
+   }
 
-            return linkList;
-        } catch (Exception e)
-        {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not findValues link", e);
-        }
-    }
+   /**
+    * Assume that the resource produces XHTML. Get the resolved references
+    * for the links with the "rel" attribute set to the given value.
+    *
+    * @param rel the rel name
+    * @return the resolved reference
+    * @throws ResourceException
+    */
+   protected Iterable<Reference> getLinks( String rel ) throws ResourceException
+   {
+      get();
 
-    /**
-     * Assume that the resource produces XHTML. Get the resolved references
-     * for the links with the "rel" attribute set to the given value, and
-     * convert them to resources by instantiating the given resource class.
-     *
-     * @param rel           the rel name
-     * @param resourceClass resource class that extends ClientResource
-     * @return the resolved references
-     * @throws ResourceException
-     */
-    protected <T extends ClientResource> Iterable<T> getLinkedResources(String rel, Class<T> resourceClass) throws ResourceException
-    {
-        Iterable<Reference> references = getLinks(rel);
-        List<T> resources = new ArrayList<T>();
-        for (Reference reference : references)
-        {
-            resources.add(getResource(reference, resourceClass));
-        }
-        return resources;
-    }
+      DomRepresentation dom = getResponseEntityAsDom();
+      try
+      {
+         NodeSet links = (NodeSet) dom.evaluate( "//a[@rel=\"" + rel + "\"]/@href", XPathConstants.NODESET );
+         List<Reference> linkList = new ArrayList<Reference>();
+         for (Node link : links)
+         {
+            linkList.add( new Reference( getReference(), link.getTextContent() ) );
+         }
 
-    protected <T extends ClientResource> T getResource(String ref, Class<T> resourceClass)
-    {
-        Reference reference = new Reference(getReference(), ref);
-        return getResource(reference, resourceClass);
-    }
+         return linkList;
+      } catch (Exception e)
+      {
+         throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Could not findValues link", e );
+      }
+   }
 
-    private Object handleError( Representation result )
-            throws ResourceException
-    {
-        if (getResponse().getStatus().equals( Status.SERVER_ERROR_INTERNAL))
-        {
-            if (getResponse().getEntity().getMediaType().equals( MediaType.APPLICATION_JAVA_OBJECT))
-            {
-                try
-                {
-                    Object exception = new ObjectRepresentation(result).getObject();
-                    throw new ResourceException((Throwable) exception);
-                } catch (IOException e)
-                {
-                    throw new ResourceException(e);
-                } catch (ClassNotFoundException e)
-                {
-                    throw new ResourceException(e);
-                }
-            }
+   /**
+    * Assume that the resource produces XHTML. Get the resolved references
+    * for the links with the "rel" attribute set to the given value, and
+    * convert them to resources by instantiating the given resource class.
+    *
+    * @param rel           the rel name
+    * @param resourceClass resource class that extends ClientResource
+    * @return the resolved references
+    * @throws ResourceException
+    */
+   protected <T extends ClientResource> Iterable<T> getLinkedResources( String rel, Class<T> resourceClass ) throws ResourceException
+   {
+      Iterable<Reference> references = getLinks( rel );
+      List<T> resources = new ArrayList<T>();
+      for (Reference reference : references)
+      {
+         resources.add( getResource( reference, resourceClass ) );
+      }
+      return resources;
+   }
 
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, getResponse().getEntityAsText());
-        } else if (getResponse().getStatus().equals(Status.CLIENT_ERROR_CONFLICT))
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
-        }
-        else
-        {
+   protected <T extends ClientResource> T getResource( String ref, Class<T> resourceClass )
+   {
+      Reference reference = new Reference( getReference(), ref );
+      return getResource( reference, resourceClass );
+   }
+
+   private Object handleError( Representation result )
+         throws ResourceException
+   {
+      if (getResponse().getStatus().equals( Status.SERVER_ERROR_INTERNAL ))
+      {
+         if (getResponse().getEntity().getMediaType().equals( MediaType.APPLICATION_JAVA_OBJECT ))
+         {
             try
             {
-                if (getResponseEntity() != null)
-                {
-                    String text = getResponseEntity().getText();
-                    throw new ResourceException(getResponse().getStatus(), text);
-                } else
-                {
-                    throw new ResourceException(getResponse().getStatus());
-                }
+               Object exception = new ObjectRepresentation( result ).getObject();
+               throw new ResourceException( (Throwable) exception );
             } catch (IOException e)
             {
-                throw new ResourceException(e);
+               throw new ResourceException( e );
+            } catch (ClassNotFoundException e)
+            {
+               throw new ResourceException( e );
             }
-        }
-    }
+         }
+
+         throw new ResourceException( Status.SERVER_ERROR_INTERNAL, getResponse().getEntityAsText() );
+      } else if (getResponse().getStatus().equals( Status.CLIENT_ERROR_CONFLICT ))
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
+      } else
+      {
+         try
+         {
+            if (getResponseEntity() != null)
+            {
+               String text = getResponseEntity().getText();
+               throw new ResourceException( getResponse().getStatus(), text );
+            } else
+            {
+               throw new ResourceException( getResponse().getStatus() );
+            }
+         } catch (IOException e)
+         {
+            throw new ResourceException( e );
+         }
+      }
+   }
 
 
-    public DomRepresentation getResponseEntityAsDom()
-    {
-        DomRepresentation dom = new DomRepresentation(getResponse().getEntity());
-        dom.setValidating(false);
-        dom.setEntityResolver(new DefaultHandler());
-        return dom;
-    }
+   public DomRepresentation getResponseEntityAsDom()
+   {
+      DomRepresentation dom = new DomRepresentation( getResponse().getEntity() );
+      dom.setValidating( false );
+      dom.setEntityResolver( new DefaultHandler() );
+      return dom;
+   }
 }

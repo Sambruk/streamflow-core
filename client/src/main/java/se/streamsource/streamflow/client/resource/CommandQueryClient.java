@@ -54,314 +54,315 @@ import java.io.InputStream;
  */
 public final class CommandQueryClient
 {
-    @Structure
-    protected ValueBuilderFactory vbf;
+   @Structure
+   protected ValueBuilderFactory vbf;
 
-    @Structure
-    protected ObjectBuilderFactory obf;
+   @Structure
+   protected ObjectBuilderFactory obf;
 
-    @Structure
-    protected UnitOfWorkFactory uowf;
+   @Structure
+   protected UnitOfWorkFactory uowf;
 
-    @Structure
-    protected Qi4jSPI spi;
+   @Structure
+   protected Qi4jSPI spi;
 
-    @Structure
-    protected Module module;
+   @Structure
+   protected Module module;
 
-    @Service
-    protected TransactionHandler transactionHandler;
+   @Service
+   protected TransactionHandler transactionHandler;
 
-    @Uses
-    Uniform next;
-    
-    @Uses Reference reference;
+   @Uses
+   Uniform next;
 
-    public <T extends ValueComposite> T query(String operation, Class<T> queryResult) throws ResourceException
-    {
-        return query(operation, null, queryResult);
-    }
+   @Uses
+   Reference reference;
 
-    public <T extends ValueComposite> T query(String operation, ValueComposite queryValue, Class<T> queryResult) throws ResourceException
-    {
-        ClientResource result = invokeQuery( operation, queryValue );
-        
-        if (result.getResponse().getStatus().isSuccess())
-        {
-            String jsonValue = result.getResponse().getEntityAsText();
-            T returnValue = vbf.newValueFromJSON(queryResult, jsonValue);
-            return returnValue;
-        } else
-        {
-            // This will throw an exception
-            handleError( result.getResponse() );
-            return null;
-        }
-    }
+   public <T extends ValueComposite> T query( String operation, Class<T> queryResult ) throws ResourceException
+   {
+      return query( operation, null, queryResult );
+   }
 
-    public InputStream queryStream(String operation, ValueComposite queryValue) throws ResourceException, IOException
-    {
-        ClientResource result = invokeQuery( operation, queryValue );
+   public <T extends ValueComposite> T query( String operation, ValueComposite queryValue, Class<T> queryResult ) throws ResourceException
+   {
+      ClientResource result = invokeQuery( operation, queryValue );
 
-        if (result.getResponse().getStatus().isSuccess())
-        {
-            return result.getResponse().getEntity().getStream();
-        } else
-        {
-            // This will throw an exception
-            handleError( result.getResponse() );
-            return null;
-        }
-    }
+      if (result.getResponse().getStatus().isSuccess())
+      {
+         String jsonValue = result.getResponse().getEntityAsText();
+         T returnValue = vbf.newValueFromJSON( queryResult, jsonValue );
+         return returnValue;
+      } else
+      {
+         // This will throw an exception
+         handleError( result.getResponse() );
+         return null;
+      }
+   }
 
-    private void setQueryParameters(final Reference ref, ValueComposite queryValue)
-    {
-        // Value as parameter
-        StateHolder holder = spi.getState(queryValue);
-        final ValueDescriptor descriptor = spi.getValueDescriptor(queryValue);
+   public InputStream queryStream( String operation, ValueComposite queryValue ) throws ResourceException, IOException
+   {
+      ClientResource result = invokeQuery( operation, queryValue );
 
-        ref.setQuery(null);
+      if (result.getResponse().getStatus().isSuccess())
+      {
+         return result.getResponse().getEntity().getStream();
+      } else
+      {
+         // This will throw an exception
+         handleError( result.getResponse() );
+         return null;
+      }
+   }
 
-        holder.visitProperties(new StateHolder.StateVisitor()
-        {
-            public void visitProperty(QualifiedName
-                    name, Object value)
+   private void setQueryParameters( final Reference ref, ValueComposite queryValue )
+   {
+      // Value as parameter
+      StateHolder holder = spi.getState( queryValue );
+      final ValueDescriptor descriptor = spi.getValueDescriptor( queryValue );
+
+      ref.setQuery( null );
+
+      holder.visitProperties( new StateHolder.StateVisitor()
+      {
+         public void visitProperty( QualifiedName
+               name, Object value )
+         {
+            if (value != null)
             {
-                if (value != null)
-                {
-                    PropertyTypeDescriptor propertyDesc = descriptor.state().getPropertyByQualifiedName(name);
-                    String queryParam = propertyDesc.propertyType().type().toQueryParameter(value);
-                    ref.addQueryParameter(name.name(), queryParam);
-                }
+               PropertyTypeDescriptor propertyDesc = descriptor.state().getPropertyByQualifiedName( name );
+               String queryParam = propertyDesc.propertyType().type().toQueryParameter( value );
+               ref.addQueryParameter( name.name(), queryParam );
             }
-        });
-    }
+         }
+      } );
+   }
 
-    public void postCommand(String operation) throws ResourceException
-    {
-        postCommand(operation, new EmptyRepresentation());
-    }
+   public void postCommand( String operation ) throws ResourceException
+   {
+      postCommand( operation, new EmptyRepresentation() );
+   }
 
-    public void postCommand(String operation, ValueComposite command) throws ResourceException
-    {
-        Representation commandRepresentation;
-        commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
+   public void postCommand( String operation, ValueComposite command ) throws ResourceException
+   {
+      Representation commandRepresentation;
+      commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
 
-        postCommand( operation, commandRepresentation );
-    }
+      postCommand( operation, commandRepresentation );
+   }
 
-    public void postCommand( String operation, Representation commandRepresentation )
-            throws ResourceException
-    {
-        Reference ref = new Reference(reference).addQueryParameter("command", operation);
-        ClientResource client = new ClientResource(ref);
-        client.setNext( next );
-        client.post(commandRepresentation);
-        if (!client.getStatus().isSuccess())
-        {
-            throw new ResourceException(client.getStatus());
-        } else
-        {
-            processEvents(client.getResponse());
-        }
-    }
+   public void postCommand( String operation, Representation commandRepresentation )
+         throws ResourceException
+   {
+      Reference ref = new Reference( reference ).addQueryParameter( "command", operation );
+      ClientResource client = new ClientResource( ref );
+      client.setNext( next );
+      client.post( commandRepresentation );
+      if (!client.getStatus().isSuccess())
+      {
+         throw new ResourceException( client.getStatus() );
+      } else
+      {
+         processEvents( client.getResponse() );
+      }
+   }
 
-    private Object handleError( Response response)
-            throws ResourceException
-    {
-        if (response.getStatus().equals( Status.SERVER_ERROR_INTERNAL))
-        {
-            if (response.getEntity().getMediaType().equals( MediaType.APPLICATION_JAVA_OBJECT))
+   private Object handleError( Response response )
+         throws ResourceException
+   {
+      if (response.getStatus().equals( Status.SERVER_ERROR_INTERNAL ))
+      {
+         if (response.getEntity().getMediaType().equals( MediaType.APPLICATION_JAVA_OBJECT ))
+         {
+            try
             {
-                try
-                {
-                    Object exception = new ObjectRepresentation(response.getEntity()).getObject();
-                    throw new ResourceException((Throwable) exception);
-                } catch (IOException e)
-                {
-                    throw new ResourceException(e);
-                } catch (ClassNotFoundException e)
-                {
-                    throw new ResourceException(e);
-                }
+               Object exception = new ObjectRepresentation( response.getEntity() ).getObject();
+               throw new ResourceException( (Throwable) exception );
+            } catch (IOException e)
+            {
+               throw new ResourceException( e );
+            } catch (ClassNotFoundException e)
+            {
+               throw new ResourceException( e );
             }
+         }
 
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, response.getEntityAsText());
-        } else
-        {
-            if (response.getEntity() != null)
+         throw new ResourceException( Status.SERVER_ERROR_INTERNAL, response.getEntityAsText() );
+      } else
+      {
+         if (response.getEntity() != null)
+         {
+            String text = response.getEntityAsText();
+            throw new ResourceException( response.getStatus(), text );
+         } else
+         {
+            throw new ResourceException( response.getStatus() );
+         }
+      }
+   }
+
+   private ClientResource invokeQuery( String operation, ValueComposite queryValue )
+         throws ResourceException
+   {
+      Reference ref = new Reference( reference );
+      if (queryValue != null)
+         setQueryParameters( ref, queryValue );
+      ref.addQueryParameter( "query", operation );
+
+      ClientResource client = new ClientResource( ref );
+      client.setNext( next );
+
+      client.get( MediaType.APPLICATION_JSON );
+
+      return client;
+   }
+
+   public void create() throws ResourceException
+   {
+      putCommand( null );
+   }
+
+   public void putCommand( String operation ) throws ResourceException
+   {
+      putCommand( operation, null );
+   }
+
+   public void putCommand( String operation, ValueComposite command ) throws ResourceException
+   {
+      Representation commandRepresentation;
+      if (command != null)
+         commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
+      else
+         commandRepresentation = new EmptyRepresentation();
+
+      Reference ref = new Reference( reference );
+      if (operation != null)
+      {
+         ref = ref.addQueryParameter( "command", operation );
+      }
+
+      ClientResource client = new ClientResource( ref );
+      client.setNext( next );
+      int tries = 3;
+      while (true)
+      {
+         try
+         {
+            client.put( commandRepresentation );
+            if (!client.getStatus().isSuccess())
             {
-                String text = response.getEntityAsText();
-                throw new ResourceException(response.getStatus(), text);
+               throw new ResourceException( client.getStatus() );
             } else
             {
-                throw new ResourceException(response.getStatus());
+               processEvents( client.getResponse() );
             }
-        }
-    }
-
-    private ClientResource invokeQuery( String operation, ValueComposite queryValue )
-            throws ResourceException
-    {
-        Reference ref = new Reference(reference);
-        if (queryValue != null)
-            setQueryParameters(ref, queryValue);
-        ref.addQueryParameter("query", operation);
-
-        ClientResource client = new ClientResource(ref);
-        client.setNext( next );
-
-        client.get( MediaType.APPLICATION_JSON);
-
-        return client;
-    }
-
-    public void create() throws ResourceException
-    {
-        putCommand(null);
-    }
-
-    public void putCommand(String operation) throws ResourceException
-    {
-        putCommand(operation, null);
-    }
-
-    public void putCommand(String operation, ValueComposite command) throws ResourceException
-    {
-        Representation commandRepresentation;
-        if (command != null)
-            commandRepresentation = new StringRepresentation(command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
-        else
-            commandRepresentation = new EmptyRepresentation();
-
-        Reference ref = new Reference(reference);
-        if (operation != null)
-        {
-            ref = ref.addQueryParameter("command", operation);
-        }
-
-        ClientResource client = new ClientResource(ref);
-        client.setNext( next );
-        int tries = 3;
-        while (true)
-        {
-            try
+            break;
+         } catch (ResourceException e)
+         {
+            if (e.getStatus().equals( Status.CONNECTOR_ERROR_COMMUNICATION ) ||
+                  e.getStatus().equals( Status.CONNECTOR_ERROR_CONNECTION ))
             {
-                client.put(commandRepresentation);
-                if (!client.getStatus().isSuccess())
-                {
-                    throw new ResourceException(client.getStatus());
-                } else
-                {
-                    processEvents(client.getResponse());
-                }
-                break;
-            } catch (ResourceException e)
+               if (tries == 0)
+                  throw e; // Give up
+               else
+               {
+                  // Try again
+                  tries--;
+                  continue;
+               }
+            } else
             {
-                if (e.getStatus().equals(Status.CONNECTOR_ERROR_COMMUNICATION) ||
-                        e.getStatus().equals(Status.CONNECTOR_ERROR_CONNECTION))
-                {
-                    if (tries == 0)
-                        throw e; // Give up
-                    else
-                    {
-                        // Try again
-                        tries--;
-                        continue;
-                    }
-                } else
-                {
-                    // Abort
-                    throw e;
-                }
+               // Abort
+               throw e;
             }
-        }
-    }
+         }
+      }
+   }
 
-    public void deleteCommand() throws ResourceException
-    {
+   public void deleteCommand() throws ResourceException
+   {
 
-        ClientResource client = new ClientResource(new Reference(reference));
-        client.setNext( next );
+      ClientResource client = new ClientResource( new Reference( reference ) );
+      client.setNext( next );
 
-        int tries = 3;
-        while (true)
-        {
-            try
+      int tries = 3;
+      while (true)
+      {
+         try
+         {
+            client.delete();
+            if (!client.getStatus().isSuccess())
             {
-                client.delete();
-                if (!client.getStatus().isSuccess())
-                {
-                    throw new ResourceException(client.getStatus());
-                } else
-                {
-                    processEvents(client.getResponse());
-                }
-
-                break;
-            } catch (ResourceException e)
+               throw new ResourceException( client.getStatus() );
+            } else
             {
-                if (e.getStatus().equals(Status.CONNECTOR_ERROR_COMMUNICATION) ||
-                        e.getStatus().equals(Status.CONNECTOR_ERROR_CONNECTION))
-                {
-                    if (tries == 0)
-                        throw e; // Give up
-                    else
-                    {
-                        // Try again
-                        tries--;
-                        continue;
-                    }
-                } else
-                {
-                    // Abort
-                    throw e;
-                }
+               processEvents( client.getResponse() );
             }
-        }
-    }
 
-    public <T extends ClientResource> T getSubResource(String pathSegment, Class<T> clientResource)
-    {
-        T resource = getResource(reference.clone().addSegment(pathSegment), clientResource);
-        resource.setNext( next );
-        return resource;
-    }
-
-    public <T extends ClientResource> T getResource(Reference ref, Class<T> clientResource)
-    {
-        T resource = obf.newObjectBuilder(clientResource).use(next, new Context(), ref).newInstance();
-        return resource;
-    }
-
-    public CommandQueryClient getSubClient(String pathSegment)
-    {
-        Reference subReference = reference.clone().addSegment( pathSegment );
-        return obf.newObjectBuilder(CommandQueryClient.class).use(next, new Context(), subReference).newInstance();
-    }
-
-    private void processEvents(Response response)
-    {
-        if (response.getStatus().isSuccess() &&
-                (response.getRequest().getMethod().equals( Method.POST) ||
-                        response.getRequest().getMethod().equals(Method.DELETE) ||
-                        response.getRequest().getMethod().equals(Method.PUT)))
-        {
-            try
+            break;
+         } catch (ResourceException e)
+         {
+            if (e.getStatus().equals( Status.CONNECTOR_ERROR_COMMUNICATION ) ||
+                  e.getStatus().equals( Status.CONNECTOR_ERROR_CONNECTION ))
             {
-                Representation entity = response.getEntity();
-                if (entity != null && !(entity instanceof EmptyRepresentation))
-                {
-                    String source = entity.getText();
-
-                    final TransactionEvents transactionEvents = vbf.newValueFromJSON(TransactionEvents.class,  source);
-
-                    transactionHandler.handleTransaction( transactionEvents );
-                }
-            } catch (Exception e)
+               if (tries == 0)
+                  throw e; // Give up
+               else
+               {
+                  // Try again
+                  tries--;
+                  continue;
+               }
+            } else
             {
-                throw new OperationException( StreamFlowResources.could_not_process_events, e);
+               // Abort
+               throw e;
             }
-        }
-    }
+         }
+      }
+   }
+
+   public <T extends ClientResource> T getSubResource( String pathSegment, Class<T> clientResource )
+   {
+      T resource = getResource( reference.clone().addSegment( pathSegment ), clientResource );
+      resource.setNext( next );
+      return resource;
+   }
+
+   public <T extends ClientResource> T getResource( Reference ref, Class<T> clientResource )
+   {
+      T resource = obf.newObjectBuilder( clientResource ).use( next, new Context(), ref ).newInstance();
+      return resource;
+   }
+
+   public CommandQueryClient getSubClient( String pathSegment )
+   {
+      Reference subReference = reference.clone().addSegment( pathSegment );
+      return obf.newObjectBuilder( CommandQueryClient.class ).use( next, new Context(), subReference ).newInstance();
+   }
+
+   private void processEvents( Response response )
+   {
+      if (response.getStatus().isSuccess() &&
+            (response.getRequest().getMethod().equals( Method.POST ) ||
+                  response.getRequest().getMethod().equals( Method.DELETE ) ||
+                  response.getRequest().getMethod().equals( Method.PUT )))
+      {
+         try
+         {
+            Representation entity = response.getEntity();
+            if (entity != null && !(entity instanceof EmptyRepresentation))
+            {
+               String source = entity.getText();
+
+               final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
+
+               transactionHandler.handleTransaction( transactionEvents );
+            }
+         } catch (Exception e)
+         {
+            throw new OperationException( StreamFlowResources.could_not_process_events, e );
+         }
+      }
+   }
 }

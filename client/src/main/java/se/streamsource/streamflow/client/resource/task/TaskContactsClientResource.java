@@ -29,28 +29,28 @@ import java.io.IOException;
  * Mapped to /task/{id}/contacts
  */
 public class TaskContactsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public TaskContactsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public TaskContactsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public TaskContactsDTO contacts() throws ResourceException, IOException
-    {
-        return getQuery(TaskContactsDTO.class);
-    }
+   public TaskContactsDTO contacts() throws ResourceException, IOException
+   {
+      return getQuery( TaskContactsDTO.class );
+   }
 
-    public void add() throws ResourceException
-    {
-        postCommand("add", vbf.newValue(ContactValue.class));
-    }
+   public void add() throws ResourceException
+   {
+      postCommand( "add", vbf.newValue( ContactValue.class ) );
+   }
 
-    public TaskContactClientResource taskContact(int index)
-    {
-        TaskContactClientResource contact = getSubResource("" + index, TaskContactClientResource.class);
-        contact.setRoot(getRoot());
-        return contact;
-    }
+   public TaskContactClientResource taskContact( int index )
+   {
+      TaskContactClientResource contact = getSubResource( "" + index, TaskContactClientResource.class );
+      contact.setRoot( getRoot() );
+      return contact;
+   }
 
 }

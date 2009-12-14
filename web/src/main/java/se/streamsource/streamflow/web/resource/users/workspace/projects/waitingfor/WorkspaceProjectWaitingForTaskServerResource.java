@@ -27,92 +27,92 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /users/{user}/workspace/projects/{project}/waitingfor/{task}
  */
 public class WorkspaceProjectWaitingForTaskServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public void assignToMe()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String taskId = (String) getRequest().getAttributes().get("task");
-        String userId = (String) getRequest().getAttributes().get("user");
-        String projectId = (String) getRequest().getAttributes().get("project");
+   public void assignToMe()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      String projectId = (String) getRequest().getAttributes().get( "project" );
 
-        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
-        Assignee assignee = uow.get(Assignee.class, userId);
-        Task task = uow.get(Task.class, taskId);
+      WaitingFor waitingFor = uow.get( WaitingFor.class, projectId );
+      Assignee assignee = uow.get( Assignee.class, userId );
+      Task task = uow.get( Task.class, taskId );
 
-        waitingFor.assignWaitingForTask( task, assignee );
-    }
+      waitingFor.assignWaitingForTask( task, assignee );
+   }
 
-    public void markAsRead()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String taskId = (String) getRequest().getAttributes().get("task");
-        String projectId = (String) getRequest().getAttributes().get("project");
+   public void markAsRead()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      String projectId = (String) getRequest().getAttributes().get( "project" );
 
-        Task task = uow.get(Task.class, taskId);
-        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
+      Task task = uow.get( Task.class, taskId );
+      WaitingFor waitingFor = uow.get( WaitingFor.class, projectId );
 
-        waitingFor.markWaitingForAsRead( task );
-    }
+      waitingFor.markWaitingForAsRead( task );
+   }
 
-    public void reject()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String taskId = (String) getRequest().getAttributes().get("task");
-        String projectId = (String) getRequest().getAttributes().get("project");
+   public void reject()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      String projectId = (String) getRequest().getAttributes().get( "project" );
 
-        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
-        Task task = uow.get(Task.class, taskId);
+      WaitingFor waitingFor = uow.get( WaitingFor.class, projectId );
+      Task task = uow.get( Task.class, taskId );
 
-        waitingFor.rejectFinishedTask(task);
-    }
+      waitingFor.rejectFinishedTask( task );
+   }
 
-    public void completeFinishedTask()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String taskId = (String) getRequest().getAttributes().get("task");
-        String projectId = (String) getRequest().getAttributes().get("project");
+   public void completeFinishedTask()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      String projectId = (String) getRequest().getAttributes().get( "project" );
 
-        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
-        Task task = uow.get(Task.class, taskId);
+      WaitingFor waitingFor = uow.get( WaitingFor.class, projectId );
+      Task task = uow.get( Task.class, taskId );
 
-        waitingFor.completeFinishedTask(task);
-    }
+      waitingFor.completeFinishedTask( task );
+   }
 
 
    public void completeWaitingForTask()
    {
-       UnitOfWork uow = uowf.currentUnitOfWork();
-       String taskId = (String) getRequest().getAttributes().get("task");
-       String userId = (String) getRequest().getAttributes().get("user");
-       String projectId = (String) getRequest().getAttributes().get("project");
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      String projectId = (String) getRequest().getAttributes().get( "project" );
 
-       WaitingFor delegations = uow.get(WaitingFor.class, projectId);
-       Assignee assignee = uow.get(Assignee.class, userId);
-       Task task = uow.get(Task.class, taskId);
+      WaitingFor delegations = uow.get( WaitingFor.class, projectId );
+      Assignee assignee = uow.get( Assignee.class, userId );
+      Task task = uow.get( Task.class, taskId );
 
-       delegations.completeWaitingForTask(task, assignee);
+      delegations.completeWaitingForTask( task, assignee );
    }
 
-    public void drop()
-    {
-        String userId = (String) getRequest().getAttributes().get("user");
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
-        WaitingFor waitingFor = uowf.currentUnitOfWork().get(WaitingFor.class, projectId);
-        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
-        waitingFor.dropWaitingForTask( task, assignee);
-    }
+   public void drop()
+   {
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      String projectId = (String) getRequest().getAttributes().get( "project" );
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      Task task = uowf.currentUnitOfWork().get( Task.class, taskId );
+      WaitingFor waitingFor = uowf.currentUnitOfWork().get( WaitingFor.class, projectId );
+      Assignee assignee = uowf.currentUnitOfWork().get( Assignee.class, userId );
+      waitingFor.dropWaitingForTask( task, assignee );
+   }
 
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        WaitingFor waitingFor = uow.get(WaitingFor.class, projectId);
-        TaskEntity task = uow.get(TaskEntity.class, taskId);
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String projectId = (String) getRequest().getAttributes().get( "project" );
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      WaitingFor waitingFor = uow.get( WaitingFor.class, projectId );
+      TaskEntity task = uow.get( TaskEntity.class, taskId );
 
-        waitingFor.deleteWaitingForTask(task);
-    }
+      waitingFor.deleteWaitingForTask( task );
+   }
 }

@@ -34,106 +34,111 @@ import java.util.List;
 /**
  * List of organizations a participant is a member of.
  */
- @Concerns(OrganizationParticipations.LeaveConcern.class)
+@Concerns(OrganizationParticipations.LeaveConcern.class)
 @Mixins(OrganizationParticipations.Mixin.class)
 public interface OrganizationParticipations
 {
-    void join(Organization org);
+   void join( Organization org );
 
-    void leave(Organization ou);
+   void leave( Organization ou );
 
-    interface Data
-    {
-        ManyAssociation<Organization> organizations();
+   interface Data
+   {
+      ManyAssociation<Organization> organizations();
 
-        void joinedOrganization(DomainEvent event, Organization org);
-        void leftOrganization(DomainEvent event, Organization org);
-    }
+      void joinedOrganization( DomainEvent event, Organization org );
 
-    abstract class Mixin
-            implements OrganizationParticipations, Data
-    {
-        @This
-        Data state;
+      void leftOrganization( DomainEvent event, Organization org );
+   }
 
-        public void join(Organization ou)
-        {
-            if (!state.organizations().contains(ou))
+   abstract class Mixin
+         implements OrganizationParticipations, Data
+   {
+      @This
+      Data state;
+
+      public void join( Organization ou )
+      {
+         if (!state.organizations().contains( ou ))
+         {
+            joinedOrganization( DomainEvent.CREATE, ou );
+         }
+      }
+
+      public void leave( Organization ou )
+      {
+         if (state.organizations().contains( ou ))
+         {
+            leftOrganization( DomainEvent.CREATE, ou );
+         }
+      }
+
+      public void joinedOrganization( DomainEvent event, Organization org )
+      {
+         state.organizations().add( org );
+      }
+
+      public void leftOrganization( DomainEvent event, Organization org )
+      {
+         state.organizations().remove( org );
+      }
+   }
+
+   abstract class LeaveConcern
+         extends ConcernOf<OrganizationParticipations>
+         implements OrganizationParticipations
+   {
+      @This
+      UserEntity user;
+
+      @Structure
+      UnitOfWorkFactory uowf;
+
+      public void leave( Organization ou )
+      {
+         for (OrganizationalUnit organizationalUnit : ((OrganizationalUnits.Data) ou).organizationalUnits())
+         {
+            userLeaves( (OrganizationalUnitEntity) organizationalUnit );
+         }
+
+         next.leave( ou );
+      }
+
+      private boolean userLeaves( OrganizationalUnitEntity org )
+      {
+         for (ParticipantRolesValue participantRoleValue : org.policy().get())
+         {
+            if (participantRoleValue.participant().get().equals( EntityReference.getEntityReference( user ) ))
             {
-                joinedOrganization(DomainEvent.CREATE, ou);
-            }
-        }
+               for (EntityReference reference : participantRoleValue.roles().get())
+               {
+                  org.revokeRole( user, uowf.currentUnitOfWork().get( Role.class, reference.identity() ) );
+               }
 
-        public void leave(Organization ou)
-        {
-            if (state.organizations().contains(ou))
+            }
+         }
+
+         // leave project
+         for (Project project : org.projects())
+         {
+            user.leaveProject( project );
+         }
+
+         List<Group> groupList = user.groups().toList();
+         for (Group group : org.groups())
+         {
+            if (groupList.contains( group ))
             {
-                leftOrganization(DomainEvent.CREATE, ou);
+               user.leaveGroup( group );
             }
-        }
+         }
 
-        public void joinedOrganization(DomainEvent event, Organization org)
-        {
-            state.organizations().add(org);
-        }
+         for (OrganizationalUnit orgUnit : org.organizationalUnits())
+         {
+            userLeaves( (OrganizationalUnitEntity) orgUnit );
+         }
 
-        public void leftOrganization(DomainEvent event, Organization org)
-        {
-            state.organizations().remove(org);
-        }
-    }
-
-    abstract class LeaveConcern
-        extends ConcernOf<OrganizationParticipations>
-        implements OrganizationParticipations
-    {
-        @This
-        UserEntity user;
-        
-        @Structure
-        UnitOfWorkFactory uowf;
-
-        public void leave(Organization ou)
-        {
-            userLeaves((OrganizationalUnitEntity) ou);
-            next.leave(ou);
-        }
-
-        private boolean userLeaves(OrganizationalUnitEntity org)
-        {
-            for(ParticipantRolesValue participantRoleValue : org.policy().get())
-            {
-                if(participantRoleValue.participant().get().equals(EntityReference.getEntityReference(user)))
-                {
-                    for (EntityReference reference : participantRoleValue.roles().get())
-                    {
-                        org.revokeRole(user,uowf.currentUnitOfWork().get(Role.class, reference.identity()));
-                    }
-
-                }
-            }
-
-            // leave project
-            for(Project project : org.projects())
-            {
-                user.leaveProject(project);
-            }
-
-            List<Group> groupList = user.groups().toList();
-            for(Group group : org.groups())
-            {
-                if(groupList.contains(group))
-                {
-                    user.leaveGroup(group);
-                }
-            }
-
-            for(OrganizationalUnit orgUnit : org.organizationalUnits())
-            {
-                userLeaves((OrganizationalUnitEntity)orgUnit);
-            }
-
-            return true;
-        }
-    }
+         return true;
+      }
+   }
 }

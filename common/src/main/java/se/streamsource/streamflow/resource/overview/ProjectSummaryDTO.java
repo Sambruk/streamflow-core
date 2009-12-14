@@ -14,19 +14,19 @@
 
 package se.streamsource.streamflow.resource.overview;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.api.common.UseDefaults;
 
 public interface ProjectSummaryDTO
-    extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<String> project();
+   @UseDefaults
+   Property<String> project();
 
-    @UseDefaults
-    Property<Long> inboxCount();
+   @UseDefaults
+   Property<Long> inboxCount();
 
-    @UseDefaults
-    Property<Long> assignedCount();
+   @UseDefaults
+   Property<Long> assignedCount();
 }

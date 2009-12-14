@@ -34,50 +34,50 @@ import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
  * JAVADOC
  */
 public class AdministrationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addObjects(AdministrationWindow.class).visibleIn(Visibility.layer);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addObjects( AdministrationWindow.class ).visibleIn( Visibility.layer );
 
-        module.addObjects(AdministrationNode.class,
-                AccountAdministrationNode.class,
-                OrganizationAdministrationNode.class,
-                OrganizationalUnitAdministrationNode.class,
-                OrganizationAdministrationModel.class);
+      module.addObjects( AdministrationNode.class,
+            AccountAdministrationNode.class,
+            OrganizationAdministrationNode.class,
+            OrganizationalUnitAdministrationNode.class,
+            OrganizationAdministrationModel.class );
 
-        UIAssemblers.addViews(module,
-                AdministrationView.class);
-        UIAssemblers.addMV(module,
-                OrganizationalUnitAdministrationModel.class,
-                OrganizationalUnitAdministrationView.class);
-        UIAssemblers.addMV(module,
-                OrganizationAdministrationModel.class,
-                OrganizationAdministrationView.class);
-        UIAssemblers.addMV(module,
-                AdministrationModel.class,
-                AdministrationOutlineView.class);
+      UIAssemblers.addViews( module,
+            AdministrationView.class );
+      UIAssemblers.addMV( module,
+            OrganizationalUnitAdministrationModel.class,
+            OrganizationalUnitAdministrationView.class );
+      UIAssemblers.addMV( module,
+            OrganizationAdministrationModel.class,
+            OrganizationAdministrationView.class );
+      UIAssemblers.addMV( module,
+            AdministrationModel.class,
+            AdministrationOutlineView.class );
 
-        UIAssemblers.addMV(module,
-                AccountModel.class,
-                AccountView.class);
-        UIAssemblers.addDialogs(module,
-                ChangePasswordDialog.class,
-                SelectOrganizationalUnitDialog.class,
-                SelectOrganizationUsersDialog.class);
-        UIAssemblers.addTasks(module, TestConnectionTask.class);
+      UIAssemblers.addMV( module,
+            AccountModel.class,
+            AccountView.class );
+      UIAssemblers.addDialogs( module,
+            ChangePasswordDialog.class,
+            SelectOrganizationalUnitDialog.class,
+            SelectOrganizationUsersDialog.class );
+      UIAssemblers.addTasks( module, TestConnectionTask.class );
 
-        UIAssemblers.addModels(module, SelectOrganizationUsersDialogModel.class);
+      UIAssemblers.addModels( module, SelectOrganizationUsersDialogModel.class );
 
-        // Other administration modules
-        new LabelsAssembler().assemble(module.layerAssembly().moduleAssembly("Labels"));
-        new UserAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Users"));
-        new OrganizationsAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Organizations"));
-        new GroupAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Groups"));
-        new ProjectAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Projects"));
-        new TaskTypeAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Task types"));
-        new RoleAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Roles"));
-        new FormDefinitionsAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Forms"));
-        new AdministratorAdministrationAssembler().assemble(module.layerAssembly().moduleAssembly("Administrators"));
-    }
+      // Other administration modules
+      new LabelsAssembler().assemble( module.layerAssembly().moduleAssembly( "Labels" ) );
+      new UserAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Users" ) );
+      new OrganizationsAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Organizations" ) );
+      new GroupAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Groups" ) );
+      new ProjectAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Projects" ) );
+      new TaskTypeAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Task types" ) );
+      new RoleAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Roles" ) );
+      new FormDefinitionsAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Forms" ) );
+      new AdministratorAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Administrators" ) );
+   }
 }

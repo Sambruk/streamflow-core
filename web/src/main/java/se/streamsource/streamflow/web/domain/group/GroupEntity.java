@@ -22,11 +22,11 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
  * JAVADOC
  */
 public interface GroupEntity
-        extends Group,
-        Describable.Data,
-        Participation.Data,
-        Participants.Data,
-        Removable.Data,
-        DomainEntity
+      extends Group,
+      Describable.Data,
+      Participation.Data,
+      Participants.Data,
+      Removable.Data,
+      DomainEntity
 {
 }

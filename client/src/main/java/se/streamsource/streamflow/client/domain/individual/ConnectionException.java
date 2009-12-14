@@ -21,21 +21,21 @@ import org.restlet.data.Status;
  */
 public class ConnectionException extends Exception
 {
-    private Status status;
+   private Status status;
 
-    public ConnectionException(String message, Status status)
-    {
-        super(message);
-        this.status = status;
-    }
+   public ConnectionException( String message, Status status )
+   {
+      super( message );
+      this.status = status;
+   }
 
-    public ConnectionException(String message)
-    {
-        super(message);
-    }
+   public ConnectionException( String message )
+   {
+      super( message );
+   }
 
-    public Status status()
-    {
-        return status;
-    }
+   public Status status()
+   {
+      return status;
+   }
 }

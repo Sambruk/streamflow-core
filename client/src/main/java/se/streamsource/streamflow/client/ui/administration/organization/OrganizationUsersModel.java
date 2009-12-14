@@ -19,59 +19,58 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 
 public class OrganizationUsersModel
-    extends AbstractListModel
-    implements Refreshable, EventListener
+      extends AbstractListModel
+      implements Refreshable, EventListener
 {
-    private OrganizationClientResource organizationResource;
-    private List<ListItemValue> users;
+   private OrganizationClientResource organizationResource;
+   private List<ListItemValue> users;
 
-    public OrganizationUsersModel(@Uses OrganizationClientResource organizationResource)
-    {
-        this.organizationResource = organizationResource;
-        refresh();
-    }
+   public OrganizationUsersModel( @Uses OrganizationClientResource organizationResource )
+   {
+      this.organizationResource = organizationResource;
+      refresh();
+   }
 
 
-    public int getSize()
-    {
-        return users == null ? 0 : users.size();
-    }
+   public int getSize()
+   {
+      return users == null ? 0 : users.size();
+   }
 
-    public Object getElementAt(int index)
-    {
-        return users == null ? null : users.get(index);
-    }
+   public Object getElementAt( int index )
+   {
+      return users == null ? null : users.get( index );
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            users = organizationResource.participatingUsers().items().get();
+   public void refresh()
+   {
+      try
+      {
+         users = organizationResource.participatingUsers().items().get();
 
-            fireContentsChanged(this, 0, users.size());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
-        }
-    }
+         fireContentsChanged( this, 0, users.size() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
 
-    public OrganizationClientResource getResource()
-    {
-        return organizationResource;
-    }
+   public OrganizationClientResource getResource()
+   {
+      return organizationResource;
+   }
 
-    public void notifyEvent(DomainEvent event)
-    {
-       //Do nothing
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      //Do nothing
+   }
 }

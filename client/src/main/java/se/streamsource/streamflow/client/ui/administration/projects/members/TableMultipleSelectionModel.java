@@ -23,51 +23,51 @@ import java.util.Map;
 import java.util.Set;
 
 public class TableMultipleSelectionModel
-        extends AbstractTableSelectionModel<Set<String>>
+      extends AbstractTableSelectionModel<Set<String>>
 {
-    private Map<ListItemValue, Boolean> selected;
+   private Map<ListItemValue, Boolean> selected;
 
-    public void clearSelection()
-    {
-        selected = new HashMap<ListItemValue, Boolean>();
-        fireTableChanged(new TableModelEvent(this, 0, getRowCount(), 0, TableModelEvent.DELETE));
-    }
+   public void clearSelection()
+   {
+      selected = new HashMap<ListItemValue, Boolean>();
+      fireTableChanged( new TableModelEvent( this, 0, getRowCount(), 0, TableModelEvent.DELETE ) );
+   }
 
-    public Set<String> getSelected()
-    {
-        Set<String> selectedIdentities = new LinkedHashSet<String>();
+   public Set<String> getSelected()
+   {
+      Set<String> selectedIdentities = new LinkedHashSet<String>();
 
-        for (ListItemValue listItemValue : selected.keySet())
-        {
-            selectedIdentities.add(listItemValue.entity().get().identity());
-        }
-        return selectedIdentities;
-    }
+      for (ListItemValue listItemValue : selected.keySet())
+      {
+         selectedIdentities.add( listItemValue.entity().get().identity() );
+      }
+      return selectedIdentities;
+   }
 
 
-    public Object getValueAt(int row, int column)
-    {
-        switch (column)
-        {
-            case 0:
-                return selected.get(getModel().items().get().get(row));
-            case 1:
-                return getModel().items().get().get(row).description().get();
-        }
-        return null;
-    }
+   public Object getValueAt( int row, int column )
+   {
+      switch (column)
+      {
+         case 0:
+            return selected.get( getModel().items().get().get( row ) );
+         case 1:
+            return getModel().items().get().get( row ).description().get();
+      }
+      return null;
+   }
 
-    @Override
-    public void setValueAt(Object value, int row, int column)
-    {
-        if (!(Boolean) value)
-        {
-            selected.remove(getModel().items().get().get(row));
-        } else
-        {
-            selected.put(getModel().items().get().get(row), Boolean.TRUE);
-        }
-        fireTableCellUpdated(row, column);
-    }
+   @Override
+   public void setValueAt( Object value, int row, int column )
+   {
+      if (!(Boolean) value)
+      {
+         selected.remove( getModel().items().get().get( row ) );
+      } else
+      {
+         selected.put( getModel().items().get().get( row ), Boolean.TRUE );
+      }
+      fireTableCellUpdated( row, column );
+   }
 
 }

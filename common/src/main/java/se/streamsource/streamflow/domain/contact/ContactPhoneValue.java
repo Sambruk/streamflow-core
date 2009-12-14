@@ -23,17 +23,17 @@ import org.qi4j.library.constraints.annotation.Matches;
  * JAVADOC
  */
 public interface ContactPhoneValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    public enum ContactType
-    {
-        HOME, WORK, MOBILE, FAX, OTHER
-    }
+   public enum ContactType
+   {
+      HOME, WORK, MOBILE, FAX, OTHER
+   }
 
-    @UseDefaults
-    Property<ContactType> contactType();
+   @UseDefaults
+   Property<ContactType> contactType();
 
-    @UseDefaults
-    @Matches("\\+?[\\d -]*")
-    Property<String> phoneNumber();
+   @UseDefaults
+   @Matches("\\+?[\\d -]*")
+   Property<String> phoneNumber();
 }

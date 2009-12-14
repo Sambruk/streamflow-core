@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import java.util.Date;
-
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
@@ -25,8 +23,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
-
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -35,87 +34,87 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Delegatable.Mixin.class)
 public interface Delegatable
 {
-    void delegateTo(Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom);
+   void delegateTo( Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom );
 
-    void rejectDelegation();
+   void rejectDelegation();
 
-    interface Data
-    {
-        @Optional
-        Association<Delegatee> delegatedTo();
+   interface Data
+   {
+      @Optional
+      Association<Delegatee> delegatedTo();
 
-        @Optional
-        Association<Delegator> delegatedBy();
+      @Optional
+      Association<Delegator> delegatedBy();
 
-        @Optional
-        Association<WaitingFor> delegatedFrom();
+      @Optional
+      Association<WaitingFor> delegatedFrom();
 
-        @Optional
-        Property<Date> delegatedOn();
+      @Optional
+      Property<Date> delegatedOn();
 
-        void delegatedTo(DomainEvent create, Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom);
+      void delegatedTo( DomainEvent create, Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom );
 
-        void rejectedDelegation(DomainEvent event);
-    }
+      void rejectedDelegation( DomainEvent event );
+   }
 
-    abstract class Mixin
-            implements Delegatable, Data
-    {
-        @This
-        Ownable.Data ownable;
+   abstract class Mixin
+         implements Delegatable, Data
+   {
+      @This
+      Ownable.Data ownable;
 
-        @This
-        Task task;
+      @This
+      Task task;
 
-        @Structure
-        Qi4j api;
+      @Structure
+      Qi4j api;
 
-        public void delegateTo(Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom)
-        {
-            delegatedTo(DomainEvent.CREATE, delegatee, delegator, delegatedFrom);
-        }
+      public void delegateTo( Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom )
+      {
+         delegatedTo( DomainEvent.CREATE, delegatee, delegator, delegatedFrom );
+      }
 
-        public void delegatedTo(DomainEvent event, Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom)
-        {
-            delegatedTo().set(delegatee);
-            delegatedBy().set(delegator);
-            delegatedOn().set(event.on().get());
-            delegatedFrom().set(delegatedFrom);
-        }
+      public void delegatedTo( DomainEvent event, Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom )
+      {
+         delegatedTo().set( delegatee );
+         delegatedBy().set( delegator );
+         delegatedOn().set( event.on().get() );
+         delegatedFrom().set( delegatedFrom );
+      }
 
-        public void rejectDelegation()
-        {
-            if (delegatedTo().get() != null)
-            {
-                WaitingFor waitingFor = delegatedFrom().get();
-                waitingFor.rejectTask(task);
-                rejectedDelegation(DomainEvent.CREATE);
-            }
-        }
+      public void rejectDelegation()
+      {
+         if (delegatedTo().get() != null)
+         {
+            WaitingFor waitingFor = delegatedFrom().get();
+            waitingFor.rejectTask( task );
+            rejectedDelegation( DomainEvent.CREATE );
+         }
+      }
 
-        public void rejectedDelegation(DomainEvent event)
-        {
-            delegatedTo().set(null);
-            delegatedBy().set(null);
-            delegatedOn().set(null);
-            delegatedFrom().set(null);
-        }
-    }
+      public void rejectedDelegation( DomainEvent event )
+      {
+         delegatedTo().set( null );
+         delegatedBy().set( null );
+         delegatedOn().set( null );
+         delegatedFrom().set( null );
+      }
+   }
 
    abstract public class FinishedDelegatedTaskSideEffect
-        extends SideEffectOf<TaskStatus>
-        implements TaskStatus
-    {
-        @This
-        Delegatable.Data delegatable;
+         extends SideEffectOf<TaskStatus>
+         implements TaskStatus
+   {
+      @This
+      Delegatable.Data delegatable;
 
-        @This
-        Task task;
+      @This
+      Task task;
 
-        public void done()
-        {
-            delegatable.delegatedFrom().get().markWaitingForAsUnread(task);
-        }
-    }
+      public void done()
+      {
+         delegatable.delegatedFrom().get().markWaitingForAsUnread( task );
+      }
+   }
 
 }

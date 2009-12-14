@@ -30,90 +30,90 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /users/{user}/workspace/user/inbox/{task}
  */
 public class WorkspaceUserInboxTaskServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public void complete()
-    {
-        String id = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
-        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
-        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
-        inbox.completeTask(task, assignee);
-    }
+   public void complete()
+   {
+      String id = (String) getRequest().getAttributes().get( "user" );
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      Task task = uowf.currentUnitOfWork().get( Task.class, taskId );
+      Inbox inbox = uowf.currentUnitOfWork().get( Inbox.class, id );
+      Assignee assignee = uowf.currentUnitOfWork().get( Assignee.class, id );
+      inbox.completeTask( task, assignee );
+   }
 
-    public void drop()
-    {
-        String id = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
-        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, id);
-        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, id);
-        inbox.dropTask(task, assignee);
-    }
+   public void drop()
+   {
+      String id = (String) getRequest().getAttributes().get( "user" );
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      Task task = uowf.currentUnitOfWork().get( Task.class, taskId );
+      Inbox inbox = uowf.currentUnitOfWork().get( Inbox.class, id );
+      Assignee assignee = uowf.currentUnitOfWork().get( Assignee.class, id );
+      inbox.dropTask( task, assignee );
+   }
 
-    public void assignToMe()
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        Assignee assignee = uow.get(Assignee.class, userId);
-        inbox.assignTo(task, assignee);
-    }
+   public void assignToMe()
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Task task = uow.get( Task.class, taskId );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Inbox inbox = uow.get( Inbox.class, userId );
+      Assignee assignee = uow.get( Assignee.class, userId );
+      inbox.assignTo( task, assignee );
+   }
 
-    public void delegate(EntityReferenceDTO reference)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        Delegator delegator = uow.get(Delegator.class, userId);
-        Delegatee delegatee = uow.get(Delegatee.class, reference.entity().get().identity());
-        inbox.delegateTo(task, delegatee, delegator); // TODO Role
-    }
+   public void delegate( EntityReferenceDTO reference )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Task task = uow.get( Task.class, taskId );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Inbox inbox = uow.get( Inbox.class, userId );
+      Delegator delegator = uow.get( Delegator.class, userId );
+      Delegatee delegatee = uow.get( Delegatee.class, reference.entity().get().identity() );
+      inbox.delegateTo( task, delegatee, delegator ); // TODO Role
+   }
 
-    public void forward(EntityReferenceDTO reference)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        TaskEntity task = uow.get(TaskEntity.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        Inbox receiverInbox = uow.get(Inbox.class, reference.entity().get().identity());
-        inbox.forwardTo(task, receiverInbox);
-    }
+   public void forward( EntityReferenceDTO reference )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      TaskEntity task = uow.get( TaskEntity.class, taskId );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Inbox inbox = uow.get( Inbox.class, userId );
+      Inbox receiverInbox = uow.get( Inbox.class, reference.entity().get().identity() );
+      inbox.forwardTo( task, receiverInbox );
+   }
 
-    public void markAsRead()
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        inbox.markAsRead(task);
-    }
+   public void markAsRead()
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Task task = uow.get( Task.class, taskId );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Inbox inbox = uow.get( Inbox.class, userId );
+      inbox.markAsRead( task );
+   }
 
-    public void markAsUnread()
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Task task = uow.get(Task.class, taskId);
-        String userId = (String) getRequest().getAttributes().get("user");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        inbox.markAsUnread(task);
-    }
+   public void markAsUnread()
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Task task = uow.get( Task.class, taskId );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Inbox inbox = uow.get( Inbox.class, userId );
+      inbox.markAsUnread( task );
+   }
 
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String userId = (String) getRequest().getAttributes().get("user");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        Inbox inbox = uow.get(Inbox.class, userId);
-        TaskEntity task = uow.get(TaskEntity.class, taskId);
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      Inbox inbox = uow.get( Inbox.class, userId );
+      TaskEntity task = uow.get( TaskEntity.class, taskId );
 
-        inbox.deleteTask(task);
-    }
+      inbox.deleteTask( task );
+   }
 }

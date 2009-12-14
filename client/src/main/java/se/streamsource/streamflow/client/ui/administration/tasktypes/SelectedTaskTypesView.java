@@ -39,64 +39,64 @@ import java.awt.BorderLayout;
  * JAVADOC
  */
 public class SelectedTaskTypesView
-        extends JPanel
+      extends JPanel
 {
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    @Uses
-    ObjectBuilder<SelectTaskTypesDialog> taskTypesDialogs;
+   @Uses
+   ObjectBuilder<SelectTaskTypesDialog> taskTypesDialogs;
 
-    public JList taskTypeList;
+   public JList taskTypeList;
 
-    private SelectedTaskTypesModel modelSelected;
+   private SelectedTaskTypesModel modelSelected;
 
-    public SelectedTaskTypesView(@Service ApplicationContext context, @Uses SelectedTaskTypesModel modelSelected )
-    {
-        super(new BorderLayout());
-        this.modelSelected = modelSelected;
+   public SelectedTaskTypesView( @Service ApplicationContext context, @Uses SelectedTaskTypesModel modelSelected )
+   {
+      super( new BorderLayout() );
+      this.modelSelected = modelSelected;
 
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
 
-        taskTypeList = new JList( new EventListModel<ListItemValue>(new SortedList<ListItemValue>(modelSelected.getTaskTypeList(), new ListItemComparator())));
+      taskTypeList = new JList( new EventListModel<ListItemValue>( new SortedList<ListItemValue>( modelSelected.getTaskTypeList(), new ListItemComparator() ) ) );
 
-        taskTypeList.setCellRenderer(new ListItemListCellRenderer());
+      taskTypeList.setCellRenderer( new ListItemListCellRenderer() );
 
-        add(new JScrollPane( taskTypeList ), BorderLayout.CENTER);
+      add( new JScrollPane( taskTypeList ), BorderLayout.CENTER );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("add")));
-        toolbar.add(new JButton(am.get("remove")));
-        add(toolbar, BorderLayout.SOUTH);
-        taskTypeList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( am.get( "add" ) ) );
+      toolbar.add( new JButton( am.get( "remove" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
+      taskTypeList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
-        addAncestorListener( new RefreshWhenVisible( modelSelected, this) );
-    }
+      addAncestorListener( new RefreshWhenVisible( modelSelected, this ) );
+   }
 
-    @Action
-    public void add()
-    {
-        SelectTaskTypesDialog dialog = taskTypesDialogs.use( modelSelected.getPossibleTaskTypes() ).newInstance();
+   @Action
+   public void add()
+   {
+      SelectTaskTypesDialog dialog = taskTypesDialogs.use( modelSelected.getPossibleTaskTypes() ).newInstance();
 
-        dialogs.showOkCancelHelpDialog( this, dialog );
+      dialogs.showOkCancelHelpDialog( this, dialog );
 
-        if (dialog.getSelectedTaskTypes() != null)
-        {
-            for (ListItemValue listItemValue : dialog.getSelectedTaskTypes())
-            {
-                modelSelected.addTaskType( listItemValue.entity().get() );
-            }
-            modelSelected.refresh();
-        }
+      if (dialog.getSelectedTaskTypes() != null)
+      {
+         for (ListItemValue listItemValue : dialog.getSelectedTaskTypes())
+         {
+            modelSelected.addTaskType( listItemValue.entity().get() );
+         }
+         modelSelected.refresh();
+      }
 
-    }
+   }
 
-    @Action
-    public void remove()
-    {
-        ListItemValue selected = (ListItemValue) taskTypeList.getSelectedValue();
-        modelSelected.removeTaskType( selected.entity().get() );
-        modelSelected.refresh();
-    }
+   @Action
+   public void remove()
+   {
+      ListItemValue selected = (ListItemValue) taskTypeList.getSelectedValue();
+      modelSelected.removeTaskType( selected.entity().get() );
+      modelSelected.refresh();
+   }
 }

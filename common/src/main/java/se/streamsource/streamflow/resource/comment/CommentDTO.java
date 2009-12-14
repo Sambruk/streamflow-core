@@ -23,13 +23,13 @@ import java.util.Date;
  * Comment DTO
  */
 public interface CommentDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<String> commenter();
+   Property<String> commenter();
 
-    Property<Date> creationDate();
+   Property<Date> creationDate();
 
-    Property<String> text();
+   Property<String> text();
 
-    Property<Boolean> isPublic();
+   Property<Boolean> isPublic();
 }

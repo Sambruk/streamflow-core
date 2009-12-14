@@ -28,25 +28,25 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * /users/{user}/workspace/user/assignments
  */
 public class WorkspaceUserAssignmentsServerResource
-        extends AbstractTaskListServerResource
+      extends AbstractTaskListServerResource
 {
-    public AssignmentsTaskListDTO tasks(TasksQuery query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("user");
-        AssignmentsQueries assignments = uow.get(AssignmentsQueries.class, id);
-        Assignee assignee = uow.get(Assignee.class, id);
+   public AssignmentsTaskListDTO tasks( TasksQuery query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "user" );
+      AssignmentsQueries assignments = uow.get( AssignmentsQueries.class, id );
+      Assignee assignee = uow.get( Assignee.class, id );
 
-        return assignments.assignmentsTasks( assignee );
-    }
+      return assignments.assignmentsTasks( assignee );
+   }
 
-    public void createtask()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("user");
-        Assignments assignments = uow.get(Assignments.class, id);
-        Assignee assignee = uow.get(Assignee.class, id);
+   public void createtask()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "user" );
+      Assignments assignments = uow.get( Assignments.class, id );
+      Assignee assignee = uow.get( Assignee.class, id );
 
-        Task task = assignments.createAssignedTask(assignee);
-    }
+      Task task = assignments.createAssignedTask( assignee );
+   }
 }

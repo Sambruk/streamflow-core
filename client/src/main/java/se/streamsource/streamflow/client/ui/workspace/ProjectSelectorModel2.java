@@ -15,59 +15,60 @@ import java.util.List;
 
 public class ProjectSelectorModel2 implements EventHandler, Refreshable
 {
-	List<ListItemValue> items;
+   List<ListItemValue> items;
 
-    WorkspaceUserInboxClientResource resource;
+   WorkspaceUserInboxClientResource resource;
 
-    private EventHandlerFilter eventFilter;
+   private EventHandlerFilter eventFilter;
 
-    private BasicEventList<ListItemValue> list;
+   private BasicEventList<ListItemValue> list;
 
-	public ProjectSelectorModel2(@Uses WorkspaceUserInboxClientResource resource)
-	{
-		this.resource = resource;
-        eventFilter = new EventHandlerFilter(this, "addedProject", "removedProject", "joinedProject", "leftProject");
-        list = new BasicEventList<ListItemValue>();
+   public ProjectSelectorModel2( @Uses WorkspaceUserInboxClientResource resource )
+   {
+      this.resource = resource;
+      eventFilter = new EventHandlerFilter( this, "addedProject", "removedProject", "joinedProject", "leftProject" );
+      list = new BasicEventList<ListItemValue>();
 
-        refresh();
-    }
+      refresh();
+   }
 
-    public BasicEventList<ListItemValue> getList()
-    {
-        return list;
-    }
-    public void refresh()
-    {
-        try
-        {
-            this.items = resource.projects().items().get();
-            list.clear();
-            list.addAll( items );
-        } catch (ResourceException e)
-        {
-            throw new OperationException(WorkspaceResources.could_not_refresh_projects, e);
-        }
-    }
+   public BasicEventList<ListItemValue> getList()
+   {
+      return list;
+   }
 
-    public boolean handleEvent(DomainEvent event)
-    {
-        this.refresh();
-        return true;
-    }
+   public void refresh()
+   {
+      try
+      {
+         this.items = resource.projects().items().get();
+         list.clear();
+         list.addAll( items );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh_projects, e );
+      }
+   }
 
-    public void notifyEvent(DomainEvent event)
-    {
-        eventFilter.handleEvent( event );
-    }
+   public boolean handleEvent( DomainEvent event )
+   {
+      this.refresh();
+      return true;
+   }
 
-    public ListItemValue getProjectByName( String projectName )
-    {
-        for (ListItemValue item : items)
-        {
-            if (item.description().get().equals(projectName))
-                return item;
-        }
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
+   }
 
-        return null;
-    }
+   public ListItemValue getProjectByName( String projectName )
+   {
+      for (ListItemValue item : items)
+      {
+         if (item.description().get().equals( projectName ))
+            return item;
+      }
+
+      return null;
+   }
 }

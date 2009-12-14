@@ -23,44 +23,44 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  */
 public class EventParameters
 {
-    /**
-     * Get the named parameter from an event.
-     *
-     * @param event event with parameters
-     * @param name name of parameter
-     * @return the parameter with the given name or null
-     */
-    public static String getParameter( DomainEvent event, String name)
-    {
-        String parametersJson = event.parameters().get();
-        try
-        {
-            JSONObject jsonObject = new JSONObject(parametersJson);
-            return jsonObject.get( name ).toString();
-        } catch (JSONException e)
-        {
-            return null;
-        }
-    }
+   /**
+    * Get the named parameter from an event.
+    *
+    * @param event event with parameters
+    * @param name  name of parameter
+    * @return the parameter with the given name or null
+    */
+   public static String getParameter( DomainEvent event, String name )
+   {
+      String parametersJson = event.parameters().get();
+      try
+      {
+         JSONObject jsonObject = new JSONObject( parametersJson );
+         return jsonObject.get( name ).toString();
+      } catch (JSONException e)
+      {
+         return null;
+      }
+   }
 
-    /**
-     * Get parameter with given index.
-     *
-     * @param event event with parameters
-     * @param idx index of parameter
-     * @return the parameter with the given index or null
-     * @throws JSONException
-     */
-    public static String getParameter( DomainEvent event, int idx)
-    {
-        try
-        {
-            String parametersJson = event.parameters().get();
-            JSONObject jsonObject = new JSONObject(parametersJson);
-            return jsonObject.get( "param"+idx).toString();
-        } catch (JSONException e)
-        {
-            return null;
-        }
-    }
+   /**
+    * Get parameter with given index.
+    *
+    * @param event event with parameters
+    * @param idx   index of parameter
+    * @return the parameter with the given index or null
+    * @throws JSONException
+    */
+   public static String getParameter( DomainEvent event, int idx )
+   {
+      try
+      {
+         String parametersJson = event.parameters().get();
+         JSONObject jsonObject = new JSONObject( parametersJson );
+         return jsonObject.get( "param" + idx ).toString();
+      } catch (JSONException e)
+      {
+         return null;
+      }
+   }
 }

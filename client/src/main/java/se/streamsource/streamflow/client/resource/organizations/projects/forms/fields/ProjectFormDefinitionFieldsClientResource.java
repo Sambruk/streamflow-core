@@ -26,25 +26,25 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
  * /organizations/{organization}/projects/{project}/forms/{index}/fields
  */
 public class ProjectFormDefinitionFieldsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public ProjectFormDefinitionFieldsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public ProjectFormDefinitionFieldsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ProjectFormDefinitionFieldClientResource field(int index)
-    {
-        return getSubResource(""+index, ProjectFormDefinitionFieldClientResource.class);
-    }
+   public ProjectFormDefinitionFieldClientResource field( int index )
+   {
+      return getSubResource( "" + index, ProjectFormDefinitionFieldClientResource.class );
+   }
 
-    public ListValue fields() throws ResourceException
-    {
-        return query("fields", ListValue.class);
-    }
+   public ListValue fields() throws ResourceException
+   {
+      return query( "fields", ListValue.class );
+   }
 
-    public void addField(CreateFieldDTO createFieldDTO) throws ResourceException
-    {
-        putCommand("addField", createFieldDTO);
-    }
+   public void addField( CreateFieldDTO createFieldDTO ) throws ResourceException
+   {
+      putCommand( "addField", createFieldDTO );
+   }
 }

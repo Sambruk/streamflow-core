@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.restlet.Restlet;
 import org.restlet.Uniform;
 import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
 import se.streamsource.streamflow.client.resource.users.UserClientResource;
@@ -24,7 +23,7 @@ import se.streamsource.streamflow.client.resource.users.UserClientResource;
  */
 public interface AccountConnection
 {
-    StreamFlowClientResource server(Uniform client);
+   StreamFlowClientResource server( Uniform client );
 
-    UserClientResource user(Uniform client);
+   UserClientResource user( Uniform client );
 }

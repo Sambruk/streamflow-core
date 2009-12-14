@@ -33,45 +33,45 @@ import javax.swing.event.ListSelectionListener;
  * JAVADOC
  */
 public class GroupAdminView
-        extends JSplitPane
+      extends JSplitPane
 {
-    @Uses
-    ObjectBuilder<GroupView> groupView;
+   @Uses
+   ObjectBuilder<GroupView> groupView;
 
-    public GroupAdminView(@Uses GroupsView groupsView,
-                          @Uses final GroupsModel groupsModel)
-    {
-        super();
+   public GroupAdminView( @Uses GroupsView groupsView,
+                          @Uses final GroupsModel groupsModel )
+   {
+      super();
 
-        setLeftComponent(groupsView);
-        setRightComponent(new JPanel());
+      setLeftComponent( groupsView );
+      setRightComponent( new JPanel() );
 
-        setDividerLocation(250);
+      setDividerLocation( 250 );
 
-        final JList list = groupsView.getGroupList();
-        list.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      final JList list = groupsView.getGroupList();
+      list.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            ListItemValue groupValue = (ListItemValue) list.getSelectedValue();
+            if (groupValue == null)
+               setRightComponent( new JPanel() );
+            else
             {
-                ListItemValue groupValue = (ListItemValue) list.getSelectedValue();
-                if (groupValue == null)
-                    setRightComponent(new JPanel());
-                else
-                {
-                    GroupModel groupModel = groupsModel.getGroupModel(groupValue.entity().get().identity());
-                    setRightComponent(groupView.use(groupModel).newInstance());
-                    try
-                    {
-                        groupModel.refresh();
-                    } catch (ResourceException e1)
-                    {
-                        throw new OperationException(AdministrationResources.could_not_refresh_list_of_groups, e1);
-                    }
-                }
+               GroupModel groupModel = groupsModel.getGroupModel( groupValue.entity().get().identity() );
+               setRightComponent( groupView.use( groupModel ).newInstance() );
+               try
+               {
+                  groupModel.refresh();
+               } catch (ResourceException e1)
+               {
+                  throw new OperationException( AdministrationResources.could_not_refresh_list_of_groups, e1 );
+               }
             }
-        });
+         }
+      } );
 
-        addAncestorListener( new RefreshWhenVisible(groupsModel, this) );
-    }
+      addAncestorListener( new RefreshWhenVisible( groupsModel, this ) );
+   }
 
 }

@@ -25,10 +25,10 @@ import java.util.List;
  * JAVADOC
  */
 public interface SubmitFormDTO
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> form();
+   Property<EntityReference> form();
 
-    @UseDefaults
-    Property<List<SubmittedFieldValue>> values();
+   @UseDefaults
+   Property<List<SubmittedFieldValue>> values();
 }

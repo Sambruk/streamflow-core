@@ -14,12 +14,8 @@
 
 package se.streamsource.streamflow.web.resource.organizations;
 
-import static org.qi4j.api.query.QueryExpressions.templateFor;
-
-import static org.qi4j.api.query.QueryExpressions.eq;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.mixin.Mixins;
-
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
@@ -29,14 +25,14 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 @Mixins(DescribableResource.DescribableMixin.class)
 public interface DescribableResource
 {
-    void changedescription(StringDTO stringValue, @Name("entity") Describable describable);
+   void changedescription( StringDTO stringValue, @Name("entity") Describable describable );
 
-    class DescribableMixin
-        implements DescribableResource
-    {
-        public void changedescription(StringDTO stringValue, Describable describable)
-        {
-            describable.changeDescription(stringValue.string().get());
-        }
-    }
+   class DescribableMixin
+         implements DescribableResource
+   {
+      public void changedescription( StringDTO stringValue, Describable describable )
+      {
+         describable.changeDescription( stringValue.string().get() );
+      }
+   }
 }

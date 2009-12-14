@@ -22,7 +22,7 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface Context
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> context();
+   Property<EntityReference> context();
 }

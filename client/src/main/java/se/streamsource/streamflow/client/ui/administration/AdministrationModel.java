@@ -32,58 +32,59 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class AdministrationModel
-        extends DefaultTreeModel
-        implements Refreshable, EventListener, EventHandler
+      extends DefaultTreeModel
+      implements Refreshable, EventListener, EventHandler
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    WeakModelMap<Account, AccountAdministrationNode> nodes = new WeakModelMap<Account, AccountAdministrationNode>()
-    {
-        @Override
-        protected AccountAdministrationNode newModel(Account key)
-        {
-            return obf.newObjectBuilder(AccountAdministrationNode.class).use(getRoot(), key).newInstance();
-        }
-    };
+   WeakModelMap<Account, AccountAdministrationNode> nodes = new WeakModelMap<Account, AccountAdministrationNode>()
+   {
+      @Override
+      protected AccountAdministrationNode newModel( Account key )
+      {
+         return obf.newObjectBuilder( AccountAdministrationNode.class ).use( getRoot(), key ).newInstance();
+      }
+   };
 
-    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "removedOrganizationalUnit", "addedOrganizationalUnit");;
+   private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "removedOrganizationalUnit", "addedOrganizationalUnit" );
+   ;
 
-    public AdministrationModel(@Uses AdministrationNode root)
-    {
-        super(root);
-    }
+   public AdministrationModel( @Uses AdministrationNode root )
+   {
+      super( root );
+   }
 
-    @Override
-    public AdministrationNode getRoot()
-    {
-        return (AdministrationNode) super.getRoot();
-    }
+   @Override
+   public AdministrationNode getRoot()
+   {
+      return (AdministrationNode) super.getRoot();
+   }
 
-    public void refresh()
-    {
-        getRoot().refresh();
-        reload(getRoot());
-    }
+   public void refresh()
+   {
+      getRoot().refresh();
+      reload( getRoot() );
+   }
 
-    public void createOrganizationalUnit( OrganizationalUnitAdministrationNode orgNode, String name)
-    {
-        orgNode.model().createOrganizationalUnit(name);
-    }
+   public void createOrganizationalUnit( OrganizationalUnitAdministrationNode orgNode, String name )
+   {
+      orgNode.model().createOrganizationalUnit( name );
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        getRoot().notifyEvent(event);
+   public void notifyEvent( DomainEvent event )
+   {
+      getRoot().notifyEvent( event );
 
-        eventFilter.handleEvent( event );
-    }
+      eventFilter.handleEvent( event );
+   }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        Logger.getLogger("administration").info("Refresh organizational overview");
-        getRoot().refresh();
-        reload(getRoot());
+   public boolean handleEvent( DomainEvent event )
+   {
+      Logger.getLogger( "administration" ).info( "Refresh organizational overview" );
+      getRoot().refresh();
+      reload( getRoot() );
 
-        return false;
-    }
+      return false;
+   }
 }

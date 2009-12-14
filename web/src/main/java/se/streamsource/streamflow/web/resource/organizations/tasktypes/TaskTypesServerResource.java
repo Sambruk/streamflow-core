@@ -26,29 +26,29 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/tasktypes
  */
 public class TaskTypesServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue tasktypes()
-    {
-        String orgId = (String) getRequest().getAttributes().get( "organization" );
+   public ListValue tasktypes()
+   {
+      String orgId = (String) getRequest().getAttributes().get( "organization" );
 
-        TaskTypes taskTypes = uowf.currentUnitOfWork().get( TaskTypes.class, orgId );
+      TaskTypes taskTypes = uowf.currentUnitOfWork().get( TaskTypes.class, orgId );
 
-        checkPermission( taskTypes );
+      checkPermission( taskTypes );
 
-        return taskTypes.taskTypeList();
-    }
+      return taskTypes.taskTypeList();
+   }
 
-    public void createtasktype( StringDTO name ) throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void createtasktype( StringDTO name ) throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String identity = getRequest().getAttributes().get( "organization" ).toString();
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
 
-        TaskTypes taskTypes = uow.get( TaskTypes.class, identity );
-        checkPermission( taskTypes );
+      TaskTypes taskTypes = uow.get( TaskTypes.class, identity );
+      checkPermission( taskTypes );
 
-        taskTypes.createTaskType( name.string().get() );
-    }
+      taskTypes.createTaskType( name.string().get() );
+   }
 
 }

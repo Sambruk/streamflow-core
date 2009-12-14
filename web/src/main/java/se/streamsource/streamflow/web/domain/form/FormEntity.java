@@ -18,8 +18,8 @@ package se.streamsource.streamflow.web.domain.form;
  * JAVADOC
  */
 public interface FormEntity
-    extends FormTemplateEntity,
-        Form,
-        FormTemplateReference.Data
+      extends FormTemplateEntity,
+      Form,
+      FormTemplateReference.Data
 {
 }

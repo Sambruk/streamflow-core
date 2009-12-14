@@ -30,85 +30,85 @@ import java.util.Iterator;
  * JAVADOC
  */
 public class AdministrationNode
-        implements TreeNode, Refreshable, EventListener
+      implements TreeNode, Refreshable, EventListener
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Uses
-    AccountModel accountsModel;
+   @Uses
+   AccountModel accountsModel;
 
-    WeakModelMap<AccountModel, AccountAdministrationNode> models = new WeakModelMap<AccountModel, AccountAdministrationNode>()
-    {
-        @Override
-        protected AccountAdministrationNode newModel(AccountModel key)
-        {
-            AccountAdministrationNode administrationNode = obf.newObjectBuilder( AccountAdministrationNode.class ).use( AdministrationNode.this, key ).newInstance();
-            administrationNode.refresh();
-            return administrationNode;
-        }
-    };
+   WeakModelMap<AccountModel, AccountAdministrationNode> models = new WeakModelMap<AccountModel, AccountAdministrationNode>()
+   {
+      @Override
+      protected AccountAdministrationNode newModel( AccountModel key )
+      {
+         AccountAdministrationNode administrationNode = obf.newObjectBuilder( AccountAdministrationNode.class ).use( AdministrationNode.this, key ).newInstance();
+         administrationNode.refresh();
+         return administrationNode;
+      }
+   };
 
-    public TreeNode getChildAt(final int childIndex)
-    {
-        return models.get(accountsModel);
-    }
+   public TreeNode getChildAt( final int childIndex )
+   {
+      return models.get( accountsModel );
+   }
 
-    public int getChildCount()
-    {
-        return 1;
-    }
+   public int getChildCount()
+   {
+      return 1;
+   }
 
-    public TreeNode getParent()
-    {
-        return null;
-    }
+   public TreeNode getParent()
+   {
+      return null;
+   }
 
-    public int getIndex(TreeNode node)
-    {
-        return 0;
-    }
+   public int getIndex( TreeNode node )
+   {
+      return 0;
+   }
 
-    public boolean getAllowsChildren()
-    {
-        return true;
-    }
+   public boolean getAllowsChildren()
+   {
+      return true;
+   }
 
-    public boolean isLeaf()
-    {
-        return false;
-    }
+   public boolean isLeaf()
+   {
+      return false;
+   }
 
-    public Enumeration children()
-    {
-        final Iterator<AccountAdministrationNode> administrationNodeIterator = models.iterator();
-        return new Enumeration()
-        {
-            public boolean hasMoreElements()
-            {
-                return administrationNodeIterator.hasNext();
-            }
+   public Enumeration children()
+   {
+      final Iterator<AccountAdministrationNode> administrationNodeIterator = models.iterator();
+      return new Enumeration()
+      {
+         public boolean hasMoreElements()
+         {
+            return administrationNodeIterator.hasNext();
+         }
 
-            public Object nextElement()
-            {
-                return administrationNodeIterator.next();
-            }
-        };
-    }
+         public Object nextElement()
+         {
+            return administrationNodeIterator.next();
+         }
+      };
+   }
 
-    public void refresh()
-    {
-        for (AccountAdministrationNode model : models)
-        {
-            model.refresh();
-        }
-    }
+   public void refresh()
+   {
+      for (AccountAdministrationNode model : models)
+      {
+         model.refresh();
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        for (AccountAdministrationNode model : models)
-        {
-            model.notifyEvent(event);
-        }
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      for (AccountAdministrationNode model : models)
+      {
+         model.notifyEvent( event );
+      }
+   }
 }

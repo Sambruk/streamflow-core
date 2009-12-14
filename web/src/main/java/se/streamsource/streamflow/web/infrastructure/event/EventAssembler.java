@@ -30,20 +30,20 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
  * JAVADOC
  */
 public class EventAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addValues(TransactionEvents.class, DomainEvent.class).visibleIn(Visibility.application);
-        module.addServices(EventSourceService.class).identifiedBy("eventsource").visibleIn(Visibility.application);
-        module.addServices( DomainEventFactoryService.class).visibleIn( Visibility.application );
-        module.addServices( CommandEventListenerService.class).visibleIn( Visibility.application );
-        module.addObjects( TimeService.class );
-        module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
+      module.addServices( EventSourceService.class ).identifiedBy( "eventsource" ).visibleIn( Visibility.application );
+      module.addServices( DomainEventFactoryService.class ).visibleIn( Visibility.application );
+      module.addServices( CommandEventListenerService.class ).visibleIn( Visibility.application );
+      module.addObjects( TimeService.class );
+      module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
 
-        if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
-            module.addServices(JdbmEventStoreService.class).identifiedBy("eventstore").visibleIn(Visibility.application);
-        else
-            module.addServices( MemoryEventStoreService.class).identifiedBy("eventstore").visibleIn(Visibility.application);
-    }
+      if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
+         module.addServices( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
+      else
+         module.addServices( MemoryEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
+   }
 }

@@ -35,62 +35,62 @@ import java.util.logging.Logger;
  * List of contacts for a task
  */
 public class TaskSubmittedFormsModel
-        extends AbstractListModel
-        implements Refreshable, EventListener, EventHandler
+      extends AbstractListModel
+      implements Refreshable, EventListener, EventHandler
 
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Uses
-    TaskSubmittedFormsClientResource taskSubmittedForms;
+   @Uses
+   TaskSubmittedFormsClientResource taskSubmittedForms;
 
-    List<SubmittedFormListDTO> submittedForms = Collections.emptyList();
+   List<SubmittedFormListDTO> submittedForms = Collections.emptyList();
 
-    EventHandlerFilter eventFilter = new EventHandlerFilter(this, "submittedForm");
+   EventHandlerFilter eventFilter = new EventHandlerFilter( this, "submittedForm" );
 
-    public void refresh()
-    {
-        try
-        {
-            submittedForms = taskSubmittedForms.taskSubmittedForms().forms().get();
-            fireContentsChanged(this, 0, getSize());
-        } catch (Exception e)
-        {
-            throw new OperationException(TaskResources.could_not_refresh, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         submittedForms = taskSubmittedForms.taskSubmittedForms().forms().get();
+         fireContentsChanged( this, 0, getSize() );
+      } catch (Exception e)
+      {
+         throw new OperationException( TaskResources.could_not_refresh, e );
+      }
+   }
 
-    public TaskSubmittedFormsClientResource getTaskSubmittedFormsClientResource()
-    {
-        return taskSubmittedForms;
-    }
+   public TaskSubmittedFormsClientResource getTaskSubmittedFormsClientResource()
+   {
+      return taskSubmittedForms;
+   }
 
-    public int getSize()
-    {
-        return submittedForms.size();
-    }
+   public int getSize()
+   {
+      return submittedForms.size();
+   }
 
-    public Object getElementAt(int i)
-    {
-        return submittedForms.get(i);
-    }
+   public Object getElementAt( int i )
+   {
+      return submittedForms.get( i );
+   }
 
 
-    public void notifyEvent( DomainEvent event )
-    {
-        eventFilter.handleEvent( event );
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
+   }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        if (taskSubmittedForms.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get()))
-        {
-            Logger.getLogger("workspace").info("Refresh submitted forms");
-            refresh();
-        }
+   public boolean handleEvent( DomainEvent event )
+   {
+      if (taskSubmittedForms.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get() ))
+      {
+         Logger.getLogger( "workspace" ).info( "Refresh submitted forms" );
+         refresh();
+      }
 
-        return false;
-    }
+      return false;
+   }
 
 }

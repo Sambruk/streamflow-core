@@ -33,47 +33,47 @@ import java.io.Writer;
  * Get events since a given date
  */
 public class EventsServerResource
-        extends ServerResource
+      extends ServerResource
 {
-    @Service
-    EventStore store;
+   @Service
+   EventStore store;
 
-    public EventsServerResource()
-    {
-        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-    }
+   public EventsServerResource()
+   {
+      getVariants().add( new Variant( MediaType.TEXT_PLAIN ) );
+   }
 
-    @Override
-    protected Representation get(Variant variant) throws ResourceException
-    {
-        String after = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "after" );
+   @Override
+   protected Representation get( Variant variant ) throws ResourceException
+   {
+      String after = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "after" );
 
-        final long afterDate = after == null ? 0 : Long.parseLong(after );
+      final long afterDate = after == null ? 0 : Long.parseLong( after );
 
-        WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_PLAIN )
-        {
-            public void write( final Writer writer ) throws IOException
+      WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_PLAIN )
+      {
+         public void write( final Writer writer ) throws IOException
+         {
+            store.transactionsAfter( afterDate, new TransactionHandler()
             {
-                store.transactionsAfter( afterDate, new TransactionHandler()
-                {
-                    public boolean handleTransaction( TransactionEvents transaction )
-                    {
-                        try
-                        {
-                            String json = transaction.toJSON();
-                            writer.write( json );
-                            writer.write( '\n' );
+               public boolean handleTransaction( TransactionEvents transaction )
+               {
+                  try
+                  {
+                     String json = transaction.toJSON();
+                     writer.write( json );
+                     writer.write( '\n' );
 
-                            return true;
-                        } catch (IOException e)
-                        {
-                            return false;
-                        }
-                    }
-                } );
-            }
-        };
-        representation.setCharacterSet( CharacterSet.UTF_8 );
-        return representation;
-    }
+                     return true;
+                  } catch (IOException e)
+                  {
+                     return false;
+                  }
+               }
+            } );
+         }
+      };
+      representation.setCharacterSet( CharacterSet.UTF_8 );
+      return representation;
+   }
 }

@@ -40,47 +40,47 @@ import java.awt.BorderLayout;
  * JAVADOC
  */
 public class SelectedLabelsView
-        extends JPanel
+      extends JPanel
 {
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    @Uses
-    Iterable<NameDialog> nameDialogs;
+   @Uses
+   Iterable<NameDialog> nameDialogs;
 
-    @Uses
-    ObjectBuilder<SelectLabelsDialog> labelsDialogs;
+   @Uses
+   ObjectBuilder<SelectLabelsDialog> labelsDialogs;
 
-    public JList labelList;
+   public JList labelList;
 
-    private SelectedLabelsModel modelSelected;
+   private SelectedLabelsModel modelSelected;
 
-    public SelectedLabelsView(@Service ApplicationContext context, @Uses SelectedLabelsModel modelSelected )
-    {
-        super(new BorderLayout());
-        this.modelSelected = modelSelected;
+   public SelectedLabelsView( @Service ApplicationContext context, @Uses SelectedLabelsModel modelSelected )
+   {
+      super( new BorderLayout() );
+      this.modelSelected = modelSelected;
 
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
 
-        labelList = new JList( new EventListModel<ListItemValue>(new SortedList<ListItemValue>(modelSelected.getLabelList(), new ListItemComparator())));
+      labelList = new JList( new EventListModel<ListItemValue>( new SortedList<ListItemValue>( modelSelected.getLabelList(), new ListItemComparator() ) ) );
 
-        labelList.setCellRenderer(new ListItemListCellRenderer());
+      labelList.setCellRenderer( new ListItemListCellRenderer() );
 
-        add(new JScrollPane(labelList), BorderLayout.CENTER);
+      add( new JScrollPane( labelList ), BorderLayout.CENTER );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("add")));
-        toolbar.add(new JButton(am.get("remove")));
-        add(toolbar, BorderLayout.SOUTH);
-        labelList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( am.get( "add" ) ) );
+      toolbar.add( new JButton( am.get( "remove" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
+      labelList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
-        addAncestorListener( new RefreshWhenVisible( modelSelected, this) );
-    }
+      addAncestorListener( new RefreshWhenVisible( modelSelected, this ) );
+   }
 
-    @Action
-    public void add()
-    {
+   @Action
+   public void add()
+   {
 /*
         NameDialog dialog = nameDialogs.iterator().next();
         dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.add_label_title));
@@ -90,26 +90,26 @@ public class SelectedLabelsView
             modelSelected.createLabel( name);
         }
 */
-        SelectLabelsDialog dialog = labelsDialogs.use( modelSelected.getPossibleLabels() ).newInstance();
+      SelectLabelsDialog dialog = labelsDialogs.use( modelSelected.getPossibleLabels() ).newInstance();
 
-        dialogs.showOkCancelHelpDialog( this, dialog );
+      dialogs.showOkCancelHelpDialog( this, dialog );
 
-        if (dialog.getSelectedLabels() != null)
-        {
-            for (ListItemValue listItemValue : dialog.getSelectedLabels())
-            {
-                modelSelected.addLabel( listItemValue.entity().get() );
-            }
-            modelSelected.refresh();
-        }
+      if (dialog.getSelectedLabels() != null)
+      {
+         for (ListItemValue listItemValue : dialog.getSelectedLabels())
+         {
+            modelSelected.addLabel( listItemValue.entity().get() );
+         }
+         modelSelected.refresh();
+      }
 
-    }
+   }
 
-    @Action
-    public void remove()
-    {
-        ListItemValue selected = (ListItemValue) labelList.getSelectedValue();
-        modelSelected.removeLabel( selected.entity().get() );
-        modelSelected.refresh();
-    }
+   @Action
+   public void remove()
+   {
+      ListItemValue selected = (ListItemValue) labelList.getSelectedValue();
+      modelSelected.removeLabel( selected.entity().get() );
+      modelSelected.refresh();
+   }
 }

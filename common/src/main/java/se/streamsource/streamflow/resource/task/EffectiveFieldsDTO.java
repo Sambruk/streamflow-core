@@ -24,8 +24,8 @@ import java.util.List;
  * JAVADOC
  */
 public interface EffectiveFieldsDTO
-    extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<EffectiveFieldDTO>> effectiveFields();
+   @UseDefaults
+   Property<List<EffectiveFieldDTO>> effectiveFields();
 }

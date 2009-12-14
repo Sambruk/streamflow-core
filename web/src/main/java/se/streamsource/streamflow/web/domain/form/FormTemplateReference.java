@@ -29,59 +29,59 @@ import java.util.Date;
 @Mixins(FormTemplateReference.Mixin.class)
 public interface FormTemplateReference
 {
-    void synchronizeWithTemplate();
+   void synchronizeWithTemplate();
 
-    interface Data
-    {
-        @Optional
-        Association<FormTemplate> template();
+   interface Data
+   {
+      @Optional
+      Association<FormTemplate> template();
 
-        @Optional
-        Property<Date> lastSynchronization();
+      @Optional
+      Property<Date> lastSynchronization();
 
-        void formSynchronized(DomainEvent event);
+      void formSynchronized( DomainEvent event );
 
-        void removedTemplateReference( DomainEvent create );
-    }
+      void removedTemplateReference( DomainEvent create );
+   }
 
-    abstract class Mixin
-        implements FormTemplateReference, Data
-    {
-        @This
-        Fields.Data fieldsData;
+   abstract class Mixin
+         implements FormTemplateReference, Data
+   {
+      @This
+      Fields.Data fieldsData;
 
-        @This
-        Fields fields;
+      @This
+      Fields fields;
 
-        public void synchronizeWithTemplate( )
-        {
-            // First remove all local fields
-            for (Field field : fieldsData.fields())
-            {
-                fieldsData.removedField( DomainEvent.CREATE, field );
-            }
+      public void synchronizeWithTemplate()
+      {
+         // First remove all local fields
+         for (Field field : fieldsData.fields())
+         {
+            fieldsData.removedField( DomainEvent.CREATE, field );
+         }
 
-            // Copy fields from template
-            Fields.Data templateFields = (Fields.Data) template().get();
-            for (Field templateField : templateFields.fields())
-            {
-                FieldEntity field = fields.createField( templateField.getDescription(), ((FieldValueDefinition.Data) templateField).fieldValue().get() );
-                field.copyFromTemplate(templateField);
-            }
-            // TODO What else should be copied? Description? Note?
+         // Copy fields from template
+         Fields.Data templateFields = (Fields.Data) template().get();
+         for (Field templateField : templateFields.fields())
+         {
+            FieldEntity field = fields.createField( templateField.getDescription(), ((FieldValueDefinition.Data) templateField).fieldValue().get() );
+            field.copyFromTemplate( templateField );
+         }
+         // TODO What else should be copied? Description? Note?
 
-            formSynchronized( DomainEvent.CREATE );
-        }
+         formSynchronized( DomainEvent.CREATE );
+      }
 
-        public void formSynchronized( DomainEvent event )
-        {
-            lastSynchronization().set( event.on().get() );
-        }
+      public void formSynchronized( DomainEvent event )
+      {
+         lastSynchronization().set( event.on().get() );
+      }
 
-        public void removedTemplateReference( DomainEvent create )
-        {
-            template().set( null );
-            lastSynchronization().set( null );
-        }
-    }
+      public void removedTemplateReference( DomainEvent create )
+      {
+         template().set( null );
+         lastSynchronization().set( null );
+      }
+   }
 }

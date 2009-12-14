@@ -37,90 +37,90 @@ import java.util.List;
  * JAVADOC
  */
 public class BeforeAndAfterWebDomainApplicationSteps
-        extends Steps
+      extends Steps
 {
-    CandidateSteps[] steps;
+   CandidateSteps[] steps;
 
-    public BeforeAndAfterWebDomainApplicationSteps()
-    {
-    }
+   public BeforeAndAfterWebDomainApplicationSteps()
+   {
+   }
 
-    public BeforeAndAfterWebDomainApplicationSteps(CandidateSteps... steps)
-    {
-        CandidateSteps[] theSteps = new CandidateSteps[steps.length +1];
-        System.arraycopy(steps,0,theSteps,0,steps.length);
-        this.genericSteps = new GenericSteps();
-        theSteps[steps.length] = genericSteps;
-        this.steps = theSteps;
-    }
+   public BeforeAndAfterWebDomainApplicationSteps( CandidateSteps... steps )
+   {
+      CandidateSteps[] theSteps = new CandidateSteps[steps.length + 1];
+      System.arraycopy( steps, 0, theSteps, 0, steps.length );
+      this.genericSteps = new GenericSteps();
+      theSteps[steps.length] = genericSteps;
+      this.steps = theSteps;
+   }
 
-    @Structure
-    protected UnitOfWorkFactory uowf;
+   @Structure
+   protected UnitOfWorkFactory uowf;
 
-    @Structure
-    protected Qi4jSPI spi;
+   @Structure
+   protected Qi4jSPI spi;
 
-    protected ApplicationSPI app;
-    protected UnitOfWork uow;
+   protected ApplicationSPI app;
+   protected UnitOfWork uow;
 
-    private GenericSteps genericSteps;
+   private GenericSteps genericSteps;
 
-    @BeforeScenario
-    public void activateApplication() throws Exception
-    {
-        try
-        {
-            Energy4Java is = new Energy4Java();
+   @BeforeScenario
+   public void activateApplication() throws Exception
+   {
+      try
+      {
+         Energy4Java is = new Energy4Java();
 
-            Class[] stepClasses = new Class[steps.length + 1];
-            stepClasses[0] = getClass();
-            for (int i = 0; i < steps.length; i++)
-            {
-                CandidateSteps step = steps[i];
-                stepClasses[i + 1] = step.getClass();
-            }
+         Class[] stepClasses = new Class[steps.length + 1];
+         stepClasses[0] = getClass();
+         for (int i = 0; i < steps.length; i++)
+         {
+            CandidateSteps step = steps[i];
+            stepClasses[i + 1] = step.getClass();
+         }
 
 //            Client restlet = new Client(Protocol.HTTP);
-            app = is.newApplication(new StreamFlowWebDomainTestAssembler(stepClasses, genericSteps));
+         app = is.newApplication( new StreamFlowWebDomainTestAssembler( stepClasses, genericSteps ) );
 
-            Module module = app.findModule("Domain", "Test");
+         Module module = app.findModule( "Domain", "Test" );
 
-            for (CandidateSteps step : steps)
-            {
-                Class<CandidateSteps> aClass = (Class<CandidateSteps>) step.getClass();
-                ObjectBuilder<CandidateSteps> builder = module.objectBuilderFactory().newObjectBuilder(aClass);
-                builder.use(steps);
-                builder.injectTo(step);
-            }
+         for (CandidateSteps step : steps)
+         {
+            Class<CandidateSteps> aClass = (Class<CandidateSteps>) step.getClass();
+            ObjectBuilder<CandidateSteps> builder = module.objectBuilderFactory().newObjectBuilder( aClass );
+            builder.use( steps );
+            builder.injectTo( step );
+         }
 
-            app.activate();
-            module.objectBuilderFactory().newObjectBuilder(BeforeAndAfterWebDomainApplicationSteps.class).injectTo(this);
+         app.activate();
+         module.objectBuilderFactory().newObjectBuilder( BeforeAndAfterWebDomainApplicationSteps.class ).injectTo( this );
 
-            uow = uowf.newUnitOfWork();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            throw e;
-        }
-    }
+         uow = uowf.newUnitOfWork();
+      } catch (Exception e)
+      {
+         e.printStackTrace();
+         throw e;
+      }
+   }
 
-    @Override
-    public CandidateStep[] getSteps()
-    {
-        List<CandidateStep> stepList = new ArrayList<CandidateStep>();
-        for (int i = 0; i < steps.length; i++)
-        {
-            CandidateSteps step = steps[i];
-            stepList.addAll(Arrays.asList(step.getSteps()));
-        }
-        return stepList.toArray(new CandidateStep[stepList.size()]);
-    }
+   @Override
+   public CandidateStep[] getSteps()
+   {
+      List<CandidateStep> stepList = new ArrayList<CandidateStep>();
+      for (int i = 0; i < steps.length; i++)
+      {
+         CandidateSteps step = steps[i];
+         stepList.addAll( Arrays.asList( step.getSteps() ) );
+      }
+      return stepList.toArray( new CandidateStep[stepList.size()] );
+   }
 
-    @AfterScenario
-    public void passivateApplication() throws Exception
-    {
-        uow.discard();
+   @AfterScenario
+   public void passivateApplication() throws Exception
+   {
+      uow.discard();
 
-        app.passivate();
-    }
+      app.passivate();
+   }
 }

@@ -41,84 +41,84 @@ import java.awt.BorderLayout;
  * JAVADOC
  */
 public class FormsView
-        extends JPanel
+      extends JPanel
 {
-    public JList formList;
-    private FormsModel model;
+   public JList formList;
+   private FormsModel model;
 
-    @Uses
-    Iterable<ConfirmationDialog> confirmationDialog;
-    
-    @Service
-    DialogService dialogs;
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
 
-    @Uses
-    Iterable<NameDialog> newFormDialogs;
+   @Service
+   DialogService dialogs;
 
-    @Structure
-    ObjectBuilderFactory obf;
+   @Uses
+   Iterable<NameDialog> newFormDialogs;
 
-    public FormsView(@Service ApplicationContext context,
-                     @Uses FormsModel model)
-    {
-        super(new BorderLayout());
-        this.model = model;
+   @Structure
+   ObjectBuilderFactory obf;
 
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
-        formList = new JList(model);
+   public FormsView( @Service ApplicationContext context,
+                     @Uses FormsModel model )
+   {
+      super( new BorderLayout() );
+      this.model = model;
 
-        formList.setCellRenderer(new ListItemListCellRenderer());
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
+      formList = new JList( model );
 
-        add(formList, BorderLayout.CENTER);
+      formList.setCellRenderer( new ListItemListCellRenderer() );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(am.get("add")));
-        toolbar.add(new JButton(am.get("remove")));
-        add(toolbar, BorderLayout.SOUTH);
-        formList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("remove")));
+      add( formList, BorderLayout.CENTER );
 
-        addAncestorListener( new RefreshWhenVisible(model, this) );
-    }
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( am.get( "add" ) ) );
+      toolbar.add( new JButton( am.get( "remove" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
+      formList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
-    @Action
-    public void add()
-    {
-        NameDialog formDialog = newFormDialogs.iterator().next();
+      addAncestorListener( new RefreshWhenVisible( model, this ) );
+   }
 
-        dialogs.showOkCancelHelpDialog(this, formDialog, i18n.text(AdministrationResources.create_new_form));
+   @Action
+   public void add()
+   {
+      NameDialog formDialog = newFormDialogs.iterator().next();
 
-        String name = formDialog.name();
-        if (name != null && !"".equals(name))
-        {
-            model.createForm(name);
-        }
-    }
+      dialogs.showOkCancelHelpDialog( this, formDialog, i18n.text( AdministrationResources.create_new_form ) );
 
-    @Action
-    public void remove()
-    {
-        ConfirmationDialog dialog = confirmationDialog.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
-        if(dialog.isConfirmed())
-        {
-            ListItemValue selected = (ListItemValue) formList.getSelectedValue();
-            if (selected != null)
-            {
-                model.removeForm(selected.entity().get());
-                model.formModels.clear();
-                formList.clearSelection();
-            }
-        }
-    }
+      String name = formDialog.name();
+      if (name != null && !"".equals( name ))
+      {
+         model.createForm( name );
+      }
+   }
 
-    public JList getFormList()
-    {
-        return formList;
-    }
+   @Action
+   public void remove()
+   {
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         ListItemValue selected = (ListItemValue) formList.getSelectedValue();
+         if (selected != null)
+         {
+            model.removeForm( selected.entity().get() );
+            model.formModels.clear();
+            formList.clearSelection();
+         }
+      }
+   }
 
-    public FormsModel getModel()
-    {
-        return model;
-    }
+   public JList getFormList()
+   {
+      return formList;
+   }
+
+   public FormsModel getModel()
+   {
+      return model;
+   }
 }

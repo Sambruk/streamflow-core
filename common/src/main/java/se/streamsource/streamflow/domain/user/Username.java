@@ -18,13 +18,14 @@ import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.library.constraints.annotation.Matches;
 
 import java.lang.annotation.Retention;
+
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
  * Constraint for usernames
  */
 @ConstraintDeclaration
-@Retention( RUNTIME )
+@Retention(RUNTIME)
 @Matches("[\\p{Graph}]{4,30}")
 public @interface Username
 {

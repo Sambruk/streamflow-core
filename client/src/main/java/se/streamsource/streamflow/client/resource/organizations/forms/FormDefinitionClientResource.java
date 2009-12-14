@@ -25,22 +25,22 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
  * JAVADOC
  */
 public class FormDefinitionClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public FormDefinitionClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public FormDefinitionClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void createField( ListItemValue fieldvalue) throws ResourceException
-    {
-        postCommand( "createfield", fieldvalue );
-    }
+   public void createField( ListItemValue fieldvalue ) throws ResourceException
+   {
+      postCommand( "createfield", fieldvalue );
+   }
 
-    public FieldDefinitionClientResource field(int index)
-    {
-        FieldDefinitionClientResource field = getSubResource("" + index, FieldDefinitionClientResource.class);
-        field.setRoot(getRoot());
-        return field;
-    }
+   public FieldDefinitionClientResource field( int index )
+   {
+      FieldDefinitionClientResource field = getSubResource( "" + index, FieldDefinitionClientResource.class );
+      field.setRoot( getRoot() );
+      return field;
+   }
 }

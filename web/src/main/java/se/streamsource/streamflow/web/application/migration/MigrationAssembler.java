@@ -24,18 +24,18 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * Eager migration of data at startup
  */
 public class MigrationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
-        if (mode.equals(Application.Mode.production))
-        {
-            // Migrate state
-            module.addServices(StartupMigrationService.class).
-                    visibleIn(Visibility.application).
-                    identifiedBy("startupmigration").
-                    instantiateOnStartup();
-        }
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.production ))
+      {
+         // Migrate state
+         module.addServices( StartupMigrationService.class ).
+               visibleIn( Visibility.application ).
+               identifiedBy( "startupmigration" ).
+               instantiateOnStartup();
+      }
+   }
 }

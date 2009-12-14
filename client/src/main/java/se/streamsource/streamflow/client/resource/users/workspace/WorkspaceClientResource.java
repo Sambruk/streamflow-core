@@ -25,20 +25,20 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.Workspace
  * JAVADOC
  */
 public class WorkspaceClientResource
-        extends BaseClientResource
+      extends BaseClientResource
 {
-    public WorkspaceClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public WorkspaceClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public WorkspaceUserClientResource user()
-    {
-        return getSubResource("user", WorkspaceUserClientResource.class);
-    }
+   public WorkspaceUserClientResource user()
+   {
+      return getSubResource( "user", WorkspaceUserClientResource.class );
+   }
 
-    public WorkspaceProjectsClientResource projects()
-    {
-        return getSubResource("projects", WorkspaceProjectsClientResource.class);
-    }
+   public WorkspaceProjectsClientResource projects()
+   {
+      return getSubResource( "projects", WorkspaceProjectsClientResource.class );
+   }
 }

@@ -14,11 +14,14 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
+import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -27,139 +30,139 @@ import java.beans.PropertyChangeListener;
  */
 public class FormEditor
 {
-    Component[] components;
-    boolean editing = false;
+   Component[] components;
+   boolean editing = false;
 
-    public FormEditor(Component... components)
-    {
-        this.components = components;
-        init(components);
-        view();
-    }
+   public FormEditor( Component... components )
+   {
+      this.components = components;
+      init( components );
+      view();
+   }
 
-    private void init(Component... components)
-    {
-        for (Component component : components)
-        {
-            if (component instanceof JPanel)
+   private void init( Component... components )
+   {
+      for (Component component : components)
+      {
+         if (component instanceof JPanel)
+         {
+            init( ((JPanel) component).getComponents() );
+         } else if (component instanceof JLabel)
+         {
+            final JLabel label = (JLabel) component;
+            label.addPropertyChangeListener( "text", new PropertyChangeListener()
             {
-                init(((JPanel) component).getComponents());
-            } else if (component instanceof JLabel)
+               public void propertyChange( PropertyChangeEvent evt )
+               {
+                  setVisible( label, !(evt.getNewValue() == null || evt.getNewValue().equals( "" )) );
+               }
+            } );
+         } else if (component instanceof JPasswordField)
+         {
+            setVisible( component, false );
+         } else if (component instanceof JTextComponent)
+         {
+            final JTextComponent text = (JTextComponent) component;
+            text.getDocument().addDocumentListener( new DocumentListener()
             {
-                final JLabel label = (JLabel) component;
-                label.addPropertyChangeListener("text", new PropertyChangeListener()
-                {
-                    public void propertyChange(PropertyChangeEvent evt)
-                    {
-                        setVisible(label, !(evt.getNewValue() == null || evt.getNewValue().equals("")));
-                    }
-                });
-            } else if (component instanceof JPasswordField)
-            {
-                setVisible(component, false);
-            } else if (component instanceof JTextComponent)
-            {
-                final JTextComponent text = (JTextComponent) component;
-                text.getDocument().addDocumentListener(new DocumentListener()
-                {
-                    public void insertUpdate(DocumentEvent e)
-                    {
-                        changedUpdate(e);
-                    }
+               public void insertUpdate( DocumentEvent e )
+               {
+                  changedUpdate( e );
+               }
 
-                    public void removeUpdate(DocumentEvent e)
-                    {
-                        changedUpdate(e);
-                    }
+               public void removeUpdate( DocumentEvent e )
+               {
+                  changedUpdate( e );
+               }
 
-                    public void changedUpdate(DocumentEvent e)
-                    {
-                        if (!isEditing())
+               public void changedUpdate( DocumentEvent e )
+               {
+                  if (!isEditing())
+                  {
+                     if (text.getText().equals( "" ))
+                     {
+                        setVisible( text, false );
+                     } else
+                     {
+                        if (!text.isVisible())
                         {
-                            if (text.getText().equals(""))
-                            {
-                                setVisible(text, false);
-                            } else
-                            {
-                                if (!text.isVisible())
-                                {
-                                    setVisible(text, true);
-                                }
-                            }
+                           setVisible( text, true );
                         }
-                    }
-                });
-            }
-        }
-    }
+                     }
+                  }
+               }
+            } );
+         }
+      }
+   }
 
-    public boolean isEditing()
-    {
-        return editing;
-    }
+   public boolean isEditing()
+   {
+      return editing;
+   }
 
-    public void view()
-    {
-        editing = false;
-        view(components);
-    }
+   public void view()
+   {
+      editing = false;
+      view( components );
+   }
 
-    private void view(Component... components)
-    {
-        for (Component component : components)
-        {
-            if (component instanceof JPanel)
-            {
-                view(((JPanel) component).getComponents());
-            } else if (component instanceof JLabel)
-            {
-                // Do nothing
-            } else if (component instanceof JPasswordField)
-            {
-                setVisible(component, false);
-            } else if (component instanceof JComponent)
-            {
-                final JComponent text = (JComponent) component;
-                text.setEnabled(false);
-            }
-            component.doLayout();
-        }
-    }
+   private void view( Component... components )
+   {
+      for (Component component : components)
+      {
+         if (component instanceof JPanel)
+         {
+            view( ((JPanel) component).getComponents() );
+         } else if (component instanceof JLabel)
+         {
+            // Do nothing
+         } else if (component instanceof JPasswordField)
+         {
+            setVisible( component, false );
+         } else if (component instanceof JComponent)
+         {
+            final JComponent text = (JComponent) component;
+            text.setEnabled( false );
+         }
+         component.doLayout();
+      }
+   }
 
-    public void edit()
-    {
-        editing = true;
-        edit(components);
-    }
+   public void edit()
+   {
+      editing = true;
+      edit( components );
+   }
 
-    private void edit(Component... components)
-    {
-        for (Component component : components)
-        {
-            if (component instanceof JPanel)
-            {
-                edit(((JPanel) component).getComponents());
-            } else if (component instanceof JLabel)
-            {
-                // Do nothing
-            } else if (component instanceof JPasswordField)
-            {
-                final JPasswordField passwordField = (JPasswordField) component;
-                setVisible(component, true);
-            } else if (component instanceof JComponent)
-            {
-                final JComponent text = (JComponent) component;
-                text.setEnabled(true);
-                setVisible(component, true);
-            }
-        }
-    }
+   private void edit( Component... components )
+   {
+      for (Component component : components)
+      {
+         if (component instanceof JPanel)
+         {
+            edit( ((JPanel) component).getComponents() );
+         } else if (component instanceof JLabel)
+         {
+            // Do nothing
+         } else if (component instanceof JPasswordField)
+         {
+            final JPasswordField passwordField = (JPasswordField) component;
+            setVisible( component, true );
+         } else if (component instanceof JComponent)
+         {
+            final JComponent text = (JComponent) component;
+            text.setEnabled( true );
+            setVisible( component, true );
+         }
+      }
+   }
 
-    private void setVisible(Component component, boolean b)
-    {
-        component.setVisible(b);
-        JLabel label = (JLabel) ((JComponent) component).getClientProperty("labeledBy");
-        if (label != null)
-            label.setVisible(b);
-    }
+   private void setVisible( Component component, boolean b )
+   {
+      component.setVisible( b );
+      JLabel label = (JLabel) ((JComponent) component).getClientProperty( "labeledBy" );
+      if (label != null)
+         label.setVisible( b );
+   }
 }

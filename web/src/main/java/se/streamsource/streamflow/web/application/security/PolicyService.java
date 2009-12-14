@@ -33,44 +33,44 @@ import java.util.List;
  */
 @Mixins(PolicyService.Mixin.class)
 public interface PolicyService
-    extends AccessPolicy, ServiceComposite
+      extends AccessPolicy, ServiceComposite
 {
-    class Mixin
-        implements AccessPolicy
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
+   class Mixin
+         implements AccessPolicy
+   {
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject)
-        {
-            Principal userPrincipal = subject.iterator().next();
-            UserEntity userEntity = uowf.currentUnitOfWork().get(UserEntity.class, userPrincipal.getName());
+      public AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject )
+      {
+         Principal userPrincipal = subject.iterator().next();
+         UserEntity userEntity = uowf.currentUnitOfWork().get( UserEntity.class, userPrincipal.getName() );
 
-            PermissionCollection permissions = null;
-            if (userEntity.isAdministrator())
+         PermissionCollection permissions = null;
+         if (userEntity.isAdministrator())
+         {
+            permissions = new AllPermission().newPermissionCollection();
+            permissions.add( new AllPermission() );
+         } else
+         {
+            if (securedObject instanceof UserPermissions)
             {
-                permissions = new AllPermission().newPermissionCollection();
-                permissions.add(new AllPermission());
+               UserPermissions userPermissions = (UserPermissions) securedObject;
+
+               permissions = userPermissions.getPermissions( userEntity );
             } else
             {
-                if (securedObject instanceof UserPermissions)
-                {
-                    UserPermissions userPermissions = (UserPermissions) securedObject;
-
-                    permissions = userPermissions.getPermissions(userEntity);
-                } else
-                {
-                    // By default we allow all
-                    permissions = new AllPermission().newPermissionCollection();
-                    permissions.add(new AllPermission());
-                }
+               // By default we allow all
+               permissions = new AllPermission().newPermissionCollection();
+               permissions.add( new AllPermission() );
             }
+         }
 
-            Principal[] principals = new Principal[]{};
-            ProtectionDomain[] domains = new ProtectionDomain[] {new ProtectionDomain(null, permissions, securedObject.getClass().getClassLoader(), principals)};
+         Principal[] principals = new Principal[]{};
+         ProtectionDomain[] domains = new ProtectionDomain[]{new ProtectionDomain( null, permissions, securedObject.getClass().getClassLoader(), principals )};
 
 
-            return new AccessControlContext(domains);
-        }
-    }
+         return new AccessControlContext( domains );
+      }
+   }
 }

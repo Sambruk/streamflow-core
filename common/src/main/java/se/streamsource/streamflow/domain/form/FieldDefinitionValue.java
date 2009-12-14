@@ -22,10 +22,13 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface FieldDefinitionValue
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> field();
-    Property<String> description();
-    Property<String> note();
-    Property<FieldValue> fieldValue();
+   Property<EntityReference> field();
+
+   Property<String> description();
+
+   Property<String> note();
+
+   Property<FieldValue> fieldValue();
 }

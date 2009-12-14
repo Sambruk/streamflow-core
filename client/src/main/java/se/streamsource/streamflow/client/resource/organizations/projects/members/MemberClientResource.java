@@ -25,15 +25,15 @@ import se.streamsource.streamflow.client.resource.organizations.projects.members
  * JAVADOC
  */
 public class MemberClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public MemberClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public MemberClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public MemberRolesClientResource roles() throws ResourceException
-    {
-        return getSubResource("roles", MemberRolesClientResource.class);
-    }
+   public MemberRolesClientResource roles() throws ResourceException
+   {
+      return getSubResource( "roles", MemberRolesClientResource.class );
+   }
 }

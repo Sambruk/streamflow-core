@@ -23,25 +23,25 @@ import se.streamsource.streamflow.web.domain.group.Group;
  * JAVADOC
  */
 public class ParticipantsSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    GroupsSteps groupsSteps;
+   @Uses
+   GroupsSteps groupsSteps;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @When("a participant joins a group")
-    public void joinGroup()
-    {
-        Group group = groupsSteps.givenGroup;
-        group.addParticipant( orgsSteps.givenUser );
-    }
+   @When("a participant joins a group")
+   public void joinGroup()
+   {
+      Group group = groupsSteps.givenGroup;
+      group.addParticipant( orgsSteps.givenUser );
+   }
 
-    @When("a participant leaves a group")
-    public void leaveGroup()
-    {
-        Group group = groupsSteps.givenGroup;
-        group.removeParticipant( orgsSteps.givenUser );
-    }
+   @When("a participant leaves a group")
+   public void leaveGroup()
+   {
+      Group group = groupsSteps.givenGroup;
+      group.removeParticipant( orgsSteps.givenUser );
+   }
 }

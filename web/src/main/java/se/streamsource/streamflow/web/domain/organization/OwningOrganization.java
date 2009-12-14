@@ -22,6 +22,6 @@ import org.qi4j.api.property.Immutable;
  */
 public interface OwningOrganization
 {
-    @Immutable
-    Association<Organization> organization();
+   @Immutable
+   Association<Organization> organization();
 }

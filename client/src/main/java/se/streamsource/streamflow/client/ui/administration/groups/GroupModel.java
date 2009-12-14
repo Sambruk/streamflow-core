@@ -25,76 +25,76 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 
 /**
  * JAVADOC
  */
 public class GroupModel
-        extends AbstractListModel
-    implements EventListener
+      extends AbstractListModel
+      implements EventListener
 {
-    public ListValue list;
+   public ListValue list;
 
-    public GroupModel(@Uses GroupClientResource group)
-    {
-        this.group = group;
-    }
+   public GroupModel( @Uses GroupClientResource group )
+   {
+      this.group = group;
+   }
 
-    @Uses
-    private GroupClientResource group;
+   @Uses
+   private GroupClientResource group;
 
-    public int getSize()
-    {
-        return list == null ? 0 : list.items().get().size();
-    }
+   public int getSize()
+   {
+      return list == null ? 0 : list.items().get().size();
+   }
 
-    public Object getElementAt(int index)
-    {
-        return list.items().get().get(index);
-    }
+   public Object getElementAt( int index )
+   {
+      return list.items().get().get( index );
+   }
 
 
-    public void addParticipants(Iterable<String> participants)
-    {
-        try
-        {
-            for (String value : participants)
-            {
-                ParticipantClientResource participant = group.participants().participant(value);
-                participant.create();
-            }
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_add_participants, e);
-        }
-    }
+   public void addParticipants( Iterable<String> participants )
+   {
+      try
+      {
+         for (String value : participants)
+         {
+            ParticipantClientResource participant = group.participants().participant( value );
+            participant.create();
+         }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_add_participants, e );
+      }
+   }
 
-    public void removeParticipant(String participant)
-    {
-        try
-        {
-            group.participants().participant(participant).deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_participant, e);
-        }
+   public void removeParticipant( String participant )
+   {
+      try
+      {
+         group.participants().participant( participant ).deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_participant, e );
+      }
 
-    }
+   }
 
-    public void refresh() throws ResourceException
-    {
-        list = group.participants().participants();
-        fireContentsChanged(this, 0, getSize());
-    }
+   public void refresh() throws ResourceException
+   {
+      list = group.participants().participants();
+      fireContentsChanged( this, 0, getSize() );
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
+   public void notifyEvent( DomainEvent event )
+   {
 
-    }
+   }
 
-    public UsersAndGroupsFilter getFilterResource()
-    {
-        return group;
-    }
+   public UsersAndGroupsFilter getFilterResource()
+   {
+      return group;
+   }
 }

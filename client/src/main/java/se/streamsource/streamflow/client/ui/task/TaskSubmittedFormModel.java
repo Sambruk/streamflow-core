@@ -26,55 +26,55 @@ import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
 import javax.swing.table.AbstractTableModel;
 
 public class TaskSubmittedFormModel
-    extends AbstractTableModel
+      extends AbstractTableModel
 {
 
-    String[] columnNames = {i18n.text(WorkspaceResources.field_name), i18n.text(WorkspaceResources.field_value)};
+   String[] columnNames = {i18n.text( WorkspaceResources.field_name ), i18n.text( WorkspaceResources.field_value )};
 
-    private SubmittedFormDTO form;
+   private SubmittedFormDTO form;
 
-    public TaskSubmittedFormModel(@Uses TaskSubmittedFormClientResource resource)
-    {
-        try
-        {
-            form = resource.form();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(WorkspaceResources.could_not_get_submitted_form, e);
-        }
-    }
+   public TaskSubmittedFormModel( @Uses TaskSubmittedFormClientResource resource )
+   {
+      try
+      {
+         form = resource.form();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_get_submitted_form, e );
+      }
+   }
 
-    public int getRowCount()
-    {
-        return form.values().get().size();
-    }
+   public int getRowCount()
+   {
+      return form.values().get().size();
+   }
 
-    public int getColumnCount()
-    {
-        return 2;
-    }
+   public int getColumnCount()
+   {
+      return 2;
+   }
 
-    public Object getValueAt(int row, int column)
-    {
-        FieldDTO field = form.values().get().get(row);
-        switch (column)
-        {
-            case 0:
-                return field.field().get();
-            default:
-                return field.value().get();
-        }
-    }
+   public Object getValueAt( int row, int column )
+   {
+      FieldDTO field = form.values().get().get( row );
+      switch (column)
+      {
+         case 0:
+            return field.field().get();
+         default:
+            return field.value().get();
+      }
+   }
 
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex)
-    {
-        return false;
-    }
+   @Override
+   public boolean isCellEditable( int rowIndex, int columnIndex )
+   {
+      return false;
+   }
 
-    @Override
-    public String getColumnName(int i)
-    {
-        return columnNames[i];
-    }
+   @Override
+   public String getColumnName( int i )
+   {
+      return columnNames[i];
+   }
 }

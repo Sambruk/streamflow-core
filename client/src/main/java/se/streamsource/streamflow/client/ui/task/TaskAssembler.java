@@ -15,8 +15,8 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 
@@ -24,60 +24,60 @@ import se.streamsource.streamflow.client.ui.administration.projects.members.Tabl
  * JAVADOC
  */
 public class TaskAssembler
-    implements Assembler
+      implements Assembler
 {
-    public void assemble( ModuleAssembly module ) throws AssemblyException
-    {
-        UIAssemblers.addViews(module, TasksDetailView.class, TableSelectionView.class, TaskContactsAdminView.class,
-                TaskFormsAdminView.class, TaskSubmittedFormsAdminView.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addViews( module, TasksDetailView.class, TableSelectionView.class, TaskContactsAdminView.class,
+            TaskFormsAdminView.class, TaskSubmittedFormsAdminView.class );
 
-        UIAssemblers.addDialogs(module, AddCommentDialog.class);
+      UIAssemblers.addDialogs( module, AddCommentDialog.class );
 
-        UIAssemblers.addModels( module, TasksModel.class, TaskFormsModel.class );
+      UIAssemblers.addModels( module, TasksModel.class, TaskFormsModel.class );
 
         UIAssemblers.addMV(module,
                 TaskModel.class,
                 TaskDetailView.class);
 
-        UIAssemblers.addMV(module,
-                TaskCommentsModel.class,
-                TaskCommentsView.class);
+      UIAssemblers.addMV( module,
+            TaskCommentsModel.class,
+            TaskCommentsView.class );
 
-        UIAssemblers.addMV(module,
-                TaskContactsModel.class,
-                TaskContactsView.class);
+      UIAssemblers.addMV( module,
+            TaskContactsModel.class,
+            TaskContactsView.class );
 
-        UIAssemblers.addMV(module,
-                TaskContactModel.class,
-                TaskContactView.class);
+      UIAssemblers.addMV( module,
+            TaskContactModel.class,
+            TaskContactView.class );
 
-        UIAssemblers.addMV(module,
-                TaskGeneralModel.class,
-                TaskGeneralView.class);
+      UIAssemblers.addMV( module,
+            TaskGeneralModel.class,
+            TaskGeneralView.class );
 
-        UIAssemblers.addMV(module,
-                TaskLabelsModel.class,
-                TaskLabelsView.class);
+      UIAssemblers.addMV( module,
+            TaskLabelsModel.class,
+            TaskLabelsView.class );
 
-        UIAssemblers.addMV(module,
-                TaskLabelSelectionModel.class,
-                TaskLabelSelectionView.class);
+      UIAssemblers.addMV( module,
+            TaskLabelSelectionModel.class,
+            TaskLabelSelectionView.class );
 
-        UIAssemblers.addMV(module,
-                PossibleTaskTypesModel.class,
-                TaskTypesDialog.class);
+      UIAssemblers.addMV( module,
+            PossibleTaskTypesModel.class,
+            TaskTypesDialog.class );
 
-        UIAssemblers.addMV(module,
-                TaskEffectiveFieldsValueModel.class,
-                TaskEffectiveFieldsValueView.class);
+      UIAssemblers.addMV( module,
+            TaskEffectiveFieldsValueModel.class,
+            TaskEffectiveFieldsValueView.class );
 
-        UIAssemblers.addMV(module,
-                TaskSubmittedFormsModel.class,
-                TaskSubmittedFormsView.class);
+      UIAssemblers.addMV( module,
+            TaskSubmittedFormsModel.class,
+            TaskSubmittedFormsView.class );
 
-        UIAssemblers.addMV(module,
-                TaskSubmittedFormModel.class,
-                TaskSubmittedFormView.class);
+      UIAssemblers.addMV( module,
+            TaskSubmittedFormModel.class,
+            TaskSubmittedFormView.class );
 
         UIAssemblers.addMV(module,
                 FormSubmitModel.class,

@@ -29,38 +29,38 @@ import java.io.File;
  * Test of FileConfiguration service
  */
 public class FileConfigurationTest
-        extends AbstractQi4jTest
+      extends AbstractQi4jTest
 {
-    @Service
-    FileConfiguration config;
+   @Service
+   FileConfiguration config;
 
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.layerAssembly().applicationAssembly().setName( "StreamFlowServer");
-        module.addServices(FileConfiguration.class);
-        module.addObjects(getClass());
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.layerAssembly().applicationAssembly().setName( "StreamFlowServer" );
+      module.addServices( FileConfiguration.class );
+      module.addObjects( getClass() );
+   }
 
-    @Test
-    public void testMac()
-    {
-        objectBuilderFactory.newObjectBuilder(FileConfigurationTest.class).injectTo(this);
+   @Test
+   public void testMac()
+   {
+      objectBuilderFactory.newObjectBuilder( FileConfigurationTest.class ).injectTo( this );
 
-        System.setProperty("os.name", "Mac OS X");
+      System.setProperty( "os.name", "Mac OS X" );
 
-        String user = System.getProperty("user.home");
-        Assert.assertThat("OS is correct", config.os(), CoreMatchers.equalTo(FileConfiguration.OS.mac));
-        Assert.assertThat("configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo(new File(user + "/Library/Preferences/StreamFlowServer")));
-    }
+      String user = System.getProperty( "user.home" );
+      Assert.assertThat( "OS is correct", config.os(), CoreMatchers.equalTo( FileConfiguration.OS.mac ) );
+      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user + "/Library/Preferences/StreamFlowServer" ) ) );
+   }
 
-    @Test
-    public void testLinux()
-    {
-        objectBuilderFactory.newObjectBuilder(FileConfigurationTest.class).injectTo(this);
-        System.setProperty("os.name", "Linux");
+   @Test
+   public void testLinux()
+   {
+      objectBuilderFactory.newObjectBuilder( FileConfigurationTest.class ).injectTo( this );
+      System.setProperty( "os.name", "Linux" );
 
-        String user = System.getProperty("user.home");
-        Assert.assertThat("OS is correct", config.os(), CoreMatchers.equalTo(FileConfiguration.OS.unix));
-        Assert.assertThat("configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo(new File(user + "/.StreamFlowServer/etc")));
-    }
+      String user = System.getProperty( "user.home" );
+      Assert.assertThat( "OS is correct", config.os(), CoreMatchers.equalTo( FileConfiguration.OS.unix ) );
+      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user + "/.StreamFlowServer/etc" ) ) );
+   }
 }

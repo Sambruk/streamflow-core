@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.client.application.shared.steps;
 
-import static org.jbehave.Ensure.ensureThat;
-
 import org.hamcrest.CoreMatchers;
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.Then;
@@ -25,66 +23,67 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
 
+import static org.jbehave.Ensure.*;
+
 /**
  * JAVADOC
  */
 public class WaitingForSteps
-        extends Steps
+      extends Steps
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Uses
-    ProjectsSteps projectsSteps;
+   @Uses
+   ProjectsSteps projectsSteps;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    public TaskEntity givenTask;
+   public TaskEntity givenTask;
 
-    @Given("first waitingFor task")
-    public void givenWaitingForTask() throws UnitOfWorkCompletionException
-    {
-        uowf.currentUnitOfWork().apply();
-        WaitingForTaskListDTO list = projectsSteps.givenProject.waitingForTasks( orgsSteps.givenUser );
-        TaskDTO task = list.tasks().get().get( 0 );
-        givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
-    }
+   @Given("first waitingFor task")
+   public void givenWaitingForTask() throws UnitOfWorkCompletionException
+   {
+      uowf.currentUnitOfWork().apply();
+      WaitingForTaskListDTO list = projectsSteps.givenProject.waitingForTasks( orgsSteps.givenUser );
+      TaskDTO task = list.tasks().get().get( 0 );
+      givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
+   }
 
-    @When("waitingFor task is marked as $mark")
-    public void markAssignedTaskAs(String mark)
-    {
-        if ("read".equals(mark))
-        {
-            projectsSteps.givenProject.markWaitingForAsRead(givenTask);
-        } else
-        {
-            projectsSteps.givenProject.markWaitingForAsUnread(givenTask);
-        }
-    }
+   @When("waitingFor task is marked as $mark")
+   public void markAssignedTaskAs( String mark )
+   {
+      if ("read".equals( mark ))
+      {
+         projectsSteps.givenProject.markWaitingForAsRead( givenTask );
+      } else
+      {
+         projectsSteps.givenProject.markWaitingForAsUnread( givenTask );
+      }
+   }
 
-    @When("waitingFor task is completed")
-    public void completeWaitingForTask()
-    {
-        projectsSteps.givenProject.completeWaitingForTask( givenTask, orgsSteps.givenUser );
-    }
+   @When("waitingFor task is completed")
+   public void completeWaitingForTask()
+   {
+      projectsSteps.givenProject.completeWaitingForTask( givenTask, orgsSteps.givenUser );
+   }
 
-    @Then("task is completed")
-    public void taskStatusEqualsCompleted()
-    {
-        ensureThat(givenTask.status().get(), CoreMatchers.equalTo( TaskStates.COMPLETED ));
-    }
-    
+   @Then("task is completed")
+   public void taskStatusEqualsCompleted()
+   {
+      ensureThat( givenTask.status().get(), CoreMatchers.equalTo( TaskStates.COMPLETED ) );
+   }
+
 //  @When("waitingFor task is finished")
 //  public void completeFinishedTask()
 //	{

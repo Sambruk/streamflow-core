@@ -25,25 +25,25 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class LabelsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public LabelsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public LabelsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ListValue labels() throws ResourceException
-    {
-        return query("labels", ListValue.class);
-    }
+   public ListValue labels() throws ResourceException
+   {
+      return query( "labels", ListValue.class );
+   }
 
-    public LabelClientResource label(String id)
-    {
-        return getSubResource(id, LabelClientResource.class);
-    }
+   public LabelClientResource label( String id )
+   {
+      return getSubResource( id, LabelClientResource.class );
+   }
 
-    public void createLabel(StringDTO name) throws ResourceException
-    {
-        postCommand("createLabel",name);
-    }
+   public void createLabel( StringDTO name ) throws ResourceException
+   {
+      postCommand( "createLabel", name );
+   }
 }

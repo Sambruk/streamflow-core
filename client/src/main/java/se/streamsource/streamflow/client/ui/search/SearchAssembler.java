@@ -14,24 +14,24 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.api.common.Visibility;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 
 /**
  * JAVADOC
  */
 public class SearchAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addObjects(SearchWindow.class).visibleIn(Visibility.layer);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addObjects( SearchWindow.class ).visibleIn( Visibility.layer );
 
-        UIAssemblers.addViews(module, SearchView.class, SearchResultTableView.class);
+      UIAssemblers.addViews( module, SearchView.class, SearchResultTableView.class );
 
-        UIAssemblers.addModels(module, SearchResultTableModel.class);
-    }
+      UIAssemblers.addModels( module, SearchResultTableModel.class );
+   }
 }

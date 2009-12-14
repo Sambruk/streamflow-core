@@ -23,27 +23,27 @@ import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
  * JAVADOC
  */
 public class MenuAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        UIAssemblers.addViews(module,
-                WorkspaceMenuBar.class,
-                OverviewMenuBar.class,
-                SearchMenuBar.class,
-                AdministrationMenuBar.class);
-        UIAssemblers.addViews(module,
-                FileMenu.class,
-                EditMenu.class,
-                ViewMenu.class,
-                AccountMenu.class,
-                TaskMenu.class,
-                WindowMenu.class,
-                HelpMenu.class
-                );
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addViews( module,
+            WorkspaceMenuBar.class,
+            OverviewMenuBar.class,
+            SearchMenuBar.class,
+            AdministrationMenuBar.class );
+      UIAssemblers.addViews( module,
+            FileMenu.class,
+            EditMenu.class,
+            ViewMenu.class,
+            AccountMenu.class,
+            TaskMenu.class,
+            WindowMenu.class,
+            HelpMenu.class
+      );
 
-        UIAssemblers.addDialogs(module, CreateAccountDialog.class, AccountsDialog.class);
+      UIAssemblers.addDialogs( module, CreateAccountDialog.class, AccountsDialog.class );
 
-        UIAssemblers.addModels(module, AccountsModel.class);
-    }
+      UIAssemblers.addModels( module, AccountsModel.class );
+   }
 }

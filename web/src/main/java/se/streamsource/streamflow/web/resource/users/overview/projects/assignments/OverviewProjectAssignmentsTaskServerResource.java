@@ -26,23 +26,23 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /users/{user}/overview/projects/{project}/assignments/{task}
  */
 public class OverviewProjectAssignmentsTaskServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public void complete()
-    {
-        String userId = (String) getRequest().getAttributes().get("user");
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String taskId = (String) getRequest().getAttributes().get("task");
-        Task task = uowf.currentUnitOfWork().get(Task.class, taskId);
-        Inbox inbox = uowf.currentUnitOfWork().get(Inbox.class, projectId);
-        Assignee assignee = uowf.currentUnitOfWork().get(Assignee.class, userId);
-        inbox.completeTask(task, assignee);
-    }
+   public void complete()
+   {
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      String projectId = (String) getRequest().getAttributes().get( "project" );
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      Task task = uowf.currentUnitOfWork().get( Task.class, taskId );
+      Inbox inbox = uowf.currentUnitOfWork().get( Inbox.class, projectId );
+      Assignee assignee = uowf.currentUnitOfWork().get( Assignee.class, userId );
+      inbox.completeTask( task, assignee );
+   }
 
-    public void changedescription(StringDTO stringValue)
-    {
-        String taskId = (String) getRequest().getAttributes().get("task");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, taskId);
-        describable.changeDescription(stringValue.string().get());
-    }
+   public void changedescription( StringDTO stringValue )
+   {
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+      Describable describable = uowf.currentUnitOfWork().get( Describable.class, taskId );
+      describable.changeDescription( stringValue.string().get() );
+   }
 }

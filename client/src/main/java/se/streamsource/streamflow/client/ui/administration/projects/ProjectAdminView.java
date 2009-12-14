@@ -34,55 +34,55 @@ import javax.swing.event.ListSelectionListener;
  * JAVADOC
  */
 public class ProjectAdminView
-        extends JSplitPane
+      extends JSplitPane
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Uses
-    ProjectsModel projectsModel;
+   @Uses
+   ProjectsModel projectsModel;
 
-    @Uses
-    OrganizationalUnitAdministrationModel organizationModel;
+   @Uses
+   OrganizationalUnitAdministrationModel organizationModel;
 
-    public ProjectAdminView(@Uses final ProjectsView projectsView, @Uses final AdministrationView adminView)
-    {
-        super();
+   public ProjectAdminView( @Uses final ProjectsView projectsView, @Uses final AdministrationView adminView )
+   {
+      super();
 
-        setLeftComponent(projectsView);
-        setRightComponent(new JPanel());
+      setLeftComponent( projectsView );
+      setRightComponent( new JPanel() );
 
-        setDividerLocation(200);
+      setDividerLocation( 200 );
 
-        final JList list = projectsView.getProjectList();
-        list.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      final JList list = projectsView.getProjectList();
+      list.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    int idx = list.getSelectedIndex();
-                    if (idx < list.getModel().getSize() && idx >= 0)
-                    {
-                        ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        ProjectModel projectModel = projectsModel.getProjectModel(projectValue.entity().get().identity());
-                        ProjectMembersModel membersModel = projectModel.getMembersModel();
-                        SelectedLabelsModel labelsModel = projectModel.getSelectedLabelsModel();
-                        SelectedTaskTypesModel selectedTaskTypes = projectModel.getSelectedTaskTypes();
-                        ProjectView view = obf.newObjectBuilder(ProjectView.class).use(
-                                membersModel,
-                                labelsModel,
-                                selectedTaskTypes,
-                                organizationModel,
-                                adminView).newInstance();
-                        setRightComponent(view);
-                    } else
-                    {
-                        setRightComponent(new JPanel());
-                    }
-                }
+               int idx = list.getSelectedIndex();
+               if (idx < list.getModel().getSize() && idx >= 0)
+               {
+                  ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt( idx );
+                  ProjectModel projectModel = projectsModel.getProjectModel( projectValue.entity().get().identity() );
+                  ProjectMembersModel membersModel = projectModel.getMembersModel();
+                  SelectedLabelsModel labelsModel = projectModel.getSelectedLabelsModel();
+                  SelectedTaskTypesModel selectedTaskTypes = projectModel.getSelectedTaskTypes();
+                  ProjectView view = obf.newObjectBuilder( ProjectView.class ).use(
+                        membersModel,
+                        labelsModel,
+                        selectedTaskTypes,
+                        organizationModel,
+                        adminView ).newInstance();
+                  setRightComponent( view );
+               } else
+               {
+                  setRightComponent( new JPanel() );
+               }
             }
-        });
-    }
+         }
+      } );
+   }
 
 }

@@ -30,102 +30,100 @@ import se.streamsource.streamflow.web.domain.project.Projects;
 @Mixins(OrganizationalUnitRefactoring.Mixin.class)
 public interface OrganizationalUnitRefactoring
 {
-    void moveOrganizationalUnit(OrganizationalUnits to) throws MoveOrganizationalUnitException;
+   void moveOrganizationalUnit( OrganizationalUnits to ) throws MoveOrganizationalUnitException;
 
-    void mergeOrganizationalUnit( OrganizationalUnitRefactoring to) throws MergeOrganizationalUnitException;
+   void mergeOrganizationalUnit( OrganizationalUnitRefactoring to ) throws MergeOrganizationalUnitException;
 
-    void deleteOrganizationalUnit() throws OpenProjectExistsException;
+   void deleteOrganizationalUnit() throws OpenProjectExistsException;
 
-    interface Data
-    {
-        OrganizationalUnits getParent();
-    }
+   interface Data
+   {
+      OrganizationalUnits getParent();
+   }
 
-    abstract class Mixin
-            implements OrganizationalUnitRefactoring, Data
-    {
-        @This
-        Projects.Data projects;
+   abstract class Mixin
+         implements OrganizationalUnitRefactoring, Data
+   {
+      @This
+      Projects.Data projects;
 
-        @This
-        ProjectRoles projectRoles;
+      @This
+      ProjectRoles projectRoles;
 
-        @This
-        Groups groups;
+      @This
+      Groups groups;
 
-        @This
-        OrganizationalUnits.Data organizationalUnits;
+      @This
+      OrganizationalUnits.Data organizationalUnits;
 
-        @This
-        Removable removable;
+      @This
+      Removable removable;
 
-        @This
-        OrganizationalUnit organizationalUnit;
+      @This
+      OrganizationalUnit organizationalUnit;
 
-        @This
-        OwningOrganization organization;
+      @This
+      OwningOrganization organization;
 
 
-        public void deleteOrganizationalUnit() throws OpenProjectExistsException
-        {
-            if(projects.projects().count() > 0)
+      public void deleteOrganizationalUnit() throws OpenProjectExistsException
+      {
+         if (projects.projects().count() > 0)
+         {
+            throw new OpenProjectExistsException( "There are open projects" );
+         } else
+         {
+            for (OrganizationalUnitRefactoring oue : organizationalUnits.organizationalUnits())
             {
-                throw new OpenProjectExistsException("There are open projects");
+               OrganizationalUnitEntity e = (OrganizationalUnitEntity) oue;
+
+               if (e.projects().count() > 0)
+               {
+                  throw new OpenProjectExistsException( "There are open projects" );
+               }
             }
-            else
-            {
-                for(OrganizationalUnitRefactoring oue : organizationalUnits.organizationalUnits())
-                {
-                    OrganizationalUnitEntity e = (OrganizationalUnitEntity)oue;
+         }
+         OrganizationalUnits parent = getParent();
+         parent.removeOrganizationalUnit( organizationalUnit );
+         removable.removeEntity();
+      }
 
-                    if(e.projects().count() > 0)
-                     {
-                         throw new OpenProjectExistsException("There are open projects");
-                     }
-                }
-            }
-            OrganizationalUnits parent = getParent();
-            parent.removeOrganizationalUnit(organizationalUnit);
-            removable.removeEntity();
-        }
+      public void moveOrganizationalUnit( OrganizationalUnits to ) throws MoveOrganizationalUnitException
+      {
+         OrganizationalUnits parent = getParent();
+         if (organizationalUnit.equals( to ))
+         {
+            throw new MoveOrganizationalUnitException();
+         }
+         if (to.equals( parent ))
+         {
+            return;
+         }
 
-        public void moveOrganizationalUnit(OrganizationalUnits to) throws MoveOrganizationalUnitException
-        {
-            OrganizationalUnits parent = getParent();
-            if (organizationalUnit.equals(to))
-            {
-                throw new MoveOrganizationalUnitException();
-            }
-            if (to.equals(parent))
-            {
-                return;
-            }
+         parent.removeOrganizationalUnit( organizationalUnit );
+         to.addOrganizationalUnit( organizationalUnit );
+      }
 
-            parent.removeOrganizationalUnit(organizationalUnit);
-            to.addOrganizationalUnit(organizationalUnit);
-        }
+      public void mergeOrganizationalUnit( OrganizationalUnitRefactoring to ) throws MergeOrganizationalUnitException
+      {
+         OrganizationalUnits parent = getParent();
+         OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
+         if (organizationalUnit.equals( toEntity ))
+         {
+            throw new MergeOrganizationalUnitException();
+         }
 
-        public void mergeOrganizationalUnit( OrganizationalUnitRefactoring to) throws MergeOrganizationalUnitException
-        {
-            OrganizationalUnits parent = getParent();
-            OrganizationalUnitEntity toEntity = (OrganizationalUnitEntity) to;
-            if (organizationalUnit.equals(toEntity))
-            {
-                throw new MergeOrganizationalUnitException();
-            }
+         groups.mergeGroups( (Groups) to );
+         projects.mergeProjects( (Projects) to );
 
-            projectRoles.mergeProjectRoles((ProjectRoles)to);
-            groups.mergeGroups((Groups)to);
-            projects.mergeProjects((Projects)to);
+         parent.removeOrganizationalUnit( organizationalUnit );
+         removable.removeEntity();
+      }
 
-            parent.removeOrganizationalUnit(organizationalUnit);
-            removable.removeEntity();
-        }
-
-        public OrganizationalUnits getParent()
-        {
-            OrganizationalUnits.Data ous = (OrganizationalUnits.Data) organization.organization().get();
-            return ous.getParent(organizationalUnit);
-        }
-    }
+      public OrganizationalUnits getParent()
+      {
+         OrganizationalUnits.Data ous = (OrganizationalUnits.Data) organization.organization().get();
+         return ous.getParent( organizationalUnit );
+      }
+   }
 }

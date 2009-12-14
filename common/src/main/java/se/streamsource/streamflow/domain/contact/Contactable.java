@@ -25,37 +25,37 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Contactable.Mixin.class)
 public interface Contactable
 {
-    void updateContact(ContactValue contact);
+   void updateContact( ContactValue contact );
 
-    ContactValue getContact();
+   ContactValue getContact();
 
 
-    interface Data
-    {
-        Property<ContactValue> contact();
+   interface Data
+   {
+      Property<ContactValue> contact();
 
-        void updatedContact(DomainEvent event, ContactValue contact);
-    }
+      void updatedContact( DomainEvent event, ContactValue contact );
+   }
 
-    abstract class Mixin
-            implements Contactable, Data
-    {
-        @This
-        Data state;
+   abstract class Mixin
+         implements Contactable, Data
+   {
+      @This
+      Data state;
 
-        public void updateContact(ContactValue newContact)
-        {
-            updatedContact(DomainEvent.CREATE, newContact);
-        }
+      public void updateContact( ContactValue newContact )
+      {
+         updatedContact( DomainEvent.CREATE, newContact );
+      }
 
-        public ContactValue getContact()
-        {
-            return state.contact().get();
-        }
+      public ContactValue getContact()
+      {
+         return state.contact().get();
+      }
 
-        public void updatedContact(DomainEvent event, ContactValue contact)
-        {
-            state.contact().set(contact);
-        }
-    }
+      public void updatedContact( DomainEvent event, ContactValue contact )
+      {
+         state.contact().set( contact );
+      }
+   }
 }

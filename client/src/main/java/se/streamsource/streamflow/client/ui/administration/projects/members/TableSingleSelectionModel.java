@@ -19,48 +19,48 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import javax.swing.event.TableModelEvent;
 
 public class TableSingleSelectionModel
-        extends AbstractTableSelectionModel<ListItemValue>
+      extends AbstractTableSelectionModel<ListItemValue>
 {
-    private int selected;
+   private int selected;
 
-    public void clearSelection()
-    {
-        selected = -1;
-        fireTableChanged(new TableModelEvent(this, 0, getRowCount(), 0, TableModelEvent.DELETE));
-    }
+   public void clearSelection()
+   {
+      selected = -1;
+      fireTableChanged( new TableModelEvent( this, 0, getRowCount(), 0, TableModelEvent.DELETE ) );
+   }
 
-    public ListItemValue getSelected()
-    {
-        if (selected == -1) return null;
-        return getModel().items().get().get(selected);
-    }
+   public ListItemValue getSelected()
+   {
+      if (selected == -1) return null;
+      return getModel().items().get().get( selected );
+   }
 
-    public Object getValueAt(int row, int column)
-    {
-        switch (column)
-        {
-            case 0:
-                return (row == selected);
-            case 1:
-                return getModel().items().get().get(row).description().get();
-        }
-        return null;
-    }
+   public Object getValueAt( int row, int column )
+   {
+      switch (column)
+      {
+         case 0:
+            return (row == selected);
+         case 1:
+            return getModel().items().get().get( row ).description().get();
+      }
+      return null;
+   }
 
-    @Override
-    public void setValueAt(Object value, int row, int column)
-    {
-        if ((Boolean) value)
-        {
-            selected = row;
-        } else
-        {
-            if (row == selected)
-            {
-                selected = -1;
-            }
-        }
-        fireTableCellUpdated(row, column);
-    }
+   @Override
+   public void setValueAt( Object value, int row, int column )
+   {
+      if ((Boolean) value)
+      {
+         selected = row;
+      } else
+      {
+         if (row == selected)
+         {
+            selected = -1;
+         }
+      }
+      fireTableCellUpdated( row, column );
+   }
 
 }

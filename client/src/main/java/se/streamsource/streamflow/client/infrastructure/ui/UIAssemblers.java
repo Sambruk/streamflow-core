@@ -19,41 +19,41 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 /**
  * JAVADOC
  */
 public final class UIAssemblers
 {
-    public static void addMV(ModuleAssembly module, Class modelClass, Class<? extends JComponent> viewClass) throws AssemblyException
-    {
-        addModels(module, modelClass);
-        addViews(module, viewClass);
-    }
+   public static void addMV( ModuleAssembly module, Class modelClass, Class<? extends JComponent> viewClass ) throws AssemblyException
+   {
+      addModels( module, modelClass );
+      addViews( module, viewClass );
+   }
 
-    public static void addModels(ModuleAssembly module, Class... modelClasses) throws AssemblyException
-    {
-        module.addObjects(modelClasses).visibleIn(Visibility.layer);
-    }
+   public static void addModels( ModuleAssembly module, Class... modelClasses ) throws AssemblyException
+   {
+      module.addObjects( modelClasses ).visibleIn( Visibility.layer );
+   }
 
-    public static void addViews(ModuleAssembly module, Class<? extends JComponent>... viewClasses) throws AssemblyException
-    {
-        module.addObjects(viewClasses).visibleIn(Visibility.layer);
-    }
+   public static void addViews( ModuleAssembly module, Class<? extends JComponent>... viewClasses ) throws AssemblyException
+   {
+      module.addObjects( viewClasses ).visibleIn( Visibility.layer );
+   }
 
-    public static void addControllers(ModuleAssembly module, Class... controllerClasses) throws AssemblyException
-    {
-        module.addObjects(controllerClasses).visibleIn(Visibility.layer);
-    }
+   public static void addControllers( ModuleAssembly module, Class... controllerClasses ) throws AssemblyException
+   {
+      module.addObjects( controllerClasses ).visibleIn( Visibility.layer );
+   }
 
-    public static void addDialogs(ModuleAssembly module, Class<? extends JComponent>... dialogClasses) throws AssemblyException
-    {
-        module.addObjects(dialogClasses).visibleIn(Visibility.layer);
-    }
+   public static void addDialogs( ModuleAssembly module, Class<? extends JComponent>... dialogClasses ) throws AssemblyException
+   {
+      module.addObjects( dialogClasses ).visibleIn( Visibility.layer );
+   }
 
-    public static void addTasks(ModuleAssembly module, Class<? extends Task>... taskClasses) throws AssemblyException
-    {
-        module.addObjects(taskClasses);
-    }
+   public static void addTasks( ModuleAssembly module, Class<? extends Task>... taskClasses ) throws AssemblyException
+   {
+      module.addObjects( taskClasses );
+   }
 }

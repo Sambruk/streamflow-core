@@ -29,19 +29,19 @@ import se.streamsource.streamflow.web.domain.tasktype.SelectedTaskTypes;
  * JAVADOC
  */
 public interface Project
-        extends
-        Describable,
-        Delegatee,
-        Members,
-        Inbox,
-        Assignments,
-        Delegations,
-        WaitingFor,
-        Owner,
-        OwningOrganizationalUnit,
-        SelectedLabels,
-        IdGenerator,
-        Removable,
-        SelectedTaskTypes
+      extends
+      Describable,
+      Delegatee,
+      Members,
+      Inbox,
+      Assignments,
+      Delegations,
+      WaitingFor,
+      Owner,
+      OwningOrganizationalUnit,
+      SelectedLabels,
+      IdGenerator,
+      Removable,
+      SelectedTaskTypes
 {
 }

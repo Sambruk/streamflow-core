@@ -26,7 +26,12 @@ import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.roles.Describable;
-import se.streamsource.streamflow.resource.task.*;
+import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
+import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.task.FieldDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 
 /**
  * JAVADOC
@@ -34,56 +39,35 @@ import se.streamsource.streamflow.resource.task.*;
 @Mixins(SubmittedFormsQueries.Mixin.class)
 public interface SubmittedFormsQueries
 {
-    SubmittedFormsListDTO getSubmittedForms();
+   SubmittedFormsListDTO getSubmittedForms();
 
-    SubmittedFormDTO getSubmittedForm(int idx);
+   SubmittedFormDTO getSubmittedForm( int idx );
 
-    EffectiveFieldsDTO effectiveFields();
+   EffectiveFieldsDTO effectiveFields();
 
-    class Mixin
-            implements SubmittedFormsQueries
-    {
-        @This
-        SubmittedForms.Data submittedForms;
+   class Mixin
+         implements SubmittedFormsQueries
+   {
+      @This
+      SubmittedForms.Data submittedForms;
 
-        @Structure
-        ValueBuilderFactory vbf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public SubmittedFormsListDTO getSubmittedForms()
-        {
-            UnitOfWork uow = uowf.currentUnitOfWork();
+      public SubmittedFormsListDTO getSubmittedForms()
+      {
+         UnitOfWork uow = uowf.currentUnitOfWork();
 
-            ValueBuilder<SubmittedFormsListDTO> listBuilder = vbf.newValueBuilder(SubmittedFormsListDTO.class );
-            ValueBuilder<SubmittedFormListDTO> formBuilder = vbf.newValueBuilder(SubmittedFormListDTO.class );
-            SubmittedFormsListDTO list = listBuilder.prototype();
-            SubmittedFormListDTO formDTO = formBuilder.prototype();
+         ValueBuilder<SubmittedFormsListDTO> listBuilder = vbf.newValueBuilder( SubmittedFormsListDTO.class );
+         ValueBuilder<SubmittedFormListDTO> formBuilder = vbf.newValueBuilder( SubmittedFormListDTO.class );
+         SubmittedFormsListDTO list = listBuilder.prototype();
+         SubmittedFormListDTO formDTO = formBuilder.prototype();
 
-            for (SubmittedFormValue form : submittedForms.submittedForms().get())
-            {
-                formDTO.submissionDate().set( form.submissionDate().get() );
-
-                Describable.Data submitter = uow.get( Describable.Data.class, form.submitter().get().identity() );
-                formDTO.submitter().set( submitter.description().get() );
-
-                Describable.Data formName = uow.get( Describable.Data.class, form.form().get().identity() );
-                formDTO.form().set( formName.description().get() );
-                list.forms().get().add( formBuilder.newInstance() );
-            }
-
-            return listBuilder.newInstance();
-        }
-
-        public SubmittedFormDTO getSubmittedForm( int idx )
-        {
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            ValueBuilder<SubmittedFormDTO> formBuilder = vbf.newValueBuilder( SubmittedFormDTO.class );
-            SubmittedFormDTO formDTO = formBuilder.prototype();
-
-            SubmittedFormValue form = submittedForms.submittedForms().get().get( idx );
-
+         for (SubmittedFormValue form : submittedForms.submittedForms().get())
+         {
             formDTO.submissionDate().set( form.submissionDate().get() );
 
             Describable.Data submitter = uow.get( Describable.Data.class, form.submitter().get().identity() );
@@ -91,48 +75,69 @@ public interface SubmittedFormsQueries
 
             Describable.Data formName = uow.get( Describable.Data.class, form.form().get().identity() );
             formDTO.form().set( formName.description().get() );
+            list.forms().get().add( formBuilder.newInstance() );
+         }
 
-            ValueBuilder<FieldDTO> fieldBuilder = vbf.newValueBuilder( FieldDTO.class );
-            FieldDTO fieldDTO = fieldBuilder.prototype();
+         return listBuilder.newInstance();
+      }
 
-            for (SubmittedFieldValue fieldValue : form.values().get())
+      public SubmittedFormDTO getSubmittedForm( int idx )
+      {
+         UnitOfWork uow = uowf.currentUnitOfWork();
+         ValueBuilder<SubmittedFormDTO> formBuilder = vbf.newValueBuilder( SubmittedFormDTO.class );
+         SubmittedFormDTO formDTO = formBuilder.prototype();
+
+         SubmittedFormValue form = submittedForms.submittedForms().get().get( idx );
+
+         formDTO.submissionDate().set( form.submissionDate().get() );
+
+         Describable.Data submitter = uow.get( Describable.Data.class, form.submitter().get().identity() );
+         formDTO.submitter().set( submitter.description().get() );
+
+         Describable.Data formName = uow.get( Describable.Data.class, form.form().get().identity() );
+         formDTO.form().set( formName.description().get() );
+
+         ValueBuilder<FieldDTO> fieldBuilder = vbf.newValueBuilder( FieldDTO.class );
+         FieldDTO fieldDTO = fieldBuilder.prototype();
+
+         for (SubmittedFieldValue fieldValue : form.values().get())
+         {
+            Describable.Data field = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
+            fieldDTO.field().set( field.description().get() );
+            fieldDTO.value().set( fieldValue.value().get() );
+            formDTO.values().get().add( fieldBuilder.newInstance() );
+         }
+
+         return formBuilder.newInstance();
+      }
+
+      public EffectiveFieldsDTO effectiveFields()
+      {
+         UnitOfWork uow = uowf.currentUnitOfWork();
+
+         ValueBuilder<EffectiveFieldsDTO> listBuilder = vbf.newValueBuilder( EffectiveFieldsDTO.class );
+         ValueBuilder<EffectiveFieldDTO> fieldBuilder = vbf.newValueBuilder( EffectiveFieldDTO.class );
+         EffectiveFieldsDTO list = listBuilder.prototype();
+         EffectiveFieldDTO fieldDTO = fieldBuilder.prototype();
+
+         EffectiveFormFieldsValue effectiveFormFields = submittedForms.effectiveFieldValues().get();
+         if (effectiveFormFields != null)
+         {
+            for (EffectiveFieldValue fieldValue : effectiveFormFields.fields().get())
             {
-                Describable.Data field = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
-                fieldDTO.field().set( field.description().get() );
-                fieldDTO.value().set( fieldValue.value().get() );
-                formDTO.values().get().add( fieldBuilder.newInstance() );
+               fieldDTO.submissionDate().set( fieldValue.submissionDate().get() );
+
+               Describable.Data submitter = uow.get( Describable.Data.class, fieldValue.submitter().get().identity() );
+               fieldDTO.submitter().set( submitter.description().get() );
+
+               fieldDTO.fieldValue().set( fieldValue.value().get() );
+               Describable.Data fieldName = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
+               fieldDTO.fieldName().set( fieldName.description().get() );
+               list.effectiveFields().get().add( fieldBuilder.newInstance() );
             }
+         }
 
-            return formBuilder.newInstance();
-        }
-
-        public EffectiveFieldsDTO effectiveFields()
-        {
-            UnitOfWork uow = uowf.currentUnitOfWork();
-
-            ValueBuilder<EffectiveFieldsDTO> listBuilder = vbf.newValueBuilder(EffectiveFieldsDTO.class );
-            ValueBuilder<EffectiveFieldDTO> fieldBuilder = vbf.newValueBuilder(EffectiveFieldDTO.class );
-            EffectiveFieldsDTO list = listBuilder.prototype();
-            EffectiveFieldDTO fieldDTO = fieldBuilder.prototype();
-
-            EffectiveFormFieldsValue effectiveFormFields = submittedForms.effectiveFieldValues().get(); 
-            if (effectiveFormFields != null)
-            {
-                for (EffectiveFieldValue fieldValue : effectiveFormFields.fields().get())
-                {
-                    fieldDTO.submissionDate().set( fieldValue.submissionDate().get() );
-
-                    Describable.Data submitter = uow.get( Describable.Data.class, fieldValue.submitter().get().identity() );
-                    fieldDTO.submitter().set( submitter.description().get() );
-
-                    fieldDTO.fieldValue().set(fieldValue.value().get() );
-                    Describable.Data fieldName = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
-                    fieldDTO.fieldName().set( fieldName.description().get() );
-                    list.effectiveFields().get().add( fieldBuilder.newInstance() );
-                }
-            }
-
-            return listBuilder.newInstance();
-        }
-    }
+         return listBuilder.newInstance();
+      }
+   }
 }

@@ -30,27 +30,27 @@ import java.lang.reflect.Method;
  */
 @AppliesTo(EventEntityCreatedMixin.EventEntityCreatedAppliesTo.class)
 public class EventEntityCreatedMixin
-        implements InvocationHandler
+      implements InvocationHandler
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-    {
-        // Create entity
-        EntityComposite entity = (EntityComposite) uowf.currentUnitOfWork().newEntity(method.getReturnType(), (String) args[1]);
+   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   {
+      // Create entity
+      EntityComposite entity = (EntityComposite) uowf.currentUnitOfWork().newEntity( method.getReturnType(), (String) args[1] );
 
-        return entity;
-    }
+      return entity;
+   }
 
-    public static class EventEntityCreatedAppliesTo
-            implements AppliesToFilter
-    {
-        public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
-        {
-            return method.getParameterTypes().length == 2 &&
-                    method.getParameterTypes()[0].equals(DomainEvent.class) && method.getName().startsWith("created") &&
-                    !method.getReturnType().equals(Void.TYPE);
-        }
-    }
+   public static class EventEntityCreatedAppliesTo
+         implements AppliesToFilter
+   {
+      public boolean appliesTo( Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass )
+      {
+         return method.getParameterTypes().length == 2 &&
+               method.getParameterTypes()[0].equals( DomainEvent.class ) && method.getName().startsWith( "created" ) &&
+               !method.getReturnType().equals( Void.TYPE );
+      }
+   }
 }

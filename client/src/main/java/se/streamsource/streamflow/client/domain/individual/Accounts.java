@@ -29,50 +29,50 @@ import org.qi4j.api.value.ValueBuilderFactory;
 @Mixins(Accounts.Mixin.class)
 public interface Accounts
 {
-    Account newAccount();
+   Account newAccount();
 
-    void removeAccount(Account removedAccount);
+   void removeAccount( Account removedAccount );
 
-    void visitAccounts(AccountVisitor visitor);
+   void visitAccounts( AccountVisitor visitor );
 
-    interface Data
-    {
-        @Aggregated
-        ManyAssociation<Account> accounts();
-    }
+   interface Data
+   {
+      @Aggregated
+      ManyAssociation<Account> accounts();
+   }
 
-    class Mixin
-            implements Accounts
-    {
-        @This
-        Data state;
+   class Mixin
+         implements Accounts
+   {
+      @This
+      Data state;
 
-        @Structure
-        UnitOfWorkFactory uowf;
-        @Structure
-        ValueBuilderFactory vbf;
+      @Structure
+      UnitOfWorkFactory uowf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-        public Account newAccount()
-        {
-            AccountSettingsValue settings = vbf.newValue(AccountSettingsValue.class);
-            EntityBuilder<Account> builder = uowf.currentUnitOfWork().newEntityBuilder(Account.class);
-            builder.instance().updateSettings(settings);
-            Account account = builder.newInstance();
-            state.accounts().add(state.accounts().count(), account);
-            return account;
-        }
+      public Account newAccount()
+      {
+         AccountSettingsValue settings = vbf.newValue( AccountSettingsValue.class );
+         EntityBuilder<Account> builder = uowf.currentUnitOfWork().newEntityBuilder( Account.class );
+         builder.instance().updateSettings( settings );
+         Account account = builder.newInstance();
+         state.accounts().add( state.accounts().count(), account );
+         return account;
+      }
 
-        public void removeAccount(Account removedAccount)
-        {
-            state.accounts().remove(removedAccount);
-        }
+      public void removeAccount( Account removedAccount )
+      {
+         state.accounts().remove( removedAccount );
+      }
 
-        public void visitAccounts(AccountVisitor visitor)
-        {
-            for (Account account : state.accounts())
-            {
-                visitor.visitAccount(account);
-            }
-        }
-    }
+      public void visitAccounts( AccountVisitor visitor )
+      {
+         for (Account account : state.accounts())
+         {
+            visitor.visitAccount( account );
+         }
+      }
+   }
 }

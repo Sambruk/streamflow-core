@@ -26,25 +26,25 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class FormDefinitionsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public FormDefinitionsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public FormDefinitionsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ListValue forms() throws ResourceException
-    {
-        return query("forms", ListValue.class);
-    }
+   public ListValue forms() throws ResourceException
+   {
+      return query( "forms", ListValue.class );
+   }
 
-    public void createForm( StringDTO nameDTO) throws ResourceException
-    {
-        postCommand("createForm", nameDTO);
-    }
+   public void createForm( StringDTO nameDTO ) throws ResourceException
+   {
+      postCommand( "createForm", nameDTO );
+   }
 
-    public FormDefinitionClientResource form(String id)
-    {
-        return getSubResource(id, FormDefinitionClientResource.class);
-    }
+   public FormDefinitionClientResource form( String id )
+   {
+      return getSubResource( id, FormDefinitionClientResource.class );
+   }
 }

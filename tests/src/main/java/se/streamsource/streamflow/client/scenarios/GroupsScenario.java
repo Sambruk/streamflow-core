@@ -26,21 +26,21 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
  * JAVADOC
  */
 public class GroupsScenario
-        extends AbstractWebDomainApplicationScenario
+      extends AbstractWebDomainApplicationScenario
 {
 
-    public GroupsScenario()
-    {
-        this(Thread.currentThread().getContextClassLoader());
-    }
+   public GroupsScenario()
+   {
+      this( Thread.currentThread().getContextClassLoader() );
+   }
 
-    public GroupsScenario(ClassLoader classLoader)
-    {
-        super(classLoader, new TestSetupSteps(),
-                new GroupsSteps(),
-                new ParticipantsSteps(),
-                new OrganizationalUnitsSteps(),
-                new OrganizationsSteps(),
-                new UserSteps());
-    }
+   public GroupsScenario( ClassLoader classLoader )
+   {
+      super( classLoader, new TestSetupSteps(),
+            new GroupsSteps(),
+            new ParticipantsSteps(),
+            new OrganizationalUnitsSteps(),
+            new OrganizationsSteps(),
+            new UserSteps() );
+   }
 }

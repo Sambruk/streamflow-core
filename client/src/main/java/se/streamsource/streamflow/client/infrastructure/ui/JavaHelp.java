@@ -16,54 +16,55 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import java.awt.*;
+import java.awt.Component;
 import java.net.URL;
 import java.util.logging.Logger;
 
 
 public class JavaHelp
 {
-    private HelpBroker hb;
+   private HelpBroker hb;
 
-    public JavaHelp()
-    {
-        // Help system
-        String helpHS = "helpset.hs";
-        ClassLoader cl = getClass().getClassLoader();
-        HelpSet hs;
-        try
-        {
-            URL hsURL = HelpSet.findHelpSet(cl, helpHS);
-            hs = new HelpSet(null, hsURL);
+   public JavaHelp()
+   {
+      // Help system
+      String helpHS = "helpset.hs";
+      ClassLoader cl = getClass().getClassLoader();
+      HelpSet hs;
+      try
+      {
+         URL hsURL = HelpSet.findHelpSet( cl, helpHS );
+         hs = new HelpSet( null, hsURL );
 
-            // Create a HelpBroker object:
-            hb = hs.createHelpBroker();
-            hb.setCurrentID("intro1");
+         // Create a HelpBroker object:
+         hb = hs.createHelpBroker();
+         hb.setCurrentID( "intro1" );
 
-        } catch (Exception ee)
-        {
-            // Say what the exception really is
-            Logger.getLogger(getClass().getName()).warning("HelpSet " + helpHS + " not found: " + ee.getMessage());
-        }
-    }
+      } catch (Exception ee)
+      {
+         // Say what the exception really is
+         Logger.getLogger( getClass().getName() ).warning( "HelpSet " + helpHS + " not found: " + ee.getMessage() );
+      }
+   }
 
 
-    public void enableHelp(Component c, String helpID)
-    {
-        if(hb != null)
-        {
-            hb.enableHelp(c, helpID, hb.getHelpSet());
-            hb.enableHelpKey(c, helpID, hb.getHelpSet());
-        }
-    }
+   public void enableHelp( Component c, String helpID )
+   {
+      if (hb != null)
+      {
+         hb.enableHelp( c, helpID, hb.getHelpSet() );
+         hb.enableHelpKey( c, helpID, hb.getHelpSet() );
+      }
+   }
 
-    public void init() {
-        if(hb != null)
-        {
-            hb.setCurrentID("intro1");
-            hb.setViewDisplayed(true);
-            if(!hb.isDisplayed())
-                hb.setDisplayed(true);
-        }
-    }
+   public void init()
+   {
+      if (hb != null)
+      {
+         hb.setCurrentID( "intro1" );
+         hb.setViewDisplayed( true );
+         if (!hb.isDisplayed())
+            hb.setDisplayed( true );
+      }
+   }
 }

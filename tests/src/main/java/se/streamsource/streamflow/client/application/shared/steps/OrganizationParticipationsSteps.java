@@ -23,24 +23,24 @@ import se.streamsource.streamflow.client.application.shared.steps.setup.GenericS
  * JAVADOC
  */
 public class OrganizationParticipationsSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @When("a user joins organization")
-    public void joinOrganization()
-    {
-        orgsSteps.givenUser.join( orgsSteps.givenOrganization);
-    }
+   @When("a user joins organization")
+   public void joinOrganization()
+   {
+      orgsSteps.givenUser.join( orgsSteps.givenOrganization );
+   }
 
-    @When("a user leaves organization")
-    public void leaveOrganization()
-    {
-        orgsSteps.givenUser.leave( orgsSteps.givenOrganization);
-    }
+   @When("a user leaves organization")
+   public void leaveOrganization()
+   {
+      orgsSteps.givenUser.leave( orgsSteps.givenOrganization );
+   }
 
 }

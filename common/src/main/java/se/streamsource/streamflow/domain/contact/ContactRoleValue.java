@@ -21,9 +21,9 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface ContactRoleValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<ContactValue> contact();
+   Property<ContactValue> contact();
 
-    Property<String> role();
+   Property<String> role();
 }

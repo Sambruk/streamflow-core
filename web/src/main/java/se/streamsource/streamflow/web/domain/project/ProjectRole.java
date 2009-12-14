@@ -22,6 +22,6 @@ import se.streamsource.streamflow.web.domain.task.Delegatee;
  * JAVADOC
  */
 public interface ProjectRole
-        extends Delegatee, Describable, Removable
+      extends Delegatee, Describable, Removable
 {
 }

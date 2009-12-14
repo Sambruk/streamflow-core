@@ -24,7 +24,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
  * JAVADOC
  */
 public class WorkspaceAssembler
-        implements Assembler
+      implements Assembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
@@ -32,58 +32,58 @@ public class WorkspaceAssembler
       module.addObjects( WorkspaceWindow.class ).visibleIn( Visibility.layer );
 
       module.addObjects(
-              WorkspaceNode.class,
-              WorkspaceUserNode.class,
-              WorkspaceUserInboxNode.class,
-              WorkspaceUserAssignmentsNode.class,
-              WorkspaceUserDelegationsNode.class,
-              WorkspaceUserWaitingForNode.class,
-              WorkspaceProjectsNode.class,
-              WorkspaceProjectNode.class,
-              WorkspaceProjectInboxNode.class,
-              WorkspaceProjectAssignmentsNode.class,
-              WorkspaceProjectDelegationsNode.class,
-              WorkspaceProjectWaitingForNode.class );
+            WorkspaceNode.class,
+            WorkspaceUserNode.class,
+            WorkspaceUserInboxNode.class,
+            WorkspaceUserAssignmentsNode.class,
+            WorkspaceUserDelegationsNode.class,
+            WorkspaceUserWaitingForNode.class,
+            WorkspaceProjectsNode.class,
+            WorkspaceProjectNode.class,
+            WorkspaceProjectInboxNode.class,
+            WorkspaceProjectAssignmentsNode.class,
+            WorkspaceProjectDelegationsNode.class,
+            WorkspaceProjectWaitingForNode.class );
 
       UIAssemblers.addModels( module, ProjectSelectorModel2.class );
 
       UIAssemblers.addMV( module,
-              WorkspaceModel.class,
-              WorkspaceView.class );
+            WorkspaceModel.class,
+            WorkspaceView.class );
 
       // User
       UIAssemblers.addMV( module,
-              WorkspaceUserInboxModel.class,
-              WorkspaceUserInboxView.class );
+            WorkspaceUserInboxModel.class,
+            WorkspaceUserInboxView.class );
 
       UIAssemblers.addMV( module,
-              WorkspaceUserAssignmentsModel.class,
-              WorkspaceUserAssignmentsView.class );
+            WorkspaceUserAssignmentsModel.class,
+            WorkspaceUserAssignmentsView.class );
 
       UIAssemblers.addMV( module,
-              WorkspaceUserDelegationsModel.class,
-              WorkspaceUserDelegationsView.class );
+            WorkspaceUserDelegationsModel.class,
+            WorkspaceUserDelegationsView.class );
 
       UIAssemblers.addMV( module,
-              WorkspaceUserWaitingForModel.class,
-              WorkspaceUserWaitingForView.class );
+            WorkspaceUserWaitingForModel.class,
+            WorkspaceUserWaitingForView.class );
 
       // Project
       UIAssemblers.addMV( module,
-              WorkspaceProjectInboxModel.class,
-              WorkspaceProjectInboxView.class );
+            WorkspaceProjectInboxModel.class,
+            WorkspaceProjectInboxView.class );
 
       UIAssemblers.addMV( module,
-              WorkspaceProjectAssignmentsModel.class,
-              WorkspaceProjectAssignmentsView.class );
+            WorkspaceProjectAssignmentsModel.class,
+            WorkspaceProjectAssignmentsView.class );
 
       UIAssemblers.addMV( module,
-              WorkspaceProjectDelegationsModel.class,
-              WorkspaceProjectDelegationsView.class );
+            WorkspaceProjectDelegationsModel.class,
+            WorkspaceProjectDelegationsView.class );
 
       UIAssemblers.addMV( module,
-              WorkspaceProjectWaitingForModel.class,
-              WorkspaceProjectWaitingForView.class );
+            WorkspaceProjectWaitingForModel.class,
+            WorkspaceProjectWaitingForView.class );
 
       UIAssemblers.addDialogs( module, SelectUserOrProjectDialog.class, SelectUserOrProjectDialog2.class, ProjectSelectionDialog.class );
 

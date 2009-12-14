@@ -28,36 +28,36 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class MembersClientResource
-        extends CommandQueryClientResource
-    implements UsersAndGroupsFilter
+      extends CommandQueryClientResource
+      implements UsersAndGroupsFilter
 {
-    public MembersClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public MembersClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public MemberClientResource member(String id)
-    {
-        return getSubResource(id, MemberClientResource.class);
-    }
+   public MemberClientResource member( String id )
+   {
+      return getSubResource( id, MemberClientResource.class );
+   }
 
-    public ListValue members() throws ResourceException
-    {
-        return query("members", ListValue.class);
-    }
+   public ListValue members() throws ResourceException
+   {
+      return query( "members", ListValue.class );
+   }
 
-    public ListValue findUsers(String query) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(query);
-        return query("findUsers", builder.newInstance(), ListValue.class);
-    }
+   public ListValue findUsers( String query ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( query );
+      return query( "findUsers", builder.newInstance(), ListValue.class );
+   }
 
-    public ListValue findGroups(String query) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(query);
-        return query("findGroups", builder.newInstance(), ListValue.class);
+   public ListValue findGroups( String query ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( query );
+      return query( "findGroups", builder.newInstance(), ListValue.class );
 
-    }
+   }
 }

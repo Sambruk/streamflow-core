@@ -21,6 +21,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
  */
 public interface CommandEvents
 {
-    void reset();
-    TransactionEvents commandEvents();
+   void reset();
+
+   TransactionEvents commandEvents();
 }

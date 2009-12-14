@@ -20,6 +20,6 @@ import javax.swing.JPanel;
  * JAVADOC
  */
 public class FormDefinitionView
-    extends JPanel
+      extends JPanel
 {
 }

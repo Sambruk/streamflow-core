@@ -23,26 +23,26 @@ import se.streamsource.streamflow.web.rest.StreamFlowRestApplication;
  */
 public class MainWeb
 {
-    private Component component;
+   private Component component;
 
-    public static void main(String[] args) throws Exception
-    {
-        new MainWeb().start();
-    }
+   public static void main( String[] args ) throws Exception
+   {
+      new MainWeb().start();
+   }
 
-    public void start() throws Exception
-    {
-        component = new Component();
-        component.getServers().add(Protocol.HTTP, 8040);
-        component.getClients().add(Protocol.CLAP);
-        component.getClients().add(Protocol.FILE);
-        StreamFlowRestApplication application = new StreamFlowRestApplication(component.getContext().createChildContext());
-        component.getDefaultHost().attach("/streamflow/streamflow", application);
-        component.start();
-    }
+   public void start() throws Exception
+   {
+      component = new Component();
+      component.getServers().add( Protocol.HTTP, 8040 );
+      component.getClients().add( Protocol.CLAP );
+      component.getClients().add( Protocol.FILE );
+      StreamFlowRestApplication application = new StreamFlowRestApplication( component.getContext().createChildContext() );
+      component.getDefaultHost().attach( "/streamflow/streamflow", application );
+      component.start();
+   }
 
-    public void stop() throws Exception
-    {
-        component.stop();
-    }
+   public void stop() throws Exception
+   {
+      component.stop();
+   }
 }

@@ -23,37 +23,42 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.TextArea;
+import java.awt.TextField;
 
 /**
  * JAVADOC
  */
 public class FieldValueMultiSelectionEditView
-    extends JScrollPane
+      extends JScrollPane
 {
 
 
-    public FieldValueMultiSelectionEditView(@Service ApplicationContext context,
-                                         @Uses FieldValueEditModel model)
-    {
-        JPanel panel = new JPanel(new BorderLayout());
+   public FieldValueMultiSelectionEditView( @Service ApplicationContext context,
+                                            @Uses FieldValueEditModel model )
+   {
+      JPanel panel = new JPanel( new BorderLayout() );
 
-        JPanel fieldPanel = new JPanel();
-        FieldDefinitionValue value = model.getField();
+      JPanel fieldPanel = new JPanel();
+      FieldDefinitionValue value = model.getField();
 
-        FormLayout formLayout = new FormLayout(
-                "pref, 4dlu, 150dlu","");
+      FormLayout formLayout = new FormLayout(
+            "pref, 4dlu, 150dlu", "" );
 
-        DefaultFormBuilder formBuilder = new DefaultFormBuilder(formLayout, fieldPanel);
+      DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
 
-        formBuilder.append("Type:", new JLabel(i18n.text(FieldTypes.multi_selection)));
-        formBuilder.append("Mandatory", new Checkbox());
-        formBuilder.append("Name", new TextField(value.description().get()));
-        TextArea textArea = new TextArea(value.note().get());
-        formBuilder.append("Description", textArea);
-        panel.add(fieldPanel, BorderLayout.CENTER);
+      formBuilder.append( "Type:", new JLabel( i18n.text( FieldTypes.multi_selection ) ) );
+      formBuilder.append( "Mandatory", new Checkbox() );
+      formBuilder.append( "Name", new TextField( value.description().get() ) );
+      TextArea textArea = new TextArea( value.note().get() );
+      formBuilder.append( "Description", textArea );
+      panel.add( fieldPanel, BorderLayout.CENTER );
 
-        setViewportView(panel);
-    }
+      setViewportView( panel );
+   }
 }

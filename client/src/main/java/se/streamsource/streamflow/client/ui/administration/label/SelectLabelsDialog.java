@@ -32,41 +32,41 @@ import java.util.List;
  * JAVADOC
  */
 public class SelectLabelsDialog
-    extends JPanel
+      extends JPanel
 {
-    public FilteredList filteredList = new FilteredList();
-    public List<ListItemValue> selected;
+   public FilteredList filteredList = new FilteredList();
+   public List<ListItemValue> selected;
 
-    public SelectLabelsDialog( @Service ApplicationContext context, @Uses EventList<ListItemValue> list)
-    {
-        setActionMap( context.getActionMap(this ));
+   public SelectLabelsDialog( @Service ApplicationContext context, @Uses EventList<ListItemValue> list )
+   {
+      setActionMap( context.getActionMap( this ) );
 
-        setLayout( new BorderLayout() );
+      setLayout( new BorderLayout() );
 
-        filteredList.setEventList( list );
-        add(filteredList, BorderLayout.CENTER);
-    }
+      filteredList.setEventList( list );
+      add( filteredList, BorderLayout.CENTER );
+   }
 
-    public Iterable<ListItemValue> getSelectedLabels()
-    {
-        return selected;
-    }
+   public Iterable<ListItemValue> getSelectedLabels()
+   {
+      return selected;
+   }
 
-    @Action
-    public void execute()
-    {
-        selected = new ArrayList<ListItemValue>();
-        for (Object item : filteredList.getList().getSelectedValues())
-        {
-            selected.add( (ListItemValue) item );
-        }
+   @Action
+   public void execute()
+   {
+      selected = new ArrayList<ListItemValue>();
+      for (Object item : filteredList.getList().getSelectedValues())
+      {
+         selected.add( (ListItemValue) item );
+      }
 
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 }

@@ -29,41 +29,41 @@ import java.util.logging.Logger;
  */
 @Mixins(IndividualRepositoryService.Mixin.class)
 public interface IndividualRepositoryService
-        extends IndividualRepository, ServiceComposite, Activatable
+      extends IndividualRepository, ServiceComposite, Activatable
 {
-    class Mixin
-            implements IndividualRepository, Activatable
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
+   class Mixin
+         implements IndividualRepository, Activatable
+   {
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public Individual individual()
-        {
-            UnitOfWork unitOfWork = uowf.currentUnitOfWork();
-            Individual individual = unitOfWork.get(Individual.class, "1");
-            return individual;
-        }
+      public Individual individual()
+      {
+         UnitOfWork unitOfWork = uowf.currentUnitOfWork();
+         Individual individual = unitOfWork.get( Individual.class, "1" );
+         return individual;
+      }
 
-        public void activate() throws Exception
-        {
-            UnitOfWork uow = uowf.newUnitOfWork();
+      public void activate() throws Exception
+      {
+         UnitOfWork uow = uowf.newUnitOfWork();
 
-            try
-            {
-                uow.get(Individual.class, "1");
-            } catch (NoSuchEntityException e)
-            {
-                // Create Individual
-                uow.newEntity(Individual.class, "1");
+         try
+         {
+            uow.get( Individual.class, "1" );
+         } catch (NoSuchEntityException e)
+         {
+            // Create Individual
+            uow.newEntity( Individual.class, "1" );
 
-                Logger.getLogger(IndividualRepository.class.getName()).info("Created invidual");
-            }
+            Logger.getLogger( IndividualRepository.class.getName() ).info( "Created invidual" );
+         }
 
-            uow.complete();
-        }
+         uow.complete();
+      }
 
-        public void passivate() throws Exception
-        {
-        }
-    }
+      public void passivate() throws Exception
+      {
+      }
+   }
 }

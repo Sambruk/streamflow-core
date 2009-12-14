@@ -27,18 +27,18 @@ import java.lang.reflect.Method;
  */
 @AppliesTo(StatusMessage.class)
 public class StatusConcern
-        extends GenericConcern
+      extends GenericConcern
 {
-    @Invocation
-    StatusMessage message;
+   @Invocation
+   StatusMessage message;
 
-    @Service
-    StatusService status;
+   @Service
+   StatusService status;
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-    {
-        status.status(message.value());
+   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   {
+      status.status( message.value() );
 
-        return next.invoke(proxy, method, args);
-    }
+      return next.invoke( proxy, method, args );
+   }
 }

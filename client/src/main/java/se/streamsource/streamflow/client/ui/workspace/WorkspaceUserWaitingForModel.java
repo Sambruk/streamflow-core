@@ -14,21 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.assigned_to_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_on_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.delegated_to_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.title_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.task_status_header;
-
-import java.util.Date;
-
-import javax.swing.ImageIcon;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskClientResource;
@@ -37,122 +25,128 @@ import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
+import javax.swing.ImageIcon;
+import java.util.Date;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+
 /**
  * JAVADOC
  */
 
 public class WorkspaceUserWaitingForModel
-        extends TaskTableModel
+      extends TaskTableModel
 {
-    public WorkspaceUserWaitingForModel(@Uses WorkspaceUserWaitingForClientResource resource)
-    {
-        super(resource);
-        columnNames = new String[]{text( title_column_header ), text(delegated_to_header), text(assigned_to_header), text(delegated_on_header), text(task_status_header)};
-        columnClasses = new Class[]{String.class, String.class, String.class, Date.class, ImageIcon.class};
-        columnEditable = new boolean[]{false, false, false, false, false};
-    }
+   public WorkspaceUserWaitingForModel( @Uses WorkspaceUserWaitingForClientResource resource )
+   {
+      super( resource );
+      columnNames = new String[]{text( title_column_header ), text( delegated_to_header ), text( assigned_to_header ), text( delegated_on_header ), text( task_status_header )};
+      columnClasses = new Class[]{String.class, String.class, String.class, Date.class, ImageIcon.class};
+      columnEditable = new boolean[]{false, false, false, false, false};
+   }
 
-    @Override
-    public WorkspaceUserWaitingForClientResource getResource()
-    {
-        return (WorkspaceUserWaitingForClientResource) super.getResource();
-    }
+   @Override
+   public WorkspaceUserWaitingForClientResource getResource()
+   {
+      return (WorkspaceUserWaitingForClientResource) super.getResource();
+   }
 
-    @Override
-    public int getColumnCount()
-    {
-        return 5;
-    }
+   @Override
+   public int getColumnCount()
+   {
+      return 5;
+   }
 
-    @Override
-    public Object getValueAt(int rowIndex, int column)
-    {
-        WaitingForTaskDTO task = (WaitingForTaskDTO) tasks.get(rowIndex);
-        switch (column)
-        {
-            case 1:
-                return task.delegatedTo().get();
-            case 2:
-                return task.assignedTo().get();
-            case 3:
-                return task.delegatedOn().get();
+   @Override
+   public Object getValueAt( int rowIndex, int column )
+   {
+      WaitingForTaskDTO task = (WaitingForTaskDTO) tasks.get( rowIndex );
+      switch (column)
+      {
+         case 1:
+            return task.delegatedTo().get();
+         case 2:
+            return task.assignedTo().get();
+         case 3:
+            return task.delegatedOn().get();
+         case 4:
+            return task.status().get();
+      }
+
+      return super.getValueAt( rowIndex, column );
+   }
+
+   @Override
+   public void setValueAt( Object aValue, int rowIndex, int column )
+   {
+      try
+      {
+         switch (column)
+         {
+            case 0:
+            {
+               String description = (String) aValue;
+               TaskDTO taskValue = (TaskDTO) tasks.get( rowIndex );
+               if (!description.equals( taskValue.description().get() ))
+               {
+                  taskValue.description().set( description );
+                  fireTableCellUpdated( rowIndex, column );
+               }
+               break;
+            }
             case 4:
-                return task.status().get();
-        }
-
-        return super.getValueAt(rowIndex, column);
-    }
-    
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int column)
-    {
-        try
-        {
-            switch (column)
             {
-                case 0:
-                {
-                    String description = (String) aValue;
-                    TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
-                    if (!description.equals(taskValue.description().get()))
-                    {
-                        taskValue.description().set(description);
-                        fireTableCellUpdated(rowIndex, column);
-                    }
-                    break;
-                }
-                case 4:
-                {
-                    Boolean completed = (Boolean) aValue;
-                    if (completed)
-                    {
+               Boolean completed = (Boolean) aValue;
+               if (completed)
+               {
 
-                        TaskDTO taskValue = (TaskDTO) tasks.get(rowIndex);
-                        if (taskValue.status().get() == TaskStates.ACTIVE)
-                        {
-                            EntityReference task = taskValue.task().get();
-                            getResource().task(task.identity()).complete();
+                  TaskDTO taskValue = (TaskDTO) tasks.get( rowIndex );
+                  if (taskValue.status().get() == TaskStates.ACTIVE)
+                  {
+                     EntityReference task = taskValue.task().get();
+                     getResource().task( task.identity() ).complete();
 
-                            taskValue.status().set(TaskStates.COMPLETED);
-                            fireTableCellUpdated(rowIndex, column);
-                        }
-                    }
-                    break;
-                }
+                     taskValue.status().set( TaskStates.COMPLETED );
+                     fireTableCellUpdated( rowIndex, column );
+                  }
+               }
+               break;
             }
-        } catch (ResourceException e)
-        {
-            // TODO Better error handling
-            e.printStackTrace();
-        }
+         }
+      } catch (ResourceException e)
+      {
+         // TODO Better error handling
+         e.printStackTrace();
+      }
 
-        return; // Skip if don't know what is going on
-    }
+      return; // Skip if don't know what is going on
+   }
 
-    public void reject(int row) throws ResourceException
-    {
-        TaskDTO task = getTask(row);
+   public void reject( int row ) throws ResourceException
+   {
+      TaskDTO task = getTask( row );
 
-        getResource().task( task.task().get().identity() ).reject();
-    }
+      getResource().task( task.task().get().identity() ).reject();
+   }
 
-    public void complete(int row)
-    {
-        try
-        {
-            TaskDTO task = getTask(row);
+   public void complete( int row )
+   {
+      try
+      {
+         TaskDTO task = getTask( row );
 
-            WorkspaceUserWaitingForTaskClientResource waitingForTaskClientResource = getResource().task( task.task().get().identity() );
-            if (task.status().get().equals(TaskStates.DONE))
-            {
-                waitingForTaskClientResource.completeFinishedTask();
-            } else if (task.status().get().equals(TaskStates.ACTIVE))
-            {
-                waitingForTaskClientResource.completeWaitingForTask();
-            }
-        } catch (ResourceException e)
-        {
-            throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-        }
-    }
+         WorkspaceUserWaitingForTaskClientResource waitingForTaskClientResource = getResource().task( task.task().get().identity() );
+         if (task.status().get().equals( TaskStates.DONE ))
+         {
+            waitingForTaskClientResource.completeFinishedTask();
+         } else if (task.status().get().equals( TaskStates.ACTIVE ))
+         {
+            waitingForTaskClientResource.completeWaitingForTask();
+         }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
+      }
+   }
 }

@@ -25,15 +25,15 @@ import se.streamsource.streamflow.infrastructure.application.TreeValue;
  * JAVADOC
  */
 public class UserAdministrationClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public UserAdministrationClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public UserAdministrationClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public TreeValue organizations() throws ResourceException
-    {
-        return query("organizations", TreeValue.class);
-    }
+   public TreeValue organizations() throws ResourceException
+   {
+      return query( "organizations", TreeValue.class );
+   }
 }

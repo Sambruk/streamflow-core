@@ -22,6 +22,6 @@ import se.streamsource.streamflow.domain.roles.Removable;
  * JAVADOC
  */
 public interface Label
-        extends Describable, Notable, Removable
+      extends Describable, Notable, Removable
 {
 }

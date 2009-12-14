@@ -43,89 +43,89 @@ import java.util.logging.SimpleFormatter;
  * JAVADOC
  */
 public class ConsoleServerResource
-    extends ServerResource
+      extends ServerResource
 {
-    @Service
-    Console console;
+   @Service
+   Console console;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public ConsoleServerResource()
-    {
-        getVariants().addAll( Arrays.asList(new Variant(MediaType.TEXT_HTML)));
-    }
+   public ConsoleServerResource()
+   {
+      getVariants().addAll( Arrays.asList( new Variant( MediaType.TEXT_HTML ) ) );
+   }
 
-    @Override
-    protected Representation get( Variant variant ) throws ResourceException
-    {
-        if (getRequest().getResourceRef().getQueryAsForm().getFirst( "help" ) != null)
-        {
-            return new InputRepresentation(getClass().getResourceAsStream( "help.html" ), MediaType.TEXT_HTML);
-        } else
-        {        
-            try
-            {
-                String template = TemplateUtil.getTemplate("console.html",
-                    ConsoleServerResource.class);
-                String content = TemplateUtil.eval(template,
-                        "$script", "",
-                        "$out", "",
-                        "$log", "");
-                return new StringRepresentation(content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8);
-            } catch (IOException e)
-            {
-                throw new ResourceException( e);
-            }
-        }
-    }
+   @Override
+   protected Representation get( Variant variant ) throws ResourceException
+   {
+      if (getRequest().getResourceRef().getQueryAsForm().getFirst( "help" ) != null)
+      {
+         return new InputRepresentation( getClass().getResourceAsStream( "help.html" ), MediaType.TEXT_HTML );
+      } else
+      {
+         try
+         {
+            String template = TemplateUtil.getTemplate( "console.html",
+                  ConsoleServerResource.class );
+            String content = TemplateUtil.eval( template,
+                  "$script", "",
+                  "$out", "",
+                  "$log", "" );
+            return new StringRepresentation( content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8 );
+         } catch (IOException e)
+         {
+            throw new ResourceException( e );
+         }
+      }
+   }
 
-    @Override
-    protected Representation post( Representation representation, Variant variant ) throws ResourceException
-    {
-        Form form = new Form(representation);
+   @Override
+   protected Representation post( Representation representation, Variant variant ) throws ResourceException
+   {
+      Form form = new Form( representation );
 
-        String script = form.getFirstValue( "script" );
-        ValueBuilder<ConsoleScriptValue> builder = vbf.newValueBuilder( ConsoleScriptValue.class );
-        builder.prototype().script().set( script );
-        String firstValue = form.getFirstValue( "complete" );
-        builder.prototype().completeUnitOfWork().set( firstValue.equals( "yes" ));
+      String script = form.getFirstValue( "script" );
+      ValueBuilder<ConsoleScriptValue> builder = vbf.newValueBuilder( ConsoleScriptValue.class );
+      builder.prototype().script().set( script );
+      String firstValue = form.getFirstValue( "complete" );
+      builder.prototype().completeUnitOfWork().set( firstValue.equals( "yes" ) );
 
-        try
-        {
-            ConsoleResultValue result = console.executeScript( builder.newInstance() );
+      try
+      {
+         ConsoleResultValue result = console.executeScript( builder.newInstance() );
 
-            String log = "";
-            SimpleFormatter formatter = new SimpleFormatter();
-            for (LogRecord logRecord : result.log().get())
-            {
-                log += formatter.format( logRecord )+"\n";
-            }
+         String log = "";
+         SimpleFormatter formatter = new SimpleFormatter();
+         for (LogRecord logRecord : result.log().get())
+         {
+            log += formatter.format( logRecord ) + "\n";
+         }
 
-            String template = TemplateUtil.getTemplate("console.html",
-                ConsoleServerResource.class);
-            String content = TemplateUtil.eval(template,
-                    "$script", script,
-                    "$out", result.out().get(),
-                    "$log", log);
-            return new StringRepresentation(content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8);
-        } catch (Exception e)
-        {
-            StringWriter out = new StringWriter();
-            e.printStackTrace( new PrintWriter(out) );
+         String template = TemplateUtil.getTemplate( "console.html",
+               ConsoleServerResource.class );
+         String content = TemplateUtil.eval( template,
+               "$script", script,
+               "$out", result.out().get(),
+               "$log", log );
+         return new StringRepresentation( content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8 );
+      } catch (Exception e)
+      {
+         StringWriter out = new StringWriter();
+         e.printStackTrace( new PrintWriter( out ) );
 
-            try
-            {
-                String template = TemplateUtil.getTemplate("console.html",
-                    ConsoleServerResource.class);
-                String content = TemplateUtil.eval(template,
-                        "$script", script,
-                        "$out", out.toString());
-                return new StringRepresentation(content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8);
-            } catch (IOException e1)
-            {
-                throw new ResourceException( e1);
-            }
-        }
-    }
+         try
+         {
+            String template = TemplateUtil.getTemplate( "console.html",
+                  ConsoleServerResource.class );
+            String content = TemplateUtil.eval( template,
+                  "$script", script,
+                  "$out", out.toString() );
+            return new StringRepresentation( content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8 );
+         } catch (IOException e1)
+         {
+            throw new ResourceException( e1 );
+         }
+      }
+   }
 }

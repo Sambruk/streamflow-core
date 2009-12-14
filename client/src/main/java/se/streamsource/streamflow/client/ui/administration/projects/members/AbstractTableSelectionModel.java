@@ -19,64 +19,64 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import javax.swing.table.AbstractTableModel;
 
 public abstract class AbstractTableSelectionModel<T>
-        extends AbstractTableModel
+      extends AbstractTableModel
 {
-    Class[] columnClasses = {Boolean.class, String.class};
-    boolean[] columnEditable = {true, false};
-    String[] columnNames;
+   Class[] columnClasses = {Boolean.class, String.class};
+   boolean[] columnEditable = {true, false};
+   String[] columnNames;
 
-    abstract public T getSelected();
+   abstract public T getSelected();
 
-    public void setColumnNames(String... columnNames)
-    {
-        this.columnNames = columnNames;
-    }
+   public void setColumnNames( String... columnNames )
+   {
+      this.columnNames = columnNames;
+   }
 
-    public AbstractTableSelectionModel()
-    {
-        clearSelection();
-    }
+   public AbstractTableSelectionModel()
+   {
+      clearSelection();
+   }
 
-    public ListValue getModel()
-    {
-        return model;
-    }
+   public ListValue getModel()
+   {
+      return model;
+   }
 
-    private ListValue model;
+   private ListValue model;
 
-    public void setModel(ListValue projects)
-    {
-        this.model = projects;
-        clearSelection();
-    }
+   public void setModel( ListValue projects )
+   {
+      this.model = projects;
+      clearSelection();
+   }
 
-    abstract public void clearSelection();
+   abstract public void clearSelection();
 
-    public Class<?> getColumnClass(int column)
-    {
-        return columnClasses[column];
-    }
+   public Class<?> getColumnClass( int column )
+   {
+      return columnClasses[column];
+   }
 
-    public boolean isCellEditable(int row, int column)
-    {
-        return columnEditable[column];
-    }
+   public boolean isCellEditable( int row, int column )
+   {
+      return columnEditable[column];
+   }
 
-    public String getColumnName(int column)
-    {
-        if (columnNames == null) return "";
-        return columnNames[column];
-    }
+   public String getColumnName( int column )
+   {
+      if (columnNames == null) return "";
+      return columnNames[column];
+   }
 
-    public int getRowCount()
-    {
-        if (model == null) return 0;
-        return model.items().get().size();
-    }
+   public int getRowCount()
+   {
+      if (model == null) return 0;
+      return model.items().get().size();
+   }
 
-    public int getColumnCount()
-    {
-        return columnClasses.length;
-    }
+   public int getColumnCount()
+   {
+      return columnClasses.length;
+   }
 
 }

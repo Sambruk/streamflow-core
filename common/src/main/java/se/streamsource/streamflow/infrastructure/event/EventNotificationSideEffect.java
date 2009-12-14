@@ -22,21 +22,21 @@ import org.qi4j.api.sideeffect.SideEffectOf;
  * Notify event listeners that an event was created by the factory
  */
 public class EventNotificationSideEffect
-        extends SideEffectOf<DomainEventFactory>
-        implements DomainEventFactory
+      extends SideEffectOf<DomainEventFactory>
+      implements DomainEventFactory
 {
-    @Service
-    Iterable<EventListener> listeners;
+   @Service
+   Iterable<EventListener> listeners;
 
-    public DomainEvent createEvent( EntityComposite entity, String name, Object[] args )
-    {
-        DomainEvent event = result.createEvent( entity, name, args);
+   public DomainEvent createEvent( EntityComposite entity, String name, Object[] args )
+   {
+      DomainEvent event = result.createEvent( entity, name, args );
 
-        for (EventListener listener : listeners)
-        {
-            listener.notifyEvent(event);
-        }
+      for (EventListener listener : listeners)
+      {
+         listener.notifyEvent( event );
+      }
 
-        return null;
-    }
+      return null;
+   }
 }

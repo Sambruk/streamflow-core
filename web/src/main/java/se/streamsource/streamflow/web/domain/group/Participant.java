@@ -21,6 +21,6 @@ import se.streamsource.streamflow.domain.roles.Describable;
  * JAVADOC
  */
 public interface Participant
-        extends Identity, Participation, Describable
+      extends Identity, Participation, Describable
 {
 }

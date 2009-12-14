@@ -35,109 +35,118 @@ import java.util.Date;
  * created events.
  */
 public interface DomainEvent
-        extends ValueComposite, Identity
+      extends ValueComposite, Identity
 {
-    // Dummy event to be used when calling event methods from commands
-    public static final DomainEvent CREATE = new DomainEventDummy();
+   // Dummy event to be used when calling event methods from commands
+   public static final DomainEvent CREATE = new DomainEventDummy();
 
-    // Usecase
-    Property<String> usecase();
+   // Usecase
 
-    // Name of method/event
-    Property<String> name();
+   Property<String> usecase();
 
-    // Id of the entity that generated the event
-    Property<String> entity();
+   // Name of method/event
 
-    // When the event occurred
-    Property<Date> on();
+   Property<String> name();
 
-    // Who performed the event
-    @Optional
-    Property<String> by();
+   // Id of the entity that generated the event
 
-    // Method parameters as JSON
-    Property<String> parameters();
+   Property<String> entity();
 
-    // Type of the entity being invoked
-    Property<String> entityType();
+   // When the event occurred
 
-    // Version of the application
-    Property<String> version();
+   Property<Date> on();
 
-    // Dummy event class
-    class DomainEventDummy
-            implements DomainEvent
-    {
-        public Property<String> usecase()
-        {
-            return null;
-        }
+   // Who performed the event
 
-        public Property<String> name()
-        {
-            return null;
-        }
+   @Optional
+   Property<String> by();
 
-        public Property<String> entity()
-        {
-            return null;
-        }
+   // Method parameters as JSON
 
-        public Property<Date> on()
-        {
-            return null;
-        }
+   Property<String> parameters();
 
-        public Property<String> by()
-        {
-            return null;
-        }
+   // Type of the entity being invoked
 
-        public Property<String> parameters()
-        {
-            return null;
-        }
+   Property<String> entityType();
+
+   // Version of the application
+
+   Property<String> version();
+
+   // Dummy event class
+
+   class DomainEventDummy
+         implements DomainEvent
+   {
+      public Property<String> usecase()
+      {
+         return null;
+      }
+
+      public Property<String> name()
+      {
+         return null;
+      }
+
+      public Property<String> entity()
+      {
+         return null;
+      }
+
+      public Property<Date> on()
+      {
+         return null;
+      }
+
+      public Property<String> by()
+      {
+         return null;
+      }
+
+      public Property<String> parameters()
+      {
+         return null;
+      }
 
 
-        public Property<String> version()
-        {
-            return null;
-        }
+      public Property<String> version()
+      {
+         return null;
+      }
 
-        public Property<String> entityType()
-        {
-            return null;
-        }
+      public Property<String> entityType()
+      {
+         return null;
+      }
 
-        public StateHolder state()
-        {
-            return null;
-        }
+      public StateHolder state()
+      {
+         return null;
+      }
 
-        public <T> ValueBuilder<T> buildWith()
-        {
-            return null;
-        }
+      public <T> ValueBuilder<T> buildWith()
+      {
+         return null;
+      }
 
-        public String toJSON()
-        {
-            return null;
-        }
+      public String toJSON()
+      {
+         return null;
+      }
 
-        public <T> T metaInfo(Class<T> infoType)
-        {
-            return null;
-        }
+      public <T> T metaInfo( Class<T> infoType )
+      {
+         return null;
+      }
 
-        public Class<? extends Composite> type()
-        {
-            return null;
-        }
+      public Class<? extends Composite> type()
+      {
+         return null;
+      }
 
-        public Property<String> identity()
-        {
-            return null;
-        }
-    }
+      public Property<String> identity()
+      {
+         return null;
+      }
+   }
 }

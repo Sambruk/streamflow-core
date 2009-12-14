@@ -14,15 +14,15 @@
 
 package se.streamsource.streamflow.web.resource.organizations.groups;
 
-import se.streamsource.streamflow.web.resource.Path;
+import org.qi4j.api.composite.TransientBuilder;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.domain.group.Group;
 import se.streamsource.streamflow.web.domain.group.Groups;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.composite.TransientBuilder;
-import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.web.resource.Path;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -31,27 +31,27 @@ import java.util.ArrayList;
 @Mixins(GroupsResource.GroupsMixin.class)
 public interface GroupsResource
 {
-    GroupResource group(Group group);
+   GroupResource group( Group group );
 
-    class GroupsMixin
-        implements GroupsResource
-    {
-        @Uses
-        TransientBuilder<GroupResource> groupResource;
+   class GroupsMixin
+         implements GroupsResource
+   {
+      @Uses
+      TransientBuilder<GroupResource> groupResource;
 
-        public GroupResource group(Group group)
-        {
-            return groupResource.use(group).newInstance();
-        }
+      public GroupResource group( Group group )
+      {
+         return groupResource.use( group ).newInstance();
+      }
 
-        public Iterable<GroupResource> group( Groups.Data groups)
-        {
-            List<GroupResource> groupList = new ArrayList<GroupResource>();
-            for (Group group : groups.groups())
-            {
-                groupList.add(groupResource.use(group).newInstance());
-            }
-            return groupList;
-        }
-    }
+      public Iterable<GroupResource> group( Groups.Data groups )
+      {
+         List<GroupResource> groupList = new ArrayList<GroupResource>();
+         for (Group group : groups.groups())
+         {
+            groupList.add( groupResource.use( group ).newInstance() );
+         }
+         return groupList;
+      }
+   }
 }

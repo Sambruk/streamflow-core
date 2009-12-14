@@ -19,18 +19,18 @@ package se.streamsource.streamflow.client.ui.overview;
  */
 public enum OverviewResources
 {
-    projects_node,
-    assignments_node,
-    window_name,
-    could_not_refresh_projects,
-    description_column_header,
-    created_column_header,
-    assigned_to_column_header,
-    waitingfor_node,
-    project_column_header,
-    inbox_column_header,
-    assigned_column_header,
-    could_not_refresh, 
-    total_column_header,
-    projects_summary
+   projects_node,
+   assignments_node,
+   window_name,
+   could_not_refresh_projects,
+   description_column_header,
+   created_column_header,
+   assigned_to_column_header,
+   waitingfor_node,
+   project_column_header,
+   inbox_column_header,
+   assigned_column_header,
+   could_not_refresh,
+   total_column_header,
+   projects_summary
 }

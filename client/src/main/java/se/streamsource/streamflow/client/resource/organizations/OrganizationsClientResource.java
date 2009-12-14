@@ -32,54 +32,54 @@ import se.streamsource.streamflow.resource.user.UserEntityListDTO;
  * JAVADOC
  */
 public class OrganizationsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public OrganizationsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public OrganizationsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public OrganizationClientResource organization(String orgid) throws ResourceException
-    {
-        return getSubResource(orgid, OrganizationClientResource.class);
-    }
+   public OrganizationClientResource organization( String orgid ) throws ResourceException
+   {
+      return getSubResource( orgid, OrganizationClientResource.class );
+   }
 
-    public UserEntityListDTO users() throws ResourceException
-    {
-        return query("users", UserEntityListDTO.class);
-    }
+   public UserEntityListDTO users() throws ResourceException
+   {
+      return query( "users", UserEntityListDTO.class );
+   }
 
-    public void createUser(String username, String password) throws ResourceException
-    {
-        ValueBuilder<NewUserCommand> builder = vbf.newValueBuilder(NewUserCommand.class);
-        builder.prototype().username().set(username);
-        builder.prototype().password().set(password);
+   public void createUser( String username, String password ) throws ResourceException
+   {
+      ValueBuilder<NewUserCommand> builder = vbf.newValueBuilder( NewUserCommand.class );
+      builder.prototype().username().set( username );
+      builder.prototype().password().set( password );
 
-        postCommand("createUser",builder.newInstance());
-    }
+      postCommand( "createUser", builder.newInstance() );
+   }
 
-    public void changeDisabled(UserEntityDTO user) throws ResourceException
-    {
-        postCommand("changeDisabled", user);
-    }
+   public void changeDisabled( UserEntityDTO user ) throws ResourceException
+   {
+      postCommand( "changeDisabled", user );
+   }
 
 
-    public void importUsers(Representation representation) throws ResourceException
-    {
-        postCommand("importUsers", representation);
-    }
+   public void importUsers( Representation representation ) throws ResourceException
+   {
+      postCommand( "importUsers", representation );
+   }
 
-    public ListValue organizations() throws ResourceException
-    {
-        return query("organizations", ListValue.class);
-    }
+   public ListValue organizations() throws ResourceException
+   {
+      return query( "organizations", ListValue.class );
+   }
 
-    public void resetPassword(EntityReference userentity, String password) throws ResourceException
-    {
-        ValueBuilder<ResetPasswordCommand> builder = vbf.newValueBuilder(ResetPasswordCommand.class);
-        builder.prototype().entity().set(userentity);
-        builder.prototype().password().set(password);
+   public void resetPassword( EntityReference userentity, String password ) throws ResourceException
+   {
+      ValueBuilder<ResetPasswordCommand> builder = vbf.newValueBuilder( ResetPasswordCommand.class );
+      builder.prototype().entity().set( userentity );
+      builder.prototype().password().set( password );
 
-        putCommand("resetPassword",builder.newInstance());
-    }
+      putCommand( "resetPassword", builder.newInstance() );
+   }
 }

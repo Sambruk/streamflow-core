@@ -24,8 +24,8 @@ import java.util.List;
  * List of task comments
  */
 public interface CommentsDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<CommentDTO>> comments();
+   @UseDefaults
+   Property<List<CommentDTO>> comments();
 }

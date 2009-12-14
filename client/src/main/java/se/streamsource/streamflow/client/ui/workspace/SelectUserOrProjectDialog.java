@@ -29,10 +29,12 @@ import se.streamsource.streamflow.client.ui.administration.projects.members.Tabl
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -40,115 +42,115 @@ import java.awt.event.KeyEvent;
  * JAVADOC
  */
 public class SelectUserOrProjectDialog
-        extends JPanel
+      extends JPanel
 {
-    Dimension dialogSize = new Dimension(600, 300);
-    private TableSelectionView addUsersView;
-    private TableSelectionView addProjectsView;
-    public ListItemValue selected;
+   Dimension dialogSize = new Dimension( 600, 300 );
+   private TableSelectionView addUsersView;
+   private TableSelectionView addProjectsView;
+   public ListItemValue selected;
 
-    public SelectUserOrProjectDialog(final @Uses WorkspaceUserNode user,
-                                        @Service ApplicationContext context,
-                                        @Structure ObjectBuilderFactory obf)
-    {
-        super(new BorderLayout());
+   public SelectUserOrProjectDialog( final @Uses WorkspaceUserNode user,
+                                     @Service ApplicationContext context,
+                                     @Structure ObjectBuilderFactory obf )
+   {
+      super( new BorderLayout() );
 
-        setName(i18n.text(WorkspaceResources.search_projects_users));
-        setActionMap(context.getActionMap(this));
+      setName( i18n.text( WorkspaceResources.search_projects_users ) );
+      setActionMap( context.getActionMap( this ) );
 
-        TableSingleSelectionModel usersModel = obf.newObject(TableSingleSelectionModel.class);
-        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, i18n.text(WorkspaceResources.search_user)).newInstance();
+      TableSingleSelectionModel usersModel = obf.newObject( TableSingleSelectionModel.class );
+      this.addUsersView = obf.newObjectBuilder( TableSelectionView.class ).use( usersModel, i18n.text( WorkspaceResources.search_user ) ).newInstance();
 
-        TableSingleSelectionModel projectsModel = obf.newObject(TableSingleSelectionModel.class);
-        this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, i18n.text(WorkspaceResources.search_project)).newInstance();
+      TableSingleSelectionModel projectsModel = obf.newObject( TableSingleSelectionModel.class );
+      this.addProjectsView = obf.newObjectBuilder( TableSelectionView.class ).use( projectsModel, i18n.text( WorkspaceResources.search_project ) ).newInstance();
 
-        JSplitPane dialog = new JSplitPane();
+      JSplitPane dialog = new JSplitPane();
 
-        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyReleased(KeyEvent keyEvent)
+      addUsersView.getSearchInputField().addKeyListener( new KeyAdapter()
+      {
+         @Override
+         public void keyReleased( KeyEvent keyEvent )
+         {
+            try
             {
-                try
-                {
-                    ListValue value = user.findUsers(addUsersView.searchText());
-                    addUsersView.getModel().setModel(value);
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        addProjectsView.getSearchInputField().addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyReleased(KeyEvent keyEvent)
+               ListValue value = user.findUsers( addUsersView.searchText() );
+               addUsersView.getModel().setModel( value );
+            } catch (ResourceException e)
             {
-                try
-                {
-                    ListValue value = user.findProjects(addProjectsView.searchText());
-                    addProjectsView.getModel().setModel(value);
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
+               e.printStackTrace();
             }
-        });
+         }
+      } );
 
-        addProjectsView.getModel().addTableModelListener(new TableModelListener()
-        {
-
-            public void tableChanged(TableModelEvent tableModelEvent)
+      addProjectsView.getSearchInputField().addKeyListener( new KeyAdapter()
+      {
+         @Override
+         public void keyReleased( KeyEvent keyEvent )
+         {
+            try
             {
-                if (TableModelEvent.UPDATE == tableModelEvent.getType())
-                {
-                    addUsersView.getModel().clearSelection();
-                }
-            }
-        });
-
-        addUsersView.getModel().addTableModelListener(new TableModelListener()
-        {
-
-            public void tableChanged(TableModelEvent tableModelEvent)
+               ListValue value = user.findProjects( addProjectsView.searchText() );
+               addProjectsView.getModel().setModel( value );
+            } catch (ResourceException e)
             {
-                if (TableModelEvent.UPDATE == tableModelEvent.getType())
-                {
-                    addProjectsView.getModel().clearSelection();
-                }
+               e.printStackTrace();
             }
-        });
+         }
+      } );
+
+      addProjectsView.getModel().addTableModelListener( new TableModelListener()
+      {
+
+         public void tableChanged( TableModelEvent tableModelEvent )
+         {
+            if (TableModelEvent.UPDATE == tableModelEvent.getType())
+            {
+               addUsersView.getModel().clearSelection();
+            }
+         }
+      } );
+
+      addUsersView.getModel().addTableModelListener( new TableModelListener()
+      {
+
+         public void tableChanged( TableModelEvent tableModelEvent )
+         {
+            if (TableModelEvent.UPDATE == tableModelEvent.getType())
+            {
+               addProjectsView.getModel().clearSelection();
+            }
+         }
+      } );
 
 
-        dialog.setLeftComponent(addProjectsView);
-        dialog.setRightComponent(addUsersView);
-        dialog.setPreferredSize(dialogSize);
-        dialog.setDividerLocation((int)((dialogSize.getWidth() - dialog.getDividerSize()) / 2));
-        setPreferredSize(dialogSize);
-        add(dialog, BorderLayout.NORTH);
-    }
+      dialog.setLeftComponent( addProjectsView );
+      dialog.setRightComponent( addUsersView );
+      dialog.setPreferredSize( dialogSize );
+      dialog.setDividerLocation( (int) ((dialogSize.getWidth() - dialog.getDividerSize()) / 2) );
+      setPreferredSize( dialogSize );
+      add( dialog, BorderLayout.NORTH );
+   }
 
-    public EntityReference getSelected()
-    {
-        return selected == null ? null : selected.entity().get();
-    }
+   public EntityReference getSelected()
+   {
+      return selected == null ? null : selected.entity().get();
+   }
 
-    @Action
-    public void execute()
-    {
-        selected = ((TableSingleSelectionModel) addUsersView.getModel()).getSelected();
-        if (selected == null)
-        {
-            selected = ((TableSingleSelectionModel) addProjectsView.getModel()).getSelected();
-        }
+   @Action
+   public void execute()
+   {
+      selected = ((TableSingleSelectionModel) addUsersView.getModel()).getSelected();
+      if (selected == null)
+      {
+         selected = ((TableSingleSelectionModel) addProjectsView.getModel()).getSelected();
+      }
 
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 }

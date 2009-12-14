@@ -23,18 +23,18 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * JAVADOC
  */
 public class FormAssembler
-    implements Assembler
+      implements Assembler
 {
-    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
-    {
-        moduleAssembly.addValues( CreateFieldDTO.class, 
-                EffectiveFieldValue.class,
-                EffectiveFormFieldsValue.class,
-                SubmittedFieldValue.class,
-                FormValue.class,
-                FieldValue.class,
-                FieldDefinitionValue.class,
-                SubmittedFormValue.class,
-                SubmitFormDTO.class).visibleIn( Visibility.application );
-    }
+   public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      moduleAssembly.addValues( CreateFieldDTO.class,
+            EffectiveFieldValue.class,
+            EffectiveFormFieldsValue.class,
+            SubmittedFieldValue.class,
+            FormValue.class,
+            FieldValue.class,
+            FieldDefinitionValue.class,
+            SubmittedFormValue.class,
+            SubmitFormDTO.class ).visibleIn( Visibility.application );
+   }
 }

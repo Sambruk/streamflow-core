@@ -25,44 +25,44 @@ import se.streamsource.streamflow.web.domain.group.Groups;
  * JAVADOC
  */
 public class GroupsSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    OrganizationalUnitsSteps ouSteps;
+   @Uses
+   OrganizationalUnitsSteps ouSteps;
 
-    @Uses
-    OrganizationsSteps organizationsSteps;
+   @Uses
+   OrganizationsSteps organizationsSteps;
 
-    public GroupEntity givenGroup;
+   public GroupEntity givenGroup;
 
-    @Given("group named $name")
-    public void givenGroup(String name)
-    {
-        givenGroup = ouSteps.givenOu.getGroupByName(name);
-    }
+   @Given("group named $name")
+   public void givenGroup( String name )
+   {
+      givenGroup = ouSteps.givenOu.getGroupByName( name );
+   }
 
-    @When("a group named $name is created")
-    public void createGroup(String name)
-    {
-        givenGroup = ouSteps.givenOu.createGroup(name);
-    }
+   @When("a group named $name is created")
+   public void createGroup( String name )
+   {
+      givenGroup = ouSteps.givenOu.createGroup( name );
+   }
 
-    @When("group is added")
-    public void addGroup()
-    {
-        ouSteps.givenOu.addGroup( givenGroup );
-    }
+   @When("group is added")
+   public void addGroup()
+   {
+      ouSteps.givenOu.addGroup( givenGroup );
+   }
 
-    @When("group is removed")
-    public void removeGroup()
-    {
-        ouSteps.givenOu.removeGroup(givenGroup);
-    }
+   @When("group is removed")
+   public void removeGroup()
+   {
+      ouSteps.givenOu.removeGroup( givenGroup );
+   }
 
-    @When("groups are merged with $name")
-    public void mergeGroups(String ouName)
-    {
-        Groups mergeToGroups = (Groups) organizationsSteps.givenOrganization.getOrganizationalUnitByName(ouName);
-        ouSteps.givenOu.mergeGroups( mergeToGroups );
-    }
+   @When("groups are merged with $name")
+   public void mergeGroups( String ouName )
+   {
+      Groups mergeToGroups = (Groups) organizationsSteps.givenOrganization.getOrganizationalUnitByName( ouName );
+      ouSteps.givenOu.mergeGroups( mergeToGroups );
+   }
 }

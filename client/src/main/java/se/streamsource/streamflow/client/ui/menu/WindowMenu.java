@@ -21,22 +21,22 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
  * Window menu
  */
 public class WindowMenu
-        extends AbstractMenu
+      extends AbstractMenu
 {
-    @Service
-    FileConfiguration config;
+   @Service
+   FileConfiguration config;
 
-    protected void init()
-    {
-        menu("windowMenu",
+   protected void init()
+   {
+      menu( "windowMenu",
 /*
                 "minimizeAll",
                 "---",
 */
-                "showWorkspaceWindow",
-                "showOverviewWindow",
-                "showSearchWindow",
-                "showAdministrationWindow",
-                "showDebugWindow");
-    }
+            "showWorkspaceWindow",
+            "showOverviewWindow",
+            "showSearchWindow",
+            "showAdministrationWindow",
+            "showDebugWindow" );
+   }
 }

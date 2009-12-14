@@ -34,61 +34,61 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * Mapped to /organizations/{organization}/ou/{ou}
  */
 public class OrganizationalUnitServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public void changedescription(StringDTO stringValue)
-    {
-        String orgId = (String) getRequest().getAttributes().get("ou");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, orgId);
+   public void changedescription( StringDTO stringValue )
+   {
+      String orgId = (String) getRequest().getAttributes().get( "ou" );
+      Describable describable = uowf.currentUnitOfWork().get( Describable.class, orgId );
 
-        checkPermission(describable);
-        describable.changeDescription(stringValue.string().get());
-    }
+      checkPermission( describable );
+      describable.changeDescription( stringValue.string().get() );
+   }
 
-    @Override
-    protected Representation get(Variant variant) throws ResourceException
-    {
-        if (getRequest().getResourceRef().hasQuery())
-        {
-            return super.get(variant);
-        }
-        return getHtml("resources/ou.html");
-    }
+   @Override
+   protected Representation get( Variant variant ) throws ResourceException
+   {
+      if (getRequest().getResourceRef().hasQuery())
+      {
+         return super.get( variant );
+      }
+      return getHtml( "resources/ou.html" );
+   }
 
-    public void move(EntityReferenceDTO moveValue) throws ResourceException
-    {
-        String ouId = (String) getRequest().getAttributes().get("ou");
-        OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
-        OrganizationalUnits toEntity = uowf.currentUnitOfWork().get(OrganizationalUnits.class, moveValue.entity().get().identity());
+   public void move( EntityReferenceDTO moveValue ) throws ResourceException
+   {
+      String ouId = (String) getRequest().getAttributes().get( "ou" );
+      OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get( OrganizationalUnitEntity.class, ouId );
+      OrganizationalUnits toEntity = uowf.currentUnitOfWork().get( OrganizationalUnits.class, moveValue.entity().get().identity() );
 
-        checkPermission(ou);
+      checkPermission( ou );
 
-        try
-        {
-            ou.moveOrganizationalUnit(toEntity);
-        } catch (MoveOrganizationalUnitException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
-        }
-    }
+      try
+      {
+         ou.moveOrganizationalUnit( toEntity );
+      } catch (MoveOrganizationalUnitException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
+      }
+   }
 
-    public void merge(EntityReferenceDTO moveValue) throws ResourceException
-    {
-        String ouId = (String) getRequest().getAttributes().get("ou");
-        OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get(OrganizationalUnitEntity.class, ouId);
-        OrganizationalUnitRefactoring toEntity = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.class, moveValue.entity().get().identity());
+   public void merge( EntityReferenceDTO moveValue ) throws ResourceException
+   {
+      String ouId = (String) getRequest().getAttributes().get( "ou" );
+      OrganizationalUnitEntity ou = uowf.currentUnitOfWork().get( OrganizationalUnitEntity.class, ouId );
+      OrganizationalUnitRefactoring toEntity = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.class, moveValue.entity().get().identity() );
 
-        checkPermission(ou);
+      checkPermission( ou );
 
-        try
-        {
-            ou.mergeOrganizationalUnit(toEntity);
-        } catch (MergeOrganizationalUnitException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
-        }
-    }
+      try
+      {
+         ou.mergeOrganizationalUnit( toEntity );
+      } catch (MergeOrganizationalUnitException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
+      }
+   }
 }

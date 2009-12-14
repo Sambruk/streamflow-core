@@ -37,50 +37,50 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @AppliesTo(EventEntityAddedMixin.EventEntityAddedAppliesTo.class)
 public class EventEntityAddedMixin
-        implements InvocationHandler
+      implements InvocationHandler
 {
-    private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
+   private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
 
-    @State
-    EntityStateHolder state;
+   @State
+   EntityStateHolder state;
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @This
-    EntityComposite composite;
+   @This
+   EntityComposite composite;
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-    {
-        Method manyAssociationMethod = methodMappings.get(method);
-        if (manyAssociationMethod == null)
-        {
-            // Find ManyAssociation method
-            String addedName = Introspector.decapitalize( method.getName().substring("added".length())) + "s";
-            manyAssociationMethod = composite.getClass().getInterfaces()[0].getMethod(addedName);
-            methodMappings.put(method, manyAssociationMethod);
-        }
+   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   {
+      Method manyAssociationMethod = methodMappings.get( method );
+      if (manyAssociationMethod == null)
+      {
+         // Find ManyAssociation method
+         String addedName = Introspector.decapitalize( method.getName().substring( "added".length() ) ) + "s";
+         manyAssociationMethod = composite.getClass().getInterfaces()[0].getMethod( addedName );
+         methodMappings.put( method, manyAssociationMethod );
+      }
 
-        // Create entity
-        EntityComposite entity = (EntityComposite) args[1];
+      // Create entity
+      EntityComposite entity = (EntityComposite) args[1];
 
-        // Lookup the ManyAssociation
-        ManyAssociation<Object> manyAssociation = state.getManyAssociation(manyAssociationMethod);
+      // Lookup the ManyAssociation
+      ManyAssociation<Object> manyAssociation = state.getManyAssociation( manyAssociationMethod );
 
-        // Add entity to ManyAssociation
-        manyAssociation.add(entity);
+      // Add entity to ManyAssociation
+      manyAssociation.add( entity );
 
-        return entity;
-    }
+      return entity;
+   }
 
-    public static class EventEntityAddedAppliesTo
-            implements AppliesToFilter
-    {
-        public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
-        {
-            return method.getParameterTypes().length == 2 &&
-                    method.getParameterTypes()[0].equals(DomainEvent.class) && method.getName().startsWith("added") &&
-                    method.getReturnType().equals(Void.TYPE);
-        }
-    }
+   public static class EventEntityAddedAppliesTo
+         implements AppliesToFilter
+   {
+      public boolean appliesTo( Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass )
+      {
+         return method.getParameterTypes().length == 2 &&
+               method.getParameterTypes()[0].equals( DomainEvent.class ) && method.getName().startsWith( "added" ) &&
+               method.getReturnType().equals( Void.TYPE );
+      }
+   }
 }

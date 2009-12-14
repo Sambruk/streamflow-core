@@ -21,39 +21,42 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 public class OrganizationsView
-        extends JPanel
+      extends JPanel
 {
-    private OrganizationsModel model;
+   private OrganizationsModel model;
 
-    JList organizationsList;
-    @Structure
-    ObjectBuilderFactory obf;
+   JList organizationsList;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    public OrganizationsView(@Service ApplicationContext context, @Uses OrganizationsModel model)
-    {
-        super(new BorderLayout());
-        this.model = model;
+   public OrganizationsView( @Service ApplicationContext context, @Uses OrganizationsModel model )
+   {
+      super( new BorderLayout() );
+      this.model = model;
 
-        organizationsList = new JList(model);
+      organizationsList = new JList( model );
 
-        organizationsList.setCellRenderer(new ListItemListCellRenderer());
+      organizationsList.setCellRenderer( new ListItemListCellRenderer() );
 
-        JScrollPane scrollPane = new JScrollPane(organizationsList);
-        add(scrollPane, BorderLayout.CENTER);
-        setPreferredSize(new Dimension(250,600));
-    }
+      JScrollPane scrollPane = new JScrollPane( organizationsList );
+      add( scrollPane, BorderLayout.CENTER );
+      setPreferredSize( new Dimension( 250, 600 ) );
+   }
 
-    public JList getOrganizationsList()
-    {
-        return organizationsList; 
-    }
+   public JList getOrganizationsList()
+   {
+      return organizationsList;
+   }
 
-    public OrganizationsModel getModel()
-    {
-        return model;
-    }
+   public OrganizationsModel getModel()
+   {
+      return model;
+   }
 }

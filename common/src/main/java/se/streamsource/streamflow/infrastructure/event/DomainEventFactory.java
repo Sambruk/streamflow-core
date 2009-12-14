@@ -21,5 +21,5 @@ import org.qi4j.api.entity.EntityComposite;
  */
 public interface DomainEventFactory
 {
-    DomainEvent createEvent( EntityComposite entity, String name, Object[] args );
+   DomainEvent createEvent( EntityComposite entity, String name, Object[] args );
 }

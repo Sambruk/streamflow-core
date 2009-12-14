@@ -25,71 +25,71 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
  * JAVADOC
  */
 public class InboxSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @Uses
-    ProjectsSteps projectsSteps;
+   @Uses
+   ProjectsSteps projectsSteps;
 
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    public TaskEntity givenTask;
+   public TaskEntity givenTask;
 
-    @When("inbox task is created")
-    public void createTask()
-    {
-        givenTask = (TaskEntity) projectsSteps.givenProject.createTask();
-    }
+   @When("inbox task is created")
+   public void createTask()
+   {
+      givenTask = (TaskEntity) projectsSteps.givenProject.createTask();
+   }
 
-    @When("inbox task is forwarded to user $name")
-    public void forward(String name)
-    {
-        try
-        {
-            UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
-            projectsSteps.givenProject.forwardTo(givenTask, user);
-        } catch (Exception e)
-        {
-            genericSteps.setThrowable( e );
-        }
-    }
+   @When("inbox task is forwarded to user $name")
+   public void forward( String name )
+   {
+      try
+      {
+         UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
+         projectsSteps.givenProject.forwardTo( givenTask, user );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
-    @When("task is marked as $mark")
-    public void markTaskAs(String mark)
-    {
-        if ("read".equals(mark))
-        {
-            projectsSteps.givenProject.markAsRead( givenTask );
-        } else
-        {
-            projectsSteps.givenProject.markAsUnread(givenTask);
-        }
-    }
+   @When("task is marked as $mark")
+   public void markTaskAs( String mark )
+   {
+      if ("read".equals( mark ))
+      {
+         projectsSteps.givenProject.markAsRead( givenTask );
+      } else
+      {
+         projectsSteps.givenProject.markAsUnread( givenTask );
+      }
+   }
 
-    @When("task is completed")
-    public void completeTask()
-    {
-        try
-        {
-            projectsSteps.givenProject.completeTask( givenTask, orgsSteps.givenUser );
-        } catch (Exception e)
-        {
-            genericSteps.setThrowable( e );
-        }
-    }
+   @When("task is completed")
+   public void completeTask()
+   {
+      try
+      {
+         projectsSteps.givenProject.completeTask( givenTask, orgsSteps.givenUser );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
-    /*
-    void receiveTask(Task task);
+   /*
+  void receiveTask(Task task);
 
 
-    void dropTask(Task task, Assignee assignee);
+  void dropTask(Task task, Assignee assignee);
 
-    void assignTo(Task task, Assignee assignee);
+  void assignTo(Task task, Assignee assignee);
 
-    void delegateTo(Task task, Delegatee delegatee, Delegator delegator);
+  void delegateTo(Task task, Delegatee delegatee, Delegator delegator);
 
-     */
+   */
 }

@@ -27,38 +27,38 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class WorkspaceModel
-        extends DefaultTreeModel
-    implements EventListener, EventHandler
+      extends DefaultTreeModel
+      implements EventListener, EventHandler
 {
-    public EventHandlerFilter eventHandlerFilter;
+   public EventHandlerFilter eventHandlerFilter;
 
-    public WorkspaceModel(@Uses WorkspaceNode node)
-    {
-        super(node);
+   public WorkspaceModel( @Uses WorkspaceNode node )
+   {
+      super( node );
 
-        eventHandlerFilter = new EventHandlerFilter(this, "joinedProject","leftProject","joinedGroup","leftGroup",
-                "createdProject","removedProject");
-    }
+      eventHandlerFilter = new EventHandlerFilter( this, "joinedProject", "leftProject", "joinedGroup", "leftGroup",
+            "createdProject", "removedProject" );
+   }
 
-    @Override
-    public WorkspaceNode getRoot()
-    {
-        return (WorkspaceNode) super.getRoot();
-    }
+   @Override
+   public WorkspaceNode getRoot()
+   {
+      return (WorkspaceNode) super.getRoot();
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        getRoot().notifyEvent(event);
+   public void notifyEvent( DomainEvent event )
+   {
+      getRoot().notifyEvent( event );
 
-        eventHandlerFilter.handleEvent( event );
-    }
+      eventHandlerFilter.handleEvent( event );
+   }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        Logger.getLogger("workspace").info("Refresh project list");
-        getRoot().getProjectsNode().refresh();
-        reload(getRoot().getProjectsNode());
+   public boolean handleEvent( DomainEvent event )
+   {
+      Logger.getLogger( "workspace" ).info( "Refresh project list" );
+      getRoot().getProjectsNode().refresh();
+      reload( getRoot().getProjectsNode() );
 
-        return true;
-    }
+      return true;
+   }
 }

@@ -26,51 +26,51 @@ import se.streamsource.streamflow.web.domain.form.FormTemplates;
  * JAVADOC
  */
 public class FormTemplatesSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    @Uses
-    FormsSteps formsSteps;
+   @Uses
+   FormsSteps formsSteps;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    public FormTemplateEntity givenTemplate;
+   public FormTemplateEntity givenTemplate;
 
-    @Given("form template named $form")
-    public void givenFormTemplate(String name)
-    {
-        FormTemplates.Data forms = orgsSteps.givenOrganization;
-        givenTemplate = forms.getTemplateByName( name );
-    }
+   @Given("form template named $form")
+   public void givenFormTemplate( String name )
+   {
+      FormTemplates.Data forms = orgsSteps.givenOrganization;
+      givenTemplate = forms.getTemplateByName( name );
+   }
 
-    @When("a form template is created")
-    public void createTemplate() throws Exception
-    {
-        try
-        {
-            FormTemplates forms = orgsSteps.givenOrganization;
+   @When("a form template is created")
+   public void createTemplate() throws Exception
+   {
+      try
+      {
+         FormTemplates forms = orgsSteps.givenOrganization;
 
-            givenTemplate = forms.createFormTemplate( formsSteps.givenForm );
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+         givenTemplate = forms.createFormTemplate( formsSteps.givenForm );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
-    @When("a form template is removed")
-    public void removeTemplate() throws Exception
-    {
-        try
-        {
-            FormTemplates forms = orgsSteps.givenOrganization;
+   @When("a form template is removed")
+   public void removeTemplate() throws Exception
+   {
+      try
+      {
+         FormTemplates forms = orgsSteps.givenOrganization;
 
-            forms.removeFormTemplate( givenTemplate );
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+         forms.removeFormTemplate( givenTemplate );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 }

@@ -14,42 +14,41 @@
 
 package se.streamsource.streamflow.client.resource.users.overview;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * JAVADOC
  */
 public class OverviewClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public OverviewClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public OverviewClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public OverviewProjectsClientResource projects()
-    {
-        return getSubResource("projects", OverviewProjectsClientResource.class);
-    }
+   public OverviewProjectsClientResource projects()
+   {
+      return getSubResource( "projects", OverviewProjectsClientResource.class );
+   }
 
-    public ProjectSummaryListDTO overview() throws ResourceException, IOException
-    {
-        return query("projectSummary", ProjectSummaryListDTO.class);
-    }
-    
-    public InputStream generateExcelProjectSummary() throws ResourceException, IOException
-    {
-    	return queryStream("generateExcelProjectSummary", null);
-    }
+   public ProjectSummaryListDTO overview() throws ResourceException, IOException
+   {
+      return query( "projectSummary", ProjectSummaryListDTO.class );
+   }
+
+   public InputStream generateExcelProjectSummary() throws ResourceException, IOException
+   {
+      return queryStream( "generateExcelProjectSummary", null );
+   }
 
 }

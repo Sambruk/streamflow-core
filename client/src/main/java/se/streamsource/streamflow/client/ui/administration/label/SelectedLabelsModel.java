@@ -37,94 +37,94 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * Management of selected labels on a tasktype, project or OU level
  */
 public class SelectedLabelsModel
-        implements EventListener, Refreshable
+      implements EventListener, Refreshable
 {
-    @Uses
-    CommandQueryClient client;
+   @Uses
+   CommandQueryClient client;
 
-    BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>( );
+   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private ListValue list;
+   private ListValue list;
 
-    public EventList<ListItemValue> getLabelList()
-    {
-        return eventList;
-    }
+   public EventList<ListItemValue> getLabelList()
+   {
+      return eventList;
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            // Get label list
-            ListValue newList = client.query( "selectedlabels", ListValue.class );
+   public void refresh()
+   {
+      try
+      {
+         // Get label list
+         ListValue newList = client.query( "selectedlabels", ListValue.class );
 
-            if (list == null || !newList.equals( list ))
-            {
-                eventList.clear();
-                eventList.addAll( newList.items().get() );
-                list = newList;
-            }
+         if (list == null || !newList.equals( list ))
+         {
+            eventList.clear();
+            eventList.addAll( newList.items().get() );
+            list = newList;
+         }
 
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_labels, e);
-        }
-    }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh_list_of_labels, e );
+      }
+   }
 
-    public EventList<ListItemValue> getPossibleLabels()
-    {
-        try
-        {
-            BasicEventList<ListItemValue> possibleLabels = new BasicEventList<ListItemValue>();
-            possibleLabels.addAll( client.query( "possiblelabels", ListValue.class ).items().get() );
-            return possibleLabels;
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
-        }
-    }
+   public EventList<ListItemValue> getPossibleLabels()
+   {
+      try
+      {
+         BasicEventList<ListItemValue> possibleLabels = new BasicEventList<ListItemValue>();
+         possibleLabels.addAll( client.query( "possiblelabels", ListValue.class ).items().get() );
+         return possibleLabels;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
 
-    public void createLabel(String description)
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(description);
-            client.postCommand("createlabel",builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_create_label, e);
-        }
-    }
+   public void createLabel( String description )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( description );
+         client.postCommand( "createlabel", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_create_label, e );
+      }
+   }
 
-    public void addLabel( EntityReference identity)
-    {
-        try
-        {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class);
-            builder.prototype().entity().set(identity);
-            client.postCommand( "addlabel",  builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_add_label, e);
-        }
-    }
+   public void addLabel( EntityReference identity )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( identity );
+         client.postCommand( "addlabel", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_add_label, e );
+      }
+   }
 
-    public void removeLabel( EntityReference identity)
-    {
-        try
-        {
-            client.getSubClient( identity.identity() ).deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException( AdministrationResources.could_not_remove_label, e);
-        }
-    }
+   public void removeLabel( EntityReference identity )
+   {
+      try
+      {
+         client.getSubClient( identity.identity() ).deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_label, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+   }
 }

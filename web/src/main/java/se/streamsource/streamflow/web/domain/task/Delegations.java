@@ -14,11 +14,12 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.entity.association.ManyAssociation;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import static se.streamsource.streamflow.domain.task.TaskStates.ACTIVE;
+
+import static se.streamsource.streamflow.domain.task.TaskStates.*;
 
 /**
  * Delegations of tasks
@@ -26,71 +27,74 @@ import static se.streamsource.streamflow.domain.task.TaskStates.ACTIVE;
 @Mixins(Delegations.Mixin.class)
 public interface Delegations
 {
-    void accept(@HasStatus(ACTIVE) Task task, Assignee assignee);
+   void accept( @HasStatus(ACTIVE) Task task, Assignee assignee );
 
-    void reject(@HasStatus(ACTIVE) Task task);
+   void reject( @HasStatus(ACTIVE) Task task );
 
-    void finishDelegatedTask(@HasStatus(ACTIVE) Task task, Assignee assignee);
+   void finishDelegatedTask( @HasStatus(ACTIVE) Task task, Assignee assignee );
 
-    void markDelegatedTaskAsRead(Task task);
-    void markDelegatedTaskAsUnread(Task task);
+   void markDelegatedTaskAsRead( Task task );
 
-    interface Data
-    {
-        void markedDelegatedTaskAsRead(DomainEvent event, Task task);
-        void markedDelegatedTaskAsUnread(DomainEvent event, Task task);
-        ManyAssociation<Task> unreadDelegatedTasks();
-    }
+   void markDelegatedTaskAsUnread( Task task );
 
-    abstract class Mixin
-            implements Delegations, Data
-    {
-        @This
-        Owner owner;
+   interface Data
+   {
+      void markedDelegatedTaskAsRead( DomainEvent event, Task task );
 
-        public void accept(Task task, Assignee assignee)
-        {
-            task.assignTo(assignee);
-            task.changeOwner(owner);
-        }
+      void markedDelegatedTaskAsUnread( DomainEvent event, Task task );
 
-        public void reject(Task task)
-        {
-            task.rejectDelegation();
-        }
+      ManyAssociation<Task> unreadDelegatedTasks();
+   }
 
-        public void finishDelegatedTask(Task task, Assignee assignee)
-        {
-            accept(task, assignee);
-            task.done();
-        }
+   abstract class Mixin
+         implements Delegations, Data
+   {
+      @This
+      Owner owner;
 
-        public void markDelegatedTaskAsRead(Task task)
-        {
-            if (!unreadDelegatedTasks().contains(task))
-            {
-                return;
-            }
-            markedDelegatedTaskAsRead( DomainEvent.CREATE, task);
-        }
+      public void accept( Task task, Assignee assignee )
+      {
+         task.assignTo( assignee );
+         task.changeOwner( owner );
+      }
 
-        public void markDelegatedTaskAsUnread(Task task)
-        {
-            if (unreadDelegatedTasks().contains(task))
-            {
-                return;
-            }
-            markedDelegatedTaskAsUnread(DomainEvent.CREATE, task);
-        }
+      public void reject( Task task )
+      {
+         task.rejectDelegation();
+      }
 
-        public void markedDelegatedTaskAsRead(DomainEvent event, Task task)
-        {
-            unreadDelegatedTasks().remove(task);
-        }
+      public void finishDelegatedTask( Task task, Assignee assignee )
+      {
+         accept( task, assignee );
+         task.done();
+      }
 
-        public void markedDelegatedTaskAsUnread(DomainEvent event, Task task)
-        {
-            unreadDelegatedTasks().add(task);
-        }
-    }
+      public void markDelegatedTaskAsRead( Task task )
+      {
+         if (!unreadDelegatedTasks().contains( task ))
+         {
+            return;
+         }
+         markedDelegatedTaskAsRead( DomainEvent.CREATE, task );
+      }
+
+      public void markDelegatedTaskAsUnread( Task task )
+      {
+         if (unreadDelegatedTasks().contains( task ))
+         {
+            return;
+         }
+         markedDelegatedTaskAsUnread( DomainEvent.CREATE, task );
+      }
+
+      public void markedDelegatedTaskAsRead( DomainEvent event, Task task )
+      {
+         unreadDelegatedTasks().remove( task );
+      }
+
+      public void markedDelegatedTaskAsUnread( DomainEvent event, Task task )
+      {
+         unreadDelegatedTasks().add( task );
+      }
+   }
 }

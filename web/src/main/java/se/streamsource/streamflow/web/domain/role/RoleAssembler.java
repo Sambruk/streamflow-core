@@ -23,11 +23,11 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * JAVADOC
  */
 public class RoleAssembler
-    implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addEntities(RoleEntity.class).visibleIn(Visibility.application);
-        module.addValues(ParticipantRolesValue.class).visibleIn(Visibility.application);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addEntities( RoleEntity.class ).visibleIn( Visibility.application );
+      module.addValues( ParticipantRolesValue.class ).visibleIn( Visibility.application );
+   }
 }

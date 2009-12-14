@@ -27,26 +27,26 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/organizationalunits/{ou}/groups
  */
 public class GroupsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
 
-    public ListValue groups()
-    {
-        String identity = getRequest().getAttributes().get("ou").toString();
-        Groups.Data groups = uowf.currentUnitOfWork().get( Groups.Data.class, identity);
+   public ListValue groups()
+   {
+      String identity = getRequest().getAttributes().get( "ou" ).toString();
+      Groups.Data groups = uowf.currentUnitOfWork().get( Groups.Data.class, identity );
 
-        return new ListValueBuilder(vbf).addDescribableItems( groups.groups() ).newList();
-    }
+      return new ListValueBuilder( vbf ).addDescribableItems( groups.groups() ).newList();
+   }
 
-    public void createGroup(StringDTO name) throws ResourceException
-    {
-        String identity = getRequest().getAttributes().get("ou").toString();
+   public void createGroup( StringDTO name ) throws ResourceException
+   {
+      String identity = getRequest().getAttributes().get( "ou" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        Groups groups = uow.get(Groups.class, identity);
+      Groups groups = uow.get( Groups.class, identity );
 
-        checkPermission(groups);
-        groups.createGroup(name.string().get());
-    }
+      checkPermission( groups );
+      groups.createGroup( name.string().get() );
+   }
 }

@@ -51,206 +51,207 @@ import java.util.Observable;
  * JAVADOC
  */
 public class AccountModel
-        extends Observable
-    implements EventListener
+      extends Observable
+      implements EventListener
 {
-    @Structure ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Service
-    IndividualRepository individualRepository;
+   @Service
+   IndividualRepository individualRepository;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Service
-    Uniform client;
+   @Service
+   Uniform client;
 
-    @Uses
-    Account account;
+   @Uses
+   Account account;
 
-    private WorkspaceModel workspaceModel;
-    private OverviewModel overviewModel;
-    private SearchResultTableModel searchResults;
-    private AdministrationModel administrationModel;
-    private TasksModel tasksModel;
+   private WorkspaceModel workspaceModel;
+   private OverviewModel overviewModel;
+   private SearchResultTableModel searchResults;
+   private AdministrationModel administrationModel;
+   private TasksModel tasksModel;
 
-    public AccountSettingsValue settings()
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
-        Account acc = uow.get(account);
-        try
-        {
-            return acc.accountSettings();
-        } finally
-        {
-            uow.discard();
-        }
-    }
+   public AccountSettingsValue settings()
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
+      Account acc = uow.get( account );
+      try
+      {
+         return acc.accountSettings();
+      } finally
+      {
+         uow.discard();
+      }
+   }
 
-    public void updateSettings(AccountSettingsValue value) throws UnitOfWorkCompletionException
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
-        uow.get(account).updateSettings(value);
-        uow.complete();
-        setChanged();
-        notifyObservers();
-    }
+   public void updateSettings( AccountSettingsValue value ) throws UnitOfWorkCompletionException
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
+      uow.get( account ).updateSettings( value );
+      uow.complete();
+      setChanged();
+      notifyObservers();
+   }
 
-    public String test() throws IOException, ResourceException
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
-        try
-        {
-            return uow.get(account).server(client).version();
-        } finally
-        {
-            uow.discard();
-        }
-    }
+   public String test() throws IOException, ResourceException
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
+      try
+      {
+         return uow.get( account ).server( client ).version();
+      } finally
+      {
+         uow.discard();
+      }
+   }
 
-    public UserClientResource userResource()
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
+   public UserClientResource userResource()
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
 
-        try
-        {
-            return uow.get(account).user(client);
-        } finally
-        {
-            uow.discard();
-        }
-    }
+      try
+      {
+         return uow.get( account ).user( client );
+      } finally
+      {
+         uow.discard();
+      }
+   }
 
-    public StreamFlowClientResource serverResource()
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
+   public StreamFlowClientResource serverResource()
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
 
-        try
-        {
-            return uow.get(account).server(client);
-        } finally
-        {
-            uow.discard();
-        }
-    }
+      try
+      {
+         return uow.get( account ).server( client );
+      } finally
+      {
+         uow.discard();
+      }
+   }
 
-    public TreeValue organizations() throws ResourceException
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
-        Account acc = uow.get(account);
-        try
-        {
-            return acc.user(client).administration().organizations();
+   public TreeValue organizations() throws ResourceException
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
+      Account acc = uow.get( account );
+      try
+      {
+         return acc.user( client ).administration().organizations();
 
-        } finally
-        {
-            uow.discard();
-        }
-    }
+      } finally
+      {
+         uow.discard();
+      }
+   }
 
-    public void remove() throws UnitOfWorkCompletionException
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
-        Account acc = uow.get(account);
-        individualRepository.individual().removeAccount(acc);
-        uow.complete();
-    }
+   public void remove() throws UnitOfWorkCompletionException
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
+      Account acc = uow.get( account );
+      individualRepository.individual().removeAccount( acc );
+      uow.complete();
+   }
 
-    public void changePassword(ChangePasswordCommand changePasswordCommand) throws Exception
-    {
-        UnitOfWork uow = uowf.newUnitOfWork();
+   public void changePassword( ChangePasswordCommand changePasswordCommand ) throws Exception
+   {
+      UnitOfWork uow = uowf.newUnitOfWork();
 
-        try
-        {
-            Account account1 = uow.get(account);
-            account1.changePassword(client, changePasswordCommand);
-            uow.complete();
-        } catch (Exception ex)
-        {
-            uow.discard();
-            throw ex;
-        }
-    }
+      try
+      {
+         Account account1 = uow.get( account );
+         account1.changePassword( client, changePasswordCommand );
+         uow.complete();
+      } catch (Exception ex)
+      {
+         uow.discard();
+         throw ex;
+      }
+   }
 
-    public TasksModel tasks()
-    {
-        if (tasksModel == null)
-            tasksModel = obf.newObjectBuilder( TasksModel.class ).use( this, serverResource().tasks() ).newInstance();
+   public TasksModel tasks()
+   {
+      if (tasksModel == null)
+         tasksModel = obf.newObjectBuilder( TasksModel.class ).use( this, serverResource().tasks() ).newInstance();
 
-        return tasksModel;
-    }
+      return tasksModel;
+   }
 
-    public WorkspaceModel workspace()
-    {
-        if (workspaceModel == null)
-        {
-            UserClientResource resource = userResource();
-            WorkspaceUserInboxClientResource userInboxResource = resource.workspace().user().inbox();
-            WorkspaceUserAssignmentsClientResource userAssignmentsResource = resource.workspace().user().assignments();
-            WorkspaceUserDelegationsClientResource userDelegationsResource = resource.workspace().user().delegations();
-            WorkspaceUserWaitingForClientResource userWaitingForResource = resource.workspace().user().waitingFor();
-            LabelsClientResource labelsResource = resource.workspace().user().labels();
+   public WorkspaceModel workspace()
+   {
+      if (workspaceModel == null)
+      {
+         UserClientResource resource = userResource();
+         WorkspaceUserInboxClientResource userInboxResource = resource.workspace().user().inbox();
+         WorkspaceUserAssignmentsClientResource userAssignmentsResource = resource.workspace().user().assignments();
+         WorkspaceUserDelegationsClientResource userDelegationsResource = resource.workspace().user().delegations();
+         WorkspaceUserWaitingForClientResource userWaitingForResource = resource.workspace().user().waitingFor();
+         LabelsClientResource labelsResource = resource.workspace().user().labels();
 
-            workspaceModel = obf.newObjectBuilder( WorkspaceModel.class ).use( this,
-                    resource,
-                    userInboxResource,
-                    userAssignmentsResource,
-                    userDelegationsResource,
-                    userWaitingForResource,
-                    labelsResource,
-                    tasks() ).newInstance();
-        }
+         workspaceModel = obf.newObjectBuilder( WorkspaceModel.class ).use( this,
+               resource,
+               userInboxResource,
+               userAssignmentsResource,
+               userDelegationsResource,
+               userWaitingForResource,
+               labelsResource,
+               tasks() ).newInstance();
+      }
 
-        return workspaceModel;
-    }
+      return workspaceModel;
+   }
 
-    public OverviewModel overview()
-    {
-        if (overviewModel == null)
-            overviewModel = obf.newObjectBuilder( OverviewModel.class ).use( this, tasks(), userResource().overview() ).newInstance();
+   public OverviewModel overview()
+   {
+      if (overviewModel == null)
+         overviewModel = obf.newObjectBuilder( OverviewModel.class ).use( this, tasks(), userResource().overview() ).newInstance();
 
-        return overviewModel;
-    }
+      return overviewModel;
+   }
 
-    public SearchResultTableModel search()
-    {
-        if (searchResults == null)
-        {
-            SearchClientResource search = userResource().search();
-            searchResults = obf.newObjectBuilder(SearchResultTableModel.class).use(search, tasks()).newInstance();
-        }
+   public SearchResultTableModel search()
+   {
+      if (searchResults == null)
+      {
+         SearchClientResource search = userResource().search();
+         searchResults = obf.newObjectBuilder( SearchResultTableModel.class ).use( search, tasks() ).newInstance();
+      }
 
-        return searchResults;
-    }
+      return searchResults;
+   }
 
-    public AdministrationModel administration()
-    {
-        if (administrationModel == null)
-        {
-            administrationModel = obf.newObjectBuilder( AdministrationModel.class ).use( this, tasks() ).newInstance();
-        }
+   public AdministrationModel administration()
+   {
+      if (administrationModel == null)
+      {
+         administrationModel = obf.newObjectBuilder( AdministrationModel.class ).use( this, tasks() ).newInstance();
+      }
 
-        return administrationModel;
-    }
+      return administrationModel;
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        if (workspaceModel != null)
-            workspaceModel.notifyEvent(event);
+   public void notifyEvent( DomainEvent event )
+   {
+      if (workspaceModel != null)
+         workspaceModel.notifyEvent( event );
 
-        if (overviewModel != null)
-            overviewModel.notifyEvent(event);
+      if (overviewModel != null)
+         overviewModel.notifyEvent( event );
 
-        if (searchResults != null)
-            searchResults.notifyEvent(event);
+      if (searchResults != null)
+         searchResults.notifyEvent( event );
 
-        if (administrationModel != null)
-            administrationModel.notifyEvent(event);
+      if (administrationModel != null)
+         administrationModel.notifyEvent( event );
 
-        if (tasksModel != null)
-            tasksModel.notifyEvent(event);
-    }
+      if (tasksModel != null)
+         tasksModel.notifyEvent( event );
+   }
 }

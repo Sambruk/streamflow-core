@@ -29,8 +29,9 @@ import se.streamsource.streamflow.client.ui.administration.projects.members.Tabl
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -38,61 +39,61 @@ import java.awt.event.KeyEvent;
  * Select project.
  */
 public class ProjectSelectionDialog
-        extends JPanel
+      extends JPanel
 {
-    Dimension dialogSize = new Dimension(600, 300);
-    private TableSelectionView addProjectsView;
-    public ListItemValue selected;
+   Dimension dialogSize = new Dimension( 600, 300 );
+   private TableSelectionView addProjectsView;
+   public ListItemValue selected;
 
-    public ProjectSelectionDialog(final @Uses WorkspaceProjectNode project,
+   public ProjectSelectionDialog( final @Uses WorkspaceProjectNode project,
                                   @Service ApplicationContext context,
-                                  @Structure ObjectBuilderFactory obf)
-    {
-        super(new BorderLayout());
+                                  @Structure ObjectBuilderFactory obf )
+   {
+      super( new BorderLayout() );
 
-        setName(i18n.text(WorkspaceResources.search_project));
-        setActionMap(context.getActionMap(this));
+      setName( i18n.text( WorkspaceResources.search_project ) );
+      setActionMap( context.getActionMap( this ) );
 
-        TableSingleSelectionModel projectsModel = obf.newObject(TableSingleSelectionModel.class);
-        this.addProjectsView = obf.newObjectBuilder(TableSelectionView.class).use(projectsModel, i18n.text(WorkspaceResources.search_project)).newInstance();
+      TableSingleSelectionModel projectsModel = obf.newObject( TableSingleSelectionModel.class );
+      this.addProjectsView = obf.newObjectBuilder( TableSelectionView.class ).use( projectsModel, i18n.text( WorkspaceResources.search_project ) ).newInstance();
 
-        addProjectsView.getSearchInputField().addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyReleased(KeyEvent keyEvent)
+      addProjectsView.getSearchInputField().addKeyListener( new KeyAdapter()
+      {
+         @Override
+         public void keyReleased( KeyEvent keyEvent )
+         {
+            try
             {
-                try
-                {
-                    ListValue value = project.findProjects(addProjectsView.searchText());
-                    addProjectsView.getModel().setModel(value);
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
+               ListValue value = project.findProjects( addProjectsView.searchText() );
+               addProjectsView.getModel().setModel( value );
+            } catch (ResourceException e)
+            {
+               e.printStackTrace();
             }
-        });
+         }
+      } );
 
 
-        setPreferredSize(dialogSize);
-        add(addProjectsView, BorderLayout.NORTH);
-    }
+      setPreferredSize( dialogSize );
+      add( addProjectsView, BorderLayout.NORTH );
+   }
 
-    public EntityReference getSelected()
-    {
-        return selected == null ? null : selected.entity().get();
-    }
+   public EntityReference getSelected()
+   {
+      return selected == null ? null : selected.entity().get();
+   }
 
-    @Action
-    public void execute()
-    {
-        selected = ((TableSingleSelectionModel) addProjectsView.getModel()).getSelected();
+   @Action
+   public void execute()
+   {
+      selected = ((TableSingleSelectionModel) addProjectsView.getModel()).getSelected();
 
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 }

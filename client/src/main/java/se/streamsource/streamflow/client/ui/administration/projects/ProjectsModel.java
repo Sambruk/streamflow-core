@@ -40,120 +40,120 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * List of projects in a OU
  */
 public class ProjectsModel
-    implements Refreshable
+      implements Refreshable
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Uses
-    OrganizationalUnitAdministrationModel organizationModel;
+   @Uses
+   OrganizationalUnitAdministrationModel organizationModel;
 
-    @Uses
-    CommandQueryClient client;
+   @Uses
+   CommandQueryClient client;
 
-    BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>( );
+   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
 
-    WeakModelMap<String, ProjectModel> projectModels = new WeakModelMap<String, ProjectModel>()
-    {
-        protected ProjectModel newModel( String key )
-        {
-            CommandQueryClient projectClient = client.getSubClient( key );
-            SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder(SelectedLabelsModel.class ).use( projectClient.getSubClient("labels" )).newInstance();
-            SelectedTaskTypesModel selectedTaskTypesModel = obf.newObjectBuilder(SelectedTaskTypesModel.class ).use( projectClient.getSubClient("tasktypes" )).newInstance();
+   WeakModelMap<String, ProjectModel> projectModels = new WeakModelMap<String, ProjectModel>()
+   {
+      protected ProjectModel newModel( String key )
+      {
+         CommandQueryClient projectClient = client.getSubClient( key );
+         SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( projectClient.getSubClient( "labels" ) ).newInstance();
+         SelectedTaskTypesModel selectedTaskTypesModel = obf.newObjectBuilder( SelectedTaskTypesModel.class ).use( projectClient.getSubClient( "tasktypes" ) ).newInstance();
 
-            return obf.newObjectBuilder(ProjectModel.class).use(project(key).members(),
-                    selectedLabelsModel,
-                    selectedTaskTypesModel,
-                    project(key).forms(),
-                    organizationModel).newInstance();
-        }
-    };
+         return obf.newObjectBuilder( ProjectModel.class ).use( project( key ).members(),
+               selectedLabelsModel,
+               selectedTaskTypesModel,
+               project( key ).forms(),
+               organizationModel ).newInstance();
+      }
+   };
 
-    public BasicEventList<ListItemValue> getProjectList()
-    {
-        return eventList;
-    }
+   public BasicEventList<ListItemValue> getProjectList()
+   {
+      return eventList;
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            // Get Project list
-            eventList.clear();
-            eventList.addAll(client.query("projects", ListValue.class).items().get());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         // Get Project list
+         eventList.clear();
+         eventList.addAll( client.query( "projects", ListValue.class ).items().get() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
 
-    public void removeProject(String id)
-    {
-        try
-        {
-            project(id).deleteCommand();
-            refresh();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_project, e);
-        }
-    }
-    
-    public void newProject(String projectName)
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(projectName);
-            client.postCommand("createProject",builder.newInstance());
-            refresh();
-        } catch (ResourceException e)
-        {
-            if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
-            {
-                throw new OperationException(AdministrationResources.could_not_create_project_name_already_exists, e);
-            }
-            throw new OperationException(AdministrationResources.could_not_create_project, e);
-        }
-    }
+   public void removeProject( String id )
+   {
+      try
+      {
+         project( id ).deleteCommand();
+         refresh();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_project, e );
+      }
+   }
 
-    public void changeDescription(int selectedIndex, String newName)
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newName);
+   public void newProject( String projectName )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( projectName );
+         client.postCommand( "createProject", builder.newInstance() );
+         refresh();
+      } catch (ResourceException e)
+      {
+         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
+         {
+            throw new OperationException( AdministrationResources.could_not_create_project_name_already_exists, e );
+         }
+         throw new OperationException( AdministrationResources.could_not_create_project, e );
+      }
+   }
 
-        try
-        {
-            project(eventList.get(selectedIndex).entity().get().identity()).changeDescription(builder.newInstance());
-        } catch(ResourceException e)
-        {
-            if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
-            {
-                throw new OperationException(AdministrationResources.could_not_rename_project_name_already_exists,e);
-            }
-            throw new OperationException(AdministrationResources.could_not_rename_project,e);
-        }
-        refresh();
-    }
+   public void changeDescription( int selectedIndex, String newName )
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newName );
 
-    public void notifyEvent( DomainEvent event )
-    {
-        for (ProjectModel projectModel : projectModels)
-        {
-            projectModel.notifyEvent( event );
-        }
-    }
+      try
+      {
+         project( eventList.get( selectedIndex ).entity().get().identity() ).changeDescription( builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
+         {
+            throw new OperationException( AdministrationResources.could_not_rename_project_name_already_exists, e );
+         }
+         throw new OperationException( AdministrationResources.could_not_rename_project, e );
+      }
+      refresh();
+   }
 
-    public ProjectClientResource project(String id)
-    {
-        return client.getSubResource(id, ProjectClientResource.class);
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      for (ProjectModel projectModel : projectModels)
+      {
+         projectModel.notifyEvent( event );
+      }
+   }
 
-    public ProjectModel getProjectModel( String id )
-    {
-        return projectModels.get( id );
-    }
+   public ProjectClientResource project( String id )
+   {
+      return client.getSubResource( id, ProjectClientResource.class );
+   }
+
+   public ProjectModel getProjectModel( String id )
+   {
+      return projectModels.get( id );
+   }
 }

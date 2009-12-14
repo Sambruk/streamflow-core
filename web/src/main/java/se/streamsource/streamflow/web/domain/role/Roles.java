@@ -27,45 +27,48 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Concerns(Roles.DescribeCreatedRoleConcern.class)
 public interface Roles
 {
-    RoleEntity createRole(String name);
-    void removeRole(RoleEntity projectRole);
+   RoleEntity createRole( String name );
 
-    @Mixins(Mixin.class)
-    interface Data
-    {
-        @Aggregated
-        ManyAssociation<Role> roles();
+   void removeRole( RoleEntity projectRole );
 
-        Role getAdministratorRole()
+   @Mixins(Mixin.class)
+   interface Data
+   {
+      @Aggregated
+      ManyAssociation<Role> roles();
+
+      Role getAdministratorRole()
             throws IllegalStateException;
 
-        RoleEntity createdRole(DomainEvent event, String id);
-        void addedRole(DomainEvent event, RoleEntity role);
-        void removedRole(DomainEvent event, RoleEntity role);
-    }
+      RoleEntity createdRole( DomainEvent event, String id );
 
-    public abstract class Mixin
-        implements Data
-    {
-        public Role getAdministratorRole()
-                throws IllegalStateException
-        {
-            if (roles().count() > 0)
-                return roles().get(0);
-            else
-                throw new IllegalStateException("There's no Administrator role!");
-        }
-    }
+      void addedRole( DomainEvent event, RoleEntity role );
 
-    abstract class DescribeCreatedRoleConcern
-        extends ConcernOf<Roles>
-        implements Roles
-    {
-        public RoleEntity createRole(String name)
-        {
-            RoleEntity role = next.createRole(name);
-            role.changeDescription(name);
-            return role;
-        }
-    }
+      void removedRole( DomainEvent event, RoleEntity role );
+   }
+
+   public abstract class Mixin
+         implements Data
+   {
+      public Role getAdministratorRole()
+            throws IllegalStateException
+      {
+         if (roles().count() > 0)
+            return roles().get( 0 );
+         else
+            throw new IllegalStateException( "There's no Administrator role!" );
+      }
+   }
+
+   abstract class DescribeCreatedRoleConcern
+         extends ConcernOf<Roles>
+         implements Roles
+   {
+      public RoleEntity createRole( String name )
+      {
+         RoleEntity role = next.createRole( name );
+         role.changeDescription( name );
+         return role;
+      }
+   }
 }

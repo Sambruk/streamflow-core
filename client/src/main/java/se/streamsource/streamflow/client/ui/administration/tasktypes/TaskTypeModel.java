@@ -22,68 +22,72 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
  */
 public class TaskTypeModel
-    implements EventListener
+      implements EventListener
 {
-    private @Structure
-    ValueBuilderFactory vbf;
+   private
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private @Uses
-    CommandQueryClient client;
+   private
+   @Uses
+   CommandQueryClient client;
 
-    private @Uses
-    SelectedLabelsModel selectedLabelsModel;
+   private
+   @Uses
+   SelectedLabelsModel selectedLabelsModel;
 
-    private @Uses
-    FormsModel formsModel;
+   private
+   @Uses
+   FormsModel formsModel;
 
-    public void changeDescription(String newName)
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newName);
+   public void changeDescription( String newName )
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newName );
 
-        try
-        {
-            client.putCommand( "changedescription", builder.newInstance() );
-        } catch(ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_rename_project,e);
-        }
-    }
+      try
+      {
+         client.putCommand( "changedescription", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_rename_project, e );
+      }
+   }
 
-    public SelectedLabelsModel getSelectedLabelsModel()
-    {
-        return selectedLabelsModel;
-    }
+   public SelectedLabelsModel getSelectedLabelsModel()
+   {
+      return selectedLabelsModel;
+   }
 
-    public FormsModel getFormsModel()
-    {
-        return formsModel;
-    }
+   public FormsModel getFormsModel()
+   {
+      return formsModel;
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        selectedLabelsModel.notifyEvent( event );
-        formsModel.notifyEvent( event );
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      selectedLabelsModel.notifyEvent( event );
+      formsModel.notifyEvent( event );
+   }
 
-    public void remove()
-    {
-        try
-        {
-            client.deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_tasktype, e);
-        }
-    }
+   public void remove()
+   {
+      try
+      {
+         client.deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_tasktype, e );
+      }
+   }
 }

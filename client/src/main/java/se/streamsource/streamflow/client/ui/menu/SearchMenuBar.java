@@ -14,30 +14,25 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.ResourceMap;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import static se.streamsource.streamflow.infrastructure.configuration.FileConfiguration.OS.mac;
 
-import javax.swing.*;
+import javax.swing.JMenuBar;
 
 /**
  * Menu bar for the Search window
  */
 public class SearchMenuBar
-        extends JMenuBar
+      extends JMenuBar
 {
-    public SearchMenuBar(@Uses FileMenu fileMenu,
-                            @Uses ViewMenu viewMenu,
-                            @Uses WindowMenu windowMenu,
-                            @Uses HelpMenu helpMenu
-                            )
-    {
-        add(fileMenu);
-        add(viewMenu);
-        add(windowMenu);
-        add(helpMenu);
-    }
+   public SearchMenuBar( @Uses FileMenu fileMenu,
+                         @Uses ViewMenu viewMenu,
+                         @Uses WindowMenu windowMenu,
+                         @Uses HelpMenu helpMenu
+   )
+   {
+      add( fileMenu );
+      add( viewMenu );
+      add( windowMenu );
+      add( helpMenu );
+   }
 }

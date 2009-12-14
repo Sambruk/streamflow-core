@@ -41,72 +41,72 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @AppliesTo(CommandEntityCreateMixin.CommandEntityCreateAppliesTo.class)
 public class CommandEntityCreateMixin
-        implements InvocationHandler
+      implements InvocationHandler
 {
-    private static Map<Method, Method> createdMappings = new ConcurrentHashMap();
-    private static Map<Method, Method> addedMappings = new ConcurrentHashMap();
+   private static Map<Method, Method> createdMappings = new ConcurrentHashMap();
+   private static Map<Method, Method> addedMappings = new ConcurrentHashMap();
 
-    @Service
-    IdentityGenerator idGen;
+   @Service
+   IdentityGenerator idGen;
 
-    @State
-    EntityStateHolder state;
+   @State
+   EntityStateHolder state;
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @This
-    EntityComposite composite;
+   @This
+   EntityComposite composite;
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-    {
+   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   {
 
-        //Method createdMethod = createdMappings.get(method);
-        //Method addedMethod = null;
-        Method createdMethod;
-        Method addedMethod;
-        //if (createdMethod == null)
-        //{
-            // createFoo -> createdFoo
-            String name = method.getName().substring("create".length());
-            {
-                String createdName = "created"+name;
-                Class[] parameterTypes = new Class[]{DomainEvent.class, String.class};
-                createdMethod = composite.getClass().getMethod(createdName, parameterTypes);
-                //createdMappings.put(method, createdMethod);
-            }
+      //Method createdMethod = createdMappings.get(method);
+      //Method addedMethod = null;
+      Method createdMethod;
+      Method addedMethod;
+      //if (createdMethod == null)
+      //{
+      // createFoo -> createdFoo
+      String name = method.getName().substring( "create".length() );
+      {
+         String createdName = "created" + name;
+         Class[] parameterTypes = new Class[]{DomainEvent.class, String.class};
+         createdMethod = composite.getClass().getMethod( createdName, parameterTypes );
+         //createdMappings.put(method, createdMethod);
+      }
 
-            // createFoo -> addedFoo
-            {
-                String addedName = "added"+name;
-                Class[] parameterTypes = new Class[]{DomainEvent.class, method.getReturnType()};
-                addedMethod = composite.getClass().getMethod(addedName, parameterTypes);
-                //addedMappings.put(method, addedMethod);
-            }
-        /*} else
-        {
-            addedMethod = addedMappings.get(method);
-        }*/
+      // createFoo -> addedFoo
+      {
+         String addedName = "added" + name;
+         Class[] parameterTypes = new Class[]{DomainEvent.class, method.getReturnType()};
+         addedMethod = composite.getClass().getMethod( addedName, parameterTypes );
+         //addedMappings.put(method, addedMethod);
+      }
+      /*} else
+      {
+          addedMethod = addedMappings.get(method);
+      }*/
 
-        // Generate id
-        String id = idGen.generate((Class<? extends Identity>) method.getReturnType());
+      // Generate id
+      String id = idGen.generate( (Class<? extends Identity>) method.getReturnType() );
 
-        // Create entity
-        Object entity = createdMethod.invoke(composite, DomainEvent.CREATE, id);
+      // Create entity
+      Object entity = createdMethod.invoke( composite, DomainEvent.CREATE, id );
 
-        // Add entity to collection
-        addedMethod.invoke(composite, DomainEvent.CREATE, entity);
+      // Add entity to collection
+      addedMethod.invoke( composite, DomainEvent.CREATE, entity );
 
-        return entity;
-    }
+      return entity;
+   }
 
-    public static class CommandEntityCreateAppliesTo
-            implements AppliesToFilter
-    {
-        public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
-        {
-            return method.getName().startsWith("create") &&
-                    EntityComposite.class.isAssignableFrom(method.getReturnType());
-        }
-    }
+   public static class CommandEntityCreateAppliesTo
+         implements AppliesToFilter
+   {
+      public boolean appliesTo( Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass )
+      {
+         return method.getName().startsWith( "create" ) &&
+               EntityComposite.class.isAssignableFrom( method.getReturnType() );
+      }
+   }
 }

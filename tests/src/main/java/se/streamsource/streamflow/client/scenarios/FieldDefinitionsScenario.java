@@ -25,20 +25,20 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
  * JAVADOC
  */
 public class FieldDefinitionsScenario
-        extends AbstractWebDomainApplicationScenario
+      extends AbstractWebDomainApplicationScenario
 {
-    public FieldDefinitionsScenario()
-    {
-        this(Thread.currentThread().getContextClassLoader());
-    }
+   public FieldDefinitionsScenario()
+   {
+      this( Thread.currentThread().getContextClassLoader() );
+   }
 
-    public FieldDefinitionsScenario(ClassLoader classLoader)
-    {
-        super(classLoader,
-                new TestSetupSteps(),
-                new ProjectsSteps(),
-                new OrganizationsSteps(),
-                new OrganizationalUnitsSteps(),
-                new FieldDefinitionsSteps());
-    }
+   public FieldDefinitionsScenario( ClassLoader classLoader )
+   {
+      super( classLoader,
+            new TestSetupSteps(),
+            new ProjectsSteps(),
+            new OrganizationsSteps(),
+            new OrganizationalUnitsSteps(),
+            new FieldDefinitionsSteps() );
+   }
 }

@@ -23,15 +23,15 @@ import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
  * JAVADOC
  */
 public class UsersClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public UsersClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public UsersClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public UserClientResource user(String username)
-    {
-        return getSubResource(username, UserClientResource.class);
-    }
+   public UserClientResource user( String username )
+   {
+      return getSubResource( username, UserClientResource.class );
+   }
 }

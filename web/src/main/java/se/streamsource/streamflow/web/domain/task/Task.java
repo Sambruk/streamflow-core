@@ -25,19 +25,19 @@ import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
  * Task entity.
  */
 public interface Task
-        extends
-        Assignable,
-        Commentable,
-        Contacts,
-        Delegatable,
-        Describable,
-        DueOn,
-        Labelable,
-        Notable,
-        Ownable,
-        SubmittedForms,
-        TaskId,
-        TaskStatus,
-        TypedTask
+      extends
+      Assignable,
+      Commentable,
+      Contacts,
+      Delegatable,
+      Describable,
+      DueOn,
+      Labelable,
+      Notable,
+      Ownable,
+      SubmittedForms,
+      TaskId,
+      TaskStatus,
+      TypedTask
 {
 }

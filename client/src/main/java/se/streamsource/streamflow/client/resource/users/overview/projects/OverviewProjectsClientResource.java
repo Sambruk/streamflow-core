@@ -25,20 +25,20 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
  * JAVADOC
  */
 public class OverviewProjectsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public OverviewProjectsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public OverviewProjectsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public OverviewProjectClientResource project(String project)
-    {
-        return getSubResource(project, OverviewProjectClientResource.class);
-    }
+   public OverviewProjectClientResource project( String project )
+   {
+      return getSubResource( project, OverviewProjectClientResource.class );
+   }
 
-    public ListValue listProjects() throws ResourceException
-    {
-        return query("listProjects", ListValue.class);
-    }
+   public ListValue listProjects() throws ResourceException
+   {
+      return query( "listProjects", ListValue.class );
+   }
 }

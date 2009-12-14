@@ -29,83 +29,83 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.Set;
 
 /**
  * JAVADOC
  */
 public class ProjectMembersModel
-    extends AbstractListModel
-        implements Refreshable, EventListener
-    
+      extends AbstractListModel
+      implements Refreshable, EventListener
+
 {
-    @Uses
-    private MembersClientResource members;
-    @Uses
-    OrganizationalUnitAdministrationModel ouAdminModel;
+   @Uses
+   private MembersClientResource members;
+   @Uses
+   OrganizationalUnitAdministrationModel ouAdminModel;
 
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    private ListValue memberList;
+   private ListValue memberList;
 
-    public int getSize()
-    {
-        return memberList == null ? 0 : memberList.items().get().size();
-    }
+   public int getSize()
+   {
+      return memberList == null ? 0 : memberList.items().get().size();
+   }
 
-    public Object getElementAt( int index )
-    {
-        return memberList.items().get().get( index );
-    }
+   public Object getElementAt( int index )
+   {
+      return memberList.items().get().get( index );
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            memberList = members.members();
-            fireContentsChanged( this, 0, getSize() );
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_members, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         memberList = members.members();
+         fireContentsChanged( this, 0, getSize() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh_list_of_members, e );
+      }
+   }
 
-    public void addMembers(Set<String> newMembers)
-    {
-        try
-        {
-            for (String value : newMembers)
-            {
-                MemberClientResource member = this.members.member(value);
-                member.create();
-            }
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_add_members, e);
-        }
-    }
+   public void addMembers( Set<String> newMembers )
+   {
+      try
+      {
+         for (String value : newMembers)
+         {
+            MemberClientResource member = this.members.member( value );
+            member.create();
+         }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_add_members, e );
+      }
+   }
 
-    public void removeMember(int index)
-    {
-        try
-        {
-            String id = memberList.items().get().get( index ).entity().get().identity();
+   public void removeMember( int index )
+   {
+      try
+      {
+         String id = memberList.items().get().get( index ).entity().get().identity();
 
-            members.member(id).deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_member, e);
-        }
-    }
+         members.member( id ).deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_member, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+   }
 
-    public UsersAndGroupsFilter getFilterResource()
-    {
-        return members;
-    }
+   public UsersAndGroupsFilter getFilterResource()
+   {
+      return members;
+   }
 }

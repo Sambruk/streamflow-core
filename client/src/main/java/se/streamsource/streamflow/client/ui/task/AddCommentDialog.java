@@ -26,76 +26,76 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.CHECKBOX;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 import java.util.Date;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
  */
 public class AddCommentDialog
-        extends JPanel
+      extends JPanel
 {
-    private StateBinder TaskBinder;
-    private ValueBuilder<NewCommentCommand> commandBuilder;
-    public NewCommentCommand command;
+   private StateBinder TaskBinder;
+   private ValueBuilder<NewCommentCommand> commandBuilder;
+   public NewCommentCommand command;
 
-    public AddCommentDialog(@Service ApplicationContext appContext,
+   public AddCommentDialog( @Service ApplicationContext appContext,
                             @Structure ValueBuilderFactory vbf,
                             @Uses EntityReference user
-    )
-    {
-        setActionMap(appContext.getActionMap(this));
+   )
+   {
+      setActionMap( appContext.getActionMap( this ) );
 
-        setName(i18n.text(WorkspaceResources.add_comment_title));
+      setName( i18n.text( WorkspaceResources.add_comment_title ) );
 
-        FormLayout layout = new FormLayout(
-                "200dlu",
-                "");                                      // add rows dynamically
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
-        builder.setDefaultDialogBorder();
+      FormLayout layout = new FormLayout(
+            "200dlu",
+            "" );                                      // add rows dynamically
+      DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
+      builder.setDefaultDialogBorder();
 
-        TaskBinder = new StateBinder();
-        TaskBinder.setResourceMap(appContext.getResourceMap(getClass()));
-        NewCommentCommand template = TaskBinder.bindingTemplate(NewCommentCommand.class);
+      TaskBinder = new StateBinder();
+      TaskBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      NewCommentCommand template = TaskBinder.bindingTemplate( NewCommentCommand.class );
 
 
-        BindingFormBuilder bb = new BindingFormBuilder(builder, TaskBinder);
-        bb.appendLine(WorkspaceResources.comment_public_label, CHECKBOX, template.isPublic());
-        bb.appendLine(WorkspaceResources.comment_text_label, TEXTAREA, template.text());
+      BindingFormBuilder bb = new BindingFormBuilder( builder, TaskBinder );
+      bb.appendLine( WorkspaceResources.comment_public_label, CHECKBOX, template.isPublic() );
+      bb.appendLine( WorkspaceResources.comment_text_label, TEXTAREA, template.text() );
 
-        // Create command builder
-        commandBuilder = vbf.newValueBuilder(NewCommentCommand.class);
-        commandBuilder.prototype().commenter().set(user);
+      // Create command builder
+      commandBuilder = vbf.newValueBuilder( NewCommentCommand.class );
+      commandBuilder.prototype().commenter().set( user );
 
-        TaskBinder.updateWith(commandBuilder.prototype());
-    }
+      TaskBinder.updateWith( commandBuilder.prototype() );
+   }
 
-    @Action
-    public void execute()
-            throws Exception
-    {
-        // Create command instance
-        commandBuilder.prototype().creationDate().set(new Date());
-        command = commandBuilder.newInstance();
+   @Action
+   public void execute()
+         throws Exception
+   {
+      // Create command instance
+      commandBuilder.prototype().creationDate().set( new Date() );
+      command = commandBuilder.newInstance();
 
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    public NewCommentCommand command()
-    {
-        return command;
-    }
+   public NewCommentCommand command()
+   {
+      return command;
+   }
 }

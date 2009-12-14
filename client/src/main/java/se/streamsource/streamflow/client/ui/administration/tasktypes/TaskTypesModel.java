@@ -38,81 +38,81 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * List of tasktypes in an Organization
  */
 public class TaskTypesModel
-    implements Refreshable
+      implements Refreshable
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Uses
-    CommandQueryClient client;
+   @Uses
+   CommandQueryClient client;
 
-    BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>( );
+   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
 
-    WeakModelMap<String, TaskTypeModel> taskTypeModels = new WeakModelMap<String, TaskTypeModel>()
-    {
-        protected TaskTypeModel newModel( String key )
-        {
-            CommandQueryClient taskTypeClient = client.getSubClient( key );
-            SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder(SelectedLabelsModel.class ).use( taskTypeClient.getSubClient("labels" )).newInstance();
-            FormsModel formsModel = obf.newObjectBuilder(FormsModel.class ).use( taskTypeClient.getSubClient("forms" )).newInstance();
+   WeakModelMap<String, TaskTypeModel> taskTypeModels = new WeakModelMap<String, TaskTypeModel>()
+   {
+      protected TaskTypeModel newModel( String key )
+      {
+         CommandQueryClient taskTypeClient = client.getSubClient( key );
+         SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( taskTypeClient.getSubClient( "labels" ) ).newInstance();
+         FormsModel formsModel = obf.newObjectBuilder( FormsModel.class ).use( taskTypeClient.getSubClient( "forms" ) ).newInstance();
 
-            return obf.newObjectBuilder(TaskTypeModel.class).use(selectedLabelsModel, formsModel, taskTypeClient).newInstance();
-        }
-    };
+         return obf.newObjectBuilder( TaskTypeModel.class ).use( selectedLabelsModel, formsModel, taskTypeClient ).newInstance();
+      }
+   };
 
-    public BasicEventList<ListItemValue> getTaskTypeList()
-    {
-        return eventList;
-    }
+   public BasicEventList<ListItemValue> getTaskTypeList()
+   {
+      return eventList;
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            // Get TaskType list
-            eventList.clear();
-            eventList.addAll(client.query("tasktypes", ListValue.class).items().get());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         // Get TaskType list
+         eventList.clear();
+         eventList.addAll( client.query( "tasktypes", ListValue.class ).items().get() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
 
-    public void removeTaskType(String id)
-    {
-        getTaskTypeModel(id).remove();
-    }
+   public void removeTaskType( String id )
+   {
+      getTaskTypeModel( id ).remove();
+   }
 
-    public void newTaskType(String taskTypeName)
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(taskTypeName);
-            client.postCommand("createtasktype",builder.newInstance());
-        } catch (ResourceException e)
-        {
-            if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus()))
-            {
-                throw new OperationException(AdministrationResources.could_not_create_project_name_already_exists, e);
-            }
-            throw new OperationException(AdministrationResources.could_not_create_project, e);
-        }
-    }
+   public void newTaskType( String taskTypeName )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( taskTypeName );
+         client.postCommand( "createtasktype", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
+         {
+            throw new OperationException( AdministrationResources.could_not_create_project_name_already_exists, e );
+         }
+         throw new OperationException( AdministrationResources.could_not_create_project, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        for (TaskTypeModel taskTypeModel : taskTypeModels)
-        {
-            taskTypeModel.notifyEvent( event );
-        }
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      for (TaskTypeModel taskTypeModel : taskTypeModels)
+      {
+         taskTypeModel.notifyEvent( event );
+      }
+   }
 
-    public TaskTypeModel getTaskTypeModel( String id )
-    {
-        return taskTypeModels.get( id );
-    }
+   public TaskTypeModel getTaskTypeModel( String id )
+   {
+      return taskTypeModels.get( id );
+   }
 }

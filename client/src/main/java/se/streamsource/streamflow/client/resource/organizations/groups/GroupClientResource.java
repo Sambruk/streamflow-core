@@ -22,43 +22,43 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantsClientResource;
 import se.streamsource.streamflow.client.ui.UsersAndGroupsFilter;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
  */
 public class GroupClientResource
-        extends CommandQueryClientResource
-    implements UsersAndGroupsFilter
+      extends CommandQueryClientResource
+      implements UsersAndGroupsFilter
 {
-    public GroupClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public GroupClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ParticipantsClientResource participants() throws ResourceException
-    {
-        return getSubResource("participants", ParticipantsClientResource.class);
-    }
+   public ParticipantsClientResource participants() throws ResourceException
+   {
+      return getSubResource( "participants", ParticipantsClientResource.class );
+   }
 
-    public void changeDescription(StringDTO stringDTO) throws ResourceException
-    {
-        putCommand("changedescription", stringDTO);
-    }
+   public void changeDescription( StringDTO stringDTO ) throws ResourceException
+   {
+      putCommand( "changedescription", stringDTO );
+   }
 
-    public ListValue findUsers(String query) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(query);
-        return query("findUsers", builder.newInstance(), ListValue.class);
-    }
+   public ListValue findUsers( String query ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( query );
+      return query( "findUsers", builder.newInstance(), ListValue.class );
+   }
 
-    public ListValue findGroups(String query) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(query);
-        return query("findGroups", builder.newInstance(), ListValue.class);
+   public ListValue findGroups( String query ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( query );
+      return query( "findGroups", builder.newInstance(), ListValue.class );
 
-    }
+   }
 }

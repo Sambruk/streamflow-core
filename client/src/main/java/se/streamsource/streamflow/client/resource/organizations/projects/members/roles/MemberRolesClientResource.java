@@ -25,20 +25,20 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
  * JAVADOC
  */
 public class MemberRolesClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public MemberRolesClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public MemberRolesClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public MemberRoleClientResource role(String id)
-    {
-        return getSubResource(id, MemberRoleClientResource.class);
-    }
+   public MemberRoleClientResource role( String id )
+   {
+      return getSubResource( id, MemberRoleClientResource.class );
+   }
 
-    public ListValue roles() throws ResourceException
-    {
-        return query("roles", ListValue.class);
-    }
+   public ListValue roles() throws ResourceException
+   {
+      return query( "roles", ListValue.class );
+   }
 }

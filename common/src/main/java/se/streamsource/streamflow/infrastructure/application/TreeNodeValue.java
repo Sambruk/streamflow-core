@@ -30,14 +30,14 @@ import java.util.List;
  * an enumeration, rather than being a classname.
  */
 public interface TreeNodeValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<String> description();
+   Property<String> description();
 
-    Property<EntityReference> entity();
+   Property<EntityReference> entity();
 
-    @UseDefaults
-    Property<List<TreeNodeValue>> children();
+   @UseDefaults
+   Property<List<TreeNodeValue>> children();
 
-    Property<String> nodeType();
+   Property<String> nodeType();
 }

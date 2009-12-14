@@ -39,6 +39,8 @@ import se.streamsource.streamflow.web.resource.organizations.projects.ProjectSer
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.FormDefinitionFieldServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
@@ -92,114 +94,116 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.W
  * Assembler for API resources
  */
 public class ServerResourceAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addTransients(OrganizationCompositeResource.class, GroupResource.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addTransients( OrganizationCompositeResource.class, GroupResource.class );
 
-        // Resources
-        module.addObjects(
-                APIv1Router.class,
-                UsersRouter.class,
-                UserAccessFilter.class,
-                StreamFlowServerResource.class,
-                CompositeCommandQueryServerResource.class,
+      // Resources
+      module.addObjects(
+            APIv1Router.class,
+            UsersRouter.class,
+            UserAccessFilter.class,
+            StreamFlowServerResource.class,
+            CompositeCommandQueryServerResource.class,
 
-                // /users
-                UsersServerResource.class,
-                UserServerResource.class,
-                UserAdministrationServerResource.class,
+            // /users
+            UsersServerResource.class,
+            UserServerResource.class,
+            UserAdministrationServerResource.class,
 
-                // /users/{user}/workspace
-                WorkspaceServerResource.class,
-                WorkspaceUserServerResource.class,
+            // /users/{user}/workspace
+            WorkspaceServerResource.class,
+            WorkspaceUserServerResource.class,
 
-                WorkspaceUserInboxServerResource.class,
-                WorkspaceUserInboxTaskServerResource.class,
+            WorkspaceUserInboxServerResource.class,
+            WorkspaceUserInboxTaskServerResource.class,
 
-                WorkspaceUserAssignmentsServerResource.class,
-                WorkspaceUserAssignedTaskServerResource.class,
+            WorkspaceUserAssignmentsServerResource.class,
+            WorkspaceUserAssignedTaskServerResource.class,
 
-                WorkspaceUserDelegationsServerResource.class,
-                WorkspaceUserDelegatedTaskServerResource.class,
+            WorkspaceUserDelegationsServerResource.class,
+            WorkspaceUserDelegatedTaskServerResource.class,
 
-                WorkspaceUserWaitingForServerResource.class,
-                WorkspaceUserWaitingForTaskServerResource.class,
+            WorkspaceUserWaitingForServerResource.class,
+            WorkspaceUserWaitingForTaskServerResource.class,
 
-                TaskServerResource.class,
-                TaskGeneralServerResource.class,
-                TaskCommentsServerResource.class,
-                TaskContactsServerResource.class,
-                TaskContactServerResource.class,
-                TaskSubmittedFormsServerResource.class,
-                TaskSubmittedFormServerResource.class,
-                TaskFormDefinitionServerResource.class,
+            TaskServerResource.class,
+            TaskGeneralServerResource.class,
+            TaskCommentsServerResource.class,
+            TaskContactsServerResource.class,
+            TaskContactServerResource.class,
+            TaskSubmittedFormsServerResource.class,
+            TaskSubmittedFormServerResource.class,
+            TaskFormDefinitionServerResource.class,
 
-                WorkspaceProjectsServerResource.class,
-                WorkspaceProjectServerResource.class,
-                WorkspaceProjectInboxServerResource.class,
-                WorkspaceProjectInboxTaskServerResource.class,
-                WorkspaceProjectAssignmentsServerResource.class,
-                WorkspaceProjectAssignmentsTaskServerResource.class,
-                WorkspaceProjectDelegationsServerResource.class,
-                WorkspaceProjectDelegationsTaskServerResource.class,
-                WorkspaceProjectWaitingForServerResource.class,
-                WorkspaceProjectWaitingForTaskServerResource.class,
-                LabelsServerResource.class,
-                SelectedLabelsServerResource.class,
-                SelectedLabelServerResource.class,
+            WorkspaceProjectsServerResource.class,
+            WorkspaceProjectServerResource.class,
+            WorkspaceProjectInboxServerResource.class,
+            WorkspaceProjectInboxTaskServerResource.class,
+            WorkspaceProjectAssignmentsServerResource.class,
+            WorkspaceProjectAssignmentsTaskServerResource.class,
+            WorkspaceProjectDelegationsServerResource.class,
+            WorkspaceProjectDelegationsTaskServerResource.class,
+            WorkspaceProjectWaitingForServerResource.class,
+            WorkspaceProjectWaitingForTaskServerResource.class,
+            LabelsServerResource.class,
+            SelectedLabelsServerResource.class,
+            SelectedLabelServerResource.class,
 
-                // /users/{user}/overview
-                OverviewServerResource.class,
-                OverviewProjectsServerResource.class,
-                OverviewProjectServerResource.class,
-                OverviewProjectAssignmentsServerResource.class,
-                OverviewProjectAssignmentsTaskServerResource.class,
+            // /users/{user}/overview
+            OverviewServerResource.class,
+            OverviewProjectsServerResource.class,
+            OverviewProjectServerResource.class,
+            OverviewProjectAssignmentsServerResource.class,
+            OverviewProjectAssignmentsTaskServerResource.class,
 /*
                 OverviewProjectWaitingForServerResource.class,
                 OverviewProjectWaitingForTaskServerResource.class,
 */
 
-                // /organizations
-                OrganizationsServerResource.class,
-                OrganizationServerResource.class,
-                OrganizationalUnitsServerResource.class,
+            // /organizations
+            OrganizationsServerResource.class,
+            OrganizationServerResource.class,
+            OrganizationalUnitsServerResource.class,
 
-                FormTemplateServerResource.class,
-                FormTemplatesServerResource.class,
+            FormTemplateServerResource.class,
+            FormTemplatesServerResource.class,
 
-                GroupsServerResource.class,
-                GroupServerResource.class,
-                ParticipantsServerResource.class,
-                ParticipantServerResource.class,
+            GroupsServerResource.class,
+            GroupServerResource.class,
+            ParticipantsServerResource.class,
+            ParticipantServerResource.class,
 
-                ProjectsServerResource.class,
-                ProjectServerResource.class,
-                MembersServerResource.class,
-                MemberServerResource.class,
-                FormDefinitionsServerResource.class,
-                FormDefinitionServerResource.class,
-                SelectedTaskTypesServerResource.class,
-                SelectedTaskTypeServerResource.class,
+            ProjectsServerResource.class,
+            ProjectServerResource.class,
+            MembersServerResource.class,
+            MemberServerResource.class,
+            FormDefinitionsServerResource.class,
+            FormDefinitionServerResource.class,
+            FormDefinitionFieldsServerResource.class,
+            FormDefinitionFieldServerResource.class,
+            SelectedTaskTypesServerResource.class,
+            SelectedTaskTypeServerResource.class,
 
-                RolesServerResource.class,
-                RoleServerResource.class,
+            RolesServerResource.class,
+            RoleServerResource.class,
 
-                AdministratorsServerResource.class,
-                AdministratorServerResource.class,
+            AdministratorsServerResource.class,
+            AdministratorServerResource.class,
 
-                TaskTypesServerResource.class,
-                TaskTypeServerResource.class,
+            TaskTypesServerResource.class,
+            TaskTypeServerResource.class,
 
-                SearchTasksServerResource.class,
-                SearchTaskServerResource.class,
+            SearchTasksServerResource.class,
+            SearchTaskServerResource.class,
 
-                // Events
-                EventsServerResource.class,
+            // Events
+            EventsServerResource.class,
 
-                // Admin
-                ConsoleServerResource.class
-        );
-    }
+            // Admin
+            ConsoleServerResource.class
+      );
+   }
 }

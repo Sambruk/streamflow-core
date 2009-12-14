@@ -28,28 +28,28 @@ import java.util.logging.Logger;
  */
 @Mixins(ReindexOnStartupService.Mixin.class)
 public interface ReindexOnStartupService
-        extends Activatable, ServiceComposite
+      extends Activatable, ServiceComposite
 {
-    class Mixin
-            implements Activatable
-    {
-        @Service
-        Reindexer reindexer;
-        public Logger logger;
+   class Mixin
+         implements Activatable
+   {
+      @Service
+      Reindexer reindexer;
+      public Logger logger;
 
-        public void activate() throws Exception
-        {
-            logger = Logger.getLogger(ReindexOnStartupService.class.getName());
-            if (System.getProperty("reindex") != null)
-            {
-                logger.info("Reindex started");
-                reindexer.reindex();
-                logger.info("Reindex finished");
-            }
-        }
+      public void activate() throws Exception
+      {
+         logger = Logger.getLogger( ReindexOnStartupService.class.getName() );
+         if (System.getProperty( "reindex" ) != null)
+         {
+            logger.info( "Reindex started" );
+            reindexer.reindex();
+            logger.info( "Reindex finished" );
+         }
+      }
 
-        public void passivate() throws Exception
-        {
-        }
-    }
+      public void passivate() throws Exception
+      {
+      }
+   }
 }

@@ -16,8 +16,8 @@ package se.streamsource.streamflow.client.resource.task;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -25,39 +25,39 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
  * Mapped to /task/<id>
  */
 public class TaskClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public TaskClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public TaskClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public TaskGeneralClientResource general()
-    {
-        return getSubResource("general", TaskGeneralClientResource.class);
-    }
+   public TaskGeneralClientResource general()
+   {
+      return getSubResource( "general", TaskGeneralClientResource.class );
+   }
 
-    public TaskCommentsClientResource comments()
-    {
-        return getSubResource("comments", TaskCommentsClientResource.class);
-    }
+   public TaskCommentsClientResource comments()
+   {
+      return getSubResource( "comments", TaskCommentsClientResource.class );
+   }
 
-    public TaskContactsClientResource contacts()
-    {
-        TaskContactsClientResource contacts = getSubResource("contacts", TaskContactsClientResource.class);
-        contacts.setRoot(this);
-        return contacts;
-    }
+   public TaskContactsClientResource contacts()
+   {
+      TaskContactsClientResource contacts = getSubResource( "contacts", TaskContactsClientResource.class );
+      contacts.setRoot( this );
+      return contacts;
+   }
 
-    public TaskSubmittedFormsClientResource forms()
-    {
-        TaskSubmittedFormsClientResource forms = getSubResource("forms", TaskSubmittedFormsClientResource.class);
-        forms.setRoot(this);
-        return forms;
-    }
+   public TaskSubmittedFormsClientResource forms()
+   {
+      TaskSubmittedFormsClientResource forms = getSubResource( "forms", TaskSubmittedFormsClientResource.class );
+      forms.setRoot( this );
+      return forms;
+   }
 
-    public ListValue possibleProjects() throws ResourceException
-    {
-        return query( "possibleprojects", ListValue.class );
-    }
+   public ListValue possibleProjects() throws ResourceException
+   {
+      return query( "possibleprojects", ListValue.class );
+   }
 }

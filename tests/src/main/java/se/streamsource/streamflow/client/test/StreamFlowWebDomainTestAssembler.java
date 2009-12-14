@@ -27,42 +27,42 @@ import se.streamsource.streamflow.web.application.organization.BootstrapAssemble
  * JAVADOC
  */
 public class StreamFlowWebDomainTestAssembler
-        extends StreamFlowWebAssembler
+      extends StreamFlowWebAssembler
 {
-    private Class[] testClass;
-    private Object[] serviceObjects;
+   private Class[] testClass;
+   private Object[] serviceObjects;
 
 
-    public StreamFlowWebDomainTestAssembler(Class[] testClass, Object... serviceObjects)
-    {
-        this.serviceObjects = serviceObjects;
-        this.testClass = testClass;
-    }
+   public StreamFlowWebDomainTestAssembler( Class[] testClass, Object... serviceObjects )
+   {
+      this.serviceObjects = serviceObjects;
+      this.testClass = testClass;
+   }
 
-    @Override
-    protected void assembleApplicationLayer(LayerAssembly appLayer) throws AssemblyException
-    {
-        appLayer.applicationAssembly().setMode(Application.Mode.test);
+   @Override
+   protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException
+   {
+      appLayer.applicationAssembly().setMode( Application.Mode.test );
 //        super.assembleApplicationLayer(appLayer);
-        new BootstrapAssembler().assemble( appLayer.moduleAssembly("Bootstrap" ));
-    }
+      new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Bootstrap" ) );
+   }
 
-    @Override
-    protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
-    {
-    }
+   @Override
+   protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
+   {
+   }
 
-    @Override
-    protected void assembleDomainLayer(LayerAssembly domainLayer) throws AssemblyException
-    {
-        super.assembleDomainLayer(domainLayer);
-        ModuleAssembly moduleAssembly = domainLayer.moduleAssembly("Test");
-        moduleAssembly.addObjects(testClass);
-        moduleAssembly.importServices(EventListener.class).visibleIn(Visibility.application);
+   @Override
+   protected void assembleDomainLayer( LayerAssembly domainLayer ) throws AssemblyException
+   {
+      super.assembleDomainLayer( domainLayer );
+      ModuleAssembly moduleAssembly = domainLayer.moduleAssembly( "Test" );
+      moduleAssembly.addObjects( testClass );
+      moduleAssembly.importServices( EventListener.class ).visibleIn( Visibility.application );
 
-        for (Object serviceObject : serviceObjects)
-        {
-            domainLayer.applicationAssembly().setMetaInfo(serviceObject);
-        }
-    }
+      for (Object serviceObject : serviceObjects)
+      {
+         domainLayer.applicationAssembly().setMetaInfo( serviceObject );
+      }
+   }
 }

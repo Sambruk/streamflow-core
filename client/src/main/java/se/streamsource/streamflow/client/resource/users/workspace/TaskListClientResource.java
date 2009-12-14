@@ -28,25 +28,25 @@ import java.util.List;
  * JAVADOC
  */
 public abstract class TaskListClientResource<T extends AbstractTaskClientResource>
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    Class<T> taskClass;
+   Class<T> taskClass;
 
-    public TaskListClientResource(@Uses Context context, @Uses Reference reference, Class<T> taskClass)
-    {
-        super(context, reference);
-        this.taskClass = taskClass;
-    }
+   public TaskListClientResource( @Uses Context context, @Uses Reference reference, Class<T> taskClass )
+   {
+      super( context, reference );
+      this.taskClass = taskClass;
+   }
 
-    public abstract List<? extends TaskDTO> tasks(TasksQuery query) throws ResourceException;
+   public abstract List<? extends TaskDTO> tasks( TasksQuery query ) throws ResourceException;
 
-    public void createTask() throws ResourceException
-    {
-        postCommand("createtask");
-    }
+   public void createTask() throws ResourceException
+   {
+      postCommand( "createtask" );
+   }
 
-    public T task(String id)
-    {
-        return getSubResource(id, taskClass);
-    }
+   public T task( String id )
+   {
+      return getSubResource( id, taskClass );
+   }
 }

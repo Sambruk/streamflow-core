@@ -15,13 +15,9 @@
 package se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
-import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Delegator;
-import se.streamsource.streamflow.web.domain.task.Task;
-import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.domain.task.WaitingForQueries;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
@@ -30,15 +26,15 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * /users/{user}/workspace/user/waitingfor
  */
 public class WorkspaceUserWaitingForServerResource
-        extends AbstractTaskListServerResource
+      extends AbstractTaskListServerResource
 {
-    public WaitingForTaskListDTO tasks(TasksQuery query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String userId = (String) getRequest().getAttributes().get("user");
-        Delegator delegator = uow.get( Delegator.class, userId );
-        WaitingForQueries waitingFor = uow.get(WaitingForQueries.class, userId);
+   public WaitingForTaskListDTO tasks( TasksQuery query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Delegator delegator = uow.get( Delegator.class, userId );
+      WaitingForQueries waitingFor = uow.get( WaitingForQueries.class, userId );
 
-        return waitingFor.waitingForTasks( delegator );
-    }
+      return waitingFor.waitingForTasks( delegator );
+   }
 }

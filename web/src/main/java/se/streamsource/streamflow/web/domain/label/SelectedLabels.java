@@ -28,71 +28,75 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(SelectedLabels.Mixin.class)
 public interface SelectedLabels
 {
-    void createLabel( Labels labels, String name );
-    void addLabel(Label label);
-    void removeLabel(Label label);
-    boolean hasLabel( Label label );
+   void createLabel( Labels labels, String name );
 
-    interface Data
-    {
-        ManyAssociation<Label> selectedLabels();
+   void addLabel( Label label );
 
-        ListValue possibleLabels(ManyAssociation<Label> labels);
+   void removeLabel( Label label );
 
-        void labelAdded( DomainEvent event, Label label);
-        void labelRemoved( DomainEvent event, Label label);
-    }
+   boolean hasLabel( Label label );
 
-    abstract class Mixin
-        implements SelectedLabels, Data
-    {
-        @Structure
-        ValueBuilderFactory vbf;
+   interface Data
+   {
+      ManyAssociation<Label> selectedLabels();
 
-        public void createLabel( Labels labels, String name )
-        {
-            Label label = labels.createLabel( name );
-            addLabel( label );
-        }
+      ListValue possibleLabels( ManyAssociation<Label> labels );
 
-        public void addLabel( Label label )
-        {
-            labelAdded(DomainEvent.CREATE, label);
-        }
+      void labelAdded( DomainEvent event, Label label );
 
-        public void removeLabel( Label label )
-        {
-            labelRemoved(DomainEvent.CREATE, label);
-        }
+      void labelRemoved( DomainEvent event, Label label );
+   }
 
-        public boolean hasLabel( Label label )
-        {
-            return selectedLabels().contains( label );
-        }
+   abstract class Mixin
+         implements SelectedLabels, Data
+   {
+      @Structure
+      ValueBuilderFactory vbf;
 
-        public void labelAdded( DomainEvent event, Label label )
-        {
-            selectedLabels().add( label );
-        }
+      public void createLabel( Labels labels, String name )
+      {
+         Label label = labels.createLabel( name );
+         addLabel( label );
+      }
 
-        public void labelRemoved( DomainEvent event, Label label )
-        {
-            selectedLabels().remove( label );
-        }
+      public void addLabel( Label label )
+      {
+         labelAdded( DomainEvent.CREATE, label );
+      }
 
-        public ListValue possibleLabels( ManyAssociation<Label> labels )
-        {
-            ListValueBuilder builder = new ListValueBuilder(vbf);
+      public void removeLabel( Label label )
+      {
+         labelRemoved( DomainEvent.CREATE, label );
+      }
 
-            for (Label label : labels)
+      public boolean hasLabel( Label label )
+      {
+         return selectedLabels().contains( label );
+      }
+
+      public void labelAdded( DomainEvent event, Label label )
+      {
+         selectedLabels().add( label );
+      }
+
+      public void labelRemoved( DomainEvent event, Label label )
+      {
+         selectedLabels().remove( label );
+      }
+
+      public ListValue possibleLabels( ManyAssociation<Label> labels )
+      {
+         ListValueBuilder builder = new ListValueBuilder( vbf );
+
+         for (Label label : labels)
+         {
+            if (!selectedLabels().contains( label ))
             {
-                if (!selectedLabels().contains( label ))
-                {
-                    builder.addDescribable( label );
-                }
+               builder.addDescribable( label );
             }
-            
-            return builder.newList();
-        }
-    }
+         }
+
+         return builder.newList();
+      }
+   }
 }

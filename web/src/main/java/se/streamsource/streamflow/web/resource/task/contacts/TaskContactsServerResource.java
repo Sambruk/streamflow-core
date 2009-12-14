@@ -36,62 +36,62 @@ import java.util.List;
  * /users/{user}/workspace/user/{view}/{task}/contacts
  */
 public class TaskContactsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public TaskContactsServerResource()
-    {
-        setNegotiated(true);
-        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-    }
-
-
-    @Override
-    protected Representation get(Variant variant) throws ResourceException
-    {
-        UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Get task contacts"));
-
-        ValueBuilder<TaskContactsDTO> builder = vbf.newValueBuilder(TaskContactsDTO.class);
-        ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
-        List<ContactValue> list = builder.prototype().contacts().get();
-
-        TaskEntity task = uow.get(TaskEntity.class, getRequestAttributes().get("task").toString());
-
-        for (ContactValue contact : task.contacts().get())
-        {
-            contactBuilder.prototype().company().set(contact.company().get());
-            contactBuilder.prototype().name().set(contact.name().get());
-            contactBuilder.prototype().isCompany().set(contact.isCompany().get());
-            contactBuilder.prototype().note().set(contact.note().get());
-            contactBuilder.prototype().picture().set(contact.picture().get());
-
-            contactBuilder.prototype().addresses().set(contact.addresses().get());
-            contactBuilder.prototype().emailAddresses().set(contact.emailAddresses().get());
-            contactBuilder.prototype().phoneNumbers().set(contact.phoneNumbers().get());
-            list.add(contactBuilder.newInstance());
-        }
-        uow.discard();
-        Representation rep = new StringRepresentation(builder.newInstance().toJSON(), MediaType.APPLICATION_JSON);
-
-        rep.setTag(getInfo(variant).getTag());
-        return rep;
-    }
+   public TaskContactsServerResource()
+   {
+      setNegotiated( true );
+      getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
+   }
 
 
-    public void add(ContactValue newContact)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   @Override
+   protected Representation get( Variant variant ) throws ResourceException
+   {
+      UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Get task contacts" ) );
 
-        TaskEntity task = uow.get(TaskEntity.class, getRequestAttributes().get("task").toString());
+      ValueBuilder<TaskContactsDTO> builder = vbf.newValueBuilder( TaskContactsDTO.class );
+      ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder( ContactValue.class );
+      List<ContactValue> list = builder.prototype().contacts().get();
 
-        task.addContact(newContact);
-    }
+      TaskEntity task = uow.get( TaskEntity.class, getRequestAttributes().get( "task" ).toString() );
 
-    @Override
-    protected String getConditionalIdentityAttribute()
-    {
-        return "task";
-    }
+      for (ContactValue contact : task.contacts().get())
+      {
+         contactBuilder.prototype().company().set( contact.company().get() );
+         contactBuilder.prototype().name().set( contact.name().get() );
+         contactBuilder.prototype().isCompany().set( contact.isCompany().get() );
+         contactBuilder.prototype().note().set( contact.note().get() );
+         contactBuilder.prototype().picture().set( contact.picture().get() );
+
+         contactBuilder.prototype().addresses().set( contact.addresses().get() );
+         contactBuilder.prototype().emailAddresses().set( contact.emailAddresses().get() );
+         contactBuilder.prototype().phoneNumbers().set( contact.phoneNumbers().get() );
+         list.add( contactBuilder.newInstance() );
+      }
+      uow.discard();
+      Representation rep = new StringRepresentation( builder.newInstance().toJSON(), MediaType.APPLICATION_JSON );
+
+      rep.setTag( getInfo( variant ).getTag() );
+      return rep;
+   }
+
+
+   public void add( ContactValue newContact )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+
+      TaskEntity task = uow.get( TaskEntity.class, getRequestAttributes().get( "task" ).toString() );
+
+      task.addContact( newContact );
+   }
+
+   @Override
+   protected String getConditionalIdentityAttribute()
+   {
+      return "task";
+   }
 }

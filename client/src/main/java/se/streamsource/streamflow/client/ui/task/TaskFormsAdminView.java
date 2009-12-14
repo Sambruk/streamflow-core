@@ -28,48 +28,48 @@ import java.awt.BorderLayout;
  * JAVADOC
  */
 public class TaskFormsAdminView
-        extends JPanel
+      extends JPanel
 {
 
-    private TaskSubmittedFormsAdminView submittedFormsView;
-    private TaskEffectiveFieldsValueView effectiveFieldsValueView;
-    public RefreshWhenVisible refresher;
-    public JTabbedPane tabs;
-    private TaskFormsModel model;
+   private TaskSubmittedFormsAdminView submittedFormsView;
+   private TaskEffectiveFieldsValueView effectiveFieldsValueView;
+   public RefreshWhenVisible refresher;
+   public JTabbedPane tabs;
+   private TaskFormsModel model;
 
-    public TaskFormsAdminView(@Uses TaskEffectiveFieldsValueView effectiveFieldsValueView,
-                              @Uses TaskSubmittedFormsAdminView submittedFormsView)
-    {
-        setLayout(new BorderLayout());
+   public TaskFormsAdminView( @Uses TaskEffectiveFieldsValueView effectiveFieldsValueView,
+                              @Uses TaskSubmittedFormsAdminView submittedFormsView )
+   {
+      setLayout( new BorderLayout() );
 
-        tabs = new JTabbedPane();
-        add( tabs, BorderLayout.CENTER );
+      tabs = new JTabbedPane();
+      add( tabs, BorderLayout.CENTER );
 
-        this.submittedFormsView = submittedFormsView;
-        this.effectiveFieldsValueView = effectiveFieldsValueView;
-        tabs.addTab(i18n.text(WorkspaceResources.effective_fields_tab), effectiveFieldsValueView);
-        tabs.addTab(i18n.text(WorkspaceResources.submitted_forms_tab), submittedFormsView);
+      this.submittedFormsView = submittedFormsView;
+      this.effectiveFieldsValueView = effectiveFieldsValueView;
+      tabs.addTab( i18n.text( WorkspaceResources.effective_fields_tab ), effectiveFieldsValueView );
+      tabs.addTab( i18n.text( WorkspaceResources.submitted_forms_tab ), submittedFormsView );
 
-        refresher = new RefreshWhenVisible( this );
-        addAncestorListener( refresher );
-    }
+      refresher = new RefreshWhenVisible( this );
+      addAncestorListener( refresher );
+   }
 
-    public TaskSubmittedFormsAdminView getSubmittedFormsView()
-    {
-        return submittedFormsView;
-    }
+   public TaskSubmittedFormsAdminView getSubmittedFormsView()
+   {
+      return submittedFormsView;
+   }
 
-    public TaskEffectiveFieldsValueView getEffectiveFieldsValueView()
-    {
-        return effectiveFieldsValueView;
-    }
+   public TaskEffectiveFieldsValueView getEffectiveFieldsValueView()
+   {
+      return effectiveFieldsValueView;
+   }
 
-    public void setModel(TaskFormsModel model)
-    {
-        this.model = model;
-        refresher.setRefreshable( model );
+   public void setModel( TaskFormsModel model )
+   {
+      this.model = model;
+      refresher.setRefreshable( model );
 
-        submittedFormsView.setModel( model.submittedForms() );
-        effectiveFieldsValueView.setModel( model.effectiveValues() );
-    }
+      submittedFormsView.setModel( model.submittedForms() );
+      effectiveFieldsValueView.setModel( model.effectiveValues() );
+   }
 }

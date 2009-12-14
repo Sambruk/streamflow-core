@@ -16,20 +16,21 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import java.awt.Component;
 
 /**
  * List renderer for lists that use ListItemValue as items.
  */
 public class ListItemListCellRenderer extends DefaultListCellRenderer
 {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
-    {
-        if (value instanceof ListItemValue)
-        {
-            ListItemValue itemValue = (ListItemValue) value;
-            return super.getListCellRendererComponent(list, itemValue == null ? "" : itemValue.description().get(), index, isSelected, cellHasFocus);
-        } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
-    }
+   public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
+   {
+      if (value instanceof ListItemValue)
+      {
+         ListItemValue itemValue = (ListItemValue) value;
+         return super.getListCellRendererComponent( list, itemValue == null ? "" : itemValue.description().get(), index, isSelected, cellHasFocus );
+      } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
+   }
 }

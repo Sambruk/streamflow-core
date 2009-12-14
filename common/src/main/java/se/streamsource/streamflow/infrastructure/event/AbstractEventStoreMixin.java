@@ -41,126 +41,126 @@ import java.util.logging.Logger;
  * Base implementation for EventStores.
  */
 public abstract class AbstractEventStoreMixin
-        implements EventStore, EventListener, Activatable
+      implements EventStore, EventListener, Activatable
 {
-    @This
-    protected Identity identity;
+   @This
+   protected Identity identity;
 
-    protected  Logger logger;
-    protected ValueType domainEventType;
-    protected ValueType transactionEventsType;
+   protected Logger logger;
+   protected ValueType domainEventType;
+   protected ValueType transactionEventsType;
 
-    protected ReentrantLock lock = new ReentrantLock();
+   protected ReentrantLock lock = new ReentrantLock();
 
-    @Structure
-    protected  ModuleSPI module;
+   @Structure
+   protected ModuleSPI module;
 
-    @Structure
-    private UnitOfWorkFactory uowf;
+   @Structure
+   private UnitOfWorkFactory uowf;
 
-    @Structure
-    private ValueBuilderFactory vbf;
+   @Structure
+   private ValueBuilderFactory vbf;
 
-    private Map<UnitOfWork, List<DomainEvent>> uows = new ConcurrentHashMap<UnitOfWork, List<DomainEvent>>();
+   private Map<UnitOfWork, List<DomainEvent>> uows = new ConcurrentHashMap<UnitOfWork, List<DomainEvent>>();
 
-    private long lastTimestamp = 0;
+   private long lastTimestamp = 0;
 
-    public void activate() throws IOException
-    {
-        logger = Logger.getLogger(identity.identity().get());
+   public void activate() throws IOException
+   {
+      logger = Logger.getLogger( identity.identity().get() );
 
-        domainEventType = module.valueDescriptor(DomainEvent.class.getName()).valueType();
-        transactionEventsType = module.valueDescriptor(TransactionEvents.class.getName()).valueType();
-    }
+      domainEventType = module.valueDescriptor( DomainEvent.class.getName() ).valueType();
+      transactionEventsType = module.valueDescriptor( TransactionEvents.class.getName() ).valueType();
+   }
 
-    public void passivate() throws Exception
-    {
-    }
+   public void passivate() throws Exception
+   {
+   }
 
-    public abstract void transactionsAfter(long afterTimestamp, TransactionHandler handler );
+   public abstract void transactionsAfter( long afterTimestamp, TransactionHandler handler );
 
-    public void notifyEvent(DomainEvent event)
-    {
-        final UnitOfWork unitOfWork = uowf.currentUnitOfWork();
-        List<DomainEvent> events = uows.get(unitOfWork);
-        if (events == null)
-        {
-            final List<DomainEvent> eventList = new ArrayList<DomainEvent>();
-            unitOfWork.addUnitOfWorkCallback(new UnitOfWorkCallback()
+   public void notifyEvent( DomainEvent event )
+   {
+      final UnitOfWork unitOfWork = uowf.currentUnitOfWork();
+      List<DomainEvent> events = uows.get( unitOfWork );
+      if (events == null)
+      {
+         final List<DomainEvent> eventList = new ArrayList<DomainEvent>();
+         unitOfWork.addUnitOfWorkCallback( new UnitOfWorkCallback()
+         {
+            public void beforeCompletion() throws UnitOfWorkCompletionException
             {
-                public void beforeCompletion() throws UnitOfWorkCompletionException
-                {
-                    if (eventList.size() > 0)
-                    {
-                        try
-                        {
-                            // Lock store so noone else can interrupt
-                            lock.lock();
+               if (eventList.size() > 0)
+               {
+                  try
+                  {
+                     // Lock store so noone else can interrupt
+                     lock.lock();
 
-                            // Store all events from this UoW as one transaction
-                            ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder(TransactionEvents.class);
-                            builder.prototype().timestamp().set(getCurrentTimestamp());
-                            builder.prototype().events().set(eventList);
-                            TransactionEvents transaction = builder.newInstance();
+                     // Store all events from this UoW as one transaction
+                     ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
+                     builder.prototype().timestamp().set( getCurrentTimestamp() );
+                     builder.prototype().events().set( eventList );
+                     TransactionEvents transaction = builder.newInstance();
 
-                            storeEvents(transaction);
-                        } catch (Exception e)
-                        {
-                            lock.unlock();
-                            throw new UnitOfWorkCompletionException(e);
-                        }
-                    }
-                }
+                     storeEvents( transaction );
+                  } catch (Exception e)
+                  {
+                     lock.unlock();
+                     throw new UnitOfWorkCompletionException( e );
+                  }
+               }
+            }
 
-                public void afterCompletion(UnitOfWorkStatus status)
-                {
-                    try
-                    {
-                        if (status.equals(UnitOfWorkStatus.COMPLETED))
-                        {
-                            if (eventList.size() > 0)
-                            {
-                                commit();
-                            }
-                        } else
-                        {
-                            rollback();
-                        }
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
+            public void afterCompletion( UnitOfWorkStatus status )
+            {
+               try
+               {
+                  if (status.equals( UnitOfWorkStatus.COMPLETED ))
+                  {
+                     if (eventList.size() > 0)
+                     {
+                        commit();
+                     }
+                  } else
+                  {
+                     rollback();
+                  }
+               } catch (IOException e)
+               {
+                  e.printStackTrace();
+               }
 
-                    // Unlock store so that others can use it
-                    if (lock.isLocked())
-                        lock.unlock();
+               // Unlock store so that others can use it
+               if (lock.isLocked())
+                  lock.unlock();
 
-                    uows.remove(unitOfWork);
-                }
-            });
-            events = eventList;
-            uows.put(unitOfWork, events);
-        }
-        events.add(event);
-    }
+               uows.remove( unitOfWork );
+            }
+         } );
+         events = eventList;
+         uows.put( unitOfWork, events );
+      }
+      events.add( event );
+   }
 
-    abstract protected void rollback()
-            throws IOException;
+   abstract protected void rollback()
+         throws IOException;
 
-    abstract protected void commit()
-            throws IOException;
+   abstract protected void commit()
+         throws IOException;
 
-    abstract protected void storeEvents(TransactionEvents transaction)
-        throws IOException;
+   abstract protected void storeEvents( TransactionEvents transaction )
+         throws IOException;
 
 
-    protected long getCurrentTimestamp()
-    {
-        long timestamp = System.currentTimeMillis();
-        if (timestamp <= lastTimestamp)
-            timestamp = lastTimestamp+1; // Increase by one to ensure uniqueness
-        lastTimestamp = timestamp;
-        return timestamp;
-    }
+   protected long getCurrentTimestamp()
+   {
+      long timestamp = System.currentTimeMillis();
+      if (timestamp <= lastTimestamp)
+         timestamp = lastTimestamp + 1; // Increase by one to ensure uniqueness
+      lastTimestamp = timestamp;
+      return timestamp;
+   }
 
 }

@@ -29,28 +29,30 @@ import java.text.ParseException;
  */
 public interface Manager
 {
-    public void reindex() throws Exception;
+   public void reindex() throws Exception;
 
-    public String exportDatabase(@Name("Compress") boolean compress) throws IOException;
+   public String exportDatabase( @Name("Compress") boolean compress ) throws IOException;
 
-    public String importDatabase(@Name("Filename") String name) throws IOException;
+   public String importDatabase( @Name("Filename") String name ) throws IOException;
 
-    public String exportEvents(@Name("Compress") boolean compress) throws IOException;
+   public String exportEvents( @Name("Compress") boolean compress ) throws IOException;
 
-    public String exportEventsRange(@Name("Compress") boolean compress, @Name("From, yyyyMMdd:HHmm") String fromDate, @Optional @Name("To, yyyyMMdd:HHmm") String toDate) throws IOException, ParseException;
+   public String exportEventsRange( @Name("Compress") boolean compress, @Name("From, yyyyMMdd:HHmm") String fromDate, @Optional @Name("To, yyyyMMdd:HHmm") String toDate ) throws IOException, ParseException;
 
-    // Backup
-    public String backup() throws Exception;
-    public String restore() throws Exception;
+   // Backup
 
-    public String generateTestData(@Name("Nr of tasks") int nrOfTasks) throws Exception;
+   public String backup() throws Exception;
 
-    public String databaseSize();    
+   public String restore() throws Exception;
 
-    @Computed
-    Property<Integer> failedLogins();
+   public String generateTestData( @Name("Nr of tasks") int nrOfTasks ) throws Exception;
 
-    @Immutable
-    Property<String> version();
+   public String databaseSize();
+
+   @Computed
+   Property<Integer> failedLogins();
+
+   @Immutable
+   Property<String> version();
 
 }

@@ -21,22 +21,22 @@ import java.util.Date;
  */
 public class LoginContext
 {
-    String loginMethod;
-    Date loginDate;
+   String loginMethod;
+   Date loginDate;
 
-    public LoginContext(String loginMethod, Date loginDate)
-    {
-        this.loginMethod = loginMethod;
-        this.loginDate = loginDate;
-    }
+   public LoginContext( String loginMethod, Date loginDate )
+   {
+      this.loginMethod = loginMethod;
+      this.loginDate = loginDate;
+   }
 
-    public String getLoginMethod()
-    {
-        return loginMethod;
-    }
+   public String getLoginMethod()
+   {
+      return loginMethod;
+   }
 
-    public Date getLoginDate()
-    {
-        return loginDate;
-    }
+   public Date getLoginDate()
+   {
+      return loginDate;
+   }
 }

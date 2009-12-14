@@ -28,20 +28,20 @@ import java.io.IOException;
  * Mapped to /task/{id}/comments
  */
 public class TaskCommentsClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public TaskCommentsClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public TaskCommentsClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public CommentsDTO comments() throws IOException, ResourceException
-    {
-        return getQuery(CommentsDTO.class);
-    }
+   public CommentsDTO comments() throws IOException, ResourceException
+   {
+      return getQuery( CommentsDTO.class );
+   }
 
-    public void addComment(NewCommentCommand value) throws ResourceException
-    {
-        postCommand("addComment", value);
-    }
+   public void addComment( NewCommentCommand value ) throws ResourceException
+   {
+      postCommand( "addComment", value );
+   }
 }

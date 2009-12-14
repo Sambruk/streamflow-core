@@ -35,84 +35,87 @@ import java.io.IOException;
  * JAVADOC
  */
 public class OrganizationalUnitAdministrationNode
-        extends DefaultMutableTreeNode implements Transferable, EventListener
+      extends DefaultMutableTreeNode implements Transferable, EventListener
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    WeakModelMap<TreeNodeValue, OrganizationalUnitAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalUnitAdministrationNode>()
-    {
-        @Override
-        protected OrganizationalUnitAdministrationNode newModel(TreeNodeValue key)
-        {
-            OrganizationalUnitClientResource resource = orgResource.organizationalUnits().organizationalUnit( key.entity().get().identity() );
-            return obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class).use( OrganizationalUnitAdministrationNode.this, key, resource).newInstance();
-        }
-    };
+   WeakModelMap<TreeNodeValue, OrganizationalUnitAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalUnitAdministrationNode>()
+   {
+      @Override
+      protected OrganizationalUnitAdministrationNode newModel( TreeNodeValue key )
+      {
+         OrganizationalUnitClientResource resource = orgResource.organizationalUnits().organizationalUnit( key.entity().get().identity() );
+         return obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( OrganizationalUnitAdministrationNode.this, key, resource ).newInstance();
+      }
+   };
 
-    OrganizationalUnitAdministrationModel model;
+   OrganizationalUnitAdministrationModel model;
 
-    OrganizationalUnitClientResource orgResource;
+   OrganizationalUnitClientResource orgResource;
 
-    public OrganizationalUnitAdministrationNode(@Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses OrganizationalUnitClientResource ouResource, @Structure ObjectBuilderFactory obf) throws ResourceException
-    {
-        super(ou.buildWith().prototype());
-        this.orgResource = ouResource;
+   public OrganizationalUnitAdministrationNode( @Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses OrganizationalUnitClientResource ouResource, @Structure ObjectBuilderFactory obf ) throws ResourceException
+   {
+      super( ou.buildWith().prototype() );
+      this.orgResource = ouResource;
 
-        model = obf.newObjectBuilder(OrganizationalUnitAdministrationModel.class).use(ouResource).newInstance();
+      model = obf.newObjectBuilder( OrganizationalUnitAdministrationModel.class ).use( ouResource ).newInstance();
 
-        for (TreeNodeValue treeNodeValue : ou.children().get())
-        {
-            OrganizationalUnitClientResource resource = orgResource.organizationalUnits().organizationalUnit( treeNodeValue.entity().get().identity() );
-            add(obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class).use(this, treeNodeValue, resource).newInstance());
-        }
-    }
+      for (TreeNodeValue treeNodeValue : ou.children().get())
+      {
+         OrganizationalUnitClientResource resource = orgResource.organizationalUnits().organizationalUnit( treeNodeValue.entity().get().identity() );
+         add( obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( this, treeNodeValue, resource ).newInstance() );
+      }
+   }
 
-    @Override
-    public String toString()
-    {
-        return ou().description().get();
-    }
+   @Override
+   public String toString()
+   {
+      return ou().description().get();
+   }
 
-    public TreeNodeValue ou()
-    {
-        return (TreeNodeValue) getUserObject();
-    }
+   public TreeNodeValue ou()
+   {
+      return (TreeNodeValue) getUserObject();
+   }
 
-    @Override
-    public void setUserObject(Object userObject)
-    {
-        model.changeDescription(userObject.toString());
-        ou().description().set(userObject.toString());
-    }
+   @Override
+   public void setUserObject( Object userObject )
+   {
+      model.changeDescription( userObject.toString() );
+      ou().description().set( userObject.toString() );
+   }
 
-    public OrganizationalUnitAdministrationModel model()
-    {
-        return model;
-    }
+   public OrganizationalUnitAdministrationModel model()
+   {
+      return model;
+   }
 
-    public DataFlavor[] getTransferDataFlavors() {
+   public DataFlavor[] getTransferDataFlavors()
+   {
 
-        DataFlavor[] result = {new DataFlavor( OrganizationalUnitAdministrationNode.class,"OrganizationalStructureNode")};
-        return result;
-    }
+      DataFlavor[] result = {new DataFlavor( OrganizationalUnitAdministrationNode.class, "OrganizationalStructureNode" )};
+      return result;
+   }
 
-    public boolean isDataFlavorSupported(DataFlavor dataFlavor) {
-        return "OrganizationalStructureNode".equals(dataFlavor.getHumanPresentableName());
-    }
+   public boolean isDataFlavorSupported( DataFlavor dataFlavor )
+   {
+      return "OrganizationalStructureNode".equals( dataFlavor.getHumanPresentableName() );
+   }
 
-    public Object getTransferData(DataFlavor dataFlavor) throws UnsupportedFlavorException, IOException {
+   public Object getTransferData( DataFlavor dataFlavor ) throws UnsupportedFlavorException, IOException
+   {
 
-        return ((OrganizationalUnitAdministrationNode)parent).ou().entity().get();
-    }
+      return ((OrganizationalUnitAdministrationNode) parent).ou().entity().get();
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        model.notifyEvent(event);
+   public void notifyEvent( DomainEvent event )
+   {
+      model.notifyEvent( event );
 
-        for (OrganizationalUnitAdministrationNode organizationalUnitAdministrationNode : models)
-        {
-            organizationalUnitAdministrationNode.notifyEvent( event );
-        }
-    }
+      for (OrganizationalUnitAdministrationNode organizationalUnitAdministrationNode : models)
+      {
+         organizationalUnitAdministrationNode.notifyEvent( event );
+      }
+   }
 }

@@ -21,5 +21,5 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
  */
 public interface TransactionHandler
 {
-    boolean handleTransaction( TransactionEvents transaction);
+   boolean handleTransaction( TransactionEvents transaction );
 }

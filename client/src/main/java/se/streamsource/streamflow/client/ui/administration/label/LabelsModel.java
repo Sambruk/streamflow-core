@@ -35,81 +35,81 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * Management of labels on an organizational or user level
  */
 public class LabelsModel
-        implements EventListener, Refreshable
+      implements EventListener, Refreshable
 {
-    @Uses
-    CommandQueryClient client;
+   @Uses
+   CommandQueryClient client;
 
-    BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>( );
+   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private ListValue list;
+   private ListValue list;
 
-    public EventList<ListItemValue> getLabelList()
-    {
-        return eventList;
-    }
+   public EventList<ListItemValue> getLabelList()
+   {
+      return eventList;
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            // Get label list
-            ListValue newList = client.query( "labels", ListValue.class );
+   public void refresh()
+   {
+      try
+      {
+         // Get label list
+         ListValue newList = client.query( "labels", ListValue.class );
 
-            if (list == null || !newList.equals( list ))
-            {
-                eventList.clear();
-                eventList.addAll( newList.items().get() );
-                list = newList;
-            }
+         if (list == null || !newList.equals( list ))
+         {
+            eventList.clear();
+            eventList.addAll( newList.items().get() );
+            list = newList;
+         }
 
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_labels, e);
-        }
-    }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh_list_of_labels, e );
+      }
+   }
 
-    public void createLabel(String description)
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(description);
-            client.postCommand("createlabel",builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_create_label, e);
-        }
-    }
+   public void createLabel( String description )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( description );
+         client.postCommand( "createlabel", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_create_label, e );
+      }
+   }
 
-    public void removeLabel(String identity)
-    {
-        try
-        {
-            client.getSubClient( identity ).deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException( AdministrationResources.could_not_remove_label, e);
-        }
-    }
+   public void removeLabel( String identity )
+   {
+      try
+      {
+         client.getSubClient( identity ).deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_label, e );
+      }
+   }
 
-    public void changeDescription(int selectedIndex, String name)
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(name);
-            client.getSubClient( list.items().get().get(selectedIndex).entity().get().identity() ).putCommand( "changedescription", builder.newInstance() );
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_change_description, e);
-        }
-    }
+   public void changeDescription( int selectedIndex, String name )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( name );
+         client.getSubClient( list.items().get().get( selectedIndex ).entity().get().identity() ).putCommand( "changedescription", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_change_description, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+   }
 }

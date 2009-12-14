@@ -24,15 +24,15 @@ import se.streamsource.streamflow.domain.form.TextFieldValue;
  * JAVADOC
  */
 public class FormAssembler
-    implements Assembler
+      implements Assembler
 {
-    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
-    {
-        moduleAssembly.addEntities(
-                FormTemplateEntity.class,
-                FormEntity.class,
-                FieldEntity.class).visibleIn( Visibility.application );
+   public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      moduleAssembly.addEntities(
+            FormTemplateEntity.class,
+            FormEntity.class,
+            FieldEntity.class ).visibleIn( Visibility.application );
 
-        moduleAssembly.addValues(TextFieldValue.class).visibleIn( Visibility.application);
-    }
+      moduleAssembly.addValues( TextFieldValue.class ).visibleIn( Visibility.application );
+   }
 }

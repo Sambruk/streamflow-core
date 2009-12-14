@@ -20,9 +20,9 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
-import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
+import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.client.resource.users.workspace.WorkspaceClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -32,56 +32,56 @@ import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
  * JAVADOC
  */
 public class UserClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public UserClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public UserClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public WorkspaceClientResource workspace()
-    {
-        return getSubResource("workspace", WorkspaceClientResource.class);
-    }
+   public WorkspaceClientResource workspace()
+   {
+      return getSubResource( "workspace", WorkspaceClientResource.class );
+   }
 
-    public OverviewClientResource overview()
-    {
-        return getSubResource("overview", OverviewClientResource.class);
-    }
+   public OverviewClientResource overview()
+   {
+      return getSubResource( "overview", OverviewClientResource.class );
+   }
 
-    public SearchClientResource search()
-    {
-        return getSubResource("search", SearchClientResource.class);
-    }
+   public SearchClientResource search()
+   {
+      return getSubResource( "search", SearchClientResource.class );
+   }
 
-    public UserAdministrationClientResource administration()
-    {
-        return getSubResource("administration", UserAdministrationClientResource.class);
-    }
+   public UserAdministrationClientResource administration()
+   {
+      return getSubResource( "administration", UserAdministrationClientResource.class );
+   }
 
-    public ListValue findUsers(String participantName) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(participantName);
-        return query("findUsers", builder.newInstance(), ListValue.class);
-    }
+   public ListValue findUsers( String participantName ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( participantName );
+      return query( "findUsers", builder.newInstance(), ListValue.class );
+   }
 
-    public ListValue findGroups(String groupName) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(groupName);
-        return query("findGroups", builder.newInstance(), ListValue.class);
-    }
+   public ListValue findGroups( String groupName ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( groupName );
+      return query( "findGroups", builder.newInstance(), ListValue.class );
+   }
 
-    public ListValue findProjects(String projectName) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(projectName);
-        return query("findProjects", builder.newInstance(), ListValue.class);
-    }
+   public ListValue findProjects( String projectName ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( projectName );
+      return query( "findProjects", builder.newInstance(), ListValue.class );
+   }
 
-    public void changePassword(ChangePasswordCommand changePasswordCommand) throws ResourceException
-    {
-        postCommand("changePassword", changePasswordCommand);
-    }
+   public void changePassword( ChangePasswordCommand changePasswordCommand ) throws ResourceException
+   {
+      postCommand( "changePassword", changePasswordCommand );
+   }
 }

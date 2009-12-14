@@ -26,30 +26,30 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Subtask.Mixin.class)
 public interface Subtask
 {
-    void changeParentTask(Subtasks subtasks);
+   void changeParentTask( Subtasks subtasks );
 
-    interface Data
-    {
-        @Optional
-        Association<Subtasks> parentTask();
+   interface Data
+   {
+      @Optional
+      Association<Subtasks> parentTask();
 
-        void changedParentTask(DomainEvent event, Subtasks subtasks);
-    }
+      void changedParentTask( DomainEvent event, Subtasks subtasks );
+   }
 
-    abstract class Mixin
-            implements Subtask, Data
-    {
-        @This
-        Data state;
+   abstract class Mixin
+         implements Subtask, Data
+   {
+      @This
+      Data state;
 
-        public void changeParentTask(Subtasks subtasks)
-        {
-            changedParentTask(DomainEvent.CREATE, subtasks);
-        }
+      public void changeParentTask( Subtasks subtasks )
+      {
+         changedParentTask( DomainEvent.CREATE, subtasks );
+      }
 
-        public void changedParentTask(DomainEvent event, Subtasks subtasks)
-        {
-            state.parentTask().set(subtasks);
-        }
-    }
+      public void changedParentTask( DomainEvent event, Subtasks subtasks )
+      {
+         state.parentTask().set( subtasks );
+      }
+   }
 }

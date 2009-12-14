@@ -29,66 +29,68 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(Groups.Mixin.class)
 public interface Groups
 {
-    GroupEntity createGroup(String name);
+   GroupEntity createGroup( String name );
 
-    void addGroup(GroupEntity group);
+   void addGroup( GroupEntity group );
 
-    boolean removeGroup(Group group);
+   boolean removeGroup( Group group );
 
-    void mergeGroups(Groups groups);
+   void mergeGroups( Groups groups );
 
-    interface Data
-    {
-        @Aggregated
-        ManyAssociation<Group> groups();
+   interface Data
+   {
+      @Aggregated
+      ManyAssociation<Group> groups();
 
-        GroupEntity createdGroup(DomainEvent event, String id);
-        void addedGroup(DomainEvent event, GroupEntity group);
-        void removedGroup(DomainEvent event, Group group);
+      GroupEntity createdGroup( DomainEvent event, String id );
 
-        GroupEntity getGroupByName(String name);
-    }
+      void addedGroup( DomainEvent event, GroupEntity group );
 
-    abstract class Mixin
-        implements Groups, Data
-    {
-        public void mergeGroups(Groups groups)
-        {
+      void removedGroup( DomainEvent event, Group group );
 
-            while (this.groups().count() >0)
-            {
-                Group group = this.groups().get(0);
-                removedGroup(DomainEvent.CREATE, group);
-                groups.addGroup((GroupEntity) group);
-            }
+      GroupEntity getGroupByName( String name );
+   }
 
-        }
+   abstract class Mixin
+         implements Groups, Data
+   {
+      public void mergeGroups( Groups groups )
+      {
 
-        public void addGroup(GroupEntity group)
-        {
-            if (groups().contains(group))
-            {
-                return;
-            }
-            addedGroup(DomainEvent.CREATE, group);
-        }
+         while (this.groups().count() > 0)
+         {
+            Group group = this.groups().get( 0 );
+            removedGroup( DomainEvent.CREATE, group );
+            groups.addGroup( (GroupEntity) group );
+         }
 
-        public GroupEntity getGroupByName( String name )
-        {
-            return (GroupEntity) Describable.Mixin.getDescribable( groups(), name );
-        }
-    }
+      }
 
-    abstract class DescribeCreatedGroupConcern
-        extends ConcernOf<Groups>
-        implements Groups
-    {
-        public GroupEntity createGroup(String name)
-        {
-            GroupEntity group = next.createGroup(name);
-            group.changeDescription(name);
-            return group;
-        }
-    }
+      public void addGroup( GroupEntity group )
+      {
+         if (groups().contains( group ))
+         {
+            return;
+         }
+         addedGroup( DomainEvent.CREATE, group );
+      }
+
+      public GroupEntity getGroupByName( String name )
+      {
+         return (GroupEntity) Describable.Mixin.getDescribable( groups(), name );
+      }
+   }
+
+   abstract class DescribeCreatedGroupConcern
+         extends ConcernOf<Groups>
+         implements Groups
+   {
+      public GroupEntity createGroup( String name )
+      {
+         GroupEntity group = next.createGroup( name );
+         group.changeDescription( name );
+         return group;
+      }
+   }
 
 }

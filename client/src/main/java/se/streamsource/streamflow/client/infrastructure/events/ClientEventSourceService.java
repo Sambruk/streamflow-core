@@ -35,67 +35,68 @@ import java.util.List;
  */
 @Mixins(ClientEventSourceService.Mixin.class)
 public interface ClientEventSourceService
-        extends EventSource, TransactionHandler, ServiceComposite
+      extends EventSource, TransactionHandler, ServiceComposite
 {
-    class Mixin
-            implements EventSource, TransactionHandler, Activatable
-    {
-        Date after = new Date();
+   class Mixin
+         implements EventSource, TransactionHandler, Activatable
+   {
+      Date after = new Date();
 
-        public Reader reader;
-        public Iterable<TransactionEvents> events;
-        public TransactionCollector transactionCollector;
+      public Reader reader;
+      public Iterable<TransactionEvents> events;
+      public TransactionCollector transactionCollector;
 
-        public void activate() throws Exception
-        {
-        }
+      public void activate() throws Exception
+      {
+      }
 
-        public void passivate() throws Exception
-        {
-        }
+      public void passivate() throws Exception
+      {
+      }
 
-        private List<Reference<TransactionHandler>> listeners = new ArrayList<Reference<TransactionHandler>>();
+      private List<Reference<TransactionHandler>> listeners = new ArrayList<Reference<TransactionHandler>>();
 
-        // EventSource implementation
+      // EventSource implementation
 
-        public void registerListener(TransactionHandler handler)
-        {
-            listeners.add(new WeakReference<TransactionHandler>(handler));
-        }
+      public void registerListener( TransactionHandler handler )
+      {
+         listeners.add( new WeakReference<TransactionHandler>( handler ) );
+      }
 
-        public void unregisterListener(TransactionHandler subscriber)
-        {
-            Iterator<Reference<TransactionHandler>> referenceIterator = listeners.iterator();
-            while (referenceIterator.hasNext())
+      public void unregisterListener( TransactionHandler subscriber )
+      {
+         Iterator<Reference<TransactionHandler>> referenceIterator = listeners.iterator();
+         while (referenceIterator.hasNext())
+         {
+            Reference<TransactionHandler> eventSourceListenerReference = referenceIterator.next();
+            TransactionHandler lstnr = eventSourceListenerReference.get();
+            if (lstnr == null || lstnr.equals( subscriber ))
             {
-                Reference<TransactionHandler> eventSourceListenerReference = referenceIterator.next();
-                TransactionHandler lstnr = eventSourceListenerReference.get();
-                if (lstnr == null || lstnr.equals(subscriber))
-                {
-                    referenceIterator.remove();
-                    return;
-                }
+               referenceIterator.remove();
+               return;
             }
-        }
+         }
+      }
 
-        // TransactionHandler implementation
-       public boolean handleTransaction( TransactionEvents transaction )
-       {
-            Iterator<Reference<TransactionHandler>> referenceIterator = listeners.iterator();
-            while (referenceIterator.hasNext())
+      // TransactionHandler implementation
+
+      public boolean handleTransaction( TransactionEvents transaction )
+      {
+         Iterator<Reference<TransactionHandler>> referenceIterator = listeners.iterator();
+         while (referenceIterator.hasNext())
+         {
+            Reference<TransactionHandler> eventSourceListenerReference = referenceIterator.next();
+            TransactionHandler lstnr = eventSourceListenerReference.get();
+            if (lstnr == null)
             {
-                Reference<TransactionHandler> eventSourceListenerReference = referenceIterator.next();
-                TransactionHandler lstnr = eventSourceListenerReference.get();
-                if (lstnr == null)
-                {
-                    referenceIterator.remove();
-                } else
-                {
-                    lstnr.handleTransaction( transaction );
-                }
+               referenceIterator.remove();
+            } else
+            {
+               lstnr.handleTransaction( transaction );
             }
+         }
 
-          return true;
-        }
-    }
+         return true;
+      }
+   }
 }

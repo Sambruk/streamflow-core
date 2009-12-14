@@ -19,5 +19,5 @@ package se.streamsource.streamflow.client.domain.individual;
  */
 public interface IndividualRepository
 {
-    Individual individual();
+   Individual individual();
 }

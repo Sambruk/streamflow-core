@@ -23,15 +23,15 @@ import se.streamsource.streamflow.client.resource.BaseClientResource;
  * JAVADOC
  */
 public class TasksClientResource
-    extends BaseClientResource
+      extends BaseClientResource
 {
-    public TasksClientResource( @Uses Context context, @Uses Reference reference )
-    {
-        super( context, reference );
-    }
+   public TasksClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public TaskClientResource task(String id)
-    {
-        return getSubResource( id, TaskClientResource.class );
-    }
+   public TaskClientResource task( String id )
+   {
+      return getSubResource( id, TaskClientResource.class );
+   }
 }

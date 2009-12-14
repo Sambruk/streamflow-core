@@ -43,89 +43,89 @@ import java.io.IOException;
  * JAVADOC
  */
 public class TaskCommentsView
-        extends JPanel
-        implements ListDataListener
+      extends JPanel
+      implements ListDataListener
 {
-    @Service
-    StreamFlowApplication app;
+   @Service
+   StreamFlowApplication app;
 
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    @Uses
-    ObjectBuilder<AddCommentDialog> addCommentDialogs;
+   @Uses
+   ObjectBuilder<AddCommentDialog> addCommentDialogs;
 
-    private TaskCommentsModel model;
-    public JPanel comments;
-    public RefreshWhenVisible refresher;
+   private TaskCommentsModel model;
+   public JPanel comments;
+   public RefreshWhenVisible refresher;
 
-    public TaskCommentsView(@Service ApplicationContext context)
-    {
-        super(new BorderLayout());
-        ActionMap am = context.getActionMap(this);
-        JButton addComments = new JButton(am.get("addTaskComment"));
+   public TaskCommentsView( @Service ApplicationContext context )
+   {
+      super( new BorderLayout() );
+      ActionMap am = context.getActionMap( this );
+      JButton addComments = new JButton( am.get( "addTaskComment" ) );
 
-        comments = new JPanel();
-        comments.setLayout(new BoxLayout(comments, BoxLayout.Y_AXIS));
+      comments = new JPanel();
+      comments.setLayout( new BoxLayout( comments, BoxLayout.Y_AXIS ) );
 
-        add(addComments, BorderLayout.NORTH);
-        add(new JScrollPane(comments), BorderLayout.CENTER);
+      add( addComments, BorderLayout.NORTH );
+      add( new JScrollPane( comments ), BorderLayout.CENTER );
 
-        refresher = new RefreshWhenVisible( this );
-        addAncestorListener( refresher );
-    }
+      refresher = new RefreshWhenVisible( this );
+      addAncestorListener( refresher );
+   }
 
-    @Action
-    public void addTaskComment() throws ResourceException, IOException
-    {
-        AddCommentDialog dialog = addCommentDialogs.use(EntityReference.parseEntityReference(app.getSelectedUser())).newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+   @Action
+   public void addTaskComment() throws ResourceException, IOException
+   {
+      AddCommentDialog dialog = addCommentDialogs.use( EntityReference.parseEntityReference( app.getSelectedUser() ) ).newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
 
-        if (dialog.command() != null)
-        {
-            model.addComment(dialog.command());
-            model.refresh();
-        }
-    }
+      if (dialog.command() != null)
+      {
+         model.addComment( dialog.command() );
+         model.refresh();
+      }
+   }
 
-    public void setModel(TaskCommentsModel taskCommentsModel)
-    {
-        if (model != null)
-            model.removeListDataListener(this);
+   public void setModel( TaskCommentsModel taskCommentsModel )
+   {
+      if (model != null)
+         model.removeListDataListener( this );
 
-        model = taskCommentsModel;
+      model = taskCommentsModel;
 
-        if (model != null)
-        {
-            model.addListDataListener(this);
+      if (model != null)
+      {
+         model.addListDataListener( this );
 
-            contentsChanged(null);
-        }
+         contentsChanged( null );
+      }
 
-        refresher.setRefreshable( model );
-    }
+      refresher.setRefreshable( model );
+   }
 
-    public void intervalAdded(ListDataEvent e)
-    {
-        contentsChanged(e);
-    }
+   public void intervalAdded( ListDataEvent e )
+   {
+      contentsChanged( e );
+   }
 
-    public void intervalRemoved(ListDataEvent e)
-    {
-        contentsChanged(e);
-    }
+   public void intervalRemoved( ListDataEvent e )
+   {
+      contentsChanged( e );
+   }
 
-    public void contentsChanged(ListDataEvent e)
-    {
-        comments.removeAll();
-        int size = model.getSize();
-        for (int i = 0; i < size; i++)
-        {
-            CommentDTO commentDTO = (CommentDTO) model.getElementAt(i);
-            String text = commentDTO.text().get().replace("\n", "<br/>");
-            JLabel comment = new JLabel("<html><b>" + commentDTO.commenter().get() + ", " + commentDTO.creationDate().get() + "</b>" + (commentDTO.isPublic().get() ? " (" + i18n.text(WorkspaceResources.public_comment) + ")" : "") + "<p>" + text + "</p></html>");
-            comments.add(comment);
-        }
-        TaskCommentsView.this.validate();
-    }
+   public void contentsChanged( ListDataEvent e )
+   {
+      comments.removeAll();
+      int size = model.getSize();
+      for (int i = 0; i < size; i++)
+      {
+         CommentDTO commentDTO = (CommentDTO) model.getElementAt( i );
+         String text = commentDTO.text().get().replace( "\n", "<br/>" );
+         JLabel comment = new JLabel( "<html><b>" + commentDTO.commenter().get() + ", " + commentDTO.creationDate().get() + "</b>" + (commentDTO.isPublic().get() ? " (" + i18n.text( WorkspaceResources.public_comment ) + ")" : "") + "<p>" + text + "</p></html>" );
+         comments.add( comment );
+      }
+      TaskCommentsView.this.validate();
+   }
 }

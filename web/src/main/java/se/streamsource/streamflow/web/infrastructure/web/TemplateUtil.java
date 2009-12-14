@@ -25,43 +25,43 @@ import java.lang.reflect.Method;
  */
 public class TemplateUtil
 {
-    public static String getTemplate(String resourceName, Class resourceClass) throws IOException
-    {
-        StringBuilder template = new StringBuilder("");
-        InputStream in = resourceClass.getResourceAsStream(resourceName);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line;
-        while ((line = reader.readLine()) != null)
-            template.append(line + "\n");
-        reader.close();
+   public static String getTemplate( String resourceName, Class resourceClass ) throws IOException
+   {
+      StringBuilder template = new StringBuilder( "" );
+      InputStream in = resourceClass.getResourceAsStream( resourceName );
+      BufferedReader reader = new BufferedReader( new InputStreamReader( in ) );
+      String line;
+      while ((line = reader.readLine()) != null)
+         template.append( line + "\n" );
+      reader.close();
 
-        return template.toString();
-    }
+      return template.toString();
+   }
 
-    public static String eval(String template, String... parameters)
-    {
-        for (int i = 0; i < parameters.length; i += 2)
-        {
-            String variable = parameters[i];
-            String value = parameters[i + 1];
+   public static String eval( String template, String... parameters )
+   {
+      for (int i = 0; i < parameters.length; i += 2)
+      {
+         String variable = parameters[i];
+         String value = parameters[i + 1];
 
-            template = template.replace(variable, value);
-        }
+         template = template.replace( variable, value );
+      }
 
-        return template;
-    }
+      return template;
+   }
 
-    public static String methodList(Class methodClass)
-    {
-        // List methods
-        StringBuilder links = new StringBuilder("");
-        Method[] methods = methodClass.getMethods();
-        for (Method method : methods)
-        {
-            links.append("<li><a href=\"").append(method.getName()).append("/\" rel=\"")
-            	.append(method.getName()).append("\">").append(method.getName()).append("</a></li>\n");
-        }
+   public static String methodList( Class methodClass )
+   {
+      // List methods
+      StringBuilder links = new StringBuilder( "" );
+      Method[] methods = methodClass.getMethods();
+      for (Method method : methods)
+      {
+         links.append( "<li><a href=\"" ).append( method.getName() ).append( "/\" rel=\"" )
+               .append( method.getName() ).append( "\">" ).append( method.getName() ).append( "</a></li>\n" );
+      }
 
-        return links.toString();
-    }
+      return links.toString();
+   }
 }

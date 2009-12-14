@@ -21,11 +21,11 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  */
 public interface EventSpecification
 {
-    /**
-     * Returns true if the event should be included in the result.
-     *
-     * @param event the event that potentially should be included
-     * @return whether or not the event should be included
-     */
-    boolean accept(DomainEvent event);
+   /**
+    * Returns true if the event should be included in the result.
+    *
+    * @param event the event that potentially should be included
+    * @return whether or not the event should be included
+    */
+   boolean accept( DomainEvent event );
 }

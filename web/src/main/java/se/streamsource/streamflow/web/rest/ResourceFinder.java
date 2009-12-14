@@ -26,16 +26,16 @@ import org.restlet.resource.ServerResource;
  */
 public class ResourceFinder extends Finder
 {
-    @Structure
-    private ObjectBuilderFactory factory;
+   @Structure
+   private ObjectBuilderFactory factory;
 
-    public ResourceFinder()
-    {
-    }
+   public ResourceFinder()
+   {
+   }
 
-    @Override
-    public ServerResource create(Class<? extends ServerResource> targetClass, Request request, Response response)
-    {
-        return factory.newObject(targetClass);
-    }
+   @Override
+   public ServerResource create( Class<? extends ServerResource> targetClass, Request request, Response response )
+   {
+      return factory.newObject( targetClass );
+   }
 }

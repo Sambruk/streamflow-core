@@ -39,97 +39,97 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class StreamFlowRestApplication
-        extends Application
+      extends Application
 {
-    public static final MediaType APPLICATION_SPARQL_JSON = new MediaType("application/sparql-results+json", "SPARQL JSON");
+   public static final MediaType APPLICATION_SPARQL_JSON = new MediaType( "application/sparql-results+json", "SPARQL JSON" );
 
-    @Structure
-    ObjectBuilderFactory factory;
-    @Structure
-    UnitOfWorkFactory unitOfWorkFactory;
+   @Structure
+   ObjectBuilderFactory factory;
+   @Structure
+   UnitOfWorkFactory unitOfWorkFactory;
 
-    @Optional
-    @Service
-    Verifier verifier;
+   @Optional
+   @Service
+   Verifier verifier;
 
-    Enroler enroler = new DefaultEnroler();
+   Enroler enroler = new DefaultEnroler();
 
-    @Structure
-    ApplicationSPI app;
+   @Structure
+   ApplicationSPI app;
 
-    Thread shutdownHook = new Thread()
-    {
-        @Override
-        public void run()
-        {
-            try
-            {
-                System.out.println( "SHUTDOWN" );
-                Logger.getLogger( "streamflow" ).info( "VM shutdown; passivating StreamFlow" );
-                app.passivate();
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    public StreamFlowRestApplication(@Uses Context parentContext) throws Exception
-    {
-        super(parentContext);
-
-        getMetadataService().addExtension("srj", APPLICATION_SPARQL_JSON);
-
-    }
-
-    /**
-     * Creates a root Restlet that will receive all incoming calls.
-     */
-    @Override
-    public synchronized Restlet createRoot()
-    {
-        getContext().setVerifier(verifier);
-        getContext().setEnroler( enroler );
-
-        Router api = factory.newObjectBuilder(APIv1Router.class).use(getContext()).newInstance();
-
-        Router versions = new Router(getContext());
-        versions.attach("/v1", api);
-
-        return versions;
-    }
-
-    @Override
-    public void start() throws Exception
-    {
-        try
-        {
-// Start Qi4j
-            Energy4Java is = new Energy4Java();
-            app = is.newApplication(new StreamFlowWebAssembler(this));
-
-            app.activate();
-
-            app.findModule("Web", "REST").objectBuilderFactory().newObjectBuilder(StreamFlowRestApplication.class).injectTo(this);
-
-            Runtime.getRuntime().addShutdownHook( shutdownHook );
-
-            super.start();
-        } catch (Exception e)
-        {
+   Thread shutdownHook = new Thread()
+   {
+      @Override
+      public void run()
+      {
+         try
+         {
+            System.out.println( "SHUTDOWN" );
+            Logger.getLogger( "streamflow" ).info( "VM shutdown; passivating StreamFlow" );
+            app.passivate();
+         } catch (Exception e)
+         {
             e.printStackTrace();
-            throw e;
-        }
-    }
+         }
+      }
+   };
 
-    @Override
-    public void stop() throws Exception
-    {
-        super.stop();
+   public StreamFlowRestApplication( @Uses Context parentContext ) throws Exception
+   {
+      super( parentContext );
 
-        Logger.getLogger("streamflow").info("Passivating StreamFlow");
-        app.passivate();
+      getMetadataService().addExtension( "srj", APPLICATION_SPARQL_JSON );
 
-        Runtime.getRuntime().removeShutdownHook( shutdownHook );
-    }
+   }
+
+   /**
+    * Creates a root Restlet that will receive all incoming calls.
+    */
+   @Override
+   public synchronized Restlet createRoot()
+   {
+      getContext().setVerifier( verifier );
+      getContext().setEnroler( enroler );
+
+      Router api = factory.newObjectBuilder( APIv1Router.class ).use( getContext() ).newInstance();
+
+      Router versions = new Router( getContext() );
+      versions.attach( "/v1", api );
+
+      return versions;
+   }
+
+   @Override
+   public void start() throws Exception
+   {
+      try
+      {
+// Start Qi4j
+         Energy4Java is = new Energy4Java();
+         app = is.newApplication( new StreamFlowWebAssembler( this ) );
+
+         app.activate();
+
+         app.findModule( "Web", "REST" ).objectBuilderFactory().newObjectBuilder( StreamFlowRestApplication.class ).injectTo( this );
+
+         Runtime.getRuntime().addShutdownHook( shutdownHook );
+
+         super.start();
+      } catch (Exception e)
+      {
+         e.printStackTrace();
+         throw e;
+      }
+   }
+
+   @Override
+   public void stop() throws Exception
+   {
+      super.stop();
+
+      Logger.getLogger( "streamflow" ).info( "Passivating StreamFlow" );
+      app.passivate();
+
+      Runtime.getRuntime().removeShutdownHook( shutdownHook );
+   }
 }

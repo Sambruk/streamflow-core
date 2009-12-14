@@ -24,20 +24,20 @@ import org.qi4j.spi.service.importer.NewObjectImporter;
  * JAVADOC
  */
 public class UIInfrastructureAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addObjects(
-                DialogService.class,
-                UncaughtExceptionHandler.class,
-                JavaHelp.class
-        ).visibleIn(Visibility.layer);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addObjects(
+            DialogService.class,
+            UncaughtExceptionHandler.class,
+            JavaHelp.class
+      ).visibleIn( Visibility.layer );
 
-        module.importServices(UncaughtExceptionHandler.class,
-                JavaHelp.class).importedBy(NewObjectImporter.class).visibleIn(Visibility.application);
-        module.addServices(
-                ExceptionHandlerService.class).instantiateOnStartup();
-        module.importServices(DialogService.class).importedBy(NewObjectImporter.class).visibleIn(Visibility.application);
-    }
+      module.importServices( UncaughtExceptionHandler.class,
+            JavaHelp.class ).importedBy( NewObjectImporter.class ).visibleIn( Visibility.application );
+      module.addServices(
+            ExceptionHandlerService.class ).instantiateOnStartup();
+      module.importServices( DialogService.class ).importedBy( NewObjectImporter.class ).visibleIn( Visibility.application );
+   }
 }

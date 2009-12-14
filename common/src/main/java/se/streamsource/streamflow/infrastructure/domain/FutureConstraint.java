@@ -23,10 +23,10 @@ import java.util.Date;
  * to current system time.
  */
 public class FutureConstraint
-        implements Constraint<Future, Date>
+      implements Constraint<Future, Date>
 {
-    public boolean isValid(Future annotation, Date value)
-    {
-        return value.getTime() > System.currentTimeMillis();
-    }
+   public boolean isValid( Future annotation, Date value )
+   {
+      return value.getTime() > System.currentTimeMillis();
+   }
 }

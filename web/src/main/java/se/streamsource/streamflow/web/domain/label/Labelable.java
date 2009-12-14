@@ -29,84 +29,86 @@ import java.util.List;
 @Mixins(Labelable.Mixin.class)
 public interface Labelable
 {
-    void addLabel(Label label);
-    void removeLabel(Label label);
+   void addLabel( Label label );
 
-    void retainLabels(@Optional SelectedLabels currentSelection, @Optional SelectedLabels nextSelection);
+   void removeLabel( Label label );
 
-    interface Data
-    {
-        ManyAssociation<LabelEntity> labels();
+   void retainLabels( @Optional SelectedLabels currentSelection, @Optional SelectedLabels nextSelection );
 
-        void addedLabel(DomainEvent event, Label label);
-        void removedLabel(DomainEvent event, Label label);
-    }
+   interface Data
+   {
+      ManyAssociation<LabelEntity> labels();
 
-    abstract class Mixin
-            implements Labelable, Data
-    {
-        @This
-        Data state;
+      void addedLabel( DomainEvent event, Label label );
 
-        public void addLabel(Label label)
-        {
-            addedLabel(DomainEvent.CREATE, label);
-        }
+      void removedLabel( DomainEvent event, Label label );
+   }
 
-        public void removeLabel(Label label)
-        {
-            if (state.labels().contains((LabelEntity) label))
+   abstract class Mixin
+         implements Labelable, Data
+   {
+      @This
+      Data state;
+
+      public void addLabel( Label label )
+      {
+         addedLabel( DomainEvent.CREATE, label );
+      }
+
+      public void removeLabel( Label label )
+      {
+         if (state.labels().contains( (LabelEntity) label ))
+         {
+            removedLabel( DomainEvent.CREATE, label );
+         }
+      }
+
+      public void retainLabels( SelectedLabels currentSelection, SelectedLabels nextSelection )
+      {
+         List<Label> removedLabels = new ArrayList<Label>();
+         if (nextSelection == null)
+         {
+            for (LabelEntity labelEntity : labels())
             {
-                removedLabel(DomainEvent.CREATE, label);
+               if (currentSelection.hasLabel( labelEntity ))
+                  removedLabels.add( labelEntity );
             }
-        }
-
-        public void retainLabels( SelectedLabels currentSelection, SelectedLabels nextSelection )
-        {
-            List<Label> removedLabels = new ArrayList<Label>( );
-            if (nextSelection == null)
+         } else if (currentSelection == null)
+         {
+            // Do nothing
+         } else
+         {
+            for (LabelEntity labelEntity : labels())
             {
-                for (LabelEntity labelEntity : labels())
-                {
-                    if (currentSelection.hasLabel( labelEntity ))
-                        removedLabels.add( labelEntity );
-                }
-            } else if (currentSelection == null)
-            {
-                // Do nothing
-            } else
-            {
-                for (LabelEntity labelEntity : labels())
-                {
-                    if (currentSelection.hasLabel( labelEntity ) && !nextSelection.hasLabel( labelEntity ))
-                        removedLabels.add( labelEntity );
-                }
+               if (currentSelection.hasLabel( labelEntity ) && !nextSelection.hasLabel( labelEntity ))
+                  removedLabels.add( labelEntity );
             }
+         }
 
-            // Remove any labels that should not be retained
-            for (Label removedLabel : removedLabels)
+         // Remove any labels that should not be retained
+         for (Label removedLabel : removedLabels)
+         {
+            removeLabel( removedLabel );
+         }
+      }
+
+      public void addedLabel( DomainEvent event, Label label )
+      {
+         for (int i = 0; i < state.labels().count(); i++)
+         {
+            if (state.labels().get( i ).getDescription().compareTo( label.getDescription() ) > 0)
             {
-                removeLabel(removedLabel);
+               state.labels().add( i, (LabelEntity) label );
+               return;
             }
-        }
+         }
 
-        public void addedLabel(DomainEvent event, Label label)
-        {
-            for (int i = 0; i < state.labels().count(); i++)
-            {
-                if (state.labels().get(i).getDescription().compareTo(label.getDescription()) > 0)
-                {
-                    state.labels().add(i, (LabelEntity) label);
-                    return;
-                }
-            }
+         state.labels().add( (LabelEntity) label );
+      }
 
-            state.labels().add((LabelEntity) label);
-        }
-
-        public void removedLabel(DomainEvent event, Label label)
-        {
-            state.labels().remove((LabelEntity) label);
-        }
-    }
+      public void removedLabel( DomainEvent event, Label label )
+      {
+         state.labels().remove( (LabelEntity) label );
+      }
+   }
 }

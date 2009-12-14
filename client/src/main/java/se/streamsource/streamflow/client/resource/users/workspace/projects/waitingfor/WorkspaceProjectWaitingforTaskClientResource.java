@@ -16,33 +16,33 @@ package se.streamsource.streamflow.client.resource.users.workspace.projects.wait
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Reference;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
 
 /**
  * JAVADOC
  */
 public class WorkspaceProjectWaitingforTaskClientResource
-        extends AbstractTaskClientResource
+      extends AbstractTaskClientResource
 {
-    public WorkspaceProjectWaitingforTaskClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public WorkspaceProjectWaitingforTaskClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void reject() throws ResourceException
-    {
-        postCommand("reject");
-    }
+   public void reject() throws ResourceException
+   {
+      postCommand( "reject" );
+   }
 
-    public void completeFinishedTask() throws ResourceException
-    {
-        postCommand("completeFinishedTask");
-    }
+   public void completeFinishedTask() throws ResourceException
+   {
+      postCommand( "completeFinishedTask" );
+   }
 
-    public void completeWaitingForTask() throws ResourceException
-    {
-        postCommand("completeWaitingForTask");
-    }
+   public void completeWaitingForTask() throws ResourceException
+   {
+      postCommand( "completeWaitingForTask" );
+   }
 }

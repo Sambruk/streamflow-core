@@ -19,7 +19,9 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.swingx.util.WindowUtils;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -28,35 +30,36 @@ import java.util.Properties;
  * JAVADOC
  */
 public class AboutDialog
-    extends JPanel
+      extends JPanel
 {
-    public AboutDialog()
-    {
+   public AboutDialog()
+   {
 
-        Box box = Box.createVerticalBox();
+      Box box = Box.createVerticalBox();
 
-        setActionMap(Application.getInstance().getContext().getActionMap(this));
+      setActionMap( Application.getInstance().getContext().getActionMap( this ) );
 
-        try {
-            InputStream is = getClass().getResourceAsStream("/version.properties");
-            Properties p = IOUtil.readProperties(is);
+      try
+      {
+         InputStream is = getClass().getResourceAsStream( "/version.properties" );
+         Properties p = IOUtil.readProperties( is );
 
-            box.add(new JLabel("Version: " + p.getProperty("application.version")));
-            box.add(new JLabel("BuildKey: " + p.getProperty("application.buildKey")));
-            box.add(new JLabel("BuildNumber: " + p.getProperty("application.buildNumber")));
-            box.add(new JLabel("Revision: " + p.getProperty("application.revision")));
+         box.add( new JLabel( "Version: " + p.getProperty( "application.version" ) ) );
+         box.add( new JLabel( "BuildKey: " + p.getProperty( "application.buildKey" ) ) );
+         box.add( new JLabel( "BuildNumber: " + p.getProperty( "application.buildNumber" ) ) );
+         box.add( new JLabel( "Revision: " + p.getProperty( "application.revision" ) ) );
 
-            
-        } catch(IOException e)
-        {
-          box.add(new JLabel("Version properties could not be read!"));
-        }
-        add(box);
-    }
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+      } catch (IOException e)
+      {
+         box.add( new JLabel( "Version properties could not be read!" ) );
+      }
+      add( box );
+   }
+
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 }

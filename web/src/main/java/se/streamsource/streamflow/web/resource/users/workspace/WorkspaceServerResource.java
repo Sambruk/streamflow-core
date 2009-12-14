@@ -22,11 +22,11 @@ import se.streamsource.streamflow.web.resource.BaseServerResource;
  * Mapped to /user/{userid}/workspace
  */
 public class WorkspaceServerResource
-        extends BaseServerResource
+      extends BaseServerResource
 {
-    @Override
-    protected Representation get() throws ResourceException
-    {
-        return getHtml("resources/workspace.html");
-    }
+   @Override
+   protected Representation get() throws ResourceException
+   {
+      return getHtml( "resources/workspace.html" );
+   }
 }

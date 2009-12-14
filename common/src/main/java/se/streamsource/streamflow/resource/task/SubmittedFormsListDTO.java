@@ -24,8 +24,8 @@ import java.util.List;
  * List of submitted forms for a task
  */
 public interface SubmittedFormsListDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<SubmittedFormListDTO>> forms();
+   @UseDefaults
+   Property<List<SubmittedFormListDTO>> forms();
 }

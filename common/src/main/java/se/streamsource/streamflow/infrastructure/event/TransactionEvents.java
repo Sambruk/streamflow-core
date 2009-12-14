@@ -26,14 +26,16 @@ import java.util.List;
  * with what happened in that transaction.
  */
 public interface TransactionEvents
-    extends ValueComposite
+      extends ValueComposite
 {
-    // Timestamp when the events were stored in the EventStore
-    // Note that if events are sent from one store to another this timestamp
-    // is updated when it is re-stored
-    Property<Long> timestamp();
+   // Timestamp when the events were stored in the EventStore
+   // Note that if events are sent from one store to another this timestamp
+   // is updated when it is re-stored
 
-    // List of events for this transaction
-    @UseDefaults
-    Property<List<DomainEvent>> events();
+   Property<Long> timestamp();
+
+   // List of events for this transaction
+
+   @UseDefaults
+   Property<List<DomainEvent>> events();
 }

@@ -39,7 +39,7 @@ import java.awt.Dimension;
  * JAVADOC
  */
 public class SelectUserOrProjectDialog2
-        extends JPanel
+      extends JPanel
 {
    Dimension dialogSize = new Dimension( 600, 300 );
 

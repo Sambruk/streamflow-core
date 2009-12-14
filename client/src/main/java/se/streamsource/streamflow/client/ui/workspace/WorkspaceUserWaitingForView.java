@@ -36,77 +36,77 @@ import javax.swing.JPopupMenu;
  * JAVADOC
  */
 public class WorkspaceUserWaitingForView
-        extends TaskTableView
+      extends TaskTableView
 {
-    @Uses
-    protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+   @Uses
+   protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
 
-    public void init(@Service ApplicationContext context,
-            @Uses final TaskTableModel model,
-            final @Uses TasksDetailView detailsView,
-            @Structure final ObjectBuilderFactory obf,
-            @Structure ValueBuilderFactory vbf)
-    {
-    	super.init(context, model, detailsView, obf, vbf);
-        taskTable.getColumn(3).setPreferredWidth(150);
-        taskTable.getColumn(3).setMaxWidth(150);
-    }
-    
-    protected void buildPopupMenu(JPopupMenu popup)
-    {
-        ActionMap am = getActionMap();
-        Action markTasksAsUnread = am.get( "markTasksAsUnread" );
-        popup.add( markTasksAsUnread );
-        Action markTasksAsRead = am.get( "markTasksAsRead" );
-        popup.add( markTasksAsRead );
-        Action rejectFinished = am.get("rejectFinished");
-        popup.add(rejectFinished);
-        Action dropAction = am.get("dropTasks");
-        popup.add(dropAction);
-        Action removeTaskAction = am.get("removeTasks");
-        popup.add(removeTaskAction);
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(4, taskTable, markTasksAsRead, markTasksAsUnread, dropAction, removeTaskAction, rejectFinished));
-    }
+   public void init( @Service ApplicationContext context,
+                     @Uses final TaskTableModel model,
+                     final @Uses TasksDetailView detailsView,
+                     @Structure final ObjectBuilderFactory obf,
+                     @Structure ValueBuilderFactory vbf )
+   {
+      super.init( context, model, detailsView, obf, vbf );
+      taskTable.getColumn( 3 ).setPreferredWidth( 150 );
+      taskTable.getColumn( 3 ).setMaxWidth( 150 );
+   }
 
-    @Override
-    protected void buildToolbar(JPanel toolbar)
-    {
-        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
-        Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
-        Action delegateTasksFromInbox = addToolbarButton(toolbar, "delegateTasks");
-        addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(acceptAction));
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(4, taskTable, assignAction, delegateTasksFromInbox));
-    }
+   protected void buildPopupMenu( JPopupMenu popup )
+   {
+      ActionMap am = getActionMap();
+      Action markTasksAsUnread = am.get( "markTasksAsUnread" );
+      popup.add( markTasksAsUnread );
+      Action markTasksAsRead = am.get( "markTasksAsRead" );
+      popup.add( markTasksAsRead );
+      Action rejectFinished = am.get( "rejectFinished" );
+      popup.add( rejectFinished );
+      Action dropAction = am.get( "dropTasks" );
+      popup.add( dropAction );
+      Action removeTaskAction = am.get( "removeTasks" );
+      popup.add( removeTaskAction );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 4, taskTable, markTasksAsRead, markTasksAsUnread, dropAction, removeTaskAction, rejectFinished ) );
+   }
 
-    @Override
-    @org.jdesktop.application.Action
-    public void delegateTasks() throws ResourceException
-    {
-        SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
-        dialogs.showOkCancelHelpDialog(this, dialog);
+   @Override
+   protected void buildToolbar( JPanel toolbar )
+   {
+      Action acceptAction = addToolbarButton( toolbar, "completeTasks" );
+      Action assignAction = addToolbarButton( toolbar, "assignTasksToMe" );
+      Action delegateTasksFromInbox = addToolbarButton( toolbar, "delegateTasks" );
+      addToolbarButton( toolbar, "refresh" );
+      taskTable.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( acceptAction ) );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 4, taskTable, assignAction, delegateTasksFromInbox ) );
+   }
 
-        dialogSelection = dialog.getSelected();
-        super.delegateTasks();
-    }
+   @Override
+   @org.jdesktop.application.Action
+   public void delegateTasks() throws ResourceException
+   {
+      SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
 
-    @org.jdesktop.application.Action
-    public void rejectFinished() throws ResourceException
-    {
-        for (int row : getReverseSelectedTasks())
-        {
-            ((WorkspaceUserWaitingForModel)model).reject(row);
-        }
-        model.refresh();
-    }
+      dialogSelection = dialog.getSelected();
+      super.delegateTasks();
+   }
 
-    @org.jdesktop.application.Action
-    public void completeTasks()
-    {
-        for (int row : getReverseSelectedTasks())
-        {
-            ((WorkspaceUserWaitingForModel)model).complete(row);
-        }
-        model.refresh();
-    }
+   @org.jdesktop.application.Action
+   public void rejectFinished() throws ResourceException
+   {
+      for (int row : getReverseSelectedTasks())
+      {
+         ((WorkspaceUserWaitingForModel) model).reject( row );
+      }
+      model.refresh();
+   }
+
+   @org.jdesktop.application.Action
+   public void completeTasks()
+   {
+      for (int row : getReverseSelectedTasks())
+      {
+         ((WorkspaceUserWaitingForModel) model).complete( row );
+      }
+      model.refresh();
+   }
 }

@@ -20,17 +20,17 @@ import java.security.Principal;
  * JAVADOC
  */
 public class StreamFlowPrincipal
-    implements Principal
+      implements Principal
 {
-    private String name;
+   private String name;
 
-    public StreamFlowPrincipal( String name )
-    {
-        this.name = name;
-    }
+   public StreamFlowPrincipal( String name )
+   {
+      this.name = name;
+   }
 
-    public String getName()
-    {
-        return name;
-    }
+   public String getName()
+   {
+      return name;
+   }
 }

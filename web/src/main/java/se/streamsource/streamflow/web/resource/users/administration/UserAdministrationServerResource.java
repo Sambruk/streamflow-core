@@ -36,44 +36,44 @@ import java.util.List;
  * JAVADOC
  */
 public class UserAdministrationServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public TreeValue organizations()
-    {
-        ValueBuilder<TreeValue> listBuilder = vbf.newValueBuilder(TreeValue.class);
-        String id = (String) getRequest().getAttributes().get("user");
-        OrganizationParticipations organizationParticipations = uowf.currentUnitOfWork().get(OrganizationParticipations.class, id);
-        Participant participant = (Participant) organizationParticipations;
-        List<TreeNodeValue> list = listBuilder.prototype().roots().get();
-        OrganizationParticipations.Data state = (OrganizationParticipations.Data) organizationParticipations;
-        addOrganizationalUnits(state.organizations(), list, participant);
-        return listBuilder.newInstance();
-    }
+   public TreeValue organizations()
+   {
+      ValueBuilder<TreeValue> listBuilder = vbf.newValueBuilder( TreeValue.class );
+      String id = (String) getRequest().getAttributes().get( "user" );
+      OrganizationParticipations organizationParticipations = uowf.currentUnitOfWork().get( OrganizationParticipations.class, id );
+      Participant participant = (Participant) organizationParticipations;
+      List<TreeNodeValue> list = listBuilder.prototype().roots().get();
+      OrganizationParticipations.Data state = (OrganizationParticipations.Data) organizationParticipations;
+      addOrganizationalUnits( state.organizations(), list, participant );
+      return listBuilder.newInstance();
+   }
 
-    private void addOrganizationalUnits(Iterable<? extends OrganizationalUnits> organizations, List<TreeNodeValue> list, Participant participant)
-    {
-        for (OrganizationalUnits organization : organizations)
-        {
-            OrganizationalUnits.Data ou = (OrganizationalUnits.Data) organization;
-            ValueBuilder<TreeNodeValue> valueBuilder = vbf.newValueBuilder(TreeNodeValue.class);
-            TreeNodeValue itemValue = valueBuilder.prototype();
-            itemValue.description().set(((Describable) organization).getDescription());
-            itemValue.entity().set(EntityReference.getEntityReference(organization));
-            itemValue.nodeType().set( organization instanceof OrganizationEntity ? AdministrationType.organization.name() : AdministrationType.organizationalunit.name() );
-            List<TreeNodeValue> subOrgs = itemValue.children().get();
+   private void addOrganizationalUnits( Iterable<? extends OrganizationalUnits> organizations, List<TreeNodeValue> list, Participant participant )
+   {
+      for (OrganizationalUnits organization : organizations)
+      {
+         OrganizationalUnits.Data ou = (OrganizationalUnits.Data) organization;
+         ValueBuilder<TreeNodeValue> valueBuilder = vbf.newValueBuilder( TreeNodeValue.class );
+         TreeNodeValue itemValue = valueBuilder.prototype();
+         itemValue.description().set( ((Describable) organization).getDescription() );
+         itemValue.entity().set( EntityReference.getEntityReference( organization ) );
+         itemValue.nodeType().set( organization instanceof OrganizationEntity ? AdministrationType.organization.name() : AdministrationType.organizationalunit.name() );
+         List<TreeNodeValue> subOrgs = itemValue.children().get();
 
-            RolePolicy.Data rolePolicy = (RolePolicy.Data) ou;
+         RolePolicy.Data rolePolicy = (RolePolicy.Data) ou;
 
-            if (rolePolicy.hasRoles(participant) || participant.identity().get().equals(UserEntity.ADMINISTRATOR_USERNAME))
-            {
-                addOrganizationalUnits(((OrganizationalUnits.Data) organization).organizationalUnits(), subOrgs, participant);
-                list.add(valueBuilder.newInstance());
+         if (rolePolicy.hasRoles( participant ) || participant.identity().get().equals( UserEntity.ADMINISTRATOR_USERNAME ))
+         {
+            addOrganizationalUnits( ((OrganizationalUnits.Data) organization).organizationalUnits(), subOrgs, participant );
+            list.add( valueBuilder.newInstance() );
 
-            } else
-                addOrganizationalUnits(((OrganizationalUnits.Data) organization).organizationalUnits(), list, participant);
-        }
-    }
+         } else
+            addOrganizationalUnits( ((OrganizationalUnits.Data) organization).organizationalUnits(), list, participant );
+      }
+   }
 }

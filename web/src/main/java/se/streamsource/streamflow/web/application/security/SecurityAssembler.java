@@ -14,23 +14,24 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import static org.qi4j.api.common.Visibility.application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.security.Verifier;
 
+import static org.qi4j.api.common.Visibility.*;
+
 /**
  * Assembler for security services.
  */
 public class SecurityAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addObjects(PasswordVerifierService.class);
-        module.importServices(Verifier.class).importedBy(NewObjectImporter.class).visibleIn(application);
-        module.addServices(PolicyService.class).visibleIn(application);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addObjects( PasswordVerifierService.class );
+      module.importServices( Verifier.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
+      module.addServices( PolicyService.class ).visibleIn( application );
+   }
 }

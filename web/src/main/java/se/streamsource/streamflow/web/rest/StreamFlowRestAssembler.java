@@ -29,21 +29,21 @@ import org.restlet.security.ChallengeAuthenticator;
  * JAVADOC
  */
 public class StreamFlowRestAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addObjects(StreamFlowRestApplication.class,
-                ResourceFinder.class,
-                CompositeFinder.class,
-                EntityStateSerializer.class,
-                EntityTypeSerializer.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addObjects( StreamFlowRestApplication.class,
+            ResourceFinder.class,
+            CompositeFinder.class,
+            EntityStateSerializer.class,
+            EntityTypeSerializer.class );
 
-        module.addObjects(SPARQLResource.class,
-                IndexResource.class,
-                EntitiesResource.class,
-                EntityResource.class);
+      module.addObjects( SPARQLResource.class,
+            IndexResource.class,
+            EntitiesResource.class,
+            EntityResource.class );
 
-        module.importServices(ChallengeAuthenticator.class);
-    }
+      module.importServices( ChallengeAuthenticator.class );
+   }
 }

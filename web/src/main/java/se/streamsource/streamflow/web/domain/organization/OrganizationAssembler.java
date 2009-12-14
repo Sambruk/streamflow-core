@@ -14,20 +14,21 @@
 
 package se.streamsource.streamflow.web.domain.organization;
 
-import static org.qi4j.api.common.Visibility.application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC
  */
 public class OrganizationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addEntities(OrganizationsEntity.class, OrganizationEntity.class,
-                OrganizationalUnitEntity.class).visibleIn(application);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addEntities( OrganizationsEntity.class, OrganizationEntity.class,
+            OrganizationalUnitEntity.class ).visibleIn( application );
+   }
 }

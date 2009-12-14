@@ -27,27 +27,27 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * /users/{user}/workspace/projects/{project}/assignments
  */
 public class WorkspaceProjectAssignmentsServerResource
-        extends AbstractTaskListServerResource
+      extends AbstractTaskListServerResource
 {
-    public AssignmentsTaskListDTO tasks(TasksQuery query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String userId = (String) getRequest().getAttributes().get("user");
+   public AssignmentsTaskListDTO tasks( TasksQuery query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String projectId = (String) getRequest().getAttributes().get( "project" );
+      String userId = (String) getRequest().getAttributes().get( "user" );
 
-        AssignmentsQueries queries = uow.get( AssignmentsQueries.class, projectId );
-        Assignee assignee = uow.get( Assignee.class, userId );
+      AssignmentsQueries queries = uow.get( AssignmentsQueries.class, projectId );
+      Assignee assignee = uow.get( Assignee.class, userId );
 
-        return queries.assignmentsTasks( assignee );
-    }
+      return queries.assignmentsTasks( assignee );
+   }
 
-    public void createtask()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String projectId = (String) getRequest().getAttributes().get("project");
-        String userId = (String) getRequest().getAttributes().get("user");
-        Assignments assignments = uow.get(Assignments.class, projectId);
-        Assignee assignee = uow.get(Assignee.class, userId);
-        assignments.createAssignedTask(assignee);
-    }
+   public void createtask()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String projectId = (String) getRequest().getAttributes().get( "project" );
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Assignments assignments = uow.get( Assignments.class, projectId );
+      Assignee assignee = uow.get( Assignee.class, userId );
+      assignments.createAssignedTask( assignee );
+   }
 }

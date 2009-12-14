@@ -21,5 +21,5 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  */
 public interface EventHandler
 {
-    boolean handleEvent( DomainEvent event);
+   boolean handleEvent( DomainEvent event );
 }

@@ -37,9 +37,26 @@ import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
-import se.streamsource.streamflow.resource.roles.*;
-import se.streamsource.streamflow.resource.task.*;
-import se.streamsource.streamflow.resource.user.*;
+import se.streamsource.streamflow.resource.roles.BooleanDTO;
+import se.streamsource.streamflow.resource.roles.DateDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
+import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.task.FieldDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
+import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.task.TaskContactsDTO;
+import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+import se.streamsource.streamflow.resource.task.TasksQuery;
+import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.resource.user.RegisterUserCommand;
+import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
+import se.streamsource.streamflow.resource.user.UserEntityDTO;
+import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskListDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
@@ -49,57 +66,57 @@ import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
  * JAVADOC
  */
 public class CommonResourceAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        // Commands
-        module.addValues(RegisterUserCommand.class,
-                ChangePasswordCommand.class,
-                BooleanDTO.class,
-                StringDTO.class,
-                DateDTO.class,
-                IntegerDTO.class,
-                EntityReferenceDTO.class,
-                NewCommentCommand.class,
-                NewUserCommand.class,
-                ResetPasswordCommand.class).visibleIn(Visibility.application);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      // Commands
+      module.addValues( RegisterUserCommand.class,
+            ChangePasswordCommand.class,
+            BooleanDTO.class,
+            StringDTO.class,
+            DateDTO.class,
+            IntegerDTO.class,
+            EntityReferenceDTO.class,
+            NewCommentCommand.class,
+            NewUserCommand.class,
+            ResetPasswordCommand.class ).visibleIn( Visibility.application );
 
-        // Queries
-        module.addValues(TasksQuery.class).visibleIn(Visibility.application);
+      // Queries
+      module.addValues( TasksQuery.class ).visibleIn( Visibility.application );
 
-        // Result values
-        module.addValues(ListValue.class, ListItemValue.class,
-                InboxTaskListDTO.class,
-                InboxTaskDTO.class,
-                TaskGeneralDTO.class,
-                TaskContactsDTO.class,
-                CommentsDTO.class,
-                CommentDTO.class,
-                AssignmentsTaskListDTO.class,
-                AssignedTaskDTO.class,
-                DelegationsTaskListDTO.class,
-                DelegatedTaskDTO.class,
-                WaitingForTaskListDTO.class,
-                WaitingForTaskDTO.class,
-                OverviewWaitingForTaskListDTO.class,
-                OverviewWaitingForTaskDTO.class,
-                TreeValue.class,
-                TreeNodeValue.class,
-                OverviewAssignmentsTaskListDTO.class,
-                OverviewAssignedTaskDTO.class,
-                ProjectSummaryDTO.class,
-                ProjectSummaryListDTO.class,
-                FieldDTO.class,
-                EffectiveFieldsDTO.class,
-                EffectiveFieldDTO.class,
-                SubmittedFormDTO.class,
-                SubmittedFormListDTO.class,
-                SubmittedFormsListDTO.class,
-                UserEntityListDTO.class,
-                UserEntityDTO.class).visibleIn(Visibility.application);
+      // Result values
+      module.addValues( ListValue.class, ListItemValue.class,
+            InboxTaskListDTO.class,
+            InboxTaskDTO.class,
+            TaskGeneralDTO.class,
+            TaskContactsDTO.class,
+            CommentsDTO.class,
+            CommentDTO.class,
+            AssignmentsTaskListDTO.class,
+            AssignedTaskDTO.class,
+            DelegationsTaskListDTO.class,
+            DelegatedTaskDTO.class,
+            WaitingForTaskListDTO.class,
+            WaitingForTaskDTO.class,
+            OverviewWaitingForTaskListDTO.class,
+            OverviewWaitingForTaskDTO.class,
+            TreeValue.class,
+            TreeNodeValue.class,
+            OverviewAssignmentsTaskListDTO.class,
+            OverviewAssignedTaskDTO.class,
+            ProjectSummaryDTO.class,
+            ProjectSummaryListDTO.class,
+            FieldDTO.class,
+            EffectiveFieldsDTO.class,
+            EffectiveFieldDTO.class,
+            SubmittedFormDTO.class,
+            SubmittedFormListDTO.class,
+            SubmittedFormsListDTO.class,
+            UserEntityListDTO.class,
+            UserEntityDTO.class ).visibleIn( Visibility.application );
 
-        module.addValues(SearchTaskListDTO.class,
-                SearchTaskDTO.class).visibleIn(Visibility.application);
-    }
+      module.addValues( SearchTaskListDTO.class,
+            SearchTaskDTO.class ).visibleIn( Visibility.application );
+   }
 }

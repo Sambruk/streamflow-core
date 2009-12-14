@@ -33,68 +33,68 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/projects/{project}/members
  */
 public class MembersServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue members()
-    {
-        String identity = getRequest().getAttributes().get("project").toString();
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Members.Data members = uow.get( Members.Data.class, identity);
+   public ListValue members()
+   {
+      String identity = getRequest().getAttributes().get( "project" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Members.Data members = uow.get( Members.Data.class, identity );
 
-        return new ListValueBuilder(vbf).addDescribableItems( members.members() ).newList();
-    }
+      return new ListValueBuilder( vbf ).addDescribableItems( members.members() ).newList();
+   }
 
-    public ListValue findUsers(StringDTO query) throws ResourceException
-     {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+   public ListValue findUsers( StringDTO query ) throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-         String orgId = getRequest().getAttributes().get("organization").toString();
+      String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
-         OwningOrganization organization  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
-         checkPermission(organization);
+      OwningOrganization organization = uowf.currentUnitOfWork().get( OwningOrganization.class, orgId );
+      checkPermission( organization );
 
-         ListValue list = ((OrganizationQueries)organization.organization().get()).findUsers(query.string().get());
+      ListValue list = ((OrganizationQueries) organization.organization().get()).findUsers( query.string().get() );
 
-         String projectId = getRequest().getAttributes().get("project").toString();
-         ProjectEntity project = uow.get(ProjectEntity.class,projectId);
+      String projectId = getRequest().getAttributes().get( "project" ).toString();
+      ProjectEntity project = uow.get( ProjectEntity.class, projectId );
 
-         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
-         for(ListItemValue user : list.items().get())
+      for (ListItemValue user : list.items().get())
+      {
+         if (!project.members().contains( uow.get( Participant.class, user.entity().get().identity() ) ))
          {
-             if(!project.members().contains(uow.get(Participant.class, user.entity().get().identity())))
-             {
-                 listBuilder.addListItem(user.description().get(), user.entity().get());
-             }
+            listBuilder.addListItem( user.description().get(), user.entity().get() );
          }
+      }
 
-         return listBuilder.newList();
-     }
+      return listBuilder.newList();
+   }
 
-     public ListValue findGroups(StringDTO query) throws ResourceException
-     {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+   public ListValue findGroups( StringDTO query ) throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-         String orgId = getRequest().getAttributes().get("organization").toString();
+      String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
-         OwningOrganization organization  = uowf.currentUnitOfWork().get(OwningOrganization.class, orgId);
-         checkPermission(organization);
+      OwningOrganization organization = uowf.currentUnitOfWork().get( OwningOrganization.class, orgId );
+      checkPermission( organization );
 
-         ListValue list = ((OrganizationQueries)organization.organization().get()).findGroups(query.string().get());
+      ListValue list = ((OrganizationQueries) organization.organization().get()).findGroups( query.string().get() );
 
-         String projectId = getRequest().getAttributes().get("project").toString();
-         ProjectEntity group = uow.get(ProjectEntity.class,projectId);
+      String projectId = getRequest().getAttributes().get( "project" ).toString();
+      ProjectEntity group = uow.get( ProjectEntity.class, projectId );
 
-         ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
-         for(ListItemValue grp : list.items().get())
+      for (ListItemValue grp : list.items().get())
+      {
+         if (!group.members().contains( uow.get( Group.class, grp.entity().get().identity() ) ))
          {
-             if(!group.members().contains(uow.get(Group.class, grp.entity().get().identity())))
-             {
-                 listBuilder.addListItem(grp.description().get(), grp.entity().get());
-             }
+            listBuilder.addListItem( grp.description().get(), grp.entity().get() );
          }
+      }
 
-         return listBuilder.newList();
-     }
+      return listBuilder.newList();
+   }
 }

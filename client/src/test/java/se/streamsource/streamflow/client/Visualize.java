@@ -21,12 +21,12 @@ import org.qi4j.bootstrap.AssemblyException;
  */
 public class Visualize
 {
-    public static void main(String[] args) throws AssemblyException
-    {
+   public static void main( String[] args ) throws AssemblyException
+   {
 /*
         Energy4Java is = new Energy4Java();
         ApplicationModelSPI app = is.newApplicationModel(new StreamFlowClientAssembler());
         new Envisage().run(app);
 */
-    }
+   }
 }

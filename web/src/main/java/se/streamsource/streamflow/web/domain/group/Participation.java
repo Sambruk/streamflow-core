@@ -39,218 +39,218 @@ import java.util.List;
 @Mixins(Participation.Mixin.class)
 public interface Participation
 {
-    void joinProject(Project project);
+   void joinProject( Project project );
 
-    void leaveProject(Project project);
+   void leaveProject( Project project );
 
-    void joinGroup(Group group);
+   void joinGroup( Group group );
 
-    void leaveGroup(Group group);
+   void leaveGroup( Group group );
 
-    interface Data
-    {
-        ManyAssociation<Project> projects();
+   interface Data
+   {
+      ManyAssociation<Project> projects();
 
-        ManyAssociation<Group> groups();
+      ManyAssociation<Group> groups();
 
-        /**
-         * Return all projects that this participant has access to.
-         * This includes projects that this participant is transitively
-         * a member of through groups.
-         *
-         * @return all projects that this participant is a member of
-         */
-        Iterable<Project> allProjects();
+      /**
+       * Return all projects that this participant has access to.
+       * This includes projects that this participant is transitively
+       * a member of through groups.
+       *
+       * @return all projects that this participant is a member of
+       */
+      Iterable<Project> allProjects();
 
-        /**
-         * Return all groups that this participant is a member of, transitively.
-         *
-         * @return all groups that this participant is a member of
-         */
-        Iterable<Group> allGroups();
-
-
-        void joinedProject(DomainEvent event, Project project);
+      /**
+       * Return all groups that this participant is a member of, transitively.
+       *
+       * @return all groups that this participant is a member of
+       */
+      Iterable<Group> allGroups();
 
 
-        void leftProject(DomainEvent event, Project project);
+      void joinedProject( DomainEvent event, Project project );
 
 
-        void joinedGroup(DomainEvent event, Group group);
+      void leftProject( DomainEvent event, Project project );
 
 
-        void leftGroup(DomainEvent event, Group group);
-    }
+      void joinedGroup( DomainEvent event, Group group );
 
-    abstract class Mixin
-            implements Participation, Data
-    {
-        @Structure
-        Module module;
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      void leftGroup( DomainEvent event, Group group );
+   }
 
-        @This
-        Participation participant;
+   abstract class Mixin
+         implements Participation, Data
+   {
+      @Structure
+      Module module;
 
-        @This
-        Data state;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public void joinProject(Project project)
-        {
-            if (state.projects().contains(project))
-                return;
+      @This
+      Participation participant;
 
-            joinedProject(DomainEvent.CREATE, project);
-        }
+      @This
+      Data state;
 
-        public void leaveProject(Project project)
-        {
-            if (!state.projects().contains(project))
-                return;
+      public void joinProject( Project project )
+      {
+         if (state.projects().contains( project ))
+            return;
 
-            leftProject(DomainEvent.CREATE, project);
-        }
+         joinedProject( DomainEvent.CREATE, project );
+      }
 
-        public Iterable<Project> allProjects()
-        {
-            List<Project> projects = new ArrayList<Project>();
-            // List my own
-            for (Project project : state.projects())
+      public void leaveProject( Project project )
+      {
+         if (!state.projects().contains( project ))
+            return;
+
+         leftProject( DomainEvent.CREATE, project );
+      }
+
+      public Iterable<Project> allProjects()
+      {
+         List<Project> projects = new ArrayList<Project>();
+         // List my own
+         for (Project project : state.projects())
+         {
+            if (!projects.contains( project )
+                  && !((Removable.Data) project).removed().get())
+               projects.add( project );
+         }
+
+         // Get group projects
+         for (Group group : state.groups())
+         {
+            Iterable<Project> groupProjects = ((Data) group).allProjects();
+            for (Project groupProject : groupProjects)
             {
-                if (!projects.contains(project)
-                    && !((Removable.Data)project).removed().get())
-                    projects.add(project);
+               if (!projects.contains( groupProject )
+                     && !((Removable.Data) groupProject).removed().get())
+                  projects.add( groupProject );
+            }
+         }
+
+         return projects;
+      }
+
+      public void joinGroup( Group group )
+      {
+         if (!group.equals( participant ))
+            joinedGroup( DomainEvent.CREATE, group );
+      }
+
+      public void leaveGroup( Group group )
+      {
+         if (!state.groups().contains( group ))
+            return;
+
+         leftGroup( DomainEvent.CREATE, group );
+      }
+
+      public Iterable<Group> allGroups()
+      {
+         List<Group> groups = new ArrayList<Group>();
+         for (Group group : state.groups())
+         {
+            if (!groups.contains( group ))
+               groups.add( group );
+
+            // Add transitively
+            for (Group group1 : ((Data) group).allGroups())
+            {
+               if (!groups.contains( group1 ))
+                  groups.add( group );
+            }
+         }
+
+         return groups;
+      }
+
+      public void joinedProject( DomainEvent event, Project project )
+      {
+         state.projects().add( project );
+      }
+
+      public void leftProject( DomainEvent event, Project project )
+      {
+         state.projects().remove( project );
+      }
+
+      public void joinedGroup( DomainEvent event, Group group )
+      {
+         state.groups().add( group );
+      }
+
+      public void leftGroup( DomainEvent event, Group group )
+      {
+         state.groups().remove( group );
+      }
+   }
+
+   class RemovableSideEffect
+         extends SideEffectOf<Removable>
+         implements Removable
+   {
+      @This
+      Participation.Data state;
+
+      @This
+      Participant participant;
+
+      public boolean removeEntity()
+      {
+         if (result.removeEntity())
+         {
+            // Leave other groups and projects
+            for (Group group : state.groups().toList())
+            {
+               group.removeParticipant( participant );
             }
 
-            // Get group projects
-            for (Group group : state.groups())
+            for (Project project : state.projects().toList())
             {
-                Iterable<Project> groupProjects = ((Data)group).allProjects();
-                for (Project groupProject : groupProjects)
-                {
-                    if (!projects.contains(groupProject)
-                        && !((Removable.Data)groupProject).removed().get())
-                        projects.add(groupProject);
-                }
+               project.removeMember( participant );
             }
+         }
 
-            return projects;
-        }
+         return true;
+      }
 
-        public void joinGroup(Group group)
-        {
-            if(!group.equals(participant))
-               joinedGroup(DomainEvent.CREATE, group);
-        }
+      public boolean reinstate()
+      {
+         return result.reinstate();
+      }
+   }
 
-        public void leaveGroup(Group group)
-        {
-            if (!state.groups().contains(group))
-                return;
+   abstract class LeaveConcern
+         extends ConcernOf<Participation>
+         implements Participation
+   {
 
-            leftGroup(DomainEvent.CREATE, group);
-        }
+      @This
+      Participation.Data state;
 
-        public Iterable<Group> allGroups()
-        {
-            List<Group> groups = new ArrayList<Group>();
-            for (Group group : state.groups())
-            {
-                if (!groups.contains(group))
-                    groups.add(group);
-
-                // Add transitively
-                for (Group group1 : ((Data)group).allGroups())
-                {
-                    if (!groups.contains(group1))
-                        groups.add(group);
-                }
-            }
-
-            return groups;
-        }
-
-        public void joinedProject(DomainEvent event, Project project)
-        {
-            state.projects().add(project);
-        }
-
-        public void leftProject(DomainEvent event, Project project)
-        {
-            state.projects().remove(project);
-        }
-
-        public void joinedGroup(DomainEvent event, Group group)
-        {
-            state.groups().add(group);
-        }
-
-        public void leftGroup(DomainEvent event, Group group)
-        {
-            state.groups().remove(group);
-        }
-    }
-
-    class RemovableSideEffect
-            extends SideEffectOf<Removable>
-            implements Removable
-    {
-        @This
-        Participation.Data state;
-        
-        @This
-        Participant participant;
-
-        public boolean removeEntity()
-        {
-            if (result.removeEntity())
-            {
-                // Leave other groups and projects
-                for (Group group : state.groups().toList())
-                {
-                    group.removeParticipant(participant);
-                }
-
-                for (Project project : state.projects().toList())
-                {
-                    project.removeMember(participant);
-                }
-            }
-
-            return true;
-        }
-
-        public boolean reinstate()
-        {
-            return result.reinstate();
-        }
-    }
-
-    abstract class LeaveConcern
-        extends ConcernOf<Participation>
-        implements Participation
-    {
-
-        @This
-        Participation.Data state;
-
-        @This
-        Participant participant;
+      @This
+      Participant participant;
 
 
-        public void leaveProject(Project project)
-        {
-            project.removeMember(participant);
-            next.leaveProject(project);
-        }
+      public void leaveProject( Project project )
+      {
+         project.removeMember( participant );
+         next.leaveProject( project );
+      }
 
-        public void leaveGroup(Group group)
-        {
-            group.removeParticipant(participant);
-            next.leaveGroup(group);
-        }
-    }
+      public void leaveGroup( Group group )
+      {
+         group.removeParticipant( participant );
+         next.leaveGroup( group );
+      }
+   }
 
 }

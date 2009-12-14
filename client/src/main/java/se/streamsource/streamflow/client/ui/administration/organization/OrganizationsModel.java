@@ -29,93 +29,93 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 
-import javax.swing.*;
+import javax.swing.AbstractListModel;
 import java.util.List;
 import java.util.logging.Logger;
 
 public class OrganizationsModel
-        extends AbstractListModel
-        implements EventListener, EventHandler
+      extends AbstractListModel
+      implements EventListener, EventHandler
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "createdOrganization", "createdUser");
+   private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "createdOrganization", "createdUser" );
 
-    WeakModelMap<String, OrganizationUsersModel> organizationUsersModels = new WeakModelMap<String, OrganizationUsersModel>()
-    {
-        @Override
-        protected OrganizationUsersModel newModel(String key)
-        {
-            OrganizationUsersModel model;
-            try
-            {
-                model = obf.newObjectBuilder(OrganizationUsersModel.class)
-                        .use(organizationsResource.organization(key), organizationsResource).newInstance();
-            } catch (ResourceException e)
-            {
-                throw new OperationException(AdministrationResources.could_not_find_organization,e);
-            }
-            return model;
-        }
-    };
+   WeakModelMap<String, OrganizationUsersModel> organizationUsersModels = new WeakModelMap<String, OrganizationUsersModel>()
+   {
+      @Override
+      protected OrganizationUsersModel newModel( String key )
+      {
+         OrganizationUsersModel model;
+         try
+         {
+            model = obf.newObjectBuilder( OrganizationUsersModel.class )
+                  .use( organizationsResource.organization( key ), organizationsResource ).newInstance();
+         } catch (ResourceException e)
+         {
+            throw new OperationException( AdministrationResources.could_not_find_organization, e );
+         }
+         return model;
+      }
+   };
 
-    private OrganizationsClientResource organizationsResource;
+   private OrganizationsClientResource organizationsResource;
 
-    private List<ListItemValue> organizations;
+   private List<ListItemValue> organizations;
 
-    public OrganizationsModel(@Uses OrganizationsClientResource organizationsResource)
-    {
-        this.organizationsResource = organizationsResource;
-        this.refresh();
-    }
+   public OrganizationsModel( @Uses OrganizationsClientResource organizationsResource )
+   {
+      this.organizationsResource = organizationsResource;
+      this.refresh();
+   }
 
-    public int getSize()
-    {
-        return organizations == null ? 0 : organizations.size();
-    }
+   public int getSize()
+   {
+      return organizations == null ? 0 : organizations.size();
+   }
 
-    public Object getElementAt(int index)
-    {
-        return organizations == null ? null : organizations.get(index);
-    }
+   public Object getElementAt( int index )
+   {
+      return organizations == null ? null : organizations.get( index );
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            organizations = organizationsResource.organizations().items().get();
+   public void refresh()
+   {
+      try
+      {
+         organizations = organizationsResource.organizations().items().get();
 
-            fireContentsChanged(this, 0, organizations.size());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
-        }
-    }
+         fireContentsChanged( this, 0, organizations.size() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
 
 
-    public OrganizationUsersModel getOrganizationUsersModel(String id)
-    {
-        return organizationUsersModels.get(id);
-    }
+   public OrganizationUsersModel getOrganizationUsersModel( String id )
+   {
+      return organizationUsersModels.get( id );
+   }
 
-    public void notifyEvent(DomainEvent event)
-    {
-        eventFilter.handleEvent(event);
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
 
-        for (OrganizationUsersModel model : organizationUsersModels)
-        {
-            model.notifyEvent(event);
-        }
-    }
+      for (OrganizationUsersModel model : organizationUsersModels)
+      {
+         model.notifyEvent( event );
+      }
+   }
 
-    public boolean handleEvent(DomainEvent event)
-    {
-        Logger.getLogger("administration").info("Refresh organizations");
-        refresh();
-        return false;
-    }
+   public boolean handleEvent( DomainEvent event )
+   {
+      Logger.getLogger( "administration" ).info( "Refresh organizations" );
+      refresh();
+      return false;
+   }
 }

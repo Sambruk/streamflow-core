@@ -22,13 +22,13 @@ import java.util.Comparator;
  * JAVADOC
  */
 public class ListItemComparator
-    implements Comparator<ListItemValue>
+      implements Comparator<ListItemValue>
 {
-    public int compare( ListItemValue o1, ListItemValue o2 )
-    {
-        String s1 = o1.description().get();
-        String s2 = o2.description().get();
+   public int compare( ListItemValue o1, ListItemValue o2 )
+   {
+      String s1 = o1.description().get();
+      String s2 = o2.description().get();
 
-        return s1.compareTo(s2);
-    }
+      return s1.compareTo( s2 );
+   }
 }

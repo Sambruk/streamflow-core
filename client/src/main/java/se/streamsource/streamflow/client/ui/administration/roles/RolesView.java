@@ -23,7 +23,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -34,69 +33,71 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+
 /**
  * JAVADOC
  */
 public class RolesView
-        extends JPanel
+      extends JPanel
 {
-    RolesModel model;
+   RolesModel model;
 
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    @Uses
-    Iterable<NameDialog> nameDialogs;
+   @Uses
+   Iterable<NameDialog> nameDialogs;
 
-    @Uses
-    Iterable<ConfirmationDialog> confirmationDialog;
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
 
-    public JList roleList;
+   public JList roleList;
 
-    public RolesView(@Service ApplicationContext context, @Uses final RolesModel model)
-    {
-        super(new BorderLayout());
-        this.model = model;
+   public RolesView( @Service ApplicationContext context, @Uses final RolesModel model )
+   {
+      super( new BorderLayout() );
+      this.model = model;
 
-        setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-        roleList = new JList(model);
+      roleList = new JList( model );
 
-        roleList.setCellRenderer(new ListItemListCellRenderer());
-        add(roleList, BorderLayout.CENTER);
+      roleList.setCellRenderer( new ListItemListCellRenderer() );
+      add( roleList, BorderLayout.CENTER );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(getActionMap().get("add")));
-        toolbar.add(new JButton(getActionMap().get("remove")));
-        add(toolbar, BorderLayout.SOUTH);
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( getActionMap().get( "add" ) ) );
+      toolbar.add( new JButton( getActionMap().get( "remove" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
 
-        addAncestorListener( new RefreshWhenVisible(model, this) );
-    }
+      addAncestorListener( new RefreshWhenVisible( model, this ) );
+   }
 
-    @Action
-    public void add()
-    {
-        NameDialog dialog = nameDialogs.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.add_role_title));
-        String name = dialog.name();
-        if (name != null)
-        {
-            model.createRole(name);
-            model.refresh();
-        }
-    }
+   @Action
+   public void add()
+   {
+      NameDialog dialog = nameDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_role_title ) );
+      String name = dialog.name();
+      if (name != null)
+      {
+         model.createRole( name );
+         model.refresh();
+      }
+   }
 
-    @Action
-    public void remove()
-    {
-        ConfirmationDialog dialog = confirmationDialog.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
-        if(dialog.isConfirmed())
-        {
-            ListItemValue selected = (ListItemValue) roleList.getSelectedValue();
-            model.removeRole(selected.entity().get().identity());
-            model.refresh();
-        }
-    }
+   @Action
+   public void remove()
+   {
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         ListItemValue selected = (ListItemValue) roleList.getSelectedValue();
+         model.removeRole( selected.entity().get().identity() );
+         model.refresh();
+      }
+   }
 
 }

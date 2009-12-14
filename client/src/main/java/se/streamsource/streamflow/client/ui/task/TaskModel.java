@@ -30,69 +30,69 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
  * Model for task details.
  */
 public class TaskModel
-        implements EventListener
+      implements EventListener
 {
-    @Uses
-    private TaskClientResource resource;
+   @Uses
+   private TaskClientResource resource;
 
-    @Uses
-    private TaskCommentsModel comments;
+   @Uses
+   private TaskCommentsModel comments;
 
-    @Uses
-    private TaskGeneralModel general;
+   @Uses
+   private TaskGeneralModel general;
 
-    @Uses
-    private TaskContactsModel contacts;
+   @Uses
+   private TaskContactsModel contacts;
 
-    @Uses
-    private TaskFormsModel forms;
+   @Uses
+   private TaskFormsModel forms;
 
-    public TaskClientResource resource()
-    {
-        return resource;
-    }
+   public TaskClientResource resource()
+   {
+      return resource;
+   }
 
-    public TaskCommentsModel comments()
-    {
-        return comments;
-    }
+   public TaskCommentsModel comments()
+   {
+      return comments;
+   }
 
-    public TaskGeneralModel general()
-    {
-        return general;
-    }
+   public TaskGeneralModel general()
+   {
+      return general;
+   }
 
-    public TaskContactsModel contacts()
-    {
-        return contacts;
-    }
+   public TaskContactsModel contacts()
+   {
+      return contacts;
+   }
 
-    public TaskFormsModel forms()
-    {
-        return forms;
-    }
+   public TaskFormsModel forms()
+   {
+      return forms;
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        comments.notifyEvent(event);
-        general.notifyEvent(event);
-        contacts.notifyEvent( event );
-        forms.notifyEvent(event);
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      comments.notifyEvent( event );
+      general.notifyEvent( event );
+      contacts.notifyEvent( event );
+      forms.notifyEvent( event );
+   }
 
-    public EventList<ListItemValue> getPossibleProjects()
-    {
-        try
-        {
-            BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+   public EventList<ListItemValue> getPossibleProjects()
+   {
+      try
+      {
+         BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
 
-            ListValue listValue = resource.possibleProjects();
-            list.addAll(listValue.items().get());
+         ListValue listValue = resource.possibleProjects();
+         list.addAll( listValue.items().get() );
 
-            return list;
-        } catch (ResourceException e)
-        {
-            throw new OperationException( WorkspaceResources.could_not_refresh, e);
-        }
-    }
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh, e );
+      }
+   }
 }

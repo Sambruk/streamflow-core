@@ -15,17 +15,16 @@
 package se.streamsource.streamflow.client.ui.administration.users;
 
 import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.groups.*;
 
 public class UserAdministrationAssembler
-    implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        UIAssemblers.addMV(module, UsersAdministrationModel.class,
-                UsersAdministrationView.class);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      UIAssemblers.addMV( module, UsersAdministrationModel.class,
+            UsersAdministrationView.class );
+   }
 }

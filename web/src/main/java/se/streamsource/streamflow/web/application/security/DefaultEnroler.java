@@ -23,14 +23,14 @@ import org.restlet.security.User;
  * in the StreamFlow user database.
  */
 public class DefaultEnroler
-        extends Enroler
+      extends Enroler
 {
-    public void enrole( ClientInfo clientInfo )
-    {
-        User user = clientInfo.getUser();
-        if (user != null)
-        {
-            clientInfo.getPrincipals().add( new StreamFlowPrincipal(user.getIdentifier()) );
-        }
-    }
+   public void enrole( ClientInfo clientInfo )
+   {
+      User user = clientInfo.getUser();
+      if (user != null)
+      {
+         clientInfo.getPrincipals().add( new StreamFlowPrincipal( user.getIdentifier() ) );
+      }
+   }
 }

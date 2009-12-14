@@ -17,7 +17,6 @@ package se.streamsource.streamflow.web.resource.users.workspace.user.inbox;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilderFactory;
-
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
@@ -31,34 +30,34 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * /users/{user}/workspace/user/inbox
  */
 public class WorkspaceUserInboxServerResource
-        extends AbstractTaskListServerResource
+      extends AbstractTaskListServerResource
 {
-	@Structure
-	ValueBuilderFactory vbf; 
-	
-    public InboxTaskListDTO tasks(TasksQuery query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("user");
-        InboxQueries inbox = uow.get(InboxQueries.class, id);
+   @Structure
+   ValueBuilderFactory vbf;
 
-        return inbox.inboxTasks();
-    }
+   public InboxTaskListDTO tasks( TasksQuery query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "user" );
+      InboxQueries inbox = uow.get( InboxQueries.class, id );
 
-    public void createtask()
-    {
-        String userId = (String) getRequest().getAttributes().get("user");
+      return inbox.inboxTasks();
+   }
 
-        createTask(userId);
-    }
-    
-    public ListValue projects()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String userId = (String) getRequest().getAttributes().get("user");
-    	Participation.Data user = uow.get(Participation.Data.class, userId);
-    	ListValueBuilder builder = new ListValueBuilder(vbf);
+   public void createtask()
+   {
+      String userId = (String) getRequest().getAttributes().get( "user" );
 
-    	return builder.addDescribableItems(user.allProjects()).newList();
-    }
+      createTask( userId );
+   }
+
+   public ListValue projects()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      Participation.Data user = uow.get( Participation.Data.class, userId );
+      ListValueBuilder builder = new ListValueBuilder( vbf );
+
+      return builder.addDescribableItems( user.allProjects() ).newList();
+   }
 }

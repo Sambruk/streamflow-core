@@ -32,49 +32,49 @@ import java.util.List;
  * JAVADOC
  */
 public class TaskCommentsModel
-        extends AbstractListModel
-        implements EventListener, Refreshable
+      extends AbstractListModel
+      implements EventListener, Refreshable
 {
-    @Uses
-    TaskCommentsClientResource commentsClientResource;
+   @Uses
+   TaskCommentsClientResource commentsClientResource;
 
-    List<CommentDTO> comments = Collections.emptyList();
+   List<CommentDTO> comments = Collections.emptyList();
 
-    public void refresh()
-    {
-        try
-        {
-            comments = commentsClientResource.comments().comments().get();
-            fireContentsChanged(this, 0, getSize());
-        } catch (Exception e)
-        {
-            throw new OperationException(TaskResources.could_not_refresh, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         comments = commentsClientResource.comments().comments().get();
+         fireContentsChanged( this, 0, getSize() );
+      } catch (Exception e)
+      {
+         throw new OperationException( TaskResources.could_not_refresh, e );
+      }
+   }
 
-    public int getSize()
-    {
-        return comments.size();
-    }
+   public int getSize()
+   {
+      return comments.size();
+   }
 
-    public Object getElementAt(int index)
-    {
-        return comments.get(index);
-    }
+   public Object getElementAt( int index )
+   {
+      return comments.get( index );
+   }
 
-    public void addComment(NewCommentCommand command)
-    {
-        try
-        {
-            commentsClientResource.addComment(command);
-        } catch (ResourceException e)
-        {
-            throw new OperationException(TaskResources.could_not_add_comment, e);
-        }
-    }
+   public void addComment( NewCommentCommand command )
+   {
+      try
+      {
+         commentsClientResource.addComment( command );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( TaskResources.could_not_add_comment, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
+   public void notifyEvent( DomainEvent event )
+   {
 
-    }
+   }
 }

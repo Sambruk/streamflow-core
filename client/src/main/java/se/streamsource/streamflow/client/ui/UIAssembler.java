@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.ApplicationContext;
-import static org.qi4j.api.common.Visibility.*;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -24,36 +23,38 @@ import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 
+import static org.qi4j.api.common.Visibility.*;
+
 /**
  * JAVADOC
  */
 public class UIAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addObjects(
-                StreamFlowApplication.class,
-                AccountSelector.class
-        );
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addObjects(
+            StreamFlowApplication.class,
+            AccountSelector.class
+      );
 
-        // SAF objects
-        module.importServices(StreamFlowApplication.class, ApplicationContext.class, AccountSelector.class).visibleIn(layer);
+      // SAF objects
+      module.importServices( StreamFlowApplication.class, ApplicationContext.class, AccountSelector.class ).visibleIn( layer );
 
 
-        module.addServices(DummyDataService.class).instantiateOnStartup();
-        module.addServices(ApplicationInitializationService.class).instantiateOnStartup();
+      module.addServices( DummyDataService.class ).instantiateOnStartup();
+      module.addServices( ApplicationInitializationService.class ).instantiateOnStartup();
 
-        UIAssemblers.addDialogs(module, NameDialog.class,
-                SelectUsersAndGroupsDialog.class,
-                CreateUserDialog.class,
-                ConfirmationDialog.class,
-                ResetPasswordDialog.class);
+      UIAssemblers.addDialogs( module, NameDialog.class,
+            SelectUsersAndGroupsDialog.class,
+            CreateUserDialog.class,
+            ConfirmationDialog.class,
+            ResetPasswordDialog.class );
 
-        UIAssemblers.addModels(module, TableMultipleSelectionModel.class,
-                TableSingleSelectionModel.class);
+      UIAssemblers.addModels( module, TableMultipleSelectionModel.class,
+            TableSingleSelectionModel.class );
 
-        module.addObjects(DebugWindow.class);
+      module.addObjects( DebugWindow.class );
 
-    }
+   }
 }

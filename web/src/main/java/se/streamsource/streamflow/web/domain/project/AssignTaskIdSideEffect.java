@@ -24,20 +24,20 @@ import se.streamsource.streamflow.web.domain.task.TaskId;
  * Assign id to task if sent to project inbox
  */
 public class AssignTaskIdSideEffect
-        extends SideEffectOf<Ownable>
-        implements Ownable
+      extends SideEffectOf<Ownable>
+      implements Ownable
 {
-    @This
-    TaskId id;
+   @This
+   TaskId id;
 
-    public void changeOwner(Owner owner)
-    {
-        result.changeOwner(owner);
+   public void changeOwner( Owner owner )
+   {
+      result.changeOwner( owner );
 
-        if (owner instanceof IdGenerator)
-        {
-            IdGenerator idgen = (IdGenerator) owner;
-            id.assignId(idgen);
-        }
-    }
+      if (owner instanceof IdGenerator)
+      {
+         IdGenerator idgen = (IdGenerator) owner;
+         id.assignId( idgen );
+      }
+   }
 }

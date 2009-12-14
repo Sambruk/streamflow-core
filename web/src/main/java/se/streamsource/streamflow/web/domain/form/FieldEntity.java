@@ -18,6 +18,6 @@ package se.streamsource.streamflow.web.domain.form;
  * JAVADOC
  */
 public interface FieldEntity
-        extends FieldTemplateEntity, Field
+      extends FieldTemplateEntity, Field
 {
 }

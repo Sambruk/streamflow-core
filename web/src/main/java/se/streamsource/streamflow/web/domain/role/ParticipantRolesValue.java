@@ -25,10 +25,10 @@ import java.util.List;
  * Roles that a particular participant has
  */
 public interface ParticipantRolesValue
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> participant();
+   Property<EntityReference> participant();
 
-    @UseDefaults
-    Property<List<EntityReference>> roles();
+   @UseDefaults
+   Property<List<EntityReference>> roles();
 }

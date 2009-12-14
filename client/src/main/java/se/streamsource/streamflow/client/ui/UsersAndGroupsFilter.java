@@ -19,7 +19,7 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 public interface UsersAndGroupsFilter
 {
-    public ListValue findUsers(String query) throws ResourceException;
+   public ListValue findUsers( String query ) throws ResourceException;
 
-    public ListValue findGroups(String query) throws ResourceException;
+   public ListValue findGroups( String query ) throws ResourceException;
 }

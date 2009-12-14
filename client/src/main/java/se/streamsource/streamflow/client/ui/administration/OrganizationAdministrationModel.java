@@ -38,108 +38,108 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class OrganizationAdministrationModel
-    implements EventListener
+      implements EventListener
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private AdministratorsModel administratorsModel;
-    private RolesModel rolesModel;
-    private LabelsModel labelsModel;
-    private FormDefinitionsModel formsModel;
-    private TaskTypesModel taskTypesModel;
+   private AdministratorsModel administratorsModel;
+   private RolesModel rolesModel;
+   private LabelsModel labelsModel;
+   private FormDefinitionsModel formsModel;
+   private TaskTypesModel taskTypesModel;
 
-    private OrganizationClientResource resource;
+   private OrganizationClientResource resource;
 
-    public OrganizationAdministrationModel( @Structure ObjectBuilderFactory obf, @Uses OrganizationClientResource organization )
-            throws ResourceException
-    {
-        resource = organization;
+   public OrganizationAdministrationModel( @Structure ObjectBuilderFactory obf, @Uses OrganizationClientResource organization )
+         throws ResourceException
+   {
+      resource = organization;
 
-        rolesModel = obf.newObjectBuilder(RolesModel.class).use(organization.roles()).newInstance();
-        labelsModel = obf.newObjectBuilder(LabelsModel.class).use(organization.getNext(), organization.labels()).newInstance();
-        taskTypesModel = obf.newObjectBuilder(TaskTypesModel.class).use(organization.getNext(), organization.taskTypes()).newInstance();
-        formsModel = obf.newObjectBuilder(FormDefinitionsModel.class).use(organization.forms()).newInstance();
-        administratorsModel = obf.newObjectBuilder(AdministratorsModel.class).use(organization.administrators()).newInstance();
-    }
+      rolesModel = obf.newObjectBuilder( RolesModel.class ).use( organization.roles() ).newInstance();
+      labelsModel = obf.newObjectBuilder( LabelsModel.class ).use( organization.getNext(), organization.labels() ).newInstance();
+      taskTypesModel = obf.newObjectBuilder( TaskTypesModel.class ).use( organization.getNext(), organization.taskTypes() ).newInstance();
+      formsModel = obf.newObjectBuilder( FormDefinitionsModel.class ).use( organization.forms() ).newInstance();
+      administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( organization.administrators() ).newInstance();
+   }
 
-    public RolesModel rolesModel()
-    {
-        return rolesModel;
-    }
+   public RolesModel rolesModel()
+   {
+      return rolesModel;
+   }
 
-    public LabelsModel labelsModel()
-    {
-        return labelsModel;
-    }
+   public LabelsModel labelsModel()
+   {
+      return labelsModel;
+   }
 
-    public TaskTypesModel taskTypesModel()
-    {
-        return taskTypesModel;
-    }
+   public TaskTypesModel taskTypesModel()
+   {
+      return taskTypesModel;
+   }
 
-    public FormDefinitionsModel formsModel()
-    {
-        return formsModel;
-    }
+   public FormDefinitionsModel formsModel()
+   {
+      return formsModel;
+   }
 
-    public AdministratorsModel administratorsModel()
-    {
-        return administratorsModel;
-    }
+   public AdministratorsModel administratorsModel()
+   {
+      return administratorsModel;
+   }
 
-        public void changeDescription( String newDescription )
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
-            builder.prototype().string().set( newDescription );
-            resource.changeDescription( builder.newInstance() );
-        } catch (ResourceException e)
-        {
-            throw new OperationException( AdministrationResources.could_not_rename_organization, e );
-        }
-    }
+   public void changeDescription( String newDescription )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( newDescription );
+         resource.changeDescription( builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_rename_organization, e );
+      }
+   }
 
-    public void createOrganizationalUnit( String name )
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
-            builder.prototype().string().set( name );
-            resource.organizationalUnits().createOrganizationalUnit( builder.newInstance() );
-        } catch (ResourceException e)
-        {
-            throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
-        }
-    }
+   public void createOrganizationalUnit( String name )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( name );
+         resource.organizationalUnits().createOrganizationalUnit( builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
+      }
+   }
 
-    public void removeOrganizationalUnit( EntityReference id )
-    {
-        try
-        {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-            builder.prototype().entity().set( id );
-            resource.organizationalUnits().removeOrganizationalUnit( builder.newInstance() );
-        } catch (ResourceException e)
-        {
-            if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
-            {
-                throw new OperationException( AdministrationResources.could_not_remove_organisation_with_open_projects, e );
+   public void removeOrganizationalUnit( EntityReference id )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( id );
+         resource.organizationalUnits().removeOrganizationalUnit( builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
+         {
+            throw new OperationException( AdministrationResources.could_not_remove_organisation_with_open_projects, e );
 
-            } else
-            {
-                throw new OperationException( AdministrationResources.could_not_remove_organization, e );
-            }
+         } else
+         {
+            throw new OperationException( AdministrationResources.could_not_remove_organization, e );
+         }
 
-        }
-    }
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        rolesModel.notifyEvent(event);
-        labelsModel.notifyEvent( event );
-        formsModel.notifyEvent(event);
-        administratorsModel.notifyEvent( event );
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      rolesModel.notifyEvent( event );
+      labelsModel.notifyEvent( event );
+      formsModel.notifyEvent( event );
+      administratorsModel.notifyEvent( event );
+   }
 }

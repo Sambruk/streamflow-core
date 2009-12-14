@@ -32,25 +32,25 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * /users/{user}/workspace/user/delegations
  */
 public class WorkspaceUserDelegationsServerResource
-        extends AbstractTaskListServerResource
+      extends AbstractTaskListServerResource
 {
-    public DelegationsTaskListDTO tasks(TasksQuery query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String userId = (String) getRequest().getAttributes().get("user");
-        DelegationsQueries delegations = uow.get(DelegationsQueries.class, userId);
+   public DelegationsTaskListDTO tasks( TasksQuery query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String userId = (String) getRequest().getAttributes().get( "user" );
+      DelegationsQueries delegations = uow.get( DelegationsQueries.class, userId );
 
-        return delegations.delegationsTasks();
-    }
+      return delegations.delegationsTasks();
+   }
 
-    @Override
-    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
-    {
-        ((DelegatedTaskDTO) prototype).delegatedOn().set(task.delegatedOn().get());
-        Owner owner = uowf.currentUnitOfWork().get(Owner.class, task.owner().get().identity().get());
-        ((DelegatedTaskDTO) prototype).delegatedFrom().set(owner.getDescription());
-        prototype.isRead().set(true);
+   @Override
+   protected <T extends TaskListDTO> void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
+   {
+      ((DelegatedTaskDTO) prototype).delegatedOn().set( task.delegatedOn().get() );
+      Owner owner = uowf.currentUnitOfWork().get( Owner.class, task.owner().get().identity().get() );
+      ((DelegatedTaskDTO) prototype).delegatedFrom().set( owner.getDescription() );
+      prototype.isRead().set( true );
 
-        super.buildTask(prototype, labelBuilder, labelPrototype, task);
-    }
+      super.buildTask( prototype, labelBuilder, labelPrototype, task );
+   }
 }

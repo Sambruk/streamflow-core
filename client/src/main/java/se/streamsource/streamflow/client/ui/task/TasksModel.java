@@ -30,55 +30,55 @@ import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
  * Model that keeps track of all task models
  */
 public class TasksModel
-    implements EventListener, EventHandler
+      implements EventListener, EventHandler
 {
-    @Uses
-    TasksClientResource tasksResource;
+   @Uses
+   TasksClientResource tasksResource;
 
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    WeakModelMap<String, TaskModel> models = new WeakModelMap<String, TaskModel>()
-    {
-        protected TaskModel newModel(String key)
-        {
-            TaskClientResource taskResource = tasksResource.task( key );
+   WeakModelMap<String, TaskModel> models = new WeakModelMap<String, TaskModel>()
+   {
+      protected TaskModel newModel( String key )
+      {
+         TaskClientResource taskResource = tasksResource.task( key );
 
-            PossibleTaskTypesModel taskTypes = obf.newObjectBuilder( PossibleTaskTypesModel.class ).use( taskResource.general().getNext(), taskResource.general().getReference()).newInstance();
+         PossibleTaskTypesModel taskTypes = obf.newObjectBuilder( PossibleTaskTypesModel.class ).use( taskResource.general().getNext(), taskResource.general().getReference() ).newInstance();
 
-            return obf.newObjectBuilder( TaskModel.class).
-                    use( taskResource,
-                            taskResource.general(),
-                            taskResource.comments(),
-                            taskResource.contacts(),
-                            taskResource.forms(),
-                            taskTypes).newInstance();
-        }
-    };
+         return obf.newObjectBuilder( TaskModel.class ).
+               use( taskResource,
+                     taskResource.general(),
+                     taskResource.comments(),
+                     taskResource.contacts(),
+                     taskResource.forms(),
+                     taskTypes ).newInstance();
+      }
+   };
 
-    private EventHandlerFilter eventFilter = new EventHandlerFilter(this, "deletedTask", "deletedAssignedTask", "deletedWaitingForTask");
+   private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "deletedTask", "deletedAssignedTask", "deletedWaitingForTask" );
 
 
-    public TaskModel task(String id)
-    {
-        return models.get( id );
-    }
+   public TaskModel task( String id )
+   {
+      return models.get( id );
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        eventFilter.handleEvent( event );
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
 
-        for (TaskModel model : models)
-        {
-            model.notifyEvent(event);
-        }
-    }
+      for (TaskModel model : models)
+      {
+         model.notifyEvent( event );
+      }
+   }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        String key = EventParameters.getParameter( event, "param1" );
-        models.remove( key );
+   public boolean handleEvent( DomainEvent event )
+   {
+      String key = EventParameters.getParameter( event, "param1" );
+      models.remove( key );
 
-        return false;
-    }
+      return false;
+   }
 }

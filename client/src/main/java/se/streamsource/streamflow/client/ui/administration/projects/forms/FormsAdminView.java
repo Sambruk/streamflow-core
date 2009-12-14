@@ -31,47 +31,47 @@ import javax.swing.event.ListSelectionListener;
  * JAVADOC
  */
 public class FormsAdminView
-        extends JSplitPane
+      extends JSplitPane
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    public FormsAdminView(@Uses final FormsView formsView,
+   public FormsAdminView( @Uses final FormsView formsView,
                           @Uses final AdministrationView adminView,
-                          @Structure final ObjectBuilderFactory obf)
-    {
-        super();
+                          @Structure final ObjectBuilderFactory obf )
+   {
+      super();
 
-        setLeftComponent(formsView);
-        setRightComponent(new JPanel());
+      setLeftComponent( formsView );
+      setRightComponent( new JPanel() );
 
-        setDividerLocation(200);
+      setDividerLocation( 200 );
 
-        final JList list = formsView.getFormList();
-        list.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      final JList list = formsView.getFormList();
+      list.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    int idx = list.getSelectedIndex();
+               int idx = list.getSelectedIndex();
 
-                    if (idx < list.getModel().getSize() && idx >= 0)
-                    {
-                        ListItemValue formValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        FormModel formModel = formsView.getModel().getFormModel(formValue.entity().get().identity());
+               if (idx < list.getModel().getSize() && idx >= 0)
+               {
+                  ListItemValue formValue = (ListItemValue) list.getModel().getElementAt( idx );
+                  FormModel formModel = formsView.getModel().getFormModel( formValue.entity().get().identity() );
 
-                        FormView formView = obf.newObjectBuilder(FormView.class).
-                                use(formModel, adminView).newInstance();
+                  FormView formView = obf.newObjectBuilder( FormView.class ).
+                        use( formModel, adminView ).newInstance();
 
-                        setRightComponent(formView);
-                    } else
-                    {
-                        setRightComponent(new JPanel());
-                    }
-                }
+                  setRightComponent( formView );
+               } else
+               {
+                  setRightComponent( new JPanel() );
+               }
             }
-        });
-    }
+         }
+      } );
+   }
 
 }

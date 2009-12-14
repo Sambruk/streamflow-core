@@ -31,83 +31,83 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  */
 public class TaskContactModel
 {
-    @Uses
-    private ContactValue contact;
+   @Uses
+   private ContactValue contact;
 
-    @Uses
-    TaskContactClientResource taskContactClientResource;
+   @Uses
+   TaskContactClientResource taskContactClientResource;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
 
-    public ContactValue getContact()
-    {
-        return contact;
-    }
+   public ContactValue getContact()
+   {
+      return contact;
+   }
 
-    public ContactPhoneValue getPhoneNumber()
-    {
-        return contact.phoneNumbers().get().get(0);
-    }
+   public ContactPhoneValue getPhoneNumber()
+   {
+      return contact.phoneNumbers().get().get( 0 );
+   }
 
-    public ContactAddressValue getAddress()
-    {
-        return contact.addresses().get().get(0);
-    }
+   public ContactAddressValue getAddress()
+   {
+      return contact.addresses().get().get( 0 );
+   }
 
-    public ContactEmailValue getEmailAddress()
-    {
-        return contact.emailAddresses().get().get(0);
-    }
+   public ContactEmailValue getEmailAddress()
+   {
+      return contact.emailAddresses().get().get( 0 );
+   }
 
-    public void changeName(String newName) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newName);
-        taskContactClientResource.changeName(builder.newInstance());
-    }
+   public void changeName( String newName ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newName );
+      taskContactClientResource.changeName( builder.newInstance() );
+   }
 
-    public void changeNote(String newNote) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newNote);
-        taskContactClientResource.changeNote(builder.newInstance());
-    }
+   public void changeNote( String newNote ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newNote );
+      taskContactClientResource.changeNote( builder.newInstance() );
+   }
 
-    public void changeContactId(String newId) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newId);
-        taskContactClientResource.changeContactId(builder.newInstance());
-    }
+   public void changeContactId( String newId ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newId );
+      taskContactClientResource.changeContactId( builder.newInstance() );
+   }
 
-    public void changeCompany(String newCompany) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newCompany);
-        taskContactClientResource.changeCompany(builder.newInstance());
-    }
+   public void changeCompany( String newCompany ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newCompany );
+      taskContactClientResource.changeCompany( builder.newInstance() );
+   }
 
-    public void changePhoneNumber(String newPhoneNumber) throws ResourceException
-    {
-        ValueBuilder<ContactPhoneValue> builder = vbf.newValueBuilder(ContactPhoneValue.class);
-        builder.prototype().phoneNumber().set(newPhoneNumber);
-        taskContactClientResource.changePhoneNumber(builder.newInstance());
-    }
+   public void changePhoneNumber( String newPhoneNumber ) throws ResourceException
+   {
+      ValueBuilder<ContactPhoneValue> builder = vbf.newValueBuilder( ContactPhoneValue.class );
+      builder.prototype().phoneNumber().set( newPhoneNumber );
+      taskContactClientResource.changePhoneNumber( builder.newInstance() );
+   }
 
-    public void changeAddress(String newAddress) throws ResourceException
-    {
-        ValueBuilder<ContactAddressValue> builder = vbf.newValueBuilder(ContactAddressValue.class);
-        builder.prototype().address().set(newAddress);
-        taskContactClientResource.changeAddress(builder.newInstance());
-    }
+   public void changeAddress( String newAddress ) throws ResourceException
+   {
+      ValueBuilder<ContactAddressValue> builder = vbf.newValueBuilder( ContactAddressValue.class );
+      builder.prototype().address().set( newAddress );
+      taskContactClientResource.changeAddress( builder.newInstance() );
+   }
 
-    public void changeEmailAddress(String newEmailAddress) throws ResourceException
-    {
-        ValueBuilder<ContactEmailValue> builder = vbf.newValueBuilder(ContactEmailValue.class);
-        builder.prototype().emailAddress().set(newEmailAddress);
-        taskContactClientResource.changeEmailAddress(builder.newInstance());
-    }
+   public void changeEmailAddress( String newEmailAddress ) throws ResourceException
+   {
+      ValueBuilder<ContactEmailValue> builder = vbf.newValueBuilder( ContactEmailValue.class );
+      builder.prototype().emailAddress().set( newEmailAddress );
+      taskContactClientResource.changeEmailAddress( builder.newInstance() );
+   }
 
 }

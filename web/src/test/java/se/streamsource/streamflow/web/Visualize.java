@@ -16,18 +16,18 @@ package se.streamsource.streamflow.web;
 
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.spi.structure.ApplicationModelSPI;
 import org.qi4j.envisage.Envisage;
+import org.qi4j.spi.structure.ApplicationModelSPI;
 
 /**
  * Visualize the web part of the application
  */
 public class Visualize
 {
-    public static void main(String[] args) throws AssemblyException
-    {
-        Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamFlowWebAssembler());
-        new Envisage().run(app);
-    }
+   public static void main( String[] args ) throws AssemblyException
+   {
+      Energy4Java is = new Energy4Java();
+      ApplicationModelSPI app = is.newApplicationModel( new StreamFlowWebAssembler() );
+      new Envisage().run( app );
+   }
 }

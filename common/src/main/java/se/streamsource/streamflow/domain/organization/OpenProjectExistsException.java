@@ -16,8 +16,8 @@ package se.streamsource.streamflow.domain.organization;
 
 public class OpenProjectExistsException extends Exception
 {
-   public OpenProjectExistsException(String msg)
+   public OpenProjectExistsException( String msg )
    {
-       super(msg);
+      super( msg );
    }
 }

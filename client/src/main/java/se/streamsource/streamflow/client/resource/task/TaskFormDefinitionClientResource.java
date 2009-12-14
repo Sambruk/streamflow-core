@@ -28,22 +28,22 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
  * Mapped to /task/{id}/formDefinitions/{form}
  */
 public class TaskFormDefinitionClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public TaskFormDefinitionClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public TaskFormDefinitionClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ListValue fields() throws ResourceException
-    {
-        return query("fields", ListValue.class);
-    }
+   public ListValue fields() throws ResourceException
+   {
+      return query( "fields", ListValue.class );
+   }
 
-    public EntityReference formEntityReference()
-    {
-        return EntityReference.parseEntityReference(getRequest().getResourceRef().getLastSegment());
-    }
+   public EntityReference formEntityReference()
+   {
+      return EntityReference.parseEntityReference( getRequest().getResourceRef().getLastSegment() );
+   }
 
     public FormValue form() throws ResourceException
     {

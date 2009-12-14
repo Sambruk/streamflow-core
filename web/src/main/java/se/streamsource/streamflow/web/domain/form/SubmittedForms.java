@@ -22,12 +22,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,80 +37,80 @@ import java.util.List;
 @Mixins(SubmittedForms.Mixin.class)
 public interface SubmittedForms
 {
-    void submitForm(SubmittedFormValue form);
+   void submitForm( SubmittedFormValue form );
 
-    interface Data
-    {
-        @UseDefaults
-        Property<List<SubmittedFormValue>> submittedForms();
+   interface Data
+   {
+      @UseDefaults
+      Property<List<SubmittedFormValue>> submittedForms();
 
-        @Optional
-        Property<EffectiveFormFieldsValue> effectiveFieldValues();
+      @Optional
+      Property<EffectiveFormFieldsValue> effectiveFieldValues();
 
-        void submittedForm( DomainEvent event, SubmittedFormValue form);
+      void submittedForm( DomainEvent event, SubmittedFormValue form );
 
-        String getEffectiveValue( Field field);
-    }
+      String getEffectiveValue( Field field );
+   }
 
-    abstract class Mixin
-        implements SubmittedForms, Data
-    {
-        @Structure
-        ValueBuilderFactory vbf;
+   abstract class Mixin
+         implements SubmittedForms, Data
+   {
+      @Structure
+      ValueBuilderFactory vbf;
 
-        public void submitForm( SubmittedFormValue form )
-        {
-            submittedForm( DomainEvent.CREATE, form);
-        }
+      public void submitForm( SubmittedFormValue form )
+      {
+         submittedForm( DomainEvent.CREATE, form );
+      }
 
-        public void submittedForm( DomainEvent event, SubmittedFormValue form )
-        {
-           List<SubmittedFormValue> forms = submittedForms().get();
-           forms.add( form );
-           submittedForms().set( forms );
+      public void submittedForm( DomainEvent event, SubmittedFormValue form )
+      {
+         List<SubmittedFormValue> forms = submittedForms().get();
+         forms.add( form );
+         submittedForms().set( forms );
 
-            //Recalculate effective values
-            ValueBuilder<EffectiveFieldValue> fieldBuilder = vbf.newValueBuilder( EffectiveFieldValue.class );
+         //Recalculate effective values
+         ValueBuilder<EffectiveFieldValue> fieldBuilder = vbf.newValueBuilder( EffectiveFieldValue.class );
 
-            LinkedHashMap<EntityReference, EffectiveFieldValue> effectiveValues = new LinkedHashMap<EntityReference, EffectiveFieldValue>( );
-            for (SubmittedFormValue submittedFormValue : forms)
+         LinkedHashMap<EntityReference, EffectiveFieldValue> effectiveValues = new LinkedHashMap<EntityReference, EffectiveFieldValue>();
+         for (SubmittedFormValue submittedFormValue : forms)
+         {
+            fieldBuilder.prototype().submissionDate().set( submittedFormValue.submissionDate().get() );
+            fieldBuilder.prototype().submitter().set( submittedFormValue.submitter().get() );
+
+            for (SubmittedFieldValue fieldValue : submittedFormValue.values().get())
             {
-                fieldBuilder.prototype().submissionDate().set( submittedFormValue.submissionDate().get() );
-                fieldBuilder.prototype().submitter().set( submittedFormValue.submitter().get() );
-
-                for (SubmittedFieldValue fieldValue : submittedFormValue.values().get())
-                {
-                    fieldBuilder.prototype().field().set( fieldValue.field().get() );
-                    fieldBuilder.prototype().value().set( fieldValue.value().get() );
-                    effectiveValues.put( fieldValue.field().get(), fieldBuilder.newInstance() );
-                }
+               fieldBuilder.prototype().field().set( fieldValue.field().get() );
+               fieldBuilder.prototype().value().set( fieldValue.value().get() );
+               effectiveValues.put( fieldValue.field().get(), fieldBuilder.newInstance() );
             }
+         }
 
-            ValueBuilder<EffectiveFormFieldsValue> fieldsBuilder = vbf.newValueBuilder( EffectiveFormFieldsValue.class );
-            List<EffectiveFieldValue> effectiveFieldValues = fieldsBuilder.prototype().fields().get();
-            effectiveFieldValues.addAll( effectiveValues.values() );
+         ValueBuilder<EffectiveFormFieldsValue> fieldsBuilder = vbf.newValueBuilder( EffectiveFormFieldsValue.class );
+         List<EffectiveFieldValue> effectiveFieldValues = fieldsBuilder.prototype().fields().get();
+         effectiveFieldValues.addAll( effectiveValues.values() );
 
-            EffectiveFormFieldsValue effectiveFormFieldsValue = fieldsBuilder.newInstance();
+         EffectiveFormFieldsValue effectiveFormFieldsValue = fieldsBuilder.newInstance();
 
-            effectiveFieldValues().set( effectiveFormFieldsValue );
-        }
+         effectiveFieldValues().set( effectiveFormFieldsValue );
+      }
 
-        public String getEffectiveValue( Field field )
-        {
-            EffectiveFormFieldsValue effectiveFormFieldsValue = effectiveFieldValues().get();
-            if (effectiveFormFieldsValue == null)
-                return null;
-
-            // Find value among effective fields collection
-            EntityReference fieldRef = EntityReference.getEntityReference( field );
-            for (EffectiveFieldValue effectiveFieldValue : effectiveFieldValues().get().fields().get())
-            {
-                if (effectiveFieldValue.field().get().equals(fieldRef))
-                    return effectiveFieldValue.value().get();
-            }
-
-            // No such field has been submitted
+      public String getEffectiveValue( Field field )
+      {
+         EffectiveFormFieldsValue effectiveFormFieldsValue = effectiveFieldValues().get();
+         if (effectiveFormFieldsValue == null)
             return null;
-        }
-    }
+
+         // Find value among effective fields collection
+         EntityReference fieldRef = EntityReference.getEntityReference( field );
+         for (EffectiveFieldValue effectiveFieldValue : effectiveFieldValues().get().fields().get())
+         {
+            if (effectiveFieldValue.field().get().equals( fieldRef ))
+               return effectiveFieldValue.value().get();
+         }
+
+         // No such field has been submitted
+         return null;
+      }
+   }
 }

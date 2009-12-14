@@ -33,29 +33,29 @@ import java.io.File;
  */
 @Mixins(ServiceConfiguration.ServiceConfigurationMixin.class)
 public interface ServiceConfiguration
-        extends ServiceComposite, Activatable
+      extends ServiceComposite, Activatable
 {
-    class ServiceConfigurationMixin
-            implements Activatable
-    {
-        @Service
-        FileConfiguration config;
+   class ServiceConfigurationMixin
+         implements Activatable
+   {
+      @Service
+      FileConfiguration config;
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public void activate() throws Exception
-        {
-            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Service configuration"));
-            String jdbmPath = new File(config.dataDirectory(), "jdbm.data").getAbsolutePath();
-            EntityBuilder<JdbmConfiguration> jdbm = uow.newEntityBuilder(JdbmConfiguration.class, "JdbmEntityStoreService");
-            jdbm.instance().file().set(jdbmPath);
-            jdbm.newInstance();
-            uow.complete();
-        }
+      public void activate() throws Exception
+      {
+         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Service configuration" ) );
+         String jdbmPath = new File( config.dataDirectory(), "jdbm.data" ).getAbsolutePath();
+         EntityBuilder<JdbmConfiguration> jdbm = uow.newEntityBuilder( JdbmConfiguration.class, "JdbmEntityStoreService" );
+         jdbm.instance().file().set( jdbmPath );
+         jdbm.newInstance();
+         uow.complete();
+      }
 
-        public void passivate() throws Exception
-        {
-        }
-    }
+      public void passivate() throws Exception
+      {
+      }
+   }
 }

@@ -19,16 +19,16 @@ import java.util.Date;
 /**
  * Time service. You can either set a given date to be returned,
  * or else System.currentTimeMillis() will be used.
- *
+ * <p/>
  * It is convenient to set the time to a specific date for generating test data
  * that is supposed to have a date other than System.currentTimeMillis
  */
 public class TimeService
-   implements Time
+      implements Time
 {
    private Date now;
 
-   public void setNow(Date newNow)
+   public void setNow( Date newNow )
    {
       now = newNow;
    }

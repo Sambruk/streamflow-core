@@ -26,21 +26,21 @@ import se.streamsource.streamflow.web.domain.form.FieldTemplates;
  * JAVADOC
  */
 public class FieldDefinitionsSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    public FieldEntity givenField;
+   public FieldEntity givenField;
 
-    @Given("field definition named $name")
-    public void givenFieldDefinition(String name)
-    {
-        givenField = orgsSteps.givenOrganization.getFieldDefinitionByName( name );
-    }
+   @Given("field definition named $name")
+   public void givenFieldDefinition( String name )
+   {
+      givenField = orgsSteps.givenOrganization.getFieldDefinitionByName( name );
+   }
 
 /*
     @When("a field definition named $name of type $type is created")
@@ -57,20 +57,21 @@ public class FieldDefinitionsSteps
         }
     }
 */
-    @When("a field definition namedis removed")
-    public void removed() throws Exception
-    {
-        try
-        {
-            FieldTemplates.Data fieldsState = orgsSteps.givenOrganization;
-            FieldTemplates fields = orgsSteps.givenOrganization;
 
-            fields.removeFieldDefinition( givenField );
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+   @When("a field definition namedis removed")
+   public void removed() throws Exception
+   {
+      try
+      {
+         FieldTemplates.Data fieldsState = orgsSteps.givenOrganization;
+         FieldTemplates fields = orgsSteps.givenOrganization;
+
+         fields.removeFieldDefinition( givenField );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
 
 }

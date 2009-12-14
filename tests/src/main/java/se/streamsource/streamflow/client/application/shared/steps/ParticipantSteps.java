@@ -24,42 +24,42 @@ import se.streamsource.streamflow.web.domain.project.Project;
  * JAVADOC
  */
 public class ParticipantSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    ProjectsSteps projectsSteps;
+   @Uses
+   ProjectsSteps projectsSteps;
 
-    @Uses
-    GroupsSteps groupsSteps;
+   @Uses
+   GroupsSteps groupsSteps;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @When("a participant joins a project")
-    public void joinProject()
-    {
-        Project project = projectsSteps.givenProject;
-        orgsSteps.givenUser.joinProject(project);
-    }
+   @When("a participant joins a project")
+   public void joinProject()
+   {
+      Project project = projectsSteps.givenProject;
+      orgsSteps.givenUser.joinProject( project );
+   }
 
-    @When("a participant leaves a project")
-    public void leaveProject()
-    {
-        Project project = projectsSteps.givenProject;
-        orgsSteps.givenUser.leaveProject(project);
-    }
+   @When("a participant leaves a project")
+   public void leaveProject()
+   {
+      Project project = projectsSteps.givenProject;
+      orgsSteps.givenUser.leaveProject( project );
+   }
 
-    @When("a participant joins a group")
-    public void joinGroup()
-    {
-        Group group = groupsSteps.givenGroup;
-        orgsSteps.givenUser.joinGroup(group);
-    }
+   @When("a participant joins a group")
+   public void joinGroup()
+   {
+      Group group = groupsSteps.givenGroup;
+      orgsSteps.givenUser.joinGroup( group );
+   }
 
-    @When("a participant leaves a group")
-    public void leaveGroup()
-    {
-        Group group = groupsSteps.givenGroup;
-        orgsSteps.givenUser.leaveGroup(group);
-    }
+   @When("a participant leaves a group")
+   public void leaveGroup()
+   {
+      Group group = groupsSteps.givenGroup;
+      orgsSteps.givenUser.leaveGroup( group );
+   }
 }

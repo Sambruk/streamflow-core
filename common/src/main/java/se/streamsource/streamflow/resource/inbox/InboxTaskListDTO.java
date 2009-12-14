@@ -20,6 +20,6 @@ import se.streamsource.streamflow.resource.task.TaskListDTO;
  * JAVADOC
  */
 public interface InboxTaskListDTO
-        extends TaskListDTO<InboxTaskDTO>
+      extends TaskListDTO<InboxTaskDTO>
 {
 }

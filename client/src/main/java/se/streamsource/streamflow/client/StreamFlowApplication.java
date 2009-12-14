@@ -41,7 +41,6 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
@@ -58,8 +57,11 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,133 +69,135 @@ import java.util.EventObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+
 /**
  * Controller for the application
  */
-@ProxyActions({"cut","copy","paste",
-        "createTask", "completeTasks", "assignTasksToMe", "markTasksAsRead", "markTasksAsUnread", "dropTasks", "forwardTasks", "delegateTasks", // Task related proxy actions 
-        "find", "selectTree", "selectTable", "selectDetails"})
+@ProxyActions({"cut", "copy", "paste",
+      "createTask", "completeTasks", "assignTasksToMe", "markTasksAsRead", "markTasksAsUnread", "dropTasks", "forwardTasks", "delegateTasks", // Task related proxy actions
+      "find", "selectTree", "selectTable", "selectDetails"})
 public class StreamFlowApplication
-        extends SingleFrameApplication
+      extends SingleFrameApplication
 {
-    public static ValueType DOMAIN_EVENT_TYPE;
+   public static ValueType DOMAIN_EVENT_TYPE;
 
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ModuleSPI module;
+   @Structure
+   ModuleSPI module;
 
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    @Service
-    IndividualRepository individualRepo;
+   @Service
+   IndividualRepository individualRepo;
 
-    @Service
-    JavaHelp javaHelp;
+   @Service
+   JavaHelp javaHelp;
 
-    AccountsModel accountsModel;
+   AccountsModel accountsModel;
 
-    JLabel label;
+   JLabel label;
 
-    private AccountSelector accountSelector;
-    WorkspaceWindow workspaceWindow;
+   private AccountSelector accountSelector;
+   WorkspaceWindow workspaceWindow;
 
-    OverviewWindow overviewWindow;
+   OverviewWindow overviewWindow;
 
-    SearchWindow searchWindow;
+   SearchWindow searchWindow;
 
-    DebugWindow debugWindow;
+   DebugWindow debugWindow;
 
-    AdministrationWindow administrationWindow;
-    private ForEvents subscriber;
-    public ApplicationSPI app;
+   AdministrationWindow administrationWindow;
+   private ForEvents subscriber;
+   public ApplicationSPI app;
 
-    public StreamFlowApplication()
-    {
-        super();
+   public StreamFlowApplication()
+   {
+      super();
 
-        getContext().getResourceManager().setApplicationBundleNames(Arrays.asList("se.streamsource.streamflow.client.resources.StreamFlowApplication"));
-    }
+      getContext().getResourceManager().setApplicationBundleNames( Arrays.asList( "se.streamsource.streamflow.client.resources.StreamFlowApplication" ) );
+   }
 
-    public void init(@Uses final AccountsModel accountsModel,
+   public void init( @Uses final AccountsModel accountsModel,
                      @Structure final ObjectBuilderFactory obf,
                      @Uses final AccountSelector accountSelector,
                      @Service EventSource source
-    ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
-    {
-        DOMAIN_EVENT_TYPE = module.valueDescriptor(DomainEvent.class.getName()).valueType();
+   ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
+   {
+      DOMAIN_EVENT_TYPE = module.valueDescriptor( DomainEvent.class.getName() ).valueType();
 
-        try
-        {
-            //Check for Mac OS - and load if we are on Mac
-            getClass().getClassLoader().loadClass("com.apple.eawt.Application");
-            MacOsUIExtension osUIExtension = new MacOsUIExtension(this);
-            osUIExtension.attachMacUIExtension();
-            osUIExtension.convertAccelerators();
-        } catch (Throwable e)
-        {
-            //Do nothing
-        }
+      try
+      {
+         //Check for Mac OS - and load if we are on Mac
+         getClass().getClassLoader().loadClass( "com.apple.eawt.Application" );
+         MacOsUIExtension osUIExtension = new MacOsUIExtension( this );
+         osUIExtension.attachMacUIExtension();
+         osUIExtension.convertAccelerators();
+      } catch (Throwable e)
+      {
+         //Do nothing
+      }
 
-        this.accountSelector = accountSelector;
-        this.workspaceWindow = obf.newObjectBuilder(WorkspaceWindow.class).use(accountSelector).newInstance();
-        this.overviewWindow = obf.newObjectBuilder(OverviewWindow.class).use(accountSelector).newInstance();
-        this.searchWindow = obf.newObjectBuilder(SearchWindow.class).use(accountSelector).newInstance();
-        this.administrationWindow = obf.newObjectBuilder(AdministrationWindow.class).use(accountSelector).newInstance();
-        this.debugWindow = obf.newObjectBuilder(DebugWindow.class).newInstance();
-        setMainFrame(workspaceWindow.getFrame());
+      this.accountSelector = accountSelector;
+      this.workspaceWindow = obf.newObjectBuilder( WorkspaceWindow.class ).use( accountSelector ).newInstance();
+      this.overviewWindow = obf.newObjectBuilder( OverviewWindow.class ).use( accountSelector ).newInstance();
+      this.searchWindow = obf.newObjectBuilder( SearchWindow.class ).use( accountSelector ).newInstance();
+      this.administrationWindow = obf.newObjectBuilder( AdministrationWindow.class ).use( accountSelector ).newInstance();
+      this.debugWindow = obf.newObjectBuilder( DebugWindow.class ).newInstance();
+      setMainFrame( workspaceWindow.getFrame() );
 
-        this.accountsModel = accountsModel;
+      this.accountsModel = accountsModel;
 
-        subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventHandler()
-        {
-            public boolean handleEvent( DomainEvent event )
+      subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventHandler()
+      {
+         public boolean handleEvent( DomainEvent event )
+         {
+            accountsModel.notifyEvent( event );
+
+            return true;
+         }
+      } );
+      source.registerListener( subscriber );
+
+      showWorkspaceWindow();
+
+      // Auto-select first account if only one available
+      SwingUtilities.invokeLater( new Runnable()
+      {
+         public void run()
+         {
+            if (accountsModel.getSize() == 1)
             {
-                accountsModel.notifyEvent( event );
-
-                return true;
+               accountSelector.setSelectedIndex( 0 );
             }
-        });
-        source.registerListener( subscriber );
+         }
+      } );
+   }
 
-        showWorkspaceWindow();
-
-        // Auto-select first account if only one available
-        SwingUtilities.invokeLater( new Runnable()
-        {
-            public void run()
+   @Override
+   protected void startup()
+   {
+      try
+      {
+         Client client = new Client( Protocol.HTTP );
+         client.start();
+         // Make it slower to get it more realistic
+         Restlet restlet = new Filter( client.getContext(), client )
+         {
+            @Override
+            protected int beforeHandle( Request request, Response response )
             {
-                if (accountsModel.getSize() == 1)
-                {
-                    accountSelector.setSelectedIndex(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void startup()
-    {
-        try
-        {
-            Client client = new Client(Protocol.HTTP);
-            client.start();
-            // Make it slower to get it more realistic
-            Restlet restlet = new Filter(client.getContext(), client)
-            {
-                @Override
-                protected int beforeHandle(Request request, Response response)
-                {
-                    Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.loading.name());
-                    Logger.getLogger(LoggerCategories.PROGRESS).info("loading");
+               Logger.getLogger( LoggerCategories.STATUS ).info( StatusResources.loading.name() );
+               Logger.getLogger( LoggerCategories.PROGRESS ).info( "loading" );
 
 /*
                     try
@@ -204,173 +208,173 @@ public class StreamFlowApplication
                         e.printStackTrace();
                     }
 */
-                    return super.beforeHandle(request, response);
-                }
+               return super.beforeHandle( request, response );
+            }
 
-                @Override
-                protected void afterHandle(Request request, Response response)
-                {
-                    Logger.getLogger(LoggerCategories.STATUS).info(StatusResources.ready.name());
-                    Logger.getLogger(LoggerCategories.PROGRESS).info(LoggerCategories.DONE);
+            @Override
+            protected void afterHandle( Request request, Response response )
+            {
+               Logger.getLogger( LoggerCategories.STATUS ).info( StatusResources.ready.name() );
+               Logger.getLogger( LoggerCategories.PROGRESS ).info( LoggerCategories.DONE );
 
-                    Logger.getLogger(LoggerCategories.HTTP).info(request.getResourceRef().toString() + "->" + response.getStatus());
+               Logger.getLogger( LoggerCategories.HTTP ).info( request.getResourceRef().toString() + "->" + response.getStatus() );
 
-                    super.afterHandle(request, response);
-                }
-            };
+               super.afterHandle( request, response );
+            }
+         };
 
-            Energy4Java is = new Energy4Java();
-            app = is.newApplication(new StreamFlowClientAssembler(this,
-                    org.jdesktop.application.Application.getInstance().getContext(),
-                    restlet));
+         Energy4Java is = new Energy4Java();
+         app = is.newApplication( new StreamFlowClientAssembler( this,
+               org.jdesktop.application.Application.getInstance().getContext(),
+               restlet ) );
 
-            Logger.getLogger(getClass().getName()).info("Starting in " + app.mode() + " mode");
+         Logger.getLogger( getClass().getName() ).info( "Starting in " + app.mode() + " mode" );
 
-            app.activate();
-        } catch (Throwable e)
-        {
-            JXErrorPane.showDialog(getMainFrame(), new ErrorInfo(i18n.text(StreamFlowResources.startup_error), e.getMessage(), null, "#error", e, Level.SEVERE, Collections.<String, String>emptyMap()));
-            shutdown();
-        }
+         app.activate();
+      } catch (Throwable e)
+      {
+         JXErrorPane.showDialog( getMainFrame(), new ErrorInfo( i18n.text( StreamFlowResources.startup_error ), e.getMessage(), null, "#error", e, Level.SEVERE, Collections.<String, String>emptyMap() ) );
+         shutdown();
+      }
 
-        Logger.getLogger("streamflow").info("Startup done");
+      Logger.getLogger( "streamflow" ).info( "Startup done" );
 
-    }
+   }
 
-    // Menu actions
+   // Menu actions
 
-    @Uses
-    private ObjectBuilder<AccountsDialog> accountsDialog;
+   @Uses
+   private ObjectBuilder<AccountsDialog> accountsDialog;
 
-    @Action
-    public void manageAccounts()
-    {
-        AccountsDialog dialog = accountsDialog.use(accountsModel).newInstance();
-        dialogs.showOkDialog(getMainFrame(), dialog, text(AccountResources.account_title));
-    }
+   @Action
+   public void manageAccounts()
+   {
+      AccountsDialog dialog = accountsDialog.use( accountsModel ).newInstance();
+      dialogs.showOkDialog( getMainFrame(), dialog, text( AccountResources.account_title ) );
+   }
 
-    @Action
-    public void selectAccount()
-    {
-        accountSelector.clearSelection();
-        if (administrationWindow.getFrame().isVisible())
-        {
-            administrationWindow.getFrame().setVisible(false);
-        }
-    }
+   @Action
+   public void selectAccount()
+   {
+      accountSelector.clearSelection();
+      if (administrationWindow.getFrame().isVisible())
+      {
+         administrationWindow.getFrame().setVisible( false );
+      }
+   }
 
-    public AccountsModel accountsModel()
-    {
-        return accountsModel;
-    }
+   public AccountsModel accountsModel()
+   {
+      return accountsModel;
+   }
 
-    public String getSelectedUser()
-    {
-        return accountSelector.isSelectionEmpty() ? null : accountSelector.getSelectedAccount().settings().userName().get();
-    }
+   public String getSelectedUser()
+   {
+      return accountSelector.isSelectionEmpty() ? null : accountSelector.getSelectedAccount().settings().userName().get();
+   }
 
-    public AccountSelector getAccountSelector()
-    {
-        return accountSelector;
-    }
+   public AccountSelector getAccountSelector()
+   {
+      return accountSelector;
+   }
 
-    // Controller actions -------------------------------------------
+   // Controller actions -------------------------------------------
 
-    // Menu actions
-    // Account menu
+   // Menu actions
+   // Account menu
 
-    @Action
-    public void showWorkspaceWindow()
-    {
-        if (!workspaceWindow.getFrame().isVisible())
-        {
-            show(workspaceWindow);
-        }
-        workspaceWindow.getFrame().toFront();
-    }
+   @Action
+   public void showWorkspaceWindow()
+   {
+      if (!workspaceWindow.getFrame().isVisible())
+      {
+         show( workspaceWindow );
+      }
+      workspaceWindow.getFrame().toFront();
+   }
 
-    @Action
-    public void showOverviewWindow() throws Exception
-    {
-        if (!overviewWindow.getFrame().isVisible())
-        {
-            show(overviewWindow);
-        }
-        overviewWindow.getFrame().toFront();
-    }
+   @Action
+   public void showOverviewWindow() throws Exception
+   {
+      if (!overviewWindow.getFrame().isVisible())
+      {
+         show( overviewWindow );
+      }
+      overviewWindow.getFrame().toFront();
+   }
 
-    @Action
-    public void showAdministrationWindow() throws Exception
-    {
-        if (!administrationWindow.getFrame().isVisible())
-            show(administrationWindow);
-        administrationWindow.getFrame().toFront();
-    }
+   @Action
+   public void showAdministrationWindow() throws Exception
+   {
+      if (!administrationWindow.getFrame().isVisible())
+         show( administrationWindow );
+      administrationWindow.getFrame().toFront();
+   }
 
-    @Action
-    public void showSearchWindow() throws Exception
-    {
-        if (!searchWindow.getFrame().isVisible())
-            show(searchWindow);
-        searchWindow.getFrame().toFront();
-    }
+   @Action
+   public void showSearchWindow() throws Exception
+   {
+      if (!searchWindow.getFrame().isVisible())
+         show( searchWindow );
+      searchWindow.getFrame().toFront();
+   }
 
-    @Action
-    public void showDebugWindow() throws Exception
-    {
-        if (!debugWindow.getFrame().isVisible())
-            show(debugWindow);
-        debugWindow.getFrame().toFront();
-    }
+   @Action
+   public void showDebugWindow() throws Exception
+   {
+      if (!debugWindow.getFrame().isVisible())
+         show( debugWindow );
+      debugWindow.getFrame().toFront();
+   }
 
-    @Action
-    public void close(ActionEvent e)
-    {
-        WindowUtils.findWindow((Component) e.getSource()).dispose();
-    }
+   @Action
+   public void close( ActionEvent e )
+   {
+      WindowUtils.findWindow( (Component) e.getSource() ).dispose();
+   }
 
-    @Action
-    public void cancel(ActionEvent e)
-    {
-        WindowUtils.findWindow((Component) e.getSource()).dispose();
-    }
+   @Action
+   public void cancel( ActionEvent e )
+   {
+      WindowUtils.findWindow( (Component) e.getSource() ).dispose();
+   }
 
-    @Action
-    public void showAbout()
-    {
-        dialogs.showOkDialog(getMainFrame(), new AboutDialog());
-    }
+   @Action
+   public void showAbout()
+   {
+      dialogs.showOkDialog( getMainFrame(), new AboutDialog() );
+   }
 
-    @Action
-    public void showHelp(ActionEvent event)
-    {
-        javaHelp.init();
-    }
+   @Action
+   public void showHelp( ActionEvent event )
+   {
+      javaHelp.init();
+   }
 
-    @Override
-    public void exit(EventObject eventObject)
-    {
-        super.exit(eventObject);
-    }
+   @Override
+   public void exit( EventObject eventObject )
+   {
+      super.exit( eventObject );
+   }
 
-    @Override
-    protected void shutdown()
-    {
-        try
-        {
-            if (app != null)
-                app.passivate();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+   @Override
+   protected void shutdown()
+   {
+      try
+      {
+         if (app != null)
+            app.passivate();
+      } catch (Exception e)
+      {
+         e.printStackTrace();
+      }
 
-        super.shutdown();
-    }
+      super.shutdown();
+   }
 
-    @Override
-    protected void show(JComponent jComponent)
-    {
-        super.show(jComponent);
-    }
+   @Override
+   protected void show( JComponent jComponent )
+   {
+      super.show( jComponent );
+   }
 }

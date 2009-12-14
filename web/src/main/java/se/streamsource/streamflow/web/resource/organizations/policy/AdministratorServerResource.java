@@ -27,24 +27,24 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/policy/{administrator}
  */
 public class AdministratorServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String org = getRequest().getAttributes().get("organization").toString();
+      String org = getRequest().getAttributes().get( "organization" ).toString();
 
-        OrganizationalUnitEntity ou = uow.get(OrganizationalUnitEntity.class, org);
+      OrganizationalUnitEntity ou = uow.get( OrganizationalUnitEntity.class, org );
 
-        String identity = getRequest().getAttributes().get("administrator").toString();
-        Participant participant = uow.get(Participant.class, identity);
+      String identity = getRequest().getAttributes().get( "administrator" ).toString();
+      Participant participant = uow.get( Participant.class, identity );
 
-        OrganizationEntity organization = (OrganizationEntity) ou.organization().get();
-        Role adminRole = organization.roles().get(0);
+      OrganizationEntity organization = (OrganizationEntity) ou.organization().get();
+      Role adminRole = organization.roles().get( 0 );
 
-        checkPermission(ou);
+      checkPermission( ou );
 
-        ou.revokeRole(participant, adminRole);
-    }
+      ou.revokeRole( participant, adminRole );
+   }
 }

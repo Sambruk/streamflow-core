@@ -39,65 +39,65 @@ import java.security.AccessControlException;
  * /organizations/{organization}/organizationalunits/{ou}/projects/{project}
  */
 public class ProjectServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    protected UnitOfWorkFactory uowf;
+   @Structure
+   protected UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public EntityReferenceDTO findRole(StringDTO query)
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
+   public EntityReferenceDTO findRole( StringDTO query )
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
 
-        try
-        {
-            ProjectRoles.Data roles = uowf.currentUnitOfWork().get( ProjectRoles.Data.class, getRequest().getAttributes().get("ou").toString());
-            for (ProjectRole projectRole : roles.projectRoles())
+      try
+      {
+         ProjectRoles.Data roles = uowf.currentUnitOfWork().get( ProjectRoles.Data.class, getRequest().getAttributes().get( "ou" ).toString() );
+         for (ProjectRole projectRole : roles.projectRoles())
+         {
+            if (projectRole.getDescription().equals( query.string().get() ))
             {
-                if (projectRole.getDescription().equals(query.string().get()))
-                {
-                    builder.prototype().entity().set(EntityReference.getEntityReference(projectRole));
-                }
+               builder.prototype().entity().set( EntityReference.getEntityReference( projectRole ) );
             }
-        } catch (NoSuchEntityException e)
-        {
-        }
-        return builder.newInstance();
-    }
+         }
+      } catch (NoSuchEntityException e)
+      {
+      }
+      return builder.newInstance();
+   }
 
-    public void changedescription(StringDTO stringValue) throws ResourceException
-    {
-        String projectId = (String) getRequest().getAttributes().get("project");
-        Describable describable = uowf.currentUnitOfWork().get(Describable.class, projectId);
+   public void changedescription( StringDTO stringValue ) throws ResourceException
+   {
+      String projectId = (String) getRequest().getAttributes().get( "project" );
+      Describable describable = uowf.currentUnitOfWork().get( Describable.class, projectId );
 
-        String identity = getRequest().getAttributes().get("ou").toString();
+      String identity = getRequest().getAttributes().get( "ou" ).toString();
 
-        String newName = stringValue.string().get();
+      String newName = stringValue.string().get();
 
-        checkPermission(describable);
-        describable.changeDescription(newName);
-    }
+      checkPermission( describable );
+      describable.changeDescription( newName );
+   }
 
-    public void deleteOperation() throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void deleteOperation() throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String org = getRequest().getAttributes().get("ou").toString();
+      String org = getRequest().getAttributes().get( "ou" ).toString();
 
-        Projects projects = uow.get(Projects.class, org);
+      Projects projects = uow.get( Projects.class, org );
 
-        String identity = getRequest().getAttributes().get("project").toString();
-        ProjectEntity projectEntity = uow.get(ProjectEntity.class, identity);
+      String identity = getRequest().getAttributes().get( "project" ).toString();
+      ProjectEntity projectEntity = uow.get( ProjectEntity.class, identity );
 
-        try
-        {
-            checkPermission(projects);
-            projects.removeProject(projectEntity);
-        } catch(AccessControlException ae)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
-        }
-    }
+      try
+      {
+         checkPermission( projects );
+         projects.removeProject( projectEntity );
+      } catch (AccessControlException ae)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
+      }
+   }
 }

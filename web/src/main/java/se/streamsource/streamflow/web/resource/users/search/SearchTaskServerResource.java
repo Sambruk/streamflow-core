@@ -21,6 +21,6 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/search/{task}
  */
 public class SearchTaskServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
 }

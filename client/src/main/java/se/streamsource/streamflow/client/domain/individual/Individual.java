@@ -18,6 +18,6 @@ package se.streamsource.streamflow.client.domain.individual;
  * JAVADOC
  */
 public interface Individual
-        extends Accounts
+      extends Accounts
 {
 }

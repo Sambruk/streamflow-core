@@ -19,9 +19,9 @@ package se.streamsource.streamflow.client.ui.workspace;
  */
 public enum WorkspaceResources
 {
-    inbox_node,
+   inbox_node,
 
-    inbox_tab, detail_tab,
+   inbox_tab, detail_tab,
 
     description_column_header,
     title_column_header,
@@ -46,42 +46,42 @@ public enum WorkspaceResources
     email_label,
     address_label,
 
-    assignments_tab,
+   assignments_tab,
 
-    delegations_tab,
-    delegated_from_header,
+   delegations_tab,
+   delegated_from_header,
 
-    waitingfor_tab,
+   waitingfor_tab,
 
-    delegated_on_header,
-    delegated_to_header,
-    assigned_to_header,
-    delegated_done_header,
+   delegated_on_header,
+   delegated_to_header,
+   assigned_to_header,
+   delegated_done_header,
 
-    comment_text_label,
-    comment_public_label,
-    public_comment,
-    user_node,
-    projects_node,
-    inboxes_node,
+   comment_text_label,
+   comment_public_label,
+   public_comment,
+   user_node,
+   projects_node,
+   inboxes_node,
 
-    assignments_node,
-    delegations_node,
-    waitingfor_node,
+   assignments_node,
+   delegations_node,
+   waitingfor_node,
 
-    general_tab,
-    metadata_tab,
-    comments_tab,
-    attachments_tab,
-    contacts_tab,
+   general_tab,
+   metadata_tab,
+   comments_tab,
+   attachments_tab,
+   contacts_tab,
 
-    add_comment_title,
+   add_comment_title,
 
-    window_name,
-    could_not_refresh_projects,
-    is_completed,
+   window_name,
+   could_not_refresh_projects,
+   is_completed,
 
-    date_format,
+   date_format,
 
     search_project,
     search_projects_users,

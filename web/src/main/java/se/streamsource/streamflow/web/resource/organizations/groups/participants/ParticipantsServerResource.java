@@ -29,29 +29,29 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/organizationalunits/{ou}/groups/{group}/participants
  */
 public class ParticipantsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue participants()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String identity = getRequest().getAttributes().get("ou").toString();
-        Groups.Data groups = uow.get( Groups.Data.class, identity);
+   public ListValue participants()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String identity = getRequest().getAttributes().get( "ou" ).toString();
+      Groups.Data groups = uow.get( Groups.Data.class, identity );
 
-        ListValueBuilder builder = new ListValueBuilder(vbf);
-        String groupId = getRequest().getAttributes().get("group").toString();
-        for (Group group : groups.groups())
-        {
-            if (group.identity().get().equals(groupId))
+      ListValueBuilder builder = new ListValueBuilder( vbf );
+      String groupId = getRequest().getAttributes().get( "group" ).toString();
+      for (Group group : groups.groups())
+      {
+         if (group.identity().get().equals( groupId ))
+         {
+            Participants.Data participants = uow.get( Participants.Data.class, groupId );
+            for (Participant participant : participants.participants())
             {
-                Participants.Data participants = uow.get( Participants.Data.class, groupId);
-                for (Participant participant : participants.participants())
-                {
-                    builder.addListItem(participant.getDescription(), EntityReference.getEntityReference(participant));
-                }
-                return builder.newList();
+               builder.addListItem( participant.getDescription(), EntityReference.getEntityReference( participant ) );
             }
-        }
+            return builder.newList();
+         }
+      }
 
-        return builder.newList();
-    }
+      return builder.newList();
+   }
 }

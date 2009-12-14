@@ -28,35 +28,35 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfo
  * JAVADOC
  */
 public class WorkspaceUserClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public WorkspaceUserClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public WorkspaceUserClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public WorkspaceUserInboxClientResource inbox()
-    {
-        return getSubResource("inbox", WorkspaceUserInboxClientResource.class);
-    }
+   public WorkspaceUserInboxClientResource inbox()
+   {
+      return getSubResource( "inbox", WorkspaceUserInboxClientResource.class );
+   }
 
-    public WorkspaceUserAssignmentsClientResource assignments()
-    {
-        return getSubResource("assignments", WorkspaceUserAssignmentsClientResource.class);
-    }
+   public WorkspaceUserAssignmentsClientResource assignments()
+   {
+      return getSubResource( "assignments", WorkspaceUserAssignmentsClientResource.class );
+   }
 
-    public WorkspaceUserDelegationsClientResource delegations()
-    {
-        return getSubResource("delegations", WorkspaceUserDelegationsClientResource.class);
-    }
+   public WorkspaceUserDelegationsClientResource delegations()
+   {
+      return getSubResource( "delegations", WorkspaceUserDelegationsClientResource.class );
+   }
 
-    public WorkspaceUserWaitingForClientResource waitingFor()
-    {
-        return getSubResource("waitingfor", WorkspaceUserWaitingForClientResource.class);
-    }
+   public WorkspaceUserWaitingForClientResource waitingFor()
+   {
+      return getSubResource( "waitingfor", WorkspaceUserWaitingForClientResource.class );
+   }
 
-    public LabelsClientResource labels()
-    {
-        return getSubResource("labels", LabelsClientResource.class);
-    }
+   public LabelsClientResource labels()
+   {
+      return getSubResource( "labels", LabelsClientResource.class );
+   }
 }

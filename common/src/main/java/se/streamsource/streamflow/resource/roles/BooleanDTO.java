@@ -22,8 +22,8 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface BooleanDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<Boolean> bool();
+   @UseDefaults
+   Property<Boolean> bool();
 }

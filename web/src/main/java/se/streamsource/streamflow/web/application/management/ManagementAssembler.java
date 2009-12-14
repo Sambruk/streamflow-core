@@ -30,25 +30,25 @@ import javax.management.MBeanServer;
  * Set up all JMX services
  */
 public class ManagementAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        if (module.layerAssembly().applicationAssembly().mode().equals(Application.Mode.production))
-        {
-            module.addObjects(CompositeMBean.class);
-            module.addTransients(ManagerComposite.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      if (module.layerAssembly().applicationAssembly().mode().equals( Application.Mode.production ))
+      {
+         module.addObjects( CompositeMBean.class );
+         module.addTransients( ManagerComposite.class );
 
-            module.importServices(MBeanServer.class).importedBy(MBeanServerImporter.class);
-            module.addServices(ManagerService.class).visibleIn( Visibility.application ).instantiateOnStartup();
+         module.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
+         module.addServices( ManagerService.class ).visibleIn( Visibility.application ).instantiateOnStartup();
 
-            module.addServices(JmxConnectorService.class).identifiedBy("jmxconnector").instantiateOnStartup();
-            
-            module.addServices(ReindexerService.class).identifiedBy("reindexer");
-            module.addServices(ReindexOnStartupService.class).instantiateOnStartup();
+         module.addServices( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
 
-            module.addServices(EventManagerService.class, DomainEventPlayerService.class ).instantiateOnStartup();
-            module.addServices(ErrorLogService.class).instantiateOnStartup();
-        }
-    }
+         module.addServices( ReindexerService.class ).identifiedBy( "reindexer" );
+         module.addServices( ReindexOnStartupService.class ).instantiateOnStartup();
+
+         module.addServices( EventManagerService.class, DomainEventPlayerService.class ).instantiateOnStartup();
+         module.addServices( ErrorLogService.class ).instantiateOnStartup();
+      }
+   }
 }

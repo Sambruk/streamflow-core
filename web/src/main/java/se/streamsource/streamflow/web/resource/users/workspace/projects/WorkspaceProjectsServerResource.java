@@ -27,19 +27,19 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /users/{user}/workspace/projects
  */
 public class WorkspaceProjectsServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue listProjects()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public ListValue listProjects()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
-        String id = (String) getRequest().getAttributes().get("user");
-        Participation.Data participant = uow.get( Participation.Data.class, id);
+      String id = (String) getRequest().getAttributes().get( "user" );
+      Participation.Data participant = uow.get( Participation.Data.class, id );
 
-        return listBuilder.addDescribableItems( participant.allProjects() ).newList();
-    }
+      return listBuilder.addDescribableItems( participant.allProjects() ).newList();
+   }
 
 }

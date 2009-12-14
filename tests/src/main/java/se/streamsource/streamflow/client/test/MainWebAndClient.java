@@ -22,40 +22,40 @@ import se.streamsource.streamflow.web.MainWeb;
  */
 public class MainWebAndClient
 {
-    private MainWeb web;
-    private MainClient mainClient;
+   private MainWeb web;
+   private MainClient mainClient;
 
-    public static void main(String[] args) throws Exception
-    {
-        MainWebAndClient mainWebAndClient = new MainWebAndClient();
-        try
-        {
-            mainWebAndClient.start();
-        } catch (Exception e)
-        {
-            e.printStackTrace(  );
-            mainWebAndClient.stop();
-        }
-    }
+   public static void main( String[] args ) throws Exception
+   {
+      MainWebAndClient mainWebAndClient = new MainWebAndClient();
+      try
+      {
+         mainWebAndClient.start();
+      } catch (Exception e)
+      {
+         e.printStackTrace();
+         mainWebAndClient.stop();
+      }
+   }
 
-    public void start() throws Exception
-    {
-        web = new MainWeb();
-        mainClient = new MainClient();
+   public void start() throws Exception
+   {
+      web = new MainWeb();
+      mainClient = new MainClient();
 
-        // Start web server_label
-        web.start();
+      // Start web server_label
+      web.start();
 
-        // Start client
-        mainClient.start();
-    }
+      // Start client
+      mainClient.start();
+   }
 
-    public void stop() throws Exception
-    {
-        // Stop web
-        web.stop();
+   public void stop() throws Exception
+   {
+      // Stop web
+      web.stop();
 
-        // Stop client
-        mainClient.stop();
-    }
+      // Stop client
+      mainClient.stop();
+   }
 }

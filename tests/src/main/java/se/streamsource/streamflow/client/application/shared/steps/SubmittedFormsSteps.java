@@ -34,77 +34,77 @@ import java.util.Date;
  * JAVADOC
  */
 public class SubmittedFormsSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    @Uses
-    OrganizationsSteps organizationsSteps;
+   @Uses
+   OrganizationsSteps organizationsSteps;
 
-    @Uses
-    FormsSteps formsSteps;
+   @Uses
+   FormsSteps formsSteps;
 
-    @Uses
-    InboxSteps inboxSteps;
+   @Uses
+   InboxSteps inboxSteps;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    public SubmittedFormValue form;
-    public ValueBuilder<SubmittedFormValue> formBuilder;
+   public SubmittedFormValue form;
+   public ValueBuilder<SubmittedFormValue> formBuilder;
 
-    @When("form submission is created")
-    public void createForm()
-    {
-        formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
-        form = formBuilder.prototype();
-        form.form().set( EntityReference.getEntityReference( formsSteps.givenForm ));
-    }
+   @When("form submission is created")
+   public void createForm()
+   {
+      formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
+      form = formBuilder.prototype();
+      form.form().set( EntityReference.getEntityReference( formsSteps.givenForm ) );
+   }
 
-    @When("field $name with value $value is added to form")
-    public void addFieldValueToForm(String field, String value)
-    {
-        ValueBuilder<SubmittedFieldValue> builder = vbf.newValueBuilder( SubmittedFieldValue.class );
+   @When("field $name with value $value is added to form")
+   public void addFieldValueToForm( String field, String value )
+   {
+      ValueBuilder<SubmittedFieldValue> builder = vbf.newValueBuilder( SubmittedFieldValue.class );
 
-        FieldEntity entity = formsSteps.givenForm.getFieldByName( field );
-        builder.prototype().field().set( EntityReference.getEntityReference( entity ));
-        builder.prototype().value().set( value );
+      FieldEntity entity = formsSteps.givenForm.getFieldByName( field );
+      builder.prototype().field().set( EntityReference.getEntityReference( entity ) );
+      builder.prototype().value().set( value );
 
-        form.values().get().add( builder.newInstance() );
-    }
+      form.values().get().add( builder.newInstance() );
+   }
 
-    @When("submission date is now")
-    public void submissionDateIsNow()
-    {
-        form.submissionDate().set( new Date() );
-    }
+   @When("submission date is now")
+   public void submissionDateIsNow()
+   {
+      form.submissionDate().set( new Date() );
+   }
 
-    @When("submitter is set")
-    public void submitterIsSet()
-    {
-        form.submitter().set( EntityReference.getEntityReference(organizationsSteps.givenUser ));
-    }
+   @When("submitter is set")
+   public void submitterIsSet()
+   {
+      form.submitter().set( EntityReference.getEntityReference( organizationsSteps.givenUser ) );
+   }
 
-    @When("form is submitted")
-    public void submitForm() throws Exception
-    {
+   @When("form is submitted")
+   public void submitForm() throws Exception
+   {
 
-        form.submissionDate().set( new Date() );
+      form.submissionDate().set( new Date() );
 
-        try
-        {
-            inboxSteps.givenTask.submitForm( formBuilder.newInstance() );
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+      try
+      {
+         inboxSteps.givenTask.submitForm( formBuilder.newInstance() );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
-    @Then("effective field value for field $field is $value")
-    public void removed(String form, String value) throws Exception
-    {
-        SubmittedForms.Data data = (SubmittedForms.Data) inboxSteps.givenTask;
+   @Then("effective field value for field $field is $value")
+   public void removed( String form, String value ) throws Exception
+   {
+      SubmittedForms.Data data = (SubmittedForms.Data) inboxSteps.givenTask;
 
 /*
 
@@ -126,7 +126,7 @@ public class SubmittedFormsSteps
             genericSteps.setThrowable(e);
         }
 */
-    }
+   }
 
 
 }

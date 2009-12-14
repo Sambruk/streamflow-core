@@ -18,7 +18,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,85 +25,85 @@ import java.util.List;
  */
 public class EventFilter
 {
-    public static final EventFilter ALL_EVENTS = new EventFilter(AllEventsSpecification.INSTANCE);
+   public static final EventFilter ALL_EVENTS = new EventFilter( AllEventsSpecification.INSTANCE );
 
-    private EventSpecification eventSpecification;
-    private long lastTimestamp;
+   private EventSpecification eventSpecification;
+   private long lastTimestamp;
 
-    public EventFilter()
-    {
-        this(new AllEventsSpecification());
-    }
+   public EventFilter()
+   {
+      this( new AllEventsSpecification() );
+   }
 
-    public EventFilter(EventSpecification eventSpecification)
-    {
-        this.eventSpecification = eventSpecification;
-    }
+   public EventFilter( EventSpecification eventSpecification )
+   {
+      this.eventSpecification = eventSpecification;
+   }
 
-    public Iterable<DomainEvent> events(Iterable<TransactionEvents> transactions)
-    {
-        List<DomainEvent> events = new ArrayList<DomainEvent>();
-        for (TransactionEvents transaction : transactions)
-        {
-            for (DomainEvent domainEvent : transaction.events().get())
+   public Iterable<DomainEvent> events( Iterable<TransactionEvents> transactions )
+   {
+      List<DomainEvent> events = new ArrayList<DomainEvent>();
+      for (TransactionEvents transaction : transactions)
+      {
+         for (DomainEvent domainEvent : transaction.events().get())
+         {
+            if (eventSpecification.accept( domainEvent ))
             {
-                if (eventSpecification.accept(domainEvent))
-                {
-                    events.add(domainEvent);
-                }
+               events.add( domainEvent );
             }
-            lastTimestamp = transaction.timestamp().get();
-        }
+         }
+         lastTimestamp = transaction.timestamp().get();
+      }
 
-        return events;
-    }
+      return events;
+   }
 
-    public Iterable<TransactionEvents> transactions(Iterable<TransactionEvents> transactions)
-    {
-        List<TransactionEvents> matchedTransactions = new ArrayList<TransactionEvents>();
-        for (TransactionEvents transaction : transactions)
-        {
-            for (DomainEvent domainEvent : transaction.events().get())
+   public Iterable<TransactionEvents> transactions( Iterable<TransactionEvents> transactions )
+   {
+      List<TransactionEvents> matchedTransactions = new ArrayList<TransactionEvents>();
+      for (TransactionEvents transaction : transactions)
+      {
+         for (DomainEvent domainEvent : transaction.events().get())
+         {
+            if (eventSpecification.accept( domainEvent ))
             {
-                if (eventSpecification.accept(domainEvent))
-                {
-                    // Found an event that matches - add tx and continue with next
-                    matchedTransactions.add(transaction);
-                    break;
-                }
+               // Found an event that matches - add tx and continue with next
+               matchedTransactions.add( transaction );
+               break;
             }
-            lastTimestamp = transaction.timestamp().get();
-        }
+         }
+         lastTimestamp = transaction.timestamp().get();
+      }
 
-        return matchedTransactions;
-    }
+      return matchedTransactions;
+   }
 
-    public boolean matchesAny(Iterable<TransactionEvents> transactions)
-    {
-        boolean matches = false;
-        for (TransactionEvents transaction : transactions)
-        {
-            for (DomainEvent domainEvent : transaction.events().get())
+   public boolean matchesAny( Iterable<TransactionEvents> transactions )
+   {
+      boolean matches = false;
+      for (TransactionEvents transaction : transactions)
+      {
+         for (DomainEvent domainEvent : transaction.events().get())
+         {
+            if (eventSpecification.accept( domainEvent ))
             {
-                if (eventSpecification.accept(domainEvent))
-                {
-                    matches = true;
-                }
+               matches = true;
             }
-            lastTimestamp = transaction.timestamp().get();
-        }
+         }
+         lastTimestamp = transaction.timestamp().get();
+      }
 
-        return matches;
-    }
+      return matches;
+   }
 
-    /**
-     * Timestamp of the last evalutated transaction. This can be used as input
-     * to the next call to {@link EventStore#events(java.util.Date, int)}.
-     *
-     * @return
-     */
-    public long lastTimestamp()
-    {
-        return lastTimestamp;
-    }
+   /**
+    * Timestamp of the last evalutated transaction. This can be used as input
+    * to the next call to {@link EventStore#events(java.util.Date, int)}.
+    *
+    * @return
+    */
+   public long lastTimestamp()
+   {
+      return lastTimestamp;
+   }
 }

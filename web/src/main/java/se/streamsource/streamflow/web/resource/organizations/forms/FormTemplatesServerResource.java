@@ -29,39 +29,39 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/forms
  */
 public class FormTemplatesServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue forms()
-    {
-        String identity = getRequest().getAttributes().get("organization").toString();
+   public ListValue forms()
+   {
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        //TODO: Quick and dirty fix for ClassCastExcepion to be able to deploy to test server - must be removed
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
-        ListValue resp = listBuilder.newList();
+      //TODO: Quick and dirty fix for ClassCastExcepion to be able to deploy to test server - must be removed
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
+      ListValue resp = listBuilder.newList();
 
-        try
-        {
-            FormQueries forms = uow.get( FormQueries.class, identity);
+      try
+      {
+         FormQueries forms = uow.get( FormQueries.class, identity );
 
-            resp = forms.getForms();
-        } catch(ClassCastException cce)
-        {
-        }  
+         resp = forms.getForms();
+      } catch (ClassCastException cce)
+      {
+      }
 
-        return resp;
-    }
+      return resp;
+   }
 
-    public void createTemplate( EntityReferenceDTO formDTO) throws ResourceException
-    {
-        String identity = getRequest().getAttributes().get("organization").toString();
+   public void createTemplate( EntityReferenceDTO formDTO ) throws ResourceException
+   {
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormTemplates templates = uow.get( FormTemplates.class, identity );
-        Form form = uow.get( Form.class,  formDTO.entity().get().identity());
+      FormTemplates templates = uow.get( FormTemplates.class, identity );
+      Form form = uow.get( Form.class, formDTO.entity().get().identity() );
 
-        templates.createFormTemplate( form );
-    }
+      templates.createFormTemplate( form );
+   }
 }

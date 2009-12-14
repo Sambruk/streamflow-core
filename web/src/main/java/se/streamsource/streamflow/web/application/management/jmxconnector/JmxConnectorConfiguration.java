@@ -14,20 +14,20 @@
 
 package se.streamsource.streamflow.web.application.management.jmxconnector;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.common.UseDefaults;
 
 /**
  * Configuration for the JMX-Connector service.
  */
 public interface JmxConnectorConfiguration
-    extends ConfigurationComposite
+      extends ConfigurationComposite
 {
-    @UseDefaults
-    Property<Boolean> enabled();
+   @UseDefaults
+   Property<Boolean> enabled();
 
-    @UseDefaults
-    Property<Integer> port();
+   @UseDefaults
+   Property<Integer> port();
 
 }

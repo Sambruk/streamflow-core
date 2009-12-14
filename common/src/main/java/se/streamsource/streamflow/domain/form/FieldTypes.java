@@ -16,5 +16,5 @@ package se.streamsource.streamflow.domain.form;
 
 public enum FieldTypes
 {
-    text,number,date,single_selection,multi_selection,comment,page_break
+   text, number, date, single_selection, multi_selection, comment, page_break
 }

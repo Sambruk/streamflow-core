@@ -21,8 +21,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -31,52 +31,55 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(FieldTemplates.Mixin.class)
 public interface FieldTemplates
 {
-    FieldEntity createFieldTemplate(String name, FieldValue valueDefinition);
-    void removeFieldDefinition( Field field);
+   FieldEntity createFieldTemplate( String name, FieldValue valueDefinition );
 
-    interface Data
-    {
-        ManyAssociation<FieldEntity> fieldDefinitions();
+   void removeFieldDefinition( Field field );
 
-        FieldEntity createdFieldDefinition( DomainEvent event, String id, FieldValue valueDefinition);
-        void addedFieldDefinition( DomainEvent event, FieldEntity field);
-        void removedFieldDefinition( DomainEvent event, Field field);
+   interface Data
+   {
+      ManyAssociation<FieldEntity> fieldDefinitions();
 
-        FieldEntity getFieldDefinitionByName(String name);
-    }
+      FieldEntity createdFieldDefinition( DomainEvent event, String id, FieldValue valueDefinition );
 
-    abstract class Mixin
-        implements FieldTemplates, Data
-    {
-        @Service
-        IdentityGenerator idGen;
+      void addedFieldDefinition( DomainEvent event, FieldEntity field );
 
-        @Structure
-        UnitOfWorkFactory uowf;
+      void removedFieldDefinition( DomainEvent event, Field field );
 
-        public FieldEntity createFieldTemplate( String name, FieldValue valueDefinition )
-        {
-            String id = idGen.generate( FieldEntity.class );
+      FieldEntity getFieldDefinitionByName( String name );
+   }
 
-            FieldEntity field = createdFieldDefinition( DomainEvent.CREATE, id, valueDefinition );
-            addedFieldDefinition( DomainEvent.CREATE, field );
-            field.changeDescription( name );
+   abstract class Mixin
+         implements FieldTemplates, Data
+   {
+      @Service
+      IdentityGenerator idGen;
 
-            return field;
-        }
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        public FieldEntity createdFieldDefinition( DomainEvent event, String id, FieldValue valueDefinition )
-        {
-            EntityBuilder<FieldEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FieldEntity.class, id );
+      public FieldEntity createFieldTemplate( String name, FieldValue valueDefinition )
+      {
+         String id = idGen.generate( FieldEntity.class );
 
-            builder.instance().fieldValue().set( valueDefinition );
+         FieldEntity field = createdFieldDefinition( DomainEvent.CREATE, id, valueDefinition );
+         addedFieldDefinition( DomainEvent.CREATE, field );
+         field.changeDescription( name );
 
-            return builder.newInstance();
-        }
+         return field;
+      }
 
-        public FieldEntity getFieldDefinitionByName( String name )
-        {
-            return Describable.Mixin.getDescribable( fieldDefinitions(), name );
-        }
-    }
+      public FieldEntity createdFieldDefinition( DomainEvent event, String id, FieldValue valueDefinition )
+      {
+         EntityBuilder<FieldEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FieldEntity.class, id );
+
+         builder.instance().fieldValue().set( valueDefinition );
+
+         return builder.newInstance();
+      }
+
+      public FieldEntity getFieldDefinitionByName( String name )
+      {
+         return Describable.Mixin.getDescribable( fieldDefinitions(), name );
+      }
+   }
 }

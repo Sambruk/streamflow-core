@@ -22,8 +22,8 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
  */
 public interface OwningOrganizationalUnit
 {
-    interface Data
-    {
-        Association<OrganizationalUnit> organizationalUnit();
-    }
+   interface Data
+   {
+      Association<OrganizationalUnit> organizationalUnit();
+   }
 }

@@ -28,53 +28,53 @@ import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
 @Mixins(TaskLabelsQueries.Mixin.class)
 public interface TaskLabelsQueries
 {
-	ListValue possibleLabels();
+   ListValue possibleLabels();
 
-    class Mixin
-	implements TaskLabelsQueries 
-	{
-		@This 
-		Ownable.Data ownable;
+   class Mixin
+         implements TaskLabelsQueries
+   {
+      @This
+      Ownable.Data ownable;
 
-		@This
-		TypedTask.Data type;
+      @This
+      TypedTask.Data type;
 
-		@This 
-		Labelable.Data labelable;
-		
-		@Structure
-		ValueBuilderFactory vbf;
-		
-		public ListValue possibleLabels()
-        {
-            ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+      @This
+      Labelable.Data labelable;
 
-            if (ownable.owner().get() instanceof SelectedLabels)
+      @Structure
+      ValueBuilderFactory vbf;
+
+      public ListValue possibleLabels()
+      {
+         ListValueBuilder listBuilder = new ListValueBuilder( vbf );
+
+         if (ownable.owner().get() instanceof SelectedLabels)
+         {
+            for (Label label : ((SelectedLabels.Data) ownable.owner().get()).selectedLabels())
             {
-                for (Label label : ((SelectedLabels.Data) ownable.owner().get()).selectedLabels())
-                {
-                    if (!labelable.labels().contains((LabelEntity) label))
-                    {
-                        listBuilder.addDescribable(label);
-                    }
-                }
+               if (!labelable.labels().contains( (LabelEntity) label ))
+               {
+                  listBuilder.addDescribable( label );
+               }
             }
+         }
 
-            if (type.taskType().get() != null)
+         if (type.taskType().get() != null)
+         {
+            SelectedLabels.Data taskType = (SelectedLabels.Data) type.taskType().get();
+            for (Label label : taskType.selectedLabels())
             {
-                SelectedLabels.Data taskType = (SelectedLabels.Data) type.taskType().get();
-                for (Label label : taskType.selectedLabels())
-                {
-                    if (!labelable.labels().contains((LabelEntity) label))
-                    {
-                        listBuilder.addDescribable(label);
-                    }
-                }
+               if (!labelable.labels().contains( (LabelEntity) label ))
+               {
+                  listBuilder.addDescribable( label );
+               }
             }
+         }
 
-            // TODO Add from OU if owner is a Project
+         // TODO Add from OU if owner is a Project
 
-            return listBuilder.newList();
-        }
-    }
+         return listBuilder.newList();
+      }
+   }
 }

@@ -24,8 +24,8 @@ import java.util.List;
  * JAVADOC
  */
 public interface AddressValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<ContactAddressValue>> addresses();
+   @UseDefaults
+   Property<List<ContactAddressValue>> addresses();
 }

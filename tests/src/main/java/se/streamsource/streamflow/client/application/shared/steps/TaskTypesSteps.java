@@ -24,29 +24,29 @@ import se.streamsource.streamflow.web.domain.tasktype.TaskTypeEntity;
  * JAVADOC
  */
 public class TaskTypesSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    OrganizationsSteps orgSteps;
+   @Uses
+   OrganizationsSteps orgSteps;
 
-    public TaskTypeEntity givenTaskType;
+   public TaskTypeEntity givenTaskType;
 
 
    @Given("tasktype named $tasktype")
-    public void givenTaskType(String name)
-    {
-        givenTaskType = orgSteps.givenOrganization.getTaskTypeByName( name );
-    }
+   public void givenTaskType( String name )
+   {
+      givenTaskType = orgSteps.givenOrganization.getTaskTypeByName( name );
+   }
 
-    @When("a tasktype named $name is created")
-    public void createTaskType(String name)
-    {
-        givenTaskType = orgSteps.givenOrganization.createTaskType(name);
-    }
+   @When("a tasktype named $name is created")
+   public void createTaskType( String name )
+   {
+      givenTaskType = orgSteps.givenOrganization.createTaskType( name );
+   }
 
-    @When("tasktype is removed")
-    public void removeProject()
-    {
-        orgSteps.givenOrganization.removeTaskType( givenTaskType );
-    }
+   @When("tasktype is removed")
+   public void removeProject()
+   {
+      orgSteps.givenOrganization.removeTaskType( givenTaskType );
+   }
 }

@@ -22,9 +22,9 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface ListItemValue
-        extends ValueComposite
+      extends ValueComposite
 {
-    Property<String> description();
+   Property<String> description();
 
-    Property<EntityReference> entity();
+   Property<EntityReference> entity();
 }

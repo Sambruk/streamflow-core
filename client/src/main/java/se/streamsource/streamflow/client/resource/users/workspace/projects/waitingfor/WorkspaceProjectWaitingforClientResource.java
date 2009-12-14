@@ -29,15 +29,15 @@ import java.util.List;
  * JAVADOC
  */
 public class WorkspaceProjectWaitingforClientResource
-        extends TaskListClientResource<WorkspaceProjectWaitingforTaskClientResource>
+      extends TaskListClientResource<WorkspaceProjectWaitingforTaskClientResource>
 {
-    public WorkspaceProjectWaitingforClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference, WorkspaceProjectWaitingforTaskClientResource.class);
-    }
+   public WorkspaceProjectWaitingforClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference, WorkspaceProjectWaitingforTaskClientResource.class );
+   }
 
-    public List<WaitingForTaskDTO> tasks(TasksQuery query) throws ResourceException
-    {
-        return query("tasks", query, WaitingForTaskListDTO.class).<WaitingForTaskListDTO>buildWith().prototype().tasks().get();
-    }
+   public List<WaitingForTaskDTO> tasks( TasksQuery query ) throws ResourceException
+   {
+      return query( "tasks", query, WaitingForTaskListDTO.class ).<WaitingForTaskListDTO>buildWith().prototype().tasks().get();
+   }
 }

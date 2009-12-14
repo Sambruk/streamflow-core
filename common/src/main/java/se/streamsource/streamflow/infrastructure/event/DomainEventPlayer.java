@@ -19,5 +19,5 @@ package se.streamsource.streamflow.infrastructure.event;
  */
 public interface DomainEventPlayer
 {
-    void replayEvents( long afterDate) throws EventReplayException;
+   void replayEvents( long afterDate ) throws EventReplayException;
 }

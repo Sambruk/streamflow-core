@@ -23,18 +23,18 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
  * JAVADOC
  */
 public class OrganizationParticipationsScenario
-        extends AbstractWebDomainApplicationScenario
+      extends AbstractWebDomainApplicationScenario
 {
 
-    public OrganizationParticipationsScenario()
-    {
-        this(Thread.currentThread().getContextClassLoader());
-    }
+   public OrganizationParticipationsScenario()
+   {
+      this( Thread.currentThread().getContextClassLoader() );
+   }
 
-    public OrganizationParticipationsScenario(ClassLoader classLoader)
-    {
-        super(classLoader, new TestSetupSteps(),
-                new OrganizationParticipationsSteps(),
-                new OrganizationsSteps());
-    }
+   public OrganizationParticipationsScenario( ClassLoader classLoader )
+   {
+      super( classLoader, new TestSetupSteps(),
+            new OrganizationParticipationsSteps(),
+            new OrganizationsSteps() );
+   }
 }

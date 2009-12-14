@@ -15,47 +15,49 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
  * JAVADOC
  */
 public class WorkspaceUserDelegationsView
-        extends TaskTableView
+      extends TaskTableView
 {
 
-    protected void buildPopupMenu(JPopupMenu popup)
-    {
-        ActionMap am = getActionMap();
-        Action markTasksAsUnread = am.get("markTasksAsUnread");
-        popup.add(markTasksAsUnread);
-        Action markTasksAsRead = am.get( "markTasksAsRead" );
-        popup.add( markTasksAsRead );
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(3, taskTable, markTasksAsRead, markTasksAsUnread));
-    }
+   protected void buildPopupMenu( JPopupMenu popup )
+   {
+      ActionMap am = getActionMap();
+      Action markTasksAsUnread = am.get( "markTasksAsUnread" );
+      popup.add( markTasksAsUnread );
+      Action markTasksAsRead = am.get( "markTasksAsRead" );
+      popup.add( markTasksAsRead );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 3, taskTable, markTasksAsRead, markTasksAsUnread ) );
+   }
 
-    @Override
-    protected void buildToolbar(JPanel toolbar)
-    {
-        Action acceptAction = addToolbarButton(toolbar, "completeTasks");
-        Action assignAction = addToolbarButton(toolbar, "assignTasksToMe");
-        Action delegateTasksFromInbox = addToolbarButton(toolbar, "reject");
-        addToolbarButton(toolbar, "refresh");
-        taskTable.getSelectionModel().addListSelectionListener(new TaskSelectionActionEnabler(3, taskTable, assignAction, delegateTasksFromInbox, acceptAction));
-    }
+   @Override
+   protected void buildToolbar( JPanel toolbar )
+   {
+      Action acceptAction = addToolbarButton( toolbar, "completeTasks" );
+      Action assignAction = addToolbarButton( toolbar, "assignTasksToMe" );
+      Action delegateTasksFromInbox = addToolbarButton( toolbar, "reject" );
+      addToolbarButton( toolbar, "refresh" );
+      taskTable.getSelectionModel().addListSelectionListener( new TaskSelectionActionEnabler( 3, taskTable, assignAction, delegateTasksFromInbox, acceptAction ) );
+   }
 
 
-    @org.jdesktop.application.Action
-    public void reject() throws ResourceException
-    {
-        WorkspaceUserDelegationsModel delegationsModel = (WorkspaceUserDelegationsModel) model;
-        for (int row : getReverseSelectedTasks())
-        {
-            delegationsModel.reject(row);
-        }
-        model.refresh();
-    }
+   @org.jdesktop.application.Action
+   public void reject() throws ResourceException
+   {
+      WorkspaceUserDelegationsModel delegationsModel = (WorkspaceUserDelegationsModel) model;
+      for (int row : getReverseSelectedTasks())
+      {
+         delegationsModel.reject( row );
+      }
+      model.refresh();
+   }
 }

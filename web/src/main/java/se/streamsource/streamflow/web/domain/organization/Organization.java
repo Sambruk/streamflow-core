@@ -28,16 +28,16 @@ import se.streamsource.streamflow.web.domain.tasktype.TaskTypes;
  * JAVADOC
  */
 public interface Organization
-        extends
-        Describable,
-        ProjectRoles,
-        RolePolicy,
-        FieldTemplates,
-        FormTemplates,
-        IdGenerator,
-        Labels,
-        OrganizationalUnits,
-        Roles,
-        TaskTypes
+      extends
+      Describable,
+      ProjectRoles,
+      RolePolicy,
+      FieldTemplates,
+      FormTemplates,
+      IdGenerator,
+      Labels,
+      OrganizationalUnits,
+      Roles,
+      TaskTypes
 {
 }

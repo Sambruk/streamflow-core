@@ -21,28 +21,28 @@ import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
  */
 public class ObjectArrayNode extends DefaultMutableTreeTableNode
 {
-    public ObjectArrayNode(Object... values)
-    {
-        super(values);
-    }
+   public ObjectArrayNode( Object... values )
+   {
+      super( values );
+   }
 
-    @Override
-    public Object getUserObject()
-    {
-        return super.getUserObject();
-    }
+   @Override
+   public Object getUserObject()
+   {
+      return super.getUserObject();
+   }
 
-    @Override
-    public Object getValueAt(int column)
-    {
-        Object[] values = (Object[]) getUserObject();
-        return values[column];
-    }
+   @Override
+   public Object getValueAt( int column )
+   {
+      Object[] values = (Object[]) getUserObject();
+      return values[column];
+   }
 
 
-    @Override
-    public int getColumnCount()
-    {
-        return ((Object[]) getUserObject()).length;
-    }
+   @Override
+   public int getColumnCount()
+   {
+      return ((Object[]) getUserObject()).length;
+   }
 }

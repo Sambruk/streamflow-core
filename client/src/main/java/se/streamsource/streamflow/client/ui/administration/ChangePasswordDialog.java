@@ -28,76 +28,78 @@ import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 
 /**
  * Dialog for changing password
  */
 public class ChangePasswordDialog
-        extends JPanel
+      extends JPanel
 {
-    private StateBinder passwordBinder;
-    private JPasswordField confirmPassword;
-    private JPasswordField newPassword;
+   private StateBinder passwordBinder;
+   private JPasswordField confirmPassword;
+   private JPasswordField newPassword;
 
-    private
-    @Service
-    DialogService dialogs;
+   private
+   @Service
+   DialogService dialogs;
 
-    private ChangePasswordCommand command;
+   private ChangePasswordCommand command;
 
-    public ChangePasswordDialog(@Service ApplicationContext context, @Structure ValueBuilderFactory vbf)
-    {
-        setActionMap(context.getActionMap(this));
+   public ChangePasswordDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf )
+   {
+      setActionMap( context.getActionMap( this ) );
 
-        StateBinder binder = new StateBinder();
-        binder.bindingTemplate(ChangePasswordCommand.class);
+      StateBinder binder = new StateBinder();
+      binder.bindingTemplate( ChangePasswordCommand.class );
 
-        FormLayout layout = new FormLayout(
-                "200dlu",
+      FormLayout layout = new FormLayout(
+            "200dlu",
 //                "right:max(40dlu;p), 4dlu, 80dlu, 7dlu, " // 1st major column
 //                        + "right:max(40dlu;p), 4dlu, 80dlu",        // 2nd major column
-                "");                                      // add rows dynamically
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
-        builder.setDefaultDialogBorder();
+            "" );                                      // add rows dynamically
+      DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
+      builder.setDefaultDialogBorder();
 
-        passwordBinder = new StateBinder();
-        passwordBinder.setResourceMap(context.getResourceMap(getClass()));
+      passwordBinder = new StateBinder();
+      passwordBinder.setResourceMap( context.getResourceMap( getClass() ) );
 
-        command = vbf.newValue(ChangePasswordCommand.class).<ChangePasswordCommand>buildWith().prototype();
+      command = vbf.newValue( ChangePasswordCommand.class ).<ChangePasswordCommand>buildWith().prototype();
 
-        BindingFormBuilder bb = new BindingFormBuilder(builder, passwordBinder);
+      BindingFormBuilder bb = new BindingFormBuilder( builder, passwordBinder );
 
-        bb.appendLine(AdministrationResources.old_password, BindingFormBuilder.Fields.PASSWORD, command.oldPassword());
-        bb.appendLine(AdministrationResources.new_password, newPassword = (JPasswordField) BindingFormBuilder.Fields.PASSWORD.newField(), command.newPassword());
-        JLabel label = builder.append(bb.getResource(AdministrationResources.confirm_password));
-        builder.nextLine();
-        builder.append(confirmPassword = new JPasswordField());
-        label.setLabelFor(confirmPassword);
-        builder.nextLine();
-    }
+      bb.appendLine( AdministrationResources.old_password, BindingFormBuilder.Fields.PASSWORD, command.oldPassword() );
+      bb.appendLine( AdministrationResources.new_password, newPassword = (JPasswordField) BindingFormBuilder.Fields.PASSWORD.newField(), command.newPassword() );
+      JLabel label = builder.append( bb.getResource( AdministrationResources.confirm_password ) );
+      builder.nextLine();
+      builder.append( confirmPassword = new JPasswordField() );
+      label.setLabelFor( confirmPassword );
+      builder.nextLine();
+   }
 
-    @Action
-    public void execute()
-    {
-        if (new String(confirmPassword.getPassword()).equals(new String(newPassword.getPassword())))
-        {
-            WindowUtils.findWindow(this).dispose();
-        } else
-        {
-            dialogs.showOkDialog(this, new JLabel(i18n.text(AdministrationResources.passwords_do_not_match)));
-        }
-    }
+   @Action
+   public void execute()
+   {
+      if (new String( confirmPassword.getPassword() ).equals( new String( newPassword.getPassword() ) ))
+      {
+         WindowUtils.findWindow( this ).dispose();
+      } else
+      {
+         dialogs.showOkDialog( this, new JLabel( i18n.text( AdministrationResources.passwords_do_not_match ) ) );
+      }
+   }
 
-    @Action
-    public void close()
-    {
-        command = null;
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void close()
+   {
+      command = null;
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    public ChangePasswordCommand command()
-    {
-        return command;
-    }
+   public ChangePasswordCommand command()
+   {
+      return command;
+   }
 }

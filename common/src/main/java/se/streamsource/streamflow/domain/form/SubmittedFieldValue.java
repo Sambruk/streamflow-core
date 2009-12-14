@@ -22,8 +22,9 @@ import org.qi4j.api.value.ValueComposite;
  * JAVADOC
  */
 public interface SubmittedFieldValue
-    extends ValueComposite
+      extends ValueComposite
 {
-    Property<EntityReference> field();
-    Property<String> value();
+   Property<EntityReference> field();
+
+   Property<String> value();
 }

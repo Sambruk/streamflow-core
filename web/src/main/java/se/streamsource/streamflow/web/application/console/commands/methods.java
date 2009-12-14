@@ -24,18 +24,18 @@ import java.lang.reflect.Method;
  */
 public class methods
 {
-    public static void invoke( final Interpreter env, CallStack callstack, Object entity)
-    {
-        try
-        {
-            env.println( entity.toString() );
-            for (Method method : entity.getClass().getMethods())
-            {
-                env.println(method.toGenericString());
-            }
-        } catch (Throwable throwable)
-        {
-            throwable.printStackTrace();
-        }
-    }
+   public static void invoke( final Interpreter env, CallStack callstack, Object entity )
+   {
+      try
+      {
+         env.println( entity.toString() );
+         for (Method method : entity.getClass().getMethods())
+         {
+            env.println( method.toGenericString() );
+         }
+      } catch (Throwable throwable)
+      {
+         throwable.printStackTrace();
+      }
+   }
 }

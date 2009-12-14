@@ -37,86 +37,86 @@ import java.util.List;
  * JAVADOC
  */
 public class FormDefinitionsModel
-        extends AbstractListModel
-    implements EventListener
+      extends AbstractListModel
+      implements EventListener
 {
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Uses
-    private FormDefinitionsClientResource forms;
+   @Uses
+   private FormDefinitionsClientResource forms;
 
-    WeakModelMap<String, FormDefinitionModel> formModels = new WeakModelMap<String, FormDefinitionModel>()
-    {
-        protected FormDefinitionModel newModel( String key )
-        {
-            FormDefinitionClientResource formResource = forms.form( key );
-            return obf.newObjectBuilder( FormDefinitionModel.class ).use( formResource ).newInstance();
-        }
-    };
+   WeakModelMap<String, FormDefinitionModel> formModels = new WeakModelMap<String, FormDefinitionModel>()
+   {
+      protected FormDefinitionModel newModel( String key )
+      {
+         FormDefinitionClientResource formResource = forms.form( key );
+         return obf.newObjectBuilder( FormDefinitionModel.class ).use( formResource ).newInstance();
+      }
+   };
 
-    private List<ListItemValue> list;
+   private List<ListItemValue> list;
 
-    public int getSize()
-    {
-        return list == null ? 0 : list.size();
-    }
+   public int getSize()
+   {
+      return list == null ? 0 : list.size();
+   }
 
-    public Object getElementAt(int index)
-    {
-        return list == null ? null : list.get(index);
-    }
+   public Object getElementAt( int index )
+   {
+      return list == null ? null : list.get( index );
+   }
 
-    public void createForm(String description)
-    {
-        try
-        {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-            builder.prototype().string().set(description);
-            forms.createForm( builder.newInstance());
+   public void createForm( String description )
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( description );
+         forms.createForm( builder.newInstance() );
 
-        } catch (ResourceException e)
-        {
-            throw new OperationException( AdministrationResources.could_not_create_form, e);
-        }
-    }
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_create_form, e );
+      }
+   }
 
-    public void removeForm(String id)
-    {
-        try
-        {
-            forms.form(id).deleteCommand();
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_form, e);
-        }
-    }
+   public void removeForm( String id )
+   {
+      try
+      {
+         forms.form( id ).deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_form, e );
+      }
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            list = forms.forms().items().get();
-            fireContentsChanged(this, 0, list.size());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         list = forms.forms().items().get();
+         fireContentsChanged( this, 0, list.size() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        for (FormDefinitionModel formModel : formModels)
-        {
-            formModel.notifyEvent( event );
-        }
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      for (FormDefinitionModel formModel : formModels)
+      {
+         formModel.notifyEvent( event );
+      }
+   }
 
-    public FormDefinitionModel getFormModel( String id )
-    {
-        return formModels.get( id );
-    }
+   public FormDefinitionModel getFormModel( String id )
+   {
+      return formModels.get( id );
+   }
 }

@@ -26,20 +26,20 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
  * Assembly of configuration for services
  */
 public class ConfigurationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        System.setProperty("application", "StreamFlowClient");
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      System.setProperty( "application", "StreamFlowClient" );
 
-        module.addServices(ServiceConfiguration.class).instantiateOnStartup();
+      module.addServices( ServiceConfiguration.class ).instantiateOnStartup();
 
-        module.addServices(FileConfiguration.class).instantiateOnStartup().visibleIn(Visibility.application);
+      module.addServices( FileConfiguration.class ).instantiateOnStartup().visibleIn( Visibility.application );
 
-        // Configurations
-        module.addEntities(JdbmConfiguration.class).visibleIn(Visibility.layer);
+      // Configurations
+      module.addEntities( JdbmConfiguration.class ).visibleIn( Visibility.layer );
 
-        // Configuration store
-        module.addServices(MemoryEntityStoreService.class);
-    }
+      // Configuration store
+      module.addServices( MemoryEntityStoreService.class );
+   }
 }

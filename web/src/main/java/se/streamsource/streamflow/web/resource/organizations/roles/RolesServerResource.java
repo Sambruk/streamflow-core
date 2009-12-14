@@ -27,26 +27,26 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /organizations/{organization}/roles
  */
 public class RolesServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public ListValue roles()
-    {
-        String identity = getRequest().getAttributes().get("organization").toString();
-        Roles.Data roles = uowf.currentUnitOfWork().get( Roles.Data.class, identity);
+   public ListValue roles()
+   {
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
+      Roles.Data roles = uowf.currentUnitOfWork().get( Roles.Data.class, identity );
 
-        return new ListValueBuilder(vbf).addDescribableItems( roles.roles() ).newList();
-    }
+      return new ListValueBuilder( vbf ).addDescribableItems( roles.roles() ).newList();
+   }
 
-    public void createRole(StringDTO name) throws ResourceException
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public void createRole( StringDTO name ) throws ResourceException
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        String identity = getRequest().getAttributes().get("organization").toString();
+      String identity = getRequest().getAttributes().get( "organization" ).toString();
 
-        Roles roles = uow.get( Roles.class, identity);
-        checkPermission( roles );
+      Roles roles = uow.get( Roles.class, identity );
+      checkPermission( roles );
 
-        roles.createRole( name.string().get() );
-    }
+      roles.createRole( name.string().get() );
+   }
 
 }

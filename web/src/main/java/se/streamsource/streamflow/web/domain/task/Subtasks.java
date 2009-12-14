@@ -23,33 +23,33 @@ import org.qi4j.api.mixin.Mixins;
 @Mixins(Subtasks.Mixin.class)
 public interface Subtasks
 {
-    void addSubtask(Subtask subtask);
+   void addSubtask( Subtask subtask );
 
-    void removeSubtask(Subtask subtask);
+   void removeSubtask( Subtask subtask );
 
-    interface Data
-    {
+   interface Data
+   {
 //        ManyAssociation<Subtask> subtasks();
-    }
+   }
 
-    class Mixin
-            implements Subtasks
-    {
-        @This
-        Data state;
-        @This
-        Subtasks subtasks;
+   class Mixin
+         implements Subtasks
+   {
+      @This
+      Data state;
+      @This
+      Subtasks subtasks;
 
-        public void addSubtask(Subtask subtask)
-        {
+      public void addSubtask( Subtask subtask )
+      {
 //            state.subtasks().add(state.subtasks().count(), subtask);
-            subtask.changeParentTask(subtasks);
-        }
+         subtask.changeParentTask( subtasks );
+      }
 
-        public void removeSubtask(Subtask subtask)
-        {
+      public void removeSubtask( Subtask subtask )
+      {
 //            state.subtasks().remove(subtask);
-            subtask.changeParentTask(subtasks);
-        }
-    }
+         subtask.changeParentTask( subtasks );
+      }
+   }
 }

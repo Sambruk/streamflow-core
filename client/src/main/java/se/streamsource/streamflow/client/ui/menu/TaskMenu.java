@@ -14,30 +14,22 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.ResourceMap;
-import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import static se.streamsource.streamflow.infrastructure.configuration.FileConfiguration.OS.mac;
-
-import javax.swing.*;
-
 /**
  * Tasks menu
  */
 public class TaskMenu
-        extends AbstractMenu
+      extends AbstractMenu
 {
-    protected void init()
-    {
-        menu("taskMenu",
-                "createTask",
-                "completeTasks",
-                "markTasksAsRead",
-                "markTasksAsUnread",
-                "assignTasksToMe",
-                "forwardTasks",
-                "delegateTasks"
-                );
-    }
+   protected void init()
+   {
+      menu( "taskMenu",
+            "createTask",
+            "completeTasks",
+            "markTasksAsRead",
+            "markTasksAsUnread",
+            "assignTasksToMe",
+            "forwardTasks",
+            "delegateTasks"
+      );
+   }
 }

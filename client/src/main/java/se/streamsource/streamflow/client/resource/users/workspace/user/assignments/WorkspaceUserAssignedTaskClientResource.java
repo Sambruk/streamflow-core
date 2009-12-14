@@ -24,16 +24,16 @@ import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskCl
  * JAVADOC
  */
 public class WorkspaceUserAssignedTaskClientResource
-        extends AbstractTaskClientResource
+      extends AbstractTaskClientResource
 {
-    public WorkspaceUserAssignedTaskClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public WorkspaceUserAssignedTaskClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void unassign() throws ResourceException
-    {
-        putCommand("unassign");
-    }
+   public void unassign() throws ResourceException
+   {
+      putCommand( "unassign" );
+   }
 
 }

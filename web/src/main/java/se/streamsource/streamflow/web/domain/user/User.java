@@ -14,50 +14,50 @@
 
 package se.streamsource.streamflow.web.domain.user;
 
+import se.streamsource.streamflow.domain.contact.Contactable;
+import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.web.domain.comment.Commenter;
+import se.streamsource.streamflow.web.domain.group.OverviewQueries;
+import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.label.Labels;
+import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
 import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.Delegator;
 import se.streamsource.streamflow.web.domain.task.Delegations;
 import se.streamsource.streamflow.web.domain.task.DelegationsQueries;
-import se.streamsource.streamflow.web.domain.task.Owner;
+import se.streamsource.streamflow.web.domain.task.Delegator;
 import se.streamsource.streamflow.web.domain.task.Inbox;
 import se.streamsource.streamflow.web.domain.task.InboxQueries;
+import se.streamsource.streamflow.web.domain.task.Owner;
 import se.streamsource.streamflow.web.domain.task.WaitingFor;
 import se.streamsource.streamflow.web.domain.task.WaitingForQueries;
-import se.streamsource.streamflow.web.domain.comment.Commenter;
-import se.streamsource.streamflow.web.domain.organization.OrganizationParticipations;
-import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.group.OverviewQueries;
-import se.streamsource.streamflow.web.domain.label.Labels;
-import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.domain.roles.Describable;
 
 /**
  * JAVADOC
  */
 public interface User
-    extends
-        Assignee,
-        Assignments,
-        AssignmentsQueries,
-        Commenter,
-        Contactable,
-        Delegatee,
-        Delegator,
-        Delegations,
-        DelegationsQueries,
-        Describable,
-        OrganizationParticipations,
-        Owner,
-        Participant,
-        OverviewQueries,
-        Inbox,
-        InboxQueries,
-        WaitingFor,
-        WaitingForQueries,
-        Labels,
-        UserAuthentication
+      extends
+      Assignee,
+      Assignments,
+      AssignmentsQueries,
+      Commenter,
+      Contactable,
+      Delegatee,
+      Delegator,
+      Delegations,
+      DelegationsQueries,
+      Describable,
+      OrganizationParticipations,
+      Owner,
+      Participant,
+      OverviewQueries,
+      Inbox,
+      InboxQueries,
+      WaitingFor,
+      WaitingForQueries,
+      Labels,
+      UserAuthentication
 {
 }

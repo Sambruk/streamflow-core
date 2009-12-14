@@ -31,52 +31,52 @@ import java.awt.BorderLayout;
  * JAVADOC
  */
 public class FilteredList
-    extends JPanel
+      extends JPanel
 {
-    private JTextField textField;
-    private JList list;
-    private EventListModel listModel;
-    public JScrollPane pane = new JScrollPane();
+   private JTextField textField;
+   private JList list;
+   private EventListModel listModel;
+   public JScrollPane pane = new JScrollPane();
 
-    public FilteredList()
-    {
-        setLayout( new BorderLayout() );
+   public FilteredList()
+   {
+      setLayout( new BorderLayout() );
 
-        textField = new JTextField( 20 );
+      textField = new JTextField( 20 );
 
-        list = new JList();
-        list.setCellRenderer( new ListItemListCellRenderer() );
-        pane.setViewportView( list );
+      list = new JList();
+      list.setCellRenderer( new ListItemListCellRenderer() );
+      pane.setViewportView( list );
 
-        add( textField, BorderLayout.NORTH);
-        add( pane, BorderLayout.CENTER);
-    }
+      add( textField, BorderLayout.NORTH );
+      add( pane, BorderLayout.CENTER );
+   }
 
-    public JTextField getTextField()
-    {
-        return textField;
-    }
+   public JTextField getTextField()
+   {
+      return textField;
+   }
 
-    public JList getList()
-    {
-        return list;
-    }
+   public JList getList()
+   {
+      return list;
+   }
 
-    public JScrollPane getPane()
-    {
-        return pane;
-    }
+   public JScrollPane getPane()
+   {
+      return pane;
+   }
 
-    public void setEventList( EventList<ListItemValue> eventList)
-    {
-        SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( eventList, new ListItemComparator() );
-        FilterList<ListItemValue> textFilteredIssues = new FilterList<ListItemValue>( sortedIssues, new TextComponentMatcherEditor( textField, new ListItemFilterator() ) );
-        listModel = new EventListModel<ListItemValue>(textFilteredIssues);
+   public void setEventList( EventList<ListItemValue> eventList )
+   {
+      SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( eventList, new ListItemComparator() );
+      FilterList<ListItemValue> textFilteredIssues = new FilterList<ListItemValue>( sortedIssues, new TextComponentMatcherEditor( textField, new ListItemFilterator() ) );
+      listModel = new EventListModel<ListItemValue>( textFilteredIssues );
 
-        list.setModel( listModel );
+      list.setModel( listModel );
 
-        textField.setText( "" );
+      textField.setText( "" );
 
 
-    }
+   }
 }

@@ -21,8 +21,11 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -30,55 +33,55 @@ import java.util.Observer;
  * JAVADOC
  */
 public class FormView
-    extends JPanel
-    implements Observer
+      extends JPanel
+      implements Observer
 {
-    private AdministrationView adminView;
-    private FormModel model;
+   private AdministrationView adminView;
+   private FormModel model;
 
-    @Structure
-    ObjectBuilderFactory obf;
-    private JTextArea textArea;
+   @Structure
+   ObjectBuilderFactory obf;
+   private JTextArea textArea;
 
-    public FormView(@Service ApplicationContext context,
+   public FormView( @Service ApplicationContext context,
                     @Uses FormModel model,
-                    @Uses AdministrationView adminView)
-    {
-        super(new BorderLayout());
-        this.model = model;
-        ActionMap am = context.getActionMap(this);
+                    @Uses AdministrationView adminView )
+   {
+      super( new BorderLayout() );
+      this.model = model;
+      ActionMap am = context.getActionMap( this );
 
-        this.adminView = adminView;
+      this.adminView = adminView;
 
 
-        model.addObserver(this);
-        textArea = new JTextArea(model.getNote());
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setEditable(false);
-        add(textArea, BorderLayout.CENTER);
-        add(new JButton(am.get("edit")), BorderLayout.SOUTH);
+      model.addObserver( this );
+      textArea = new JTextArea( model.getNote() );
+      textArea.setLineWrap( true );
+      textArea.setWrapStyleWord( true );
+      textArea.setEditable( false );
+      add( textArea, BorderLayout.CENTER );
+      add( new JButton( am.get( "edit" ) ), BorderLayout.SOUTH );
 
-    }
+   }
 
-    @org.jdesktop.application.Action
-    public void edit()
-    {
-        FieldsModel fieldsModel = model.getFieldsModel();
+   @org.jdesktop.application.Action
+   public void edit()
+   {
+      FieldsModel fieldsModel = model.getFieldsModel();
 
-        FormEditAdminView formEditAdminView = obf.newObjectBuilder(FormEditAdminView.class).
-                use(model, fieldsModel).newInstance();
+      FormEditAdminView formEditAdminView = obf.newObjectBuilder( FormEditAdminView.class ).
+            use( model, fieldsModel ).newInstance();
 
-        adminView.show( formEditAdminView );
-    }
+      adminView.show( formEditAdminView );
+   }
 
-    public FormModel getModel()
-    {
-        return model;
-    }
+   public FormModel getModel()
+   {
+      return model;
+   }
 
-    public void update(Observable observable, Object o)
-    {
-        textArea.setText(model.getNote());
-    }
+   public void update( Observable observable, Object o )
+   {
+      textArea.setText( model.getNote() );
+   }
 }

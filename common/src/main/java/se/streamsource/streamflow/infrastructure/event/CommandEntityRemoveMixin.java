@@ -43,74 +43,74 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @AppliesTo(CommandEntityRemoveMixin.CommandEntityRemoveAppliesTo.class)
 public class CommandEntityRemoveMixin
-        implements InvocationHandler
+      implements InvocationHandler
 {
-    private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
-    private static Map<Method, Method> manyAssociationMappings = new ConcurrentHashMap();
+   private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
+   private static Map<Method, Method> manyAssociationMappings = new ConcurrentHashMap();
 
-    @Service
-    IdentityGenerator idGen;
+   @Service
+   IdentityGenerator idGen;
 
-    @State
-    EntityStateHolder state;
+   @State
+   EntityStateHolder state;
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    Qi4jSPI spi;
+   @Structure
+   Qi4jSPI spi;
 
-    @This
-    EntityComposite composite;
+   @This
+   EntityComposite composite;
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-    {
-        //Method eventMethod = methodMappings.get(method);
-        Method eventMethod;
-        //if (eventMethod == null)
-        {
-            // removeFoo -> fooRemoved
-            String name = method.getName().substring("remove".length());
-            name = "removed"+name;
-            Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
-            eventMethod = composite.getClass().getMethod(name, parameterTypes);
-            //methodMappings.put(method, eventMethod);
-        }
+   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   {
+      //Method eventMethod = methodMappings.get(method);
+      Method eventMethod;
+      //if (eventMethod == null)
+      {
+         // removeFoo -> fooRemoved
+         String name = method.getName().substring( "remove".length() );
+         name = "removed" + name;
+         Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
+         eventMethod = composite.getClass().getMethod( name, parameterTypes );
+         //methodMappings.put(method, eventMethod);
+      }
 
-        //Method manyAssociationMethod = manyAssociationMappings.get(method);
-        Method manyAssociationMethod;
-        //if (manyAssociationMethod == null)
-        {
-            // removeFoo -> foos
-            String name = method.getName().substring("remove".length());
-            name = Introspector.decapitalize(name) + "s";
-            manyAssociationMethod = composite.getClass().getMethod(name);
-            //manyAssociationMappings.put(method, manyAssociationMethod);
-        }
+      //Method manyAssociationMethod = manyAssociationMappings.get(method);
+      Method manyAssociationMethod;
+      //if (manyAssociationMethod == null)
+      {
+         // removeFoo -> foos
+         String name = method.getName().substring( "remove".length() );
+         name = Introspector.decapitalize( name ) + "s";
+         manyAssociationMethod = composite.getClass().getMethod( name );
+         //manyAssociationMappings.put(method, manyAssociationMethod);
+      }
 
-        ManyAssociation manyAssociation = (ManyAssociation) manyAssociationMethod.invoke(proxy);
+      ManyAssociation manyAssociation = (ManyAssociation) manyAssociationMethod.invoke( proxy );
 
-        if (!manyAssociation.contains(args[0]))
-                return false; // ManyAssociation does not contain entity
+      if (!manyAssociation.contains( args[0] ))
+         return false; // ManyAssociation does not contain entity
 
-        eventMethod.invoke(composite, DomainEvent.CREATE, args[0]);
+      eventMethod.invoke( composite, DomainEvent.CREATE, args[0] );
 
-        // Call Removable.removeEntity()
-        if (args[0] instanceof Removable)
-        {
-            Removable removable = (Removable) args[0];
-            removable.removeEntity();
-        }
+      // Call Removable.removeEntity()
+      if (args[0] instanceof Removable)
+      {
+         Removable removable = (Removable) args[0];
+         removable.removeEntity();
+      }
 
-        return true;
-    }
+      return true;
+   }
 
-    public static class CommandEntityRemoveAppliesTo
-            implements AppliesToFilter
-    {
-        public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
-        {
-            return method.getName().startsWith("remove") && method.getParameterTypes().length == 1;
-        }
-    }
+   public static class CommandEntityRemoveAppliesTo
+         implements AppliesToFilter
+   {
+      public boolean appliesTo( Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass )
+      {
+         return method.getName().startsWith( "remove" ) && method.getParameterTypes().length == 1;
+      }
+   }
 }

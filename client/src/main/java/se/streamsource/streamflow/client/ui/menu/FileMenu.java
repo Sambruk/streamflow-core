@@ -21,19 +21,20 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
  * File menu
  */
 public class FileMenu
-        extends AbstractMenu
+      extends AbstractMenu
 {
-    @Service FileConfiguration config;
+   @Service
+   FileConfiguration config;
 
-    protected void init()
-    {
-        if (config.os() == FileConfiguration.OS.mac)
-        {
-            menu("fileMenu");
-        } else
-        {
-            menu("fileMenu",
-                    "quit");
-        }
-    }
+   protected void init()
+   {
+      if (config.os() == FileConfiguration.OS.mac)
+      {
+         menu( "fileMenu" );
+      } else
+      {
+         menu( "fileMenu",
+               "quit" );
+      }
+   }
 }

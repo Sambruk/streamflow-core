@@ -69,162 +69,166 @@ import java.util.List;
  * JAVADOC
  */
 public class CommandQueryResourceTest
-    extends AbstractQi4jTest
+      extends AbstractQi4jTest
 {
-    Component component;
-    public Context context;
-    public Client restlet;
+   Component component;
+   public Context context;
+   public Client restlet;
 
-    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
-    {
-        new EntityTestAssembler().assemble( moduleAssembly );
-        moduleAssembly.addServices( CommandEventListenerService.class, MemoryEventStoreService.class, EventSourceService.class, DomainEventFactoryService.class);
-        moduleAssembly.importServices( TransactionHandler.class );
-        moduleAssembly.importServices( AccessPolicy.class, TimeService.class ).importedBy( NewObjectImporter.class );
-        moduleAssembly.addObjects( TimeService.class, ResourceFinder.class, TestTransactionHandler.class, TestAccessPolicy.class, TestClientResource.class, TestServerResource.class );
-        moduleAssembly.addValues( StringDTO.class, TransactionEvents.class, DomainEvent.class );
-        moduleAssembly.addEntities( TestEntity.class );
+   public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      new EntityTestAssembler().assemble( moduleAssembly );
+      moduleAssembly.addServices( CommandEventListenerService.class, MemoryEventStoreService.class, EventSourceService.class, DomainEventFactoryService.class );
+      moduleAssembly.importServices( TransactionHandler.class );
+      moduleAssembly.importServices( AccessPolicy.class, TimeService.class ).importedBy( NewObjectImporter.class );
+      moduleAssembly.addObjects( TimeService.class, ResourceFinder.class, TestTransactionHandler.class, TestAccessPolicy.class, TestClientResource.class, TestServerResource.class );
+      moduleAssembly.addValues( StringDTO.class, TransactionEvents.class, DomainEvent.class );
+      moduleAssembly.addEntities( TestEntity.class );
 
-        moduleAssembly.layerAssembly().applicationAssembly().setMetaInfo( new TestTransactionHandler() );
-    }
+      moduleAssembly.layerAssembly().applicationAssembly().setMetaInfo( new TestTransactionHandler() );
+   }
 
-    @Before
-    public void init() throws Exception
-    {
-        ResourceFinder finder = objectBuilderFactory.newObject(ResourceFinder.class);
-        finder.setTargetClass(TestServerResource.class);
+   @Before
+   public void init() throws Exception
+   {
+      ResourceFinder finder = objectBuilderFactory.newObject( ResourceFinder.class );
+      finder.setTargetClass( TestServerResource.class );
 
-        component = new Component();
-        component.getServers().add( Protocol.HTTP, 8888);
-        component.getDefaultHost().attach("/test", finder);
-        component.start();
+      component = new Component();
+      component.getServers().add( Protocol.HTTP, 8888 );
+      component.getDefaultHost().attach( "/test", finder );
+      component.start();
 
-        context = new Context();
-        restlet = new Client( context, Protocol.HTTP);
+      context = new Context();
+      restlet = new Client( context, Protocol.HTTP );
 
-    }
+   }
 
-    @After
-    public void shutdown() throws Exception
-    {
-       if (component != null)
-           component.stop();
-    }
+   @After
+   public void shutdown() throws Exception
+   {
+      if (component != null)
+         component.stop();
+   }
 
-    @Test
-    public void testValueQuery() throws ResourceException
-    {
-        TestClientResource clientResource = objectBuilderFactory.newObjectBuilder( TestClientResource.class ).use( context, new Reference("http://localhost:8888/test") ).newInstance();
+   @Test
+   public void testValueQuery() throws ResourceException
+   {
+      TestClientResource clientResource = objectBuilderFactory.newObjectBuilder( TestClientResource.class ).use( context, new Reference( "http://localhost:8888/test" ) ).newInstance();
 
-        StringDTO dto = clientResource.testQuery();
+      StringDTO dto = clientResource.testQuery();
 
-        Assert.assertThat( "Test", CoreMatchers.equalTo( dto.string().get() ));
-    }
+      Assert.assertThat( "Test", CoreMatchers.equalTo( dto.string().get() ) );
+   }
 
-    @Test
-    public void testRepresentationCommand() throws ResourceException
-    {
-        TestClientResource clientResource = objectBuilderFactory.newObjectBuilder( TestClientResource.class ).use( context, new Reference("http://localhost:8888/test") ).newInstance();
+   @Test
+   public void testRepresentationCommand() throws ResourceException
+   {
+      TestClientResource clientResource = objectBuilderFactory.newObjectBuilder( TestClientResource.class ).use( context, new Reference( "http://localhost:8888/test" ) ).newInstance();
 
-        Representation rep = new WriterRepresentation( MediaType.TEXT_PLAIN)
-        {
-            public void write( Writer writer ) throws IOException
+      Representation rep = new WriterRepresentation( MediaType.TEXT_PLAIN )
+      {
+         public void write( Writer writer ) throws IOException
+         {
+            writer.write( "Test" );
+         }
+      };
+      clientResource.testCommandStream( rep );
+   }
+
+   public static class TestClientResource
+         extends CommandQueryClientResource
+   {
+      public TestClientResource( @Uses Context context, @Uses Reference reference )
+      {
+         super( context, reference );
+      }
+
+      // Queries
+
+      public StringDTO testQuery() throws ResourceException
+      {
+         return query( "testQuery", StringDTO.class );
+      }
+
+      // Commands
+
+      public void testCommandStream( Representation representation ) throws ResourceException
+      {
+         postCommand( "testCommandStream", representation );
+      }
+   }
+
+   public static class TestServerResource
+         extends CommandQueryServerResource
+   {
+      @Structure
+      ValueBuilderFactory vbf;
+
+      @Service
+      EventListener listener;
+
+      @Service
+      DomainEventFactory def;
+
+      @Structure
+      UnitOfWorkFactory uowf;
+
+      // Queries
+
+      public StringDTO testQuery()
+      {
+         return vbf.newValueFromJSON( StringDTO.class, "{\"string\":\"Test\"}" );
+      }
+
+      // Commands
+
+      public void testCommandStream( Representation representation ) throws ResourceException, IOException
+      {
+         String text = representation.getText();
+         System.out.println( text );
+         TestEntity test = uowf.currentUnitOfWork().newEntity( TestEntity.class );
+         listener.notifyEvent( def.createEvent( test, "testCommandStream", new Object[0] ) );
+      }
+   }
+
+   public static class TestTransactionHandler
+         implements TransactionHandler
+   {
+      public boolean handleTransaction( TransactionEvents transaction )
+      {
+         new TransactionEventAdapter( new EventHandler()
+         {
+            public boolean handleEvent( DomainEvent event )
             {
-                writer.write( "Test" );
+               System.out.println( event );
+               return true;
             }
-        };
-        clientResource.testCommandStream(rep );
-    }
+         } ).handleTransaction( transaction );
+         return true;
+      }
+   }
 
-    public static class TestClientResource
-        extends CommandQueryClientResource
-    {
-        public TestClientResource( @Uses Context context, @Uses Reference reference )
-        {
-            super( context, reference );
-        }
+   public static class TestAccessPolicy
+         implements AccessPolicy
+   {
+      public AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject )
+      {
+         PermissionCollection permissions = null;
+         permissions = new AllPermission().newPermissionCollection();
+         permissions.add( new AllPermission() );
 
-        // Queries
-        public StringDTO testQuery() throws ResourceException
-        {
-            return query( "testQuery", StringDTO.class );
-        }
-
-        // Commands
-        public void testCommandStream( Representation representation) throws ResourceException
-        {
-            postCommand( "testCommandStream", representation );
-        }
-    }
-
-    public static class TestServerResource
-        extends CommandQueryServerResource
-    {
-        @Structure
-        ValueBuilderFactory vbf;
-
-        @Service
-        EventListener listener;
-
-        @Service
-        DomainEventFactory def;
-
-        @Structure
-        UnitOfWorkFactory uowf;
-
-        // Queries
-        public StringDTO testQuery()
-        {
-            return vbf.newValueFromJSON( StringDTO.class, "{\"string\":\"Test\"}" );
-        }
-
-        // Commands
-        public void testCommandStream( Representation representation) throws ResourceException, IOException
-        {
-            String text = representation.getText();
-            System.out.println(text);
-            TestEntity test = uowf.currentUnitOfWork().newEntity( TestEntity.class );
-            listener.notifyEvent( def.createEvent( test, "testCommandStream", new Object[0] ) );
-        }
-    }
-
-    public static class TestTransactionHandler
-        implements TransactionHandler
-    {
-       public boolean handleTransaction( TransactionEvents transaction )
-       {
-            new TransactionEventAdapter(new EventHandler()
-            {
-                public boolean handleEvent( DomainEvent event )
-                {
-                    System.out.println(event);
-                    return true;
-                }
-            }).handleTransaction( transaction );
-          return true;
-        }
-    }
-
-    public static class TestAccessPolicy
-        implements AccessPolicy
-    {
-        public AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject )
-        {
-            PermissionCollection permissions = null;
-            permissions = new AllPermission().newPermissionCollection();
-            permissions.add(new AllPermission());
-
-            Principal[] principals = new Principal[]{};
-            ProtectionDomain[] domains = new ProtectionDomain[] {new ProtectionDomain(null, permissions, securedObject.getClass().getClassLoader(), principals)};
+         Principal[] principals = new Principal[]{};
+         ProtectionDomain[] domains = new ProtectionDomain[]{new ProtectionDomain( null, permissions, securedObject.getClass().getClassLoader(), principals )};
 
 
-            return new AccessControlContext(domains);
-        }
-    }
+         return new AccessControlContext( domains );
+      }
+   }
 
-    public interface TestEntity
-        extends EntityComposite
-    {
+   public interface TestEntity
+         extends EntityComposite
+   {
 
-    }
+   }
 }

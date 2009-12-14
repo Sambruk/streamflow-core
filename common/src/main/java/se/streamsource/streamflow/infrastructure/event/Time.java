@@ -22,5 +22,6 @@ import java.util.Date;
 public interface Time
 {
    long timeNow();
+
    Date dateNow();
 }

@@ -32,76 +32,76 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
  * JAVADOC
  */
 public class OrganizationsSteps
-        extends Steps
+      extends Steps
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Uses
-    GenericSteps genericSteps;
+   @Uses
+   GenericSteps genericSteps;
 
-    public OrganizationsEntity organizations;
+   public OrganizationsEntity organizations;
 
-    public OrganizationEntity givenOrganization;
-    public UserEntity givenUser;
+   public OrganizationEntity givenOrganization;
+   public UserEntity givenUser;
 
-    @Given("organization named $org")
-    public void givenOrganization(String name)
-    {
-        givenOrganization = organizations.getOrganizationByName( name );
-    }
+   @Given("organization named $org")
+   public void givenOrganization( String name )
+   {
+      givenOrganization = organizations.getOrganizationByName( name );
+   }
 
-    @Given("user named $user")
-    public void givenUser(String name)
-    {
-        givenUser = organizations.getUserByName( name );
-    }
+   @Given("user named $user")
+   public void givenUser( String name )
+   {
+      givenUser = organizations.getUserByName( name );
+   }
 
-    @Given("the organizations")
-    public OrganizationsEntity givenOrganizations()
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        organizations = uow.get(OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID);
-        return organizations;
-    }
+   @Given("the organizations")
+   public OrganizationsEntity givenOrganizations()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      organizations = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+      return organizations;
+   }
 
-    @When("a new organization named $name is created")
-    public void createOrganization(String name) throws Exception
-    {
-        try
-        {
-            givenOrganization = organizations.createOrganization(name);
-        } catch (Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+   @When("a new organization named $name is created")
+   public void createOrganization( String name ) throws Exception
+   {
+      try
+      {
+         givenOrganization = organizations.createOrganization( name );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
 
-    @When("a new user named $newUser is created")
-    public void createUser(String newUser) throws UnitOfWorkCompletionException
-    {
-        try
-        {
-            givenUser = organizations.createUser(newUser, newUser);
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+   @When("a new user named $newUser is created")
+   public void createUser( String newUser ) throws UnitOfWorkCompletionException
+   {
+      try
+      {
+         givenUser = organizations.createUser( newUser, newUser );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 
-    @When("a faulty user named $first $second is created")
-    public void createUser(String first, String second) throws UnitOfWorkCompletionException
-    {
-        try
-        {
-            organizations.createUser(first + " " + second, "pwd");
-        } catch(Exception e)
-        {
-            genericSteps.setThrowable(e);
-        }
-    }
+   @When("a faulty user named $first $second is created")
+   public void createUser( String first, String second ) throws UnitOfWorkCompletionException
+   {
+      try
+      {
+         organizations.createUser( first + " " + second, "pwd" );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
 }

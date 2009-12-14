@@ -25,21 +25,21 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * /users/{user}/workspace/projects/{project}/inbox
  */
 public class WorkspaceProjectInboxServerResource
-        extends AbstractTaskListServerResource
+      extends AbstractTaskListServerResource
 {
-    public InboxTaskListDTO tasks(TasksQuery query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("project");
-        InboxQueries inbox = uow.get(InboxQueries.class, id);
+   public InboxTaskListDTO tasks( TasksQuery query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "project" );
+      InboxQueries inbox = uow.get( InboxQueries.class, id );
 
-        return inbox.inboxTasks();
-    }
+      return inbox.inboxTasks();
+   }
 
-    public void createtask()
-    {
-        String projectId = (String) getRequest().getAttributes().get("project");
+   public void createtask()
+   {
+      String projectId = (String) getRequest().getAttributes().get( "project" );
 
-        createTask(projectId);
-    }
+      createTask( projectId );
+   }
 }

@@ -23,10 +23,10 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * JAVADOC
  */
 public class CommentAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addValues(CommentValue.class).visibleIn(Visibility.application);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addValues( CommentValue.class ).visibleIn( Visibility.application );
+   }
 }

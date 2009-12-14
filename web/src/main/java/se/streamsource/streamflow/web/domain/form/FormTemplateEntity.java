@@ -22,11 +22,11 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
  * JAVADOC
  */
 public interface FormTemplateEntity
-    extends
-        FormTemplate,
-        Describable.Data,
-        Notable.Data,
-        Fields.Data,
-        DomainEntity
+      extends
+      FormTemplate,
+      Describable.Data,
+      Notable.Data,
+      Fields.Data,
+      DomainEntity
 {
 }

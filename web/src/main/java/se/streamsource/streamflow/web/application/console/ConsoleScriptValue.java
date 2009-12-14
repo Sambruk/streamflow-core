@@ -24,16 +24,16 @@ import java.util.Map;
  * JAVADOC
  */
 public interface ConsoleScriptValue
-    extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<Console.Language> language();
+   @UseDefaults
+   Property<Console.Language> language();
 
-    Property<String> script();
+   Property<String> script();
 
-    @UseDefaults
-    Property<Map<String, Object>> bindings();
+   @UseDefaults
+   Property<Map<String, Object>> bindings();
 
-    @UseDefaults
-    Property<Boolean> completeUnitOfWork();
+   @UseDefaults
+   Property<Boolean> completeUnitOfWork();
 }

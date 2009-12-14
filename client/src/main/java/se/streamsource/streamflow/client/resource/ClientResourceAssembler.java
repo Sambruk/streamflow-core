@@ -85,101 +85,101 @@ import se.streamsource.streamflow.client.resource.users.workspace.user.waitingfo
  * JAVADOC
  */
 public class ClientResourceAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        module.addValues(ResourceListItem.class);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addValues( ResourceListItem.class );
 
-        // /users
-        module.addObjects(CommandQueryClient.class,
-                StreamFlowClientResource.class,
-                UsersClientResource.class,
-                se.streamsource.streamflow.client.resource.users.UserClientResource.class,
-                UserAdministrationClientResource.class,
+      // /users
+      module.addObjects( CommandQueryClient.class,
+            StreamFlowClientResource.class,
+            UsersClientResource.class,
+            se.streamsource.streamflow.client.resource.users.UserClientResource.class,
+            UserAdministrationClientResource.class,
 
-                TasksClientResource.class,
-                TaskClientResource.class,
-                TaskGeneralClientResource.class,
-                TaskCommentsClientResource.class,
-                TaskContactsClientResource.class,
-                TaskContactClientResource.class,
-                TaskSubmittedFormsClientResource.class,
-                TaskSubmittedFormClientResource.class,
-                TaskFormDefinitionClientResource.class,
+            TasksClientResource.class,
+            TaskClientResource.class,
+            TaskGeneralClientResource.class,
+            TaskCommentsClientResource.class,
+            TaskContactsClientResource.class,
+            TaskContactClientResource.class,
+            TaskSubmittedFormsClientResource.class,
+            TaskSubmittedFormClientResource.class,
+            TaskFormDefinitionClientResource.class,
 
-                WorkspaceClientResource.class,
-                WorkspaceUserClientResource.class,
-                WorkspaceUserInboxClientResource.class,
-                WorkspaceUserInboxTaskClientResource.class,
-                
-                WorkspaceUserAssignmentsClientResource.class,
-                WorkspaceUserAssignedTaskClientResource.class,
+            WorkspaceClientResource.class,
+            WorkspaceUserClientResource.class,
+            WorkspaceUserInboxClientResource.class,
+            WorkspaceUserInboxTaskClientResource.class,
 
-                WorkspaceUserDelegationsClientResource.class,
-                WorkspaceUserDelegatedTaskClientResource.class,
+            WorkspaceUserAssignmentsClientResource.class,
+            WorkspaceUserAssignedTaskClientResource.class,
 
-                WorkspaceUserWaitingForClientResource.class,
-                WorkspaceUserWaitingForTaskClientResource.class,
+            WorkspaceUserDelegationsClientResource.class,
+            WorkspaceUserDelegatedTaskClientResource.class,
 
-                WorkspaceProjectClientResource.class,
-                WorkspaceProjectsClientResource.class,
-                WorkspaceProjectInboxClientResource.class,
-                WorkspaceProjectInboxTaskClientResource.class,
-                WorkspaceProjectAssignmentsClientResource.class,
-                WorkspaceProjectAssignmentsTaskClientResource.class,
-                WorkspaceProjectDelegationsClientResource.class,
-                WorkspaceProjectDelegationsTaskClientResource.class,
-                WorkspaceProjectWaitingforClientResource.class,
-                WorkspaceProjectWaitingforTaskClientResource.class,
+            WorkspaceUserWaitingForClientResource.class,
+            WorkspaceUserWaitingForTaskClientResource.class,
 
-                LabelsClientResource.class,
-                LabelClientResource.class,
-                ProjectFormDefinitionsClientResource.class,
-                ProjectFormDefinitionClientResource.class,
-                ProjectFormDefinitionFieldsClientResource.class,
-                ProjectFormDefinitionFieldClientResource.class,
+            WorkspaceProjectClientResource.class,
+            WorkspaceProjectsClientResource.class,
+            WorkspaceProjectInboxClientResource.class,
+            WorkspaceProjectInboxTaskClientResource.class,
+            WorkspaceProjectAssignmentsClientResource.class,
+            WorkspaceProjectAssignmentsTaskClientResource.class,
+            WorkspaceProjectDelegationsClientResource.class,
+            WorkspaceProjectDelegationsTaskClientResource.class,
+            WorkspaceProjectWaitingforClientResource.class,
+            WorkspaceProjectWaitingforTaskClientResource.class,
 
-                OverviewClientResource.class,
-                OverviewProjectsClientResource.class,
-                OverviewProjectClientResource.class,
-                OverviewProjectAssignmentsClientResource.class,
-                OverviewProjectAssignmentsTaskClientResource.class,
-                OverviewProjectWaitingForClientResource.class,
-                OverviewProjectWaitingForTaskClientResource.class
+            LabelsClientResource.class,
+            LabelClientResource.class,
+            ProjectFormDefinitionsClientResource.class,
+            ProjectFormDefinitionClientResource.class,
+            ProjectFormDefinitionFieldsClientResource.class,
+            ProjectFormDefinitionFieldClientResource.class,
 
-        ).visibleIn(Visibility.application);
+            OverviewClientResource.class,
+            OverviewProjectsClientResource.class,
+            OverviewProjectClientResource.class,
+            OverviewProjectAssignmentsClientResource.class,
+            OverviewProjectAssignmentsTaskClientResource.class,
+            OverviewProjectWaitingForClientResource.class,
+            OverviewProjectWaitingForTaskClientResource.class
 
-        // /organizations
-        module.addObjects(OrganizationClientResource.class,
-                OrganizationalUnitsClientResource.class,
-                OrganizationalUnitClientResource.class,
-                OrganizationsClientResource.class,
+      ).visibleIn( Visibility.application );
 
-                FormDefinitionClientResource.class,
-                FormDefinitionsClientResource.class,
+      // /organizations
+      module.addObjects( OrganizationClientResource.class,
+            OrganizationalUnitsClientResource.class,
+            OrganizationalUnitClientResource.class,
+            OrganizationsClientResource.class,
 
-                GroupsClientResource.class,
-                GroupClientResource.class,
-                ParticipantsClientResource.class,
-                ParticipantClientResource.class,
+            FormDefinitionClientResource.class,
+            FormDefinitionsClientResource.class,
 
-                se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource.class,
-                se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource.class,
-                MembersClientResource.class,
-                MemberClientResource.class,
-                MemberRolesClientResource.class,
-                MemberRoleClientResource.class,
+            GroupsClientResource.class,
+            GroupClientResource.class,
+            ParticipantsClientResource.class,
+            ParticipantClientResource.class,
 
-                RolesClientResource.class,
-                RoleClientResource.class,
+            se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource.class,
+            se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource.class,
+            MembersClientResource.class,
+            MemberClientResource.class,
+            MemberRolesClientResource.class,
+            MemberRoleClientResource.class,
 
-                AdministratorsClientResource.class,
-                AdministratorClientResource.class,
+            RolesClientResource.class,
+            RoleClientResource.class,
 
-                SearchClientResource.class,
-                SearchTaskClientResource.class).visibleIn(Visibility.application);
+            AdministratorsClientResource.class,
+            AdministratorClientResource.class,
 
-        module.addObjects(EventsClientResource.class).visibleIn(Visibility.application);
-    }
+            SearchClientResource.class,
+            SearchTaskClientResource.class ).visibleIn( Visibility.application );
+
+      module.addObjects( EventsClientResource.class ).visibleIn( Visibility.application );
+   }
 }

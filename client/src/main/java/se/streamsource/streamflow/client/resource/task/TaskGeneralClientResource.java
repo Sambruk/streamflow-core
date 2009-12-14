@@ -34,67 +34,67 @@ import java.util.Date;
  * Mapped to /task/{id}/general
  */
 public class TaskGeneralClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public TaskGeneralClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public TaskGeneralClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public TaskGeneralDTO general() throws IOException, ResourceException
-    {
-        return query("general", TaskGeneralDTO.class);
-    }
+   public TaskGeneralDTO general() throws IOException, ResourceException
+   {
+      return query( "general", TaskGeneralDTO.class );
+   }
 
-    public void changeDescription(String newDescription) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newDescription);
-        putCommand("changedescription", builder.newInstance());
-    }
+   public void changeDescription( String newDescription ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newDescription );
+      putCommand( "changedescription", builder.newInstance() );
+   }
 
-    public void changeNote(String newNote) throws ResourceException
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(newNote);
-        putCommand("changenote", builder.newInstance());
-    }
+   public void changeNote( String newNote ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( newNote );
+      putCommand( "changenote", builder.newInstance() );
+   }
 
-    public void changeDueOn(Date newDueOn) throws ResourceException
-    {
-        ValueBuilder<DateDTO> builder = vbf.newValueBuilder(DateDTO.class);
-        builder.prototype().date().set(newDueOn);
-        putCommand("changedueon", builder.newInstance());
-    }
+   public void changeDueOn( Date newDueOn ) throws ResourceException
+   {
+      ValueBuilder<DateDTO> builder = vbf.newValueBuilder( DateDTO.class );
+      builder.prototype().date().set( newDueOn );
+      putCommand( "changedueon", builder.newInstance() );
+   }
 
-    public void addLabel(String labelId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set( EntityReference.parseEntityReference(labelId));
-        postCommand("addlabel", builder.newInstance());
-    }
+   public void addLabel( String labelId ) throws ResourceException
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( EntityReference.parseEntityReference( labelId ) );
+      postCommand( "addlabel", builder.newInstance() );
+   }
 
-    public void removeLabel(String labelId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(EntityReference.parseEntityReference(labelId));
-        putCommand("removelabel", builder.newInstance());
-    }
+   public void removeLabel( String labelId ) throws ResourceException
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( EntityReference.parseEntityReference( labelId ) );
+      putCommand( "removelabel", builder.newInstance() );
+   }
 
-    public void changeTaskType(EntityReference taskTypeId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set( taskTypeId);
-        postCommand("changetasktype", builder.newInstance());
-    }
-    
-    public ListValue possibleLabels() throws ResourceException
-    {
-    	return query("possiblelabels", ListValue.class);
-    }
+   public void changeTaskType( EntityReference taskTypeId ) throws ResourceException
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( taskTypeId );
+      postCommand( "changetasktype", builder.newInstance() );
+   }
 
-    public ListValue possibleTaskTypes() throws ResourceException
-    {
-    	return query("possibletasktypes", ListValue.class);
-    }
+   public ListValue possibleLabels() throws ResourceException
+   {
+      return query( "possiblelabels", ListValue.class );
+   }
+
+   public ListValue possibleTaskTypes() throws ResourceException
+   {
+      return query( "possibletasktypes", ListValue.class );
+   }
 }

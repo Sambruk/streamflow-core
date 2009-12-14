@@ -23,16 +23,16 @@ import se.streamsource.streamflow.client.test.AbstractWebDomainApplicationScenar
  * JAVADOC
  */
 public class UserScenario
-        extends AbstractWebDomainApplicationScenario
+      extends AbstractWebDomainApplicationScenario
 {
 
-    public UserScenario()
-    {
-        this(Thread.currentThread().getContextClassLoader());
-    }
+   public UserScenario()
+   {
+      this( Thread.currentThread().getContextClassLoader() );
+   }
 
-    public UserScenario(ClassLoader classLoader)
-    {
-        super(classLoader, new OrganizationsSteps(), new UserSteps(), new TestSetupSteps());
-    }
+   public UserScenario( ClassLoader classLoader )
+   {
+      super( classLoader, new OrganizationsSteps(), new UserSteps(), new TestSetupSteps() );
+   }
 }

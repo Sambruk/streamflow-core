@@ -38,41 +38,41 @@ import java.util.prefs.Preferences;
  * Assembly of configurations for services
  */
 public class ConfigurationAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        System.setProperty("application", "StreamFlowServer");
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      System.setProperty( "application", "StreamFlowServer" );
 
-        module.addServices(FileConfiguration.class, ServiceConfiguration.class).visibleIn(Visibility.application).instantiateOnStartup();
+      module.addServices( FileConfiguration.class, ServiceConfiguration.class ).visibleIn( Visibility.application ).instantiateOnStartup();
 
-        // Configurations
-        module.addEntities(JdbmConfiguration.class).visibleIn(Visibility.application);
-        module.addEntities(NativeConfiguration.class).visibleIn(Visibility.application);
-        module.addEntities(ReindexerConfiguration.class).visibleIn(Visibility.application);
-        module.addEntities(StatisticsConfiguration.class).visibleIn(Visibility.application);
-        module.addEntities(MySQLDatabaseConfiguration.class).visibleIn(Visibility.application);
-        module.addEntities(StartupMigrationConfiguration.class).visibleIn(Visibility.application);
-        module.addEntities(JmxConnectorConfiguration.class).visibleIn(Visibility.application);
-        module.addEntities(MigrationConfiguration.class).visibleIn(Visibility.application);
+      // Configurations
+      module.addEntities( JdbmConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( NativeConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( StatisticsConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( MySQLDatabaseConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( StartupMigrationConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
 
-        module.forMixin(ReindexerConfiguration.class).declareDefaults().loadValue().set(50);
+      module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
 
-        // Configuration store
-        Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
-        if (mode.equals(Application.Mode.development))
-        {
-            // In-memory store
-            module.addServices(MemoryEntityStoreService.class).visibleIn(Visibility.application);
-        } else if (mode.equals(Application.Mode.test))
-        {
-            // In-memory store
-            module.addServices(MemoryEntityStoreService.class).visibleIn(Visibility.application);
-        } else if (mode.equals(Application.Mode.production))
-        {
-            // Preferences storage
-            module.addServices(PreferencesEntityStoreService.class).setMetaInfo(new PreferencesEntityStoreInfo(Preferences.userRoot().node("streamsource/streamflow/web")));
-        }
+      // Configuration store
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.development ))
+      {
+         // In-memory store
+         module.addServices( MemoryEntityStoreService.class ).visibleIn( Visibility.application );
+      } else if (mode.equals( Application.Mode.test ))
+      {
+         // In-memory store
+         module.addServices( MemoryEntityStoreService.class ).visibleIn( Visibility.application );
+      } else if (mode.equals( Application.Mode.production ))
+      {
+         // Preferences storage
+         module.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( Preferences.userRoot().node( "streamsource/streamflow/web" ) ) );
+      }
 
-    }
+   }
 }

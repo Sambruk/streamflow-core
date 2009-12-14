@@ -28,51 +28,50 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Generic mixin for simple command methods that update a property.
- *
+ * <p/>
  * It can implement methods that follow these rules:
  * * The method must have one parameter
  * * The name must start with "change"
- *
+ * <p/>
  * Example: void changeFoo(String newValue) -> invoke event method "changedFoo(newValue);"
- *
  */
 @AppliesTo(CommandPropertyChangeMixin.CommandPropertyChangeAppliesTo.class)
 public class CommandPropertyChangeMixin
-        implements InvocationHandler
+      implements InvocationHandler
 {
-    private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
+   private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
 
-    @State
-    StateHolder state;
+   @State
+   StateHolder state;
 
-    @This
-    EntityComposite composite;
+   @This
+   EntityComposite composite;
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-    {
-        Method eventMethod = methodMappings.get(method);
+   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   {
+      Method eventMethod = methodMappings.get( method );
 
-        if (eventMethod == null)
-        {
-            // changeFoo -> fooChanged
-            String name = method.getName().substring("change".length());
-            name = "changed"+name;
-            Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
-            eventMethod = composite.getClass().getInterfaces()[0].getMethod(name, parameterTypes);
-            methodMappings.put(method, eventMethod);
-        }
+      if (eventMethod == null)
+      {
+         // changeFoo -> fooChanged
+         String name = method.getName().substring( "change".length() );
+         name = "changed" + name;
+         Class[] parameterTypes = new Class[]{DomainEvent.class, method.getParameterTypes()[0]};
+         eventMethod = composite.getClass().getInterfaces()[0].getMethod( name, parameterTypes );
+         methodMappings.put( method, eventMethod );
+      }
 
-        eventMethod.invoke(composite, DomainEvent.CREATE, args[0]);
+      eventMethod.invoke( composite, DomainEvent.CREATE, args[0] );
 
-        return null;
-    }
+      return null;
+   }
 
-    public static class CommandPropertyChangeAppliesTo
-            implements AppliesToFilter
-    {
-        public boolean appliesTo(Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass)
-        {
-            return method.getParameterTypes().length == 1 && method.getName().startsWith("change");
-        }
-    }
+   public static class CommandPropertyChangeAppliesTo
+         implements AppliesToFilter
+   {
+      public boolean appliesTo( Method method, Class<?> mixin, Class<?> compositeType, Class<?> fragmentClass )
+      {
+         return method.getParameterTypes().length == 1 && method.getName().startsWith( "change" );
+      }
+   }
 }

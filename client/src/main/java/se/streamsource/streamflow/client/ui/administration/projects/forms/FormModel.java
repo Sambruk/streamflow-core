@@ -37,101 +37,101 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class FormModel
-    extends Observable
-    implements Refreshable, EventListener, EventHandler
+      extends Observable
+      implements Refreshable, EventListener, EventHandler
 
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    private EventHandlerFilter eventFilter;
+   private EventHandlerFilter eventFilter;
 
-    private ProjectFormDefinitionClientResource resource;
-    private FormValue formValue;
+   private ProjectFormDefinitionClientResource resource;
+   private FormValue formValue;
 
-    public FormModel(@Uses ProjectFormDefinitionClientResource resource)
-    {
-        eventFilter = new EventHandlerFilter( this, "changedNote", "movedField", "changedDescription");
-        this.resource = resource;
-        refresh();
-    }
+   public FormModel( @Uses ProjectFormDefinitionClientResource resource )
+   {
+      eventFilter = new EventHandlerFilter( this, "changedNote", "movedField", "changedDescription" );
+      this.resource = resource;
+      refresh();
+   }
 
-    WeakModelMap<String, FieldsModel> fieldsModels = new WeakModelMap<String, FieldsModel>()
-    {
+   WeakModelMap<String, FieldsModel> fieldsModels = new WeakModelMap<String, FieldsModel>()
+   {
 
-        protected FieldsModel newModel(String key)
-        {
-            ProjectFormDefinitionFieldsClientResource fieldsResource = resource.fields();
-            return obf.newObjectBuilder(FieldsModel.class).use(fieldsResource).newInstance();
-        }
-    };
+      protected FieldsModel newModel( String key )
+      {
+         ProjectFormDefinitionFieldsClientResource fieldsResource = resource.fields();
+         return obf.newObjectBuilder( FieldsModel.class ).use( fieldsResource ).newInstance();
+      }
+   };
 
 
-    public void refresh() throws OperationException
-    {
-        try
-        {
-            formValue = resource.form();
-            setChanged();
-            notifyObservers(this);
-        } catch (ResourceException e)
-        {
-            e.printStackTrace();
-        }
+   public void refresh() throws OperationException
+   {
+      try
+      {
+         formValue = resource.form();
+         setChanged();
+         notifyObservers( this );
+      } catch (ResourceException e)
+      {
+         e.printStackTrace();
+      }
 
-    }
+   }
 
-    public void notifyEvent(DomainEvent event)
-    {
-        eventFilter.handleEvent( event );
-        for (FieldsModel fieldsModel : fieldsModels)
-        {
-            fieldsModel.notifyEvent( event );
-        }
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
+      for (FieldsModel fieldsModel : fieldsModels)
+      {
+         fieldsModel.notifyEvent( event );
+      }
 
-    }
+   }
 
-    public boolean handleEvent(DomainEvent event)
-    {
-        if (formValue.form().get().identity().equals(event.entity().get()))
-        {
-            if (event.name().get().equals("movedField"))
-            {
-                getFieldsModel().refresh();
-            }
-            Logger.getLogger("administration").info("Refresh the note");
-            refresh();
-        }
-        return false;
-    }
+   public boolean handleEvent( DomainEvent event )
+   {
+      if (formValue.form().get().identity().equals( event.entity().get() ))
+      {
+         if (event.name().get().equals( "movedField" ))
+         {
+            getFieldsModel().refresh();
+         }
+         Logger.getLogger( "administration" ).info( "Refresh the note" );
+         refresh();
+      }
+      return false;
+   }
 
-    public String getNote()
-    {
-        return formValue.note().get();
-    }
+   public String getNote()
+   {
+      return formValue.note().get();
+   }
 
-    public FormValue getFormValue()
-    {
-        return formValue;
-    }
+   public FormValue getFormValue()
+   {
+      return formValue;
+   }
 
-    public ProjectFormDefinitionClientResource getResource()
-    {
-        return resource;
-    }
+   public ProjectFormDefinitionClientResource getResource()
+   {
+      return resource;
+   }
 
-    public void changeDescription(StringDTO description) throws ResourceException
-    {
-        resource.changeDescription(description);
-    }
+   public void changeDescription( StringDTO description ) throws ResourceException
+   {
+      resource.changeDescription( description );
+   }
 
-    public void changeNote(StringDTO stringDTO) throws ResourceException
-    {
-        resource.changeNote(stringDTO);
-    }
+   public void changeNote( StringDTO stringDTO ) throws ResourceException
+   {
+      resource.changeNote( stringDTO );
+   }
 
-    public FieldsModel getFieldsModel()
-    {
-        return fieldsModels.get(formValue.form().get().identity());
-    }
+   public FieldsModel getFieldsModel()
+   {
+      return fieldsModels.get( formValue.form().get().identity() );
+   }
 }

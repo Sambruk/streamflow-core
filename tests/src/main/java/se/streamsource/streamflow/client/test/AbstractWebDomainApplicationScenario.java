@@ -30,21 +30,21 @@ import org.jbehave.scenario.steps.CandidateSteps;
  * and the web server is stopped.
  */
 public class AbstractWebDomainApplicationScenario
-        extends JUnitScenario
+      extends JUnitScenario
 {
-    public AbstractWebDomainApplicationScenario(final ClassLoader classLoader, CandidateSteps... steps)
-    {
-        super(new PropertyBasedConfiguration()
-        {
-            @Override
-            public ClasspathScenarioDefiner forDefiningScenarios()
-            {
-                return new ClasspathScenarioDefiner(
-                        new CasePreservingResolver(".scenario"),
-                        new PatternScenarioParser(this),
-                        classLoader);
-            }
-        }, new BeforeAndAfterWebDomainApplicationSteps(steps));
+   public AbstractWebDomainApplicationScenario( final ClassLoader classLoader, CandidateSteps... steps )
+   {
+      super( new PropertyBasedConfiguration()
+      {
+         @Override
+         public ClasspathScenarioDefiner forDefiningScenarios()
+         {
+            return new ClasspathScenarioDefiner(
+                  new CasePreservingResolver( ".scenario" ),
+                  new PatternScenarioParser( this ),
+                  classLoader );
+         }
+      }, new BeforeAndAfterWebDomainApplicationSteps( steps ) );
 
-    }
+   }
 }

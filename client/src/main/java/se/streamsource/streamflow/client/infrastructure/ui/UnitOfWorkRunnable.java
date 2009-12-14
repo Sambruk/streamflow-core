@@ -20,32 +20,32 @@ import org.qi4j.api.unitofwork.UnitOfWork;
  * JAVADOC
  */
 public final class UnitOfWorkRunnable
-        implements Runnable
+      implements Runnable
 {
-    private UnitOfWork uow;
-    private Runnable delegate;
+   private UnitOfWork uow;
+   private Runnable delegate;
 
-    public UnitOfWorkRunnable(UnitOfWork uow, Runnable delegate)
-    {
-        this.uow = uow;
-        this.delegate = delegate;
-    }
+   public UnitOfWorkRunnable( UnitOfWork uow, Runnable delegate )
+   {
+      this.uow = uow;
+      this.delegate = delegate;
+   }
 
-    public void run()
-    {
-        if (uow.isPaused())
-        {
-            uow.resume();
-            try
-            {
-                delegate.run();
-            } finally
-            {
-                uow.pause();
-            }
-        } else
-        {
+   public void run()
+   {
+      if (uow.isPaused())
+      {
+         uow.resume();
+         try
+         {
             delegate.run();
-        }
-    }
+         } finally
+         {
+            uow.pause();
+         }
+      } else
+      {
+         delegate.run();
+      }
+   }
 }

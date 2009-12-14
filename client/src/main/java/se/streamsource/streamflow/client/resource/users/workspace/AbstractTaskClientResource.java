@@ -27,49 +27,49 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
  * JAVADOC
  */
 public class AbstractTaskClientResource
-    extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public AbstractTaskClientResource( @Uses Context context, @Uses Reference reference )
-    {
-        super( context, reference );
-    }
+   public AbstractTaskClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public void complete() throws ResourceException
-    {
-        putCommand("complete");
-    }
+   public void complete() throws ResourceException
+   {
+      putCommand( "complete" );
+   }
 
-    public void drop() throws ResourceException
-    {
-        putCommand("drop");
-    }
+   public void drop() throws ResourceException
+   {
+      putCommand( "drop" );
+   }
 
-    public void assignToMe() throws ResourceException
-    {
-        putCommand("assignToMe");
-    }
+   public void assignToMe() throws ResourceException
+   {
+      putCommand( "assignToMe" );
+   }
 
-    public void markAsRead() throws ResourceException
-    {
-        putCommand("markAsRead");
-    }
+   public void markAsRead() throws ResourceException
+   {
+      putCommand( "markAsRead" );
+   }
 
-    public void markAsUnread() throws ResourceException
-    {
-        putCommand("markAsUnread");
-    }
+   public void markAsUnread() throws ResourceException
+   {
+      putCommand( "markAsUnread" );
+   }
 
-    public void delegate(String delegateeId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set( EntityReference.parseEntityReference(delegateeId));
-        putCommand("delegate", builder.newInstance());
-    }
+   public void delegate( String delegateeId ) throws ResourceException
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( EntityReference.parseEntityReference( delegateeId ) );
+      putCommand( "delegate", builder.newInstance() );
+   }
 
-    public void forward(String receiverId) throws ResourceException
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(EntityReference.parseEntityReference(receiverId));
-        putCommand("forward", builder.newInstance());
-    }
+   public void forward( String receiverId ) throws ResourceException
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( EntityReference.parseEntityReference( receiverId ) );
+      putCommand( "forward", builder.newInstance() );
+   }
 }

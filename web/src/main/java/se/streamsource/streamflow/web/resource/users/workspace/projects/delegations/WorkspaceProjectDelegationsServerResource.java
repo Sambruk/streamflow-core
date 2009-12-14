@@ -32,25 +32,25 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
  * /users/{user}/workspace/projects/{project}/delegations
  */
 public class WorkspaceProjectDelegationsServerResource
-        extends AbstractTaskListServerResource
+      extends AbstractTaskListServerResource
 {
-    public DelegationsTaskListDTO tasks(TasksQuery query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        String id = (String) getRequest().getAttributes().get("project");
+   public DelegationsTaskListDTO tasks( TasksQuery query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "project" );
 
-        DelegationsQueries delegations = uow.get( DelegationsQueries.class, id );
+      DelegationsQueries delegations = uow.get( DelegationsQueries.class, id );
 
-        return delegations.delegationsTasks();
-    }
+      return delegations.delegationsTasks();
+   }
 
-    @Override
-    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
-    {
-        ((DelegatedTaskDTO) prototype).delegatedOn().set(task.delegatedOn().get());
-        Owner owner = uowf.currentUnitOfWork().get(Owner.class, task.owner().get().identity().get());
-        ((DelegatedTaskDTO) prototype).delegatedFrom().set(owner.getDescription());
+   @Override
+   protected <T extends TaskListDTO> void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
+   {
+      ((DelegatedTaskDTO) prototype).delegatedOn().set( task.delegatedOn().get() );
+      Owner owner = uowf.currentUnitOfWork().get( Owner.class, task.owner().get().identity().get() );
+      ((DelegatedTaskDTO) prototype).delegatedFrom().set( owner.getDescription() );
 
-        super.buildTask(prototype, labelBuilder, labelPrototype, task);
-    }
+      super.buildTask( prototype, labelBuilder, labelPrototype, task );
+   }
 }

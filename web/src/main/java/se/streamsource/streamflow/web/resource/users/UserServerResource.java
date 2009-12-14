@@ -17,7 +17,6 @@ package se.streamsource.streamflow.web.resource.users;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.Usecase;
@@ -41,137 +40,139 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.domain.user.WrongPasswordException;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
+import static org.qi4j.api.query.QueryExpressions.*;
+
 /**
  * Mapped to /users/{user}
  */
 public class UserServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    private static Usecase usecase = UsecaseBuilder.newUsecase( "Check if user exists" );
+   private static Usecase usecase = UsecaseBuilder.newUsecase( "Check if user exists" );
 
-    @Override
-    protected Representation get(Variant variant) throws ResourceException
-    {
-        // Check if user exists
-        UnitOfWork unitOfWork = uowf.newUnitOfWork( usecase );
-        try
-        {
-            unitOfWork.get( UserAuthentication.class, getRequestAttributes().get("user").toString());
-        } catch (NoSuchEntityException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-        } finally
-        {
-            unitOfWork.discard();
-        }
+   @Override
+   protected Representation get( Variant variant ) throws ResourceException
+   {
+      // Check if user exists
+      UnitOfWork unitOfWork = uowf.newUnitOfWork( usecase );
+      try
+      {
+         unitOfWork.get( UserAuthentication.class, getRequestAttributes().get( "user" ).toString() );
+      } catch (NoSuchEntityException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+      } finally
+      {
+         unitOfWork.discard();
+      }
 
-        if (getRequest().getResourceRef().hasQuery())
-        {
-            return super.get(variant);
-        }
-        return getHtml("resources/user.html");
-    }
+      if (getRequest().getResourceRef().hasQuery())
+      {
+         return super.get( variant );
+      }
+      return getHtml( "resources/user.html" );
+   }
 
-    public ListValue findUsers(StringDTO query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public ListValue findUsers( StringDTO query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
-        String userId = getRequest().getAttributes().get("user").toString();
-        UserEntity user = uow.get(UserEntity.class, userId);
+      String userId = getRequest().getAttributes().get( "user" ).toString();
+      UserEntity user = uow.get( UserEntity.class, userId );
 
-        if (query.string().get().length() > 0)
-        {
-            QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
-            QueryBuilder<UserEntity> finalQueryBuilder = queryBuilder.where(and(
-                    matches(templateFor(UserEntity.class).userName(), "^" + query.string().get()),
-                    // TODO: should be a contains(ManyAssociation, List ) in Qi4j
-                    contains(templateFor(UserEntity.class).organizations(), user.organizations().get(0))
-                    )
-            );
-            Query<UserEntity> users = finalQueryBuilder.newQuery(uow);
+      if (query.string().get().length() > 0)
+      {
+         QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( UserEntity.class );
+         QueryBuilder<UserEntity> finalQueryBuilder = queryBuilder.where( and(
+               matches( templateFor( UserEntity.class ).userName(), "^" + query.string().get() ),
+               // TODO: should be a contains(ManyAssociation, List ) in Qi4j
+               contains( templateFor( UserEntity.class ).organizations(), user.organizations().get( 0 ) )
+         )
+         );
+         Query<UserEntity> users = finalQueryBuilder.newQuery( uow );
 
-            try
+         try
+         {
+            for (Participant participant : users)
             {
-                for (Participant participant : users)
-                {
-                    // dont add myself
-                    if(!participant.equals(user))
-                    {
-                        builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                        listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
-                    }
-                }
-            } catch (Exception e)
-            {
-                //e.printStackTrace();
+               // dont add myself
+               if (!participant.equals( user ))
+               {
+                  builder.prototype().entity().set( EntityReference.getEntityReference( participant ) );
+                  listBuilder.addListItem( participant.getDescription(), builder.newInstance().entity().get() );
+               }
             }
-        }
-        return listBuilder.newList();
-    }
+         } catch (Exception e)
+         {
+            //e.printStackTrace();
+         }
+      }
+      return listBuilder.newList();
+   }
 
 
-    public ListValue findGroups(StringDTO query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public ListValue findGroups( StringDTO query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
-        if (query.string().get().length() > 0)
-        {
-            QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(GroupEntity.class);
-            Query<GroupEntity> groups = queryBuilder.where(
-                    and(
-                        eq(templateFor(GroupEntity.class).removed(), false),
-                        matches(templateFor(GroupEntity.class).description(), "^" + query.string().get()))).
-                    newQuery(uow);
+      if (query.string().get().length() > 0)
+      {
+         QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( GroupEntity.class );
+         Query<GroupEntity> groups = queryBuilder.where(
+               and(
+                     eq( templateFor( GroupEntity.class ).removed(), false ),
+                     matches( templateFor( GroupEntity.class ).description(), "^" + query.string().get() ) ) ).
+               newQuery( uow );
 
-            for (Participant participant : groups)
-            {
-                builder.prototype().entity().set(EntityReference.getEntityReference(participant));
-                listBuilder.addListItem(participant.getDescription(), builder.newInstance().entity().get());
-            }
-        }
+         for (Participant participant : groups)
+         {
+            builder.prototype().entity().set( EntityReference.getEntityReference( participant ) );
+            listBuilder.addListItem( participant.getDescription(), builder.newInstance().entity().get() );
+         }
+      }
 
-        return listBuilder.newList();
-    }
+      return listBuilder.newList();
+   }
 
-    public ListValue findProjects(StringDTO query)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public ListValue findProjects( StringDTO query )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        ListValueBuilder listBuilder = new ListValueBuilder(vbf);
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
-        if (query.string().get().length() > 0)
-        {
-            QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
-            Query<ProjectEntity> projects = queryBuilder.where(
-                    and(
-                        eq(templateFor(ProjectEntity.class).removed(), false),
-                        matches(templateFor(ProjectEntity.class).description(), "^" + query.string().get())
-                    )).newQuery(uow);
+      if (query.string().get().length() > 0)
+      {
+         QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class );
+         Query<ProjectEntity> projects = queryBuilder.where(
+               and(
+                     eq( templateFor( ProjectEntity.class ).removed(), false ),
+                     matches( templateFor( ProjectEntity.class ).description(), "^" + query.string().get() )
+               ) ).newQuery( uow );
 
-            for (Project project : projects)
-            {
-                builder.prototype().entity().set(EntityReference.getEntityReference(project));
-                listBuilder.addListItem(project.getDescription(), builder.newInstance().entity().get());
-            }
-        }
+         for (Project project : projects)
+         {
+            builder.prototype().entity().set( EntityReference.getEntityReference( project ) );
+            listBuilder.addListItem( project.getDescription(), builder.newInstance().entity().get() );
+         }
+      }
 
-        return listBuilder.newList();
-    }
+      return listBuilder.newList();
+   }
 
-    public void changePassword(ChangePasswordCommand newPassword) throws WrongPasswordException
-    {
-        String userId = (String) getRequestAttributes().get("user");
+   public void changePassword( ChangePasswordCommand newPassword ) throws WrongPasswordException
+   {
+      String userId = (String) getRequestAttributes().get( "user" );
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        UserAuthentication user = uow.get( UserAuthentication.class, userId);
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      UserAuthentication user = uow.get( UserAuthentication.class, userId );
 
-        user.changePassword(newPassword.oldPassword().get(), newPassword.newPassword().get());
-    }
+      user.changePassword( newPassword.oldPassword().get(), newPassword.newPassword().get() );
+   }
 }

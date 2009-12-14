@@ -44,97 +44,97 @@ import java.util.logging.Logger;
  */
 @Mixins(ErrorLogService.Mixin.class)
 public interface ErrorLogService
-    extends Activatable, ServiceComposite
+      extends Activatable, ServiceComposite
 {
-    class Mixin
-        extends Handler
-        implements Activatable
-    {
-        Map<String, String> sourceMappings = new ConcurrentHashMap<String, String>();
+   class Mixin
+         extends Handler
+         implements Activatable
+   {
+      Map<String, String> sourceMappings = new ConcurrentHashMap<String, String>();
 
-        @Service
-        EventSource source;
+      @Service
+      EventSource source;
 
-        @Service
-        MBeanServer server;
-        public ObjectName objectName;
+      @Service
+      MBeanServer server;
+      public ObjectName objectName;
 
-        long seq = 0;
-        RequiredModelMBean mbean;
-        ExecutorService executor;
+      long seq = 0;
+      RequiredModelMBean mbean;
+      ExecutorService executor;
 
-        public void activate() throws Exception
-        {
-            ModelMBeanNotificationInfo[] notificationInfos = new ModelMBeanNotificationInfo[1];
-            notificationInfos[0] = new ModelMBeanNotificationInfo(new String[]{"web","other"},"Errorlog", "Errorlog");
-            ModelMBeanInfo info = new ModelMBeanInfoSupport(ErrorLogService.class.getName(),
-                    "Errorlog",
-                    null, null, null, notificationInfos);
-            mbean = new RequiredModelMBean(info);
+      public void activate() throws Exception
+      {
+         ModelMBeanNotificationInfo[] notificationInfos = new ModelMBeanNotificationInfo[1];
+         notificationInfos[0] = new ModelMBeanNotificationInfo( new String[]{"web", "other"}, "Errorlog", "Errorlog" );
+         ModelMBeanInfo info = new ModelMBeanInfoSupport( ErrorLogService.class.getName(),
+               "Errorlog",
+               null, null, null, notificationInfos );
+         mbean = new RequiredModelMBean( info );
 
-            objectName = new ObjectName("StreamFlow:name=errorlog");
-            server.registerMBean(mbean, objectName);
+         objectName = new ObjectName( "StreamFlow:name=errorlog" );
+         server.registerMBean( mbean, objectName );
 
-            setLevel(Level.SEVERE);
+         setLevel( Level.SEVERE );
 
-            Logger.getLogger("").addHandler(this);
+         Logger.getLogger( "" ).addHandler( this );
 
-            // From Logger name -> JMX source name
-            sourceMappings.put("command", "web");
+         // From Logger name -> JMX source name
+         sourceMappings.put( "command", "web" );
 
-            executor = Executors.newSingleThreadExecutor();
-        }
+         executor = Executors.newSingleThreadExecutor();
+      }
 
-        public void passivate() throws Exception
-        {
-            Logger.getLogger("").removeHandler(this);
-            executor.shutdown();
-            server.unregisterMBean( objectName );
-        }
+      public void passivate() throws Exception
+      {
+         Logger.getLogger( "" ).removeHandler( this );
+         executor.shutdown();
+         server.unregisterMBean( objectName );
+      }
 
-        public void publish(LogRecord record)
-        {
-            if (!isLoggable(record))
-                return;
+      public void publish( LogRecord record )
+      {
+         if (!isLoggable( record ))
+            return;
 
-            String source = sourceMappings.get(record.getLoggerName());
-            if (source == null)
-                source = "other"; // No mapping found
+         String source = sourceMappings.get( record.getLoggerName() );
+         if (source == null)
+            source = "other"; // No mapping found
 
-            final Notification notification = new Notification(source, objectName, seq++, record.getMillis(), record.getMessage());
-            Throwable throwable = record.getThrown();
-            if (throwable != null)
+         final Notification notification = new Notification( source, objectName, seq++, record.getMillis(), record.getMessage() );
+         Throwable throwable = record.getThrown();
+         if (throwable != null)
+         {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            throwable.printStackTrace( printWriter );
+            printWriter.close();
+            notification.setUserData( writer.toString() );
+         }
+
+         executor.submit( new Runnable()
+         {
+            public void run()
             {
-                StringWriter writer = new StringWriter();
-                PrintWriter printWriter = new PrintWriter(writer);
-                throwable.printStackTrace(printWriter);
-                printWriter.close();
-                notification.setUserData(writer.toString());
+
+               try
+               {
+                  mbean.sendNotification( notification );
+               } catch (MBeanException e)
+               {
+                  e.printStackTrace();
+               }
             }
+         } );
+      }
 
-            executor.submit(new Runnable()
-            {
-                public void run()
-                {
+      public void flush()
+      {
+      }
 
-                    try
-                    {
-                        mbean.sendNotification(notification);
-                    } catch (MBeanException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-
-        public void flush()
-        {
-        }
-
-        public void close() throws SecurityException
-        {
-        }
-    }
+      public void close() throws SecurityException
+      {
+      }
+   }
 
 }

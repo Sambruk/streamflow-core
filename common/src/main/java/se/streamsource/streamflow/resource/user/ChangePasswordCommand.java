@@ -22,11 +22,11 @@ import org.qi4j.api.value.ValueComposite;
  * Command for changing password
  */
 public interface ChangePasswordCommand
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<String> oldPassword();
+   @UseDefaults
+   Property<String> oldPassword();
 
-    @UseDefaults
-    Property<String> newPassword();
+   @UseDefaults
+   Property<String> newPassword();
 }

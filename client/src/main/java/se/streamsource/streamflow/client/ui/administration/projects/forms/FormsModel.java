@@ -44,134 +44,134 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class FormsModel
-    extends AbstractListModel
-        implements Refreshable, EventListener, EventHandler
+      extends AbstractListModel
+      implements Refreshable, EventListener, EventHandler
 
 {
-    @Uses
-    CommandQueryClient client;
+   @Uses
+   CommandQueryClient client;
 
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    private List<ListItemValue> formsList;
+   private List<ListItemValue> formsList;
 
-    private EventHandlerFilter eventFilter;
+   private EventHandlerFilter eventFilter;
 
-    public FormsModel()
-    {
-        eventFilter = new EventHandlerFilter( this, "createdForm", "removedForm", "changedDescription");
-    }
+   public FormsModel()
+   {
+      eventFilter = new EventHandlerFilter( this, "createdForm", "removedForm", "changedDescription" );
+   }
 
-    WeakModelMap<String, FormModel> formModels = new WeakModelMap<String, FormModel>()
-    {
-        protected FormModel newModel( String key )
-        {
-            try
+   WeakModelMap<String, FormModel> formModels = new WeakModelMap<String, FormModel>()
+   {
+      protected FormModel newModel( String key )
+      {
+         try
+         {
+            ListValue value = client.query( "forms", ListValue.class );
+            int index = 0;
+            for (ListItemValue listItemValue : value.items().get())
             {
-                ListValue value = client.query( "forms", ListValue.class );
-                int index = 0;
-                for (ListItemValue listItemValue : value.items().get())
-                {
-                    if (listItemValue.entity().get().identity().equals(key))
-                    {
-                        break;
-                    }
-                    index++;
-                }
-
-                ProjectFormDefinitionClientResource resource = client.getSubResource( ""+index, ProjectFormDefinitionClientResource.class );
-                return obf.newObjectBuilder(FormModel.class).use(resource).newInstance();
-            } catch (ResourceException e)
-            {
-                throw new OperationException(AdministrationResources.could_not_get_form, e);
+               if (listItemValue.entity().get().identity().equals( key ))
+               {
+                  break;
+               }
+               index++;
             }
-        }
-    };
+
+            ProjectFormDefinitionClientResource resource = client.getSubResource( "" + index, ProjectFormDefinitionClientResource.class );
+            return obf.newObjectBuilder( FormModel.class ).use( resource ).newInstance();
+         } catch (ResourceException e)
+         {
+            throw new OperationException( AdministrationResources.could_not_get_form, e );
+         }
+      }
+   };
 
 
-    public int getSize()
-    {
-        return formsList == null ? 0 : formsList.size();
-    }
+   public int getSize()
+   {
+      return formsList == null ? 0 : formsList.size();
+   }
 
-    public Object getElementAt( int index )
-    {
-        return formsList.get( index );
-    }
+   public Object getElementAt( int index )
+   {
+      return formsList.get( index );
+   }
 
-    public void refresh()
-    {
-        try
-        {
-            formsList = client.query( "forms", ListValue.class ).items().get();
-            fireContentsChanged( this, 0, getSize() );
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_refresh_list_of_members, e);
-        }
-    }
+   public void refresh()
+   {
+      try
+      {
+         formsList = client.query( "forms", ListValue.class ).items().get();
+         fireContentsChanged( this, 0, getSize() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh_list_of_members, e );
+      }
+   }
 
-    public void createForm(String formName)
-    {
-        ValueBuilder<StringDTO> builder = vbf.newValueBuilder(StringDTO.class);
-        builder.prototype().string().set(formName);
-        try
-        {
-            client.postCommand( "createForm", builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_add_form_definition, e);
-        }
-    }
+   public void createForm( String formName )
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( formName );
+      try
+      {
+         client.postCommand( "createForm", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_add_form_definition, e );
+      }
+   }
 
-    public void addForm(EntityReference form)
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(form);
-        try
-        {
-           client.postCommand( "addForm", builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_add_form_definition, e);
-        }
-    }
+   public void addForm( EntityReference form )
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( form );
+      try
+      {
+         client.postCommand( "addForm", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_add_form_definition, e );
+      }
+   }
 
-    public void removeForm(EntityReference form)
-    {
-        ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder(EntityReferenceDTO.class);
-        builder.prototype().entity().set(form);
-        try
-        {
-           client.postCommand( "removeForm", builder.newInstance());
-        } catch (ResourceException e)
-        {
-            throw new OperationException(AdministrationResources.could_not_remove_form_definition, e);
-        }
-    }
+   public void removeForm( EntityReference form )
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( form );
+      try
+      {
+         client.postCommand( "removeForm", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_form_definition, e );
+      }
+   }
 
-    public void notifyEvent( DomainEvent event )
-    {
-        eventFilter.handleEvent( event );
-        for (FormModel model : formModels)
-        {
-            model.notifyEvent( event );
-        }
-    }
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.handleEvent( event );
+      for (FormModel model : formModels)
+      {
+         model.notifyEvent( event );
+      }
+   }
 
-    public boolean handleEvent( DomainEvent event )
-    {
-        Logger.getLogger("administration").info("Refresh project form definitions");
-        refresh();
-        return false;
-    }
+   public boolean handleEvent( DomainEvent event )
+   {
+      Logger.getLogger( "administration" ).info( "Refresh project form definitions" );
+      refresh();
+      return false;
+   }
 
-    public FormModel getFormModel(String identity)
-    {
-        return formModels.get(identity);
-    }
+   public FormModel getFormModel( String identity )
+   {
+      return formModels.get( identity );
+   }
 }

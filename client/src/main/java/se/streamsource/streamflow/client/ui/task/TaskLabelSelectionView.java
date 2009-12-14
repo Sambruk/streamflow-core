@@ -31,41 +31,41 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 public class TaskLabelSelectionView
-        extends JPanel
+      extends JPanel
 {
-    private JTextField filterEdit;
-    private JList list;
-    private EventListModel listModel;
+   private JTextField filterEdit;
+   private JList list;
+   private EventListModel listModel;
 
-    public TaskLabelSelectionView()
-    {
-        setLayout( new BorderLayout() );
+   public TaskLabelSelectionView()
+   {
+      setLayout( new BorderLayout() );
 
-        filterEdit = new JTextField( 20 );
+      filterEdit = new JTextField( 20 );
 
-        list = new JList();
-        list.setCellRenderer( new ListItemListCellRenderer() );
+      list = new JList();
+      list.setCellRenderer( new ListItemListCellRenderer() );
 
-        JScrollPane listPane = new JScrollPane(list);
-        listPane.setPreferredSize( new Dimension((int)listPane.getPreferredSize().getWidth(), (int)listPane.getPreferredSize().getHeight()/2) );
+      JScrollPane listPane = new JScrollPane( list );
+      listPane.setPreferredSize( new Dimension( (int) listPane.getPreferredSize().getWidth(), (int) listPane.getPreferredSize().getHeight() / 2 ) );
 
-        add(filterEdit, BorderLayout.NORTH);
-        add(listPane, BorderLayout.CENTER);
-    }
+      add( filterEdit, BorderLayout.NORTH );
+      add( listPane, BorderLayout.CENTER );
+   }
 
-    public JList getList()
-    {
-        return list;
-    }
+   public JList getList()
+   {
+      return list;
+   }
 
-    public void setLabelSelectionModel( TaskLabelSelectionModel model )
-    {
-        SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( model.getList(), new ListItemComparator() );
-        FilterList<ListItemValue> textFilteredIssues = new FilterList<ListItemValue>( sortedIssues, new TextComponentMatcherEditor( filterEdit, new ListItemFilterator() ) );
-        listModel = new EventListModel<ListItemValue>(textFilteredIssues);
+   public void setLabelSelectionModel( TaskLabelSelectionModel model )
+   {
+      SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( model.getList(), new ListItemComparator() );
+      FilterList<ListItemValue> textFilteredIssues = new FilterList<ListItemValue>( sortedIssues, new TextComponentMatcherEditor( filterEdit, new ListItemFilterator() ) );
+      listModel = new EventListModel<ListItemValue>( textFilteredIssues );
 
-        list.setModel( listModel );
+      list.setModel( listModel );
 
-        filterEdit.setText( "" );
-    }
+      filterEdit.setText( "" );
+   }
 }

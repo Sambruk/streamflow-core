@@ -23,25 +23,25 @@ import se.streamsource.streamflow.web.domain.project.Project;
  * JAVADOC
  */
 public class MembersSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    ProjectsSteps projectsSetup;
+   @Uses
+   ProjectsSteps projectsSetup;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @When("a member is added to project")
-    public void addMember()
-    {
-        Project project = projectsSetup.givenProject;
-        project.addMember( orgsSteps.givenUser );
-    }
+   @When("a member is added to project")
+   public void addMember()
+   {
+      Project project = projectsSetup.givenProject;
+      project.addMember( orgsSteps.givenUser );
+   }
 
-    @When("a member is removed from project")
-    public void leaveProject()
-    {
-        Project project = projectsSetup.givenProject;
-        project.removeMember( orgsSteps.givenUser );
-    }
+   @When("a member is removed from project")
+   public void leaveProject()
+   {
+      Project project = projectsSetup.givenProject;
+      project.removeMember( orgsSteps.givenUser );
+   }
 }

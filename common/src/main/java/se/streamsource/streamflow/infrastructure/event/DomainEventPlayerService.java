@@ -41,142 +41,142 @@ import java.util.logging.Logger;
  */
 @Mixins(DomainEventPlayerService.DomainEventPlayerMixin.class)
 public interface DomainEventPlayerService
-        extends DomainEventPlayer, ServiceComposite
+      extends DomainEventPlayer, ServiceComposite
 {
-    class DomainEventPlayerMixin
-            implements DomainEventPlayer
-    {
-        @Structure
-        UnitOfWorkFactory uowf;
+   class DomainEventPlayerMixin
+         implements DomainEventPlayer
+   {
+      @Structure
+      UnitOfWorkFactory uowf;
 
-        @Structure
-        ValueBuilderFactory vbf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-        @Service
-        IdentityGenerator idGenerator;
+      @Service
+      IdentityGenerator idGenerator;
 
-        @Service
-        EventStore eventStore;
+      @Service
+      EventStore eventStore;
 
-        @Structure
-        Module module;
+      @Structure
+      Module module;
 
-        String version;
+      String version;
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+      SimpleDateFormat dateFormat = new SimpleDateFormat( "EEE MMM dd HH:mm:ss zzz yyyy" );
 
-        public void replayEvents(long afterDate) throws EventReplayException
-        {
-            final EventReplayException[] ex = new EventReplayException[1];
-            eventStore.transactionsAfter( afterDate, new TransactionHandler()
+      public void replayEvents( long afterDate ) throws EventReplayException
+      {
+         final EventReplayException[] ex = new EventReplayException[1];
+         eventStore.transactionsAfter( afterDate, new TransactionHandler()
+         {
+            public boolean handleTransaction( TransactionEvents transaction )
             {
-                public boolean handleTransaction( TransactionEvents transaction )
-                {
-                    UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Event replay" ));
-                    DomainEvent currentEvent = null;
-                    try
-                    {
-                        for (DomainEvent domainEvent : transaction.events().get())
-                        {
-                            currentEvent = domainEvent;
-                            // Get the entity
-                            Class entityType = module.classLoader().loadClass(domainEvent.entityType().get() );
-                            String id = domainEvent.entity().get();
-                            Object entity = uow.get(entityType, id);
+               UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Event replay" ) );
+               DomainEvent currentEvent = null;
+               try
+               {
+                  for (DomainEvent domainEvent : transaction.events().get())
+                  {
+                     currentEvent = domainEvent;
+                     // Get the entity
+                     Class entityType = module.classLoader().loadClass( domainEvent.entityType().get() );
+                     String id = domainEvent.entity().get();
+                     Object entity = uow.get( entityType, id );
 
-                            // Get method
-                            Method eventMethod = getEventMethod(entityType, domainEvent.name().get());
+                     // Get method
+                     Method eventMethod = getEventMethod( entityType, domainEvent.name().get() );
 
-                            if (eventMethod == null)
-                            {
-                                Logger.getLogger( DomainEventPlayer.class.getName() ).warning( "Could not find event method "+domainEvent.name().get()+" in entity of type "+entityType.getName() );
-                                continue;
-                            }
+                     if (eventMethod == null)
+                     {
+                        Logger.getLogger( DomainEventPlayer.class.getName() ).warning( "Could not find event method " + domainEvent.name().get() + " in entity of type " + entityType.getName() );
+                        continue;
+                     }
 
-                            // Build parameters
-                            String jsonParameters = domainEvent.parameters().get();
-                            JSONObject parameters = (JSONObject) new JSONTokener(jsonParameters).nextValue();
-                            Object[] args = new Object[eventMethod.getParameterTypes().length];
-                            for (int i = 1; i < eventMethod.getParameterTypes().length; i++)
-                            {
-                                Class<?> parameterType = eventMethod.getParameterTypes()[i];
+                     // Build parameters
+                     String jsonParameters = domainEvent.parameters().get();
+                     JSONObject parameters = (JSONObject) new JSONTokener( jsonParameters ).nextValue();
+                     Object[] args = new Object[eventMethod.getParameterTypes().length];
+                     for (int i = 1; i < eventMethod.getParameterTypes().length; i++)
+                     {
+                        Class<?> parameterType = eventMethod.getParameterTypes()[i];
 
-                                String paramName = "param"+i;
+                        String paramName = "param" + i;
 
-                                Object value = parameters.get( paramName );
+                        Object value = parameters.get( paramName );
 
-                                args[i] = getParameterArgument(parameterType, value, uow);
-                            }
+                        args[i] = getParameterArgument( parameterType, value, uow );
+                     }
 
-                            args[0] = domainEvent;
+                     args[0] = domainEvent;
 
-                            // Invoke method
-                            Logger.getLogger( DomainEventPlayer.class.getName() ).info( "Replay:"+domainEvent );
+                     // Invoke method
+                     Logger.getLogger( DomainEventPlayer.class.getName() ).info( "Replay:" + domainEvent );
 
-                            eventMethod.invoke( entity, args );
-                        }
-                        uow.complete();
-                        return true;
-                    } catch (Exception e)
-                    {
-                        uow.discard();
-                        ex[0] = new EventReplayException(currentEvent, e);
-                        return false;
-                    }
-                }
-            });
-
-            if (ex[0] != null)
-                throw ex[0];
-        }
-
-        private Object getParameterArgument( Class<?> parameterType, Object value, UnitOfWork uow ) throws ParseException
-        {
-            if (value.equals(JSONObject.NULL))
-                return null;
-
-            if (parameterType.equals( String.class ))
-            {
-                return (String) value;
-            } else if (parameterType.equals(Boolean.class) || parameterType.equals( Boolean.TYPE ))
-            {
-                return (Boolean) value;
-            } else if (parameterType.equals(Long.class) || parameterType.equals( Long.TYPE ))
-            {
-                return (Long) value;
-            } else if (parameterType.equals(Integer.class) || parameterType.equals( Integer.TYPE ))
-            {
-                return (Integer) value;
-            } else if (parameterType.equals(Date.class))
-            {
-                return dateFormat.parse( (String) value);
-            } else if (ValueComposite.class.isAssignableFrom( parameterType ))
-            {
-                return module.valueBuilderFactory().newValueFromJSON( parameterType, (String) value );
-            } else if (parameterType.isInterface())
-            {
-                return uow.get( parameterType, (String)value );
-            } else if (parameterType.isEnum())
-            {
-                return Enum.valueOf( (Class<? extends Enum>) parameterType, value.toString() );
-            } else
-            {
-                throw new IllegalArgumentException( "Unknown parameter type:"+parameterType.getName());
+                     eventMethod.invoke( entity, args );
+                  }
+                  uow.complete();
+                  return true;
+               } catch (Exception e)
+               {
+                  uow.discard();
+                  ex[0] = new EventReplayException( currentEvent, e );
+                  return false;
+               }
             }
-        }
+         } );
 
-        private Method getEventMethod( Class<? extends Object> aClass, String eventName )
-        {
-            for (Method method : aClass.getMethods())
-            {
-                if (method.getName().equals(eventName))
-                {
-                    Class[] parameterTypes = method.getParameterTypes();
-                    if (parameterTypes.length > 0 && parameterTypes[0].equals(DomainEvent.class))
-                        return method;
-                }
-            }
+         if (ex[0] != null)
+            throw ex[0];
+      }
+
+      private Object getParameterArgument( Class<?> parameterType, Object value, UnitOfWork uow ) throws ParseException
+      {
+         if (value.equals( JSONObject.NULL ))
             return null;
-        }
-    }
+
+         if (parameterType.equals( String.class ))
+         {
+            return (String) value;
+         } else if (parameterType.equals( Boolean.class ) || parameterType.equals( Boolean.TYPE ))
+         {
+            return (Boolean) value;
+         } else if (parameterType.equals( Long.class ) || parameterType.equals( Long.TYPE ))
+         {
+            return (Long) value;
+         } else if (parameterType.equals( Integer.class ) || parameterType.equals( Integer.TYPE ))
+         {
+            return (Integer) value;
+         } else if (parameterType.equals( Date.class ))
+         {
+            return dateFormat.parse( (String) value );
+         } else if (ValueComposite.class.isAssignableFrom( parameterType ))
+         {
+            return module.valueBuilderFactory().newValueFromJSON( parameterType, (String) value );
+         } else if (parameterType.isInterface())
+         {
+            return uow.get( parameterType, (String) value );
+         } else if (parameterType.isEnum())
+         {
+            return Enum.valueOf( (Class<? extends Enum>) parameterType, value.toString() );
+         } else
+         {
+            throw new IllegalArgumentException( "Unknown parameter type:" + parameterType.getName() );
+         }
+      }
+
+      private Method getEventMethod( Class<? extends Object> aClass, String eventName )
+      {
+         for (Method method : aClass.getMethods())
+         {
+            if (method.getName().equals( eventName ))
+            {
+               Class[] parameterTypes = method.getParameterTypes();
+               if (parameterTypes.length > 0 && parameterTypes[0].equals( DomainEvent.class ))
+                  return method;
+            }
+         }
+         return null;
+      }
+   }
 }

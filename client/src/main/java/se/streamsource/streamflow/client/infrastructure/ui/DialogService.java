@@ -22,8 +22,17 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -32,108 +41,109 @@ import java.awt.event.ActionListener;
  */
 public class DialogService
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Service
-    ApplicationContext context;
+   @Service
+   ApplicationContext context;
 
-    public void showOkCancelHelpDialog(Component component, JComponent main)
-    {
-        JXDialog dialog = createDialog(component, main);
-        dialog.setVisible(true);
-    }
+   public void showOkCancelHelpDialog( Component component, JComponent main )
+   {
+      JXDialog dialog = createDialog( component, main );
+      dialog.setVisible( true );
+   }
 
-    public void showOkCancelHelpDialog(Component component, JComponent main, String title)
-    {
-        JXDialog dialog = createDialog(component,main);
-        dialog.setTitle(title);
-        dialog.setVisible(true);
-    }
+   public void showOkCancelHelpDialog( Component component, JComponent main, String title )
+   {
+      JXDialog dialog = createDialog( component, main );
+      dialog.setTitle( title );
+      dialog.setVisible( true );
+   }
 
-    private JXDialog createDialog(Component component, JComponent main) {
-        Window window = WindowUtils.findWindow(component);
-        JXDialog dialog;
-        if (window instanceof Frame)
-            dialog = new JXDialog((Frame) window, main);
-        else
-            dialog = new JXDialog((Dialog) window, main);
+   private JXDialog createDialog( Component component, JComponent main )
+   {
+      Window window = WindowUtils.findWindow( component );
+      JXDialog dialog;
+      if (window instanceof Frame)
+         dialog = new JXDialog( (Frame) window, main );
+      else
+         dialog = new JXDialog( (Dialog) window, main );
 
-        dialog.setModal(true);
+      dialog.setModal( true );
 
-        dialog.pack();
-        dialog.setLocationRelativeTo(SwingUtilities.getAncestorOfClass(Frame.class, component));
-        return dialog;
-    }
+      dialog.pack();
+      dialog.setLocationRelativeTo( SwingUtilities.getAncestorOfClass( Frame.class, component ) );
+      return dialog;
+   }
 
-    public JXDialog showOkDialog(Component component, JComponent main)
-    {
-        Window window = WindowUtils.findWindow(component);
-        JXDialog dialog;
-        if (window instanceof Frame)
-            dialog = new JXDialog((Frame) window, main);
-        else
-            dialog = new JXDialog((Dialog) window, main);
-        final JXDialog finalDialog = dialog;
+   public JXDialog showOkDialog( Component component, JComponent main )
+   {
+      Window window = WindowUtils.findWindow( component );
+      JXDialog dialog;
+      if (window instanceof Frame)
+         dialog = new JXDialog( (Frame) window, main );
+      else
+         dialog = new JXDialog( (Dialog) window, main );
+      final JXDialog finalDialog = dialog;
 
-        Action ok = main.getActionMap().get(JXDialog.EXECUTE_ACTION_COMMAND);
-        if (ok == null)
-            ok = context.getActionMap().get("cancel");
+      Action ok = main.getActionMap().get( JXDialog.EXECUTE_ACTION_COMMAND );
+      if (ok == null)
+         ok = context.getActionMap().get( "cancel" );
 
-        dialog.getContentPane().setLayout(new BorderLayout());
-        JButton okButton = new JButton(ok);
-        dialog.getContentPane().add(BorderLayout.SOUTH, createOKBar(okButton));
-        dialog.getContentPane().add(BorderLayout.CENTER, main);
-        dialog.setMinimumSize(new Dimension(300, 200));
-        dialog.pack();
-        dialog.setLocationRelativeTo(component);
-        dialog.setVisible(true);
+      dialog.getContentPane().setLayout( new BorderLayout() );
+      JButton okButton = new JButton( ok );
+      dialog.getContentPane().add( BorderLayout.SOUTH, createOKBar( okButton ) );
+      dialog.getContentPane().add( BorderLayout.CENTER, main );
+      dialog.setMinimumSize( new Dimension( 300, 200 ) );
+      dialog.pack();
+      dialog.setLocationRelativeTo( component );
+      dialog.setVisible( true );
 
-        okButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                finalDialog.setVisible(false);
-            }
-        });
+      okButton.addActionListener( new ActionListener()
+      {
+         public void actionPerformed( ActionEvent e )
+         {
+            finalDialog.setVisible( false );
+         }
+      } );
 
-        return dialog;
-    }
+      return dialog;
+   }
 
-    private JPanel createHelpOKCancelApplyBar(
-            JButton help, JButton ok, JButton cancel, JButton apply)
-    {
-        ButtonBarBuilder2 builder = new ButtonBarBuilder2();
-        builder.addButton(help);
-        builder.addUnrelatedGap();
-        builder.addGlue();
-        builder.addButton(new JButton[]{ok, cancel, apply});
-        return builder.getPanel();
-    }
+   private JPanel createHelpOKCancelApplyBar(
+         JButton help, JButton ok, JButton cancel, JButton apply )
+   {
+      ButtonBarBuilder2 builder = new ButtonBarBuilder2();
+      builder.addButton( help );
+      builder.addUnrelatedGap();
+      builder.addGlue();
+      builder.addButton( new JButton[]{ok, cancel, apply} );
+      return builder.getPanel();
+   }
 
-    private JPanel createOKBar(JButton ok)
-    {
-        ButtonBarBuilder2 builder = new ButtonBarBuilder2();
-        builder.addUnrelatedGap();
-        builder.addGlue();
-        builder.addButton(ok);
-        return builder.getPanel();
-    }
+   private JPanel createOKBar( JButton ok )
+   {
+      ButtonBarBuilder2 builder = new ButtonBarBuilder2();
+      builder.addUnrelatedGap();
+      builder.addGlue();
+      builder.addButton( ok );
+      return builder.getPanel();
+   }
 
-    private JPanel createHelpOKCancelBar(
-            JButton help, JButton ok, JButton cancel)
-    {
-        ButtonBarBuilder2 builder = new ButtonBarBuilder2();
-        builder.addButton(help);
-        builder.addUnrelatedGap();
-        builder.addGlue();
-        builder.addButton(new JButton[]{ok, cancel});
-        return builder.getPanel();
-    }
+   private JPanel createHelpOKCancelBar(
+         JButton help, JButton ok, JButton cancel )
+   {
+      ButtonBarBuilder2 builder = new ButtonBarBuilder2();
+      builder.addButton( help );
+      builder.addUnrelatedGap();
+      builder.addGlue();
+      builder.addButton( new JButton[]{ok, cancel} );
+      return builder.getPanel();
+   }
 
 
-    public void showOkDialog(Component component, JComponent main, String title)
-    {
-        showOkDialog(component,main).setTitle(title);  
-    }
+   public void showOkDialog( Component component, JComponent main, String title )
+   {
+      showOkDialog( component, main ).setTitle( title );
+   }
 }

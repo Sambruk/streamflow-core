@@ -24,8 +24,8 @@ import java.util.List;
  * JAVADOC
  */
 public interface TaskListDTO<T extends TaskDTO>
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<T>> tasks();
+   @UseDefaults
+   Property<List<T>> tasks();
 }

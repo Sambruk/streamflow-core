@@ -31,94 +31,94 @@ import java.util.List;
  * /organizations/{organization}/tasktypes/{forms}/forms/{form}
  */
 public class FormDefinitionServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    public FormValue form()
-    {
-        String formsId = getRequest().getAttributes().get("forms").toString();
-        String formId = getRequest().getAttributes().get("form").toString();
+   public FormValue form()
+   {
+      String formsId = getRequest().getAttributes().get( "forms" ).toString();
+      String formId = getRequest().getAttributes().get( "form" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormsQueries forms = uow.get( FormsQueries.class, formsId);
+      FormsQueries forms = uow.get( FormsQueries.class, formsId );
 
-        checkPermission(forms);
+      checkPermission( forms );
 
-        List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
+      List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
 
-        ListItemValue value = itemValues.get(Integer.parseInt(formId));
+      ListItemValue value = itemValues.get( Integer.parseInt( formId ) );
 
-        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
 
-        ValueBuilder<FormValue> builder = vbf.newValueBuilder(FormValue.class);
+      ValueBuilder<FormValue> builder = vbf.newValueBuilder( FormValue.class );
 
-        builder.prototype().note().set(form.note().get());
-        builder.prototype().description().set(form.description().get());
-        builder.prototype().form().set(value.entity().get());
+      builder.prototype().note().set( form.note().get() );
+      builder.prototype().description().set( form.description().get() );
+      builder.prototype().form().set( value.entity().get() );
 
-        return builder.newInstance();
-    }
+      return builder.newInstance();
+   }
 
-    public void changeDescription(StringDTO newDescription)
-    {
-        String identity = getRequest().getAttributes().get("forms").toString();
-        String index = getRequest().getAttributes().get("form").toString();
+   public void changeDescription( StringDTO newDescription )
+   {
+      String identity = getRequest().getAttributes().get( "forms" ).toString();
+      String index = getRequest().getAttributes().get( "form" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormsQueries forms = uow.get( FormsQueries.class, identity);
+      FormsQueries forms = uow.get( FormsQueries.class, identity );
 
-        checkPermission(forms);
+      checkPermission( forms );
 
-        List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
+      List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
 
-        ListItemValue value = itemValues.get(Integer.parseInt(index));
+      ListItemValue value = itemValues.get( Integer.parseInt( index ) );
 
-        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
 
-        form.changeDescription(newDescription.string().get());
-    }
+      form.changeDescription( newDescription.string().get() );
+   }
 
-    public void changeNote(StringDTO newNote)
-    {
-        String identity = getRequest().getAttributes().get("forms").toString();
-        String index = getRequest().getAttributes().get("form").toString();
+   public void changeNote( StringDTO newNote )
+   {
+      String identity = getRequest().getAttributes().get( "forms" ).toString();
+      String index = getRequest().getAttributes().get( "form" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormsQueries forms = uow.get( FormsQueries.class, identity);
+      FormsQueries forms = uow.get( FormsQueries.class, identity );
 
-        checkPermission(forms);
+      checkPermission( forms );
 
-        List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
+      List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
 
-        ListItemValue value = itemValues.get(Integer.parseInt(index));
+      ListItemValue value = itemValues.get( Integer.parseInt( index ) );
 
-        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
 
-        form.changeNote(newNote.string().get());
-    }
+      form.changeNote( newNote.string().get() );
+   }
 
 
-    public void deleteOperation()
-    {
-        String identity = getRequest().getAttributes().get("forms").toString();
-        String index = getRequest().getAttributes().get("form").toString();
+   public void deleteOperation()
+   {
+      String identity = getRequest().getAttributes().get( "forms" ).toString();
+      String index = getRequest().getAttributes().get( "form" ).toString();
 
-        UnitOfWork uow = uowf.currentUnitOfWork();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        FormsQueries formsQueries = uow.get( FormsQueries.class, identity);
+      FormsQueries formsQueries = uow.get( FormsQueries.class, identity );
 
-        checkPermission(formsQueries);
+      checkPermission( formsQueries );
 
-        List<ListItemValue> itemValues = formsQueries.applicableFormDefinitionList().items().get();
+      List<ListItemValue> itemValues = formsQueries.applicableFormDefinitionList().items().get();
 
-        ListItemValue value = itemValues.get(Integer.parseInt(index));
+      ListItemValue value = itemValues.get( Integer.parseInt( index ) );
 
-        FormEntity form = uow.get(FormEntity.class, value.entity().get().identity());
+      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
 
-        Forms forms = (Forms) formsQueries;
+      Forms forms = (Forms) formsQueries;
 
-        forms.removeForm(form);
-    }
+      forms.removeForm( form );
+   }
 }

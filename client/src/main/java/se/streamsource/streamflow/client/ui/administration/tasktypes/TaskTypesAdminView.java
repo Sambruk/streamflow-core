@@ -32,47 +32,47 @@ import javax.swing.event.ListSelectionListener;
  * JAVADOC
  */
 public class TaskTypesAdminView
-        extends JSplitPane
+      extends JSplitPane
 {
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    public TaskTypesAdminView(@Uses final TaskTypesView taskTypesView, 
+   public TaskTypesAdminView( @Uses final TaskTypesView taskTypesView,
                               @Uses final TaskTypesModel taskTypesModel,
-                              @Uses final LabelsModel labelsModel)
-    {
-        super();
+                              @Uses final LabelsModel labelsModel )
+   {
+      super();
 
-        setLeftComponent(taskTypesView);
-        setRightComponent(new JPanel());
+      setLeftComponent( taskTypesView );
+      setRightComponent( new JPanel() );
 
-        setDividerLocation(200);
+      setDividerLocation( 200 );
 
-        final JList list = taskTypesView.getProjectList();
-        list.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      final JList list = taskTypesView.getProjectList();
+      list.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    int idx = list.getSelectedIndex();
-                    if (idx < list.getModel().getSize() && idx >= 0)
-                    {
-                        ListItemValue taskTypeValue = (ListItemValue) list.getModel().getElementAt(idx);
-                        TaskTypeModel taskTypeModel = taskTypesModel.getTaskTypeModel( taskTypeValue.entity().get().identity());
-                        TaskTypeView view = obf.newObjectBuilder(TaskTypeView.class).use(
-                                taskTypeModel.getSelectedLabelsModel(), labelsModel).newInstance();
-                        setRightComponent(view);
-                    } else
-                    {
-                        setRightComponent(new JPanel());
-                    }
-                }
+               int idx = list.getSelectedIndex();
+               if (idx < list.getModel().getSize() && idx >= 0)
+               {
+                  ListItemValue taskTypeValue = (ListItemValue) list.getModel().getElementAt( idx );
+                  TaskTypeModel taskTypeModel = taskTypesModel.getTaskTypeModel( taskTypeValue.entity().get().identity() );
+                  TaskTypeView view = obf.newObjectBuilder( TaskTypeView.class ).use(
+                        taskTypeModel.getSelectedLabelsModel(), labelsModel ).newInstance();
+                  setRightComponent( view );
+               } else
+               {
+                  setRightComponent( new JPanel() );
+               }
             }
-        });
+         }
+      } );
 
 
-        addAncestorListener( new RefreshWhenVisible(taskTypesModel, this) );
-    }
+      addAncestorListener( new RefreshWhenVisible( taskTypesModel, this ) );
+   }
 
 }

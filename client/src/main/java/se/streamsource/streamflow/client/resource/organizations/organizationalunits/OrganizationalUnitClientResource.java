@@ -28,45 +28,45 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class OrganizationalUnitClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public OrganizationalUnitClientResource( @Uses Context context, @Uses Reference reference )
-    {
-        super( context, reference );
-    }
+   public OrganizationalUnitClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public Reference projects() throws ResourceException
-    {
-        return getReference().clone().addSegment( "projects" );
-    }
+   public Reference projects() throws ResourceException
+   {
+      return getReference().clone().addSegment( "projects" );
+   }
 
-    public GroupsClientResource groups() throws ResourceException
-    {
-        return getSubResource( "groups", GroupsClientResource.class );
-    }
+   public GroupsClientResource groups() throws ResourceException
+   {
+      return getSubResource( "groups", GroupsClientResource.class );
+   }
 
-    public AdministratorsClientResource administrators() throws ResourceException
-    {
-        return getSubResource( "administrators", AdministratorsClientResource.class );
-    }
+   public AdministratorsClientResource administrators() throws ResourceException
+   {
+      return getSubResource( "administrators", AdministratorsClientResource.class );
+   }
 
-    public OrganizationalUnitsClientResource organizationalUnits()
-    {
-        return getSubResource( "organizationalunits", OrganizationalUnitsClientResource.class );
-    }
+   public OrganizationalUnitsClientResource organizationalUnits()
+   {
+      return getSubResource( "organizationalunits", OrganizationalUnitsClientResource.class );
+   }
 
-    public void changeDescription( StringDTO stringValue ) throws ResourceException
-    {
-        putCommand( "changedescription", stringValue );
-    }
+   public void changeDescription( StringDTO stringValue ) throws ResourceException
+   {
+      putCommand( "changedescription", stringValue );
+   }
 
-    public void move( EntityReferenceDTO moveCommand ) throws ResourceException
-    {
-        postCommand( "move", moveCommand );
-    }
+   public void move( EntityReferenceDTO moveCommand ) throws ResourceException
+   {
+      postCommand( "move", moveCommand );
+   }
 
-    public void merge( EntityReferenceDTO mergeCommand ) throws ResourceException
-    {
-        postCommand( "merge", mergeCommand );
-    }
+   public void merge( EntityReferenceDTO mergeCommand ) throws ResourceException
+   {
+      postCommand( "merge", mergeCommand );
+   }
 }

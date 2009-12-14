@@ -28,8 +28,10 @@ import se.streamsource.streamflow.client.ui.administration.projects.members.Tabl
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Set;
@@ -38,86 +40,86 @@ import java.util.Set;
  * JAVADOC
  */
 public class SelectUsersAndGroupsDialog
-        extends JPanel
+      extends JPanel
 {
-    Dimension dialogSize = new Dimension(600, 300);
-    private TableSelectionView addGroupsView;
-    private TableSelectionView addUsersView;
+   Dimension dialogSize = new Dimension( 600, 300 );
+   private TableSelectionView addGroupsView;
+   private TableSelectionView addUsersView;
 
-    private Set<String> usersAndGroups;
+   private Set<String> usersAndGroups;
 
-    public SelectUsersAndGroupsDialog(@Service ApplicationContext context,
+   public SelectUsersAndGroupsDialog( @Service ApplicationContext context,
                                       final @Uses UsersAndGroupsFilter resource,
-                                      @Structure ObjectBuilderFactory obf)
-    {
-        super(new BorderLayout());
+                                      @Structure ObjectBuilderFactory obf )
+   {
+      super( new BorderLayout() );
 
-        setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-        TableMultipleSelectionModel usersModel = obf.newObject(TableMultipleSelectionModel.class);
-        this.addUsersView = obf.newObjectBuilder(TableSelectionView.class).use(usersModel, i18n.text( AdministrationResources.search_users)).newInstance();
+      TableMultipleSelectionModel usersModel = obf.newObject( TableMultipleSelectionModel.class );
+      this.addUsersView = obf.newObjectBuilder( TableSelectionView.class ).use( usersModel, i18n.text( AdministrationResources.search_users ) ).newInstance();
 
-        TableMultipleSelectionModel groupsModel = obf.newObject(TableMultipleSelectionModel.class);
-        this.addGroupsView = obf.newObjectBuilder(TableSelectionView.class).use(groupsModel, i18n.text(AdministrationResources.search_groups)).newInstance();
+      TableMultipleSelectionModel groupsModel = obf.newObject( TableMultipleSelectionModel.class );
+      this.addGroupsView = obf.newObjectBuilder( TableSelectionView.class ).use( groupsModel, i18n.text( AdministrationResources.search_groups ) ).newInstance();
 
-        addUsersView.getSearchInputField().addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyReleased(KeyEvent keyEvent)
+      addUsersView.getSearchInputField().addKeyListener( new KeyAdapter()
+      {
+         @Override
+         public void keyReleased( KeyEvent keyEvent )
+         {
+            try
             {
-                try
-                {
-                    ListValue list = resource.findUsers(addUsersView.searchText());
-                    addUsersView.getModel().setModel(list);
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        addGroupsView.getSearchInputField().addKeyListener(new KeyAdapter()
-        {
-            @Override
-            public void keyReleased(KeyEvent keyEvent)
+               ListValue list = resource.findUsers( addUsersView.searchText() );
+               addUsersView.getModel().setModel( list );
+            } catch (ResourceException e)
             {
-                try
-                {
-                    ListValue list = resource.findGroups(addGroupsView.searchText());
-                    addGroupsView.getModel().setModel(list);
-                } catch (ResourceException e)
-                {
-                    e.printStackTrace();
-                } 
+               e.printStackTrace();
             }
-        });
+         }
+      } );
 
-        JSplitPane dialog = new JSplitPane();
+      addGroupsView.getSearchInputField().addKeyListener( new KeyAdapter()
+      {
+         @Override
+         public void keyReleased( KeyEvent keyEvent )
+         {
+            try
+            {
+               ListValue list = resource.findGroups( addGroupsView.searchText() );
+               addGroupsView.getModel().setModel( list );
+            } catch (ResourceException e)
+            {
+               e.printStackTrace();
+            }
+         }
+      } );
 
-        dialog.setLeftComponent(addUsersView);
-        dialog.setRightComponent(addGroupsView);
-        dialog.setPreferredSize(dialogSize);
-        setPreferredSize(dialogSize);
-        add(dialog, BorderLayout.NORTH);
-    }
+      JSplitPane dialog = new JSplitPane();
 
-    @Action
-    public void execute()
-    {
-        usersAndGroups = ((TableMultipleSelectionModel) addUsersView.getModel()).getSelected();
-        usersAndGroups.addAll(((TableMultipleSelectionModel) addGroupsView.getModel()).getSelected());
+      dialog.setLeftComponent( addUsersView );
+      dialog.setRightComponent( addGroupsView );
+      dialog.setPreferredSize( dialogSize );
+      setPreferredSize( dialogSize );
+      add( dialog, BorderLayout.NORTH );
+   }
 
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void execute()
+   {
+      usersAndGroups = ((TableMultipleSelectionModel) addUsersView.getModel()).getSelected();
+      usersAndGroups.addAll( ((TableMultipleSelectionModel) addGroupsView.getModel()).getSelected() );
 
-    @Action
-    public void close()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    public Set<String> getUsersAndGroups()
-    {
-        return usersAndGroups;
-    }
+   @Action
+   public void close()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
+
+   public Set<String> getUsersAndGroups()
+   {
+      return usersAndGroups;
+   }
 }

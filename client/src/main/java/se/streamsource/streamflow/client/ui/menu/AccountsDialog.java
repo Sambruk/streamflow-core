@@ -31,126 +31,131 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.administration.AccountView;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
  */
 public class AccountsDialog
-        extends JPanel
+      extends JPanel
 {
-    AccountsModel model;
+   AccountsModel model;
 
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Structure
-    ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-    @Service
-    IndividualRepository individualRepository;
+   @Service
+   IndividualRepository individualRepository;
 
-    @Service
-    DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-    public JList accountList;
+   public JList accountList;
 
-    @Uses
-    Iterable<CreateAccountDialog> createAccountDialog;
+   @Uses
+   Iterable<CreateAccountDialog> createAccountDialog;
 
-    @Uses
-    Iterable<ConfirmationDialog> confirmationDialog;
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
 
-    AccountView accountView;
+   AccountView accountView;
 
-    public AccountsDialog(@Service ApplicationContext context,
-                          @Uses final AccountsModel model)
-    {
-        super(new BorderLayout());
+   public AccountsDialog( @Service ApplicationContext context,
+                          @Uses final AccountsModel model )
+   {
+      super( new BorderLayout() );
 
-        setPreferredSize(new Dimension(700, 500));
+      setPreferredSize( new Dimension( 700, 500 ) );
 
-        this.model = model;
+      this.model = model;
 
-        setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-        accountList = new JList(model);
-        accountList.setCellRenderer(new ListItemListCellRenderer());
+      accountList = new JList( model );
+      accountList.setCellRenderer( new ListItemListCellRenderer() );
 
-        JScrollPane scroll = new JScrollPane(accountList);
-        scroll.setMinimumSize(new Dimension(200, 300));
-        scroll.setPreferredSize(new Dimension(200, 300));
-        add(scroll, BorderLayout.WEST);
+      JScrollPane scroll = new JScrollPane( accountList );
+      scroll.setMinimumSize( new Dimension( 200, 300 ) );
+      scroll.setPreferredSize( new Dimension( 200, 300 ) );
+      add( scroll, BorderLayout.WEST );
 
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton(getActionMap().get("add")));
-        toolbar.add(new JButton(getActionMap().get("remove")));
-        add(toolbar, BorderLayout.SOUTH);
+      JPanel toolbar = new JPanel();
+      toolbar.add( new JButton( getActionMap().get( "add" ) ) );
+      toolbar.add( new JButton( getActionMap().get( "remove" ) ) );
+      add( toolbar, BorderLayout.SOUTH );
 
-        accountList.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(getActionMap().get("remove")));
+      accountList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( getActionMap().get( "remove" ) ) );
 
-        accountList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
+      accountList.getSelectionModel().addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
             {
-                if (!e.getValueIsAdjusting())
-                {
-                    if (accountView != null)
-                        remove(accountView);
+               if (accountView != null)
+                  remove( accountView );
 
-                    if (accountList.getSelectedIndex() != -1)
-                    {
-                        AccountModel account = model.accountModel(accountList.getSelectedIndex());
-                        accountView = obf.newObjectBuilder(AccountView.class).use(account).newInstance();
-                        add(accountView, BorderLayout.CENTER);
-                    }
+               if (accountList.getSelectedIndex() != -1)
+               {
+                  AccountModel account = model.accountModel( accountList.getSelectedIndex() );
+                  accountView = obf.newObjectBuilder( AccountView.class ).use( account ).newInstance();
+                  add( accountView, BorderLayout.CENTER );
+               }
 
-                    revalidate();
-                }
+               revalidate();
             }
-        });
-    }
+         }
+      } );
+   }
 
-    @Action
-    public void execute()
-    {
-        WindowUtils.findWindow(this).dispose();
-    }
+   @Action
+   public void execute()
+   {
+      WindowUtils.findWindow( this ).dispose();
+   }
 
-    @Action
-    public void add() throws ResourceException, UnitOfWorkCompletionException
-    {
-        CreateAccountDialog dialog = createAccountDialog.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, text(AccountResources.create_account_title));
+   @Action
+   public void add() throws ResourceException, UnitOfWorkCompletionException
+   {
+      CreateAccountDialog dialog = createAccountDialog.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AccountResources.create_account_title ) );
 
-        if (dialog.settings() != null)
-        {
-            model.newAccount(dialog.settings());
-        }
-    }
+      if (dialog.settings() != null)
+      {
+         model.newAccount( dialog.settings() );
+      }
+   }
 
-    @Action
-    public void remove() throws UnitOfWorkCompletionException
-    {
-        ConfirmationDialog dialog = confirmationDialog.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, i18n.text(StreamFlowResources.confirmation));
-        if(dialog.isConfirmed())
-        {
-            System.out.println("DeleteAccount invoked");
-            model.removeAccount(accountList.getSelectedIndex());
-        }
-    }
+   @Action
+   public void remove() throws UnitOfWorkCompletionException
+   {
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         System.out.println( "DeleteAccount invoked" );
+         model.removeAccount( accountList.getSelectedIndex() );
+      }
+   }
 
 }

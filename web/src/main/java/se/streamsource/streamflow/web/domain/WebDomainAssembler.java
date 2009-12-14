@@ -33,18 +33,18 @@ import se.streamsource.streamflow.web.domain.user.UserAssembler;
  */
 public class WebDomainAssembler
 {
-    public void assemble(LayerAssembly domainLayer) throws AssemblyException
-    {
-        new CommentAssembler().assemble(domainLayer.moduleAssembly("Comments"));
-        new CommonResourceAssembler().assemble(domainLayer.moduleAssembly("Common"));
-        new FormAssembler().assemble(domainLayer.moduleAssembly("Forms"));
-        new GroupAssembler().assemble(domainLayer.moduleAssembly("Groups"));
-        new LabelAssembler().assemble(domainLayer.moduleAssembly("Labels"));
-        new OrganizationAssembler().assemble(domainLayer.moduleAssembly("Organizations"));
-        new ProjectAssembler().assemble(domainLayer.moduleAssembly("Projects"));
-        new RoleAssembler().assemble(domainLayer.moduleAssembly("Roles"));
-        new TaskAssembler().assemble(domainLayer.moduleAssembly("Tasks"));
-        new TaskTypeAssembler().assemble(domainLayer.moduleAssembly("Task types"));
-        new UserAssembler().assemble(domainLayer.moduleAssembly("Users"));
-    }
+   public void assemble( LayerAssembly domainLayer ) throws AssemblyException
+   {
+      new CommentAssembler().assemble( domainLayer.moduleAssembly( "Comments" ) );
+      new CommonResourceAssembler().assemble( domainLayer.moduleAssembly( "Common" ) );
+      new FormAssembler().assemble( domainLayer.moduleAssembly( "Forms" ) );
+      new GroupAssembler().assemble( domainLayer.moduleAssembly( "Groups" ) );
+      new LabelAssembler().assemble( domainLayer.moduleAssembly( "Labels" ) );
+      new OrganizationAssembler().assemble( domainLayer.moduleAssembly( "Organizations" ) );
+      new ProjectAssembler().assemble( domainLayer.moduleAssembly( "Projects" ) );
+      new RoleAssembler().assemble( domainLayer.moduleAssembly( "Roles" ) );
+      new TaskAssembler().assemble( domainLayer.moduleAssembly( "Tasks" ) );
+      new TaskTypeAssembler().assemble( domainLayer.moduleAssembly( "Task types" ) );
+      new UserAssembler().assemble( domainLayer.moduleAssembly( "Users" ) );
+   }
 }

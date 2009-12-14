@@ -38,39 +38,39 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
  * /tasks/{task}/formdefinitions/{form}
  */
 public class TaskFormDefinitionServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
-    @Structure
-    UnitOfWorkFactory uowf;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @Structure
-    Qi4jSPI spi;
+   @Structure
+   Qi4jSPI spi;
 
-    public TaskFormDefinitionServerResource()
-    {
-        setNegotiated(true);
-        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-    }
+   public TaskFormDefinitionServerResource()
+   {
+      setNegotiated( true );
+      getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
+   }
 
-    public ListValue fields() throws ResourceException
-    {
-        String formId = getRequest().getAttributes().get("form").toString();
-        UnitOfWork uow = uowf.currentUnitOfWork();
+   public ListValue fields() throws ResourceException
+   {
+      String formId = getRequest().getAttributes().get( "form" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
 
-        Fields.Data fields;
-        try
-        {
-            fields = uow.get(Fields.Data.class, formId);
-        } catch(NoSuchEntityException e)
-        {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
-        }
+      Fields.Data fields;
+      try
+      {
+         fields = uow.get( Fields.Data.class, formId );
+      } catch (NoSuchEntityException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND, e );
+      }
 
-        return new ListValueBuilder(vbf).addDescribableItems( fields.fields()).newList();
-    }
+      return new ListValueBuilder( vbf ).addDescribableItems( fields.fields() ).newList();
+   }
 
 
     public FormValue form()

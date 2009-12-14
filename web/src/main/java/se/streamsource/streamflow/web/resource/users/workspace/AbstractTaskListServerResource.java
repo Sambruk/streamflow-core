@@ -34,68 +34,69 @@ import java.util.List;
  * JAVADOC
  */
 public class AbstractTaskListServerResource
-        extends CommandQueryServerResource
+      extends CommandQueryServerResource
 {
 
-    protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
-            Query<TaskEntity> inboxQuery,
-            Class<V> taskClass,
-            Class<T> taskListClass)
-    {
-        ValueBuilder<V> builder = vbf.newValueBuilder(taskClass);
-        TaskDTO prototype = builder.prototype();
-        ValueBuilder<T> listBuilder = vbf.newValueBuilder(taskListClass);
-        T t = listBuilder.prototype();
-        Property<List<V>> property = t.tasks();
-        List<V> list = property.get();
-        ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder(ListItemValue.class);
-        ListItemValue labelPrototype = labelBuilder.prototype();
-        for (TaskEntity task : inboxQuery)
-        {
-            buildTask(prototype, labelBuilder, labelPrototype, task);
+   protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
+         Query<TaskEntity> inboxQuery,
+         Class<V> taskClass,
+         Class<T> taskListClass )
+   {
+      ValueBuilder<V> builder = vbf.newValueBuilder( taskClass );
+      TaskDTO prototype = builder.prototype();
+      ValueBuilder<T> listBuilder = vbf.newValueBuilder( taskListClass );
+      T t = listBuilder.prototype();
+      Property<List<V>> property = t.tasks();
+      List<V> list = property.get();
+      ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder( ListItemValue.class );
+      ListItemValue labelPrototype = labelBuilder.prototype();
+      for (TaskEntity task : inboxQuery)
+      {
+         buildTask( prototype, labelBuilder, labelPrototype, task );
 
-            list.add(builder.newInstance());
-        }
-        return listBuilder.newInstance();
-    }
+         list.add( builder.newInstance() );
+      }
+      return listBuilder.newInstance();
+   }
 
-    protected <T extends TaskListDTO> void buildTask(TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task)
-    {
-        prototype.task().set(EntityReference.getEntityReference(task));
-        prototype.creationDate().set(task.createdOn().get());
-        prototype.description().set(task.description().get());
-        prototype.status().set(task.status().get());
-        prototype.isRead().set(true);
+   protected <T extends TaskListDTO> void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
+   {
+      prototype.task().set( EntityReference.getEntityReference( task ) );
+      prototype.creationDate().set( task.createdOn().get() );
+      prototype.description().set( task.description().get() );
+      prototype.status().set( task.status().get() );
+      prototype.isRead().set( true );
 
-        addAdditionalValues(prototype,task);
-        
-        ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder(ListValue.class);
-        List<ListItemValue> labelList = labelListBuilder.prototype().items().get();
-        for (Label label : task.labels())
-        {
-            labelPrototype.entity().set(EntityReference.getEntityReference(label));
-            labelPrototype.description().set(label.getDescription());
-            labelList.add(labelBuilder.newInstance());
-        }
-        prototype.labels().set(labelListBuilder.newInstance());
+      addAdditionalValues( prototype, task );
 
-    }
+      ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder( ListValue.class );
+      List<ListItemValue> labelList = labelListBuilder.prototype().items().get();
+      for (Label label : task.labels())
+      {
+         labelPrototype.entity().set( EntityReference.getEntityReference( label ) );
+         labelPrototype.description().set( label.getDescription() );
+         labelList.add( labelBuilder.newInstance() );
+      }
+      prototype.labels().set( labelListBuilder.newInstance() );
+
+   }
 
 
-    public void createTask(String inboxId)
-    {
-        UnitOfWork uow = uowf.currentUnitOfWork();
-        Inbox inbox = uow.get(Inbox.class, inboxId);
-        inbox.createTask();
-    }
+   public void createTask( String inboxId )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      Inbox inbox = uow.get( Inbox.class, inboxId );
+      inbox.createTask();
+   }
 
-    /**
-     * Should be overriden by subclasses if there is a need to add more specialized properties.
-     * @param prototype
-     * @param task
-     */
-    protected void addAdditionalValues(TaskDTO prototype, TaskEntity task)
-    {
+   /**
+    * Should be overriden by subclasses if there is a need to add more specialized properties.
+    *
+    * @param prototype
+    * @param task
+    */
+   protected void addAdditionalValues( TaskDTO prototype, TaskEntity task )
+   {
 
-    }
+   }
 }

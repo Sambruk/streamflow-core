@@ -28,35 +28,35 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class ProjectFormDefinitionFieldClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public ProjectFormDefinitionFieldClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
+   public ProjectFormDefinitionFieldClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public FieldDefinitionValue field() throws ResourceException
-    {
-        return query("field", FieldDefinitionValue.class);
-    }
+   public FieldDefinitionValue field() throws ResourceException
+   {
+      return query( "field", FieldDefinitionValue.class );
+   }
 
-    public void updateMandatory(BooleanDTO mandatory) throws ResourceException
-    {
-        putCommand("updateMandatory", mandatory);
-    }
+   public void updateMandatory( BooleanDTO mandatory ) throws ResourceException
+   {
+      putCommand( "updateMandatory", mandatory );
+   }
 
-    public void changeDescription(StringDTO newDescription) throws ResourceException
-    {
-        putCommand("changeDescription", newDescription);
-    }
+   public void changeDescription( StringDTO newDescription ) throws ResourceException
+   {
+      putCommand( "changeDescription", newDescription );
+   }
 
-    public void changeNote(StringDTO newNote) throws ResourceException
-    {
-        putCommand("changeNote", newNote);
-    }
+   public void changeNote( StringDTO newNote ) throws ResourceException
+   {
+      putCommand( "changeNote", newNote );
+   }
 
-    public void moveField(IntegerDTO newIndex) throws ResourceException
-    {
-        putCommand("moveField", newIndex);
-    }
+   public void moveField( IntegerDTO newIndex ) throws ResourceException
+   {
+      putCommand( "moveField", newIndex );
+   }
 }

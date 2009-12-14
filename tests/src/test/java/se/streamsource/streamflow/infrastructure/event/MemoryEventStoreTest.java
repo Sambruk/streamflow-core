@@ -21,11 +21,11 @@ import org.qi4j.bootstrap.ModuleAssembly;
  * JAVADOC
  */
 public class MemoryEventStoreTest
-    extends AbstractEventStoreTest
+      extends AbstractEventStoreTest
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        super.assemble( module );
-        module.addServices( MemoryEventStoreService.class);
-    }
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      super.assemble( module );
+      module.addServices( MemoryEventStoreService.class );
+   }
 }

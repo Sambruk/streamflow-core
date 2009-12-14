@@ -27,30 +27,30 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
  * JAVADOC
  */
 public class ProjectFormDefinitionClientResource
-        extends CommandQueryClientResource
+      extends CommandQueryClientResource
 {
-    public ProjectFormDefinitionClientResource(@Uses Context context, @Uses Reference reference)
-    {
-        super(context, reference);
-    }
-    
-    public FormValue form() throws ResourceException
-    {
-        return query("form", FormValue.class);
-    }
+   public ProjectFormDefinitionClientResource( @Uses Context context, @Uses Reference reference )
+   {
+      super( context, reference );
+   }
 
-    public ProjectFormDefinitionFieldsClientResource fields()
-    {
-        return getSubResource("fields", ProjectFormDefinitionFieldsClientResource.class);
-    }
+   public FormValue form() throws ResourceException
+   {
+      return query( "form", FormValue.class );
+   }
 
-    public void changeDescription(StringDTO newDescription) throws ResourceException
-    {
-        putCommand("changeDescription", newDescription);
-    }
+   public ProjectFormDefinitionFieldsClientResource fields()
+   {
+      return getSubResource( "fields", ProjectFormDefinitionFieldsClientResource.class );
+   }
 
-    public void changeNote(StringDTO newNote) throws ResourceException
-    {
-        putCommand("changeNote", newNote);
-    }
+   public void changeDescription( StringDTO newDescription ) throws ResourceException
+   {
+      putCommand( "changeDescription", newDescription );
+   }
+
+   public void changeNote( StringDTO newNote ) throws ResourceException
+   {
+      putCommand( "changeNote", newNote );
+   }
 }

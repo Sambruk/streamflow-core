@@ -21,8 +21,8 @@ import org.qi4j.api.value.ValueComposite;
 import java.util.List;
 
 public interface ProjectSummaryListDTO
-    extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<ProjectSummaryDTO>> projectOverviews();
+   @UseDefaults
+   Property<List<ProjectSummaryDTO>> projectOverviews();
 }

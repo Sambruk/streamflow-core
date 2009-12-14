@@ -29,25 +29,25 @@ import java.util.Date;
  * JAVADOC
  */
 public class CommentableSteps
-        extends Steps
+      extends Steps
 {
-    @Uses
-    InboxSteps inboxSteps;
+   @Uses
+   InboxSteps inboxSteps;
 
-    @Uses
-    OrganizationsSteps orgsSteps;
+   @Uses
+   OrganizationsSteps orgsSteps;
 
-    @Structure
-    ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-    @When("comment with text $comment is added")
-    public void comment(String comment)
-    {
-        ValueBuilder<CommentValue> builder = vbf.newValueBuilder(CommentValue.class);
-        builder.prototype().text().set(comment);
-        builder.prototype().creationDate().set(new Date());
-        builder.prototype().commenter().set(EntityReference.getEntityReference(orgsSteps.givenUser));
+   @When("comment with text $comment is added")
+   public void comment( String comment )
+   {
+      ValueBuilder<CommentValue> builder = vbf.newValueBuilder( CommentValue.class );
+      builder.prototype().text().set( comment );
+      builder.prototype().creationDate().set( new Date() );
+      builder.prototype().commenter().set( EntityReference.getEntityReference( orgsSteps.givenUser ) );
 
-        inboxSteps.givenTask.addComment(builder.newInstance()); 
-    }
+      inboxSteps.givenTask.addComment( builder.newInstance() );
+   }
 }

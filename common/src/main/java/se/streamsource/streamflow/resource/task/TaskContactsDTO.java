@@ -25,8 +25,8 @@ import java.util.List;
  * General information about a task
  */
 public interface TaskContactsDTO
-        extends ValueComposite
+      extends ValueComposite
 {
-    @UseDefaults
-    Property<List<ContactValue>> contacts();
+   @UseDefaults
+   Property<List<ContactValue>> contacts();
 }

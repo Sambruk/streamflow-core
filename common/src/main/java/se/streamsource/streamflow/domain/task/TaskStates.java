@@ -19,9 +19,9 @@ package se.streamsource.streamflow.domain.task;
  */
 public enum TaskStates
 {
-    ACTIVE,
-    COMPLETED,
-    DONE,
-    DROPPED,
-    ARCHIVED
+   ACTIVE,
+   COMPLETED,
+   DONE,
+   DROPPED,
+   ARCHIVED
 }

@@ -15,22 +15,22 @@
 package se.streamsource.streamflow.infrastructure.event;
 
 /**
- * An event replay failed. 
+ * An event replay failed.
  */
 public class EventReplayException
-    extends Exception
+      extends Exception
 {
-    private DomainEvent event;
+   private DomainEvent event;
 
-    public EventReplayException( DomainEvent event, Throwable cause )
-    {
-        super( cause );
-        this.event = event;
-    }
+   public EventReplayException( DomainEvent event, Throwable cause )
+   {
+      super( cause );
+      this.event = event;
+   }
 
-    @Override
-    public String getMessage()
-    {
-        return "Could not replay event:"+event+", caused by:"+getCause();
-    }
+   @Override
+   public String getMessage()
+   {
+      return "Could not replay event:" + event + ", caused by:" + getCause();
+   }
 }

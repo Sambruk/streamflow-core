@@ -23,10 +23,10 @@ import se.streamsource.streamflow.web.domain.DomainEntity;
  * Label definition
  */
 public interface LabelEntity
-        extends DomainEntity,
-        Label,
-        Describable.Data,
-        Notable.Data,
-        Removable.Data
+      extends DomainEntity,
+      Label,
+      Describable.Data,
+      Notable.Data,
+      Removable.Data
 {
 }

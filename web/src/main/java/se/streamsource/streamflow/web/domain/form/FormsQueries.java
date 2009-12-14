@@ -27,20 +27,20 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 @Mixins(FormsQueries.Mixin.class)
 public interface FormsQueries
 {
-    ListValue applicableFormDefinitionList();
+   ListValue applicableFormDefinitionList();
 
-    class Mixin
-        implements FormsQueries
-    {
-        @This
-        Forms.Data state;
+   class Mixin
+         implements FormsQueries
+   {
+      @This
+      Forms.Data state;
 
-        @Structure
-        ValueBuilderFactory vbf;
+      @Structure
+      ValueBuilderFactory vbf;
 
-        public ListValue applicableFormDefinitionList()
-        {
-            return new ListValueBuilder(vbf).addDescribableItems( state.forms() ).newList();
-        }
-    }
+      public ListValue applicableFormDefinitionList()
+      {
+         return new ListValueBuilder( vbf ).addDescribableItems( state.forms() ).newList();
+      }
+   }
 }

@@ -29,41 +29,41 @@ import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
  * JAVADOC
  */
 public class ServerEntityStoreAssembler
-        implements Assembler
+      implements Assembler
 {
-    public void assemble(ModuleAssembly module) throws AssemblyException
-    {
-        Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
-        if (mode.equals(Application.Mode.development))
-        {
-            // In-memory store
-            module.addServices(MemoryEntityStoreService.class, UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
-        } else if (mode.equals(Application.Mode.test))
-        {
-            // In-memory store
-            module.addServices(MemoryEntityStoreService.class, UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
-        } else if (mode.equals(Application.Mode.production))
-        {
-            // JDBM storage
-            module.addServices(JdbmEntityStoreService.class).identifiedBy("data").visibleIn(Visibility.application);
-            module.addServices(UuidIdentityGeneratorService.class).visibleIn(Visibility.application);
+   public void assemble( ModuleAssembly module ) throws AssemblyException
+   {
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.development ))
+      {
+         // In-memory store
+         module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+      } else if (mode.equals( Application.Mode.test ))
+      {
+         // In-memory store
+         module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+      } else if (mode.equals( Application.Mode.production ))
+      {
+         // JDBM storage
+         module.addServices( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application );
+         module.addServices( UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
 
-            // Migration service
-            // Enter all migration rules here
-            // To-version should be of the form:
-            // <major-version>.<minor-version>.<sprint>.<Svn-revision>
-            // This way we can control how migrations are done from one
-            // revision to the next.
-            MigrationBuilder migrationBuilder = new MigrationBuilder("0.0");
-            migrationBuilder.
-                    toVersion("0.1.14.357").
-                        renameEntity("se.streamsource.streamflow.web.domain.project.RoleEntity",
-                                     "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity").
-                        forEntities("se.streamsource.streamflow.web.domain.organization.OrganizationEntity",
-                                    "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity").
-                            renameManyAssociation("roles", "projectRoles");
+         // Migration service
+         // Enter all migration rules here
+         // To-version should be of the form:
+         // <major-version>.<minor-version>.<sprint>.<Svn-revision>
+         // This way we can control how migrations are done from one
+         // revision to the next.
+         MigrationBuilder migrationBuilder = new MigrationBuilder( "0.0" );
+         migrationBuilder.
+               toVersion( "0.1.14.357" ).
+               renameEntity( "se.streamsource.streamflow.web.domain.project.RoleEntity",
+                     "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity" ).
+               forEntities( "se.streamsource.streamflow.web.domain.organization.OrganizationEntity",
+                     "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity" ).
+               renameManyAssociation( "roles", "projectRoles" );
 
-            module.addServices(MigrationService.class).setMetaInfo(migrationBuilder);
-        }
-    }
+         module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
+      }
+   }
 }
