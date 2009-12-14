@@ -55,28 +55,38 @@ import java.io.InputStream;
 public final class CommandQueryClient
 {
    @Structure
-   protected ValueBuilderFactory vbf;
+   private  ValueBuilderFactory vbf;
 
    @Structure
-   protected ObjectBuilderFactory obf;
+   private  ObjectBuilderFactory obf;
 
    @Structure
-   protected UnitOfWorkFactory uowf;
+   private  UnitOfWorkFactory uowf;
 
    @Structure
-   protected Qi4jSPI spi;
+   private  Qi4jSPI spi;
 
    @Structure
-   protected Module module;
+   private  Module module;
 
    @Service
-   protected TransactionHandler transactionHandler;
+   private  TransactionHandler transactionHandler;
 
    @Uses
-   Uniform next;
+   private Uniform client;
 
    @Uses
-   Reference reference;
+   private Reference reference;
+
+   public Reference getReference()
+   {
+      return reference;
+   }
+
+   public Uniform getClient()
+   {
+      return client;
+   }
 
    public <T extends ValueComposite> T query( String operation, Class<T> queryResult ) throws ResourceException
    {
@@ -156,7 +166,7 @@ public final class CommandQueryClient
    {
       Reference ref = new Reference( reference ).addQueryParameter( "command", operation );
       ClientResource client = new ClientResource( ref );
-      client.setNext( next );
+      client.setNext( this.client );
       client.post( commandRepresentation );
       if (!client.getStatus().isSuccess())
       {
@@ -210,7 +220,7 @@ public final class CommandQueryClient
       ref.addQueryParameter( "query", operation );
 
       ClientResource client = new ClientResource( ref );
-      client.setNext( next );
+      client.setNext( this.client );
 
       client.get( MediaType.APPLICATION_JSON );
 
@@ -242,7 +252,7 @@ public final class CommandQueryClient
       }
 
       ClientResource client = new ClientResource( ref );
-      client.setNext( next );
+      client.setNext( this.client );
       int tries = 3;
       while (true)
       {
@@ -283,7 +293,7 @@ public final class CommandQueryClient
    {
 
       ClientResource client = new ClientResource( new Reference( reference ) );
-      client.setNext( next );
+      client.setNext( this.client );
 
       int tries = 3;
       while (true)
@@ -325,20 +335,20 @@ public final class CommandQueryClient
    public <T extends ClientResource> T getSubResource( String pathSegment, Class<T> clientResource )
    {
       T resource = getResource( reference.clone().addSegment( pathSegment ), clientResource );
-      resource.setNext( next );
+      resource.setNext( client );
       return resource;
    }
 
    public <T extends ClientResource> T getResource( Reference ref, Class<T> clientResource )
    {
-      T resource = obf.newObjectBuilder( clientResource ).use( next, new Context(), ref ).newInstance();
+      T resource = obf.newObjectBuilder( clientResource ).use( client, new Context(), ref ).newInstance();
       return resource;
    }
 
    public CommandQueryClient getSubClient( String pathSegment )
    {
       Reference subReference = reference.clone().addSegment( pathSegment );
-      return obf.newObjectBuilder( CommandQueryClient.class ).use( next, new Context(), subReference ).newInstance();
+      return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), subReference ).newInstance();
    }
 
    private void processEvents( Response response )
