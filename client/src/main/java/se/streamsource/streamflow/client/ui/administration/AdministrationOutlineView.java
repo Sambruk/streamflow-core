@@ -173,9 +173,6 @@ public class AdministrationOutlineView
                if (tree.getSelectionPath() != null &&
                      tree.getSelectionPath().getLastPathComponent() instanceof OrganizationalUnitAdministrationNode)
                {
-                  boolean enabled = (tree.getSelectionPath().getParentPath().getLastPathComponent() instanceof OrganizationalUnitAdministrationNode);
-                  am.get( "moveOrganizationalUnit" ).setEnabled( enabled );
-                  am.get( "mergeOrganizationalUnit" ).setEnabled( enabled );
                   super.showPopup( e );
                }
             }
@@ -197,30 +194,26 @@ public class AdministrationOutlineView
    public void createOrganizationalUnit()
    {
       Object node = tree.getSelectionPath().getLastPathComponent();
-      if (node instanceof OrganizationalUnitAdministrationNode)
+
+      NameDialog dialog = nameDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
+      if (dialog.name() != null)
       {
-         OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) node;
-
-         NameDialog dialog = nameDialogs.iterator().next();
-         dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
-         if (dialog.name() != null)
+         ArrayList<Integer> expandedRows = new ArrayList<Integer>();
+         for (int i = 0; i < tree.getRowCount(); i++)
          {
-            ArrayList<Integer> expandedRows = new ArrayList<Integer>();
-            for (int i = 0; i < tree.getRowCount(); i++)
-            {
-               if (tree.isExpanded( i ))
-                  expandedRows.add( i );
-            }
-            int[] selected = tree.getSelectionRows();
-
-            model.createOrganizationalUnit( orgNode, dialog.name() );
-
-            for (Integer expandedRow : expandedRows)
-            {
-               tree.expandRow( expandedRow );
-            }
-            tree.setSelectionRows( selected );
+            if (tree.isExpanded( i ))
+               expandedRows.add( i );
          }
+         int[] selected = tree.getSelectionRows();
+
+         model.createOrganizationalUnit( node, dialog.name() );
+
+         for (Integer expandedRow : expandedRows)
+         {
+            tree.expandRow( expandedRow );
+         }
+         tree.setSelectionRows( selected );
       }
    }
 
@@ -232,32 +225,23 @@ public class AdministrationOutlineView
       {
          OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) node;
 
-         Object parent = orgNode.getParent();
-         if (parent instanceof OrganizationalUnitAdministrationNode)
+         ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         dialogs.showOkCancelHelpDialog( this, dialog, text( StreamFlowResources.confirmation ) );
+         if (dialog.isConfirmed())
          {
-            OrganizationalUnitAdministrationNode orgParent = (OrganizationalUnitAdministrationNode) parent;
-
-            ConfirmationDialog dialog = confirmationDialog.iterator().next();
-            dialogs.showOkCancelHelpDialog( this, dialog, text( StreamFlowResources.confirmation ) );
-            if (dialog.isConfirmed())
+            ArrayList<Integer> expandedRows = new ArrayList<Integer>();
+            for (int i = 0; i < tree.getRowCount(); i++)
             {
-               try
-               {
-                  orgParent.model().removeOrganizationalUnit( orgNode.ou().entity().get() );
-               } catch (OperationException e)
-               {
-                  ResourceException ex = (ResourceException) e.getCause();
-                  if (ex.getStatus().equals( Status.CLIENT_ERROR_CONFLICT ))
-                  {
-                     dialogs.showOkCancelHelpDialog( this,
-                           new JLabel( i18n.text( AdministrationResources.could_not_remove_organisation_with_open_projects ) ) );
-                  } else
-                     throw e;
-
-               }
-               model.refresh();
+               if (tree.isExpanded( i ))
+                  expandedRows.add(  i );
             }
 
+            model.removeOrganizationalUnit( orgNode.getParent(), orgNode.ou().entity().get() );
+
+            for (Integer expandedRow : expandedRows)
+            {
+               tree.expandRow( expandedRow );
+            }
          }
       }
    }
@@ -268,29 +252,13 @@ public class AdministrationOutlineView
       OrganizationalUnitAdministrationNode moved =
             (OrganizationalUnitAdministrationNode) tree.getSelectionPath().getLastPathComponent();
 
-      SelectOrganizationalUnitDialog moveAndMergeDialog = obf.newObjectBuilder( SelectOrganizationalUnitDialog.class ).use( model ).newInstance();
+      SelectOrganizationOrOrganizationalUnitDialog moveDialog = obf.newObjectBuilder( SelectOrganizationOrOrganizationalUnitDialog.class ).use( model ).newInstance();
 
-      dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), moveAndMergeDialog, i18n.text( AdministrationResources.move_to ) );
+      dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), moveDialog, i18n.text( AdministrationResources.move_to ) );
 
-      if (moveAndMergeDialog.target() != null
-            && !moved.ou().entity().get().equals( moveAndMergeDialog.target() ))
+      if ( moveDialog.target() != null )
       {
-         try
-         {
-            moved.model().moveOrganizationalUnit( moveAndMergeDialog.target() );
-         } catch (OperationException e)
-         {
-            ResourceException ex = (ResourceException) e.getCause();
-            if (ex.getStatus().equals( Status.CLIENT_ERROR_CONFLICT ))
-            {
-               dialogs.showOkCancelHelpDialog( this,
-                     new JLabel( i18n.text( AdministrationResources.could_not_remove_organisation_with_open_projects ) ) );
-            } else
-               throw e;
-         }
-      } else
-      {
-         dialogs.showOkDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( AdministrationResources.could_not_move_organization ) ) );
+         moved.model().moveOrganizationalUnit( moveDialog.target() );
       }
 
    }
@@ -301,31 +269,14 @@ public class AdministrationOutlineView
       OrganizationalUnitAdministrationNode moved =
             (OrganizationalUnitAdministrationNode) tree.getSelectionPath().getLastPathComponent();
 
-      SelectOrganizationalUnitDialog moveAndMergeDialog = obf.newObjectBuilder( SelectOrganizationalUnitDialog.class ).use( model ).newInstance();
+      SelectOrganizationalUnitDialog mergeDialog = obf.newObjectBuilder( SelectOrganizationalUnitDialog.class ).use( model ).newInstance();
 
-      dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), moveAndMergeDialog, i18n.text( AdministrationResources.merge_to ) );
+      dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), mergeDialog, i18n.text( AdministrationResources.merge_to ) );
 
-      if (moveAndMergeDialog.target() != null
-            && !moved.ou().entity().get().equals( moveAndMergeDialog.target() ))
+      if (mergeDialog.target() != null)
       {
-         try
-         {
-            moved.model().mergeOrganizationalUnit( moveAndMergeDialog.target() );
-         } catch (OperationException e)
-         {
-            ResourceException ex = (ResourceException) e.getCause();
-            if (ex.getStatus().equals( Status.CLIENT_ERROR_CONFLICT ))
-            {
-               dialogs.showOkCancelHelpDialog( this,
-                     new JLabel( i18n.text( AdministrationResources.could_not_remove_organisation_with_open_projects ) ) );
-            } else
-               throw e;
-         }
-      } else
-      {
-         dialogs.showOkDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( AdministrationResources.could_not_merge_organization ) ) );
+         moved.model().mergeOrganizationalUnit( mergeDialog.target() );
       }
-
    }
 
 

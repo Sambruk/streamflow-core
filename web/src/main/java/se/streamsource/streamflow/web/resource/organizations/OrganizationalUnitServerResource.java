@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
- * Mapped to /organizations/{organization}/ou/{ou}
+ * Mapped to /organizations/{organization}/organizationalunits/{ou}
  */
 public class OrganizationalUnitServerResource
       extends CommandQueryServerResource

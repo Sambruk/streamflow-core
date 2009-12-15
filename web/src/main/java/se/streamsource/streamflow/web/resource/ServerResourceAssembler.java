@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.resource.labels.SelectedLabelsServerResour
 import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationalUnitServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplateServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplatesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupResource;
@@ -166,6 +167,7 @@ public class ServerResourceAssembler
             // /organizations
             OrganizationsServerResource.class,
             OrganizationServerResource.class,
+            OrganizationalUnitServerResource.class,
             OrganizationalUnitsServerResource.class,
 
             FormTemplateServerResource.class,

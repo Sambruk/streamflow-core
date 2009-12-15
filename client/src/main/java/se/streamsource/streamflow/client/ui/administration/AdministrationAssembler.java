@@ -64,6 +64,7 @@ public class AdministrationAssembler
       UIAssemblers.addDialogs( module,
             ChangePasswordDialog.class,
             SelectOrganizationalUnitDialog.class,
+            SelectOrganizationOrOrganizationalUnitDialog.class,
             SelectOrganizationUsersDialog.class );
       UIAssemblers.addTasks( module, TestConnectionTask.class );
 

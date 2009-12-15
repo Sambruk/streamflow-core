@@ -36,7 +36,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-public class SelectOrganizationalUnitDialog
+public class SelectOrganizationOrOrganizationalUnitDialog
       extends JPanel
 {
 
@@ -46,8 +46,8 @@ public class SelectOrganizationalUnitDialog
    private JXTree tree;
    private EntityReference target;
 
-   public SelectOrganizationalUnitDialog( @Service ApplicationContext context,
-                                          @Uses final AdministrationModel model ) throws Exception
+   public SelectOrganizationOrOrganizationalUnitDialog( @Service ApplicationContext context,
+                                                        @Uses final AdministrationModel model ) throws Exception
    {
       super( new BorderLayout() );
       setActionMap( context.getActionMap( this ) );
@@ -106,14 +106,21 @@ public class SelectOrganizationalUnitDialog
       } else
       {
          Object selected = tree.getSelectionPath().getLastPathComponent();
-         if (!(selected instanceof OrganizationalUnitAdministrationNode))
+         if (selected instanceof AccountAdministrationNode)
          {
             dialogs.showOkCancelHelpDialog(
                   WindowUtils.findWindow( this ),
                   new JLabel( i18n.text( AdministrationResources.selection_not_an_organizational_unit ) ) );
             return;
          }
-         target = ((OrganizationalUnitAdministrationNode)selected).ou().entity().get();
+         if (selected instanceof OrganizationalUnitAdministrationNode)
+         {
+            target = ((OrganizationalUnitAdministrationNode)selected).ou().entity().get();
+
+         } else if (selected instanceof OrganizationAdministrationNode)
+         {
+            target = ((OrganizationAdministrationNode)selected).ou().entity().get();
+         }
       }
 
       WindowUtils.findWindow( this ).dispose();

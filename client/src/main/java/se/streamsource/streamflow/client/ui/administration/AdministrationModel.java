@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.entity.EntityReference;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
@@ -26,6 +27,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.util.logging.Logger;
 
 /**
@@ -48,7 +50,6 @@ public class AdministrationModel
    };
 
    private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "removedOrganizationalUnit", "addedOrganizationalUnit" );
-   ;
 
    public AdministrationModel( @Uses AdministrationNode root )
    {
@@ -67,9 +68,30 @@ public class AdministrationModel
       reload( getRoot() );
    }
 
-   public void createOrganizationalUnit( OrganizationalUnitAdministrationNode orgNode, String name )
+   public void createOrganizationalUnit( Object node, String name )
    {
-      orgNode.model().createOrganizationalUnit( name );
+      if (node instanceof OrganizationalUnitAdministrationNode)
+      {
+         OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) node;
+         orgNode.model().createOrganizationalUnit( name );
+      } else if (node instanceof OrganizationAdministrationNode)
+      {
+         OrganizationAdministrationNode orgNode = (OrganizationAdministrationNode) node;
+         orgNode.model().createOrganizationalUnit( name );
+      }
+   }
+
+   public void removeOrganizationalUnit( Object parentNode, EntityReference ou)
+   {
+      if (parentNode instanceof OrganizationalUnitAdministrationNode)
+      {
+         OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) parentNode;
+         orgNode.model().removeOrganizationalUnit( ou );
+      } else if (parentNode instanceof OrganizationAdministrationNode)
+      {
+         OrganizationAdministrationNode orgNode = (OrganizationAdministrationNode) parentNode;
+         orgNode.model().removeOrganizationalUnit( ou );
+      }
    }
 
    public void notifyEvent( DomainEvent event )

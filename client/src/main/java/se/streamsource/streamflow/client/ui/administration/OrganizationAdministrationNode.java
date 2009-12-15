@@ -106,9 +106,12 @@ public class OrganizationAdministrationNode
    {
       model.notifyEvent( event );
 
-      for (Object child : children)
+      if (children != null)
       {
-         ((EventListener) child).notifyEvent( event );
+         for (Object child : children)
+         {
+            ((EventListener) child).notifyEvent( event );
+         }
       }
    }
 }

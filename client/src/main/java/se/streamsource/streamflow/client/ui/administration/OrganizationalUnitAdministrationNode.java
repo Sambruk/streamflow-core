@@ -38,21 +38,8 @@ import java.io.IOException;
 public class OrganizationalUnitAdministrationNode
       extends DefaultMutableTreeNode implements Transferable, EventListener
 {
-
-   private ObjectBuilderFactory obf;
-
    @Uses
    CommandQueryClient client;
-
-   WeakModelMap<TreeNodeValue, OrganizationalUnitAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalUnitAdministrationNode>()
-   {
-      @Override
-      protected OrganizationalUnitAdministrationNode newModel( TreeNodeValue key )
-      {
-         CommandQueryClient ouClient = client.getSubClient( "organizationalunits" ).getSubClient( key.entity().get().identity() );
-         return obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( OrganizationalUnitAdministrationNode.this, key, ouClient ).newInstance();
-      }
-   };
 
    OrganizationalUnitAdministrationModel model;
 
@@ -60,7 +47,6 @@ public class OrganizationalUnitAdministrationNode
    {
       super( ou.buildWith().prototype() );
       this.client = client;
-      this.obf = obf;
 
       model = obf.newObjectBuilder( OrganizationalUnitAdministrationModel.class ).use( client ).newInstance();
 
@@ -116,9 +102,12 @@ public class OrganizationalUnitAdministrationNode
    {
       model.notifyEvent( event );
 
-      for (OrganizationalUnitAdministrationNode organizationalUnitAdministrationNode : models)
+      if (children != null)
       {
-         organizationalUnitAdministrationNode.notifyEvent( event );
+         for (Object child : children)
+         {
+            ((EventListener) child).notifyEvent( event );
+         }
       }
    }
 }

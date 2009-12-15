@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.resource.labels.SelectedLabelServerResourc
 import se.streamsource.streamflow.web.resource.labels.SelectedLabelsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationalUnitServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplateServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplatesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
@@ -117,6 +118,7 @@ public class APIv1Router
 
       // OrganizationalUnits
       attach( "/organizations/{organization}/organizationalunits/{policy}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}", createServerResourceFinder( OrganizationalUnitServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/groups", createServerResourceFinder( GroupsServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/groups/{group}", createServerResourceFinder( GroupServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/groups/{group}/participants", createServerResourceFinder( ParticipantsServerResource.class ) );
