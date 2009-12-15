@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXList;
@@ -28,6 +29,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRende
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -36,8 +38,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.util.Set;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
@@ -68,7 +68,7 @@ public class ProjectMembersView
 
       setActionMap( context.getActionMap( this ) );
 
-      membersList = new JXList( membersModel );
+      membersList = new JXList( new EventListModel(membersModel.getMembers()) );
 
       membersList.setCellRenderer( new ListItemListCellRenderer() );
 

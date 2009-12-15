@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
+import ca.odell.glazedlists.BasicEventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -23,18 +24,17 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
-import javax.swing.AbstractListModel;
 import java.util.Set;
 
 /**
  * JAVADOC
  */
 public class ProjectMembersModel
-      extends AbstractListModel
       implements Refreshable, EventListener
 
 {
@@ -47,24 +47,20 @@ public class ProjectMembersModel
    @Structure
    ObjectBuilderFactory obf;
 
-   private ListValue memberList;
+   private BasicEventList<ListItemValue> members = new BasicEventList<ListItemValue>( );
 
-   public int getSize()
+   public BasicEventList<ListItemValue> getMembers()
    {
-      return memberList == null ? 0 : memberList.items().get().size();
-   }
-
-   public Object getElementAt( int index )
-   {
-      return memberList.items().get().get( index );
+      return members;
    }
 
    public void refresh()
    {
       try
       {
-         memberList = client.query( "members", ListValue.class);
-         fireContentsChanged( this, 0, getSize() );
+         ListValue membersList = client.query( "members", ListValue.class);
+         members.clear();
+         members.addAll( membersList.items().get() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_members, e );
@@ -89,7 +85,7 @@ public class ProjectMembersModel
    {
       try
       {
-         String id = memberList.items().get().get( index ).entity().get().identity();
+         String id = members.get( index ).entity().get().identity();
 
          client.getSubClient( id ).deleteCommand();
       } catch (ResourceException e)

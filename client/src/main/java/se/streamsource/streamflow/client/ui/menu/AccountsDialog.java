@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -31,6 +32,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
@@ -44,8 +46,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
@@ -91,7 +91,7 @@ public class AccountsDialog
 
       setActionMap( context.getActionMap( this ) );
 
-      accountList = new JList( model );
+      accountList = new JList( new EventListModel(model.getAccounts()) );
       accountList.setCellRenderer( new ListItemListCellRenderer() );
 
       JScrollPane scroll = new JScrollPane( accountList );

@@ -41,6 +41,7 @@ import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
@@ -68,8 +69,6 @@ import java.util.Collections;
 import java.util.EventObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * Controller for the application
@@ -175,7 +174,7 @@ public class StreamFlowApplication
       {
          public void run()
          {
-            if (accountsModel.getSize() == 1)
+            if (accountsModel.getAccounts().size() == 1)
             {
                accountSelector.setSelectedIndex( 0 );
             }

@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -34,9 +36,6 @@ import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
-import javax.swing.AbstractListModel;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -44,7 +43,6 @@ import java.util.Observer;
  * JAVADOC
  */
 public class AccountsModel
-      extends AbstractListModel
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -61,7 +59,7 @@ public class AccountsModel
    @Service
    Uniform client;
 
-   List<ListItemValue> accounts = new ArrayList<ListItemValue>();
+   BasicEventList<ListItemValue> accounts = new BasicEventList<ListItemValue>();
 
    WeakModelMap<String, AccountModel> models = new WeakModelMap<String, AccountModel>()
    {
@@ -87,14 +85,9 @@ public class AccountsModel
       refresh();
    }
 
-   public int getSize()
+   public EventList<ListItemValue> getAccounts()
    {
-      return accounts.size();
-   }
-
-   public ListItemValue getElementAt( int index )
-   {
-      return accounts.get( index );
+      return accounts;
    }
 
    public AccountModel accountModel( int index )
@@ -113,15 +106,12 @@ public class AccountsModel
       uow.complete();
 
       refresh();
-
-      fireIntervalAdded( this, accounts.size(), accounts.size() );
    }
 
    public void removeAccount( int index ) throws UnitOfWorkCompletionException
    {
       accountModel( index ).remove();
       accounts.remove( index );
-      fireContentsChanged( this, 0, accounts.size() );
    }
 
    public void notifyEvent( DomainEvent event )

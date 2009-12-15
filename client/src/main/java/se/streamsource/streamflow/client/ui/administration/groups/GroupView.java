@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
@@ -62,7 +63,7 @@ public class GroupView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      participantList = new JList( model );
+      participantList = new JList( new EventListModel(model.getParticipants()) );
 
       participantList.setCellRenderer( new ListItemListCellRenderer() );
 

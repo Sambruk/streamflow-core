@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.policy;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -29,14 +31,10 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.AbstractListModel;
-import java.util.List;
-
 /**
  * JAVADOC
  */
 public class AdministratorsModel
-      extends AbstractListModel
       implements Refreshable, EventListener
 {
    @Structure
@@ -45,16 +43,11 @@ public class AdministratorsModel
    @Uses
    CommandQueryClient client;
 
-   private List<ListItemValue> list;
+   private BasicEventList<ListItemValue> administrators = new BasicEventList<ListItemValue>( );
 
-   public int getSize()
+   public EventList<ListItemValue> getAdministrators()
    {
-      return list == null ? 0 : list.size();
-   }
-
-   public Object getElementAt( int index )
-   {
-      return list == null ? null : list.get( index );
+      return administrators;
    }
 
    public void addAdministrator( String description )
@@ -89,8 +82,9 @@ public class AdministratorsModel
    {
       try
       {
-         list = client.query( "administrators", ListValue.class ).items().get();
-         fireContentsChanged( this, 0, list.size() );
+         ListValue administratorsList = client.query( "administrators", ListValue.class );
+         administrators.clear();
+         administrators.addAll( administratorsList.items().get() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.policy;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
@@ -24,6 +25,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -34,8 +36,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.util.Set;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
@@ -63,7 +63,7 @@ public class AdministratorsView
 
       setActionMap( context.getActionMap( this ) );
 
-      administratorList = new JList( model );
+      administratorList = new JList( new EventListModel(model.getAdministrators()) );
 
       administratorList.setCellRenderer( new ListItemListCellRenderer() );
       add( administratorList, BorderLayout.CENTER );

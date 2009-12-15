@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -32,14 +34,10 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.AbstractListModel;
-import java.util.List;
-
 /**
  * JAVADOC
  */
 public class GroupsModel
-      extends AbstractListModel
       implements Refreshable, EventListener
 {
    @Uses
@@ -51,6 +49,8 @@ public class GroupsModel
    @Structure
    ValueBuilderFactory vbf;
 
+   BasicEventList<ListItemValue> groups = new BasicEventList<ListItemValue>( );
+
    WeakModelMap<String, GroupModel> groupModels = new WeakModelMap<String, GroupModel>()
    {
       @Override
@@ -60,7 +60,10 @@ public class GroupsModel
       }
    };
 
-   private List<ListItemValue> groups;
+   public EventList<ListItemValue> getGroups()
+   {
+      return groups;
+   }
 
    public void newGroup( String description )
    {
@@ -92,22 +95,13 @@ public class GroupsModel
       }
    }
 
-   public int getSize()
-   {
-      return groups == null ? 0 : groups.size();
-   }
-
-   public Object getElementAt( int index )
-   {
-      return groups == null ? null : groups.get( index );
-   }
-
    public void refresh()
    {
       try
       {
-         groups = client.query( "groups", ListValue.class ).items().get();
-         fireContentsChanged( this, 0, groups.size() );
+         ListValue groupsList = client.query( "groups", ListValue.class );
+         groups.clear();
+         groups.addAll( groupsList.items().get() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

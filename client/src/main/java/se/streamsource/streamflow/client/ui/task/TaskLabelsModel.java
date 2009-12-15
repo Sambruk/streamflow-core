@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -28,14 +30,10 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
-import javax.swing.AbstractListModel;
-import java.util.List;
-
 /**
  * Model for the list of currently selected labels of a task
  */
 public class TaskLabelsModel
-      extends AbstractListModel
       implements EventListener
 {
    @Uses
@@ -44,25 +42,18 @@ public class TaskLabelsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   List<ListItemValue> labels;
+   BasicEventList<ListItemValue> labels = new BasicEventList<ListItemValue>( );
+
+   public EventList<ListItemValue> getLabels()
+   {
+      return labels;
+   }
 
    public void setLabels( ListValue labels )
    {
-      this.labels = labels.items().get();
-
-      fireContentsChanged( this, 0, this.labels.size() );
+      this.labels.clear();
+      this.labels.addAll( labels.items().get() );
    }
-
-   public int getSize()
-   {
-      return labels == null ? 0 : labels.size();
-   }
-
-   public ListItemValue getElementAt( int index )
-   {
-      return labels == null ? null : labels.get( index );
-   }
-
    public void addLabel( EntityReference addLabel )
    {
       try
@@ -95,9 +86,6 @@ public class TaskLabelsModel
       {
          throw new OperationException( TaskResources.could_not_remove_label, e );
       }
-
-      if (idx != -1)
-         fireIntervalRemoved( this, idx, idx );
    }
 
    public void notifyEvent( DomainEvent event )

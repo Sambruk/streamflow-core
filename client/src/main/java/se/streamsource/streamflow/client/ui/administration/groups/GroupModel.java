@@ -14,43 +14,33 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-
-import javax.swing.AbstractListModel;
 
 /**
  * JAVADOC
  */
 public class GroupModel
-      extends AbstractListModel
       implements EventListener
 {
    @Uses
    CommandQueryClient client;
 
-   public ListValue list;
+   private BasicEventList<ListItemValue> participants = new BasicEventList<ListItemValue>( );
 
-   public GroupModel()
+   public EventList<ListItemValue> getParticipants()
    {
+      return participants;
    }
-
-   public int getSize()
-   {
-      return list == null ? 0 : list.items().get().size();
-   }
-
-   public Object getElementAt( int index )
-   {
-      return list.items().get().get( index );
-   }
-
 
    public void addParticipants( Iterable<String> participants )
    {
@@ -81,8 +71,9 @@ public class GroupModel
 
    public void refresh() throws ResourceException
    {
-      list = client.getSubClient( "participants" ).query( "participants", ListValue.class );
-      fireContentsChanged( this, 0, getSize() );
+      ListValue list = client.getSubClient( "participants" ).query( "participants", ListValue.class );
+      participants.clear();
+      participants.addAll( list.items().get() );
    }
 
    public void notifyEvent( DomainEvent event )

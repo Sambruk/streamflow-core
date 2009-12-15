@@ -14,31 +14,32 @@
 
 package se.streamsource.streamflow.client.ui;
 
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.swing.EventListModel;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 
 import javax.swing.JList;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 /**
  * Selection of active account
  */
 public class AccountSelector
       extends JList
-      implements ListDataListener
+      implements ListEventListener
 {
    private AccountsModel dataModel;
 
    public AccountSelector( @Uses final AccountsModel dataModel )
    {
-      super( dataModel );
+      super( new EventListModel(dataModel.getAccounts()) );
       this.dataModel = dataModel;
       setCellRenderer( new ListItemListCellRenderer() );
 
-      dataModel.addListDataListener( this );
+      dataModel.getAccounts().addListEventListener( this );
    }
 
    public AccountModel getSelectedAccount()
@@ -46,19 +47,9 @@ public class AccountSelector
       return getSelectedIndex() == -1 ? null : dataModel.accountModel( getSelectedIndex() );
    }
 
-   public void intervalAdded( ListDataEvent e )
+   public void listChanged( ListEvent listEvent )
    {
-      contentsChanged( e );
-   }
-
-   public void intervalRemoved( ListDataEvent e )
-   {
-      contentsChanged( e );
-   }
-
-   public void contentsChanged( ListDataEvent e )
-   {
-      if (isSelectionEmpty() && dataModel.getSize() == 1)
+      if (isSelectionEmpty() && dataModel.getAccounts().size() == 1)
       {
          setSelectedIndex( 0 );
       }

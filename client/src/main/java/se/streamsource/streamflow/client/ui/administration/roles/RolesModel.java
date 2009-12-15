@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.roles;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -30,14 +32,10 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.AbstractListModel;
-import java.util.List;
-
 /**
  * JAVADOC
  */
 public class RolesModel
-      extends AbstractListModel
       implements EventListener, Refreshable
 {
    @Structure
@@ -46,16 +44,11 @@ public class RolesModel
    @Uses
    CommandQueryClient client;
 
-   private List<ListItemValue> list;
+   private BasicEventList<ListItemValue> roles = new BasicEventList<ListItemValue>( );
 
-   public int getSize()
+   public EventList<ListItemValue> getRoles()
    {
-      return list == null ? 0 : list.size();
-   }
-
-   public Object getElementAt( int index )
-   {
-      return list == null ? null : list.get( index );
+      return roles;
    }
 
    public void createRole( String description )
@@ -92,8 +85,9 @@ public class RolesModel
    {
       try
       {
-         list = client.query( "roles", ListValue.class).items().get();
-         fireContentsChanged( this, 0, list.size() );
+         ListValue rolesList = client.query( "roles", ListValue.class);
+         roles.clear();
+         roles.addAll( rolesList.items().get() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
