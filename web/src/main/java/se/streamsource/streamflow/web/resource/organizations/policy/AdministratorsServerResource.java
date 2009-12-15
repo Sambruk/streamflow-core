@@ -24,7 +24,6 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.organization.OrganizationQueries;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.role.Role;
 import se.streamsource.streamflow.web.domain.role.RolePolicy;
@@ -34,7 +33,8 @@ import java.util.List;
 
 /**
  * Mapped to:
- * /organizations/{organization}/administrators
+ * /organizations/{policy}/administrators
+ * /organizations/{organization}/organizationalunits/{policy}/administrators
  */
 public class AdministratorsServerResource
       extends CommandQueryServerResource
@@ -43,13 +43,14 @@ public class AdministratorsServerResource
    {
       UnitOfWork unitOfWork = uowf.currentUnitOfWork();
 
-      String identity = getRequest().getAttributes().get( "organization" ).toString();
-      OwningOrganization org = unitOfWork.get( OwningOrganization.class, identity );
-      OrganizationEntity organization = (OrganizationEntity) org.organization().get();
-      Role adminRole = organization.roles().get( 0 );
+      String identity = getRequest().getAttributes().get( "policy" ).toString();
+      RolePolicy.Data role = unitOfWork.get( RolePolicy.Data.class, identity );
 
-      RolePolicy.Data rolePolicy = (RolePolicy.Data) organization;
-      List<EntityReference> admins = rolePolicy.participantsWithRole( adminRole );
+      OwningOrganization org = ((OwningOrganization)role);
+      OrganizationEntity organization = (OrganizationEntity) org.organization().get();
+      Role adminRole = organization.getAdministratorRole();
+
+      List<EntityReference> admins = role.participantsWithRole( adminRole );
       ListValueBuilder builder = new ListValueBuilder( vbf );
       for (EntityReference admin : admins)
       {
@@ -59,27 +60,28 @@ public class AdministratorsServerResource
       return builder.newList();
    }
 
-   public void addAdministrator( StringDTO participantId ) throws ResourceException
+   public void addadministrator( StringDTO participantId ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      String identity = getRequest().getAttributes().get( "organization" ).toString();
+      String identity = getRequest().getAttributes().get( "policy" ).toString();
+      RolePolicy role = uow.get( RolePolicy.class, identity );
 
-      OrganizationalUnitEntity ou = uow.get( OrganizationalUnitEntity.class, identity );
       Participant participant = uow.get( Participant.class, participantId.string().get() );
 
-      OrganizationEntity organization = (OrganizationEntity) ou.organization().get();
-      Role adminRole = organization.roles().get( 0 );
+      OwningOrganization org = ((OwningOrganization)role);
+      OrganizationEntity organization = (OrganizationEntity) org.organization().get();
+      Role adminRole = organization.getAdministratorRole();
 
-      checkPermission( ou );
-      ou.grantRole( participant, adminRole );
+      checkPermission( role);
+      role.grantRole( participant, adminRole );
    }
 
-   public ListValue findUsers( StringDTO query ) throws ResourceException
+   public ListValue findusers( StringDTO query ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      String orgId = getRequest().getAttributes().get( "organization" ).toString();
+      String orgId = getRequest().getAttributes().get( "policy" ).toString();
 
       OwningOrganization organization = uowf.currentUnitOfWork().get( OwningOrganization.class, orgId );
       checkPermission( organization );
@@ -101,9 +103,9 @@ public class AdministratorsServerResource
       return listBuilder.newList();
    }
 
-   public ListValue findGroups( StringDTO query ) throws ResourceException
+   public ListValue findgroups( StringDTO query ) throws ResourceException
    {
-      String orgId = getRequest().getAttributes().get( "organization" ).toString();
+      String orgId = getRequest().getAttributes().get( "policy" ).toString();
 
       OwningOrganization organization = uowf.currentUnitOfWork().get( OwningOrganization.class, orgId );
       checkPermission( organization );

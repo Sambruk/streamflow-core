@@ -61,7 +61,7 @@ public class OrganizationServerResource
       return getHtml( "resources/organization.html" );
    }
 
-   public ListValue findUsers( StringDTO query )
+   public ListValue findusers( StringDTO query )
    {
       String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
@@ -72,7 +72,7 @@ public class OrganizationServerResource
    }
 
 
-   public ListValue findGroups( StringDTO query )
+   public ListValue findgroups( StringDTO query )
    {
       String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
@@ -82,7 +82,7 @@ public class OrganizationServerResource
       return ((OrganizationQueries) ouq.organization().get()).findGroups( query.string().get() );
    }
 
-   public ListValue findProjects( StringDTO query )
+   public ListValue findprojects( StringDTO query )
    {
       String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
@@ -92,7 +92,7 @@ public class OrganizationServerResource
       return ((OrganizationQueries) ouq.organization().get()).findProjects( query.string().get() );
    }
 
-   public ListValue formDefinitions()
+   public ListValue formdefinitions()
    {
       String ouId = (String) getRequest().getAttributes().get( "organization" );
 
@@ -103,7 +103,7 @@ public class OrganizationServerResource
       return forms.getForms();
    }
 
-   public ListValue participatingUsers()
+   public ListValue participatingusers()
    {
       String orgId = (String) getRequest().getAttributes().get( "organization" );
 
@@ -114,7 +114,7 @@ public class OrganizationServerResource
       return participants.participatingUsers();
    }
 
-   public ListValue nonParticipatingUsers()
+   public ListValue nonparticipatingusers()
    {
       String orgId = (String) getRequest().getAttributes().get( "organization" );
 
@@ -125,7 +125,7 @@ public class OrganizationServerResource
       return participants.nonParticipatingUsers();
    }
 
-   public ListValue taskTypes()
+   public ListValue tasktypes()
    {
       String orgId = (String) getRequest().getAttributes().get( "organization" );
 

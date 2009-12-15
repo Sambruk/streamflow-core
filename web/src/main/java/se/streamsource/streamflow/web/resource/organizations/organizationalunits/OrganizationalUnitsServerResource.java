@@ -29,14 +29,15 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /organizations/{organization}/organizationalunits
+ * /organizations/{organizationalunits}/organizationalunits
+ * /organizations/{organization}/organizationalunits/{organizationalunits}/organizationalunits
  */
 public class OrganizationalUnitsServerResource
       extends CommandQueryServerResource
 {
    public ListValue organizationalunits()
    {
-      String identity = getRequest().getAttributes().get( "organization" ).toString();
+      String identity = getRequest().getAttributes().get( "organizationalunits" ).toString();
       OrganizationalUnits.Data ous = uowf.currentUnitOfWork().get( OrganizationalUnits.Data.class, identity );
 
       checkPermission( ous );
@@ -50,9 +51,9 @@ public class OrganizationalUnitsServerResource
       return builder.newList();
    }
 
-   public void createOrganizationalUnit( StringDTO value ) throws ResourceException
+   public void createorganizationalunit( StringDTO value ) throws ResourceException
    {
-      String organization = getRequestAttributes().get( "organization" ).toString();
+      String organization = getRequestAttributes().get( "organizationalunits" ).toString();
       OrganizationalUnits ous = uowf.currentUnitOfWork().get( OrganizationalUnits.class, organization );
 
       checkPermission( ous );
@@ -60,9 +61,9 @@ public class OrganizationalUnitsServerResource
       ous.createOrganizationalUnit( value.string().get() );
    }
 
-   public void removeOrganizationalUnit( EntityReferenceDTO entity ) throws ResourceException
+   public void removeorganizationalunit( EntityReferenceDTO entity ) throws ResourceException
    {
-      String organization = getRequest().getAttributes().get( "organization" ).toString();
+      String organization = getRequest().getAttributes().get( "organizationalunits" ).toString();
       OrganizationalUnits ous = uowf.currentUnitOfWork().get( OrganizationalUnits.class, organization );
       OrganizationalUnitRefactoring ou = uowf.currentUnitOfWork().get( OrganizationalUnitRefactoring.class, entity.entity().get().identity() );
 

@@ -44,7 +44,7 @@ public class MembersServerResource
       return new ListValueBuilder( vbf ).addDescribableItems( members.members() ).newList();
    }
 
-   public ListValue findUsers( StringDTO query ) throws ResourceException
+   public ListValue findusers( StringDTO query ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 
@@ -71,7 +71,7 @@ public class MembersServerResource
       return listBuilder.newList();
    }
 
-   public ListValue findGroups( StringDTO query ) throws ResourceException
+   public ListValue findgroups( StringDTO query ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 

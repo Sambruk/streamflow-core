@@ -21,12 +21,16 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -42,6 +46,8 @@ import java.util.Set;
 public class SelectUsersAndGroupsDialog
       extends JPanel
 {
+   private ValueBuilderFactory vbf;
+
    Dimension dialogSize = new Dimension( 600, 300 );
    private TableSelectionView addGroupsView;
    private TableSelectionView addUsersView;
@@ -49,8 +55,9 @@ public class SelectUsersAndGroupsDialog
    private Set<String> usersAndGroups;
 
    public SelectUsersAndGroupsDialog( @Service ApplicationContext context,
-                                      final @Uses UsersAndGroupsFilter resource,
-                                      @Structure ObjectBuilderFactory obf )
+                                      final @Uses CommandQueryClient client,
+                                      @Structure ObjectBuilderFactory obf,
+                                      final @Structure ValueBuilderFactory vbf)
    {
       super( new BorderLayout() );
 
@@ -69,7 +76,9 @@ public class SelectUsersAndGroupsDialog
          {
             try
             {
-               ListValue list = resource.findUsers( addUsersView.searchText() );
+               ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+               builder.prototype().string().set( addUsersView.searchText() );
+               ListValue list = client.query( "findusers", builder.newInstance(), ListValue.class );
                addUsersView.getModel().setModel( list );
             } catch (ResourceException e)
             {
@@ -85,7 +94,9 @@ public class SelectUsersAndGroupsDialog
          {
             try
             {
-               ListValue list = resource.findGroups( addGroupsView.searchText() );
+               ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+               builder.prototype().string().set( addGroupsView.searchText() );
+               ListValue list = client.query( "findgroups", builder.newInstance(), ListValue.class );
                addGroupsView.getModel().setModel( list );
             } catch (ResourceException e)
             {

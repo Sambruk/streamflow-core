@@ -18,8 +18,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -37,34 +38,36 @@ import java.io.IOException;
 public class OrganizationalUnitAdministrationNode
       extends DefaultMutableTreeNode implements Transferable, EventListener
 {
-   @Structure
-   ObjectBuilderFactory obf;
+
+   private ObjectBuilderFactory obf;
+
+   @Uses
+   CommandQueryClient client;
 
    WeakModelMap<TreeNodeValue, OrganizationalUnitAdministrationNode> models = new WeakModelMap<TreeNodeValue, OrganizationalUnitAdministrationNode>()
    {
       @Override
       protected OrganizationalUnitAdministrationNode newModel( TreeNodeValue key )
       {
-         OrganizationalUnitClientResource resource = orgResource.organizationalUnits().organizationalUnit( key.entity().get().identity() );
-         return obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( OrganizationalUnitAdministrationNode.this, key, resource ).newInstance();
+         CommandQueryClient ouClient = client.getSubClient( "organizationalunits" ).getSubClient( key.entity().get().identity() );
+         return obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( OrganizationalUnitAdministrationNode.this, key, ouClient ).newInstance();
       }
    };
 
    OrganizationalUnitAdministrationModel model;
 
-   OrganizationalUnitClientResource orgResource;
-
-   public OrganizationalUnitAdministrationNode( @Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses OrganizationalUnitClientResource ouResource, @Structure ObjectBuilderFactory obf ) throws ResourceException
+   public OrganizationalUnitAdministrationNode( @Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf ) throws ResourceException
    {
       super( ou.buildWith().prototype() );
-      this.orgResource = ouResource;
+      this.client = client;
+      this.obf = obf;
 
-      model = obf.newObjectBuilder( OrganizationalUnitAdministrationModel.class ).use( ouResource ).newInstance();
+      model = obf.newObjectBuilder( OrganizationalUnitAdministrationModel.class ).use( client ).newInstance();
 
       for (TreeNodeValue treeNodeValue : ou.children().get())
       {
-         OrganizationalUnitClientResource resource = orgResource.organizationalUnits().organizationalUnit( treeNodeValue.entity().get().identity() );
-         add( obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( this, treeNodeValue, resource ).newInstance() );
+         Reference reference = client.getReference().clone().getParentRef().addSegment( treeNodeValue.entity().get().identity() );
+         add( obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( this, treeNodeValue, reference, client.getClient() ).newInstance() );
       }
    }
 

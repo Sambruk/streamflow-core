@@ -18,9 +18,10 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -31,12 +32,13 @@ public class OrganizationUsersModel
       extends AbstractListModel
       implements Refreshable, EventListener
 {
-   private OrganizationClientResource organizationResource;
+   private CommandQueryClient client;
+
    private List<ListItemValue> users;
 
-   public OrganizationUsersModel( @Uses OrganizationClientResource organizationResource )
+   public OrganizationUsersModel(@Uses CommandQueryClient client)
    {
-      this.organizationResource = organizationResource;
+      this.client = client;
       refresh();
    }
 
@@ -55,8 +57,7 @@ public class OrganizationUsersModel
    {
       try
       {
-         users = organizationResource.participatingUsers().items().get();
-
+         users = client.query("participatingusers", ListValue.class).items().get();
          fireContentsChanged( this, 0, users.size() );
       } catch (ResourceException e)
       {
@@ -64,9 +65,9 @@ public class OrganizationUsersModel
       }
    }
 
-   public OrganizationClientResource getResource()
+   public CommandQueryClient getResource()
    {
-      return organizationResource;
+      return client;
    }
 
    public void notifyEvent( DomainEvent event )

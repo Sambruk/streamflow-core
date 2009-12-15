@@ -23,7 +23,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.form.FormDefinitionsModel;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
@@ -40,6 +40,7 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 public class OrganizationAdministrationModel
       implements EventListener
 {
+
    @Structure
    ValueBuilderFactory vbf;
 
@@ -48,19 +49,18 @@ public class OrganizationAdministrationModel
    private LabelsModel labelsModel;
    private FormDefinitionsModel formsModel;
    private TaskTypesModel taskTypesModel;
+   private CommandQueryClient client;
 
-   private OrganizationClientResource resource;
-
-   public OrganizationAdministrationModel( @Structure ObjectBuilderFactory obf, @Uses OrganizationClientResource organization )
+   public OrganizationAdministrationModel( @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client)
          throws ResourceException
    {
-      resource = organization;
-
-      rolesModel = obf.newObjectBuilder( RolesModel.class ).use( organization.roles() ).newInstance();
-      labelsModel = obf.newObjectBuilder( LabelsModel.class ).use( organization.getNext(), organization.labels() ).newInstance();
-      taskTypesModel = obf.newObjectBuilder( TaskTypesModel.class ).use( organization.getNext(), organization.taskTypes() ).newInstance();
-      formsModel = obf.newObjectBuilder( FormDefinitionsModel.class ).use( organization.getNext(), organization.forms() ).newInstance();
-      administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( organization.administrators() ).newInstance();
+      this.client = client;
+      
+      rolesModel = obf.newObjectBuilder( RolesModel.class ).use( client.getSubClient( "roles" )).newInstance();
+      labelsModel = obf.newObjectBuilder( LabelsModel.class ).use( client.getSubClient( "labels")).newInstance();
+      taskTypesModel = obf.newObjectBuilder( TaskTypesModel.class ).use( client.getSubClient( "tasktypes" )).newInstance();
+      formsModel = obf.newObjectBuilder( FormDefinitionsModel.class ).use( client.getSubClient( "forms" )).newInstance();
+      administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( client.getSubClient( "administrators" )).newInstance();
    }
 
    public RolesModel rolesModel()
@@ -94,7 +94,7 @@ public class OrganizationAdministrationModel
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( newDescription );
-         resource.changeDescription( builder.newInstance() );
+         client.putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_rename_organization, e );
@@ -107,7 +107,7 @@ public class OrganizationAdministrationModel
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( name );
-         resource.organizationalUnits().createOrganizationalUnit( builder.newInstance() );
+         client.getSubClient("organizationalunits").postCommand( "createorganizationalunit", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
@@ -120,7 +120,7 @@ public class OrganizationAdministrationModel
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( id );
-         resource.organizationalUnits().removeOrganizationalUnit( builder.newInstance() );
+         client.getSubClient("organizationalunits").postCommand( "removeorganizationalunit", builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))

@@ -24,9 +24,10 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -41,6 +42,9 @@ public class GroupsModel
       extends AbstractListModel
       implements Refreshable, EventListener
 {
+   @Uses
+   CommandQueryClient client;
+
    @Structure
    ObjectBuilderFactory obf;
 
@@ -52,12 +56,9 @@ public class GroupsModel
       @Override
       protected GroupModel newModel( String key )
       {
-         return obf.newObjectBuilder( GroupModel.class ).use( groupsResource.group( key ) ).newInstance();
+         return obf.newObjectBuilder( GroupModel.class ).use( client.getSubClient( key ) ).newInstance();
       }
    };
-
-   @Uses
-   private GroupsClientResource groupsResource;
 
    private List<ListItemValue> groups;
 
@@ -67,7 +68,7 @@ public class GroupsModel
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( description );
-         groupsResource.createGroup( builder.newInstance() );
+         client.postCommand( "createGroup",  builder.newInstance() );
          refresh();
       } catch (ResourceException e)
       {
@@ -83,7 +84,7 @@ public class GroupsModel
    {
       try
       {
-         groupsResource.group( id ).deleteCommand();
+         client.getSubClient( id ).deleteCommand();
          refresh();
       } catch (ResourceException e)
       {
@@ -105,9 +106,7 @@ public class GroupsModel
    {
       try
       {
-         // Get label list
-         groups = groupsResource.groups().items().get();
-
+         groups = client.query( "groups", ListValue.class ).items().get();
          fireContentsChanged( this, 0, groups.size() );
       } catch (ResourceException e)
       {
@@ -128,7 +127,7 @@ public class GroupsModel
 
       try
       {
-         groupsResource.group( groups.get( selectedIndex ).entity().get().identity() ).changeDescription( builder.newInstance() );
+         client.getSubClient( groups.get( selectedIndex ).entity().get().identity() ).putCommand( "changedescription",  builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))

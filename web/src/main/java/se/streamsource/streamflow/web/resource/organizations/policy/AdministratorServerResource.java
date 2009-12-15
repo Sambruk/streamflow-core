@@ -18,13 +18,14 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.group.Participant;
 import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.role.Role;
+import se.streamsource.streamflow.web.domain.role.RolePolicy;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
  * /organizations/{organization}/policy/{administrator}
+ *
  */
 public class AdministratorServerResource
       extends CommandQueryServerResource
@@ -35,16 +36,17 @@ public class AdministratorServerResource
 
       String org = getRequest().getAttributes().get( "organization" ).toString();
 
-      OrganizationalUnitEntity ou = uow.get( OrganizationalUnitEntity.class, org );
+      //OrganizationalUnitEntity ou = uow.get( OrganizationalUnitEntity.class, org );
+      RolePolicy role = uow.get( RolePolicy.class, org );
 
       String identity = getRequest().getAttributes().get( "administrator" ).toString();
       Participant participant = uow.get( Participant.class, identity );
 
-      OrganizationEntity organization = (OrganizationEntity) ou.organization().get();
-      Role adminRole = organization.roles().get( 0 );
+      OrganizationEntity organization = (OrganizationEntity)role;
+      Role adminRole = organization.getAdministratorRole();
 
-      checkPermission( ou );
+      checkPermission( role );
 
-      ou.revokeRole( participant, adminRole );
+      role.revokeRole( participant, adminRole );
    }
 }

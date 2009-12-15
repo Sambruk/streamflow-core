@@ -20,9 +20,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
-import se.streamsource.streamflow.client.ui.UsersAndGroupsFilter;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -41,7 +39,8 @@ public class ProjectMembersModel
 
 {
    @Uses
-   private MembersClientResource members;
+   CommandQueryClient client;
+
    @Uses
    OrganizationalUnitAdministrationModel ouAdminModel;
 
@@ -64,7 +63,7 @@ public class ProjectMembersModel
    {
       try
       {
-         memberList = members.members();
+         memberList = client.query( "members", ListValue.class);
          fireContentsChanged( this, 0, getSize() );
       } catch (ResourceException e)
       {
@@ -78,8 +77,7 @@ public class ProjectMembersModel
       {
          for (String value : newMembers)
          {
-            MemberClientResource member = this.members.member( value );
-            member.create();
+            client.getSubClient( value ).create();
          }
       } catch (ResourceException e)
       {
@@ -93,7 +91,7 @@ public class ProjectMembersModel
       {
          String id = memberList.items().get().get( index ).entity().get().identity();
 
-         members.member( id ).deleteCommand();
+         client.getSubClient( id ).deleteCommand();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_member, e );
@@ -104,8 +102,8 @@ public class ProjectMembersModel
    {
    }
 
-   public UsersAndGroupsFilter getFilterResource()
+   public CommandQueryClient getFilterResource()
    {
-      return members;
+      return client;
    }
 }

@@ -21,9 +21,10 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -50,26 +51,18 @@ public class OrganizationsModel
       @Override
       protected OrganizationUsersModel newModel( String key )
       {
-         OrganizationUsersModel model;
-         try
-         {
-            model = obf.newObjectBuilder( OrganizationUsersModel.class )
-                  .use( organizationsResource.organization( key ), organizationsResource ).newInstance();
-         } catch (ResourceException e)
-         {
-            throw new OperationException( AdministrationResources.could_not_find_organization, e );
-         }
-         return model;
+         return obf.newObjectBuilder( OrganizationUsersModel.class )
+               .use( client.getSubClient(key), client ).newInstance();
       }
    };
 
-   private OrganizationsClientResource organizationsResource;
-
    private List<ListItemValue> organizations;
 
-   public OrganizationsModel( @Uses OrganizationsClientResource organizationsResource )
+   private CommandQueryClient client;
+
+   public OrganizationsModel(@Uses CommandQueryClient client)
    {
-      this.organizationsResource = organizationsResource;
+      this.client = client;
       this.refresh();
    }
 
@@ -87,8 +80,7 @@ public class OrganizationsModel
    {
       try
       {
-         organizations = organizationsResource.organizations().items().get();
-
+         organizations = client.query("organizations", ListValue.class).items().get();
          fireContentsChanged( this, 0, organizations.size() );
       } catch (ResourceException e)
       {

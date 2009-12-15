@@ -18,7 +18,6 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionClientResource;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
@@ -145,8 +144,7 @@ public class ClientResourceAssembler
       ).visibleIn( Visibility.application );
 
       // /organizations
-      module.addObjects( OrganizationClientResource.class,
-            OrganizationalUnitsClientResource.class,
+      module.addObjects( OrganizationalUnitsClientResource.class,
             OrganizationalUnitClientResource.class,
             OrganizationsClientResource.class,
 

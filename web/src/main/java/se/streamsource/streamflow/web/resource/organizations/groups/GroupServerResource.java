@@ -65,7 +65,7 @@ public class GroupServerResource
       groups.removeGroup( group );
    }
 
-   public ListValue findUsers( StringDTO query ) throws ResourceException
+   public ListValue findusers( StringDTO query ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 
@@ -92,7 +92,7 @@ public class GroupServerResource
       return listBuilder.newList();
    }
 
-   public ListValue findGroups( StringDTO query ) throws ResourceException
+   public ListValue findgroups( StringDTO query ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 

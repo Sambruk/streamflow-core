@@ -26,7 +26,6 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
-import se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
@@ -63,11 +62,13 @@ public class ProjectsModel
          CommandQueryClient projectClient = client.getSubClient( key );
          SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( projectClient.getSubClient( "labels" ) ).newInstance();
          SelectedTaskTypesModel selectedTaskTypesModel = obf.newObjectBuilder( SelectedTaskTypesModel.class ).use( projectClient.getSubClient( "tasktypes" ) ).newInstance();
+         ProjectMembersModel projectMembersModel = obf.newObjectBuilder(ProjectMembersModel.class).use( projectClient.getSubClient( "members" ) ).newInstance();
 
-         return obf.newObjectBuilder( ProjectModel.class ).use( project( key ).members(),
+
+         return obf.newObjectBuilder( ProjectModel.class ).use(
+               projectMembersModel,
                selectedLabelsModel,
                selectedTaskTypesModel,
-               project( key ).forms(),
                organizationModel ).newInstance();
       }
    };
@@ -94,7 +95,7 @@ public class ProjectsModel
    {
       try
       {
-         project( id ).deleteCommand();
+         client.getSubClient( id ).deleteCommand();
          refresh();
       } catch (ResourceException e)
       {
@@ -127,7 +128,7 @@ public class ProjectsModel
 
       try
       {
-         project( eventList.get( selectedIndex ).entity().get().identity() ).changeDescription( builder.newInstance() );
+         client.getSubClient( eventList.get( selectedIndex ).entity().get().identity() ).putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
@@ -145,11 +146,6 @@ public class ProjectsModel
       {
          projectModel.notifyEvent( event );
       }
-   }
-
-   public ProjectClientResource project( String id )
-   {
-      return client.getSubResource( id, ProjectClientResource.class );
    }
 
    public ProjectModel getProjectModel( String id )

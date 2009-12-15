@@ -14,9 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import org.jdesktop.application.Application;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -25,7 +23,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
@@ -40,28 +38,30 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 public class OrganizationalUnitAdministrationModel
       implements EventListener
 {
+
    @Structure
    ValueBuilderFactory vbf;
 
-   @Service
-   Application application;
+   @Structure
+   ObjectBuilderFactory obf;
 
    private GroupsModel groupsModel;
    private ProjectsModel projectsModel;
    private AdministratorsModel administratorsModel;
-   private OrganizationalUnitClientResource ou;
+   private CommandQueryClient client;
 
-   public OrganizationalUnitAdministrationModel( @Structure ObjectBuilderFactory obf, @Uses OrganizationalUnitClientResource ou ) throws ResourceException
+   public OrganizationalUnitAdministrationModel( @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client ) throws ResourceException
    {
-      this.ou = ou;
-      groupsModel = obf.newObjectBuilder( GroupsModel.class ).use( ou.groups() ).newInstance();
-      projectsModel = obf.newObjectBuilder( ProjectsModel.class ).use( ou.getNext(), ou.projects(), this ).newInstance();
-      administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( ou.administrators() ).newInstance();
+      this.client = client;
+
+      groupsModel = obf.newObjectBuilder( GroupsModel.class ).use( client.getSubClient( "groups" )).newInstance();
+      projectsModel = obf.newObjectBuilder( ProjectsModel.class ).use( client.getSubClient( "projects" ), this).newInstance();
+      administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( client.getSubClient( "administrators" )).newInstance();
    }
 
-   public OrganizationalUnitClientResource getOrganizationalUnit()
+   public CommandQueryClient getOrganizationalUnit()
    {
-      return ou;
+      return client;
    }
 
    public GroupsModel groupsModel()
@@ -85,7 +85,7 @@ public class OrganizationalUnitAdministrationModel
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( newDescription );
-         ou.changeDescription( builder.newInstance() );
+         client.putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_rename_organization, e );
@@ -98,7 +98,7 @@ public class OrganizationalUnitAdministrationModel
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( name );
-         ou.organizationalUnits().createOrganizationalUnit( builder.newInstance() );
+         client.getSubClient("organizationalunits" ).postCommand( "createorganizationalunit", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
@@ -111,7 +111,7 @@ public class OrganizationalUnitAdministrationModel
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( id );
-         ou.organizationalUnits().removeOrganizationalUnit( builder.newInstance() );
+         client.getSubClient("organizationalunits" ).postCommand( "removeorganizationalunit", builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
@@ -134,7 +134,7 @@ public class OrganizationalUnitAdministrationModel
          EntityReferenceDTO dto = builder.prototype();
          dto.entity().set( toID );
 
-         ou.move( builder.newInstance() );
+         client.postCommand( "move", builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
@@ -157,7 +157,7 @@ public class OrganizationalUnitAdministrationModel
          EntityReferenceDTO dto = builder.prototype();
          dto.entity().set( toID );
 
-         ou.merge( builder.newInstance() );
+         client.postCommand( "merge",  builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))

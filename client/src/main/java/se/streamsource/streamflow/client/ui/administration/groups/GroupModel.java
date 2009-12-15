@@ -17,9 +17,7 @@ package se.streamsource.streamflow.client.ui.administration.groups;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
-import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
-import se.streamsource.streamflow.client.ui.UsersAndGroupsFilter;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -34,15 +32,14 @@ public class GroupModel
       extends AbstractListModel
       implements EventListener
 {
+   @Uses
+   CommandQueryClient client;
+
    public ListValue list;
 
-   public GroupModel( @Uses GroupClientResource group )
+   public GroupModel()
    {
-      this.group = group;
    }
-
-   @Uses
-   private GroupClientResource group;
 
    public int getSize()
    {
@@ -61,7 +58,7 @@ public class GroupModel
       {
          for (String value : participants)
          {
-            ParticipantClientResource participant = group.participants().participant( value );
+            CommandQueryClient participant = client.getSubClient("participants" ).getSubClient( value );
             participant.create();
          }
       } catch (ResourceException e)
@@ -74,7 +71,7 @@ public class GroupModel
    {
       try
       {
-         group.participants().participant( participant ).deleteCommand();
+         client.getSubClient( "participants" ).getSubClient( participant ).deleteCommand();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_participant, e );
@@ -84,7 +81,7 @@ public class GroupModel
 
    public void refresh() throws ResourceException
    {
-      list = group.participants().participants();
+      list = client.getSubClient( "participants" ).query( "participants", ListValue.class );
       fireContentsChanged( this, 0, getSize() );
    }
 
@@ -93,8 +90,8 @@ public class GroupModel
 
    }
 
-   public UsersAndGroupsFilter getFilterResource()
+   public CommandQueryClient getFilterResource()
    {
-      return group;
+      return client;
    }
 }

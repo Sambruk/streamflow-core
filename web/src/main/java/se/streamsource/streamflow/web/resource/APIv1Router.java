@@ -104,9 +104,9 @@ public class APIv1Router
       attach( "/organizations/{organization}/roles/{role}", createServerResourceFinder( RoleServerResource.class ) );
       attach( "/organizations/{organization}/forms", createServerResourceFinder( FormTemplatesServerResource.class ) );
       attach( "/organizations/{organization}/forms/{form}", createServerResourceFinder( FormTemplateServerResource.class ) );
-      attach( "/organizations/{organization}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
+      attach( "/organizations/{policy}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
       attach( "/organizations/{organization}/administrators/{administrator}", createServerResourceFinder( AdministratorServerResource.class ) );
-      attach( "/organizations/{organization}/organizationalunits", createServerResourceFinder( OrganizationalUnitsServerResource.class ) );
+      attach( "/organizations/{organizationalunits}/organizationalunits", createServerResourceFinder( OrganizationalUnitsServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes", createServerResourceFinder( TaskTypesServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{tasktype}", createServerResourceFinder( TaskTypeServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{labels}/labels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
@@ -116,6 +116,7 @@ public class APIv1Router
       attach( "/organizations/{labels}/labels", createServerResourceFinder( LabelsServerResource.class ) );
 
       // OrganizationalUnits
+      attach( "/organizations/{organization}/organizationalunits/{policy}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/groups", createServerResourceFinder( GroupsServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/groups/{group}", createServerResourceFinder( GroupServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/groups/{group}/participants", createServerResourceFinder( ParticipantsServerResource.class ) );
@@ -130,7 +131,7 @@ public class APIv1Router
       attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{tasktypes}/tasktypes/{tasktype}", createServerResourceFinder( SelectedTaskTypeServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/administrators/{administrator}", createServerResourceFinder( AdministratorServerResource.class ) );
-      attach( "/organizations/{organization}/organizationalunits/{ou}/organizationalunits", createServerResourceFinder( OrganizationalUnitsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{organizationalunits}/organizationalunits", createServerResourceFinder( OrganizationalUnitsServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{labels}/labels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{labels}/labels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
 

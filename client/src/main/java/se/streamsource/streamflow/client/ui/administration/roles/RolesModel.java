@@ -22,9 +22,10 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -43,7 +44,7 @@ public class RolesModel
    ValueBuilderFactory vbf;
 
    @Uses
-   private RolesClientResource roles;
+   CommandQueryClient client;
 
    private List<ListItemValue> list;
 
@@ -63,7 +64,7 @@ public class RolesModel
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( description );
-         roles.createRole( builder.newInstance() );
+         client.postCommand( "createRole", builder.newInstance() );
 
       } catch (ResourceException e)
       {
@@ -80,7 +81,7 @@ public class RolesModel
    {
       try
       {
-         roles.role( id ).deleteCommand();
+         client.getSubClient( id ).deleteCommand();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_role, e );
@@ -91,7 +92,7 @@ public class RolesModel
    {
       try
       {
-         list = roles.roles().items().get();
+         list = client.query( "roles", ListValue.class).items().get();
          fireContentsChanged( this, 0, list.size() );
       } catch (ResourceException e)
       {

@@ -18,9 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationClientResource;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -43,21 +41,23 @@ public class OrganizationAdministrationNode
 
    OrganizationAdministrationModel model;
 
-   OrganizationsClientResource orgResource;
+   private CommandQueryClient client;
 
-   public OrganizationAdministrationNode( @Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses OrganizationsClientResource orgResource, @Structure ObjectBuilderFactory obf ) throws ResourceException
+   public OrganizationAdministrationNode( @Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf ) throws ResourceException
    {
       super( ou.buildWith().prototype() );
-      this.orgResource = orgResource;
+      this.client = client;
 
-      OrganizationClientResource resource = orgResource.organization( ou.entity().get().identity() );
-
-      model = obf.newObjectBuilder( OrganizationAdministrationModel.class ).use( resource ).newInstance();
+      CommandQueryClient orgClient = client.getSubClient( ou.entity().get().identity() );
+      model = obf.newObjectBuilder( OrganizationAdministrationModel.class )
+            .use( orgClient ).newInstance();
 
       for (TreeNodeValue treeNodeValue : ou.children().get())
       {
-         OrganizationalUnitClientResource ouResource = resource.organizationalUnits().organizationalUnit( treeNodeValue.entity().get().identity() );
-         add( obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( this, treeNodeValue, ouResource ).newInstance() );
+         CommandQueryClient ouClient = orgClient.getSubClient("organizationalunits")
+               .getSubClient( treeNodeValue.entity().get().identity() );
+         add( obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class )
+               .use( this, treeNodeValue, ouClient ).newInstance() );
       }
    }
 

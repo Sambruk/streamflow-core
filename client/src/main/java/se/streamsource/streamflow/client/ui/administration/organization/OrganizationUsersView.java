@@ -27,6 +27,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.SelectOrganizationUsersDialog;
@@ -40,8 +41,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class OrganizationUsersView
       extends JPanel
@@ -99,7 +98,7 @@ public class OrganizationUsersView
 
       if (dialog.getSelectedUsers() != null)
       {
-         model.getResource().join( dialog.getSelectedUsers() );
+         model.getResource().postCommand( "join", dialog.getSelectedUsers() );
          model.refresh();
       }
    }
@@ -118,7 +117,7 @@ public class OrganizationUsersView
             userList.addListItem( user.description().get(), user.entity().get() );
          }
 
-         model.getResource().leave( userList.newList() );
+         model.getResource().postCommand( "leave", userList.newList() );
          model.refresh();
 
          participantList.clearSelection();

@@ -37,7 +37,7 @@ public class RolesServerResource
       return new ListValueBuilder( vbf ).addDescribableItems( roles.roles() ).newList();
    }
 
-   public void createRole( StringDTO name ) throws ResourceException
+   public void createrole( StringDTO name ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 

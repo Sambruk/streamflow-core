@@ -14,7 +14,10 @@
 
 package se.streamsource.streamflow.client.ui.administration.users;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.MediaType;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
@@ -22,28 +25,31 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.HtmlErrorMessageExtractor;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
+import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 
 import javax.swing.table.AbstractTableModel;
 import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-
 public class UsersAdministrationModel
       extends AbstractTableModel
       implements EventListener, EventHandler
 {
+   @Structure
+   ValueBuilderFactory vbf;
 
    private List<UserEntityDTO> users;
-   private OrganizationsClientResource organizations;
 
    private String[] columnNames;
    private Class[] columnClasses;
@@ -51,10 +57,11 @@ public class UsersAdministrationModel
 
    private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "createdUser", "changedEnabled" );
 
+   private CommandQueryClient client;
 
-   public UsersAdministrationModel( @Uses OrganizationsClientResource organizations ) throws ResourceException
+   public UsersAdministrationModel( @Uses CommandQueryClient client ) throws ResourceException
    {
-      this.organizations = organizations;
+      this.client = client;
       columnNames = new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )};
       columnClasses = new Class[]{Boolean.class, String.class};
       columnEditable = new boolean[]{true, false};
@@ -65,7 +72,7 @@ public class UsersAdministrationModel
    {
       try
       {
-         users = organizations.users().users().get();
+         users = client.query("users", UserEntityListDTO.class).users().get();
          fireTableDataChanged();
       } catch (ResourceException e)
       {
@@ -127,7 +134,11 @@ public class UsersAdministrationModel
    {
       try
       {
-         organizations.createUser( username, password );
+         ValueBuilder<NewUserCommand> builder = vbf.newValueBuilder( NewUserCommand.class );
+         builder.prototype().username().set( username );
+         builder.prototype().password().set( password );
+
+         client.postCommand( "createuser", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( ErrorResources.valueOf( HtmlErrorMessageExtractor.parse( e.getMessage() ) ), e );
@@ -139,7 +150,7 @@ public class UsersAdministrationModel
    {
       try
       {
-         organizations.changeDisabled( user );
+         client.postCommand( "changedisabled", user );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_change_user_disabled, e );
@@ -156,7 +167,7 @@ public class UsersAdministrationModel
 
          Representation representation = new FileRepresentation( f, type );
 
-         organizations.importUsers( representation );
+         client.postCommand( "importusers", representation );
 
       } catch (ResourceException e)
       {
@@ -182,7 +193,11 @@ public class UsersAdministrationModel
    {
       try
       {
-         organizations.resetPassword( users.get( index ).entity().get(), password );
+         ValueBuilder<ResetPasswordCommand> builder = vbf.newValueBuilder( ResetPasswordCommand.class );
+         builder.prototype().entity().set(  users.get( index ).entity().get() );
+         builder.prototype().password().set( password );
+
+         client.putCommand( "resetpassword", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.reset_password_failed, e );

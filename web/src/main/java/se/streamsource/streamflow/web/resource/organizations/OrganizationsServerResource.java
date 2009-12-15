@@ -103,7 +103,7 @@ public class OrganizationsServerResource
       return orgs.users();
    }
 
-   public void createUser( NewUserCommand userCommand ) throws ResourceException
+   public void createuser( NewUserCommand userCommand ) throws ResourceException
    {
       Organizations organizations = uowf.currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
 
@@ -121,7 +121,7 @@ public class OrganizationsServerResource
       }
    }
 
-   public void changeDisabled( UserEntityDTO user )
+   public void changedisabled( UserEntityDTO user )
    {
       UserEntity userEntity = uowf.currentUnitOfWork().get( UserEntity.class, user.entity().get().identity() );
 
@@ -130,7 +130,7 @@ public class OrganizationsServerResource
       userEntity.changeEnabled( userEntity.disabled().get() );
    }
 
-   public void importUsers( Representation representation ) throws ResourceException
+   public void importusers( Representation representation ) throws ResourceException
    {
       boolean badRequest = false;
       String errors = "<html>";
@@ -259,7 +259,7 @@ public class OrganizationsServerResource
       return organizations.organizations();
    }
 
-   public void resetPassword( ResetPasswordCommand command )
+   public void resetpassword( ResetPasswordCommand command )
    {
       UserEntity userEntity = uowf.currentUnitOfWork().get( UserEntity.class, command.entity().get().identity() );
 

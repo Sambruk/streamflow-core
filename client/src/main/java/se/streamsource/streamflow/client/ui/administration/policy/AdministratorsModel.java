@@ -21,10 +21,10 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
-import se.streamsource.streamflow.client.ui.UsersAndGroupsFilter;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -43,7 +43,7 @@ public class AdministratorsModel
    ValueBuilderFactory vbf;
 
    @Uses
-   private AdministratorsClientResource administrators;
+   CommandQueryClient client;
 
    private List<ListItemValue> list;
 
@@ -63,7 +63,7 @@ public class AdministratorsModel
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( description );
-         administrators.addAdministrator( builder.newInstance() );
+         client.postCommand( "addadministrator", builder.newInstance() );
          refresh();
 
       } catch (ResourceException e)
@@ -77,7 +77,7 @@ public class AdministratorsModel
    {
       try
       {
-         administrators.role( id ).deleteCommand();
+         client.getSubClient( id ).deleteCommand();
          refresh();
       } catch (ResourceException e)
       {
@@ -89,7 +89,7 @@ public class AdministratorsModel
    {
       try
       {
-         list = administrators.administrators().items().get();
+         list = client.query( "administrators", ListValue.class ).items().get();
          fireContentsChanged( this, 0, list.size() );
       } catch (ResourceException e)
       {
@@ -101,8 +101,8 @@ public class AdministratorsModel
    {
    }
 
-   public UsersAndGroupsFilter getFilterResource()
+   public CommandQueryClient getFilterResource()
    {
-      return administrators;
+      return client;
    }
 }
