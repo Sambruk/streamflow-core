@@ -45,30 +45,11 @@ public class WorkspaceAssembler
             WorkspaceProjectDelegationsNode.class,
             WorkspaceProjectWaitingForNode.class ).visibleIn( Visibility.layer );
 
-      UIAssemblers.addModels( module, ProjectSelectorModel2.class );
-
       UIAssemblers.addMV( module,
             WorkspaceModel.class,
             WorkspaceView.class );
 
-      // Project
-      UIAssemblers.addMV( module,
-            WorkspaceProjectInboxModel.class,
-            WorkspaceProjectInboxView.class );
-
-      UIAssemblers.addMV( module,
-            WorkspaceProjectAssignmentsModel.class,
-            WorkspaceProjectAssignmentsView.class );
-
-      UIAssemblers.addMV( module,
-            WorkspaceProjectDelegationsModel.class,
-            WorkspaceProjectDelegationsView.class );
-
-      UIAssemblers.addMV( module,
-            WorkspaceProjectWaitingForModel.class,
-            WorkspaceProjectWaitingForView.class );
-
-      UIAssemblers.addDialogs( module, SelectUserOrProjectDialog.class, SelectUserOrProjectDialog2.class, ProjectSelectionDialog.class );
+      UIAssemblers.addDialogs( module, SelectUserOrProjectDialog.class, SelectUserOrProjectDialog2.class);
 
    }
 }

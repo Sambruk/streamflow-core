@@ -14,163 +14,55 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
-import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 
-import javax.swing.ImageIcon;
-import java.util.Date;
-import java.util.List;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import javax.swing.SwingUtilities;
 
 /**
  * JAVADOC
  */
 public class SearchResultTableModel
-      extends TaskTableModel
+      extends TaskTableModel2
 {
-   public SearchResultTableModel( @Uses SearchClientResource resource )
-   {
-      super( resource );
-      columnNames = new String[]{text( title_column_header ), text( project_column_header ), text( assigned_to_header ), text( created_column_header ), ""};
-      columnClasses = new Class[]{String.class, String.class, String.class, Date.class, ImageIcon.class};
-      columnEditable = new boolean[]{false, false, false, false, false};
-   }
-
-   @Override
-   protected SearchClientResource getResource()
-   {
-      return (SearchClientResource) super.getResource();
-   }
+   private String searchString;
 
    public void search( String text )
    {
+      searchString = text;
 
-      try
-      {
-         getResource().search( text );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( ErrorResources.search_string_malformed, e );
-      }
       refresh();
    }
 
    @Override
-   public void markAsUnread( int idx ) throws ResourceException
-   {
-      // Ignore
-   }
-
-   @Override
-   public void markAsRead( int idx )
-   {
-      // Ignore
-   }
-
-   public int getColumnCount()
-   {
-      return 5;
-   }
-
-
-   @Override
-   public Object getValueAt( int rowIndex, int column )
-   {
-      SearchTaskDTO task = (SearchTaskDTO) tasks.get( rowIndex );
-
-      if (task == null)
-         return null;
-
-      switch (column)
-      {
-         case 0:
-         {
-            StringBuilder desc = new StringBuilder( task.description().get() );
-            List<ListItemValue> labels = task.labels().get().items().get();
-            if (labels.size() > 0)
-            {
-               desc.append( " (" );
-               String comma = "";
-               for (ListItemValue label : labels)
-               {
-                  desc.append( comma + label.description().get() );
-                  comma = ",";
-               }
-               desc.append( ")" );
-            }
-            return desc.toString();
-         }
-         case 1:
-            return task.project().get();
-         case 2:
-            return task.assignedTo().get();
-         case 3:
-            return task.creationDate().get();
-         case 4:
-            return task.status().get();
-         case IS_READ:
-            return task.isRead().get();
-         case IS_DROPPED:
-            return task.status().get().equals( TaskStates.DROPPED );
-      }
-
-      return null;
-   }
-
-   @Override
-   public void setValueAt( Object aValue, int rowIndex, int column )
+   public void refresh()
    {
       try
       {
-         switch (column)
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( searchString );
+
+         final TaskListDTO newRoot = client.query( "search", builder.newInstance(), TaskListDTO.class );
+         boolean same = newRoot.equals( tasks );
+         if (!same)
          {
-            case 0:
+            SwingUtilities.invokeLater( new Runnable()
             {
-               String description = (String) aValue;
-               TaskDTO taskValue = (TaskDTO) tasks.get( rowIndex );
-               if (!description.equals( taskValue.description().get() ))
+               public void run()
                {
-                  taskValue.description().set( description );
-                  fireTableCellUpdated( rowIndex, column );
+                  eventList.clear();
+                  eventList.addAll( newRoot.tasks().get() );
                }
-               break;
-            }
-            case 4:
-            {
-               Boolean completed = (Boolean) aValue;
-               if (completed)
-               {
-
-                  TaskDTO taskValue = (TaskDTO) tasks.get( rowIndex );
-                  if (taskValue.status().get() == TaskStates.ACTIVE)
-                  {
-                     EntityReference task = taskValue.task().get();
-                     getResource().task( task.identity() ).complete();
-
-                     taskValue.status().set( TaskStates.COMPLETED );
-                     fireTableCellUpdated( rowIndex, column );
-                  }
-               }
-               break;
-            }
+            });
          }
       } catch (ResourceException e)
       {
-         // TODO Better error handling
-         e.printStackTrace();
+         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
       }
-
-      return; // Skip if don't know what is going on
    }
 }

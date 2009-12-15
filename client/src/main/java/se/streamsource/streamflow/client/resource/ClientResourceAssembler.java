@@ -39,8 +39,6 @@ import se.streamsource.streamflow.client.resource.organizations.projects.members
 import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRolesClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RoleClientResource;
 import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
-import se.streamsource.streamflow.client.resource.users.UsersClientResource;
-import se.streamsource.streamflow.client.resource.users.administration.UserAdministrationClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
@@ -59,49 +57,9 @@ public class ClientResourceAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( ResourceListItem.class );
-
       // /users
       module.addObjects( CommandQueryClient.class,
-            StreamFlowClientResource.class,
-            UsersClientResource.class,
-            se.streamsource.streamflow.client.resource.users.UserClientResource.class,
-            UserAdministrationClientResource.class,
 
-/*            TasksClientResource.class,
-            TaskClientResource.class,
-            TaskGeneralClientResource.class,
-            TaskCommentsClientResource.class,
-            TaskContactsClientResource.class,
-            TaskContactClientResource.class,
-
-            WorkspaceClientResource.class,
-            WorkspaceUserClientResource.class,
-            WorkspaceUserInboxClientResource.class,
-            WorkspaceUserInboxTaskClientResource.class,
-
-            WorkspaceUserAssignmentsClientResource.class,
-            WorkspaceUserAssignedTaskClientResource.class,
-
-            WorkspaceUserDelegationsClientResource.class,
-            WorkspaceUserDelegatedTaskClientResource.class,
-
-            WorkspaceUserWaitingForClientResource.class,
-            WorkspaceUserWaitingForTaskClientResource.class,
-
-            WorkspaceProjectClientResource.class,
-            WorkspaceProjectsClientResource.class,
-            WorkspaceProjectInboxClientResource.class,
-            WorkspaceProjectInboxTaskClientResource.class,
-            WorkspaceProjectAssignmentsClientResource.class,
-            WorkspaceProjectAssignmentsTaskClientResource.class,
-            WorkspaceProjectDelegationsClientResource.class,
-            WorkspaceProjectDelegationsTaskClientResource.class,
-            WorkspaceProjectWaitingforClientResource.class,
-            WorkspaceProjectWaitingforTaskClientResource.class,
-            LabelsClientResource.class,
-            LabelClientResource.class,
-*/
             ProjectFormDefinitionsClientResource.class,
             ProjectFormDefinitionClientResource.class,
             ProjectFormDefinitionFieldsClientResource.class,
@@ -130,8 +88,6 @@ public class ClientResourceAssembler
             ParticipantsClientResource.class,
             ParticipantClientResource.class,
 
-            se.streamsource.streamflow.client.resource.organizations.projects.ProjectsClientResource.class,
-            se.streamsource.streamflow.client.resource.organizations.projects.ProjectClientResource.class,
             MembersClientResource.class,
             MemberClientResource.class,
             MemberRolesClientResource.class,

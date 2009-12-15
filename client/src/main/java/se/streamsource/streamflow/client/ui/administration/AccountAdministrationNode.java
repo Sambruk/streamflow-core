@@ -17,13 +17,11 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.Uniform;
-import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsModel;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
 import se.streamsource.streamflow.domain.organization.AdministrationType;
@@ -56,12 +54,11 @@ public class AccountAdministrationNode
    {
       protected TreeNode newModel( TreeNodeValue key )
       {
-         Uniform uniform = accountModel.serverResource().organizations().getNext();
-         Reference ref = accountModel.serverResource().organizations().getReference();
+         CommandQueryClient organizationsClient = accountModel.serverResource().getSubClient( "organizations" );
          if (key.nodeType().get().equals( AdministrationType.organization.name() ))
-            return obf.newObjectBuilder( OrganizationAdministrationNode.class ).use( AccountAdministrationNode.this, uniform, ref, key ).newInstance();
+            return obf.newObjectBuilder( OrganizationAdministrationNode.class ).use( AccountAdministrationNode.this, organizationsClient, key ).newInstance();
          else
-            return obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( AccountAdministrationNode.this, uniform, ref, key ).newInstance();
+            return obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( AccountAdministrationNode.this, organizationsClient, key ).newInstance();
       }
    };
 
@@ -105,9 +102,8 @@ public class AccountAdministrationNode
    {
       if (usersModel == null)
       {
-         Uniform uniform = accountModel.serverResource().organizations().getNext();
-         Reference ref = accountModel.serverResource().organizations().getReference();
-         usersModel = obf.newObjectBuilder( UsersAdministrationModel.class ).use( uniform, ref ).newInstance();
+         CommandQueryClient organizationsClient = accountModel.serverResource().getSubClient( "organizations" );
+         usersModel = obf.newObjectBuilder( UsersAdministrationModel.class ).use( organizationsClient ).newInstance();
       }
 
       return usersModel;
@@ -117,9 +113,8 @@ public class AccountAdministrationNode
    {
       if (organizationsModel == null)
       {
-         Uniform uniform = accountModel.serverResource().organizations().getNext();
-         Reference ref = accountModel.serverResource().organizations().getReference();
-         organizationsModel = obf.newObjectBuilder( OrganizationsModel.class ).use( uniform, ref ).newInstance();
+         CommandQueryClient organizationsClient = accountModel.serverResource().getSubClient( "organizations" );
+         organizationsModel = obf.newObjectBuilder( OrganizationsModel.class ).use(organizationsClient ).newInstance();
       }
 
       return organizationsModel;

@@ -64,6 +64,8 @@ public class AbstractTaskListServerResource
 
       if (task.taskType().get() != null)
          prototype.taskType().set( task.taskType().get().getDescription() );
+      else
+         prototype.taskType().set( null );
 
       prototype.creationDate().set( task.createdOn().get() );
       prototype.description().set( task.description().get() );

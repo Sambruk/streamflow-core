@@ -178,6 +178,7 @@ public class OverviewView
 
                } else if (node instanceof OverviewProjectAssignmentsNode)
                {
+/*
                   OverviewProjectAssignmentsNode projectAssignmentsNode = (OverviewProjectAssignmentsNode) node;
                   final OverviewProjectAssignmentsModel assignmentsModel = projectAssignmentsNode.assignmentsModel();
                   view = obf.newObjectBuilder( OverviewProjectAssignmentsView.class ).use( assignmentsModel, projectAssignmentsNode.getParent() ).newInstance();
@@ -192,6 +193,7 @@ public class OverviewView
                      }
                   } );
 
+*/
                }
 /*
                     else if (node instanceof OverviewProjectWaitingForNode)

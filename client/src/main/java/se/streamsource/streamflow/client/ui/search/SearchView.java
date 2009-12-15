@@ -16,9 +16,12 @@ package se.streamsource.streamflow.client.ui.search;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.task.TaskTableView2;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
@@ -35,11 +38,14 @@ import java.awt.event.FocusListener;
 public class SearchView
       extends JPanel
 {
+   @Structure
+   ValueBuilderFactory vbf;
+
    public JTextField searchField;
    private SearchResultTableModel model;
 
    public SearchView( @Service ApplicationContext context,
-                      @Uses final SearchResultTableView resultView,
+                      @Uses final TaskTableView2 resultView,
                       @Uses SearchResultTableModel model )
    {
       super( new BorderLayout() );
@@ -84,18 +90,4 @@ public class SearchView
    {
       model.search( searchField.getText() );
    }
-
-   @Override
-   public void setSize( int width, int height )
-   {
-      super.setSize( width, height );
-   }
-
-   @Override
-   public void setSize( Dimension d )
-   {
-      super.setSize( d );
-   }
-
-
 }

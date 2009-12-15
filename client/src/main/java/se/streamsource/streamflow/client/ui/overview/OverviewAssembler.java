@@ -47,9 +47,6 @@ public class OverviewAssembler
 
       // Project
       UIAssemblers.addMV( module,
-            OverviewProjectAssignmentsModel.class,
-            OverviewProjectAssignmentsView.class );
-      UIAssemblers.addMV( module,
             OverviewProjectWaitingForModel.class,
             OverviewProjectWaitingForView.class );
    }

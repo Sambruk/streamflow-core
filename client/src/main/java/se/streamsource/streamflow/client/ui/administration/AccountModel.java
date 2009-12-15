@@ -29,7 +29,6 @@ import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
-import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewProjectsNode;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
@@ -234,12 +233,12 @@ public class AccountModel
       return overviewModel;
    }
 
-   public SearchResultTableModel search()
+   public TaskTableModel2 search()
    {
       if (searchResults == null)
       {
          CommandQueryClient client = userResource();
-         SearchClientResource search = client.getSubResource( "search", SearchClientResource.class );
+         CommandQueryClient search = client.getSubClient( "search");
          searchResults = obf.newObjectBuilder( SearchResultTableModel.class ).use( search, tasks() ).newInstance();
       }
 

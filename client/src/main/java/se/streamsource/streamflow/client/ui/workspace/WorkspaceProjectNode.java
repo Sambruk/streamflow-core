@@ -15,9 +15,6 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -55,11 +52,6 @@ public class WorkspaceProjectNode
    public WorkspaceProjectsNode getParent()
    {
       return (WorkspaceProjectsNode) super.getParent();
-   }
-
-   public ListValue findProjects( String name ) throws ResourceException
-   {
-      return ((WorkspaceProjectClientResource) getUserObject()).findProjects( name );
    }
 
    public void notifyEvent( DomainEvent event )

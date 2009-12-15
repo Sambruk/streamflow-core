@@ -41,16 +41,16 @@ public class TaskTableModel2
       implements EventListener, EventHandler, Refreshable
 {
    @Uses
-   CommandQueryClient client;
+   protected CommandQueryClient client;
 
    @Structure
-   ValueBuilderFactory vbf;
+   protected ValueBuilderFactory vbf;
 
    protected TaskListDTO tasks;
 
-   private EventHandlerFilter eventFilter;
+   protected BasicEventList<TaskDTO> eventList = new BasicEventList<TaskDTO>();
 
-   private BasicEventList<TaskDTO> eventList = new BasicEventList<TaskDTO>();
+   private EventHandlerFilter eventFilter;
 
    public TaskTableModel2()
    {
@@ -139,6 +139,7 @@ public class TaskTableModel2
                {
                   eventList.clear();
                   eventList.addAll( newRoot.tasks().get() );
+                  tasks = newRoot;
                }
             });
          }
