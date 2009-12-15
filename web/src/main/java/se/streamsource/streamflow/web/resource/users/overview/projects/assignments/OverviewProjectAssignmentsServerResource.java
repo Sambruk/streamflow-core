@@ -18,12 +18,12 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
-import se.streamsource.streamflow.resource.assignment.OverviewAssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
@@ -35,8 +35,6 @@ import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.task.TaskStatus;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
-import static org.qi4j.api.query.QueryExpressions.*;
-
 /**
  * Mapped to:
  * /users/{user}/overview/projects/{project}/assignments
@@ -44,7 +42,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 public class OverviewProjectAssignmentsServerResource
       extends AbstractTaskListServerResource
 {
-   public OverviewAssignmentsTaskListDTO tasks( TasksQuery query )
+   public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
       String projectId = (String) getRequest().getAttributes().get( "project" );
@@ -60,11 +58,11 @@ public class OverviewProjectAssignmentsServerResource
             newQuery( uow );
       assignmentsQuery.orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
 
-      return buildTaskList( assignmentsQuery, OverviewAssignedTaskDTO.class, OverviewAssignmentsTaskListDTO.class );
+      return buildTaskList( assignmentsQuery, OverviewAssignedTaskDTO.class );
    }
 
    @Override
-   protected <T extends TaskListDTO> void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
+   protected void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
    {
       OverviewAssignedTaskDTO taskDTO = (OverviewAssignedTaskDTO) prototype;
       Assignee assignee = task.assignedTo().get();

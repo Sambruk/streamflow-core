@@ -15,14 +15,18 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import javax.swing.AbstractListModel;
 import java.util.List;
@@ -35,7 +39,10 @@ public class TaskLabelsModel
       implements EventListener
 {
    @Uses
-   TaskGeneralClientResource resource;
+   CommandQueryClient client;
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    List<ListItemValue> labels;
 
@@ -60,7 +67,9 @@ public class TaskLabelsModel
    {
       try
       {
-         resource.addLabel( addLabel.identity() );
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( addLabel );
+         client.postCommand( "addlabel", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_add_label, e );
@@ -79,7 +88,9 @@ public class TaskLabelsModel
 
       try
       {
-         resource.removeLabel( removeLabel.identity() );
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( removeLabel );
+         client.putCommand( "removelabel", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_remove_label, e );

@@ -19,7 +19,6 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
-import se.streamsource.streamflow.client.resource.task.TasksClientResource;
 import se.streamsource.streamflow.client.resource.users.UsersClientResource;
 
 import java.io.IOException;
@@ -38,6 +37,7 @@ public class StreamFlowClientResource
 
    public String version() throws ResourceException, IOException
    {
+
       StreamFlowClientResource flowClientResource = getResource( getReference().clone().addSegment( "static" ).addSegment( "version.html" ), StreamFlowClientResource.class );
       return flowClientResource.get().getText();
    }
@@ -50,11 +50,6 @@ public class StreamFlowClientResource
    public OrganizationsClientResource organizations()
    {
       return getSubResource( "organizations", OrganizationsClientResource.class );
-   }
-
-   public TasksClientResource tasks()
-   {
-      return getSubResource( "tasks", TasksClientResource.class );
    }
 
    public EventsClientResource events()

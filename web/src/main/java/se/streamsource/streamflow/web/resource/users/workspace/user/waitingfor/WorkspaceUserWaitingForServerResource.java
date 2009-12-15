@@ -15,8 +15,8 @@
 package se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskListDTO;
 import se.streamsource.streamflow.web.domain.task.Delegator;
 import se.streamsource.streamflow.web.domain.task.WaitingForQueries;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
@@ -28,7 +28,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class WorkspaceUserWaitingForServerResource
       extends AbstractTaskListServerResource
 {
-   public WaitingForTaskListDTO tasks( TasksQuery query )
+   public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
       String userId = (String) getRequest().getAttributes().get( "user" );

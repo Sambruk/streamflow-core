@@ -37,17 +37,16 @@ public class AbstractTaskListServerResource
       extends CommandQueryServerResource
 {
 
-   protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
+   protected <V extends TaskDTO> TaskListDTO buildTaskList(
          Query<TaskEntity> inboxQuery,
-         Class<V> taskClass,
-         Class<T> taskListClass )
+         Class<V> taskClass)
    {
       ValueBuilder<V> builder = vbf.newValueBuilder( taskClass );
       TaskDTO prototype = builder.prototype();
-      ValueBuilder<T> listBuilder = vbf.newValueBuilder( taskListClass );
-      T t = listBuilder.prototype();
-      Property<List<V>> property = t.tasks();
-      List<V> list = property.get();
+      ValueBuilder<TaskListDTO> listBuilder = vbf.newValueBuilder( TaskListDTO.class );
+      TaskListDTO t = listBuilder.prototype();
+      Property<List<TaskDTO>> property = t.tasks();
+      List<TaskDTO> list = property.get();
       ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder( ListItemValue.class );
       ListItemValue labelPrototype = labelBuilder.prototype();
       for (TaskEntity task : inboxQuery)
@@ -59,9 +58,13 @@ public class AbstractTaskListServerResource
       return listBuilder.newInstance();
    }
 
-   protected <T extends TaskListDTO> void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
+   protected void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
    {
       prototype.task().set( EntityReference.getEntityReference( task ) );
+
+      if (task.taskType().get() != null)
+         prototype.taskType().set( task.taskType().get().getDescription() );
+
       prototype.creationDate().set( task.createdOn().get() );
       prototype.description().set( task.description().get() );
       prototype.status().set( task.status().get() );

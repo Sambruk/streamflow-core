@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.resource.users.search;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
@@ -28,6 +29,7 @@ import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.web.domain.label.Labelable;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Owner;
@@ -45,14 +47,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static org.qi4j.api.query.QueryExpressions.*;
-
 /**
  * JAVADOC
  */
 public class SearchTasksServerResource extends AbstractTaskListServerResource
 {
-   public SearchTaskListDTO search( StringDTO query )
+   public TaskListDTO search( StringDTO query )
          throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -124,8 +124,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
          // TODO: Do not perform a query with null whereClause! How to check
          // this?
          Query<TaskEntity> tasks = queryBuilder.newQuery( uow );
-         return buildTaskList( tasks, SearchTaskDTO.class,
-               SearchTaskListDTO.class );
+         return buildTaskList( tasks, SearchTaskDTO.class);
       } else
       {
          return vbf.newValue( SearchTaskListDTO.class );

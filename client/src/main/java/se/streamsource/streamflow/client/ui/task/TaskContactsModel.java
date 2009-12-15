@@ -14,13 +14,15 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.task.TaskContactsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -28,7 +30,6 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 
-import javax.swing.AbstractListModel;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -37,15 +38,15 @@ import java.util.logging.Logger;
  * List of contacts for a task
  */
 public class TaskContactsModel
-      extends AbstractListModel
       implements Refreshable, EventListener, EventHandler
-
 {
    @Structure
    ValueBuilderFactory vbf;
 
    @Uses
-   private TaskContactsClientResource contactsClientResource;
+   private CommandQueryClient client;
+
+   BasicEventList<ContactValue> eventList = new BasicEventList<ContactValue>( );
 
    EventHandlerFilter eventFilter = new EventHandlerFilter( this, "addedContact", "deletedContact", "updatedContact" );
 
@@ -59,40 +60,30 @@ public class TaskContactsModel
    {
       try
       {
-         TaskContactsDTO contactsDTO = (TaskContactsDTO) contactsClientResource.contacts().buildWith().prototype();
-         contacts = contactsDTO.contacts().get();
-         fireContentsChanged( this, 0, getSize() );
+         TaskContactsDTO contactsDTO = (TaskContactsDTO) client.query( "contacts", TaskContactsDTO.class ).buildWith().prototype();
+         eventList.clear();
+         eventList.addAll( contactsDTO.contacts().get() );
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );
       }
    }
 
-   public List<ContactValue> getContacts()
+   public EventList<ContactValue> getEventList()
    {
-      return contacts;
+      return eventList;
    }
 
-   public TaskContactsClientResource getTaskContactsClientResource()
+   public CommandQueryClient getTaskContactsClientResource()
    {
-      return contactsClientResource;
-   }
-
-   public int getSize()
-   {
-      return contacts.size();
-   }
-
-   public Object getElementAt( int i )
-   {
-      return contacts.get( i );
+      return client;
    }
 
    public void createContact()
    {
       try
       {
-         contactsClientResource.add();
+         client.postCommand( "add", vbf.newValue( ContactValue.class ) );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_create_contact, e );
@@ -103,7 +94,7 @@ public class TaskContactsModel
    {
       try
       {
-         contactsClientResource.taskContact( selectedIndex ).deleteCommand();
+         client.getSubClient( selectedIndex+"" ).deleteCommand();
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_remove_contact, e );
@@ -117,7 +108,7 @@ public class TaskContactsModel
 
    public boolean handleEvent( DomainEvent event )
    {
-      if (contactsClientResource.getRequest().getResourceRef().getParentRef().getLastSegment().equals( event.entity().get() ))
+      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {
          Logger.getLogger( "workspace" ).info( "Refresh task contacts" );
          refresh();

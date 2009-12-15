@@ -15,10 +15,8 @@
 package se.streamsource.streamflow.web.resource.users.workspace.projects;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.group.Participation;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -29,11 +27,10 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class WorkspaceProjectsServerResource
       extends CommandQueryServerResource
 {
-   public ListValue listProjects()
+   public ListValue projects()
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
       ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
       String id = (String) getRequest().getAttributes().get( "user" );

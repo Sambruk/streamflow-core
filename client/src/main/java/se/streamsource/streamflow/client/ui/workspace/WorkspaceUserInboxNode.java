@@ -15,7 +15,12 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.task.TaskCreationNode;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -26,18 +31,21 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceUserInboxNode
       extends DefaultMutableTreeNode
-      implements EventListener
+      implements EventListener, TaskCreationNode
 {
    @Uses
-   private WorkspaceUserInboxModel model;
+   CommandQueryClient client;
+
+   @Uses
+   private TaskTableModel2 model;
 
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.inboxes_node );
-      int unread = model.count();
-      if (unread > 0)
+      int count = model.getEventList().size();
+      if (count > 0)
       {
-         text += " (" + unread + ")";
+         text += " (" + count + ")";
       } else
       {
          text += "                ";
@@ -46,13 +54,24 @@ public class WorkspaceUserInboxNode
       return text;
    }
 
+   public void createTask()
+   {
+      try
+      {
+         client.postCommand( "createtask" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
    @Override
    public WorkspaceUserNode getParent()
    {
       return (WorkspaceUserNode) super.getParent();
    }
 
-   public WorkspaceUserInboxModel inboxModel()
+   public TaskTableModel2 taskTableModel()
    {
       return model;
    }

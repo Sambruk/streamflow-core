@@ -15,15 +15,20 @@
 package se.streamsource.streamflow.client.domain.individual;
 
 import org.restlet.Uniform;
-import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
-import se.streamsource.streamflow.client.resource.users.UserClientResource;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
+
+import java.io.IOException;
 
 /**
  * JAVADOC
  */
 public interface AccountConnection
 {
-   StreamFlowClientResource server( Uniform client );
+   CommandQueryClient server( Uniform client );
 
-   UserClientResource user( Uniform client );
+   CommandQueryClient user( Uniform client );
+
+   String version(Uniform client)
+       throws ResourceException, IOException;
 }

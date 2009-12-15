@@ -24,7 +24,6 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -32,12 +31,14 @@ import org.restlet.Uniform;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
+import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
-import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
-import se.streamsource.streamflow.client.resource.users.UserClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+
+import java.io.IOException;
 
 /**
  * JAVADOC
@@ -94,7 +95,7 @@ public interface AccountEntity
 
       public void changePassword( Uniform client, ChangePasswordCommand changePassword ) throws ResourceException
       {
-         user( client ).changePassword( changePassword );
+         user( client ).postCommand( "changePassword", changePassword );
 
          AccountSettingsValue settings = state.settings().get().<AccountSettingsValue>buildWith().prototype();
          settings.password().set( changePassword.newPassword().get() );
@@ -104,7 +105,7 @@ public interface AccountEntity
 
       // AccountConnection
 
-      public StreamFlowClientResource server( Uniform client )
+      public CommandQueryClient server( Uniform client )
       {
          AccountSettingsValue settings = accountSettings();
          Reference serverRef = new Reference( settings.server().get() );
@@ -113,15 +114,24 @@ public interface AccountEntity
          AuthenticationFilter filter = new AuthenticationFilter( uowf, account );
          filter.setNext( (Restlet) client );
 
-         Context childContext = new Context();
-         StreamFlowClientResource flowClientResource = obf.newObjectBuilder( StreamFlowClientResource.class ).use( childContext, serverRef ).newInstance();
-         flowClientResource.setNext( filter );
-         return flowClientResource;
+         CommandQueryClient cqc = obf.newObjectBuilder( CommandQueryClient.class ).use( filter, serverRef ).newInstance();
+
+         return cqc;
       }
 
-      public UserClientResource user( Uniform client )
+      public CommandQueryClient user( Uniform client )
       {
-         return server( client ).users().user( accountSettings().userName().get() );
+         return server( client ).getSubClient( "users" ).getSubClient( accountSettings().userName().get() );
+      }
+
+      public String version(Uniform client) throws ResourceException, IOException
+      {
+         CommandQueryClient server = server( client );
+         ClientResource version = new ClientResource( server.getReference().clone().addSegment( "static" ).addSegment( "version.html" ));
+         version.setNext( server.getClient() );
+
+         String response = version.get().getText();
+         return response;
       }
    }
 

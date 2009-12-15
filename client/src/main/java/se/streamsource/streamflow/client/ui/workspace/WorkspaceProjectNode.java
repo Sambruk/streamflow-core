@@ -33,13 +33,12 @@ public class WorkspaceProjectNode
    @Uses
    String projectName;
 
-   public WorkspaceProjectNode( @Uses WorkspaceProjectClientResource workspaceProjectClientResource,
-                                @Uses WorkspaceProjectInboxNode inbox,
+   public WorkspaceProjectNode(@Uses WorkspaceProjectInboxNode inbox,
                                 @Uses WorkspaceProjectAssignmentsNode assignments,
                                 @Uses WorkspaceProjectDelegationsNode delegations,
                                 @Uses WorkspaceProjectWaitingForNode waitingFor )
    {
-      super( workspaceProjectClientResource );
+      super( null );
 
       add( inbox );
       add( assignments );
@@ -56,11 +55,6 @@ public class WorkspaceProjectNode
    public WorkspaceProjectsNode getParent()
    {
       return (WorkspaceProjectsNode) super.getParent();
-   }
-
-   public ListValue findUsers( String name ) throws ResourceException
-   {
-      return ((WorkspaceProjectClientResource) getUserObject()).findUsers( name );
    }
 
    public ListValue findProjects( String name ) throws ResourceException

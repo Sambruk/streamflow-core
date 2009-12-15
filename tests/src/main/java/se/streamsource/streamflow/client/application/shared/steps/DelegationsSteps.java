@@ -1,6 +1,7 @@
 package se.streamsource.streamflow.client.application.shared.steps;
 
 import org.hamcrest.CoreMatchers;
+import static org.jbehave.Ensure.*;
 import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.Then;
 import org.jbehave.scenario.annotations.When;
@@ -11,11 +12,9 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.domain.task.TaskStates;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.web.domain.task.TaskEntity;
-
-import static org.jbehave.Ensure.*;
 
 public class DelegationsSteps extends Steps
 {
@@ -37,7 +36,7 @@ public class DelegationsSteps extends Steps
    public void givenDelegatedTask() throws UnitOfWorkCompletionException
    {
       uowf.currentUnitOfWork().apply();
-      DelegationsTaskListDTO list = projectsSteps.givenProject.delegationsTasks();
+      TaskListDTO list = projectsSteps.givenProject.delegationsTasks();
       TaskDTO task = list.tasks().get().get( 0 );
       givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
    }

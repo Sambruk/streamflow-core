@@ -14,18 +14,17 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXList;
+import org.netbeans.api.wizard.WizardDisplayer;
+import org.netbeans.spi.wizard.Wizard;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
-import org.netbeans.spi.wizard.Wizard;
-import org.netbeans.api.wizard.WizardDisplayer;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
@@ -57,6 +56,7 @@ public class TaskSubmittedFormsView
    ObjectBuilderFactory obf;
 
    private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_format ) );
+   public EventListModel eventListModel;
 
    public TaskSubmittedFormsView( @Service ApplicationContext context )
    {
@@ -102,7 +102,10 @@ public class TaskSubmittedFormsView
    public void setModel( TaskSubmittedFormsModel model )
    {
       this.model = model;
-      submittedForms.setModel( model );
+      if (eventListModel != null)
+         eventListModel.dispose();
+      eventListModel = new EventListModel( model.getSubmittedForms());
+      submittedForms.setModel( eventListModel );
    }
 
    public JList getSubmittedFormsList()

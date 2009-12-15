@@ -15,7 +15,12 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.task.TaskCreationNode;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -26,16 +31,19 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceUserAssignmentsNode
       extends DefaultMutableTreeNode
-      implements EventListener
+      implements EventListener, TaskCreationNode
 {
    @Uses
-   private WorkspaceUserAssignmentsModel model;
+   CommandQueryClient client;
+
+   @Uses
+   private TaskTableModel2 model;
 
    @Override
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.assignments_node );
-      int unread = model.count();
+      int unread = model.getEventList().size();
       if (unread > 0)
       {
          text += " (" + unread + ")";
@@ -47,13 +55,24 @@ public class WorkspaceUserAssignmentsNode
       return text;
    }
 
+   public void createTask()
+   {
+      try
+      {
+         client.postCommand( "createtask" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
    @Override
    public WorkspaceUserNode getParent()
    {
       return (WorkspaceUserNode) super.getParent();
    }
 
-   public WorkspaceUserAssignmentsModel assignmentsModel()
+   public TaskTableModel2 taskTableModel()
    {
       return model;
    }

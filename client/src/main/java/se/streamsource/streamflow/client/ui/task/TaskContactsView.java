@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -22,7 +23,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.task.TaskContactsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
@@ -55,6 +56,7 @@ public class TaskContactsView
 
    public JList contacts;
    private TaskContactView contactView;
+   public EventListModel eventListModel;
 
    public TaskContactsView( @Service ApplicationContext context,
                             @Structure ObjectBuilderFactory obf )
@@ -120,7 +122,7 @@ public class TaskContactsView
    public void add() throws IOException, ResourceException
    {
       model.createContact();
-      contacts.setSelectedIndex( model.getSize() - 1 );
+      contacts.setSelectedIndex( model.getEventList().size() - 1 );
    }
 
    @org.jdesktop.application.Action
@@ -144,7 +146,7 @@ public class TaskContactsView
          try
          {
             model.refresh();
-            if (model.getSize() > 0 && contacts.getSelectedIndex() == -1)
+            if (model.getEventList().size() > 0 && contacts.getSelectedIndex() == -1)
             {
                contacts.setSelectedIndex( 0 );
             }
@@ -157,8 +159,11 @@ public class TaskContactsView
    public void setModel( TaskContactsModel model )
    {
       this.model = model;
-      contacts.setModel( model );
-      if (model.getSize() > 0 && isVisible())
+      if (eventListModel != null)
+         eventListModel.dispose();
+      eventListModel = new EventListModel(model.getEventList());
+      contacts.setModel( eventListModel );
+      if (model.getEventList().size() > 0 && isVisible())
       {
          contacts.setSelectedIndex( 0 );
       }
@@ -174,7 +179,7 @@ public class TaskContactsView
       return contactView;
    }
 
-   public TaskContactsClientResource getTaskContactsResource()
+   public CommandQueryClient getTaskContactsResource()
    {
       return model.getTaskContactsClientResource();
    }

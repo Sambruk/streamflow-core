@@ -18,8 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.task.TaskClientResource;
-import se.streamsource.streamflow.client.resource.task.TasksClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -33,7 +32,7 @@ public class TasksModel
       implements EventListener, EventHandler
 {
    @Uses
-   TasksClientResource tasksResource;
+   CommandQueryClient client;
 
    @Structure
    ObjectBuilderFactory obf;
@@ -42,17 +41,31 @@ public class TasksModel
    {
       protected TaskModel newModel( String key )
       {
-         TaskClientResource taskResource = tasksResource.task( key );
+         CommandQueryClient taskClient = client.getSubClient( key );
 
-         PossibleTaskTypesModel taskTypes = obf.newObjectBuilder( PossibleTaskTypesModel.class ).use( taskResource.general().getNext(), taskResource.general().getReference() ).newInstance();
+         CommandQueryClient generalClient = taskClient.getSubClient( "general" );
+         CommandQueryClient commentsClient = taskClient.getSubClient( "comments" );
+         CommandQueryClient contactsClient = taskClient.getSubClient( "contacts" );
+         CommandQueryClient formsClient = taskClient.getSubClient( "forms" );
+         CommandQueryClient actionsClient = taskClient.getSubClient( "actions" );
+
+         PossibleTaskTypesModel taskTypes = obf.newObjectBuilder( PossibleTaskTypesModel.class ).use( generalClient ).newInstance();
+
+         TaskGeneralModel generalModel = obf.newObjectBuilder( TaskGeneralModel.class ).use( generalClient ).newInstance();
+         TaskCommentsModel commentsModel = obf.newObjectBuilder( TaskCommentsModel.class ).use( commentsClient ).newInstance();
+         TaskContactsModel contactsModel = obf.newObjectBuilder( TaskContactsModel.class ).use( contactsClient ).newInstance();
+         TaskFormsModel formsModel = obf.newObjectBuilder( TaskFormsModel.class ).use( formsClient ).newInstance();
+
+         TaskActionsModel actionsModel = obf.newObjectBuilder( TaskActionsModel.class ).use( actionsClient).newInstance();
 
          return obf.newObjectBuilder( TaskModel.class ).
-               use( taskResource,
-                     taskResource.general(),
-                     taskResource.comments(),
-                     taskResource.contacts(),
-                     taskResource.forms(), taskResource.getNext(),
-                     taskTypes ).newInstance();
+               use( taskClient,
+                     generalModel,
+                     commentsModel,
+                     contactsModel,
+                     formsModel,
+                     taskTypes,
+                     actionsModel ).newInstance();
       }
    };
 

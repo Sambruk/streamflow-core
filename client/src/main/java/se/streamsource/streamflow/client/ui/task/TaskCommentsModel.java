@@ -14,59 +14,53 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.task.TaskCommentsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
+import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
-
-import javax.swing.AbstractListModel;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * JAVADOC
  */
 public class TaskCommentsModel
-      extends AbstractListModel
       implements EventListener, Refreshable
 {
    @Uses
-   TaskCommentsClientResource commentsClientResource;
+   CommandQueryClient client;
 
-   List<CommentDTO> comments = Collections.emptyList();
+   BasicEventList<CommentDTO> comments = new BasicEventList<CommentDTO>();
 
    public void refresh()
    {
       try
       {
-         comments = commentsClientResource.comments().comments().get();
-         fireContentsChanged( this, 0, getSize() );
+         CommentsDTO newComments = client.query( "comments", CommentsDTO.class );
+         comments.clear();
+         comments.addAll(newComments.comments().get() );
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );
       }
    }
 
-   public int getSize()
+   public EventList<CommentDTO> getComments()
    {
-      return comments.size();
-   }
-
-   public Object getElementAt( int index )
-   {
-      return comments.get( index );
+      return comments;
    }
 
    public void addComment( NewCommentCommand command )
    {
       try
       {
-         commentsClientResource.addComment( command );
+         client.postCommand( "addcomment", command );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_add_comment, e );

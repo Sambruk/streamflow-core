@@ -28,6 +28,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
@@ -52,8 +53,6 @@ import java.awt.event.FocusListener;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
@@ -138,7 +137,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
 
       // Layout and form for the right panel
       FormLayout rightLayout = new FormLayout(
-            "40dlu, 5dlu, 120:grow, 15dlu",
+            "40dlu, 5dlu, 100:grow, 15dlu",
             "pref, pref, pref, pref, pref" );
 
       rightForm = new JPanel( rightLayout );
@@ -258,9 +257,6 @@ public class TaskGeneralView extends JScrollPane implements Observer
       } else if (property.qualifiedName().name().equals( "dueOn" ))
       {
          model.changeDueOn( (Date) property.get() );
-      } else if (property.qualifiedName().name().equals( "labels" ))
-      {
-         model.removeLabel( property.get().toString() );
       }
    }
 

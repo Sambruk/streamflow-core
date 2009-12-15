@@ -22,12 +22,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -71,6 +69,7 @@ public class SelectUserOrProjectDialog
          @Override
          public void keyReleased( KeyEvent keyEvent )
          {
+/*
             try
             {
                ListValue value = user.findUsers( addUsersView.searchText() );
@@ -79,6 +78,7 @@ public class SelectUserOrProjectDialog
             {
                e.printStackTrace();
             }
+*/
          }
       } );
 
@@ -87,6 +87,7 @@ public class SelectUserOrProjectDialog
          @Override
          public void keyReleased( KeyEvent keyEvent )
          {
+/*
             try
             {
                ListValue value = user.findProjects( addProjectsView.searchText() );
@@ -95,6 +96,7 @@ public class SelectUserOrProjectDialog
             {
                e.printStackTrace();
             }
+*/
          }
       } );
 

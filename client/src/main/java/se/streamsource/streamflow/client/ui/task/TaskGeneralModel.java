@@ -15,15 +15,21 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.roles.DateDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.util.Date;
@@ -35,9 +41,12 @@ public class TaskGeneralModel implements Refreshable, EventListener,
       EventHandler
 
 {
+   @Structure
+   ValueBuilderFactory vbf;
+
    EventHandlerFilter eventFilter;
 
-   private TaskGeneralClientResource generalClientResource;
+   private CommandQueryClient client;
 
    TaskGeneralDTO general;
 
@@ -50,10 +59,10 @@ public class TaskGeneralModel implements Refreshable, EventListener,
    @Uses
    TaskLabelSelectionModel selectionModel;
 
-   public TaskGeneralModel( @Uses TaskGeneralClientResource generalClientResource )
+   public TaskGeneralModel( @Uses CommandQueryClient client )
    {
-      this.generalClientResource = generalClientResource;
-      eventFilter = new EventHandlerFilter( generalClientResource.getRequest().getResourceRef().getParentRef().getLastSegment(), this, "addedLabel",
+      this.client = client;
+      eventFilter = new EventHandlerFilter( client.getReference().getParentRef().getLastSegment(), this, "addedLabel",
             "removedLabel", "changedOwner", "changedTaskType" );
    }
 
@@ -69,7 +78,9 @@ public class TaskGeneralModel implements Refreshable, EventListener,
    {
       try
       {
-         generalClientResource.changeDescription( newDescription );
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( newDescription );
+         client.putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException(
@@ -81,7 +92,9 @@ public class TaskGeneralModel implements Refreshable, EventListener,
    {
       try
       {
-         generalClientResource.changeNote( newNote );
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( newNote );
+         client.putCommand( "changenote", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_change_note, e );
@@ -92,34 +105,12 @@ public class TaskGeneralModel implements Refreshable, EventListener,
    {
       try
       {
-         generalClientResource.changeDueOn( newDueOn );
+         ValueBuilder<DateDTO> builder = vbf.newValueBuilder( DateDTO.class );
+         builder.prototype().date().set( newDueOn );
+         client.putCommand( "changedueon", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_change_due_on,
-               e );
-      }
-   }
-
-   public void addLabel( String labelId )
-   {
-      try
-      {
-         generalClientResource.addLabel( labelId );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( TaskResources.could_not_add_label,
-               e );
-      }
-   }
-
-   public void removeLabel( String labelId )
-   {
-      try
-      {
-         generalClientResource.removeLabel( labelId );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( TaskResources.could_not_remove_label,
                e );
       }
    }
@@ -128,7 +119,9 @@ public class TaskGeneralModel implements Refreshable, EventListener,
    {
       try
       {
-         generalClientResource.changeTaskType( taskType );
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( taskType );
+         client.postCommand( "changetasktype", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_remove_label,
@@ -156,7 +149,7 @@ public class TaskGeneralModel implements Refreshable, EventListener,
    {
       try
       {
-         general = (TaskGeneralDTO) generalClientResource.general()
+         general = (TaskGeneralDTO) client.query( "general", TaskGeneralDTO.class )
                .buildWith().prototype();
 
          taskLabelsModel.setLabels( general.labels().get() );

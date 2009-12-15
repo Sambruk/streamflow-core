@@ -22,20 +22,20 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Uniform;
+import org.restlet.resource.ClientResource;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.Individual;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.resource.StreamFlowClientResource;
-import se.streamsource.streamflow.client.resource.users.UserClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import java.util.logging.Logger;
-
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * JAVADOC
@@ -83,12 +83,15 @@ public interface DummyDataService
             account.updateSettings( builder.newInstance() );
 
 
-            StreamFlowClientResource server = account.server( client );
-            String response = server.version();
+            CommandQueryClient server = account.server( client );
+            ClientResource version = new ClientResource(server.getReference().clone().addSegment( "static" ).addSegment( "version.html" ));
+            version.setNext( server.getClient() );
+
+            String response = account.version( client );
             System.out.println( response );
-            UserClientResource user = account.server( client ).users().user( "administrator" );
+            CommandQueryClient user = account.server( client ).getSubClient( "users" ).getSubClient( "administrator" );
             TasksQuery query = vbf.newValue( TasksQuery.class );
-            System.out.println( user.workspace().user().inbox().tasks( query ).size() );
+            System.out.println( user.getSubClient( "workspace").getSubClient( "user" ).getSubClient( "inbox" ).query("tasks", query, ListValue.class ).items().get().size() );
 
             uow.complete();
 

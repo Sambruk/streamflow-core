@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.web.resource.users.workspace.projects.inbox;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.InboxQueries;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
@@ -27,7 +27,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class WorkspaceProjectInboxServerResource
       extends AbstractTaskListServerResource
 {
-   public InboxTaskListDTO tasks( TasksQuery query )
+   public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
       String id = (String) getRequest().getAttributes().get( "project" );

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.resource.task;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
@@ -29,6 +30,9 @@ public interface TaskDTO
       extends ValueComposite
 {
    Property<EntityReference> task();
+   
+   @Optional
+   Property<String> taskType();
 
    Property<String> description();
 

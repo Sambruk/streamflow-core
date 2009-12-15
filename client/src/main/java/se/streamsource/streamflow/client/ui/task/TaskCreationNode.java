@@ -12,14 +12,12 @@
  *
  */
 
-package se.streamsource.streamflow.resource.inbox;
-
-import se.streamsource.streamflow.resource.task.TaskListDTO;
+package se.streamsource.streamflow.client.ui.task;
 
 /**
  * JAVADOC
  */
-public interface InboxTaskListDTO
-      extends TaskListDTO<InboxTaskDTO>
+public interface TaskCreationNode
 {
+   void createTask();
 }

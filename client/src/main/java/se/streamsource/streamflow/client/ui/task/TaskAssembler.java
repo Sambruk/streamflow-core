@@ -33,11 +33,13 @@ public class TaskAssembler
 
       UIAssemblers.addDialogs( module, AddCommentDialog.class );
 
+      UIAssemblers.addMV( module, TaskTableModel2.class, TaskTableView2.class );
+
       UIAssemblers.addModels( module, TasksModel.class, TaskFormsModel.class );
 
-        UIAssemblers.addMV(module,
-                TaskModel.class,
-                TaskDetailView.class);
+      UIAssemblers.addMV( module,
+            TaskModel.class,
+            TaskDetailView.class );
 
       UIAssemblers.addMV( module,
             TaskCommentsModel.class,
@@ -79,16 +81,18 @@ public class TaskAssembler
             TaskSubmittedFormModel.class,
             TaskSubmittedFormView.class );
 
-        UIAssemblers.addMV(module,
-                FormSubmitModel.class,
-                FormSubmitWizardPage.class);
+      UIAssemblers.addMV( module,
+            FormSubmitModel.class,
+            FormSubmitWizardPage.class );
 
-        UIAssemblers.addMV(module,
-                FormsListModel.class,
-                FormsWizardPage.class);
+      UIAssemblers.addMV( module,
+            FormsListModel.class,
+            FormsWizardPage.class );
 
-        UIAssemblers.addControllers(module, FormSubmitWizardController.class);
+      UIAssemblers.addMV( module, TaskActionsModel.class, TaskActionsView.class );
+
+      UIAssemblers.addControllers( module, FormSubmitWizardController.class );
 
 
-    }
+   }
 }

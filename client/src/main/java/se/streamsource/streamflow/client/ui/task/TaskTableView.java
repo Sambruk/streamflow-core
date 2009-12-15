@@ -288,7 +288,6 @@ public abstract class TaskTableView
       table.scrollRowToVisible( index );
 
       TaskDetailView taskDetail = (TaskDetailView) detailsView.getComponentAt( 0 );
-      taskDetail.setSelectedIndex( 0 );
       SwingUtilities.invokeLater( new Runnable()
       {
          public void run()

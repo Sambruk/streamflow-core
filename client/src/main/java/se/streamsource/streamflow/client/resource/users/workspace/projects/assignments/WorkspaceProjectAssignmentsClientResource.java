@@ -19,8 +19,8 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class WorkspaceProjectAssignmentsClientResource
       super( context, reference, WorkspaceProjectAssignmentsTaskClientResource.class );
    }
 
-   public List<AssignedTaskDTO> tasks( TasksQuery query ) throws ResourceException
+   public List<TaskDTO> tasks( TasksQuery query ) throws ResourceException
    {
       return query( "tasks", query, AssignmentsTaskListDTO.class ).<AssignmentsTaskListDTO>buildWith().prototype().tasks().get();
    }

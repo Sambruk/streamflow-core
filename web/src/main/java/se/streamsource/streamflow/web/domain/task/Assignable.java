@@ -36,6 +36,8 @@ public interface Assignable
 
    void unassign();
 
+   boolean isAssignedTo( Assignee assignee );
+
    interface Data
    {
       @Optional
@@ -46,7 +48,6 @@ public interface Assignable
 
 
       void assignedTo( DomainEvent event, Assignee assignee );
-
 
       void unassigned( DomainEvent event );
    }
@@ -66,6 +67,11 @@ public interface Assignable
       {
          if (assignedTo().get() != null)
             unassigned( DomainEvent.CREATE );
+      }
+
+      public boolean isAssignedTo( Assignee assignee )
+      {
+         return assignee.equals( assignedTo().get() );
       }
 
       public void assignedTo( DomainEvent event, Assignee assignee )

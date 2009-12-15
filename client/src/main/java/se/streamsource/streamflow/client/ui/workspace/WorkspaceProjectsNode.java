@@ -21,12 +21,9 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.WorkspaceProjectClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.inbox.WorkspaceProjectInboxClientResource;
-import se.streamsource.streamflow.client.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingforClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -75,8 +72,9 @@ public class WorkspaceProjectsNode
    {
       try
       {
-         se.streamsource.streamflow.client.resource.users.UserClientResource user = account.userResource();
-         ListValue projects = user.workspace().projects().listProjects().<ListValue>buildWith().prototype();
+         CommandQueryClient user = account.userResource();
+         CommandQueryClient projectsClient = user.getSubClient( "workspace" ).getSubClient( "projects" );
+         ListValue projects = projectsClient.query( "projects", ListValue.class ).<ListValue>buildWith().prototype();
 
          super.removeAllChildren();
 
@@ -84,17 +82,27 @@ public class WorkspaceProjectsNode
 
          for (ListItemValue project : projects.items().get())
          {
-            WorkspaceProjectClientResource workspaceProjectClientResource = user.workspace().projects().project( project.entity().get().identity() );
-            WorkspaceProjectInboxClientResource projectInboxClientResource = workspaceProjectClientResource.inbox();
-            WorkspaceProjectAssignmentsClientResource projectAssignmentsClientResource = workspaceProjectClientResource.assignments();
-            WorkspaceProjectDelegationsClientResource projectDelegationsClientResource = workspaceProjectClientResource.delegations();
-            WorkspaceProjectWaitingforClientResource projectWaitingforClientResource = workspaceProjectClientResource.waitingFor();
+            CommandQueryClient projectClient = projectsClient.getSubClient( project.entity().get().identity() );
+            CommandQueryClient projectInboxClientResource = projectClient.getSubClient( "inbox" );
+            CommandQueryClient projectAssignmentsClientResource = projectClient.getSubClient( "assignments" );
+            CommandQueryClient projectDelegationsClientResource = projectClient.getSubClient( "delegations" );
+            CommandQueryClient projectWaitingforClientResource = projectClient.getSubClient( "waitingfor" );
 
-            add( obf.newObjectBuilder( WorkspaceProjectNode.class ).use( workspaceProjectClientResource,
-                  projectInboxClientResource,
-                  projectAssignmentsClientResource,
-                  projectDelegationsClientResource,
-                  projectWaitingforClientResource,
+            TaskTableModel2 inboxModel = obf.newObjectBuilder( TaskTableModel2.class ).use( projectInboxClientResource ).newInstance();
+            TaskTableModel2 assignmentsModel = obf.newObjectBuilder( TaskTableModel2.class ).use( projectAssignmentsClientResource ).newInstance();
+            TaskTableModel2 delegationsModel = obf.newObjectBuilder( TaskTableModel2.class ).use( projectDelegationsClientResource ).newInstance();
+            TaskTableModel2 waitingForModel = obf.newObjectBuilder( TaskTableModel2.class ).use( projectWaitingforClientResource ).newInstance();
+
+            WorkspaceProjectInboxNode inboxNode = obf.newObjectBuilder( WorkspaceProjectInboxNode.class ).use( projectInboxClientResource, inboxModel ).newInstance();
+            WorkspaceProjectAssignmentsNode assignmentsNode = obf.newObjectBuilder( WorkspaceProjectAssignmentsNode.class ).use( projectAssignmentsClientResource, assignmentsModel ).newInstance();
+            WorkspaceProjectDelegationsNode delegationsNode = obf.newObjectBuilder( WorkspaceProjectDelegationsNode.class ).use( projectDelegationsClientResource, delegationsModel ).newInstance();
+            WorkspaceProjectWaitingForNode waitingForNode = obf.newObjectBuilder( WorkspaceProjectWaitingForNode.class ).use( projectWaitingforClientResource, waitingForModel ).newInstance();
+
+            add( obf.newObjectBuilder( WorkspaceProjectNode.class ).use( projectClient,
+                  inboxNode,
+                  assignmentsNode,
+                  delegationsNode,
+                  waitingForNode,
                   account.tasks(),
                   project.description().get() ).newInstance() );
          }

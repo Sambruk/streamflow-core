@@ -19,7 +19,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.task.TaskContactClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
@@ -35,7 +35,7 @@ public class TaskContactModel
    private ContactValue contact;
 
    @Uses
-   TaskContactClientResource taskContactClientResource;
+   CommandQueryClient client;
 
    @Structure
    ValueBuilderFactory vbf;
@@ -65,49 +65,49 @@ public class TaskContactModel
    {
       ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
       builder.prototype().string().set( newName );
-      taskContactClientResource.changeName( builder.newInstance() );
+      client.putCommand( "changename", builder.newInstance() );
    }
 
    public void changeNote( String newNote ) throws ResourceException
    {
       ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
       builder.prototype().string().set( newNote );
-      taskContactClientResource.changeNote( builder.newInstance() );
+      client.putCommand( "changenote", builder.newInstance() );
    }
 
    public void changeContactId( String newId ) throws ResourceException
    {
       ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
       builder.prototype().string().set( newId );
-      taskContactClientResource.changeContactId( builder.newInstance() );
+      client.putCommand("changecontactid", builder.newInstance() );
    }
 
    public void changeCompany( String newCompany ) throws ResourceException
    {
       ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
       builder.prototype().string().set( newCompany );
-      taskContactClientResource.changeCompany( builder.newInstance() );
+      client.putCommand( "changecompany", builder.newInstance() );
    }
 
    public void changePhoneNumber( String newPhoneNumber ) throws ResourceException
    {
       ValueBuilder<ContactPhoneValue> builder = vbf.newValueBuilder( ContactPhoneValue.class );
       builder.prototype().phoneNumber().set( newPhoneNumber );
-      taskContactClientResource.changePhoneNumber( builder.newInstance() );
+      client.putCommand( "changephonenumber", builder.newInstance() );
    }
 
    public void changeAddress( String newAddress ) throws ResourceException
    {
       ValueBuilder<ContactAddressValue> builder = vbf.newValueBuilder( ContactAddressValue.class );
       builder.prototype().address().set( newAddress );
-      taskContactClientResource.changeAddress( builder.newInstance() );
+      client.putCommand( "changeaddress", builder.newInstance() );
    }
 
    public void changeEmailAddress( String newEmailAddress ) throws ResourceException
    {
       ValueBuilder<ContactEmailValue> builder = vbf.newValueBuilder( ContactEmailValue.class );
       builder.prototype().emailAddress().set( newEmailAddress );
-      taskContactClientResource.changeEmailAddress( builder.newInstance() );
+      client.putCommand( "changeemailaddress", builder.newInstance() );
    }
 
 }

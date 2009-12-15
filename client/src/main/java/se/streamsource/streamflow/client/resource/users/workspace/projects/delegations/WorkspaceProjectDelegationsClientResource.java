@@ -19,8 +19,8 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class WorkspaceProjectDelegationsClientResource
       super( context, reference, WorkspaceProjectDelegationsTaskClientResource.class );
    }
 
-   public List<DelegatedTaskDTO> tasks( TasksQuery query ) throws ResourceException
+   public List<TaskDTO> tasks( TasksQuery query ) throws ResourceException
    {
       return query( "tasks", query, DelegationsTaskListDTO.class ).<DelegationsTaskListDTO>buildWith().prototype().tasks().get();
    }

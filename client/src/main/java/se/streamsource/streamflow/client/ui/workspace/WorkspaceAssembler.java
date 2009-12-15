@@ -43,30 +43,13 @@ public class WorkspaceAssembler
             WorkspaceProjectInboxNode.class,
             WorkspaceProjectAssignmentsNode.class,
             WorkspaceProjectDelegationsNode.class,
-            WorkspaceProjectWaitingForNode.class );
+            WorkspaceProjectWaitingForNode.class ).visibleIn( Visibility.layer );
 
       UIAssemblers.addModels( module, ProjectSelectorModel2.class );
 
       UIAssemblers.addMV( module,
             WorkspaceModel.class,
             WorkspaceView.class );
-
-      // User
-      UIAssemblers.addMV( module,
-            WorkspaceUserInboxModel.class,
-            WorkspaceUserInboxView.class );
-
-      UIAssemblers.addMV( module,
-            WorkspaceUserAssignmentsModel.class,
-            WorkspaceUserAssignmentsView.class );
-
-      UIAssemblers.addMV( module,
-            WorkspaceUserDelegationsModel.class,
-            WorkspaceUserDelegationsView.class );
-
-      UIAssemblers.addMV( module,
-            WorkspaceUserWaitingForModel.class,
-            WorkspaceUserWaitingForView.class );
 
       // Project
       UIAssemblers.addMV( module,

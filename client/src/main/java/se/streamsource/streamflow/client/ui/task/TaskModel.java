@@ -14,16 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
-import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.task.TaskClientResource;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -34,7 +26,7 @@ public class TaskModel
       implements EventListener
 {
    @Uses
-   private TaskClientResource resource;
+   private TaskActionsModel actions;
 
    @Uses
    private TaskCommentsModel comments;
@@ -48,9 +40,12 @@ public class TaskModel
    @Uses
    private TaskFormsModel forms;
 
-   public TaskClientResource resource()
+   @Uses
+   CommandQueryClient client;
+
+   public String taskId()
    {
-      return resource;
+      return client.getReference().getLastSegment();
    }
 
    public TaskCommentsModel comments()
@@ -73,9 +68,9 @@ public class TaskModel
       return forms;
    }
 
-   public Reference formsReference()
+   public TaskActionsModel actions()
    {
-      return resource.forms();
+      return actions;
    }
 
    public void notifyEvent( DomainEvent event )
@@ -84,21 +79,5 @@ public class TaskModel
       general.notifyEvent( event );
       contacts.notifyEvent( event );
       forms.notifyEvent( event );
-   }
-
-   public EventList<ListItemValue> getPossibleProjects()
-   {
-      try
-      {
-         BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
-
-         ListValue listValue = resource.possibleProjects();
-         list.addAll( listValue.items().get() );
-
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh, e );
-      }
    }
 }

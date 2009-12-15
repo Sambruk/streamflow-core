@@ -24,7 +24,9 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import java.awt.BorderLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -33,55 +35,65 @@ import java.awt.event.KeyEvent;
  * JAVADOC
  */
 public class TaskDetailView
-      extends JTabbedPane
+      extends JPanel
 {
+   private JTabbedPane tabs = new JTabbedPane(JTabbedPane.BOTTOM);
+
    private TaskCommentsView commentsView;
    private TaskGeneralView generalView;
    private TaskContactsAdminView contactsView;
    private TaskFormsAdminView formsView;
    private TaskModel model;
+   private TaskActionsView actionsView;
 
    public TaskDetailView( @Service ApplicationContext appContext,
                           @Uses TaskGeneralView generalView,
                           @Uses TaskCommentsView commentsView,
                           @Uses TaskContactsAdminView contactsView,
-                          @Uses TaskFormsAdminView formsAdminView )
+                          @Uses TaskFormsAdminView formsAdminView,
+                          @Uses TaskActionsView actionsView,
+                          @Structure ObjectBuilderFactory obf )
    {
-      super( JTabbedPane.BOTTOM );
+      super(new BorderLayout());
 
-      setFocusable( true );
+      this.actionsView = actionsView;
+      tabs.setFocusable( true );
 
       this.commentsView = commentsView;
       this.generalView = generalView;
       this.contactsView = contactsView;
       this.formsView = formsAdminView;
 
-      addTab( i18n.text( WorkspaceResources.general_tab ), i18n.icon( Icons.general ), generalView, i18n.text( WorkspaceResources.general_tab ) );
-      addTab( i18n.text( WorkspaceResources.contacts_tab ), i18n.icon( Icons.projects ), contactsView, i18n.text( WorkspaceResources.contacts_tab ) );
-      addTab( i18n.text( WorkspaceResources.comments_tab ), i18n.icon( Icons.comments ), commentsView, i18n.text( WorkspaceResources.comments_tab ) );
-      addTab( i18n.text( WorkspaceResources.metadata_tab ), i18n.icon( Icons.metadata ), formsAdminView, i18n.text( WorkspaceResources.metadata_tab ) );
-      addTab( i18n.text( WorkspaceResources.attachments_tab ), i18n.icon( Icons.attachments ), new JLabel( "Attachments" ), i18n.text( WorkspaceResources.attachments_tab ) );
+      tabs.addTab( i18n.text( WorkspaceResources.general_tab ), i18n.icon( Icons.general ), generalView, i18n.text( WorkspaceResources.general_tab ) );
+      tabs.addTab( i18n.text( WorkspaceResources.contacts_tab ), i18n.icon( Icons.projects ), contactsView, i18n.text( WorkspaceResources.contacts_tab ) );
+      tabs.addTab( i18n.text( WorkspaceResources.comments_tab ), i18n.icon( Icons.comments ), commentsView, i18n.text( WorkspaceResources.comments_tab ) );
+      tabs.addTab( i18n.text( WorkspaceResources.metadata_tab ), i18n.icon( Icons.metadata ), formsAdminView, i18n.text( WorkspaceResources.metadata_tab ) );
+      tabs.addTab( i18n.text( WorkspaceResources.attachments_tab ), i18n.icon( Icons.attachments ), new JLabel( "Attachments" ), i18n.text( WorkspaceResources.attachments_tab ) );
 
-      setMnemonicAt( 0, KeyEvent.VK_1 );
-      setMnemonicAt( 1, KeyEvent.VK_2 );
-      setMnemonicAt( 2, KeyEvent.VK_3 );
-      setMnemonicAt( 3, KeyEvent.VK_4 );
-      setMnemonicAt( 4, KeyEvent.VK_5 );
+      tabs.setMnemonicAt( 0, KeyEvent.VK_1 );
+      tabs.setMnemonicAt( 1, KeyEvent.VK_2 );
+      tabs.setMnemonicAt( 2, KeyEvent.VK_3 );
+      tabs.setMnemonicAt( 3, KeyEvent.VK_4 );
+      tabs.setMnemonicAt( 4, KeyEvent.VK_5 );
 
-      setFocusable( true );
-      setFocusCycleRoot( true );
+      tabs.setFocusable( true );
+      tabs.setFocusCycleRoot( true );
 
       addFocusListener( new FocusListener()
       {
          public void focusGained( FocusEvent e )
          {
-            getSelectedComponent().requestFocusInWindow();
+            tabs.getSelectedComponent().requestFocusInWindow();
          }
 
          public void focusLost( FocusEvent e )
          {
          }
       } );
+
+      add(tabs, BorderLayout.CENTER);
+
+      add( actionsView, BorderLayout.EAST);
    }
 
    public void setTaskModel( TaskModel model )
@@ -92,26 +104,14 @@ public class TaskDetailView
       contactsView.setModel( model.contacts() );
       formsView.setModel( model.forms() );
 
-      validateTree();
-      setEnabled( true );
+      actionsView.setModel(model.actions());
+      actionsView.refresh();
 
-      if (getSelectedIndex() == -1)
-      {
-         setSelectedIndex( 0 );
-      }
+      validateTree();
    }
 
    public TaskModel getTaskModel()
    {
       return model;
-   }
-
-   @Override
-   public void setSelectedIndex( int index )
-   {
-      if (model == null && index != -1)
-         return; // Ignore since no model is set
-
-      super.setSelectedIndex( index );
    }
 }

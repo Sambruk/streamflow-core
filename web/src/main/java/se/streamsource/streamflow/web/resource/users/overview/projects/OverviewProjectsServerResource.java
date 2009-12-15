@@ -29,7 +29,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class OverviewProjectsServerResource
       extends CommandQueryServerResource
 {
-   public ListValue listProjects()
+   public ListValue projects()
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 

@@ -20,6 +20,6 @@ import se.streamsource.streamflow.resource.task.TaskListDTO;
  * JAVADOC
  */
 public interface WaitingForTaskListDTO
-      extends TaskListDTO<WaitingForTaskDTO>
+      extends TaskListDTO
 {
 }

@@ -25,6 +25,7 @@ public enum WorkspaceResources
 
     description_column_header,
     title_column_header,
+   tasktype_column_header,
     created_column_header,
     project_column_header,
     complete_task_header,
@@ -107,5 +108,5 @@ public enum WorkspaceResources
     select_form,
     tasktype_label,
     could_not_refresh,
-    search_user
+   search_user
 }

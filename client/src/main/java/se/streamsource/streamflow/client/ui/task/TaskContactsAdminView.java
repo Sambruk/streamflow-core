@@ -18,7 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.resource.task.TaskContactsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
@@ -86,8 +86,8 @@ public class TaskContactsAdminView
 
                   }
 
-                  TaskContactsClientResource taskContactsClientResource = taskContactsView.getTaskContactsResource();
-                  TaskContactModel taskContactModel = obf.newObjectBuilder( TaskContactModel.class ).use( contactValue, taskContactsClientResource.taskContact( idx ) ).newInstance();
+                  CommandQueryClient taskContactsClientResource = taskContactsView.getTaskContactsResource();
+                  TaskContactModel taskContactModel = obf.newObjectBuilder( TaskContactModel.class ).use( contactValue, taskContactsClientResource.getSubClient( ""+idx ) ).newInstance();
                   taskContactsView.getContactView().setModel( taskContactModel );
                } else
                {

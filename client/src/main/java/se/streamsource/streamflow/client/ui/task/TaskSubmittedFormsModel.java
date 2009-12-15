@@ -14,10 +14,12 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Reference;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
@@ -28,26 +30,25 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 
-import javax.swing.AbstractListModel;
-import java.util.Collections;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * List of contacts for a task
  */
 public class TaskSubmittedFormsModel
-      extends AbstractListModel
       implements Refreshable, EventListener, EventHandler
 
 {
+   @Structure
+   ObjectBuilderFactory obf;
+
    @Structure
    ValueBuilderFactory vbf;
 
    @Uses
    CommandQueryClient client;
 
-   List<SubmittedFormListDTO> submittedForms = Collections.emptyList();
+   BasicEventList<SubmittedFormListDTO> submittedForms = new BasicEventList<SubmittedFormListDTO>( );
 
    EventHandlerFilter eventFilter = new EventHandlerFilter( this, "submittedForm" );
 
@@ -55,22 +56,25 @@ public class TaskSubmittedFormsModel
    {
       try
       {
-         submittedForms = client.query( "tasksubmittedforms", SubmittedFormsListDTO.class ).forms().get();
-         fireContentsChanged( this, 0, getSize() );
+         submittedForms.clear();
+         submittedForms.addAll( client.query( "tasksubmittedforms", SubmittedFormsListDTO.class ).forms().get() );
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );
       }
    }
 
-   public int getSize()
+   public EventList<SubmittedFormListDTO> getSubmittedForms()
    {
-      return submittedForms.size();
+      return submittedForms;
    }
 
-   public Object getElementAt( int i )
+   public TaskSubmittedFormModel getSubmittedFormModel(int index)
    {
-      return submittedForms.get( i );
+      TaskSubmittedFormModel submittedFormModel = obf.newObjectBuilder(
+            TaskSubmittedFormModel.class ).use( client.getSubClient( ""+index ) ).newInstance();
+
+      return submittedFormModel;
    }
 
 
@@ -88,11 +92,5 @@ public class TaskSubmittedFormsModel
       }
 
       return false;
-   }
-
-   public Reference getReference()
-   {
-      
-      return client.getReference().clone();
    }
 }

@@ -20,8 +20,8 @@ import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import java.util.List;
@@ -37,9 +37,9 @@ public class WorkspaceUserInboxClientResource
       super( context, reference, WorkspaceUserInboxTaskClientResource.class );
    }
 
-   public List<InboxTaskDTO> tasks( TasksQuery query ) throws ResourceException
+   public List<TaskDTO> tasks( TasksQuery query ) throws ResourceException
    {
-      return query( "tasks", query, InboxTaskListDTO.class ).<InboxTaskListDTO>buildWith().prototype().tasks().get();
+      return query( "tasks", query, TaskListDTO.class ).<TaskListDTO>buildWith().prototype().tasks().get();
    }
 
    public ListValue projects() throws ResourceException

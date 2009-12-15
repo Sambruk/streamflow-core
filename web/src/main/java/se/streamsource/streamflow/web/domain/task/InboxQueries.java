@@ -23,6 +23,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -30,19 +31,16 @@ import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
 
 import java.util.List;
 
-import static org.qi4j.api.query.QueryExpressions.*;
-
 @Mixins(InboxQueries.Mixin.class)
 public interface InboxQueries
 {
-   InboxTaskListDTO inboxTasks();
+   TaskListDTO inboxTasks();
 
    boolean inboxHasActiveTasks();
 
@@ -65,7 +63,7 @@ public interface InboxQueries
       @This
       Inbox.Data inbox;
 
-      public InboxTaskListDTO inboxTasks()
+      public TaskListDTO inboxTasks()
       {
          // Find all Active tasks with specific owner which have not yet been assigned
          QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder( TaskEntity.class );
@@ -81,7 +79,7 @@ public interface InboxQueries
 
          inboxQuery.orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
 
-         return buildTaskList( inboxQuery, InboxTaskDTO.class, InboxTaskListDTO.class );
+         return buildTaskList( inboxQuery, InboxTaskDTO.class);
       }
 
       public boolean inboxHasActiveTasks()
@@ -89,17 +87,16 @@ public interface InboxQueries
          return inboxTasks().tasks().get().size() > 0;
       }
 
-      protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
+      protected <V extends TaskDTO> TaskListDTO buildTaskList(
             Query<TaskEntity> inboxQuery,
-            Class<V> taskClass,
-            Class<T> taskListClass )
+            Class<V> taskClass)
       {
          ValueBuilder<V> builder = vbf.newValueBuilder( taskClass );
          TaskDTO prototype = builder.prototype();
-         ValueBuilder<T> listBuilder = vbf.newValueBuilder( taskListClass );
-         T t = listBuilder.prototype();
-         Property<List<V>> property = t.tasks();
-         List<V> list = property.get();
+         ValueBuilder<TaskListDTO> listBuilder = vbf.newValueBuilder( TaskListDTO.class );
+         TaskListDTO t = listBuilder.prototype();
+         Property<List<TaskDTO>> property = t.tasks();
+         List<TaskDTO> list = property.get();
          ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder( ListItemValue.class );
          ListItemValue labelPrototype = labelBuilder.prototype();
          for (TaskEntity task : inboxQuery)
@@ -114,6 +111,12 @@ public interface InboxQueries
       protected <T extends TaskListDTO> void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
       {
          prototype.task().set( EntityReference.getEntityReference( task ) );
+
+         if (task.taskType().get() != null)
+            prototype.taskType().set( task.taskType().get().getDescription() );
+         else
+            prototype.taskType().set( null );
+
          prototype.creationDate().set( task.createdOn().get() );
          prototype.description().set( task.description().get() );
          prototype.status().set( task.status().get() );

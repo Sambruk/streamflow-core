@@ -47,22 +47,22 @@ public class DialogService
    @Service
    ApplicationContext context;
 
-   public void showOkCancelHelpDialog( Component component, JComponent main )
+   public void showOkCancelHelpDialog( Component owner, JComponent main )
    {
-      JXDialog dialog = createDialog( component, main );
+      JXDialog dialog = createDialog( owner, main );
       dialog.setVisible( true );
    }
 
-   public void showOkCancelHelpDialog( Component component, JComponent main, String title )
+   public void showOkCancelHelpDialog( Component owner, JComponent main, String title )
    {
-      JXDialog dialog = createDialog( component, main );
+      JXDialog dialog = createDialog( owner, main );
       dialog.setTitle( title );
       dialog.setVisible( true );
    }
 
-   private JXDialog createDialog( Component component, JComponent main )
+   private JXDialog createDialog( Component owner, JComponent main )
    {
-      Window window = WindowUtils.findWindow( component );
+      Window window = WindowUtils.findWindow( owner );
       JXDialog dialog;
       if (window instanceof Frame)
          dialog = new JXDialog( (Frame) window, main );
@@ -72,13 +72,13 @@ public class DialogService
       dialog.setModal( true );
 
       dialog.pack();
-      dialog.setLocationRelativeTo( SwingUtilities.getAncestorOfClass( Frame.class, component ) );
+      dialog.setLocationRelativeTo( SwingUtilities.getAncestorOfClass( Frame.class, owner ) );
       return dialog;
    }
 
-   public JXDialog showOkDialog( Component component, JComponent main )
+   public JXDialog showOkDialog( Component owner, JComponent main )
    {
-      Window window = WindowUtils.findWindow( component );
+      Window window = WindowUtils.findWindow( owner );
       JXDialog dialog;
       if (window instanceof Frame)
          dialog = new JXDialog( (Frame) window, main );
@@ -96,7 +96,7 @@ public class DialogService
       dialog.getContentPane().add( BorderLayout.CENTER, main );
       dialog.setMinimumSize( new Dimension( 300, 200 ) );
       dialog.pack();
-      dialog.setLocationRelativeTo( component );
+      dialog.setLocationRelativeTo( owner );
       dialog.setVisible( true );
 
       okButton.addActionListener( new ActionListener()

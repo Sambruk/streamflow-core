@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.web.resource.users.workspace.projects.assignments;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.task.Assignee;
 import se.streamsource.streamflow.web.domain.task.Assignments;
@@ -29,7 +29,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class WorkspaceProjectAssignmentsServerResource
       extends AbstractTaskListServerResource
 {
-   public AssignmentsTaskListDTO tasks( TasksQuery query )
+   public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
       String projectId = (String) getRequest().getAttributes().get( "project" );

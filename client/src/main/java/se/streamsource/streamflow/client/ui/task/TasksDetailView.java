@@ -17,8 +17,6 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.Uniform;
-import org.restlet.data.Reference;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
@@ -104,7 +102,7 @@ public class TasksDetailView
                TaskDetailView detailView = (TaskDetailView) getComponentAt( i );
                TaskModel taskModel = detailView.getTaskModel();
 
-               if (taskModel.resource().getReference().getLastSegment().equals( id ))
+               if (taskModel.taskId().equals( id ))
                {
                   setTitleAt( i, getTaskDescription( taskModel ) );
                   break;
@@ -127,7 +125,7 @@ public class TasksDetailView
          return;
       }
 
-      final TaskDetailView detailView = getCurrentDetailView(task.resource().getNext(), task.formsReference());
+      final TaskDetailView detailView = getCurrentDetailView();
 
       TaskModel key = detailView.getTaskModel();
       if (key != null)
@@ -144,11 +142,11 @@ public class TasksDetailView
          addTab( getTaskDescription( task ), detailView );
    }
 
-   private TaskDetailView getCurrentDetailView( Uniform next, Reference reference )
+   private TaskDetailView getCurrentDetailView( )
    {
       if (current == null)
       {
-         current = obf.newObjectBuilder( TaskDetailView.class ).use(next, reference).newInstance();
+         current = obf.newObjectBuilder( TaskDetailView.class ).newInstance();
       }
 
       return current;

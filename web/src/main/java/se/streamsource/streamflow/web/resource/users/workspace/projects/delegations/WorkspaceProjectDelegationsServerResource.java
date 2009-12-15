@@ -18,7 +18,6 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
@@ -34,7 +33,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class WorkspaceProjectDelegationsServerResource
       extends AbstractTaskListServerResource
 {
-   public DelegationsTaskListDTO tasks( TasksQuery query )
+   public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
       String id = (String) getRequest().getAttributes().get( "project" );
@@ -45,7 +44,7 @@ public class WorkspaceProjectDelegationsServerResource
    }
 
    @Override
-   protected <T extends TaskListDTO> void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
+   protected void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
    {
       ((DelegatedTaskDTO) prototype).delegatedOn().set( task.delegatedOn().get() );
       Owner owner = uowf.currentUnitOfWork().get( Owner.class, task.owner().get().identity().get() );

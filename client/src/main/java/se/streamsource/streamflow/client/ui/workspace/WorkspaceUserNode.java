@@ -16,9 +16,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.users.UserClientResource;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -31,9 +29,6 @@ public class WorkspaceUserNode
       extends DefaultMutableTreeNode
       implements EventListener
 {
-   @Uses
-   private UserClientResource user;
-
    public WorkspaceUserNode( @Uses AccountModel account,
                              @Uses WorkspaceUserInboxNode inbox,
                              @Uses WorkspaceUserAssignmentsNode assignments,
@@ -49,16 +44,6 @@ public class WorkspaceUserNode
       add( delegations );
 
       add( waitingFor );
-   }
-
-   public ListValue findUsers( String name ) throws ResourceException
-   {
-      return user.findUsers( name );
-   }
-
-   public ListValue findProjects( String name ) throws ResourceException
-   {
-      return user.findProjects( name );
    }
 
    public void notifyEvent( DomainEvent event )

@@ -19,7 +19,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.resource.inbox.InboxTaskListDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.group.Participation;
 import se.streamsource.streamflow.web.domain.task.InboxQueries;
@@ -35,7 +35,7 @@ public class WorkspaceUserInboxServerResource
    @Structure
    ValueBuilderFactory vbf;
 
-   public InboxTaskListDTO tasks( TasksQuery query )
+   public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
       String id = (String) getRequest().getAttributes().get( "user" );

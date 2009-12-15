@@ -15,13 +15,10 @@
 package se.streamsource.streamflow.web.resource.task;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -40,13 +37,5 @@ public class TaskServerResource
    {
       setNegotiated( true );
       getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
-   }
-
-   public ListValue possibleprojects()
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      TaskEntity task = uow.get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
-
-      return task.possibleProjects();
    }
 }

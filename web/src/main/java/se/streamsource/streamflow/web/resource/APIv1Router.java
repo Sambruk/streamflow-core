@@ -59,6 +59,7 @@ import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerRes
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
+import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskServerResource;
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
@@ -139,6 +140,7 @@ public class APIv1Router
 
       // Tasks
       attach( "/tasks/{task}", createServerResourceFinder( TaskServerResource.class ) );
+      attach( "/tasks/{task}/actions", createServerResourceFinder( TaskActionsServerResource.class ) );
       attach( "/tasks/{task}/general", createServerResourceFinder( TaskGeneralServerResource.class ) );
       attach( "/tasks/{task}/comments", createServerResourceFinder( TaskCommentsServerResource.class ) );
       attach( "/tasks/{task}/contacts", createServerResourceFinder( TaskContactsServerResource.class ) );

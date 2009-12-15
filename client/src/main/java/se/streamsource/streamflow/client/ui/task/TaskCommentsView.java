@@ -14,6 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.entity.EntityReference;
@@ -34,8 +37,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
 import java.io.IOException;
 
@@ -44,7 +45,7 @@ import java.io.IOException;
  */
 public class TaskCommentsView
       extends JPanel
-      implements ListDataListener
+      implements ListEventListener
 {
    @Service
    StreamFlowApplication app;
@@ -91,37 +92,29 @@ public class TaskCommentsView
    public void setModel( TaskCommentsModel taskCommentsModel )
    {
       if (model != null)
-         model.removeListDataListener( this );
+         model.getComments().removeListEventListener( this );
 
       model = taskCommentsModel;
 
       if (model != null)
       {
-         model.addListDataListener( this );
+         taskCommentsModel.getComments().addListEventListener( this );
 
-         contentsChanged( null );
+         model.getComments().addListEventListener( this );
+         listChanged( null );
       }
 
       refresher.setRefreshable( model );
    }
 
-   public void intervalAdded( ListDataEvent e )
-   {
-      contentsChanged( e );
-   }
-
-   public void intervalRemoved( ListDataEvent e )
-   {
-      contentsChanged( e );
-   }
-
-   public void contentsChanged( ListDataEvent e )
+   public void listChanged( ListEvent listEvent )
    {
       comments.removeAll();
-      int size = model.getSize();
+      EventList<CommentDTO> list = model.getComments();
+      int size = list.size();
       for (int i = 0; i < size; i++)
       {
-         CommentDTO commentDTO = (CommentDTO) model.getElementAt( i );
+         CommentDTO commentDTO = list.get( i );
          String text = commentDTO.text().get().replace( "\n", "<br/>" );
          JLabel comment = new JLabel( "<html><b>" + commentDTO.commenter().get() + ", " + commentDTO.creationDate().get() + "</b>" + (commentDTO.isPublic().get() ? " (" + i18n.text( WorkspaceResources.public_comment ) + ")" : "") + "<p>" + text + "</p></html>" );
          comments.add( comment );

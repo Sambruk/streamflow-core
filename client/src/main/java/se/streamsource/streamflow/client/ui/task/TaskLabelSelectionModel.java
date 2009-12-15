@@ -21,8 +21,9 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.task.TaskGeneralClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -36,7 +37,7 @@ public class TaskLabelSelectionModel
    @Structure
    ValueBuilderFactory vbf;
 
-   TaskGeneralClientResource resource;
+   CommandQueryClient client;
 
    List<ListItemValue> possibleLabels;
 
@@ -44,10 +45,10 @@ public class TaskLabelSelectionModel
 
    private EventHandlerFilter eventFilter;
 
-   public TaskLabelSelectionModel( @Uses TaskGeneralClientResource resource )
+   public TaskLabelSelectionModel( @Uses CommandQueryClient client )
    {
-      this.resource = resource;
-      eventFilter = new EventHandlerFilter( resource.getRequest().getResourceRef().getParentRef().getLastSegment(), this, "changedTaskType" );
+      this.client = client;
+      eventFilter = new EventHandlerFilter( client.getReference().getParentRef().getLastSegment(), this, "changedTaskType" );
    }
 
    public BasicEventList<ListItemValue> getList()
@@ -59,7 +60,7 @@ public class TaskLabelSelectionModel
    {
       try
       {
-         possibleLabels = resource.possibleLabels().items().get();
+         possibleLabels = client.query( "possiblelabels", ListValue.class ).items().get();
 
          list.clear();
          list.addAll( possibleLabels );

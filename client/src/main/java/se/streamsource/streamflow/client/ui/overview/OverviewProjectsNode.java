@@ -20,13 +20,9 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.waitingfor.OverviewProjectWaitingForClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -42,6 +38,9 @@ public class OverviewProjectsNode
 {
    private AccountModel account;
    private ObjectBuilderFactory obf;
+
+   private @Uses
+   CommandQueryClient client;
 
    public OverviewProjectsNode( @Uses AccountModel account,
                                 @Structure final ObjectBuilderFactory obf ) throws Exception
@@ -73,12 +72,11 @@ public class OverviewProjectsNode
    {
       try
       {
-         se.streamsource.streamflow.client.resource.users.UserClientResource user = account.userResource();
-         OverviewProjectsClientResource projectsClientResource = user.overview().projects();
-         ListValue projects = projectsClientResource.listProjects();
+         ListValue projects = client.query( "projects", ListValue.class );
 
          super.removeAllChildren();
 
+/*
          for (ListItemValue project : projects.items().get())
          {
             OverviewProjectClientResource projectClientResource = projectsClientResource.project( project.entity().get().identity() );
@@ -90,6 +88,7 @@ public class OverviewProjectsNode
                   account.tasks(),
                   project.description().get() ).newInstance() );
          }
+*/
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

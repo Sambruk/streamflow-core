@@ -22,9 +22,9 @@ import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.resource.users.workspace.TaskListClientResource;
-import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
-import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import java.util.List;
@@ -35,16 +35,16 @@ import java.util.List;
 public class SearchClientResource
       extends TaskListClientResource<SearchTaskClientResource>
 {
-   public List<SearchTaskDTO> tasks;
+   public List<TaskDTO> tasks;
 
    public SearchClientResource( @Uses Context context, @Uses Reference reference, @Structure ValueBuilderFactory vbf )
    {
       super( context, reference, SearchTaskClientResource.class );
 
-      tasks = vbf.newValue( SearchTaskListDTO.class ).tasks().get();
+      tasks = vbf.newValue( TaskListDTO.class ).tasks().get();
    }
 
-   public List<SearchTaskDTO> tasks( TasksQuery query ) throws ResourceException
+   public List<TaskDTO> tasks( TasksQuery query ) throws ResourceException
    {
       return tasks;
    }
@@ -53,6 +53,6 @@ public class SearchClientResource
    {
       ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
       builder.prototype().string().set( search );
-      tasks = query( "search", builder.newInstance(), SearchTaskListDTO.class ).<SearchTaskListDTO>buildWith().prototype().tasks().get();
+      tasks = query( "search", builder.newInstance(), TaskListDTO.class ).<TaskListDTO>buildWith().prototype().tasks().get();
    }
 }

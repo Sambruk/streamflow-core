@@ -16,6 +16,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -24,21 +26,24 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
+
 public class WorkspaceProjectInboxNode
       extends DefaultMutableTreeNode
       implements EventListener
 {
    @Uses
-   WorkspaceProjectInboxModel model;
+   CommandQueryClient client;
 
-   @Override
+   @Uses
+   private TaskTableModel2 model;
+
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.inboxes_node );
-      int unread = model.count();
-      if (unread > 0)
+      int count = model.getEventList().size();
+      if (count > 0)
       {
-         text += " (" + unread + ")";
+         text += " (" + count + ")";
       } else
       {
          text += "                ";
@@ -53,7 +58,7 @@ public class WorkspaceProjectInboxNode
       return (WorkspaceProjectNode) super.getParent();
    }
 
-   public WorkspaceProjectInboxModel inboxModel()
+   public TaskTableModel2 taskTableModel()
    {
       return model;
    }

@@ -23,6 +23,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -30,19 +31,16 @@ import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
-import se.streamsource.streamflow.resource.assignment.AssignmentsTaskListDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.web.domain.label.Label;
 
 import java.util.List;
 
-import static org.qi4j.api.query.QueryExpressions.*;
-
 @Mixins(AssignmentsQueries.Mixin.class)
 public interface AssignmentsQueries
 {
-   AssignmentsTaskListDTO assignmentsTasks( Assignee assignee );
+   TaskListDTO assignmentsTasks( Assignee assignee );
 
    boolean assignmentsHaveActiveTasks();
 
@@ -65,7 +63,7 @@ public interface AssignmentsQueries
       @This
       Assignments.Data assignments;
 
-      public AssignmentsTaskListDTO assignmentsTasks( Assignee assignee )
+      public TaskListDTO assignmentsTasks( Assignee assignee )
       {
          // Find all my Active tasks assigned to "me"
          QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder( TaskEntity.class );
@@ -78,7 +76,7 @@ public interface AssignmentsQueries
                newQuery( uowf.currentUnitOfWork() );
          assignmentsQuery.orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
 
-         return buildTaskList( assignmentsQuery, AssignedTaskDTO.class, AssignmentsTaskListDTO.class );
+         return buildTaskList( assignmentsQuery, AssignedTaskDTO.class );
       }
 
       public boolean assignmentsHaveActiveTasks()
@@ -95,17 +93,16 @@ public interface AssignmentsQueries
          return assignmentsQuery.count() > 0;
       }
 
-      protected <T extends TaskListDTO, V extends TaskDTO> T buildTaskList(
+      protected TaskListDTO buildTaskList(
             Query<TaskEntity> assignmentsQuery,
-            Class<V> taskClass,
-            Class<T> taskListClass )
+            Class taskClass)
       {
-         ValueBuilder<V> builder = vbf.newValueBuilder( taskClass );
+         ValueBuilder<TaskDTO> builder = vbf.newValueBuilder( taskClass );
          TaskDTO prototype = builder.prototype();
-         ValueBuilder<T> listBuilder = vbf.newValueBuilder( taskListClass );
-         T t = listBuilder.prototype();
-         Property<List<V>> property = t.tasks();
-         List<V> list = property.get();
+         ValueBuilder<TaskListDTO> listBuilder = vbf.newValueBuilder( TaskListDTO.class );
+         TaskListDTO t = listBuilder.prototype();
+         Property<List<TaskDTO>> property = t.tasks();
+         List<TaskDTO> list = property.get();
          ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder( ListItemValue.class );
          ListItemValue labelPrototype = labelBuilder.prototype();
          for (TaskEntity task : assignmentsQuery)
@@ -120,6 +117,10 @@ public interface AssignmentsQueries
       protected <T extends TaskListDTO> void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
       {
          prototype.task().set( EntityReference.getEntityReference( task ) );
+         if (task.taskType().get() != null)
+            prototype.taskType().set( task.taskType().get().getDescription() );
+         else
+            prototype.taskType().set( null );
          prototype.creationDate().set( task.createdOn().get() );
          prototype.description().set( task.description().get() );
          prototype.status().set( task.status().get() );

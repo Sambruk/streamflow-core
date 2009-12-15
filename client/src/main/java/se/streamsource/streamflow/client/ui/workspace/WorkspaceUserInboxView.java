@@ -151,7 +151,7 @@ public class WorkspaceUserInboxView
             EntityReference project = dialog.getSelected();
             if (project != null)
             {
-               model.forward( row, project.identity() );
+//               model.forward( row, project.identity() );
                model.refresh();
             }
          }

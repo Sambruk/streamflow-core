@@ -63,7 +63,7 @@ public class TaskContactServerResource
       task.deleteContact( Integer.parseInt( taskContactIndex ) );
    }
 
-   public void changeName( StringDTO name )
+   public void changename( StringDTO name )
    {
       String taskId = (String) getRequest().getAttributes().get( "task" );
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
@@ -78,7 +78,7 @@ public class TaskContactServerResource
       task.updateContact( idx, builder.newInstance() );
    }
 
-   public void changeNote( StringDTO note )
+   public void changenote( StringDTO note )
    {
       String taskId = (String) getRequest().getAttributes().get( "task" );
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
@@ -93,7 +93,7 @@ public class TaskContactServerResource
       task.updateContact( idx, builder.newInstance() );
    }
 
-   public void changeContactId( StringDTO contactId )
+   public void changecontactid( StringDTO contactId )
    {
       String taskId = (String) getRequest().getAttributes().get( "task" );
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
@@ -108,7 +108,7 @@ public class TaskContactServerResource
       task.updateContact( idx, builder.newInstance() );
    }
 
-   public void changeCompany( StringDTO company )
+   public void changecompany( StringDTO company )
    {
       String taskId = (String) getRequest().getAttributes().get( "task" );
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
@@ -124,7 +124,7 @@ public class TaskContactServerResource
       task.updateContact( idx, builder.newInstance() );
    }
 
-   public void changePhoneNumber( ContactPhoneValue phoneValue )
+   public void changephonenumber( ContactPhoneValue phoneValue )
    {
       String taskId = (String) getRequest().getAttributes().get( "task" );
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
@@ -148,7 +148,7 @@ public class TaskContactServerResource
       task.updateContact( idx, contact.<ContactValue>buildWith().newInstance() );
    }
 
-   public void changeAddress( ContactAddressValue addressValue )
+   public void changeaddress( ContactAddressValue addressValue )
    {
       String taskId = (String) getRequest().getAttributes().get( "task" );
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
@@ -172,7 +172,7 @@ public class TaskContactServerResource
       task.updateContact( idx, contact.<ContactValue>buildWith().newInstance() );
    }
 
-   public void changeEmailAddress( ContactEmailValue emailValue )
+   public void changeemailaddress( ContactEmailValue emailValue )
    {
       String taskId = (String) getRequest().getAttributes().get( "task" );
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, taskId );
