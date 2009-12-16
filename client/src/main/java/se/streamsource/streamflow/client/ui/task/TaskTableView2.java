@@ -137,6 +137,7 @@ public class TaskTableView2
             return format.format( time );
          }
       } ) );
+      taskTable.setDefaultRenderer( TaskStates.class, new TaskStatusTableCellRenderer() );
 
       taskTable.addHighlighter( HighlighterFactory.createAlternateStriping() );
 
