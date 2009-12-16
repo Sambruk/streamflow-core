@@ -18,27 +18,12 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionClientResource;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.groups.GroupClientResource;
-import se.streamsource.streamflow.client.resource.organizations.groups.GroupsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantClientResource;
-import se.streamsource.streamflow.client.resource.organizations.groups.participants.ParticipantsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitClientResource;
-import se.streamsource.streamflow.client.resource.organizations.organizationalunits.OrganizationalUnitsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorClientResource;
-import se.streamsource.streamflow.client.resource.organizations.policy.AdministratorsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionsClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldClientResource;
 import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.members.MemberClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.members.MembersClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRoleClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.members.roles.MemberRolesClientResource;
-import se.streamsource.streamflow.client.resource.organizations.roles.RoleClientResource;
-import se.streamsource.streamflow.client.resource.organizations.roles.RolesClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
@@ -76,28 +61,10 @@ public class ClientResourceAssembler
       ).visibleIn( Visibility.application );
 
       // /organizations
-      module.addObjects( OrganizationalUnitsClientResource.class,
-            OrganizationalUnitClientResource.class,
-            OrganizationsClientResource.class,
+      module.addObjects(
 
             FormDefinitionClientResource.class,
             FormDefinitionsClientResource.class,
-
-            GroupsClientResource.class,
-            GroupClientResource.class,
-            ParticipantsClientResource.class,
-            ParticipantClientResource.class,
-
-            MembersClientResource.class,
-            MemberClientResource.class,
-            MemberRolesClientResource.class,
-            MemberRoleClientResource.class,
-
-            RolesClientResource.class,
-            RoleClientResource.class,
-
-            AdministratorsClientResource.class,
-            AdministratorClientResource.class,
 
             SearchClientResource.class,
             SearchTaskClientResource.class ).visibleIn( Visibility.application );
