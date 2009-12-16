@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.administration;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
@@ -28,6 +29,7 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -50,7 +52,8 @@ public class SelectOrganizationalUnitDialog
                                           @Uses final AdministrationModel model ) throws Exception
    {
       super( new BorderLayout() );
-      setActionMap( context.getActionMap( this ) );
+      ApplicationActionMap am = context.getActionMap( this );
+      setActionMap( am );
 
       tree = new JXTree( model );
 
@@ -86,6 +89,7 @@ public class SelectOrganizationalUnitDialog
             false
       ) );
       tree.setCellRenderer( renderer );
+      tree.getSelectionModel().addTreeSelectionListener( new SelectionActionEnabler( am.get("execute")) );
 
       JPanel toolbar = new JPanel();
       toolbar.setBorder( BorderFactory.createEtchedBorder() );
@@ -97,25 +101,16 @@ public class SelectOrganizationalUnitDialog
    @Action
    public void execute()
    {
-      if (tree.getSelectionPath() == null)
+      Object selected = tree.getSelectionPath().getLastPathComponent();
+      if (!(selected instanceof OrganizationalUnitAdministrationNode))
       {
          dialogs.showOkCancelHelpDialog(
                WindowUtils.findWindow( this ),
-               new JLabel( i18n.text( AdministrationResources.nothing_selected ) ) );
+               new JLabel( i18n.text( AdministrationResources.selection_not_an_organizational_unit ) ) );
          return;
-      } else
-      {
-         Object selected = tree.getSelectionPath().getLastPathComponent();
-         if (!(selected instanceof OrganizationalUnitAdministrationNode))
-         {
-            dialogs.showOkCancelHelpDialog(
-                  WindowUtils.findWindow( this ),
-                  new JLabel( i18n.text( AdministrationResources.selection_not_an_organizational_unit ) ) );
-            return;
-         }
-         target = ((OrganizationalUnitAdministrationNode)selected).ou().entity().get();
       }
 
+      target = ((OrganizationalUnitAdministrationNode)selected).ou().entity().get();
       WindowUtils.findWindow( this ).dispose();
    }
 
