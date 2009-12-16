@@ -23,8 +23,8 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.organizations.OrganizationsClientResource;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsTabbedView;
+import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -103,7 +103,7 @@ public class AdministrationView
                   try
                   {
                      // check if permissions are sufficient
-                     accountAdminNode.accountModel().serverResource().getSubResource( "organizations", OrganizationsClientResource.class ).users();
+                     accountAdminNode.accountModel().serverResource().getSubClient( "organizations" ).query( "users", UserEntityListDTO.class);
                   } catch (ResourceException re)
                   {
                      if (Status.CLIENT_ERROR_FORBIDDEN.equals( re.getStatus() ))

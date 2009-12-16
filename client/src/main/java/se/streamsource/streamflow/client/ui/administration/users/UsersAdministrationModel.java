@@ -24,7 +24,6 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.HtmlErrorMessageExtractor;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -141,7 +140,7 @@ public class UsersAdministrationModel
          client.postCommand( "createuser", builder.newInstance() );
       } catch (ResourceException e)
       {
-         throw new OperationException( ErrorResources.valueOf( HtmlErrorMessageExtractor.parse( e.getMessage() ) ), e );
+         throw new OperationException( ErrorResources.valueOf( e.getMessage() ), e );
       }
    }
 

@@ -52,7 +52,7 @@ public class OrganizationsModel
       protected OrganizationUsersModel newModel( String key )
       {
          return obf.newObjectBuilder( OrganizationUsersModel.class )
-               .use( client.getSubClient(key), client ).newInstance();
+               .use( client.getSubClient(key) ).newInstance();
       }
    };
 
