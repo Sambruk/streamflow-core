@@ -49,8 +49,6 @@ import se.streamsource.streamflow.web.resource.organizations.organizationalunits
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorServerResource;
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.FormDefinitionFieldServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.fields.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
@@ -61,6 +59,8 @@ import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeS
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskServerResource;
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
