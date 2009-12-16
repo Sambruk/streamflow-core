@@ -23,9 +23,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+import org.restlet.data.Reference;
+import org.restlet.Context;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
 import javax.swing.ActionMap;
@@ -39,6 +42,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -88,16 +92,16 @@ public class TaskSubmittedFormsView
       add( toolbar, BorderLayout.SOUTH );
    }
 
-    @org.jdesktop.application.Action
-    public void add() throws IOException, ResourceException
-    {
-        FormsListModel formsListModel = obf.newObjectBuilder(FormsListModel.class)
-                .use(model.client).newInstance();
-        FormSubmitWizardController wizardController = obf.newObjectBuilder(FormSubmitWizardController.class).
-                use(formsListModel).newInstance();
-        Wizard wizard = wizardController.createWizard();
-        WizardDisplayer.showWizard(wizard);
-    }
+   @org.jdesktop.application.Action
+   public void add() throws IOException, ResourceException
+   {
+      FormsListModel formsListModel = obf.newObjectBuilder(FormsListModel.class)
+            .use( model.getClient() ).newInstance();
+      FormSubmitWizardController wizardController = obf.newObjectBuilder(FormSubmitWizardController.class).
+            use(formsListModel).newInstance();
+      Wizard wizard = wizardController.createWizard();
+      WizardDisplayer.showWizard(wizard);
+   }
 
    public void setModel( TaskSubmittedFormsModel model )
    {

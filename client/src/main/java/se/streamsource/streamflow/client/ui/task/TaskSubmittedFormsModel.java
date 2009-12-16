@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
@@ -29,6 +30,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import java.util.logging.Logger;
 
@@ -71,10 +73,10 @@ public class TaskSubmittedFormsModel
 
    public TaskSubmittedFormModel getSubmittedFormModel(int index)
    {
-      TaskSubmittedFormModel submittedFormModel = obf.newObjectBuilder(
-            TaskSubmittedFormModel.class ).use( client.getSubClient( ""+index ) ).newInstance();
-
-      return submittedFormModel;
+      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
+      builder.prototype().integer().set( index );
+      return obf.newObjectBuilder(
+            TaskSubmittedFormModel.class ).use( client, builder.newInstance() ).newInstance();
    }
 
 
@@ -92,5 +94,10 @@ public class TaskSubmittedFormsModel
       }
 
       return false;
+   }
+
+   public CommandQueryClient getClient()
+   {
+      return client;
    }
 }

@@ -69,25 +69,8 @@ public class FormsModel
    {
       protected FormModel newModel( String key )
       {
-         try
-         {
-            ListValue value = client.query( "forms", ListValue.class );
-            int index = 0;
-            for (ListItemValue listItemValue : value.items().get())
-            {
-               if (listItemValue.entity().get().identity().equals( key ))
-               {
-                  break;
-               }
-               index++;
-            }
-
-            return obf.newObjectBuilder( FormModel.class )
-                  .use( client.getSubClient( ""+ index ) ).newInstance();
-         } catch (ResourceException e)
-         {
-            throw new OperationException( AdministrationResources.could_not_get_form, e );
-         }
+         return obf.newObjectBuilder( FormModel.class )
+               .use( client.getSubClient( key ) ).newInstance();
       }
    };
 

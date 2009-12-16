@@ -49,10 +49,10 @@ import se.streamsource.streamflow.web.resource.organizations.organizationalunits
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorServerResource;
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionFieldsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionFieldServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
@@ -63,12 +63,11 @@ import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeS
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskFormsServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskFormServerResource;
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
-import se.streamsource.streamflow.web.resource.task.formdefinitions.TaskFormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormServerResource;
-import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormsServerResource;
 import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UsersRouter;
@@ -116,9 +115,9 @@ public class APIv1Router
       attach( "/organizations/{organization}/tasktypes/{labels}/labels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{labels}/labels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms", createServerResourceFinder( FormDefinitionsServerResource.class ) );
-      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{index}", createServerResourceFinder( FormDefinitionServerResource.class ) );
-      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{index}/fields", createServerResourceFinder( FormDefinitionFieldsServerResource.class ) );
-      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{index}/fields/{fieldIndex}", createServerResourceFinder( FormDefinitionFieldServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}", createServerResourceFinder( FormDefinitionServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/fields", createServerResourceFinder( FormDefinitionFieldsServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/fields/{index}", createServerResourceFinder( FormDefinitionFieldServerResource.class ) );
       attach( "/organizations/{labels}/labels", createServerResourceFinder( LabelsServerResource.class ) );
 
       // OrganizationalUnits
@@ -149,9 +148,8 @@ public class APIv1Router
       attach( "/tasks/{task}/comments", createServerResourceFinder( TaskCommentsServerResource.class ) );
       attach( "/tasks/{task}/contacts", createServerResourceFinder( TaskContactsServerResource.class ) );
       attach( "/tasks/{task}/contacts/{index}", createServerResourceFinder( TaskContactServerResource.class ) );
-      attach( "/tasks/{task}/forms", createServerResourceFinder( TaskSubmittedFormsServerResource.class ) );
-      attach( "/tasks/{task}/forms/{index}", createServerResourceFinder( TaskSubmittedFormServerResource.class ) );
-      attach( "/tasks/{task}/formdefinitions/{form}", createServerResourceFinder( TaskFormDefinitionServerResource.class ) );
+      attach( "/tasks/{task}/forms", createServerResourceFinder( TaskFormsServerResource.class ) );
+      attach( "/tasks/{task}/forms/{form}", createServerResourceFinder( TaskFormServerResource.class ) );
 
       // Events
       attach( "/events", createServerResourceFinder( EventsServerResource.class ) );

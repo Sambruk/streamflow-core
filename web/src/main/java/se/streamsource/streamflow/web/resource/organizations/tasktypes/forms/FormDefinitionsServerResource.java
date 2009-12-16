@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.organizations.projects.forms;
+package se.streamsource.streamflow.web.resource.organizations.tasktypes.forms;
 
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;

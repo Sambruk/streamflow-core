@@ -18,8 +18,6 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionClientResource;
-import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
 
 /**
  * JAVADOC
@@ -35,9 +33,6 @@ public class ClientResourceAssembler
 
       // /organizations
       module.addObjects(
-
-            FormDefinitionClientResource.class,
-            FormDefinitionsClientResource.class
 
             ).visibleIn( Visibility.application );
 

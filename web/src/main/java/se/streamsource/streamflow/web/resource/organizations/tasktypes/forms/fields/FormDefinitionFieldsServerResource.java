@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.organizations.projects.forms;
+package se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
@@ -30,48 +30,27 @@ import java.util.List;
 
 /**
  * Mapped to:
- * /organizations/{organization}/tasktypes/{forms}/forms/{index}/fields
+ * /organizations/{organization}/tasktypes/{forms}/forms/{form}/fields
  */
 public class FormDefinitionFieldsServerResource
       extends CommandQueryServerResource
 {
    public ListValue fields()
    {
-      String identity = getRequest().getAttributes().get( "forms" ).toString();
-      String index = getRequest().getAttributes().get( "index" ).toString();
-
+      String identity = getRequest().getAttributes().get( "form" ).toString();
       UnitOfWork uow = uowf.currentUnitOfWork();
-
-      FormsQueries forms = uow.get( FormsQueries.class, identity );
-
-      checkPermission( forms );
-
-      List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
-
-      ListItemValue value = itemValues.get( Integer.parseInt( index ) );
-
-      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
+      FormEntity form = uow.get( FormEntity.class, identity );
+      checkPermission( form );
 
       return new ListValueBuilder( vbf ).addDescribableItems( form.fields() ).newList();
    }
 
    public void add( CreateFieldDTO createFieldDTO )
    {
-      String identity = getRequest().getAttributes().get( "forms" ).toString();
-
-      String index = getRequest().getAttributes().get( "index" ).toString();
-
+      String identity = getRequest().getAttributes().get( "form" ).toString();
       UnitOfWork uow = uowf.currentUnitOfWork();
-
-      FormsQueries forms = uow.get( FormsQueries.class, identity );
-
-      checkPermission( forms );
-
-      List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
-
-      ListItemValue value = itemValues.get( Integer.parseInt( index ) );
-
-      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
+      FormEntity form = uow.get( FormEntity.class, identity );
+      checkPermission( form );
 
       form.createField( createFieldDTO.name().get(), getFieldValue( createFieldDTO.fieldType().get() ) );
    }

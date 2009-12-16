@@ -22,6 +22,7 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.FieldDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -33,11 +34,12 @@ public class TaskSubmittedFormModel
 
    private SubmittedFormDTO form;
 
-   public TaskSubmittedFormModel( @Uses CommandQueryClient client )
+   public TaskSubmittedFormModel( @Uses CommandQueryClient client,
+                                  @Uses IntegerDTO index)
    {
       try
       {
-         form = client.query( "form", SubmittedFormDTO.class );
+         form = client.query( "form", index ,SubmittedFormDTO.class );
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_get_submitted_form, e );

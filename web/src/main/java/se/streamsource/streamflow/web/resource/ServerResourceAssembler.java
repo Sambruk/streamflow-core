@@ -38,8 +38,10 @@ import se.streamsource.streamflow.web.resource.organizations.policy.Administrato
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
@@ -50,12 +52,11 @@ import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeS
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskFormsServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskFormServerResource;
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
-import se.streamsource.streamflow.web.resource.task.formdefinitions.TaskFormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormServerResource;
-import se.streamsource.streamflow.web.resource.task.forms.TaskSubmittedFormsServerResource;
 import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UserServerResource;
@@ -119,9 +120,8 @@ public class ServerResourceAssembler
             TaskCommentsServerResource.class,
             TaskContactsServerResource.class,
             TaskContactServerResource.class,
-            TaskSubmittedFormsServerResource.class,
-            TaskSubmittedFormServerResource.class,
-            TaskFormDefinitionServerResource.class,
+            TaskFormsServerResource.class,
+            TaskFormServerResource.class,
 
             WorkspaceProjectsServerResource.class,
             WorkspaceProjectServerResource.class,
@@ -160,6 +160,8 @@ public class ServerResourceAssembler
             MemberServerResource.class,
             FormDefinitionsServerResource.class,
             FormDefinitionServerResource.class,
+            FormDefinitionFieldsServerResource.class,
+            FormDefinitionFieldServerResource.class,
             SelectedTaskTypesServerResource.class,
             SelectedTaskTypeServerResource.class,
 

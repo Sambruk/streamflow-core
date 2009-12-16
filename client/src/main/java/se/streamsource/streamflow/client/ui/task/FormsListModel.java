@@ -42,19 +42,10 @@ public class FormsListModel
       @Override
       protected FormSubmitModel newModel(String key)
       {
-         Reference ref = client.getReference().clone();
-         List<String> segments = ref.getSegments();
-         segments.remove( ref.getSegments().size() - 1 );
-         ref.setSegments( segments );
-         ref.addSegment( "formdefinitions" ).addSegment( key );
-
-         CommandQueryClient formDefinition = obf.newObjectBuilder( CommandQueryClient.class )
-               .use( client.getClient(), new Context(), ref ).newInstance();
-
          List<ListItemValue> itemValues;
          try
          {
-            itemValues = formDefinition.query( "fields", ListValue.class ).items().get();
+            itemValues = client.getSubClient( key ).query( "fields", ListValue.class ).items().get();
          } catch (ResourceException e)
          {
             throw new OperationException(WorkspaceResources.could_not_get_form, e);
@@ -75,7 +66,7 @@ public class FormsListModel
    {
       try
       {
-         forms = client.query( "applicableforms", ListValue.class ).items().get();
+         forms = client.query( "possibleforms", ListValue.class ).items().get();
          fireContentsChanged(this, 0, forms.size());
       } catch (ResourceException e)
       {

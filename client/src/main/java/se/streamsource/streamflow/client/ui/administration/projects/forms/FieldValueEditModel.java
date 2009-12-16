@@ -85,7 +85,7 @@ public class FieldValueEditModel
    {
       try
       {
-         FieldDefinitionValue fieldDefinitionValue = client. query( "field", FieldDefinitionValue.class );
+         FieldDefinitionValue fieldDefinitionValue = client.query( "field", FieldDefinitionValue.class );
          value = vbf.newValueBuilder( FieldDefinitionValue.class ).withPrototype( fieldDefinitionValue ).prototype();
 
          value.fieldValue().set(
