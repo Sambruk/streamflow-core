@@ -7,26 +7,6 @@ Given user named user1
 When an assigned task is created
 Then events createdAssignedTask,changedOwner,changedDate,setCounter,assignedTaskId,addedContact,assignedTo occurred
 
-Scenario: Mark assigned task as unread and read
-Given basic setup 1
-Given the organization
-Given organizational unit named OU1
-Given project named project1
-Given user named user1
-When an assigned task is created
-And events are cleared
-And an assigned task is marked as unread
-Then events markedAssignedTaskAsUnread occurred
-
-When an assigned task is marked as unread
-Then no events occurred
-
-When an assigned task is marked as read
-Then events markedAssignedTaskAsRead occurred
-
-When an assigned task is marked as read
-Then no events occurred
-
 Scenario: Complete assigned task
 Given basic setup 1
 Given the organization
@@ -58,7 +38,7 @@ Given user named user1
 When an assigned task is created
 And events are cleared
 And assigned task is forwarded to user user2
-Then events unassigned,changedOwner,markedAsUnread occurred
+Then events unassigned,changedOwner occurred
 
 Scenario: Delegate assigned task
 Given basic setup 1

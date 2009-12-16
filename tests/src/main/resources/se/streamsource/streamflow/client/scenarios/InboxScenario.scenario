@@ -4,23 +4,12 @@ Given user named user1
 When inbox task is created
 Then events createdTask,changedOwner,changedDate,setCounter,assignedTaskId,addedContact occurred
 
-Scenario: Mark inbox task as read/unread
-Given basic setup 1
-When task is marked as unread
-Then events markedAsUnread occurred
-When task is marked as unread
-Then no events occurred
-When task is marked as read
-Then events markedAsRead occurred
-When task is marked as read
-Then no events occurred
-
 Scenario: Forward task
 Given basic setup 1
 When inbox task is created
 And events are cleared
 And inbox task is forwarded to user user2
-Then events changedOwner,markedAsUnread occurred
+Then events changedOwner occurred
 
 Scenario: Forward completed task
 Given basic setup 1

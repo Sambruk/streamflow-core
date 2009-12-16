@@ -74,7 +74,7 @@ import java.util.logging.Logger;
  * Controller for the application
  */
 @ProxyActions({"cut", "copy", "paste",
-      "createTask", "completeTasks", "assignTasksToMe", "markTasksAsRead", "markTasksAsUnread", "dropTasks", "forwardTasks", "delegateTasks", // Task related proxy actions
+      "createTask", "completeTasks", "assignTasksToMe", "dropTasks", "forwardTasks", "delegateTasks", // Task related proxy actions
       "find", "selectTree", "selectTable", "selectDetails"})
 public class StreamFlowApplication
       extends SingleFrameApplication

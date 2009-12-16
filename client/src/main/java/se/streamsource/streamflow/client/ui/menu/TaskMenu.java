@@ -24,12 +24,10 @@ public class TaskMenu
    {
       menu( "taskMenu",
             "createTask",
-            "completeTasks",
-            "markTasksAsRead",
-            "markTasksAsUnread",
-            "assignTasksToMe",
-            "forwardTasks",
-            "delegateTasks"
+            "complete",
+            "assign",
+            "forward",
+            "delegate"
       );
    }
 }
