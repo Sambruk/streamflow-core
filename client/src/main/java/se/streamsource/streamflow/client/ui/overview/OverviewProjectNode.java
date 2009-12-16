@@ -14,10 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -33,12 +30,10 @@ public class OverviewProjectNode
    @Uses
    String projectName;
 
-   public OverviewProjectNode( @Uses OverviewProjectClientResource projectClientResource,
-                               @Uses OverviewProjectAssignmentsNode assignmentsNode,
-                               @Uses OverviewProjectWaitingForNode waitingForNode,
-                               @Structure ObjectBuilderFactory obf )
+   public OverviewProjectNode( @Uses OverviewProjectAssignmentsNode assignmentsNode,
+                               @Uses OverviewProjectWaitingForNode waitingForNode)
    {
-      super( projectClientResource );
+      super( null );
 
       add( assignmentsNode );
 

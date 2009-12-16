@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXTable;
@@ -24,9 +26,12 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowResources;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -48,8 +53,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class OverviewSummaryView extends JPanel
 {
@@ -74,7 +77,39 @@ public class OverviewSummaryView extends JPanel
       setActionMap( am );
 
       // Table
-      overviewSummaryTable = new JXTable( model );
+      overviewSummaryTable = new JXTable( new EventJXTableModel<ProjectSummaryDTO>(model.getProjectOverviews(), new TableFormat<ProjectSummaryDTO>()
+      {
+         String[] columnNames = new String[]{text( project_column_header ), text( inbox_column_header ),
+               text( assigned_column_header ), text( total_column_header )};
+
+
+         public int getColumnCount()
+         {
+            return columnNames.length;
+         }
+
+         public String getColumnName( int i )
+         {
+            return columnNames[i];
+         }
+
+         public Object getColumnValue( ProjectSummaryDTO o, int i )
+         {
+            switch (i)
+            {
+               case 0:
+                  return o.project().get();
+               case 1:
+                  return o.inboxCount().get();
+               case 2:
+                  return o.assignedCount().get();
+               case 3:
+                  return o.assignedCount().get()+o.inboxCount().get();
+            }
+
+            return null;
+         }
+      }) );
       overviewSummaryTable.getActionMap().getParent().setParent( am );
       overviewSummaryTable.setFocusTraversalKeys(
             KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
@@ -169,7 +204,7 @@ public class OverviewSummaryView extends JPanel
       }
 
       // Generate Excel file on the server.
-      InputStream inputStream = model.getResource().generateExcelProjectSummary();
+      InputStream inputStream = model.generateExcelProjectSummary();
 
       File file = fileChooser.getSelectedFile();
       FileOutputStream out = null;

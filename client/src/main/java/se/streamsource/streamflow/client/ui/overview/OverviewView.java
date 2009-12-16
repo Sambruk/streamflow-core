@@ -28,6 +28,10 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.task.OverviewAssignmentsTaskTableFormatter;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
+import se.streamsource.streamflow.client.ui.task.TaskTableView2;
+import se.streamsource.streamflow.client.ui.task.OverviewWaitingForTaskTableFormatter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -178,10 +182,12 @@ public class OverviewView
 
                } else if (node instanceof OverviewProjectAssignmentsNode)
                {
-/*
                   OverviewProjectAssignmentsNode projectAssignmentsNode = (OverviewProjectAssignmentsNode) node;
-                  final OverviewProjectAssignmentsModel assignmentsModel = projectAssignmentsNode.assignmentsModel();
-                  view = obf.newObjectBuilder( OverviewProjectAssignmentsView.class ).use( assignmentsModel, projectAssignmentsNode.getParent() ).newInstance();
+                  final TaskTableModel2 assignmentsModel = projectAssignmentsNode.taskTableModel();
+                  view = obf.newObjectBuilder( TaskTableView2.class ).use( assignmentsModel,
+                        projectAssignmentsNode.getParent().getParent().getParent().getUserObject().tasks(),
+                        projectAssignmentsNode.getParent(),
+                        new OverviewAssignmentsTaskTableFormatter()).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -192,35 +198,25 @@ public class OverviewView
                         return null;
                      }
                   } );
+               } else if (node instanceof OverviewProjectWaitingForNode)
+               {
+                  OverviewProjectWaitingForNode projectWaitingForNode = (OverviewProjectWaitingForNode) node;
+                  final TaskTableModel2 waitingForModel = projectWaitingForNode.taskTableModel();
+                  view = obf.newObjectBuilder( TaskTableView2.class ).use(
+                        waitingForModel,
+                        projectWaitingForNode.getParent().getParent().getParent().getUserObject().tasks(),
+                        new OverviewWaitingForTaskTableFormatter()).newInstance();
 
-*/
+                  context.getTaskService().execute( new Task( context.getApplication() )
+                  {
+                     protected Object doInBackground() throws Exception
+                     {
+                        waitingForModel.refresh();
+
+                        return null;
+                     }
+                  } );
                }
-/*
-                    else if (node instanceof OverviewProjectWaitingForNode)
-                    {
-                        WorkspaceProjectWaitingForNode projectWaitingForNode = (WorkspaceProjectWaitingForNode) node;
-                        final WorkspaceProjectWaitingForModel waitingForModel = projectWaitingForNode.waitingForModel();
-                        final LabelsModel labelsModel = projectWaitingForNode.getParent().labelsModel();
-                        view = obf.newObjectBuilder(WorkspaceProjectWaitingForView.class).use(waitingForModel, labelsModel).newInstance();
-
-                        context.getTaskService().execute(new Task(context.getApplication())
-                        {
-                            protected Object doInBackground() throws Exception
-                            {
-                                try
-                                {
-                                    waitingForModel.refresh();
-                                    labelsModel.refresh();
-                                } catch (ResourceException e)
-                                {
-                                    e.printStackTrace();
-                                }
-
-                                return null;
-                            }
-                        });
-                    }
-*/
 
                pane.setRightComponent( view );
             } else

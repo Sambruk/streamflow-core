@@ -70,7 +70,6 @@ public class AbstractTaskListServerResource
       prototype.creationDate().set( task.createdOn().get() );
       prototype.description().set( task.description().get() );
       prototype.status().set( task.status().get() );
-      prototype.isRead().set( true );
 
       addAdditionalValues( prototype, task );
 

@@ -24,6 +24,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskActionsModel;
@@ -46,7 +47,7 @@ public class SelectUserOrProjectDialog2
    Dimension dialogSize = new Dimension( 600, 300 );
 
    public ListItemValue selected;
-   public JList projectList;
+   public FilteredList projectList;
    public JList userList;
 
    public SelectUserOrProjectDialog2( final @Uses TaskActionsModel taskModel,
@@ -58,11 +59,12 @@ public class SelectUserOrProjectDialog2
       setName( i18n.text( WorkspaceResources.search_projects_users ) );
       setActionMap( context.getActionMap( this ) );
 
-      EventList<ListItemValue> projects = taskModel.getPossibleProjects();
+      EventList projects = taskModel.getPossibleProjects();
       EventList<ListItemValue> users = taskModel.getPossibleUsers();
 
-      projectList = new JList( new EventListModel<ListItemValue>( projects ) );
-      projectList.setCellRenderer( new ListItemListCellRenderer() );
+      projectList = new FilteredList();
+      projectList.setEventList( projects );
+      projectList.getList().setCellRenderer( new ListItemListCellRenderer() );
 
       userList = new JList( new EventListModel<ListItemValue>( users ) );
       userList.setCellRenderer( new ListItemListCellRenderer() );
@@ -70,7 +72,7 @@ public class SelectUserOrProjectDialog2
       add( new JScrollPane( projectList ));
       add( new JScrollPane( userList ));
 
-      projectList.addListSelectionListener( new ListSelectionListener()
+      projectList.getList().addListSelectionListener( new ListSelectionListener()
       {
          public void valueChanged( ListSelectionEvent e )
          {
@@ -82,7 +84,7 @@ public class SelectUserOrProjectDialog2
       {
          public void valueChanged( ListSelectionEvent e )
          {
-            projectList.clearSelection();
+            projectList.getList().clearSelection();
          }
       });
    }
@@ -95,7 +97,7 @@ public class SelectUserOrProjectDialog2
    @Action
    public void execute()
    {
-      selected = (ListItemValue) projectList.getSelectedValue();
+      selected = (ListItemValue) projectList.getList().getSelectedValue();
       if (selected == null)
          selected = (ListItemValue) userList.getSelectedValue();
 

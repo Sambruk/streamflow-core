@@ -111,7 +111,6 @@ public interface DelegationsQueries
          prototype.creationDate().set( task.createdOn().get() );
          prototype.description().set( task.description().get() );
          prototype.status().set( task.status().get() );
-         prototype.isRead().set( !delegations.unreadDelegatedTasks().contains( task ) );
 
          ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder( ListValue.class );
          List<ListItemValue> labelList = labelListBuilder.prototype().items().get();

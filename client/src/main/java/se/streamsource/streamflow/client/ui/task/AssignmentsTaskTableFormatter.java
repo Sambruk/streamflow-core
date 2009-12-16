@@ -16,19 +16,28 @@ package se.streamsource.streamflow.client.ui.task;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import se.streamsource.streamflow.domain.task.TaskStates;
+
+import java.util.Date;
 
 /**
  * JAVADOC
  */
 public class AssignmentsTaskTableFormatter
-   extends AbstractTaskTableFormatter
+      extends AbstractTaskTableFormatter
 {
    public AssignmentsTaskTableFormatter()
    {
       columnNames = new String[]{
-         text( title_column_header ),
-         text( tasktype_column_header ),
-         text( created_column_header ),
-         text( task_status_header )};
+            text( title_column_header ),
+            text( tasktype_column_header ),
+            text( created_column_header ),
+            text( task_status_header )};
+      columnClasses = new Class[] {
+            String.class,
+            String.class,
+            Date.class,
+            TaskStates.class
+            };
    }
 }

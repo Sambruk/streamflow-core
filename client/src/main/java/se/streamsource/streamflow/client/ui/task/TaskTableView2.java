@@ -18,10 +18,11 @@ import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jdesktop.swingx.decorator.PainterHighlighter;
+import org.jdesktop.swingx.painter.PinstripePainter;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.common.Optional;
@@ -46,7 +47,6 @@ import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -115,12 +115,8 @@ public class TaskTableView2
       taskTable.getColumn( 1 ).setMaxWidth( 150 );
       taskTable.getColumn( 2 ).setPreferredWidth( 150 );
       taskTable.getColumn( 2 ).setMaxWidth( 150 );
-      taskTable.getColumn( taskTable.getColumnCount() - 1 ).setCellRenderer( new TaskStatusTableCellRenderer() );
       taskTable.getColumn( taskTable.getColumnCount() - 1 ).setMaxWidth( 40 );
       taskTable.getColumn( taskTable.getColumnCount() - 1 ).setResizable( false );
-
-      TableColumn column = taskTable.getColumnModel().getColumn( taskTable.getColumnCount()-1 );
-      column.setCellRenderer( new TaskStatusTableCellRenderer() );
 
       taskTable.setAutoCreateColumnsFromModel( false );
 
@@ -141,17 +137,20 @@ public class TaskTableView2
             return format.format( time );
          }
       } ) );
-      taskTable.setDefaultRenderer( ImageIcon.class, new TaskStatusTableCellRenderer() );
 
       taskTable.addHighlighter( HighlighterFactory.createAlternateStriping() );
-      taskTable.addHighlighter( new ColorHighlighter( new HighlightPredicate()
+
+      PinstripePainter p = new PinstripePainter();
+      p.setAngle(90);
+      p.setPaint(Color.LIGHT_GRAY);
+
+      taskTable.addHighlighter( new PainterHighlighter( new HighlightPredicate()
       {
          public boolean isHighlighted( Component component, ComponentAdapter componentAdapter )
          {
-            return componentAdapter != null && componentAdapter.getValue( 2 ).equals( TaskStates.DROPPED);
+            return componentAdapter != null && componentAdapter.getValue( componentAdapter.getColumnCount()-1 ).equals( TaskStates.DROPPED);
          }
-      }, Color.black, Color.lightGray ) );
-      taskTable.setEditable( true );
+      }, p ) );
 
       buildToolbar( toolbar );
 

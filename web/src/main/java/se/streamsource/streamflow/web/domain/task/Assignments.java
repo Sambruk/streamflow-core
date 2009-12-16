@@ -16,7 +16,6 @@ package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -25,10 +24,9 @@ import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import static se.streamsource.streamflow.domain.task.TaskStates.*;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.user.User;
-
-import static se.streamsource.streamflow.domain.task.TaskStates.*;
 
 /**
  * JAVADOC
@@ -46,23 +44,13 @@ public interface Assignments
 
    void forwardAssignedTaskTo( @HasStatus(ACTIVE) Task task, Inbox receiverInbox );
 
-   void markAssignedTaskAsRead( Task task );
-
-   void markAssignedTaskAsUnread( Task task );
-
    void deleteAssignedTask( @HasStatus(ACTIVE) Task task );
 
    interface Data
    {
       Task createdAssignedTask( DomainEvent event, String id );
 
-      void markedAssignedTaskAsRead( DomainEvent event, Task task );
-
-      void markedAssignedTaskAsUnread( DomainEvent event, Task task );
-
       void deletedAssignedTask( DomainEvent event, Task task );
-
-      ManyAssociation<Task> unreadAssignedTasks();
    }
 
 
@@ -121,13 +109,11 @@ public interface Assignments
          {
             task.complete();
          }
-         markAssignedTaskAsRead( task );
       }
 
       public void dropAssignedTask( Task task )
       {
          task.drop();
-         markAssignedTaskAsRead( task );
       }
 
       public void delegateAssignedTaskTo( Task task, Delegatee delegatee )
@@ -144,43 +130,14 @@ public interface Assignments
          receiverInbox.receiveTask( task );
       }
 
-      public void markAssignedTaskAsRead( Task task )
-      {
-         if (!unreadAssignedTasks().contains( task ))
-         {
-            return;
-         }
-         markedAssignedTaskAsRead( DomainEvent.CREATE, task );
-      }
-
-      public void markAssignedTaskAsUnread( Task task )
-      {
-         if (unreadAssignedTasks().contains( task ))
-         {
-            return;
-         }
-         markedAssignedTaskAsUnread( DomainEvent.CREATE, task );
-      }
-
       public void deleteAssignedTask( Task task )
       {
-         markAssignedTaskAsRead( task );
          deletedAssignedTask( DomainEvent.CREATE, task );
       }
 
       public void deletedAssignedTask( DomainEvent event, Task task )
       {
          uowf.currentUnitOfWork().remove( task );
-      }
-
-      public void markedAssignedTaskAsRead( DomainEvent event, Task task )
-      {
-         unreadAssignedTasks().remove( task );
-      }
-
-      public void markedAssignedTaskAsUnread( DomainEvent event, Task task )
-      {
-         unreadAssignedTasks().add( task );
       }
    }
 }

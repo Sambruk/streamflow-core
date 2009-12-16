@@ -12,27 +12,27 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.users.workspace.user.delegations;
+package se.streamsource.streamflow.web.resource.users.overview.projects.waitingfor;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.DelegationsQueries;
+import se.streamsource.streamflow.web.domain.task.WaitingForQueries;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
  * Mapped to:
- * /users/{user}/workspace/user/delegations
+ * /users/{user}/overview/projects/{project}/waitingfor
  */
-public class WorkspaceUserDelegationsServerResource
+public class OverviewProjectWaitingForServerResource
       extends AbstractTaskListServerResource
 {
    public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
-      String userId = (String) getRequest().getAttributes().get( "user" );
-      DelegationsQueries delegations = uow.get( DelegationsQueries.class, userId );
+      String waitingForId = (String) getRequest().getAttributes().get( "project" );
+      WaitingForQueries waitingFor = uow.get( WaitingForQueries.class, waitingForId );
 
-      return delegations.delegationsTasks();
+      return waitingFor.waitingForTasks( null );
    }
 }

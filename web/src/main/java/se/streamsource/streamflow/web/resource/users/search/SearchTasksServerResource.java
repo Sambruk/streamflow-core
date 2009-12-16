@@ -25,7 +25,6 @@ import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
-import se.streamsource.streamflow.resource.organization.search.SearchTaskListDTO;
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
@@ -127,7 +126,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
          return buildTaskList( tasks, SearchTaskDTO.class);
       } else
       {
-         return vbf.newValue( SearchTaskListDTO.class );
+         return vbf.newValue( TaskListDTO.class );
       }
    }
 

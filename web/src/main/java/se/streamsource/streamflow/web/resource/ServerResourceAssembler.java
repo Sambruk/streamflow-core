@@ -24,8 +24,8 @@ import se.streamsource.streamflow.web.resource.labels.SelectedLabelServerResourc
 import se.streamsource.streamflow.web.resource.labels.SelectedLabelsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
-import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationalUnitServerResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplateServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplatesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupResource;
@@ -40,8 +40,6 @@ import se.streamsource.streamflow.web.resource.organizations.projects.ProjectSer
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionFieldServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
@@ -68,29 +66,20 @@ import se.streamsource.streamflow.web.resource.users.overview.OverviewServerReso
 import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.OverviewProjectsServerResource;
 import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.overview.projects.assignments.OverviewProjectAssignmentsTaskServerResource;
-import se.streamsource.streamflow.web.resource.users.search.SearchTaskServerResource;
+import se.streamsource.streamflow.web.resource.users.overview.projects.waitingfor.OverviewProjectWaitingForServerResource;
 import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.WorkspaceProjectsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.assignments.WorkspaceProjectAssignmentsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.delegations.WorkspaceProjectDelegationsTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.WorkspaceProjectInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.inbox.WorkspaceProjectInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.projects.waitingfor.WorkspaceProjectWaitingForTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.WorkspaceUserServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.WorkspaceUserAssignedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.WorkspaceUserAssignmentsServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegatedTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxTaskServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
-import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForTaskServerResource;
 
 /**
  * Assembler for API resources
@@ -120,16 +109,9 @@ public class ServerResourceAssembler
             WorkspaceUserServerResource.class,
 
             WorkspaceUserInboxServerResource.class,
-            WorkspaceUserInboxTaskServerResource.class,
-
             WorkspaceUserAssignmentsServerResource.class,
-            WorkspaceUserAssignedTaskServerResource.class,
-
             WorkspaceUserDelegationsServerResource.class,
-            WorkspaceUserDelegatedTaskServerResource.class,
-
             WorkspaceUserWaitingForServerResource.class,
-            WorkspaceUserWaitingForTaskServerResource.class,
 
             TaskServerResource.class,
             TaskActionsServerResource.class,
@@ -144,13 +126,9 @@ public class ServerResourceAssembler
             WorkspaceProjectsServerResource.class,
             WorkspaceProjectServerResource.class,
             WorkspaceProjectInboxServerResource.class,
-            WorkspaceProjectInboxTaskServerResource.class,
             WorkspaceProjectAssignmentsServerResource.class,
-            WorkspaceProjectAssignmentsTaskServerResource.class,
             WorkspaceProjectDelegationsServerResource.class,
-            WorkspaceProjectDelegationsTaskServerResource.class,
             WorkspaceProjectWaitingForServerResource.class,
-            WorkspaceProjectWaitingForTaskServerResource.class,
             LabelsServerResource.class,
             SelectedLabelsServerResource.class,
             SelectedLabelServerResource.class,
@@ -160,11 +138,7 @@ public class ServerResourceAssembler
             OverviewProjectsServerResource.class,
             OverviewProjectServerResource.class,
             OverviewProjectAssignmentsServerResource.class,
-            OverviewProjectAssignmentsTaskServerResource.class,
-/*
-                OverviewProjectWaitingForServerResource.class,
-                OverviewProjectWaitingForTaskServerResource.class,
-*/
+            OverviewProjectWaitingForServerResource.class,
 
             // /organizations
             OrganizationsServerResource.class,
@@ -186,8 +160,6 @@ public class ServerResourceAssembler
             MemberServerResource.class,
             FormDefinitionsServerResource.class,
             FormDefinitionServerResource.class,
-            FormDefinitionFieldsServerResource.class,
-            FormDefinitionFieldServerResource.class,
             SelectedTaskTypesServerResource.class,
             SelectedTaskTypeServerResource.class,
 
@@ -201,7 +173,6 @@ public class ServerResourceAssembler
             TaskTypeServerResource.class,
 
             SearchTasksServerResource.class,
-            SearchTaskServerResource.class,
 
             // Events
             EventsServerResource.class,

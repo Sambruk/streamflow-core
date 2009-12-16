@@ -16,7 +16,6 @@ package se.streamsource.streamflow.web.domain.task;
 
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -25,10 +24,9 @@ import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import static se.streamsource.streamflow.domain.task.TaskStates.*;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.user.User;
-
-import static se.streamsource.streamflow.domain.task.TaskStates.*;
 
 /**
  * JAVADOC
@@ -50,10 +48,6 @@ public interface Inbox
 
    void delegateTo( @HasStatus(ACTIVE) Task task, Delegatee delegatee, Delegator delegator );
 
-   void markAsRead( Task task );
-
-   void markAsUnread( Task task );
-
    void deleteTask( @HasStatus(ACTIVE) Task task );
 
    interface Data
@@ -61,12 +55,6 @@ public interface Inbox
       Task createdTask( DomainEvent event, String id );
 
       void deletedTask( DomainEvent event, Task task );
-
-      void markedAsRead( DomainEvent event, Task task );
-
-      void markedAsUnread( DomainEvent event, Task task );
-
-      ManyAssociation<Task> unreadInboxTasks();
    }
 
    abstract class InboxMixin
@@ -100,7 +88,6 @@ public interface Inbox
       {
          task.unassign();
          task.changeOwner( owner );
-         markAsUnread( task );
       }
 
       public void completeTask( Task task, Assignee assignee )
@@ -122,31 +109,12 @@ public interface Inbox
 
       public void forwardTo( Task task, Inbox receiverInbox )
       {
-         markAsRead( task );
          receiverInbox.receiveTask( task );
       }
 
       public void delegateTo( Task task, Delegatee delegatee, Delegator delegator )
       {
          task.delegateTo( delegatee, delegator, waitingFor );
-      }
-
-      public void markAsRead( Task task )
-      {
-         if (!unreadInboxTasks().contains( task ))
-         {
-            return;
-         }
-         markedAsRead( DomainEvent.CREATE, task );
-      }
-
-      public void markAsUnread( Task task )
-      {
-         if (unreadInboxTasks().contains( task ))
-         {
-            return;
-         }
-         markedAsUnread( DomainEvent.CREATE, task );
       }
 
       public Task createdTask( DomainEvent event, String id )
@@ -166,23 +134,12 @@ public interface Inbox
 
       public void deleteTask( Task task )
       {
-         markAsRead( task );
          deletedTask( DomainEvent.CREATE, task );
       }
 
       public void deletedTask( DomainEvent event, Task task )
       {
          uowf.currentUnitOfWork().remove( task );
-      }
-
-      public void markedAsRead( DomainEvent event, Task task )
-      {
-         unreadInboxTasks().remove( task );
-      }
-
-      public void markedAsUnread( DomainEvent event, Task task )
-      {
-         unreadInboxTasks().add( task );
       }
    }
 }

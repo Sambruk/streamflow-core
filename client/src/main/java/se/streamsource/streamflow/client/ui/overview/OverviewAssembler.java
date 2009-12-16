@@ -44,10 +44,5 @@ public class OverviewAssembler
       UIAssemblers.addMV( module,
             OverviewSummaryModel.class,
             OverviewSummaryView.class );
-
-      // Project
-      UIAssemblers.addMV( module,
-            OverviewProjectWaitingForModel.class,
-            OverviewProjectWaitingForView.class );
    }
 }

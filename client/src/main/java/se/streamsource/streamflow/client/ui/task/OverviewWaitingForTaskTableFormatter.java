@@ -15,7 +15,11 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.domain.task.TaskStates;
 
 import java.util.Date;
@@ -23,21 +27,39 @@ import java.util.Date;
 /**
  * JAVADOC
  */
-public class InboxTaskTableFormatter
+public class OverviewWaitingForTaskTableFormatter
    extends AbstractTaskTableFormatter
 {
-   public InboxTaskTableFormatter()
+   public OverviewWaitingForTaskTableFormatter()
    {
       columnNames = new String[]{
          text( title_column_header ),
+         text( delegated_to_column_header ),
          text( tasktype_column_header ),
          text( created_column_header ),
          text( task_status_header )};
       columnClasses = new Class[] {
             String.class,
             String.class,
+            String.class,
             Date.class,
             TaskStates.class
             };
+   }
+
+   @Override
+   public Object getColumnValue( TaskDTO taskDTO, int i )
+   {
+      WaitingForTaskDTO assignedTask = (WaitingForTaskDTO) taskDTO;
+
+      switch (i)
+      {
+         case 0:
+            return super.getColumnValue( taskDTO, i );
+         case 1:
+            return assignedTask.delegatedTo().get();
+         default:
+            return super.getColumnValue( taskDTO, i-1 );
+      }
    }
 }

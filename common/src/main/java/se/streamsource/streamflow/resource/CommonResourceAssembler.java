@@ -18,17 +18,16 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
-import se.streamsource.streamflow.resource.assignment.OverviewAssignedTaskDTO;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.delegation.DelegationsTaskListDTO;
 import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
@@ -54,7 +53,6 @@ import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
-import se.streamsource.streamflow.resource.waitingfor.OverviewWaitingForTaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 /**
@@ -81,7 +79,7 @@ public class CommonResourceAssembler
       module.addValues( TasksQuery.class ).visibleIn( Visibility.application );
 
       // Result values
-      module.addValues( ListValue.class, ListItemValue.class,
+      module.addValues( ListValue.class, ListItemValue.class, GroupedListItemValue.class,
             TaskListDTO.class,
             InboxTaskDTO.class,
             TaskGeneralDTO.class,
@@ -89,13 +87,10 @@ public class CommonResourceAssembler
             CommentsDTO.class,
             CommentDTO.class,
             AssignedTaskDTO.class,
-            DelegationsTaskListDTO.class,
             DelegatedTaskDTO.class,
             WaitingForTaskDTO.class,
-            OverviewWaitingForTaskDTO.class,
             TreeValue.class,
             TreeNodeValue.class,
-            OverviewAssignedTaskDTO.class,
             ProjectSummaryDTO.class,
             ProjectSummaryListDTO.class,
             FieldDTO.class,

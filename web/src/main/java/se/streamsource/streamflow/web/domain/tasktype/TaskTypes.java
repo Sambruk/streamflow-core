@@ -32,6 +32,7 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.project.Project;
 import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.project.OwningOrganizationalUnit;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
@@ -117,7 +118,14 @@ public interface TaskTypes
 
          Query<Project> query = projects.newQuery( uowf.currentUnitOfWork() );
 
-         return new ListValueBuilder( vbf ).addDescribableItems( query ).newList();
+         ListValueBuilder lvb = new ListValueBuilder( vbf );
+         for (Project project : query)
+         {
+            OwningOrganizationalUnit.Data ou = (OwningOrganizationalUnit.Data) project;
+            lvb.addDescribable( project, ou.organizationalUnit().get() );
+         }
+
+         return lvb.newList();
       }
    }
 }

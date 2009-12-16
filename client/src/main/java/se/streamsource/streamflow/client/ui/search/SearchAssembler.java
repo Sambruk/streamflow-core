@@ -30,7 +30,7 @@ public class SearchAssembler
    {
       module.addObjects( SearchWindow.class ).visibleIn( Visibility.layer );
 
-      UIAssemblers.addViews( module, SearchView.class, SearchResultTableView.class );
+      UIAssemblers.addViews( module, SearchView.class);
 
       module.addObjects( SearchResultTableModel.class );
    }

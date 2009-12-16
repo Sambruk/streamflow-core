@@ -21,8 +21,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.sideeffect.SideEffectOf;
-import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.Date;
@@ -30,7 +28,6 @@ import java.util.Date;
 /**
  * JAVADOC
  */
-@SideEffects(Delegatable.FinishedDelegatedTaskSideEffect.class)
 @Mixins(Delegatable.Mixin.class)
 public interface Delegatable
 {
@@ -100,21 +97,4 @@ public interface Delegatable
          delegatedFrom().set( null );
       }
    }
-
-   abstract public class FinishedDelegatedTaskSideEffect
-         extends SideEffectOf<TaskStatus>
-         implements TaskStatus
-   {
-      @This
-      Delegatable.Data delegatable;
-
-      @This
-      Task task;
-
-      public void done()
-      {
-         delegatable.delegatedFrom().get().markWaitingForAsUnread( task );
-      }
-   }
-
 }

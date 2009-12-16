@@ -28,7 +28,6 @@ import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
-import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewProjectsNode;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
@@ -225,7 +224,7 @@ public class AccountModel
          CommandQueryClient client = userResource().getSubClient( "overview" ).getSubClient( "projects" );
          OverviewProjectsNode overviewProjects = obf.newObjectBuilder( OverviewProjectsNode.class ).use( client, this ).newInstance();
 
-         OverviewSummaryModel summaryModel = obf.newObjectBuilder( OverviewSummaryModel.class ).use( userResource().getSubResource("overview", OverviewClientResource.class )).newInstance();
+         OverviewSummaryModel summaryModel = obf.newObjectBuilder( OverviewSummaryModel.class ).use( userResource().getSubClient( "overview")).newInstance();
 
          overviewModel = obf.newObjectBuilder( OverviewModel.class ).use( this, tasks(), overviewProjects, summaryModel ).newInstance();
       }

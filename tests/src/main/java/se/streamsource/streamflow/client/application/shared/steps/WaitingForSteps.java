@@ -59,18 +59,6 @@ public class WaitingForSteps
       givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
    }
 
-   @When("waitingFor task is marked as $mark")
-   public void markAssignedTaskAs( String mark )
-   {
-      if ("read".equals( mark ))
-      {
-         projectsSteps.givenProject.markWaitingForAsRead( givenTask );
-      } else
-      {
-         projectsSteps.givenProject.markWaitingForAsUnread( givenTask );
-      }
-   }
-
    @When("waitingFor task is completed")
    public void completeWaitingForTask()
    {

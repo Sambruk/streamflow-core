@@ -14,14 +14,12 @@
 
 package se.streamsource.streamflow.web.domain.task;
 
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
 import static se.streamsource.streamflow.domain.task.TaskStates.*;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
@@ -39,22 +37,12 @@ public interface WaitingFor
 
    void assignWaitingForTask( @HasStatus(ACTIVE) Task task, Assignee assignee );
 
-   void markWaitingForAsRead( Task task );
-
-   void markWaitingForAsUnread( Task task );
-
    void rejectTask( Task task );
 
    void deleteWaitingForTask( Task task );
 
    interface Data
    {
-      ManyAssociation<Task> unreadWaitingForTasks();
-
-      void markedWaitingForTaskAsUnread( DomainEvent event, Task task );
-
-      void markedWaitingForTaskAsRead( DomainEvent event, Task task );
-
       void deletedWaitingForTask( DomainEvent event, Task task );
    }
 
@@ -103,27 +91,8 @@ public interface WaitingFor
          task.assignTo( assignee );
       }
 
-      public void markWaitingForAsRead( Task task )
-      {
-         if (!unreadWaitingForTasks().contains( task ))
-         {
-            return;
-         }
-         markedWaitingForTaskAsRead( DomainEvent.CREATE, task );
-      }
-
-      public void markWaitingForAsUnread( Task task )
-      {
-         if (unreadWaitingForTasks().contains( task ))
-         {
-            return;
-         }
-         markedWaitingForTaskAsUnread( DomainEvent.CREATE, task );
-      }
-
       public void rejectTask( Task task )
       {
-         markWaitingForAsUnread( task );
          inbox.receiveTask( task );
       }
 
@@ -131,7 +100,6 @@ public interface WaitingFor
       {
          if (((TaskStatus.Data) task).status().get().equals( ACTIVE ))
          {
-            markWaitingForAsRead( task );
             deletedWaitingForTask( DomainEvent.CREATE, task );
          }
       }
@@ -139,16 +107,6 @@ public interface WaitingFor
       public void deletedWaitingForTask( DomainEvent event, Task task )
       {
          uowf.currentUnitOfWork().remove( task );
-      }
-
-      public void markedWaitingForTaskAsUnread( DomainEvent event, Task task )
-      {
-         unreadWaitingForTasks().add( task );
-      }
-
-      public void markedWaitingForTaskAsRead( DomainEvent event, Task task )
-      {
-         unreadWaitingForTasks().remove( task );
       }
    }
 }

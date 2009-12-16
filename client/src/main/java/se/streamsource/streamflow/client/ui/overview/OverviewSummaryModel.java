@@ -14,120 +14,42 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 
-import javax.swing.table.AbstractTableModel;
-import java.util.List;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class OverviewSummaryModel
-      extends AbstractTableModel
 {
-
    @Uses
-   OverviewClientResource resource;
+   CommandQueryClient client;
 
-   @Structure
-   ValueBuilderFactory vbf;
+   private BasicEventList<ProjectSummaryDTO> projectOverviews = new BasicEventList<ProjectSummaryDTO>( );
 
-   @Structure
-   ObjectBuilderFactory obf;
-
-
-   private List<ProjectSummaryDTO> projectOverviews;
-
-   private String[] columnNames;
-   private Class[] columnClasses;
-
-   public OverviewSummaryModel( @Service EventSource source )
+   public InputStream generateExcelProjectSummary() throws IOException, ResourceException
    {
-      columnNames = new String[]{text( project_column_header ), text( inbox_column_header ),
-            text( assigned_column_header ), text( total_column_header )};
-      columnClasses = new Class[]{String.class, Integer.class, Integer.class, Integer.class};
+      return client.queryStream( "generateexcelprojectsummary", null );
    }
 
-   public OverviewClientResource getResource()
-   {
-      return resource;
-   }
-
-   public List<ProjectSummaryDTO> getProjectOverviews()
+   public EventList<ProjectSummaryDTO> getProjectOverviews()
    {
       return projectOverviews;
    }
-
-   @Override
-   public Class<?> getColumnClass( int column )
-   {
-      return columnClasses[column];
-   }
-
-   @Override
-   public String getColumnName( int column )
-   {
-      return columnNames[column];
-   }
-
-   public int getRowCount()
-   {
-      if (projectOverviews != null)
-         return projectOverviews.size();
-      else
-         return 0;
-   }
-
-   public int getColumnCount()
-   {
-      return 4;
-   }
-
-
-   public Object getValueAt( int rowIndex, int column )
-   {
-      ProjectSummaryDTO projectOverview = projectOverviews.get( rowIndex );
-
-      if (projectOverview == null)
-         return null;
-
-      switch (column)
-      {
-         case 0:
-            return projectOverview.project().get();
-         case 1:
-            return projectOverview.inboxCount().get();
-         case 2:
-            return projectOverview.assignedCount().get();
-         case 3:
-            return projectOverview.inboxCount().get() + projectOverview.assignedCount().get();
-
-      }
-
-      return null;
-   }
-
 
    public void refresh()
    {
       try
       {
-         ProjectSummaryListDTO newResource = (ProjectSummaryListDTO) getResource().overview();
-         boolean same = newResource.equals( projectOverviews );
-         if (!same)
-         {
-            projectOverviews = newResource.projectOverviews().get();
-            fireTableDataChanged();
-         }
+         ProjectSummaryListDTO newResource = client.query( "projectsummary", ProjectSummaryListDTO.class );
+         projectOverviews.clear();
+         projectOverviews.addAll( newResource.projectOverviews().get() );
       } catch (Exception e)
       {
          throw new OperationException( OverviewResources.could_not_refresh, e );

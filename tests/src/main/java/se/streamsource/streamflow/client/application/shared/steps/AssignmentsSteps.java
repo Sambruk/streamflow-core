@@ -45,19 +45,6 @@ public class AssignmentsSteps
       givenTask = (TaskEntity) projectsSteps.givenProject.createAssignedTask( user );
    }
 
-   @When("an assigned task is marked as $mark")
-   public void markAssignedTaskAs( String mark )
-   {
-      if ("read".equals( mark ))
-      {
-         projectsSteps.givenProject.markAssignedTaskAsRead( givenTask );
-      } else
-      {
-         projectsSteps.givenProject.markAssignedTaskAsUnread( givenTask );
-      }
-   }
-
-
    @When("assigned task is completed")
    public void complete()
    {

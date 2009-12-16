@@ -27,7 +27,6 @@ import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.web.domain.group.OverviewQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class OverviewServerResource extends CommandQueryServerResource
    @Structure
    protected ObjectBuilderFactory obf;
 
-   public ProjectSummaryListDTO projectSummary() throws ResourceException
+   public ProjectSummaryListDTO projectsummary() throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
       String id = (String) getRequest().getAttributes().get( "user" );
@@ -51,7 +50,7 @@ public class OverviewServerResource extends CommandQueryServerResource
       return queries.getProjectsSummary();
    }
 
-   public OutputRepresentation generateExcelProjectSummary() throws IOException
+   public OutputRepresentation generateexcelprojectsummary() throws IOException
    {
       List<Language> languages = new ArrayList();
       languages.add( new Language( "en-gov" ) );
@@ -82,7 +81,6 @@ public class OverviewServerResource extends CommandQueryServerResource
          }
       };
 
-      representation.write( new ByteArrayOutputStream() );
       return representation;
    }
 }

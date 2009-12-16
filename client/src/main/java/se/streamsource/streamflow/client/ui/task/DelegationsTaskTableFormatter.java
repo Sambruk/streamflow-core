@@ -18,6 +18,9 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.domain.task.TaskStates;
+
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -33,6 +36,13 @@ public class DelegationsTaskTableFormatter
          text( delegated_from_header ),
          text( delegated_on_header ),
          text( task_status_header )};
+      columnClasses = new Class[] {
+            String.class,
+            String.class,
+            String.class,
+            Date.class,
+            TaskStates.class
+            };
    }
 
    public Object getColumnValue( TaskDTO taskDTO, int i )

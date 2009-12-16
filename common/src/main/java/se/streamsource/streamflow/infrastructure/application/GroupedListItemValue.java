@@ -12,14 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.resource.waitingfor;
+package se.streamsource.streamflow.infrastructure.application;
 
-import se.streamsource.streamflow.resource.task.TaskListDTO;
+import org.qi4j.api.property.Property;
 
 /**
  * JAVADOC
  */
-public interface WaitingForTaskListDTO
-      extends TaskListDTO
+public interface GroupedListItemValue
+   extends ListItemValue
 {
+   Property<String> group();
 }

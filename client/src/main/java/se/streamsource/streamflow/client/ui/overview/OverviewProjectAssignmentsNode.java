@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.overview;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -29,13 +30,13 @@ public class OverviewProjectAssignmentsNode
       implements EventListener
 {
    @Uses
-   private OverviewProjectAssignmentsModel model;
+   private TaskTableModel2 model;
 
    @Override
    public String toString()
    {
       String text = i18n.text( OverviewResources.assignments_node );
-      int total = model.getRowCount();
+      int total = model.getEventList().size();
       if (total > 0)
       {
          text += " (" + total + ")";
@@ -53,7 +54,7 @@ public class OverviewProjectAssignmentsNode
       return (OverviewProjectNode) super.getParent();
    }
 
-   public OverviewProjectAssignmentsModel assignmentsModel()
+   public TaskTableModel2 taskTableModel()
    {
       return model;
    }

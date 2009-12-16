@@ -26,9 +26,12 @@ public class ListValueBuilder
 {
    private ValueBuilder<ListValue> listBuilder;
    private ValueBuilder<ListItemValue> itemBuilder;
+   private ValueBuilder<GroupedListItemValue> groupedItemBuilder;
+   private ValueBuilderFactory vbf;
 
    public ListValueBuilder( ValueBuilderFactory vbf )
    {
+      this.vbf = vbf;
       listBuilder = vbf.newValueBuilder( ListValue.class );
       itemBuilder = vbf.newValueBuilder( ListItemValue.class );
    }
@@ -39,6 +42,20 @@ public class ListValueBuilder
       itemBuilder.prototype().entity().set( ref );
 
       listBuilder.prototype().items().get().add( itemBuilder.newInstance() );
+
+      return this;
+   }
+
+   public ListValueBuilder addListItem( String description, EntityReference ref, String groupDescription )
+   {
+      if (groupedItemBuilder == null)
+         groupedItemBuilder = vbf.newValueBuilder( GroupedListItemValue.class );
+
+      groupedItemBuilder.prototype().description().set( description );
+      groupedItemBuilder.prototype().entity().set( ref );
+      groupedItemBuilder.prototype().group().set( groupDescription );
+
+      listBuilder.prototype().items().get().add( groupedItemBuilder.newInstance() );
 
       return this;
    }
@@ -56,6 +73,11 @@ public class ListValueBuilder
    public ListValueBuilder addDescribable( Describable item )
    {
       return addListItem( item.getDescription(), EntityReference.getEntityReference( item ) );
+   }
+
+   public ListValueBuilder addDescribable( Describable item, Describable group )
+   {
+      return addListItem( item.getDescription(), EntityReference.getEntityReference( item ), group.getDescription() );
    }
 
    public ListValue newList()

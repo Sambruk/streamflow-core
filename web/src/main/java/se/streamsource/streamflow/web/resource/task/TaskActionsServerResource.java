@@ -66,18 +66,18 @@ public class TaskActionsServerResource
             if (task.status().get().equals( TaskStates.ACTIVE ))
                actions.add( "complete" );
 
-            actions.add("assign");
-            actions.add("forward");
-            actions.add("delegate");
-            actions.add("drop");
-            actions.add("delete");
+            actions.add( "assign" );
+            actions.add( "forward" );
+            actions.add( "delegate" );
+            actions.add( "drop" );
+            actions.add( "delete" );
          } else
          {
             // Delegations/WaitingFor
          }
       } else
       {
-         if (task.isAssignedTo(user))
+         if (task.isAssignedTo( user ))
          {
             // Assignments
 
@@ -104,7 +104,7 @@ public class TaskActionsServerResource
 
       return task.possibleUsers();
    }
-   
+
    // Commands
    public void complete()
    {
@@ -142,7 +142,7 @@ public class TaskActionsServerResource
       }
    }
 
-   public void forward( EntityReferenceDTO entity)
+   public void forward( EntityReferenceDTO entity )
    {
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
 
@@ -154,15 +154,15 @@ public class TaskActionsServerResource
       {
          // Inbox or Delegations/WaitingFor
          Inbox inbox = (Inbox) owner;
-         inbox.forwardTo( task,  toInbox);
+         inbox.forwardTo( task, toInbox );
       } else
       {
          Assignments assignments = (Assignments) owner;
-         assignments.forwardAssignedTaskTo( task,  toInbox);
+         assignments.forwardAssignedTaskTo( task, toInbox );
       }
    }
 
-   public void delegate( EntityReferenceDTO entity)
+   public void delegate( EntityReferenceDTO entity )
    {
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
 
@@ -176,13 +176,35 @@ public class TaskActionsServerResource
       {
          // Inbox or Delegations/WaitingFor
          Inbox inbox = (Inbox) owner;
-         inbox.delegateTo( task,  to, user);
+         inbox.delegateTo( task, to, user );
       } else
       {
          Assignments assignments = (Assignments) owner;
-         assignments.delegateAssignedTaskTo( task,  to);
+         assignments.delegateAssignedTaskTo( task, to );
       }
    }
+
+   public void drop()
+   {
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+
+      Owner owner = task.owner().get();
+
+      User user = getUser();
+
+      if (task.assignedTo().get() == null)
+      {
+         // Inbox or Delegations/WaitingFor
+         Inbox inbox = (Inbox) owner;
+         inbox.dropTask( task, user );
+      } else
+      {
+         Assignments assignments = (Assignments) owner;
+         assignments.dropAssignedTask( task );
+      }
+
+   }
+
 
    private UserEntity getUser()
    {

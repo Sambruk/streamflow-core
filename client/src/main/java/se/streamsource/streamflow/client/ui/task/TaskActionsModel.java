@@ -127,7 +127,13 @@ public class TaskActionsModel
 
    public void drop()
    {
-
+      try
+      {
+         client.putCommand( "drop" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
    }
 
    public void forward( EntityReference to)

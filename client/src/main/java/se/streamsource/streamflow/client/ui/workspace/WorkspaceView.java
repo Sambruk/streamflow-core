@@ -34,7 +34,6 @@ import se.streamsource.streamflow.client.ui.task.AssignmentsTaskTableFormatter;
 import se.streamsource.streamflow.client.ui.task.DelegationsTaskTableFormatter;
 import se.streamsource.streamflow.client.ui.task.InboxTaskTableFormatter;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
-import se.streamsource.streamflow.client.ui.task.TaskTableView;
 import se.streamsource.streamflow.client.ui.task.TaskTableView2;
 import se.streamsource.streamflow.client.ui.task.TasksModel;
 import se.streamsource.streamflow.client.ui.task.WaitingForTaskTableFormatter;
@@ -437,9 +436,9 @@ public class WorkspaceView
       Component right = pane.getRightComponent();
       if (right != null)
       {
-         if (right instanceof TaskTableView)
+         if (right instanceof TaskTableView2)
          {
-            TaskTableView ttv = (TaskTableView) right;
+            TaskTableView2 ttv = (TaskTableView2) right;
             ttv.getTaskTable().requestFocusInWindow();
          } else
             right.requestFocusInWindow();
@@ -453,9 +452,9 @@ public class WorkspaceView
       Component right = pane.getRightComponent();
       if (right != null)
       {
-         if (right instanceof TaskTableView)
+         if (right instanceof TaskTableView2)
          {
-            TaskTableView ttv = (TaskTableView) right;
+            TaskTableView2 ttv = (TaskTableView2) right;
             ttv.getTaskDetails().requestFocusInWindow();
          } else
             right.requestFocusInWindow();

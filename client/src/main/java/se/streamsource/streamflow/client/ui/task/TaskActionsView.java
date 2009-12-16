@@ -115,7 +115,8 @@ public class TaskActionsView
    @Action
    public void drop()
    {
-
+      model.drop();
+      refresh();
    }
 
    @Action

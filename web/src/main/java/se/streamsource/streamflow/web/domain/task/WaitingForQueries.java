@@ -13,6 +13,7 @@
 */
 package se.streamsource.streamflow.web.domain.task;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
@@ -22,6 +23,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
 import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -40,7 +42,7 @@ import java.util.List;
 @Mixins(WaitingForQueries.Mixin.class)
 public interface WaitingForQueries
 {
-   TaskListDTO waitingForTasks( Delegator delegator );
+   TaskListDTO waitingForTasks( @Optional Delegator delegator );
 
    boolean hasActiveOrDoneAndUnreadTasks();
 
@@ -67,15 +69,15 @@ public interface WaitingForQueries
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         // Find all Active delegated tasks owned by this Entity and delegated by "delegator"
-         // or Completed delegated tasks that are marked as unread
+         // Find all Active delegated tasks owned by this Entity and, optionally, delegated by "delegator"
+         // or delegated tasks that are marked as done
          QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder( TaskEntity.class );
          Association<Delegator> delegatedBy = templateFor( Delegatable.Data.class ).delegatedBy();
          Association<WaitingFor> waitingFor = templateFor( Delegatable.Data.class ).delegatedFrom();
          Association<Delegatee> delegatee = templateFor( Delegatable.Data.class ).delegatedTo();
          Query<TaskEntity> waitingForQuery = queryBuilder.where( and(
                eq( waitingFor, this.waitingFor ),
-               eq( delegatedBy, delegator ),
+               delegator != null ? eq( delegatedBy, delegator ) : QueryExpressions.isNotNull( delegatedBy ),
                isNotNull( delegatee ),
                or(
                      eq( templateFor( TaskStatus.Data.class ).status(), TaskStates.ACTIVE ),
@@ -138,7 +140,6 @@ public interface WaitingForQueries
          prototype.creationDate().set( task.createdOn().get() );
          prototype.description().set( task.description().get() );
          prototype.status().set( task.status().get() );
-         prototype.isRead().set( !waitingForState.unreadWaitingForTasks().contains( task ) );
 
          ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder( ListValue.class );
          List<ListItemValue> labelList = labelListBuilder.prototype().items().get();

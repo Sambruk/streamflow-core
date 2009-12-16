@@ -244,12 +244,10 @@ public class TestSetupSteps
       assignedTask.assignTo( user );
       Inbox inbox = user;
       unreadInboxTask = user.createTask();
-      inbox.markAsUnread( unreadInboxTask );
       readInboxTask = user.createTask();
 
       Assignments assignments = organizationsSteps.givenOrganizations().getUserByName( USER2 );
       unreadAssignedTask = assignments.createAssignedTask( user );
-      assignments.markAssignedTaskAsUnread( unreadAssignedTask );
       readAssignedTask = assignments.createAssignedTask( user );
 
       ouSteps.givenOrganization();
@@ -273,7 +271,6 @@ public class TestSetupSteps
       UserEntity user2 = organizationsSteps.givenOrganizations().getUserByName( USER2 );
       unreadWaitingForTask = project.createTask();
       project.delegateTo( unreadWaitingForTask, project, user2 );
-      waitingFor.markWaitingForAsUnread( unreadWaitingForTask );
 
       readWaitingForTask = project.createTask();
       project.delegateTo( readWaitingForTask, project, user2 );

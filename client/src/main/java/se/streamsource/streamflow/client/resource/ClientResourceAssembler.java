@@ -20,15 +20,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionClientResource;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.assignments.OverviewProjectAssignmentsTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.waitingfor.OverviewProjectWaitingForClientResource;
-import se.streamsource.streamflow.client.resource.users.overview.projects.waitingfor.OverviewProjectWaitingForTaskClientResource;
-import se.streamsource.streamflow.client.resource.users.search.SearchClientResource;
-import se.streamsource.streamflow.client.resource.users.search.SearchTaskClientResource;
 
 /**
  * JAVADOC
@@ -39,25 +30,16 @@ public class ClientResourceAssembler
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
       // /users
-      module.addObjects( CommandQueryClient.class,
-            OverviewClientResource.class,
-            OverviewProjectsClientResource.class,
-            OverviewProjectClientResource.class,
-            OverviewProjectAssignmentsClientResource.class,
-            OverviewProjectAssignmentsTaskClientResource.class,
-            OverviewProjectWaitingForClientResource.class,
-            OverviewProjectWaitingForTaskClientResource.class
-
+      module.addObjects( CommandQueryClient.class
       ).visibleIn( Visibility.application );
 
       // /organizations
       module.addObjects(
 
             FormDefinitionClientResource.class,
-            FormDefinitionsClientResource.class,
+            FormDefinitionsClientResource.class
 
-            SearchClientResource.class,
-            SearchTaskClientResource.class ).visibleIn( Visibility.application );
+            ).visibleIn( Visibility.application );
 
       module.addObjects( EventsClientResource.class ).visibleIn( Visibility.application );
    }

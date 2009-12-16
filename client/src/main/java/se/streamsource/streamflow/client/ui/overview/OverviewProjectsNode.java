@@ -23,6 +23,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -76,19 +77,21 @@ public class OverviewProjectsNode
 
          super.removeAllChildren();
 
-/*
          for (ListItemValue project : projects.items().get())
          {
-            OverviewProjectClientResource projectClientResource = projectsClientResource.project( project.entity().get().identity() );
-            OverviewProjectAssignmentsClientResource projectAssignmentsClientResource = projectClientResource.assignments();
-            OverviewProjectWaitingForClientResource projectWaitingforClientResource = projectClientResource.waitingFor();
+            CommandQueryClient projectClientResource = client.getSubClient( project.entity().get().identity() );
+            CommandQueryClient projectAssignmentsClientResource = projectClientResource.getSubClient( "assignments" );
+            CommandQueryClient projectWaitingforClientResource = projectClientResource.getSubClient( "waitingfor" );
+
+            OverviewProjectAssignmentsNode assignmentsNode = obf.newObjectBuilder( OverviewProjectAssignmentsNode.class ).use( projectAssignmentsClientResource ).newInstance();
+            OverviewProjectWaitingForNode waitingForNode = obf.newObjectBuilder( OverviewProjectWaitingForNode.class ).use( projectWaitingforClientResource ).newInstance();
+
             add( obf.newObjectBuilder( OverviewProjectNode.class ).use( projectClientResource,
-                  projectAssignmentsClientResource,
-                  projectWaitingforClientResource,
-                  account.tasks(),
+                  assignmentsNode,
+                  waitingForNode,
+//                  account.tasks(),
                   project.description().get() ).newInstance() );
          }
-*/
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

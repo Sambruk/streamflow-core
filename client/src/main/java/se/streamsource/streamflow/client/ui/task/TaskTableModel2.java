@@ -18,21 +18,26 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
 import javax.swing.SwingUtilities;
+import java.util.List;
 
 /**
  * Base class for all models that list tasks
@@ -54,7 +59,7 @@ public class TaskTableModel2
 
    public TaskTableModel2()
    {
-      eventFilter = new EventHandlerFilter( this, "addedLabel", "removedLabel", "changedDescription" );
+      eventFilter = new EventHandlerFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedTaskType", "changedStatus" );
    }
 
    public void notifyEvent( DomainEvent event )
@@ -64,24 +69,27 @@ public class TaskTableModel2
 
    public boolean handleEvent( final DomainEvent event )
    {
-/*
-      final int idx = getTaskIndex( event );
+      TaskDTO updatedTask = getTask( event );
 
-      if (idx != -1)
+      if (updatedTask != null)
       {
-         final TaskDTO updatedTask = getTask( idx );
-         if (event.name().get().equals( "changedDescription" ))
+         int idx = eventList.indexOf( updatedTask );
+         ValueBuilder<TaskDTO> valueBuilder = updatedTask.<TaskDTO>buildWith();
+         updatedTask = valueBuilder.prototype();
+
+         String eventName = event.name().get();
+         if (eventName.equals( "changedDescription" ))
          {
             try
             {
                String newDesc = EventParameters.getParameter( event, "param1" );
                updatedTask.description().set( newDesc );
-               fireTableCellUpdated( idx, 1 );
+               eventList.set( idx, valueBuilder.newInstance() );
             } catch (Exception e)
             {
                e.printStackTrace();
             }
-         } else if (event.name().get().equals( "removedLabel" ))
+         } else if (eventName.equals( "removedLabel" ))
          {
             String id = EventParameters.getParameter( event, "param1" );
             List<ListItemValue> labels = updatedTask.labels().get().items().get();
@@ -93,30 +101,17 @@ public class TaskTableModel2
                   break;
                }
             }
-         } else if (event.name().get().equals( "addedLabel" ))
+            eventList.set( idx, valueBuilder.newInstance() );
+         } else if (eventName.equals( "addedLabel" ) || eventName.equals("changedTaskType"))
          {
-            SwingUtilities.invokeLater(
-                  new Runnable()
-                  {
-                     public void run()
-                     {
-                        List<ListItemValue> labels = tasksModel.models
-                              .get( updatedTask.task().get().identity() )
-                              .general().getGeneral().labels().get().items().get();
-                        for (ListItemValue label : labels)
-                        {
-                           if (label.entity().get().identity()
-                                 .equals( EventParameters.getParameter( event, "param1" ) ))
-                           {
-                              List<ListItemValue> newLabels = updatedTask.labels().get().items().get();
-                              newLabels.add( label );
-                           }
-                        }
-                     }
-                  } );
+            refresh();
+         } else if (eventName.equals("changedStatus"))
+         {
+            TaskStates newStatus = TaskStates.valueOf( EventParameters.getParameter( event, "param1" ));
+            updatedTask.status().set( newStatus );
+            eventList.set( idx, valueBuilder.newInstance() );            
          }
       }
-*/
       return true;
    }
 
@@ -137,8 +132,18 @@ public class TaskTableModel2
             {
                public void run()
                {
-                  eventList.clear();
-                  eventList.addAll( newRoot.tasks().get() );
+                  if (newRoot.tasks().get().size() == eventList.size())
+                  {
+                     int idx = 0;
+                     for (TaskDTO taskDTO : newRoot.tasks().get())
+                     {
+                        eventList.set( idx++, taskDTO );
+                     }
+                  } else
+                  {
+                     eventList.clear();
+                     eventList.addAll( newRoot.tasks().get() );
+                  }
                   tasks = newRoot;
                }
             });
@@ -149,21 +154,20 @@ public class TaskTableModel2
       }
    }
 
-   private int getTaskIndex( DomainEvent event )
+   private TaskDTO getTask( DomainEvent event )
    {
       if (tasks == null)
-         return -1;
+         return null;
 
-      TaskDTO updatedTask = null;
-      for (int i = 0; i < tasks.tasks().get().size(); i++)
+      for (int i = 0; i < eventList.size(); i++)
       {
-         TaskDTO taskDTO = tasks.tasks().get().get( i );
+         TaskDTO taskDTO = eventList.get( i );
          if (taskDTO.task().get().identity().equals( event.entity().get() ))
          {
-            return i;
+            return taskDTO;
          }
       }
 
-      return -1;
+      return null;
    }
 }

@@ -57,18 +57,6 @@ public class InboxSteps
       }
    }
 
-   @When("task is marked as $mark")
-   public void markTaskAs( String mark )
-   {
-      if ("read".equals( mark ))
-      {
-         projectsSteps.givenProject.markAsRead( givenTask );
-      } else
-      {
-         projectsSteps.givenProject.markAsUnread( givenTask );
-      }
-   }
-
    @When("task is completed")
    public void completeTask()
    {

@@ -41,6 +41,4 @@ public interface TaskDTO
    Property<TaskStates> status();
 
    Property<ListValue> labels();
-
-   Property<Boolean> isRead();
 }

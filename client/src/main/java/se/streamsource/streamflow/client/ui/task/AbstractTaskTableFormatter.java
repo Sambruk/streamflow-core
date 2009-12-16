@@ -14,20 +14,23 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * JAVADOC
  */
 public abstract class AbstractTaskTableFormatter
-      implements WritableTableFormat<TaskDTO>
+      implements WritableTableFormat<TaskDTO>, AdvancedTableFormat<TaskDTO>
 {
    protected String[] columnNames;
-   
+   protected Class[] columnClasses;
+
    public int getColumnCount()
    {
       return columnNames.length;
@@ -36,6 +39,16 @@ public abstract class AbstractTaskTableFormatter
    public String getColumnName( int i )
    {
       return columnNames[i];
+   }
+
+   public Class getColumnClass( int i )
+   {
+      return columnClasses[i];
+   }
+
+   public Comparator getColumnComparator( int i )
+   {
+      return null;
    }
 
    public Object getColumnValue( TaskDTO taskDTO, int i )

@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.resource.assignment;
 
 import se.streamsource.streamflow.resource.task.TaskDTO;
+import org.qi4j.api.property.Property;
 
 /**
  * JAVADOC
@@ -22,4 +23,5 @@ import se.streamsource.streamflow.resource.task.TaskDTO;
 public interface AssignedTaskDTO
       extends TaskDTO
 {
+   Property<String> assignedTo(); // Assignee name
 }

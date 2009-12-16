@@ -12,21 +12,24 @@
  *
  */
 
-package se.streamsource.streamflow.client.resource.users.overview.projects.assignments;
+package se.streamsource.streamflow.client.infrastructure.ui;
 
-import org.qi4j.api.injection.scope.Uses;
-import org.restlet.Context;
-import org.restlet.data.Reference;
-import se.streamsource.streamflow.client.resource.users.workspace.AbstractTaskClientResource;
+import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+
+import java.util.Comparator;
 
 /**
  * JAVADOC
  */
-public class OverviewProjectAssignmentsTaskClientResource
-      extends AbstractTaskClientResource
+public class ListItemGroupingComparator
+      implements Comparator<ListItemValue>
 {
-   public OverviewProjectAssignmentsTaskClientResource( @Uses Context context, @Uses Reference reference )
+   public int compare( ListItemValue o1, ListItemValue o2 )
    {
-      super( context, reference );
+      String s1 = ((GroupedListItemValue)o1).group().get();
+      String s2 = ((GroupedListItemValue)o2).group().get();
+
+      return s1.compareTo( s2 );
    }
 }

@@ -41,18 +41,6 @@ public class DelegationsSteps extends Steps
       givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
    }
 
-   @When("delegated task is marked as $mark")
-   public void markDelegatedTaskAs( String mark )
-   {
-      if ("read".equals( mark ))
-      {
-         projectsSteps.givenProject.markDelegatedTaskAsRead( givenTask );
-      } else
-      {
-         projectsSteps.givenProject.markDelegatedTaskAsUnread( givenTask );
-      }
-   }
-
    @When("delegated task is finished")
    public void finishDelegatedTask()
    {
