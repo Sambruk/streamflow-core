@@ -30,12 +30,5 @@ public class ClientResourceAssembler
       // /users
       module.addObjects( CommandQueryClient.class
       ).visibleIn( Visibility.application );
-
-      // /organizations
-      module.addObjects(
-
-            ).visibleIn( Visibility.application );
-
-      module.addObjects( EventsClientResource.class ).visibleIn( Visibility.application );
    }
 }

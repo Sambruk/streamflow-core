@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.AssemblyException;
@@ -39,7 +38,7 @@ import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.resource.CommandQueryClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
@@ -81,7 +80,7 @@ public class CommandQueryResourceTest
       moduleAssembly.addServices( CommandEventListenerService.class, MemoryEventStoreService.class, EventSourceService.class, DomainEventFactoryService.class );
       moduleAssembly.importServices( TransactionHandler.class );
       moduleAssembly.importServices( AccessPolicy.class, TimeService.class ).importedBy( NewObjectImporter.class );
-      moduleAssembly.addObjects( TimeService.class, ResourceFinder.class, TestTransactionHandler.class, TestAccessPolicy.class, TestClientResource.class, TestServerResource.class );
+      moduleAssembly.addObjects( TimeService.class, ResourceFinder.class, TestTransactionHandler.class, TestAccessPolicy.class, CommandQueryClient.class, TestServerResource.class );
       moduleAssembly.addValues( StringDTO.class, TransactionEvents.class, DomainEvent.class );
       moduleAssembly.addEntities( TestEntity.class );
 
@@ -114,9 +113,9 @@ public class CommandQueryResourceTest
    @Test
    public void testValueQuery() throws ResourceException
    {
-      TestClientResource clientResource = objectBuilderFactory.newObjectBuilder( TestClientResource.class ).use( context, new Reference( "http://localhost:8888/test" ) ).newInstance();
+      CommandQueryClient clientResource = objectBuilderFactory.newObjectBuilder( CommandQueryClient.class ).use( new Client(Protocol.HTTP), new Reference( "http://localhost:8888/test" ) ).newInstance();
 
-      StringDTO dto = clientResource.testQuery();
+      StringDTO dto = clientResource.query( "testQuery", StringDTO.class );
 
       Assert.assertThat( "Test", CoreMatchers.equalTo( dto.string().get() ) );
    }
@@ -124,7 +123,7 @@ public class CommandQueryResourceTest
    @Test
    public void testRepresentationCommand() throws ResourceException
    {
-      TestClientResource clientResource = objectBuilderFactory.newObjectBuilder( TestClientResource.class ).use( context, new Reference( "http://localhost:8888/test" ) ).newInstance();
+      CommandQueryClient clientResource = objectBuilderFactory.newObjectBuilder( CommandQueryClient.class ).use( new Client(Protocol.HTTP), new Reference( "http://localhost:8888/test" ) ).newInstance();
 
       Representation rep = new WriterRepresentation( MediaType.TEXT_PLAIN )
       {
@@ -133,30 +132,7 @@ public class CommandQueryResourceTest
             writer.write( "Test" );
          }
       };
-      clientResource.testCommandStream( rep );
-   }
-
-   public static class TestClientResource
-         extends CommandQueryClientResource
-   {
-      public TestClientResource( @Uses Context context, @Uses Reference reference )
-      {
-         super( context, reference );
-      }
-
-      // Queries
-
-      public StringDTO testQuery() throws ResourceException
-      {
-         return query( "testQuery", StringDTO.class );
-      }
-
-      // Commands
-
-      public void testCommandStream( Representation representation ) throws ResourceException
-      {
-         postCommand( "testCommandStream", representation );
-      }
+      clientResource.postCommand( "testCommandStream", rep );
    }
 
    public static class TestServerResource
