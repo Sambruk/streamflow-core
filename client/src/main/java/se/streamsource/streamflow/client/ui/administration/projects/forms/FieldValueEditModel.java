@@ -21,7 +21,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
@@ -43,7 +43,7 @@ public class FieldValueEditModel
    private FieldDefinitionValue value;
 
    @Uses
-   ProjectFormDefinitionFieldClientResource fieldResource;
+   CommandQueryClient client;
 
    @Structure
    ValueBuilderFactory vbf;
@@ -64,28 +64,28 @@ public class FieldValueEditModel
    {
       ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
       builder.prototype().bool().set( mandatory );
-      fieldResource.updateMandatory( builder.newInstance() );
+      client.putCommand( "updatemandatory", builder.newInstance() );
    }
 
    public void changeDescription( String newDescription ) throws ResourceException
    {
       ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
       builder.prototype().string().set( newDescription );
-      fieldResource.changeDescription( builder.newInstance() );
+      client.putCommand( "changedescription", builder.newInstance() );
    }
 
    public void changeNote( String newNote ) throws ResourceException
    {
       ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
       builder.prototype().string().set( newNote );
-      fieldResource.changeNote( builder.newInstance() );
+      client.putCommand( "changenote", builder.newInstance() );
    }
 
    public void refresh() throws OperationException
    {
       try
       {
-         FieldDefinitionValue fieldDefinitionValue = fieldResource.field();
+         FieldDefinitionValue fieldDefinitionValue = client. query( "field", FieldDefinitionValue.class );
          value = vbf.newValueBuilder( FieldDefinitionValue.class ).withPrototype( fieldDefinitionValue ).prototype();
 
          value.fieldValue().set(

@@ -46,7 +46,7 @@ public class FormDefinitionsServerResource
       return forms.applicableFormDefinitionList();
    }
 
-   public void removeForm( EntityReferenceDTO formReference ) throws ResourceException
+   public void remove( EntityReferenceDTO formReference ) throws ResourceException
    {
       String identity = getRequest().getAttributes().get( "forms" ).toString();
 
@@ -69,7 +69,7 @@ public class FormDefinitionsServerResource
    }
 
 
-   public void createForm( StringDTO formName )
+   public void create( StringDTO formName )
    {
       String identity = getRequest().getAttributes().get( "forms" ).toString();
 

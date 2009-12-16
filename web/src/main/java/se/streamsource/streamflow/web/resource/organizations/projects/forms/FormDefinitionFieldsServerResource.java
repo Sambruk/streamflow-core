@@ -16,11 +16,13 @@ package se.streamsource.streamflow.web.resource.organizations.projects.forms;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.domain.form.FormValue;
+import se.streamsource.streamflow.domain.form.CreateFieldDTO;
+import se.streamsource.streamflow.domain.form.FieldTypes;
+import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
-import se.streamsource.streamflow.web.domain.form.Forms;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
@@ -28,38 +30,12 @@ import java.util.List;
 
 /**
  * Mapped to:
- * /organizations/{organization}/tasktypes/{forms}/forms/{index}
+ * /organizations/{organization}/tasktypes/{forms}/forms/{index}/fields
  */
-public class FormDefinitionServerResource
+public class FormDefinitionFieldsServerResource
       extends CommandQueryServerResource
 {
-   public FormValue form()
-   {
-      String formsId = getRequest().getAttributes().get( "forms" ).toString();
-      String formId = getRequest().getAttributes().get( "index" ).toString();
-
-      UnitOfWork uow = uowf.currentUnitOfWork();
-
-      FormsQueries forms = uow.get( FormsQueries.class, formsId );
-
-      checkPermission( forms );
-
-      List<ListItemValue> itemValues = forms.applicableFormDefinitionList().items().get();
-
-      ListItemValue value = itemValues.get( Integer.parseInt( formId ) );
-
-      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
-
-      ValueBuilder<FormValue> builder = vbf.newValueBuilder( FormValue.class );
-
-      builder.prototype().note().set( form.note().get() );
-      builder.prototype().description().set( form.description().get() );
-      builder.prototype().form().set( value.entity().get() );
-
-      return builder.newInstance();
-   }
-
-   public void changedescription( StringDTO newDescription )
+   public ListValue fields()
    {
       String identity = getRequest().getAttributes().get( "forms" ).toString();
       String index = getRequest().getAttributes().get( "index" ).toString();
@@ -76,12 +52,13 @@ public class FormDefinitionServerResource
 
       FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
 
-      form.changeDescription( newDescription.string().get() );
+      return new ListValueBuilder( vbf ).addDescribableItems( form.fields() ).newList();
    }
 
-   public void changenote( StringDTO newNote )
+   public void add( CreateFieldDTO createFieldDTO )
    {
       String identity = getRequest().getAttributes().get( "forms" ).toString();
+
       String index = getRequest().getAttributes().get( "index" ).toString();
 
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -96,29 +73,26 @@ public class FormDefinitionServerResource
 
       FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
 
-      form.changeNote( newNote.string().get() );
+      form.createField( createFieldDTO.name().get(), getFieldValue( createFieldDTO.fieldType().get() ) );
    }
 
-
-   public void deleteOperation()
+   private FieldValue getFieldValue( FieldTypes fieldType )
    {
-      String identity = getRequest().getAttributes().get( "forms" ).toString();
-      String index = getRequest().getAttributes().get( "index" ).toString();
+      FieldValue value = null;
+      switch (fieldType)
+      {
+         case text:
+            ValueBuilder<FieldValue> valueBuilder = vbf.newValueBuilder( FieldValue.class );
+            value = valueBuilder.newInstance();
+            break;
+         case number:
+         case date:
+         case single_selection:
+         case multi_selection:
+         case comment:
+         case page_break:
 
-      UnitOfWork uow = uowf.currentUnitOfWork();
-
-      FormsQueries formsQueries = uow.get( FormsQueries.class, identity );
-
-      checkPermission( formsQueries );
-
-      List<ListItemValue> itemValues = formsQueries.applicableFormDefinitionList().items().get();
-
-      ListItemValue value = itemValues.get( Integer.parseInt( index ) );
-
-      FormEntity form = uow.get( FormEntity.class, value.entity().get().identity() );
-
-      Forms forms = (Forms) formsQueries;
-
-      forms.removeForm( form );
+      }
+      return value;
    }
 }

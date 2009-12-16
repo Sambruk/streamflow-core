@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
+import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JList;
@@ -39,7 +40,8 @@ public class TaskTypesAdminView
 
    public TaskTypesAdminView( @Uses final TaskTypesView taskTypesView,
                               @Uses final TaskTypesModel taskTypesModel,
-                              @Uses final LabelsModel labelsModel )
+                              @Uses final LabelsModel labelsModel,
+                              @Uses final AdministrationView administrationView)
    {
       super();
 
@@ -61,7 +63,7 @@ public class TaskTypesAdminView
                   ListItemValue taskTypeValue = (ListItemValue) list.getModel().getElementAt( idx );
                   TaskTypeModel taskTypeModel = taskTypesModel.getTaskTypeModel( taskTypeValue.entity().get().identity() );
                   TaskTypeView view = obf.newObjectBuilder( TaskTypeView.class ).use(
-                        taskTypeModel.getSelectedLabelsModel(), labelsModel ).newInstance();
+                        taskTypeModel.getSelectedLabelsModel(), labelsModel, taskTypeModel.getFormsModel(), administrationView ).newInstance();
                   setRightComponent( view );
                } else
                {

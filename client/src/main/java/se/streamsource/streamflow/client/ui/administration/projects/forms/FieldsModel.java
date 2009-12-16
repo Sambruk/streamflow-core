@@ -23,8 +23,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;
@@ -48,7 +47,7 @@ public class FieldsModel
       implements Refreshable, EventListener, EventHandler
 {
    @Uses
-   ProjectFormDefinitionFieldsClientResource fieldsResource;
+   CommandQueryClient client;
 
    @Structure
    ValueBuilderFactory vbf;
@@ -63,7 +62,7 @@ public class FieldsModel
       {
          try
          {
-            ListValue value = fieldsResource.fields();
+            ListValue value = client.query( "fields", ListValue.class );
             int index = 0;
             for (ListItemValue listItemValue : value.items().get())
             {
@@ -73,8 +72,8 @@ public class FieldsModel
                }
                index++;
             }
-            ProjectFormDefinitionFieldClientResource fieldResource = fieldsResource.field( index );
-            return obf.newObjectBuilder( FieldValueEditModel.class ).use( fieldResource ).newInstance();
+            return obf.newObjectBuilder( FieldValueEditModel.class )
+                  .use( client.getSubClient( ""+index ) ).newInstance();
          } catch (ResourceException e)
          {
             throw new OperationException( AdministrationResources.could_not_get_form, e );
@@ -100,7 +99,7 @@ public class FieldsModel
    {
       try
       {
-         fieldsList = fieldsResource.fields().items().get();
+         fieldsList = client.query( "fields", ListValue.class ).items().get();
          fireContentsChanged( this, 0, getSize() );
       } catch (ResourceException e)
       {
@@ -117,7 +116,7 @@ public class FieldsModel
 
       try
       {
-         fieldsResource.addField( builder.newInstance() );
+         client.putCommand( "add", builder.newInstance() );
          refresh();
       } catch (ResourceException e)
       {
@@ -129,7 +128,7 @@ public class FieldsModel
    {
       try
       {
-         fieldsResource.field( index ).delete();
+         client.getSubClient( ""+index  ).deleteCommand();
          refresh();
       } catch (ResourceException e)
       {
@@ -143,7 +142,7 @@ public class FieldsModel
       builder.prototype().integer().set( newIndex );
       try
       {
-         fieldsResource.field( fromIndex ).moveField( builder.newInstance() );
+         client.getSubClient( ""+fromIndex ).putCommand( "move", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );

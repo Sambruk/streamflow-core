@@ -25,7 +25,6 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -83,8 +82,8 @@ public class FormsModel
                index++;
             }
 
-            ProjectFormDefinitionClientResource resource = client.getSubResource( "" + index, ProjectFormDefinitionClientResource.class );
-            return obf.newObjectBuilder( FormModel.class ).use( resource ).newInstance();
+            return obf.newObjectBuilder( FormModel.class )
+                  .use( client.getSubClient( ""+ index ) ).newInstance();
          } catch (ResourceException e)
          {
             throw new OperationException( AdministrationResources.could_not_get_form, e );
@@ -121,20 +120,7 @@ public class FormsModel
       builder.prototype().string().set( formName );
       try
       {
-         client.postCommand( "createForm", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_add_form_definition, e );
-      }
-   }
-
-   public void addForm( EntityReference form )
-   {
-      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-      builder.prototype().entity().set( form );
-      try
-      {
-         client.postCommand( "addForm", builder.newInstance() );
+         client.postCommand( "create", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_add_form_definition, e );
@@ -147,7 +133,7 @@ public class FormsModel
       builder.prototype().entity().set( form );
       try
       {
-         client.postCommand( "removeForm", builder.newInstance() );
+         client.postCommand( "remove", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_form_definition, e );

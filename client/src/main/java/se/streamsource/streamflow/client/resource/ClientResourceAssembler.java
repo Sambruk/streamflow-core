@@ -20,10 +20,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionClientResource;
 import se.streamsource.streamflow.client.resource.organizations.forms.FormDefinitionsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionsClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.OverviewClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectClientResource;
 import se.streamsource.streamflow.client.resource.users.overview.projects.OverviewProjectsClientResource;
@@ -44,12 +40,6 @@ public class ClientResourceAssembler
    {
       // /users
       module.addObjects( CommandQueryClient.class,
-
-            ProjectFormDefinitionsClientResource.class,
-            ProjectFormDefinitionClientResource.class,
-            ProjectFormDefinitionFieldsClientResource.class,
-            ProjectFormDefinitionFieldClientResource.class,
-
             OverviewClientResource.class,
             OverviewProjectsClientResource.class,
             OverviewProjectClientResource.class,

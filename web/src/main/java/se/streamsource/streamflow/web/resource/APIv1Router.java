@@ -51,6 +51,8 @@ import se.streamsource.streamflow.web.resource.organizations.policy.Administrato
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionFieldsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.projects.forms.FormDefinitionFieldServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
@@ -115,6 +117,8 @@ public class APIv1Router
       attach( "/organizations/{organization}/tasktypes/{labels}/labels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms", createServerResourceFinder( FormDefinitionsServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms/{index}", createServerResourceFinder( FormDefinitionServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{index}/fields", createServerResourceFinder( FormDefinitionFieldsServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{index}/fields/{fieldIndex}", createServerResourceFinder( FormDefinitionFieldServerResource.class ) );
       attach( "/organizations/{labels}/labels", createServerResourceFinder( LabelsServerResource.class ) );
 
       // OrganizationalUnits

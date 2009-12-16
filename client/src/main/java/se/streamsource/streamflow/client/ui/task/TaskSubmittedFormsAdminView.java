@@ -55,7 +55,7 @@ public class TaskSubmittedFormsAdminView
             if (!e.getValueIsAdjusting())
             {
                int idx = submittedForms.getSelectedIndex();
-               if (idx != -1)
+               if (idx != -1 && idx < submittedForms.getModel().getSize())
                {
                   TaskSubmittedFormModel submittedFormModel = model.getSubmittedFormModel( idx );
                   submittedFormView.setModel( submittedFormModel );

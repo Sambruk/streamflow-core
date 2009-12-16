@@ -19,10 +19,10 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.ProjectFormDefinitionClientResource;
-import se.streamsource.streamflow.client.resource.organizations.projects.forms.fields.ProjectFormDefinitionFieldsClientResource;
+import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -44,25 +44,20 @@ public class FormModel
    @Structure
    ObjectBuilderFactory obf;
 
-   private EventHandlerFilter eventFilter;
+   private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "changedNote", "movedField", "changedDescription" );
 
-   private ProjectFormDefinitionClientResource resource;
+   @Uses
+   CommandQueryClient client;
+
    private FormValue formValue;
-
-   public FormModel( @Uses ProjectFormDefinitionClientResource resource )
-   {
-      eventFilter = new EventHandlerFilter( this, "changedNote", "movedField", "changedDescription" );
-      this.resource = resource;
-      refresh();
-   }
 
    WeakModelMap<String, FieldsModel> fieldsModels = new WeakModelMap<String, FieldsModel>()
    {
 
       protected FieldsModel newModel( String key )
       {
-         ProjectFormDefinitionFieldsClientResource fieldsResource = resource.fields();
-         return obf.newObjectBuilder( FieldsModel.class ).use( fieldsResource ).newInstance();
+         return obf.newObjectBuilder( FieldsModel.class )
+               .use( client.getSubClient( "fields" ) ).newInstance();
       }
    };
 
@@ -71,12 +66,12 @@ public class FormModel
    {
       try
       {
-         formValue = resource.form();
+         formValue = client.query( "form", FormValue.class );
          setChanged();
          notifyObservers( this );
       } catch (ResourceException e)
       {
-         e.printStackTrace();
+         throw new OperationException( AdministrationResources.could_not_get_form, e);
       }
 
    }
@@ -115,19 +110,14 @@ public class FormModel
       return formValue;
    }
 
-   public ProjectFormDefinitionClientResource getResource()
-   {
-      return resource;
-   }
-
    public void changeDescription( StringDTO description ) throws ResourceException
    {
-      resource.changeDescription( description );
+      client.putCommand( "changedescription", description );
    }
 
-   public void changeNote( StringDTO stringDTO ) throws ResourceException
+   public void changeNote( StringDTO note ) throws ResourceException
    {
-      resource.changeNote( stringDTO );
+      client.putCommand( "changenote", note );
    }
 
    public FieldsModel getFieldsModel()

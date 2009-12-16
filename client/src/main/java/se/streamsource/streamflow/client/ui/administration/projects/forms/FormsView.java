@@ -63,6 +63,7 @@ public class FormsView
    {
       super( new BorderLayout() );
       this.model = model;
+      model.refresh();
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );

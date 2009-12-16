@@ -49,6 +49,7 @@ public class FormView
    {
       super( new BorderLayout() );
       this.model = model;
+      model.refresh();
       ActionMap am = context.getActionMap( this );
 
       this.adminView = adminView;
