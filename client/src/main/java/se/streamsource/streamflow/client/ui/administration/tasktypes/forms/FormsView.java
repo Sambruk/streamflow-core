@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects.forms;
+package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;

@@ -27,18 +27,19 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * List of tasktypes in an Organization
  */
 public class TaskTypesModel
-      implements Refreshable
+      implements Refreshable, EventListener
 {
    @Structure
    ObjectBuilderFactory obf;

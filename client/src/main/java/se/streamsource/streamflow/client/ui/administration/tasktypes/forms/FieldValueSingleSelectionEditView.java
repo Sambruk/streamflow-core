@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.projects.forms;
+package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -34,13 +34,13 @@ import java.awt.TextField;
 /**
  * JAVADOC
  */
-public class FieldValueCommentEditView
+public class FieldValueSingleSelectionEditView
       extends JScrollPane
 {
 
 
-   public FieldValueCommentEditView( @Service ApplicationContext context,
-                                     @Uses FieldValueEditModel model )
+   public FieldValueSingleSelectionEditView( @Service ApplicationContext context,
+                                             @Uses FieldValueEditModel model )
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
@@ -52,7 +52,7 @@ public class FieldValueCommentEditView
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
 
-      formBuilder.append( "Type:", new JLabel( i18n.text( FieldTypes.comment ) ) );
+      formBuilder.append( "Type:", new JLabel( i18n.text( FieldTypes.single_selection ) ) );
       formBuilder.append( "Mandatory", new Checkbox() );
       formBuilder.append( "Name", new TextField( value.description().get() ) );
       TextArea textArea = new TextArea( value.note().get() );

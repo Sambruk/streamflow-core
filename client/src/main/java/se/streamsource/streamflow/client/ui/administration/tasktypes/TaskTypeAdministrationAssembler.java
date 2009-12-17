@@ -18,10 +18,10 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormView;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsView;
 
 /**
  * JAVADOC

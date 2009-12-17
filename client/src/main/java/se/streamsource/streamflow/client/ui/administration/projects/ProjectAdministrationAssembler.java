@@ -18,13 +18,13 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FieldCreationDialog;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FieldValueEditModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FieldValueTextEditView;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FieldsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FieldsView;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormEditAdminView;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsAdminView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldCreationDialog;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldsModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueEditModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueTextEditView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldsView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormEditAdminView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 
 /**
  * JAVADOC

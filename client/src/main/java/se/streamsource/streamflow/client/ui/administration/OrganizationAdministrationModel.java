@@ -141,5 +141,6 @@ public class OrganizationAdministrationModel
       labelsModel.notifyEvent( event );
       formsModel.notifyEvent( event );
       administratorsModel.notifyEvent( event );
+      taskTypesModel.notifyEvent( event );
    }
 }

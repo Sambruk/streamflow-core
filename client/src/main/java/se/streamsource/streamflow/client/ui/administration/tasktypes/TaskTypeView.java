@@ -17,10 +17,9 @@ package se.streamsource.streamflow.client.ui.administration.tasktypes;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.projects.forms.FormsAdminView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 
-import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 
 /**
