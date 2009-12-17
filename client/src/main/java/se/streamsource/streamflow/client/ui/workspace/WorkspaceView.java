@@ -306,6 +306,7 @@ public class WorkspaceView
                   final TaskTableModel2 assignmentsModel = projectAssignmentsNode.taskTableModel();
                   TasksModel tasksModel = model.getRoot().getUserObject().tasks();
                   view = obf.newObjectBuilder( TaskTableView2.class ).use( assignmentsModel,
+                        node,
                         projectAssignmentsNode.getParent(),
                         tasksModel,
                         new AssignmentsTaskTableFormatter()).newInstance();
