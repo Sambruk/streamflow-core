@@ -19,7 +19,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 import se.streamsource.streamflow.domain.task.TaskActions;
-import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.task.Assignments;
@@ -58,33 +57,7 @@ public class TaskActionsServerResource
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
       UserEntity user = getUser();
 
-      if (task.assignedTo().get() == null)
-      {
-         if (task.delegatedTo().get() == null)
-         {
-            // Inbox
-            if (task.status().get().equals( TaskStates.ACTIVE ))
-               actions.add( "complete" );
-
-            actions.add( "assign" );
-            actions.add( "forward" );
-            actions.add( "delegate" );
-            actions.add( "drop" );
-            actions.add( "delete" );
-         } else
-         {
-            // Delegations/WaitingFor
-         }
-      } else
-      {
-         if (task.isAssignedTo( user ))
-         {
-            // Assignments
-
-            if (task.status().get().equals( TaskStates.ACTIVE ))
-               actions.add( "complete" );
-         }
-      }
+      task.addActions( user, actions);
 
       return builder.newInstance();
    }
@@ -106,6 +79,27 @@ public class TaskActionsServerResource
    }
 
    // Commands
+   public void accept()
+   {
+
+   }
+
+   public void assign()
+   {
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+
+      Owner owner = task.owner().get();
+
+      User user = getUser();
+
+      if (task.assignedTo().get() == null)
+      {
+         // Inbox or Delegations/WaitingFor
+         Inbox inbox = (Inbox) owner;
+         inbox.assignTo( task, user );
+      }
+   }
+
    public void complete()
    {
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
@@ -126,20 +120,9 @@ public class TaskActionsServerResource
       }
    }
 
-   public void assign()
+   public void done()
    {
-      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
 
-      Owner owner = task.owner().get();
-
-      User user = getUser();
-
-      if (task.assignedTo().get() == null)
-      {
-         // Inbox or Delegations/WaitingFor
-         Inbox inbox = (Inbox) owner;
-         inbox.assignTo( task, user );
-      }
    }
 
    public void forward( EntityReferenceDTO entity )
@@ -202,6 +185,11 @@ public class TaskActionsServerResource
          Assignments assignments = (Assignments) owner;
          assignments.dropAssignedTask( task );
       }
+
+   }
+
+   public void reject()
+   {
 
    }
 

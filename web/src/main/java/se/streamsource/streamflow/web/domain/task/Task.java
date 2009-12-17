@@ -36,6 +36,7 @@ public interface Task
       Notable,
       Ownable,
       SubmittedForms,
+      TaskActions,
       TaskId,
       TaskStatus,
       TypedTask

@@ -26,6 +26,7 @@ import se.streamsource.streamflow.domain.roles.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.web.domain.group.Participant;
+import se.streamsource.streamflow.web.domain.group.Participants;
 import se.streamsource.streamflow.web.domain.task.Task;
 import se.streamsource.streamflow.web.domain.user.User;
 
@@ -41,6 +42,8 @@ public interface Members
    void removeMember( Participant participant );
 
    void removeAllMembers();
+
+   boolean isMember(Participant participant);
 
    interface Data
    {
@@ -98,6 +101,24 @@ public interface Members
          {
             removeMember( members().get( 0 ) );
          }
+      }
+
+      public boolean isMember( Participant participant )
+      {
+         for (Participant participant1 : members())
+         {
+            if (participant1.equals(participant))
+               return true;
+
+            if (participant1 instanceof Participants)
+            {
+               Participants participants = (Participants) participant1;
+               if (participants.isParticipant(participant))
+                  return true;
+            }
+         }
+
+         return false;
       }
    }
 

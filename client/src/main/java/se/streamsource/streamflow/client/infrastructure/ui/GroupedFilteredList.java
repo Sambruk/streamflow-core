@@ -16,37 +16,38 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JTree;
 import java.awt.BorderLayout;
 
 /**
  * JAVADOC
  */
-public class GroupedFilteredTree
+public class GroupedFilteredList
       extends JPanel
 {
    private JTextField textField;
-   private JTree tree;
-   private EventListModel treeModel;
+   private JList list;
+   private EventListModel listModel;
    public JScrollPane pane = new JScrollPane();
 
-   public GroupedFilteredTree()
+   public GroupedFilteredList()
    {
       setLayout( new BorderLayout() );
 
       textField = new JTextField( 20 );
 
-      tree = new JTree();
-      tree.setCellRenderer( new ListItemTreeCellRenderer() );
-      pane.setViewportView( tree );
+      list = new JList();
+      list.setCellRenderer( new SeparatorListCellRenderer(new ListItemListCellRenderer()) );
+      pane.setViewportView( list );
 
       add( textField, BorderLayout.NORTH );
       add( pane, BorderLayout.CENTER );
@@ -57,9 +58,9 @@ public class GroupedFilteredTree
       return textField;
    }
 
-   public JTree getTree()
+   public JList getList()
    {
-      return tree;
+      return list;
    }
 
    public JScrollPane getPane()
@@ -71,13 +72,11 @@ public class GroupedFilteredTree
    {
       SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( eventList, new ListItemComparator() );
       FilterList<ListItemValue> textFilteredIssues = new FilterList<ListItemValue>( sortedIssues, new TextComponentMatcherEditor( textField, new ListItemFilterator() ) );
-      
-//      treeModel = new EventTreeModel<ListItemValue>( new TreeList<ListItemValue>(textFilteredIssues, ) );
 
-//      tree.setModel( treeModel );
+      listModel = new EventListModel<ListItemValue>( new SeparatorList<ListItemValue>( textFilteredIssues, new ListItemGroupingComparator(), 1, 10000 ) );
+
+      list.setModel( listModel );
 
       textField.setText( "" );
-
-
    }
 }

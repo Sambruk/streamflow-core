@@ -38,6 +38,8 @@ public interface TaskStatus
 
    void drop();
 
+   boolean isStatus( TaskStates status );
+
    interface Data
    {
       @UseDefaults
@@ -80,6 +82,11 @@ public interface TaskStatus
          {
             changedStatus( DomainEvent.CREATE, TaskStates.ACTIVE );
          }
+      }
+
+      public boolean isStatus( TaskStates status )
+      {
+         return status().get().equals(status);
       }
    }
 

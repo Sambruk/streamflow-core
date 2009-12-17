@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -25,12 +24,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskActionsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
@@ -47,8 +45,8 @@ public class SelectUserOrProjectDialog2
    Dimension dialogSize = new Dimension( 600, 300 );
 
    public ListItemValue selected;
-   public FilteredList projectList;
-   public JList userList;
+   public GroupedFilteredList projectList;
+   public FilteredList userList;
 
    public SelectUserOrProjectDialog2( final @Uses TaskActionsModel taskModel,
                                       @Service ApplicationContext context,
@@ -62,12 +60,11 @@ public class SelectUserOrProjectDialog2
       EventList projects = taskModel.getPossibleProjects();
       EventList<ListItemValue> users = taskModel.getPossibleUsers();
 
-      projectList = new FilteredList();
+      projectList = new GroupedFilteredList();
       projectList.setEventList( projects );
-      projectList.getList().setCellRenderer( new ListItemListCellRenderer() );
 
-      userList = new JList( new EventListModel<ListItemValue>( users ) );
-      userList.setCellRenderer( new ListItemListCellRenderer() );
+      userList = new FilteredList();
+      userList.setEventList(users);
 
       add( new JScrollPane( projectList ));
       add( new JScrollPane( userList ));
@@ -76,11 +73,11 @@ public class SelectUserOrProjectDialog2
       {
          public void valueChanged( ListSelectionEvent e )
          {
-            userList.clearSelection();
+            userList.getList().clearSelection();
          }
       });
 
-      userList.addListSelectionListener( new ListSelectionListener()
+      userList.getList().addListSelectionListener( new ListSelectionListener()
       {
          public void valueChanged( ListSelectionEvent e )
          {
@@ -99,7 +96,7 @@ public class SelectUserOrProjectDialog2
    {
       selected = (ListItemValue) projectList.getList().getSelectedValue();
       if (selected == null)
-         selected = (ListItemValue) userList.getSelectedValue();
+         selected = (ListItemValue) userList.getList().getSelectedValue();
 
       WindowUtils.findWindow( this ).dispose();
    }

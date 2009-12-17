@@ -28,6 +28,8 @@ public interface Ownable
 {
    void changeOwner( Owner owner );
 
+   boolean isOwnedBy(Owner owner);
+
    interface Data
    {
       @Optional
@@ -45,6 +47,11 @@ public interface Ownable
       public void changeOwner( Owner owner )
       {
          changedOwner( DomainEvent.CREATE, owner );
+      }
+
+      public boolean isOwnedBy( Owner owner )
+      {
+         return owner.equals( owner().get() );
       }
 
       public void changedOwner( DomainEvent event, Owner newOwner )

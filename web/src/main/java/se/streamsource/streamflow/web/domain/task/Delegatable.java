@@ -22,6 +22,8 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.project.Members;
+import se.streamsource.streamflow.web.domain.user.User;
 
 import java.util.Date;
 
@@ -34,6 +36,12 @@ public interface Delegatable
    void delegateTo( Delegatee delegatee, Delegator delegator, WaitingFor delegatedFrom );
 
    void rejectDelegation();
+
+   boolean isDelegated();
+
+   boolean isDelegatedBy(User user);
+
+   boolean isDelegatedTo(User user);
 
    interface Data
    {
@@ -87,6 +95,32 @@ public interface Delegatable
             waitingFor.rejectTask( task );
             rejectedDelegation( DomainEvent.CREATE );
          }
+      }
+
+      public boolean isDelegated()
+      {
+         return delegatedTo().get() != null;
+      }
+
+      public boolean isDelegatedBy( User user )
+      {
+         return user.equals( delegatedBy().get());
+      }
+
+      public boolean isDelegatedTo( User user )
+      {
+         if (delegatedTo().get() != null)
+         {
+            if (delegatedTo().get() instanceof Members) // Project check
+            {
+               Members members = (Members) delegatedTo().get();
+               return (members.isMember( user ));
+            } else
+            {
+               return delegatedTo().get().equals(user); // User check
+            }
+         } else
+            return false;
       }
 
       public void rejectedDelegation( DomainEvent event )

@@ -22,6 +22,7 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.FieldValue;
@@ -45,8 +46,6 @@ import se.streamsource.streamflow.web.domain.user.UserEntity;
 
 import java.util.Date;
 import java.util.List;
-
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * Generates test data
@@ -102,18 +101,18 @@ public interface TestDataService
 
          // Create suborganizations
          OrganizationalUnit jayway = organization.createOrganizationalUnit( "Jayway" );
-         organization.createOrganizationalUnit( "Dotway" );
-         organization.createOrganizationalUnit( "Realway" );
+         OrganizationalUnit streamSource = organization.createOrganizationalUnit( "StreamSource" );
+         OrganizationalUnit admin = organization.createOrganizationalUnit( "Administration" );
 
          // Create groups
-         Group cc = jayway.createGroup( "Contact center" );
-         Group pm = jayway.createGroup( "Park management" );
+         Group developers = jayway.createGroup( "Developers" );
+         Group admins = admin.createGroup( "Administrators" );
 
-         cc.addParticipant( user );
-         cc.addParticipant( someUser );
+         developers.addParticipant( user );
+         developers.addParticipant( someUser );
 
-         pm.addParticipant( testUser );
-         pm.addParticipant( someUser );
+         admins.addParticipant( testUser );
+         admins.addParticipant( someUser );
 
          FormTemplates forms = (FormTemplates) organization;
 
@@ -175,12 +174,12 @@ public interface TestDataService
          info2.addSelectedTaskType( bug );
          info2.addSelectedTaskType( improvement );
 
-         info2.addMember( cc );
+         info2.addMember( developers );
          info2.addMember( user );
 
-         Project itSupport = jayway.createProject( "IT support" );
+         Project itSupport = admin.createProject( "IT support" );
          itSupport.addSelectedTaskType( passwordReset );
-         itSupport.addMember( cc );
+         itSupport.addMember( developers );
          itSupport.addMember( user );
 
          // Create tasks

@@ -35,10 +35,19 @@ public interface Participants
 
    void removeParticipant( Participant participant );
 
+   /**
+    * Check if given participant is a participant of this collection.
+    * The check is recursive, so if any participant is a collection,
+    * check that collection as well.
+    *
+    * @param participant the participant to check
+    * @return true if participant is a member of this collection or any collection herein
+    */
+   boolean isParticipant( Participant participant );
+
    interface Data
    {
       ManyAssociation<Participant> participants();
-
 
       void addedParticipant( DomainEvent event, Participant participant );
 
@@ -70,6 +79,11 @@ public interface Participants
             removedParticipant( DomainEvent.CREATE, participant );
             participant.leaveGroup( group );
          }
+      }
+
+      public boolean isParticipant( Participant participant )
+      {
+         return false;
       }
 
       // Events

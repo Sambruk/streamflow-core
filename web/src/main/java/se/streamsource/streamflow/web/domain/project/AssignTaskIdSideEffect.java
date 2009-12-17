@@ -30,6 +30,11 @@ public class AssignTaskIdSideEffect
    @This
    TaskId id;
 
+   public boolean isOwnedBy( Owner owner )
+   {
+      return result.isOwnedBy( owner );
+   }
+
    public void changeOwner( Owner owner )
    {
       result.changeOwner( owner );

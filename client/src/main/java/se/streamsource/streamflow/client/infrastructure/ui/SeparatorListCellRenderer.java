@@ -14,29 +14,37 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
+import ca.odell.glazedlists.SeparatorList;
 import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import java.awt.Component;
+import java.awt.Font;
 
 /**
- * List renderer for lists that use ListItemValue as items.
+ * JAVADOC
  */
-public class ListItemListCellRenderer extends DefaultListCellRenderer
+public class SeparatorListCellRenderer
+   extends DefaultListCellRenderer
 {
+   private ListCellRenderer next;
+
+   public SeparatorListCellRenderer( ListCellRenderer next )
+   {
+      this.next = next;
+   }
+
    public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
    {
-      if (value instanceof ListItemValue)
+      if (value instanceof SeparatorList.Separator)
       {
-         ListItemValue itemValue = (ListItemValue) value;
-         String val = itemValue == null ? "" : itemValue.description().get();
-         
-         if (value instanceof GroupedListItemValue)
-            val = "  "+val;
-
-         return super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
-      } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
+         SeparatorList.Separator separator = (SeparatorList.Separator) value;
+         Component component = super.getListCellRendererComponent( list, ((GroupedListItemValue)separator.first()).group().get(), index, isSelected, cellHasFocus );
+         setFont( getFont().deriveFont( Font.BOLD ));
+         return component;
+      } else
+         return next.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
    }
 }
