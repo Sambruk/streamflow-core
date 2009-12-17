@@ -75,7 +75,8 @@ public class TaskActionsView
    @Action
    public void accept()
    {
-
+      model.accept();
+      refresh();
    }
 
    @Action
@@ -109,13 +110,28 @@ public class TaskActionsView
    @Action
    public void delete()
    {
+      model.delete();
+      refresh();
+   }
 
+   @Action
+   public void done()
+   {
+      model.done();
+      refresh();
    }
 
    @Action
    public void drop()
    {
       model.drop();
+      refresh();
+   }
+
+   @Action
+   public void finish()
+   {
+      model.finish();
       refresh();
    }
 
@@ -133,9 +149,17 @@ public class TaskActionsView
    }
 
    @Action
+   public void redo()
+   {
+      model.redo();
+      refresh();
+   }
+
+   @Action
    public void reject()
    {
-
+      model.reject();
+      refresh();
    }
 
    public void setModel( TaskActionsModel taskActionsModel )

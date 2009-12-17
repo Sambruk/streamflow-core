@@ -46,6 +46,8 @@ public interface Assignments
 
    void deleteAssignedTask( @HasStatus(ACTIVE) Task task );
 
+   void rejectAssignedTask( @HasStatus(ACTIVE) Task task );
+
    interface Data
    {
       Task createdAssignedTask( DomainEvent event, String id );
@@ -133,6 +135,11 @@ public interface Assignments
       public void deleteAssignedTask( Task task )
       {
          deletedAssignedTask( DomainEvent.CREATE, task );
+      }
+
+      public void rejectAssignedTask( @HasStatus(ACTIVE) Task task )
+      {
+         task.rejectDelegation();
       }
 
       public void deletedAssignedTask( DomainEvent event, Task task )

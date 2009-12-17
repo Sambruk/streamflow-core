@@ -38,6 +38,8 @@ public interface TaskStatus
 
    void drop();
 
+   void redo();
+
    boolean isStatus( TaskStates status );
 
    interface Data
@@ -65,6 +67,14 @@ public interface TaskStatus
          if (status().get().equals( TaskStates.ACTIVE ) || status().get().equals( TaskStates.DONE ))
          {
             changedStatus( DomainEvent.CREATE, TaskStates.DROPPED );
+         }
+      }
+
+      public void redo()
+      {
+         if (status().get().equals(TaskStates.DONE))
+         {
+            changedStatus( DomainEvent.CREATE, TaskStates.ACTIVE );
          }
       }
 

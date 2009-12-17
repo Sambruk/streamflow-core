@@ -21,11 +21,7 @@ import org.restlet.representation.Variant;
 import se.streamsource.streamflow.domain.task.TaskActions;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.task.Assignments;
-import se.streamsource.streamflow.web.domain.task.Delegatee;
-import se.streamsource.streamflow.web.domain.task.Inbox;
-import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.task.*;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -81,6 +77,16 @@ public class TaskActionsServerResource
    // Commands
    public void accept()
    {
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+
+      User user = getUser();
+
+      if (task.assignedTo().get() == null)
+      {
+         // Inbox or Delegations/WaitingFor
+         Delegations delegations = (Delegations) task.delegatedTo().get();
+         delegations.accept( task, user );
+      }
 
    }
 
@@ -110,9 +116,17 @@ public class TaskActionsServerResource
 
       if (task.assignedTo().get() == null)
       {
-         // Inbox or Delegations/WaitingFor
-         Inbox inbox = (Inbox) owner;
-         inbox.completeTask( task, user );
+         // Inbox or WaitingFor
+         if (task.isDelegatedBy( user ))
+         {
+            WaitingFor waitingFor = task.delegatedFrom().get();
+            waitingFor.completeWaitingForTask( task, user );
+
+         } else
+         {
+            Inbox inbox = (Inbox) owner;
+            inbox.completeTask( task, user );
+         }
       } else
       {
          Assignments assignments = (Assignments) owner;
@@ -122,7 +136,18 @@ public class TaskActionsServerResource
 
    public void done()
    {
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+      User user = getUser();
 
+      Delegations delegations = (Delegations) task.delegatedTo().get();
+      delegations.finishDelegatedTask( task, user );
+   }
+
+   public void finish()
+   {
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+      WaitingFor waitingFor = task.delegatedFrom().get();
+      waitingFor.completeFinishedTask( task );
    }
 
    public void forward( EntityReferenceDTO entity )
@@ -188,9 +213,28 @@ public class TaskActionsServerResource
 
    }
 
+   public void redo()
+   {
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+      WaitingFor waitingFor = task.delegatedFrom().get();
+      waitingFor.redoFinishedTask( task );
+   }
+
    public void reject()
    {
+      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
 
+      if (task.assignedTo().get() == null)
+      {
+         // Delegations
+         Delegations delegations = (Delegations) task.delegatedTo().get();
+         delegations.reject( task );
+      } else
+      {
+         Owner owner = task.owner().get();
+         Assignments assignments = (Assignments) owner;
+         assignments.rejectAssignedTask(task);
+      }
    }
 
 

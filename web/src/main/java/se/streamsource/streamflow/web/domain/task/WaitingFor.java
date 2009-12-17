@@ -37,9 +37,12 @@ public interface WaitingFor
 
    void assignWaitingForTask( @HasStatus(ACTIVE) Task task, Assignee assignee );
 
+   void redoFinishedTask( TaskEntity task );
+
    void rejectTask( Task task );
 
    void deleteWaitingForTask( Task task );
+
 
    interface Data
    {
@@ -89,6 +92,11 @@ public interface WaitingFor
          task.rejectDelegation();
          task.changeOwner( owner );
          task.assignTo( assignee );
+      }
+
+      public void redoFinishedTask( TaskEntity task )
+      {
+         task.redo();
       }
 
       public void rejectTask( Task task )

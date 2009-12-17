@@ -83,6 +83,19 @@ public interface Participants
 
       public boolean isParticipant( Participant participant )
       {
+         for (Participant participant1 : participants())
+         {
+            if (participant.equals(participant1))
+               return true;
+
+            if (participant1 instanceof Participants)
+            {
+               Participants participants = (Participants) participant1;
+               if (participants.isParticipant( participant ))
+                  return true;
+            }
+         }
+
          return false;
       }
 

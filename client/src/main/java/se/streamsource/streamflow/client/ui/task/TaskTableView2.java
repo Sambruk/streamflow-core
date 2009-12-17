@@ -149,7 +149,12 @@ public class TaskTableView2
       {
          public boolean isHighlighted( Component component, ComponentAdapter componentAdapter )
          {
-            return componentAdapter != null && componentAdapter.getValue( componentAdapter.getColumnCount()-1 ).equals( TaskStates.DROPPED);
+            if (componentAdapter != null)
+            {
+               Object value = componentAdapter.getValue( componentAdapter.getColumnCount() - 1 );
+               return value.equals(TaskStates.DROPPED) || value.equals(TaskStates.COMPLETED);
+            } else
+            return false;
          }
       }, p ) );
 

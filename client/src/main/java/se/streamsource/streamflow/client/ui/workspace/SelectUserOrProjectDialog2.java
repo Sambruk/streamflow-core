@@ -23,7 +23,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskActionsModel;
@@ -46,7 +45,7 @@ public class SelectUserOrProjectDialog2
 
    public ListItemValue selected;
    public GroupedFilteredList projectList;
-   public FilteredList userList;
+   public GroupedFilteredList userList;
 
    public SelectUserOrProjectDialog2( final @Uses TaskActionsModel taskModel,
                                       @Service ApplicationContext context,
@@ -57,13 +56,13 @@ public class SelectUserOrProjectDialog2
       setName( i18n.text( WorkspaceResources.search_projects_users ) );
       setActionMap( context.getActionMap( this ) );
 
-      EventList projects = taskModel.getPossibleProjects();
+      EventList<ListItemValue> projects = taskModel.getPossibleProjects();
       EventList<ListItemValue> users = taskModel.getPossibleUsers();
 
       projectList = new GroupedFilteredList();
       projectList.setEventList( projects );
 
-      userList = new FilteredList();
+      userList = new GroupedFilteredList();
       userList.setEventList(users);
 
       add( new JScrollPane( projectList ));

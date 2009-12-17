@@ -80,6 +80,10 @@ public interface TaskActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
+                     } else if (task.isStatus( TaskStates.DONE ))
+                     {
+                        actions.add( "finish" );
+                        actions.add( "redo" );
                      }
 
                   } else if (!task.isAssigned())

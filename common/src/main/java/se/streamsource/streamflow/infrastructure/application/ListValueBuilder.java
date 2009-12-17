@@ -77,7 +77,12 @@ public class ListValueBuilder
 
    public ListValueBuilder addDescribable( Describable item, Describable group )
    {
-      return addListItem( item.getDescription(), EntityReference.getEntityReference( item ), group.getDescription() );
+      return addDescribable( item, group.getDescription() );
+   }
+
+   public ListValueBuilder addDescribable( Describable item, String group )
+   {
+      return addListItem( item.getDescription(), EntityReference.getEntityReference( item ), group );
    }
 
    public ListValue newList()

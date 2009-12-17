@@ -85,6 +85,17 @@ public class TaskActionsModel
    }
 
    // Actions
+   public void accept()
+   {
+      try
+      {
+         client.postCommand( "accept" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
    public void assignToMe()
    {
       try
@@ -122,14 +133,32 @@ public class TaskActionsModel
 
    public void delete()
    {
+      try
+      {
+         client.deleteCommand();
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
 
+
+   public void done()
+   {
+      try
+      {
+         client.postCommand( "done" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
    }
 
    public void drop()
    {
       try
       {
-         client.putCommand( "drop" );
+         client.postCommand( "drop" );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
@@ -149,4 +178,37 @@ public class TaskActionsModel
       }
    }
 
+   public void finish()
+   {
+      try
+      {
+         client.postCommand( "finish" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+
+   }
+
+   public void reject()
+   {
+      try
+      {
+         client.postCommand( "reject" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
+   public void redo()
+   {
+      try
+      {
+         client.postCommand( "redo" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
 }

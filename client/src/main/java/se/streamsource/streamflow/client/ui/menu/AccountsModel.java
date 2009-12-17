@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.menu;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -59,7 +60,7 @@ public class AccountsModel
    @Service
    Uniform client;
 
-   BasicEventList<ListItemValue> accounts = new BasicEventList<ListItemValue>();
+   TransactionList<ListItemValue> accounts = new TransactionList<ListItemValue>( new BasicEventList<ListItemValue>() );
 
    WeakModelMap<String, AccountModel> models = new WeakModelMap<String, AccountModel>()
    {
@@ -126,6 +127,7 @@ public class AccountsModel
    {
       UnitOfWork uow = uowf.newUnitOfWork();
       final ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
+      accounts.beginEvent();
       accounts.clear();
       repository.individual().visitAccounts( new AccountVisitor()
       {
@@ -138,5 +140,6 @@ public class AccountsModel
          }
       } );
       uow.discard();
+      accounts.commitEvent();
    }
 }

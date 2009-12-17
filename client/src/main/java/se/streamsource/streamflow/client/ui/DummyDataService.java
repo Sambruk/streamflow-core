@@ -74,13 +74,19 @@ public interface DummyDataService
             Individual individual = individualRepository.individual();
 
             ValueBuilder<AccountSettingsValue> builder = vbf.newValueBuilder( AccountSettingsValue.class );
-            builder.prototype().name().set( "Test server" );
+            builder.prototype().name().set( "Test server administrator" );
             builder.prototype().server().set( "http://localhost:8040/streamflow" );
             builder.prototype().userName().set( "administrator" );
             builder.prototype().password().set( "administrator" );
 
             final Account account = individual.newAccount();
             account.updateSettings( builder.newInstance() );
+
+            final Account account2 = individual.newAccount();
+            builder.prototype().name().set( "Test server someuser" );
+            builder.prototype().userName().set("someuser");
+            builder.prototype().password().set("someuser");
+            account2.updateSettings( builder.newInstance() );
 
 
             CommandQueryClient server = account.server( client );

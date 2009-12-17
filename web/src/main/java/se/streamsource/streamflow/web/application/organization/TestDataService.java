@@ -76,9 +76,13 @@ public interface TestDataService
 
          User testUser = orgs.createUser( "testuser", "testuser" );
          User someUser = orgs.createUser( "someuser", "someuser" );
+         User someUser2 = orgs.createUser( "someuser2", "someuser2" );
 
          OrganizationEntity organization = (OrganizationEntity) user.organizations().iterator().next();
          organization.changeDescription( "WayGroup" );
+         testUser.join( organization );
+         someUser.join( organization );
+         someUser2.join( organization );
 
          Label question = organization.createLabel( "Question" );
          Label issueChase = organization.createLabel( "Issue chase" );
@@ -179,8 +183,10 @@ public interface TestDataService
 
          Project itSupport = admin.createProject( "IT support" );
          itSupport.addSelectedTaskType( passwordReset );
-         itSupport.addMember( developers );
          itSupport.addMember( user );
+
+         Project invoicing = admin.createProject( "Invoicing" );
+         invoicing.addMember( user );
 
          // Create tasks
          Task task = project.createTask();

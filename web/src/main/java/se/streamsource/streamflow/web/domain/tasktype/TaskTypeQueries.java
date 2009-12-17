@@ -159,7 +159,9 @@ public interface TaskTypeQueries
 
          for (User user : query)
          {
-            lvb.addDescribable( user );
+
+            String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
+            lvb.addDescribable( user, group );
          }
       }
    }
