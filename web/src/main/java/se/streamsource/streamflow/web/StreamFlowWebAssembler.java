@@ -33,6 +33,7 @@ import se.streamsource.streamflow.web.infrastructure.database.DatabaseAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.event.EventAssembler;
+import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 
@@ -94,6 +95,7 @@ public class StreamFlowWebAssembler
       new ServerEntityStoreAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Entity Store" ) );
       new EntityFinderAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Entity Finder" ) );
       new EventAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Events" ) );
+      new EmbeddedSolrAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Search Engine" ));
    }
 
    protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException

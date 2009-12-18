@@ -14,14 +14,15 @@
 
 package se.streamsource.streamflow.web.resource.users.search;
 
+import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.error.ErrorResources;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.roles.Describable;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
@@ -45,6 +46,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -75,42 +78,21 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 
             if (search.startsWith( "label:" ))
             {
-               search = search.substring( "label:".length() );
-               queryBuilder = queryBuilder.where( eq( QueryExpressions.oneOf(
-                     templateFor( Labelable.Data.class )
-                           .labels() ).description(), search ) );
+               queryBuilder = buildLabelQuery( queryBuilder, search );
             } else if (search.startsWith( "assigned:" ))
             {
-               search = search.substring( "assigned:".length() );
-               search = getAssignedTo( search );
-               Assignee assignee = templateFor( TaskEntity.class )
-                     .assignedTo().get();
-               Describable.Data describable = templateFor(
-                     Describable.Data.class, assignee );
-               queryBuilder = queryBuilder.where( eq( describable.description(), search ) );
+               queryBuilder = buildAssignedQuery( queryBuilder, search );
             } else if (search.startsWith( "project:" ))
             {
-               search = search.substring( "project:".length() );
-               Owner owner = templateFor( TaskEntity.class ).owner().get();
-               Describable.Data describable = templateFor(
-                     Describable.Data.class, owner );
-               queryBuilder = queryBuilder.where( eq( describable.description(), search ) );
+               queryBuilder = buildProjectQuery( queryBuilder, search );
+            } else if (search.startsWith( "contact:" ))
+            {
+               queryBuilder = buildContactQuery( queryBuilder, search );
+
             } else if (search.startsWith( "created:" ))
             {
-               search = search.substring( "created:".length() );
-               Date referenceDate = new Date();
-               Date lowerBoundDate = getLowerBoundDate( search,
-                     referenceDate );
-               Date upperBoundDate = getUpperBoundDate( search,
-                     referenceDate );
-
-               if (lowerBoundDate == null || upperBoundDate == null)
-               {
-                  continue;
-               }
-               queryBuilder = queryBuilder.where( and( ge( templateFor( TaskEntity.class )
-                     .createdOn(), lowerBoundDate ), le( templateFor(
-                     TaskEntity.class ).createdOn(), upperBoundDate ) ) );
+               queryBuilder = buildCreatedQuery( queryBuilder, search );
+               continue;
             } else
             {
                queryBuilder = queryBuilder.where( or( eq( templateFor( TaskEntity.class )
@@ -123,11 +105,83 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
          // TODO: Do not perform a query with null whereClause! How to check
          // this?
          Query<TaskEntity> tasks = queryBuilder.newQuery( uow );
-         return buildTaskList( tasks, SearchTaskDTO.class);
+         return buildTaskList( tasks, SearchTaskDTO.class );
       } else
       {
          return vbf.newValue( TaskListDTO.class );
       }
+   }
+
+   private QueryBuilder<TaskEntity> buildCreatedQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
+   {
+      search = search.substring( "created:".length() );
+      String searchDateFrom = search;
+      String searchDateTo = search;
+      if (occurrancesOfInString( "-", search ) == 1)
+      {
+         searchDateFrom = search.substring( 0, search.indexOf( "-" ) );
+         searchDateTo = search.substring( search.indexOf( "-" ) + 1, search.length() );
+      }
+      Date referenceDate = new Date();
+      Date lowerBoundDate = getLowerBoundDate( searchDateFrom,
+            referenceDate );
+      Date upperBoundDate = getUpperBoundDate( searchDateTo,
+            referenceDate );
+
+      if (lowerBoundDate == null || upperBoundDate == null)
+      {
+         return queryBuilder;
+      }
+      queryBuilder = queryBuilder.where( and( ge( templateFor( TaskEntity.class )
+            .createdOn(), lowerBoundDate ), le( templateFor(
+            TaskEntity.class ).createdOn(), upperBoundDate ) ) );
+      return queryBuilder;
+   }
+
+   private QueryBuilder<TaskEntity> buildContactQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
+   {
+      // TODO: Uncomment and verify Qi4J change on "matches" query expression to take ValueComposites. 
+/*      search = search.substring( "contact:".length() );
+
+      Property<List<ContactValue>> contacts = templateFor( TaskEntity.class ).contacts();
+      queryBuilder = queryBuilder.where(
+            or(
+                  matches( oneOf( contacts ).name(), search ),
+                  matches( oneOf( contacts ).phone(), search ),
+                  matches( oneOf( contacts ).contactId(), search )
+            )
+      );
+      */
+      return queryBuilder;
+   }
+
+   private QueryBuilder<TaskEntity> buildProjectQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
+   {
+      search = search.substring( "project:".length() );
+      Owner owner = templateFor( TaskEntity.class ).owner().get();
+      Describable.Data describable = templateFor(
+            Describable.Data.class, owner );
+      queryBuilder = queryBuilder.where( eq( describable.description(), search ) );
+      return queryBuilder;
+   }
+
+   private QueryBuilder<TaskEntity> buildAssignedQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
+   {
+      search = search.substring( "assigned:".length() );
+      search = getAssignedTo( search );
+      Assignee assignee = templateFor( TaskEntity.class )
+            .assignedTo().get();
+      Describable.Data describable = templateFor(
+            Describable.Data.class, assignee );
+      queryBuilder = queryBuilder.where( eq( describable.description(), search ) );
+      return queryBuilder;
+   }
+
+   private QueryBuilder<TaskEntity> buildLabelQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
+   {
+      search = search.substring( "label:".length() );
+      queryBuilder = queryBuilder.where( eq( QueryExpressions.oneOf( templateFor( Labelable.Data.class ).labels() ).description(), search ) );
+      return queryBuilder;
    }
 
    protected List<String> extractSubQueries( String query )
@@ -319,5 +373,20 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
       }
       ((SearchTaskDTO) prototype).project().set( task.owner().get().getDescription() );
 
-    }
+   }
+
+   protected int occurrancesOfInString( String pattern, String source )
+   {
+      Pattern p = Pattern.compile( pattern );
+      Matcher m = p.matcher( source );
+      int count = 0;
+      while (m.find())
+      {
+         count++;
+         System.out.println( "Match number " + count );
+         System.out.println( "start(): " + m.start() );
+         System.out.println( "end(): " + m.end() );
+      }
+      return count;
+   }
 }
