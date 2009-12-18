@@ -33,7 +33,7 @@ public class TaskAssembler
 
       UIAssemblers.addDialogs( module, AddCommentDialog.class );
 
-      UIAssemblers.addMV( module, TaskTableModel2.class, TaskTableView2.class );
+      UIAssemblers.addMV( module, TaskTableModel.class, TaskTableView.class );
 
       UIAssemblers.addModels( module, TasksModel.class, TaskFormsModel.class );
 

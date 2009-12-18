@@ -83,8 +83,6 @@ public class ProjectsView
       add( toolbar, BorderLayout.SOUTH );
 
       projectList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
-
-      addAncestorListener( new RefreshWhenVisible( model, this ) );
    }
 
    @Action

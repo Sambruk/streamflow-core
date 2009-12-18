@@ -30,13 +30,8 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.AssignmentsTaskTableFormatter;
-import se.streamsource.streamflow.client.ui.task.DelegationsTaskTableFormatter;
-import se.streamsource.streamflow.client.ui.task.InboxTaskTableFormatter;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
-import se.streamsource.streamflow.client.ui.task.TaskTableView2;
-import se.streamsource.streamflow.client.ui.task.TasksModel;
-import se.streamsource.streamflow.client.ui.task.WaitingForTaskTableFormatter;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.task.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -175,7 +170,7 @@ public class WorkspaceView
       JScrollPane workspaceScroll = new JScrollPane( workspaceTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 
       pane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
-      pane.setDividerLocation( 200 );
+      pane.setDividerLocation( 170 );
       pane.setResizeWeight( 0 );
       pane.setOneTouchExpandable( true );
 
@@ -208,9 +203,9 @@ public class WorkspaceView
                } else if (node instanceof WorkspaceUserInboxNode)
                {
                   WorkspaceUserInboxNode userInboxNode = (WorkspaceUserInboxNode) node;
-                  final TaskTableModel2 inboxModel = userInboxNode.taskTableModel();
+                  final TaskTableModel inboxModel = userInboxNode.taskTableModel();
                   TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use( inboxModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( inboxModel,
                         userInboxNode.getParent(), node,
                         tasksModel, new InboxTaskTableFormatter()
                         ).newInstance();
@@ -227,9 +222,9 @@ public class WorkspaceView
                } else if (node instanceof WorkspaceUserAssignmentsNode)
                {
                   WorkspaceUserAssignmentsNode userAssignmentsNode = (WorkspaceUserAssignmentsNode) node;
-                  final TaskTableModel2 assignmentsModel = userAssignmentsNode.taskTableModel();
+                  final TaskTableModel assignmentsModel = userAssignmentsNode.taskTableModel();
                   TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use( assignmentsModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( assignmentsModel,
                         userAssignmentsNode.getParent(), node,
                         tasksModel, new AssignmentsTaskTableFormatter()
                         ).newInstance();
@@ -246,9 +241,9 @@ public class WorkspaceView
                } else if (node instanceof WorkspaceUserDelegationsNode)
                {
                   WorkspaceUserDelegationsNode userDelegationsNode = (WorkspaceUserDelegationsNode) node;
-                  final TaskTableModel2 delegationsModel = userDelegationsNode.taskTableModel();
+                  final TaskTableModel delegationsModel = userDelegationsNode.taskTableModel();
                   TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use( delegationsModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( delegationsModel,
                         userDelegationsNode.getParent(),
                         tasksModel,
                         new DelegationsTaskTableFormatter()).newInstance();
@@ -265,9 +260,9 @@ public class WorkspaceView
                } else if (node instanceof WorkspaceUserWaitingForNode)
                {
                   WorkspaceUserWaitingForNode userWaitingForNode = (WorkspaceUserWaitingForNode) node;
-                  final TaskTableModel2 waitingForModel = userWaitingForNode.taskTableModel();
+                  final TaskTableModel waitingForModel = userWaitingForNode.taskTableModel();
                   TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use( waitingForModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( waitingForModel,
                         userWaitingForNode.getParent(),
                         tasksModel,
                         new WaitingForTaskTableFormatter()).newInstance();
@@ -284,9 +279,9 @@ public class WorkspaceView
                } else if (node instanceof WorkspaceProjectInboxNode)
                {
                   WorkspaceProjectInboxNode projectInboxNode = (WorkspaceProjectInboxNode) node;
-                  final TaskTableModel2 inboxModel = projectInboxNode.taskTableModel();
+                  final TaskTableModel inboxModel = projectInboxNode.taskTableModel();
                   TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use( inboxModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( inboxModel,
                         projectInboxNode.getParent(),
                         tasksModel,
                         new InboxTaskTableFormatter()).newInstance();
@@ -303,9 +298,9 @@ public class WorkspaceView
                } else if (node instanceof WorkspaceProjectAssignmentsNode)
                {
                   WorkspaceProjectAssignmentsNode projectAssignmentsNode = (WorkspaceProjectAssignmentsNode) node;
-                  final TaskTableModel2 assignmentsModel = projectAssignmentsNode.taskTableModel();
+                  final TaskTableModel assignmentsModel = projectAssignmentsNode.taskTableModel();
                   TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use( assignmentsModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( assignmentsModel,
                         node,
                         projectAssignmentsNode.getParent(),
                         tasksModel,
@@ -324,9 +319,9 @@ public class WorkspaceView
                } else if (node instanceof WorkspaceProjectDelegationsNode)
                {
                   WorkspaceProjectDelegationsNode projectDelegationsNode = (WorkspaceProjectDelegationsNode) node;
-                  final TaskTableModel2 delegationsModel = projectDelegationsNode.taskTableModel();
+                  final TaskTableModel delegationsModel = projectDelegationsNode.taskTableModel();
                   TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use( delegationsModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( delegationsModel,
                         projectDelegationsNode.getParent(),
                         tasksModel,
                         new DelegationsTaskTableFormatter()).newInstance();
@@ -343,9 +338,9 @@ public class WorkspaceView
                } else if (node instanceof WorkspaceProjectWaitingForNode)
                {
                   WorkspaceProjectWaitingForNode projectWaitingForNode = (WorkspaceProjectWaitingForNode) node;
-                  final TaskTableModel2 waitingForModel = projectWaitingForNode.taskTableModel();
+                  final TaskTableModel waitingForModel = projectWaitingForNode.taskTableModel();
                   TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use( waitingForModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( waitingForModel,
                         projectWaitingForNode.getParent(),
                         tasksModel,
                         new WaitingForTaskTableFormatter()).newInstance();
@@ -437,9 +432,9 @@ public class WorkspaceView
       Component right = pane.getRightComponent();
       if (right != null)
       {
-         if (right instanceof TaskTableView2)
+         if (right instanceof TaskTableView)
          {
-            TaskTableView2 ttv = (TaskTableView2) right;
+            TaskTableView ttv = (TaskTableView) right;
             ttv.getTaskTable().requestFocusInWindow();
          } else
             right.requestFocusInWindow();
@@ -453,9 +448,9 @@ public class WorkspaceView
       Component right = pane.getRightComponent();
       if (right != null)
       {
-         if (right instanceof TaskTableView2)
+         if (right instanceof TaskTableView)
          {
-            TaskTableView2 ttv = (TaskTableView2) right;
+            TaskTableView ttv = (TaskTableView) right;
             ttv.getTaskDetails().requestFocusInWindow();
          } else
             right.requestFocusInWindow();

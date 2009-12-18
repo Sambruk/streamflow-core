@@ -25,7 +25,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.TaskActionsModel;
+import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JPanel;
@@ -38,51 +38,27 @@ import java.awt.GridLayout;
 /**
  * JAVADOC
  */
-public class SelectUserOrProjectDialog2
+public class SelectTaskTypeDialog
       extends JPanel
 {
    Dimension dialogSize = new Dimension( 600, 300 );
 
    public ListItemValue selected;
-   public GroupedFilteredList projectList;
-   public GroupedFilteredList userList;
+   public FilteredList taskTypesList;
 
-   public SelectUserOrProjectDialog2( final @Uses TaskActionsModel taskModel,
+   public SelectTaskTypeDialog( final @Uses EventList<ListItemValue> taskTypes,
                                       @Service ApplicationContext context,
                                       @Structure ObjectBuilderFactory obf )
    {
-      super( new GridLayout(1, 2) );
+      super( new GridLayout(1, 1) );
 
-      setName( i18n.text( WorkspaceResources.search_projects_users ) );
+      setName( i18n.text( WorkspaceResources.search_tasktype ) );
       setActionMap( context.getActionMap( this ) );
 
-      EventList<ListItemValue> projects = taskModel.getPossibleProjects();
-      EventList<ListItemValue> users = taskModel.getPossibleUsers();
+      taskTypesList = new FilteredList();
+      taskTypesList.setEventList( taskTypes );
 
-      projectList = new GroupedFilteredList();
-      projectList.setEventList( projects );
-
-      userList = new GroupedFilteredList();
-      userList.setEventList(users);
-
-      add( new JScrollPane( projectList ));
-      add( new JScrollPane( userList ));
-
-      projectList.getList().addListSelectionListener( new ListSelectionListener()
-      {
-         public void valueChanged( ListSelectionEvent e )
-         {
-            userList.getList().clearSelection();
-         }
-      });
-
-      userList.getList().addListSelectionListener( new ListSelectionListener()
-      {
-         public void valueChanged( ListSelectionEvent e )
-         {
-            projectList.getList().clearSelection();
-         }
-      });
+      add( new JScrollPane( taskTypesList ));
    }
 
    public EntityReference getSelected()
@@ -93,9 +69,7 @@ public class SelectUserOrProjectDialog2
    @Action
    public void execute()
    {
-      selected = (ListItemValue) projectList.getList().getSelectedValue();
-      if (selected == null)
-         selected = (ListItemValue) userList.getList().getSelectedValue();
+      selected = (ListItemValue) taskTypesList.getList().getSelectedValue();
 
       WindowUtils.findWindow( this ).dispose();
    }

@@ -49,8 +49,6 @@ public class TasksModel
          CommandQueryClient formsClient = taskClient.getSubClient( "forms" );
          CommandQueryClient actionsClient = taskClient.getSubClient( "actions" );
 
-         PossibleTaskTypesModel taskTypes = obf.newObjectBuilder( PossibleTaskTypesModel.class ).use( generalClient ).newInstance();
-
          TaskGeneralModel generalModel = obf.newObjectBuilder( TaskGeneralModel.class ).use( generalClient ).newInstance();
          TaskCommentsModel commentsModel = obf.newObjectBuilder( TaskCommentsModel.class ).use( commentsClient ).newInstance();
          TaskContactsModel contactsModel = obf.newObjectBuilder( TaskContactsModel.class ).use( contactsClient ).newInstance();
@@ -64,7 +62,6 @@ public class TasksModel
                      commentsModel,
                      contactsModel,
                      formsModel,
-                     taskTypes,
                      actionsModel ).newInstance();
       }
    };

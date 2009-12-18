@@ -145,7 +145,7 @@ public interface TaskTypeQueries
 
             addUsers(lvb, org);
 
-            return org.possibleProjects( typedTask.taskType().get() );
+            return lvb.newList();
          } else
          {
             return vbf.newValue( ListValue.class );

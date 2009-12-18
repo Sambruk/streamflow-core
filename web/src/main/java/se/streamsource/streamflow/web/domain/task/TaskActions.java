@@ -54,6 +54,7 @@ public interface TaskActions
                      {
                         actions.add( "done" );
                         actions.add( "reject" );
+                        actions.add( "label" );
                      }
                   } else
                   {
@@ -65,6 +66,8 @@ public interface TaskActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
+                        actions.add( "tasktype" );
+                        actions.add( "label" );
                      }
                   }
                } else
@@ -80,6 +83,7 @@ public interface TaskActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
+                        actions.add( "tasktype" );
                      } else if (task.isStatus( TaskStates.DONE ))
                      {
                         actions.add( "finish" );
@@ -97,6 +101,8 @@ public interface TaskActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
+                        actions.add( "tasktype" );
+                        actions.add( "label" );
                      }
                   } else
                   {
@@ -148,6 +154,7 @@ public interface TaskActions
                      {
                         actions.add( "done" );
                         actions.add( "reject" );
+                        actions.add( "label" );
                      }
                   } else
                   {
@@ -159,6 +166,8 @@ public interface TaskActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
+                        actions.add( "tasktype" );
+                        actions.add( "label" );
                      }
                   }
                } else
@@ -174,6 +183,8 @@ public interface TaskActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
+                        actions.add( "tasktype" );
+                        actions.add( "label" );
                      }
                   } else
                   {
@@ -186,6 +197,8 @@ public interface TaskActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
+                        actions.add( "tasktype" );
+                        actions.add( "label" );
                      }
                   }
                }

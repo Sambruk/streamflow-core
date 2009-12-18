@@ -15,27 +15,21 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TaskLabelsView extends JPanel implements ListEventListener, ActionListener, ListSelectionListener
+public class TaskLabelsView extends JPanel implements ListEventListener, ActionListener
 {
    private TaskLabelsModel modelTask;
 
    private JPanel labelPanel;
 
-   TaskLabelSelectionView labelSelection;
-
-   public TaskLabelsView( @Uses TaskLabelSelectionView labelSelection )
+   public TaskLabelsView()
    {
-      this.labelSelection = labelSelection;
       setLayout( new BorderLayout() );
 
       labelPanel = new JPanel( new ModifiedFlowLayout( FlowLayout.LEFT ) );
       //labelPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
       //setBorder(BorderFactory.createLineBorder(Color.BLUE, 1));
 
-      add( labelSelection, BorderLayout.NORTH );
       add( labelPanel, BorderLayout.SOUTH );
-
-      labelSelection.getList().addListSelectionListener( this );
    }
 
    public void setLabelsModel( TaskLabelsModel modelTask )
@@ -67,25 +61,10 @@ public class TaskLabelsView extends JPanel implements ListEventListener, ActionL
       initComponents();
    }
 
-   public void valueChanged( ListSelectionEvent e )
-   {
-      ListItemValue labelItem = (ListItemValue) labelSelection.getList().getSelectedValue();
-      if (labelItem != null)
-      {
-         labelSelection.getList().clearSelection();
-         modelTask.addLabel( labelItem.entity().get() );
-      }
-   }
-
    public void actionPerformed( ActionEvent e )
    {
       Component component = ((Component) e.getSource());
       TaskLabelView labelView = (TaskLabelView) component.getParent();
       modelTask.removeLabel( labelView.label().entity().get() );
-   }
-
-   public TaskLabelSelectionView labelSelection()
-   {
-      return labelSelection;
    }
 }

@@ -49,7 +49,7 @@ public class WorkspaceAssembler
             WorkspaceModel.class,
             WorkspaceView.class );
 
-      UIAssemblers.addDialogs( module, SelectUserOrProjectDialog2.class);
+      UIAssemblers.addDialogs( module, SelectUserOrProjectDialog.class, SelectTaskTypeDialog.class);
 
    }
 }

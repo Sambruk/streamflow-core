@@ -32,7 +32,7 @@ import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewProjectsNode;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
 import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.task.TasksModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserAssignmentsNode;
@@ -190,19 +190,19 @@ public class AccountModel
       {
          CommandQueryClient resource = userResource();
          CommandQueryClient userInboxClient = resource.getSubClient( "workspace" ).getSubClient( "user" ).getSubClient( "inbox" );
-         TaskTableModel2 inboxModel = obf.newObjectBuilder( TaskTableModel2.class ).use( userInboxClient ).newInstance();
+         TaskTableModel inboxModel = obf.newObjectBuilder( TaskTableModel.class ).use( userInboxClient ).newInstance();
          WorkspaceUserInboxNode userInboxNode = obf.newObjectBuilder( WorkspaceUserInboxNode.class ).use( inboxModel, userInboxClient ).newInstance();
 
          CommandQueryClient userAssignmentsClient = resource.getSubClient( "workspace" ).getSubClient( "user" ).getSubClient( "assignments" );
-         TaskTableModel2 assignmentsModel = obf.newObjectBuilder( TaskTableModel2.class ).use( userAssignmentsClient ).newInstance();
+         TaskTableModel assignmentsModel = obf.newObjectBuilder( TaskTableModel.class ).use( userAssignmentsClient ).newInstance();
          WorkspaceUserAssignmentsNode userAssignmentsNode = obf.newObjectBuilder( WorkspaceUserAssignmentsNode.class ).use( assignmentsModel, userAssignmentsClient ).newInstance();
 
          CommandQueryClient userDelegationsClient = resource.getSubClient( "workspace" ).getSubClient( "user" ).getSubClient( "delegations" );
-         TaskTableModel2 delegationsModel = obf.newObjectBuilder( TaskTableModel2.class ).use( userDelegationsClient ).newInstance();
+         TaskTableModel delegationsModel = obf.newObjectBuilder( TaskTableModel.class ).use( userDelegationsClient ).newInstance();
          WorkspaceUserDelegationsNode userDelegationsNode = obf.newObjectBuilder( WorkspaceUserDelegationsNode.class ).use( delegationsModel, userDelegationsClient ).newInstance();
 
          CommandQueryClient userWaitingForClient = resource.getSubClient( "workspace" ).getSubClient( "user" ).getSubClient( "waitingfor" );
-         TaskTableModel2 waitingForModel = obf.newObjectBuilder( TaskTableModel2.class ).use( userWaitingForClient ).newInstance();
+         TaskTableModel waitingForModel = obf.newObjectBuilder( TaskTableModel.class ).use( userWaitingForClient ).newInstance();
          WorkspaceUserWaitingForNode userWaitingForNode = obf.newObjectBuilder( WorkspaceUserWaitingForNode.class ).use( waitingForModel, userWaitingForClient ).newInstance();
 
          workspaceModel = obf.newObjectBuilder( WorkspaceModel.class ).use( this,
@@ -232,7 +232,7 @@ public class AccountModel
       return overviewModel;
    }
 
-   public TaskTableModel2 search()
+   public TaskTableModel search()
    {
       if (searchResults == null)
       {

@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -23,6 +24,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.task.TaskStates;
@@ -42,7 +44,7 @@ import java.util.List;
 /**
  * Base class for all models that list tasks
  */
-public class TaskTableModel2
+public class TaskTableModel
       implements EventListener, EventHandler, Refreshable
 {
    @Uses
@@ -57,9 +59,10 @@ public class TaskTableModel2
 
    private EventHandlerFilter eventFilter;
 
-   public TaskTableModel2()
+   public TaskTableModel()
    {
-      eventFilter = new EventHandlerFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedTaskType", "changedStatus" );
+      eventFilter = new EventHandlerFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedTaskType", "changedStatus",
+            "changedOwner","assignedTo","delegatedTo");
    }
 
    public void notifyEvent( DomainEvent event )
@@ -102,7 +105,7 @@ public class TaskTableModel2
                }
             }
             eventList.set( idx, valueBuilder.newInstance() );
-         } else if (eventName.equals( "addedLabel" ) || eventName.equals("changedTaskType"))
+         } else if ("addedLabel,changedTaskType,changedOwner,assignedTo,delegatedTo".indexOf(eventName) != -1)
          {
             refresh();
          } else if (eventName.equals("changedStatus"))
@@ -128,25 +131,8 @@ public class TaskTableModel2
          boolean same = newRoot.equals( tasks );
          if (!same)
          {
-            SwingUtilities.invokeLater( new Runnable()
-            {
-               public void run()
-               {
-                  if (newRoot.tasks().get().size() == eventList.size())
-                  {
-                     int idx = 0;
-                     for (TaskDTO taskDTO : newRoot.tasks().get())
-                     {
-                        eventList.set( idx++, taskDTO );
-                     }
-                  } else
-                  {
-                     eventList.clear();
-                     eventList.addAll( newRoot.tasks().get() );
-                  }
-                  tasks = newRoot;
-               }
-            });
+               EventListSynch.synchronize( newRoot.tasks().get(), eventList );
+               tasks = newRoot;
          }
       } catch (ResourceException e)
       {

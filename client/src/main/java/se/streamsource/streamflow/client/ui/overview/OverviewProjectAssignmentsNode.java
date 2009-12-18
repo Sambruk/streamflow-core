@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui.overview;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -30,7 +30,7 @@ public class OverviewProjectAssignmentsNode
       implements EventListener
 {
    @Uses
-   private TaskTableModel2 model;
+   private TaskTableModel model;
 
    @Override
    public String toString()
@@ -54,7 +54,7 @@ public class OverviewProjectAssignmentsNode
       return (OverviewProjectNode) super.getParent();
    }
 
-   public TaskTableModel2 taskTableModel()
+   public TaskTableModel taskTableModel()
    {
       return model;
    }

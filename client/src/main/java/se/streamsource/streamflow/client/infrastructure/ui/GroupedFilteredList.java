@@ -26,6 +26,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.BorderLayout;
 
 /**
@@ -47,6 +49,14 @@ public class GroupedFilteredList
 
       list = new JList();
       list.setCellRenderer( new SeparatorListCellRenderer(new ListItemListCellRenderer()) );
+      list.getSelectionModel().addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (list.getSelectedValue() instanceof SeparatorList.Separator)
+               list.clearSelection();
+         }
+      });
       pane.setViewportView( list );
 
       add( textField, BorderLayout.NORTH );

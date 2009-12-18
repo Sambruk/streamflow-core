@@ -33,11 +33,14 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import java.util.Date;
+import java.util.Observable;
 
 /**
  * Model for the general info about a task.
  */
-public class TaskGeneralModel implements Refreshable, EventListener,
+public class TaskGeneralModel
+      extends Observable
+      implements Refreshable, EventListener,
       EventHandler
 
 {
@@ -51,13 +54,7 @@ public class TaskGeneralModel implements Refreshable, EventListener,
    TaskGeneralDTO general;
 
    @Uses
-   PossibleTaskTypesModel taskTypesModel;
-
-   @Uses
    TaskLabelsModel taskLabelsModel;
-
-   @Uses
-   TaskLabelSelectionModel selectionModel;
 
    public TaskGeneralModel( @Uses CommandQueryClient client )
    {
@@ -129,21 +126,11 @@ public class TaskGeneralModel implements Refreshable, EventListener,
       }
    }
 
-   public PossibleTaskTypesModel taskTypesModel()
-   {
-      return taskTypesModel;
-   }
-
    public TaskLabelsModel labelsModel()
    {
       return taskLabelsModel;
    }
 
-
-   public TaskLabelSelectionModel selectionModel()
-   {
-      return selectionModel;
-   }
 
    public void refresh()
    {
@@ -154,9 +141,8 @@ public class TaskGeneralModel implements Refreshable, EventListener,
 
          taskLabelsModel.setLabels( general.labels().get() );
 
-         taskTypesModel.refresh();
-
-         selectionModel.refresh();
+         setChanged();
+         notifyObservers();
 
       } catch (Exception e)
       {
@@ -169,7 +155,6 @@ public class TaskGeneralModel implements Refreshable, EventListener,
       eventFilter.handleEvent( event );
 
       taskLabelsModel.notifyEvent( event );
-      selectionModel.notifyEvent( event );
    }
 
    public boolean handleEvent( DomainEvent event )

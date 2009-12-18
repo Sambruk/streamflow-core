@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.search;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
  * JAVADOC
  */
 public class SearchResultTableModel
-      extends TaskTableModel2
+      extends TaskTableModel
 {
    private String searchString;
 

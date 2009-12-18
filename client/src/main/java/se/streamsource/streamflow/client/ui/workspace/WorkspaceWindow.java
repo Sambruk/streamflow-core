@@ -66,7 +66,7 @@ public class WorkspaceWindow
       JXStatusBar bar = new StatusBarView( getContext() );
       setStatusBar( bar );
 
-      frame.setPreferredSize( new Dimension( 1000, 600 ) );
+      frame.setPreferredSize( new Dimension( 1000, 700 ) );
       frame.pack();
       javaHelp.enableHelp( this.getRootPane(), "workspace" );
 

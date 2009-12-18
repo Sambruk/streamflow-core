@@ -52,6 +52,23 @@ public class TaskActionsModel
       }
    }
 
+
+   public EventList<ListItemValue> getPossibleTaskTypes()
+   {
+      try
+      {
+         BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+
+         ListValue listValue = client.query( "possibletasktypes", ListValue.class );
+         list.addAll( listValue.items().get() );
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh, e );
+      }
+   }
+
    public EventList<ListItemValue> getPossibleProjects()
    {
       try
@@ -75,6 +92,22 @@ public class TaskActionsModel
          BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
 
          ListValue listValue = client.query( "possibleusers", ListValue.class );
+         list.addAll( listValue.items().get() );
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh, e );
+      }
+   }
+
+   public EventList<ListItemValue> getPossibleLabels()
+   {
+      try
+      {
+         BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+
+         ListValue listValue = client.query( "possiblelabels", ListValue.class );
          list.addAll( listValue.items().get() );
 
          return list;
@@ -206,6 +239,32 @@ public class TaskActionsModel
       try
       {
          client.postCommand( "redo" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
+   public void taskType( EntityReference selected )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( selected );
+         client.putCommand( "tasktype", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
+   public void addLabel( EntityReference entityReference )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( entityReference );
+         client.putCommand( "label", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);

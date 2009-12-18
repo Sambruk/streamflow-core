@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.TaskTableView2;
+import se.streamsource.streamflow.client.ui.task.TaskTableView;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
@@ -45,7 +45,7 @@ public class SearchView
    private SearchResultTableModel model;
 
    public SearchView( @Service ApplicationContext context,
-                      @Uses final TaskTableView2 resultView,
+                      @Uses final TaskTableView resultView,
                       @Uses SearchResultTableModel model )
    {
       super( new BorderLayout() );

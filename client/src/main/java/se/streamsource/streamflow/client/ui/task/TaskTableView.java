@@ -37,14 +37,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.task.TaskStates;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
@@ -59,7 +52,7 @@ import java.util.Date;
 /**
  * Base class for all views of task lists.
  */
-public class TaskTableView2
+public class TaskTableView
       extends JPanel
 {
    @Service
@@ -70,14 +63,14 @@ public class TaskTableView2
 
    protected JXTable taskTable;
    protected TaskCreationNode taskCreation;
-   protected TaskTableModel2 model;
+   protected TaskTableModel model;
    private TasksDetailView detailsView;
    protected EntityReference dialogSelection;
 
    public void init( @Service ApplicationContext context,
                      @Uses @Optional TaskCreationNode node,
                      @Uses final TasksModel tasksModel,
-                     @Uses final TaskTableModel2 model,
+                     @Uses final TaskTableModel model,
                      @Uses final TasksDetailView detailsView,
                      @Uses TableFormat tableFormat)
    {
@@ -89,7 +82,7 @@ public class TaskTableView2
       splitPane.setOneTouchExpandable( true );
       add( splitPane, BorderLayout.CENTER );
 
-      ActionMap am = context.getActionMap( TaskTableView2.class, this );
+      ActionMap am = context.getActionMap( TaskTableView.class, this );
       setActionMap( am );
 
       // Toolbar
@@ -122,7 +115,7 @@ public class TaskTableView2
 
       splitPane.setTopComponent( taskScrollPane );
       splitPane.setBottomComponent( detailsView );
-      splitPane.setResizeWeight( 0.3D );
+      splitPane.setResizeWeight( 0.27D );
 
       JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
       taskTable.setDefaultEditor( Boolean.class, completableEditor );
@@ -253,14 +246,11 @@ public class TaskTableView2
       taskCreation.createTask();
       model.refresh();
 
-/*
       JXTable table = getTaskTable();
-      int index = model.getRowCount() - 1;
+      int index = model.getEventList().size() - 1;
       table.getSelectionModel().setSelectionInterval( index, index );
       table.scrollRowToVisible( index );
 
-      TaskDetailView taskDetail = (TaskDetailView) detailsView.getComponentAt( 0 );
-      taskDetail.setSelectedIndex( 0 );
       SwingUtilities.invokeLater( new Runnable()
       {
          public void run()
@@ -270,7 +260,6 @@ public class TaskTableView2
                component1.requestFocusInWindow();
          }
       } );
-*/
    }
 
    @org.jdesktop.application.Action

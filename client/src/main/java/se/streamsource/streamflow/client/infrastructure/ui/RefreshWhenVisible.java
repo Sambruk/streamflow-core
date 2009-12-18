@@ -41,6 +41,9 @@ public class RefreshWhenVisible
    public void setRefreshable( Refreshable refreshable )
    {
       this.refreshable = refreshable;
+
+      if (refreshable != null && component.isVisible())
+         refreshable.refresh();
    }
 
    public void ancestorAdded( AncestorEvent event )

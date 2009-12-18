@@ -62,13 +62,10 @@ public class TaskGeneralView extends JScrollPane implements Observer
    @Service
    DialogService dialogs;
 
-   @Uses
-   Iterable<TaskTypesDialog> selectTaskTypeDialogs;
-
    @Service
    UncaughtExceptionHandler exception;
 
-   TaskLabelSelectionView labelSelection;
+//   TaskLabelSelectionView labelSelection;
 
    private StateBinder taskBinder;
 
@@ -83,16 +80,13 @@ public class TaskGeneralView extends JScrollPane implements Observer
    public JPanel rightForm;
    public JPanel bottomForm;
    public TaskLabelsView labels;
-   private TaskTypesDialog taskTypes;
    public RefreshWhenVisible refresher;
    public JLabel selectedTaskType = new JLabel();
-   public JButton selectTaskType = new JButton( "..." );
 
-   public TaskGeneralView( @Service ApplicationContext appContext, @Uses TaskLabelsView labels, @Uses TaskTypesDialog taskTypes )
+   public TaskGeneralView( @Service ApplicationContext appContext, @Uses TaskLabelsView labels)
    {
       this.labels = labels;
-      this.taskTypes = taskTypes;
-      this.labelSelection = labels.labelSelection();
+//      this.labelSelection = labels.labelSelection();
       setActionMap( appContext.getActionMap( this ) );
 
       // Layout and form for the left panel
@@ -137,7 +131,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
 
       // Layout and form for the right panel
       FormLayout rightLayout = new FormLayout(
-            "40dlu, 5dlu, 100:grow, 15dlu",
+            "40dlu, 5dlu, 50:grow",
             "pref, pref, pref, pref, pref" );
 
       rightForm = new JPanel( rightLayout );
@@ -154,16 +148,14 @@ public class TaskGeneralView extends JScrollPane implements Observer
       CellConstraints cc = new CellConstraints();
       rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.tasktype_label ) ), cc.xy( 1, 1 ) );
       rightBuilder.add( selectedTaskType, cc.xy( 3, 1 ) );
-      rightBuilder.add( selectTaskType, cc.xy( 4, 1 ) );
       rightBuilder.nextLine();
-//        rightBuilder.add(taskTypes, cc.xy(1, 2));
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.labels_label ) ), cc.xyw( 1, 2, 4 ) );
+      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.labels_label ) ), cc.xyw( 1, 2, 3 ) );
       rightBuilder.nextLine();
-      rightBuilder.add( labels, cc.xyw( 1, 3, 4 ) );
+      rightBuilder.add( labels, cc.xyw( 1, 3, 3 ) );
 
       // Layout and form for the bottom panel
       FormLayout bottomLayout = new FormLayout(
-            "330dlu:grow",
+            "250dlu:grow",
             "15dlu,fill:pref:grow" );
 
       bottomForm = new JPanel();
@@ -215,13 +207,16 @@ public class TaskGeneralView extends JScrollPane implements Observer
 
       refresher = new RefreshWhenVisible( this );
       addAncestorListener( refresher );
-
-      selectTaskType.addActionListener( getActionMap().get( "selectTaskType" ) );
    }
 
    public void setModel( TaskGeneralModel taskGeneralModel )
    {
+      if (model != null)
+         model.deleteObserver( this );
+
       model = taskGeneralModel;
+
+      refresher.setRefreshable( model );
 
       TaskGeneralDTO general = model.getGeneral();
       valueBuilder = general.buildWith();
@@ -234,48 +229,33 @@ public class TaskGeneralView extends JScrollPane implements Observer
             .setVisible( issueVisible );
 
       labels.setLabelsModel( model.labelsModel() );
-      labelSelection.setLabelSelectionModel( model.selectionModel() );
-
-      taskTypes.setModel( model.taskTypesModel() );
+//      labelSelection.setLabelSelectionModel( model.selectionModel() );
 
       ListItemValue value = general.taskType().get();
-      if (value != null)
-         selectedTaskType.setText( value.description().get() );
+      selectedTaskType.setText( value == null ? "" : value.description().get() );
 
-      refresher.setRefreshable( model );
+      taskGeneralModel.addObserver( this );
    }
 
    public void update( Observable o, Object arg )
    {
-      Property property = (Property) arg;
-      if (property.qualifiedName().name().equals( "description" ))
+      if (o == taskBinder)
       {
-         model.changeDescription( (String) property.get() );
-      } else if (property.qualifiedName().name().equals( "note" ))
+         Property property = (Property) arg;
+         if (property.qualifiedName().name().equals( "description" ))
+         {
+            model.changeDescription( (String) property.get() );
+         } else if (property.qualifiedName().name().equals( "note" ))
+         {
+            model.changeNote( (String) property.get() );
+         } else if (property.qualifiedName().name().equals( "dueOn" ))
+         {
+            model.changeDueOn( (Date) property.get() );
+         }
+      } else
       {
-         model.changeNote( (String) property.get() );
-      } else if (property.qualifiedName().name().equals( "dueOn" ))
-      {
-         model.changeDueOn( (Date) property.get() );
+         ListItemValue value = model.getGeneral().taskType().get();
+         selectedTaskType.setText( value == null ? "" : value.description().get() );
       }
-   }
-
-   @Action
-   public void selectTaskType()
-   {
-      TaskTypesDialog taskTypeDialog = selectTaskTypeDialogs.iterator().next();
-
-      taskTypeDialog.setModel( model.taskTypesModel() );
-
-      dialogs.showOkCancelHelpDialog( this, taskTypeDialog, "Select task type" );
-
-      EntityReference taskType = taskTypeDialog.getSelected();
-      if (taskType != null)
-      {
-         model.changeTaskType( taskType );
-         model.refresh();
-      }
-
-      taskBinder.updateWith( model.getGeneral() );
    }
 }

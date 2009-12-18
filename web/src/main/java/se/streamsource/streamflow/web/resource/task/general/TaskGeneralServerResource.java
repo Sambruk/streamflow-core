@@ -113,17 +113,6 @@ public class TaskGeneralServerResource
       dueOn.dueOn( dueOnValue.date().get() );
    }
 
-   public void addlabel( EntityReferenceDTO reference )
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      String taskId = (String) getRequest().getAttributes().get( "task" );
-
-      TaskEntity task = uow.get( TaskEntity.class, taskId );
-      Label label = uow.get( Label.class, reference.entity().get().identity() );
-
-      task.addLabel( label );
-   }
-
    public void removelabel( EntityReferenceDTO reference )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -133,38 +122,5 @@ public class TaskGeneralServerResource
       Label label = uow.get( Label.class, reference.entity().get().identity() );
 
       task.removeLabel( label );
-   }
-
-   public ListValue possiblelabels()
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      String id = (String) getRequest().getAttributes().get( "task" );
-      TaskLabelsQueries labels = uow.get( TaskLabelsQueries.class, id );
-
-      return labels.possibleLabels();
-   }
-
-   public ListValue possibletasktypes()
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      String id = (String) getRequest().getAttributes().get( "task" );
-      TaskTypeQueries task = uow.get( TaskTypeQueries.class, id );
-
-      return task.taskTypes();
-   }
-
-   public void changetasktype( EntityReferenceDTO dto )
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      String id = (String) getRequest().getAttributes().get( "task" );
-      TypedTask task = uow.get( TypedTask.class, id );
-
-      EntityReference entityReference = dto.entity().get();
-      if (entityReference != null)
-      {
-         TaskType taskType = uow.get( TaskType.class, entityReference.identity() );
-         task.changeTaskType( taskType );
-      } else
-         task.changeTaskType( null );
    }
 }

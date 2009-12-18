@@ -21,6 +21,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JList;
@@ -39,15 +40,15 @@ public class ProjectAdminView
    @Structure
    ObjectBuilderFactory obf;
 
-   @Uses
    ProjectsModel projectsModel;
 
    @Uses
    OrganizationalUnitAdministrationModel organizationModel;
 
-   public ProjectAdminView( @Uses final ProjectsView projectsView, @Uses final AdministrationView adminView )
+   public ProjectAdminView( @Uses final ProjectsView projectsView, final @Uses ProjectsModel projectsModel, @Uses final AdministrationView adminView )
    {
       super();
+      this.projectsModel = projectsModel;
 
       setLeftComponent( projectsView );
       setRightComponent( new JPanel() );
@@ -83,6 +84,9 @@ public class ProjectAdminView
             }
          }
       } );
+
+
+      projectsView.addAncestorListener( new RefreshWhenVisible( projectsModel, this ) );
    }
 
 }

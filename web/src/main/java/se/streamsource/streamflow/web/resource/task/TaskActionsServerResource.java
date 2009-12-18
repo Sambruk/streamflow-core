@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.resource.task;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.entity.EntityReference;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 import se.streamsource.streamflow.domain.task.TaskActions;
@@ -24,6 +25,10 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.task.*;
 import se.streamsource.streamflow.web.domain.user.User;
 import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.tasktype.TaskTypeQueries;
+import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
+import se.streamsource.streamflow.web.domain.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.label.Label;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import javax.security.auth.Subject;
@@ -58,6 +63,15 @@ public class TaskActionsServerResource
       return builder.newInstance();
    }
 
+   public ListValue possibletasktypes()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "task" );
+      TaskTypeQueries task = uow.get( TaskTypeQueries.class, id );
+
+      return task.taskTypes();
+   }
+
    public ListValue possibleprojects()
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -74,6 +88,15 @@ public class TaskActionsServerResource
       return task.possibleUsers();
    }
 
+   public ListValue possiblelabels()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "task" );
+      TaskLabelsQueries labels = uow.get( TaskLabelsQueries.class, id );
+
+      return labels.possibleLabels();
+   }
+
    // Commands
    public void accept()
    {
@@ -88,6 +111,17 @@ public class TaskActionsServerResource
          delegations.accept( task, user );
       }
 
+   }
+
+   public void label( EntityReferenceDTO reference )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+
+      TaskEntity task = uow.get( TaskEntity.class, taskId );
+      Label label = uow.get( Label.class, reference.entity().get().identity() );
+
+      task.addLabel( label );
    }
 
    public void assign()
@@ -237,6 +271,20 @@ public class TaskActionsServerResource
       }
    }
 
+   public void tasktype( EntityReferenceDTO dto )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "task" );
+      TypedTask task = uow.get( TypedTask.class, id );
+
+      EntityReference entityReference = dto.entity().get();
+      if (entityReference != null)
+      {
+         TaskType taskType = uow.get( TaskType.class, entityReference.identity() );
+         task.changeTaskType( taskType );
+      } else
+         task.changeTaskType( null );
+   }
 
    private UserEntity getUser()
    {

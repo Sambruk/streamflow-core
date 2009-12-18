@@ -16,12 +16,14 @@ package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -46,7 +48,7 @@ public class TaskContactsModel
    @Uses
    private CommandQueryClient client;
 
-   BasicEventList<ContactValue> eventList = new BasicEventList<ContactValue>( );
+   TransactionList<ContactValue> eventList = new TransactionList<ContactValue>(new BasicEventList<ContactValue>( ));
 
    EventHandlerFilter eventFilter = new EventHandlerFilter( this, "addedContact", "deletedContact", "updatedContact" );
 
@@ -61,8 +63,7 @@ public class TaskContactsModel
       try
       {
          TaskContactsDTO contactsDTO = (TaskContactsDTO) client.query( "contacts", TaskContactsDTO.class ).buildWith().prototype();
-         eventList.clear();
-         eventList.addAll( contactsDTO.contacts().get() );
+         EventListSynch.synchronize( contactsDTO.contacts().get(), eventList );
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );

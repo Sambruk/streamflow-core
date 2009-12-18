@@ -95,6 +95,7 @@ public class TaskCommentsView
          model.getComments().removeListEventListener( this );
 
       model = taskCommentsModel;
+      refresher.setRefreshable( model );
 
       if (model != null)
       {
@@ -104,7 +105,6 @@ public class TaskCommentsView
          listChanged( null );
       }
 
-      refresher.setRefreshable( model );
    }
 
    public void listChanged( ListEvent listEvent )

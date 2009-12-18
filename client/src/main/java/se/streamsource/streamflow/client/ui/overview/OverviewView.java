@@ -29,8 +29,8 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.OverviewAssignmentsTaskTableFormatter;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel2;
-import se.streamsource.streamflow.client.ui.task.TaskTableView2;
+import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.task.TaskTableView;
 import se.streamsource.streamflow.client.ui.task.OverviewWaitingForTaskTableFormatter;
 
 import javax.swing.AbstractAction;
@@ -183,8 +183,8 @@ public class OverviewView
                } else if (node instanceof OverviewProjectAssignmentsNode)
                {
                   OverviewProjectAssignmentsNode projectAssignmentsNode = (OverviewProjectAssignmentsNode) node;
-                  final TaskTableModel2 assignmentsModel = projectAssignmentsNode.taskTableModel();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use( assignmentsModel,
+                  final TaskTableModel assignmentsModel = projectAssignmentsNode.taskTableModel();
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( assignmentsModel,
                         projectAssignmentsNode.getParent().getParent().getParent().getUserObject().tasks(),
                         projectAssignmentsNode.getParent(),
                         new OverviewAssignmentsTaskTableFormatter()).newInstance();
@@ -201,8 +201,8 @@ public class OverviewView
                } else if (node instanceof OverviewProjectWaitingForNode)
                {
                   OverviewProjectWaitingForNode projectWaitingForNode = (OverviewProjectWaitingForNode) node;
-                  final TaskTableModel2 waitingForModel = projectWaitingForNode.taskTableModel();
-                  view = obf.newObjectBuilder( TaskTableView2.class ).use(
+                  final TaskTableModel waitingForModel = projectWaitingForNode.taskTableModel();
+                  view = obf.newObjectBuilder( TaskTableView.class ).use(
                         waitingForModel,
                         projectWaitingForNode.getParent().getParent().getParent().getUserObject().tasks(),
                         new OverviewWaitingForTaskTableFormatter()).newInstance();

@@ -41,7 +41,7 @@ public class TaskLabelSelectionView
    {
       setLayout( new BorderLayout() );
 
-      filterEdit = new JTextField( 20 );
+      filterEdit = new JTextField( 15 );
 
       list = new JList();
       list.setCellRenderer( new ListItemListCellRenderer() );

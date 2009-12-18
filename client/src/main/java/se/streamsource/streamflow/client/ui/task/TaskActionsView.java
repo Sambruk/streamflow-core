@@ -20,13 +20,14 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog2;
+import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
+import se.streamsource.streamflow.client.ui.workspace.SelectTaskTypeDialog;
+import se.streamsource.streamflow.client.ui.administration.label.SelectLabelsDialog;
 import se.streamsource.streamflow.domain.task.TaskActions;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.ActionMap;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -35,16 +36,28 @@ public class TaskActionsView
    extends JPanel
 {
    @Uses
-   protected ObjectBuilder<SelectUserOrProjectDialog2> userOrProjectSelectionDialog2;
+   protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+
+   @Uses
+   protected ObjectBuilder<SelectTaskTypeDialog> taskTypeDialog;
+
+   @Uses
+   protected ObjectBuilder<SelectLabelsDialog> labelSelectionDialog;
 
    @Service
    DialogService dialogs;
 
    private TaskActionsModel model;
 
+   private JPanel actionsPanel = new JPanel();
+
    public TaskActionsView(@Service ApplicationContext context)
    {
-      setLayout( new BoxLayout(this, BoxLayout.Y_AXIS) );
+      setLayout( new BorderLayout());
+
+      actionsPanel.setLayout(new GridLayout(0, 1));
+
+      add( actionsPanel, BorderLayout.NORTH);
 
       setActionMap( context.getActionMap(this ));
    }
@@ -53,7 +66,7 @@ public class TaskActionsView
    {
       TaskActions actions = model.actions();
 
-      removeAll();
+      actionsPanel.removeAll();
 
       ActionMap am = getActionMap();
 
@@ -63,7 +76,8 @@ public class TaskActionsView
          if (action1 != null)
          {
             JButton button = new JButton( action1 );
-            add(button);
+            button.setHorizontalAlignment( SwingConstants.LEFT );
+            actionsPanel.add(button);
          }
       }
 
@@ -96,7 +110,7 @@ public class TaskActionsView
    @Action
    public void delegate()
    {
-      SelectUserOrProjectDialog2 dialog = userOrProjectSelectionDialog2.use( model ).newInstance();
+      SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.use( model ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog);
 
       if (dialog.getSelected() != null)
@@ -138,13 +152,28 @@ public class TaskActionsView
    @Action
    public void forward()
    {
-      SelectUserOrProjectDialog2 dialog = userOrProjectSelectionDialog2.use( model ).newInstance();
+      SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.use( model ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog);
 
       if (dialog.getSelected() != null)
       {
          model.forward( dialog.getSelected() );
          refresh();
+      }
+   }
+
+   @Action
+   public void label()
+   {
+      SelectLabelsDialog dialog = labelSelectionDialog.use(model.getPossibleLabels()).newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog);
+
+      if (dialog.getSelectedLabels() != null)
+      {
+         for (ListItemValue listItemValue : dialog.getSelectedLabels())
+         {
+            model.addLabel( listItemValue.entity().get() );
+         }
       }
    }
 
@@ -160,6 +189,19 @@ public class TaskActionsView
    {
       model.reject();
       refresh();
+   }
+
+   @Action
+   public void tasktype()
+   {
+      SelectTaskTypeDialog dialog = taskTypeDialog.use( model.getPossibleTaskTypes() ).newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog);
+
+      if (dialog.getSelected() != null)
+      {
+         model.taskType( dialog.getSelected() );
+         refresh();
+      }
    }
 
    public void setModel( TaskActionsModel taskActionsModel )
