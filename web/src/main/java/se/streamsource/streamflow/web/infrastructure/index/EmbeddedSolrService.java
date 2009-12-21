@@ -26,6 +26,8 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
    {
       @Service
       FileConfiguration fileConfig;
+      public CoreContainer coreContainer;
+      public EmbeddedSolrServer server;
 
       public void activate() throws Exception
       {
@@ -35,9 +37,10 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
          System.setProperty( "solr.solr.home", directory.getAbsolutePath() );
 
          CoreContainer.Initializer initializer = new CoreContainer.Initializer();
-         CoreContainer coreContainer = initializer.initialize();
-         EmbeddedSolrServer server = new EmbeddedSolrServer( coreContainer, "" );
+         coreContainer = initializer.initialize();
+         server = new EmbeddedSolrServer( coreContainer, "" );
 
+/*
          SolrInputDocument doc = new SolrInputDocument();
          doc.setField( "id", "123" );
          doc.setField( "text", "Hello World" );
@@ -53,12 +56,12 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
          {
             System.out.println(result.getFirstValue( "id" ));
          }
-
+*/
       }
 
       public void passivate() throws Exception
       {
-         //To change body of implemented methods use File | Settings | File Templates.
+         coreContainer.shutdown();
       }
    }
 } 
