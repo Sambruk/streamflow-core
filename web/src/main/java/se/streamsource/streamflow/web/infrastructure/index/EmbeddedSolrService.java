@@ -1,10 +1,16 @@
 package se.streamsource.streamflow.web.infrastructure.index;
 
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.SolrConfig;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.core.SolrResourceLoader;
+import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.util.NamedList;
+import org.apache.solr.common.params.SolrParams;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
@@ -23,8 +29,6 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
 
       public void activate() throws Exception
       {
-         // TODO: Fix loading of config through classpath
-/*
          File directory = new File( fileConfig.dataDirectory() + "/solr" );
          directory.mkdir();
 
@@ -33,7 +37,23 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
          CoreContainer.Initializer initializer = new CoreContainer.Initializer();
          CoreContainer coreContainer = initializer.initialize();
          EmbeddedSolrServer server = new EmbeddedSolrServer( coreContainer, "" );
-*/
+
+         SolrInputDocument doc = new SolrInputDocument();
+         doc.setField( "id", "123" );
+         doc.setField( "text", "Hello World" );
+
+         server.add( doc );
+         server.commit();
+
+         NamedList list = new NamedList();
+         list.add("q", "world");
+         QueryResponse query = server.query( SolrParams.toSolrParams(list ));
+         SolrDocumentList results = query.getResults();
+         for (SolrDocument result : results)
+         {
+            System.out.println(result.getFirstValue( "id" ));
+         }
+
       }
 
       public void passivate() throws Exception
@@ -41,4 +61,4 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
          //To change body of implemented methods use File | Settings | File Templates.
       }
    }
-}
+} 
