@@ -29,6 +29,8 @@ import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.web.domain.form.Field;
 import se.streamsource.streamflow.web.domain.form.Form;
 import se.streamsource.streamflow.web.domain.form.FormTemplates;
@@ -140,6 +142,10 @@ public interface TestDataService
          commentForm.changeNote( "This is a comment form. Use it to capture any comments related to the current task." );
          ValueBuilder<TextFieldValue> builder = vbf.newValueBuilder( TextFieldValue.class );
          builder.prototype().width().set( 30 );
+         ValueBuilder<TextAreaFieldValue> textAreaBuilder = vbf.newValueBuilder( TextAreaFieldValue.class );
+         textAreaBuilder.prototype().width().set( 30 );
+         textAreaBuilder.prototype().rows().set( 10 );
+         ValueBuilder<DateFieldValue> dateBuilder = vbf.newValueBuilder( DateFieldValue.class );
          Field commentField = commentForm.createField( "Comment", builder.newInstance() );
 
          Form statusForm = bug.createForm();
@@ -149,17 +155,18 @@ public interface TestDataService
 
          organization.createFormTemplate( commentForm );
 
-         Form addressForm = improvement.createForm();
-         addressForm.changeDescription( "Address form" );
-         addressForm.changeNote( "Address form of the task" );
-         addressForm.createField( "Street", builder.newInstance() ).changeNote( "Street of the address. Note that it must only be the the street name of the address not the number" );
-         addressForm.createField( "Zip code", builder.newInstance() ).changeNote( "This is the ZIP code of the resident" );
-         addressForm.createField( "Town", builder.newInstance() ).changeNote( "Town of the address." );
+         Form emailForm = improvement.createForm();
+         emailForm.changeDescription( "Email form" );
+         emailForm.changeNote( "Form for entering and sending an email" );
+         emailForm.createField( "To", builder.newInstance() ).changeNote( "Enter address of receiver. Note it must be a valid email" );
+         emailForm.createField( "Subject", builder.newInstance() ).changeNote( "Subject of the mail" );
+         emailForm.createField( "Expect resonse", dateBuilder.newInstance() ).changeNote( "Empty means no response needed" );
+         emailForm.createField( "Content", textAreaBuilder.newInstance() ).changeNote( "Mail content" );
 
-         Form emailForm = passwordReset.createForm();
-         emailForm.changeDescription( "Reset password" );
-         emailForm.changeNote( "Reset password for a user" );
-         emailForm.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
+         Form resetPasswordForm = passwordReset.createForm();
+         resetPasswordForm.changeDescription( "Reset password" );
+         resetPasswordForm.changeNote( "Reset password for a user" );
+         resetPasswordForm.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
 
          // Create labels
          project.addLabel( question );
