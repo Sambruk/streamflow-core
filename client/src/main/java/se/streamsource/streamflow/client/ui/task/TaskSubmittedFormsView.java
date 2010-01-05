@@ -29,6 +29,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
+import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
 import javax.swing.ActionMap;
@@ -40,6 +41,8 @@ import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Point;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -58,6 +61,11 @@ public class TaskSubmittedFormsView
 
    @Structure
    ObjectBuilderFactory obf;
+
+   private
+   @Service
+   StreamFlowApplication main;
+
 
    private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_format ) );
    public EventListModel eventListModel;
@@ -100,7 +108,8 @@ public class TaskSubmittedFormsView
       FormSubmitWizardController wizardController = obf.newObjectBuilder(FormSubmitWizardController.class).
             use(formsListModel).newInstance();
       Wizard wizard = wizardController.createWizard();
-      WizardDisplayer.showWizard(wizard);
+      Point onScreen = main.getMainFrame().getLocationOnScreen();
+      WizardDisplayer.showWizard(wizard, new Rectangle(onScreen, new Dimension( 800, 600 )));
    }
 
    public void setModel( TaskSubmittedFormsModel model )

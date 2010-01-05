@@ -31,6 +31,7 @@ import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.web.domain.form.Field;
 import se.streamsource.streamflow.web.domain.form.Form;
 import se.streamsource.streamflow.web.domain.form.FormTemplates;
@@ -146,6 +147,7 @@ public interface TestDataService
          textAreaBuilder.prototype().width().set( 30 );
          textAreaBuilder.prototype().rows().set( 10 );
          ValueBuilder<DateFieldValue> dateBuilder = vbf.newValueBuilder( DateFieldValue.class );
+         ValueBuilder<PageBreakFieldValue> pageBreakBuilder = vbf.newValueBuilder( PageBreakFieldValue.class );
          Field commentField = commentForm.createField( "Comment", builder.newInstance() );
 
          Form statusForm = bug.createForm();
@@ -160,8 +162,9 @@ public interface TestDataService
          emailForm.changeNote( "Form for entering and sending an email" );
          emailForm.createField( "To", builder.newInstance() ).changeNote( "Enter address of receiver. Note it must be a valid email" );
          emailForm.createField( "Subject", builder.newInstance() ).changeNote( "Subject of the mail" );
-         emailForm.createField( "Expect resonse", dateBuilder.newInstance() ).changeNote( "Empty means no response needed" );
          emailForm.createField( "Content", textAreaBuilder.newInstance() ).changeNote( "Mail content" );
+         emailForm.createField( "Expected response", pageBreakBuilder.newInstance() );
+         emailForm.createField( "Expect resonse", dateBuilder.newInstance() ).changeNote( "Empty means no response needed" );
 
          Form resetPasswordForm = passwordReset.createForm();
          resetPasswordForm.changeDescription( "Reset password" );
