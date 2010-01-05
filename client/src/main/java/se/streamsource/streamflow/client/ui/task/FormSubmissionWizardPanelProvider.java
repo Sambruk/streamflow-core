@@ -42,7 +42,6 @@ public class FormSubmissionWizardPanelProvider
    private FormSubmitModel formSubmitModel;
    private ObjectBuilderFactory obf;
    private ValueBuilderFactory vbf;
-   private Map<String, FormSubmitWizardPage> viewMap = new HashMap<String, FormSubmitWizardPage>();
 
    protected FormSubmissionWizardPanelProvider( ObjectBuilderFactory obf,
                                                 ValueBuilderFactory vbf,

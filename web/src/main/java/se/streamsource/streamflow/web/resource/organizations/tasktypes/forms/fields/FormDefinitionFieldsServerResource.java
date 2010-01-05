@@ -21,6 +21,8 @@ import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -63,15 +65,27 @@ public class FormDefinitionFieldsServerResource
       switch (fieldType)
       {
          case text:
-            ValueBuilder<TextFieldValue> valueBuilder = vbf.newValueBuilder( TextFieldValue.class );
-            valueBuilder.prototype().width().set( 30 );
-            value = valueBuilder.newInstance();
+            ValueBuilder<TextFieldValue> textBuilder = vbf.newValueBuilder( TextFieldValue.class );
+            textBuilder.prototype().width().set( 30 );
+            value = textBuilder.newInstance();
+            break;
+         case text_area:
+            ValueBuilder<TextAreaFieldValue> textAreaBuilder = vbf.newValueBuilder( TextAreaFieldValue.class );
+            textAreaBuilder.prototype().width().set( 30 );
+            textAreaBuilder.prototype().rows().set( 5 );
+            value = textAreaBuilder.newInstance();
             break;
          case number:
+            break;
          case date:
+            value = vbf.newValue( DateFieldValue.class );
+            break;
          case single_selection:
+            break;
          case multi_selection:
+            break;
          case comment:
+            break;
          case page_break:
             value = vbf.newValue( PageBreakFieldValue.class);
             break;

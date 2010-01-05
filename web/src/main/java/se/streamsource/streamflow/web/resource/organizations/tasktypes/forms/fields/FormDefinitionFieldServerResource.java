@@ -19,6 +19,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
@@ -93,6 +95,52 @@ public class FormDefinitionFieldServerResource
       field.changeNote( newNote.string().get() );
    }
 
+   public void changewidth( IntegerDTO newWidth )
+   {
+      String identity = getRequest().getAttributes().get( "form" ).toString();
+      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      FormEntity form = uow.get( FormEntity.class, identity );
+      checkPermission( form );
+      FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
+
+      FieldValue value = field.fieldValue().get();
+      if (value instanceof TextAreaFieldValue)
+      {
+         field.changeFieldValue( update( (TextAreaFieldValue) value, TextAreaFieldValue.class, newWidth) );
+      }
+      else if ( value instanceof TextFieldValue)
+      {
+         field.changeFieldValue( update( (TextFieldValue) value, TextFieldValue.class, newWidth) );
+      }
+   }
+
+   private <T extends TextFieldValue> T update(T value, Class<T> valueType, IntegerDTO newWidth)
+   {
+      ValueBuilder<T> builder =
+            vbf.newValueBuilder( valueType ).withPrototype( value );
+      builder.prototype().width().set( newWidth.integer().get() );
+      return builder.newInstance();
+   }
+
+   public void changerows( IntegerDTO newRows )
+   {
+      String identity = getRequest().getAttributes().get( "form" ).toString();
+      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      FormEntity form = uow.get( FormEntity.class, identity );
+      checkPermission( form );
+      FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
+
+      FieldValue value = field.fieldValue().get();
+      if ( value instanceof TextAreaFieldValue)
+      {
+         ValueBuilder<TextAreaFieldValue> builder =
+               vbf.newValueBuilder( TextAreaFieldValue.class ).withPrototype( (TextAreaFieldValue) value );
+         builder.prototype().rows().set( newRows.integer().get() );
+         field.changeFieldValue( builder.newInstance() );
+      }
+   }
 
    public void deleteOperation()
    {

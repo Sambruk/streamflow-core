@@ -23,38 +23,38 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.task.TaskResources;
+import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
-import java.awt.TextArea;
-import java.awt.TextField;
-import java.util.Observer;
 import java.util.Observable;
+import java.util.Observer;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
  */
-public class FieldValuePageBreakEditView
+public class FieldValueTextAreaEditView
       extends JScrollPane
 {
-   StateBinder fieldDefinitionBinder;
-   StateBinder fieldValueBinder;
 
-   public FieldValuePageBreakEditView( @Service ApplicationContext context,
-                                       @Uses FieldValueEditModel model,
-                                       @Structure ObjectBuilderFactory obf)
+   private StateBinder fieldDefinitionBinder;
+   private StateBinder fieldValueBinder;
+
+   public FieldValueTextAreaEditView( @Service ApplicationContext context,
+                                      @Uses FieldValueEditModel model,
+                                      @Structure ObjectBuilderFactory obf)
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
@@ -70,12 +70,16 @@ public class FieldValuePageBreakEditView
 
       fieldValueBinder = new StateBinder();
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
+      TextAreaFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( TextAreaFieldValue.class );
 
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
-      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.page_break_field_type ) ) );
+      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text_area_field_type ) ) );
 
-      bb.appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
+      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldValueTemplate.mandatory(), fieldValueBinder ).
+            appendLine( AdministrationResources.width_label, TEXTFIELD, fieldValueTemplate.width(), fieldValueBinder ).
+            appendLine( AdministrationResources.rows_label, TEXTFIELD, fieldValueTemplate.rows(), fieldValueBinder ).
+            appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
             appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() );
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
@@ -89,5 +93,4 @@ public class FieldValuePageBreakEditView
 
       setViewportView( panel );
    }
-
 }

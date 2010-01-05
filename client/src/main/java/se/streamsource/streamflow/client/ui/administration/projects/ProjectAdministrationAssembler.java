@@ -26,6 +26,9 @@ import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.Field
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormEditAdminView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValuePageBreakEditView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueTextAreaEditView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueDateEditView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueObserver;
 
 /**
  * JAVADOC
@@ -52,8 +55,13 @@ public class ProjectAdministrationAssembler
 
       UIAssemblers.addMV( module, FieldValueEditModel.class, FieldValueTextEditView.class );
 
-      UIAssemblers.addViews( module, FieldValuePageBreakEditView.class );
+      UIAssemblers.addViews( module, 
+            FieldValuePageBreakEditView.class,
+            FieldValueTextAreaEditView.class,
+            FieldValueDateEditView.class  );
 
       UIAssemblers.addDialogs( module, FieldCreationDialog.class );
+
+      module.addObjects( FieldValueObserver.class );
    }
 }

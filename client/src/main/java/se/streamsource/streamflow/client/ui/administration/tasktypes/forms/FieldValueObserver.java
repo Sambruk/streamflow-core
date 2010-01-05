@@ -1,0 +1,83 @@
+/** Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
+
+import org.qi4j.api.property.Property;
+import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
+
+import java.util.Observer;
+import java.util.Observable;
+
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.task.TaskResources;
+
+public class FieldValueObserver
+   implements Observer
+{
+   @Uses
+   private FieldValueEditModel model;
+
+   public void update( Observable observable, Object arg )
+   {
+      Property property = (Property) arg;
+      if (property.qualifiedName().name().equals( "mandatory" ))
+      {
+         try
+         {
+            model.changeMandatory( (Boolean) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_mandatory, e );
+         }
+      } else if (property.qualifiedName().name().equals( "description" ))
+      {
+         try
+         {
+            model.changeDescription( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_name, e );
+         }
+      } else if (property.qualifiedName().name().equals( "note" ))
+      {
+         try
+         {
+            model.changeNote( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_note, e );
+         }
+      } else if (property.qualifiedName().name().equals( "width" ))
+      {
+         try
+         {
+            model.changeWidth( Integer.parseInt( (String) property.get() ) );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_width, e );
+         }
+      } else if (property.qualifiedName().name().equals( "rows" ))
+      {
+         try
+         {
+            model.changeRows( Integer.parseInt( (String) property.get() ) );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_rows, e );
+         }
+      }
+
+   }
+
+}

@@ -31,7 +31,7 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
 
       public void activate() throws Exception
       {
-         File directory = new File( fileConfig.dataDirectory() + "/solr" );
+/*         File directory = new File( fileConfig.dataDirectory() + "/solr" );
          directory.mkdir();
 
          System.setProperty( "solr.solr.home", directory.getAbsolutePath() );
@@ -39,7 +39,7 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
          CoreContainer.Initializer initializer = new CoreContainer.Initializer();
          coreContainer = initializer.initialize();
          server = new EmbeddedSolrServer( coreContainer, "" );
-
+*/
 /*
          SolrInputDocument doc = new SolrInputDocument();
          doc.setField( "id", "123" );
@@ -61,7 +61,7 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
 
       public void passivate() throws Exception
       {
-         coreContainer.shutdown();
+         //coreContainer.shutdown();
       }
    }
 } 

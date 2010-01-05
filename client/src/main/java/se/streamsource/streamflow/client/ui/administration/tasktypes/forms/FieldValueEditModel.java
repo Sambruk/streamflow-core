@@ -27,12 +27,14 @@ import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import java.util.logging.Logger;
 
@@ -82,6 +84,20 @@ public class FieldValueEditModel
       client.putCommand( "changenote", builder.newInstance() );
    }
 
+   public void changeWidth( Integer newWidth ) throws ResourceException
+   {
+      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
+      builder.prototype().integer().set( newWidth );
+      client.putCommand( "changewidth", builder.newInstance() );
+   }
+
+   public void changeRows( Integer newWidth ) throws ResourceException
+   {
+      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
+      builder.prototype().integer().set( newWidth );
+      client.putCommand( "changerows", builder.newInstance() );
+   }
+
    public void refresh() throws OperationException
    {
       try
@@ -90,7 +106,12 @@ public class FieldValueEditModel
          value = vbf.newValueBuilder( FieldDefinitionValue.class ).withPrototype( fieldDefinitionValue ).prototype();
 
          FieldValue field = fieldDefinitionValue.fieldValue().get();
-         if (field instanceof TextFieldValue)
+         if (field instanceof TextAreaFieldValue)
+         {
+           value.fieldValue().set(
+                 vbf.newValueBuilder( TextAreaFieldValue.class ).withPrototype( (TextAreaFieldValue) field ).prototype()
+           );
+         } else if (field instanceof TextFieldValue)
          {
             value.fieldValue().set(
                   vbf.newValueBuilder(TextFieldValue.class ).withPrototype( (TextFieldValue) field ).prototype()

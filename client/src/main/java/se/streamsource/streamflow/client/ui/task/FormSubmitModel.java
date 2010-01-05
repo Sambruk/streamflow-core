@@ -55,11 +55,11 @@ public class FormSubmitModel
 
    private String[] pageIds;
    private String[] pageNames;
-   private Map<String, ListValue> wizardPageMap;
+   private Map<String, List<FieldDefinitionValue>> wizardPageMap;
 
-   public List<ListItemValue> fieldsForPage(String pageId)
+   public List<FieldDefinitionValue> fieldsForPage(String pageId)
    {
-      return wizardPageMap.get( pageId ).items().get();
+      return wizardPageMap.get( pageId );
    }
 
    public FormDefinitionValue formDefinition()
@@ -87,10 +87,12 @@ public class FormSubmitModel
    {
       if (wizardPageMap == null)
       {
-         wizardPageMap = new HashMap<String, ListValue>();
+         wizardPageMap = new HashMap<String, List<FieldDefinitionValue>>();
 
-         ValueBuilder<ListValue> listBuilder = vbf.newValueBuilder( ListValue.class );
-         ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
+         //ValueBuilder<ListValue> listBuilder = vbf.newValueBuilder( ListValue.class );
+         //ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
+         List<FieldDefinitionValue> wizardPage = new ArrayList<FieldDefinitionValue>();
+         //ValueBuilder<List<FieldDefinitionValue>> listBuilder = new vbf.newValueBuilder( List.class );
          List<String> pageIds = new ArrayList<String>();
          List<String> pageNames = new ArrayList<String>();
          pageIds.add( formDefinition.form().get().identity() );
@@ -100,18 +102,19 @@ public class FormSubmitModel
          {
             if (value.fieldValue().get() instanceof PageBreakFieldValue)
             {
-               wizardPageMap.put( pageIds.get( pageIds.size()-1 ), listBuilder.newInstance());
-               listBuilder.prototype().items().get().clear();
+               wizardPageMap.put( pageIds.get( pageIds.size()-1 ), wizardPage);
+               wizardPage = new ArrayList<FieldDefinitionValue>();
                pageIds.add( value.field().get().identity() );
                pageNames.add( value.description().get() );
             } else
             {
-               itemBuilder.prototype().entity().set( value.field().get() );
-               itemBuilder.prototype().description().set( value.description().get() );
-               listBuilder.prototype().items().get().add( itemBuilder.newInstance() );
+               wizardPage.add( value );
+               //itemBuilder.prototype().entity().set( value.field().get() );
+               //itemBuilder.prototype().description().set( value.description().get() );
+               //listBuilder.prototype().items().get().add( itemBuilder.newInstance() );
             }
          }
-         wizardPageMap.put( pageIds.get( pageIds.size()-1 ), listBuilder.newInstance());
+         wizardPageMap.put( pageIds.get( pageIds.size()-1 ), wizardPage);
 
          this.pageIds = new String[ pageIds.size() ];
          pageIds.toArray( this.pageIds );

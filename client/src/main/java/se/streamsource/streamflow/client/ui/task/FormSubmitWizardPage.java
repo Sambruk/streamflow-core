@@ -18,6 +18,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDatePicker;
 import org.netbeans.spi.wizard.WizardPage;
 import org.netbeans.spi.wizard.WizardPanelNavResult;
 import org.netbeans.spi.wizard.Wizard;
@@ -27,6 +28,11 @@ import org.qi4j.api.entity.EntityReference;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +45,7 @@ import java.util.List;
 public class FormSubmitWizardPage
       extends WizardPage
 {
-   public FormSubmitWizardPage(@Uses java.util.List<ListItemValue> fields,
+   public FormSubmitWizardPage(@Uses java.util.List<FieldDefinitionValue> fields,
                                @Uses Map wizardValueMap)
    {
       setLayout(new BorderLayout());
@@ -48,11 +54,33 @@ public class FormSubmitWizardPage
       FormLayout formLayout = new FormLayout( "100dlu", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
 
-      for (ListItemValue value : fields)
+      for (FieldDefinitionValue value : fields)
       {
-         TextField textField = new TextField();
-         wizardValueMap.put( value.entity().get().identity(), textField );
-         formBuilder.append(value.description().get(), textField);
+         JComponent component;
+         if (value.fieldValue().get() instanceof TextAreaFieldValue)
+         {
+            TextAreaFieldValue field = (TextAreaFieldValue) value.fieldValue().get();
+            component = new JTextArea( field.rows().get(), field.width().get() );
+         } else if (value.fieldValue().get() instanceof TextFieldValue)
+         {
+            TextFieldValue field = (TextFieldValue) value.fieldValue().get();
+            component = new JTextField( field.width().get() );
+         } else if ( value.fieldValue().get() instanceof DateFieldValue)
+         {
+            component = new JXDatePicker();
+         } else
+         {
+            component = new JTextField( );
+         }
+
+         // set tool tip
+         if (value.note().get().length() > 0 )
+         {
+            component.setToolTipText( value.note().get() );
+         }
+
+         wizardValueMap.put( value.field().get().identity(), component );
+         formBuilder.append( value.description().get(), component );
       }
       JScrollPane scroll = new JScrollPane(panel);
       add(scroll,  BorderLayout.CENTER);

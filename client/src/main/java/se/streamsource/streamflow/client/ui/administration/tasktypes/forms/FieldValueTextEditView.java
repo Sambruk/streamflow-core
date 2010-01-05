@@ -19,7 +19,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
@@ -28,7 +30,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,20 +46,18 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
  */
 public class FieldValueTextEditView
       extends JScrollPane
-      implements Observer
 {
 
    private StateBinder fieldDefinitionBinder;
    private StateBinder fieldValueBinder;
-   private FieldValueEditModel model;
 
    public FieldValueTextEditView( @Service ApplicationContext context,
-                                  @Uses FieldValueEditModel model )
+                                  @Uses FieldValueEditModel model,
+                                  @Structure ObjectBuilderFactory obf)
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();
-      this.model = model;
       FormLayout formLayout = new FormLayout(
             "200dlu", "" );
 
@@ -69,18 +69,20 @@ public class FieldValueTextEditView
 
       fieldValueBinder = new StateBinder();
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      FieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( FieldValue.class );
+      TextFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( TextFieldValue.class );
 
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text_field_type ) ) );
 
       bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldValueTemplate.mandatory(), fieldValueBinder ).
+            appendLine( AdministrationResources.width_label, TEXTFIELD, fieldValueTemplate.width(), fieldValueBinder).
             appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
             appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() );
 
-      fieldValueBinder.addObserver( this );
-      fieldDefinitionBinder.addObserver( this );
+      FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
+      fieldValueBinder.addObserver( observer );
+      fieldDefinitionBinder.addObserver( observer );
 
       fieldValueBinder.updateWith( model.getFieldDefinition().fieldValue().get() );
       fieldDefinitionBinder.updateWith( model.getFieldDefinition() );
@@ -88,38 +90,5 @@ public class FieldValueTextEditView
       panel.add( fieldPanel, BorderLayout.CENTER );
 
       setViewportView( panel );
-   }
-
-   public void update( Observable observable, Object arg )
-   {
-      Property property = (Property) arg;
-      if (property.qualifiedName().name().equals( "mandatory" ))
-      {
-         try
-         {
-            model.changeMandatory( (Boolean) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( TaskResources.could_not_change_mandatory, e );
-         }
-      } else if (property.qualifiedName().name().equals( "description" ))
-      {
-         try
-         {
-            model.changeDescription( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( TaskResources.could_not_change_name, e );
-         }
-      } else if (property.qualifiedName().name().equals( "note" ))
-      {
-         try
-         {
-            model.changeNote( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( TaskResources.could_not_change_note, e );
-         }
-      }
    }
 }
