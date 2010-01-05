@@ -71,26 +71,23 @@ public class FormSubmissionWizardPanelProvider
       for (Object o : map.entrySet())
       {
          Object value = ((Map.Entry) o).getValue();
-         if (value instanceof JTextField)
+
+         if (value instanceof JComponent)
          {
             String id = (String) ((Map.Entry) o).getKey();
             EntityReference entityReference = EntityReference.parseEntityReference( id );
             fieldBuilder.prototype().field().set(entityReference);
-            fieldBuilder.prototype().value().set(((JTextField)map.get( id )).getText());
-            fields.add(fieldBuilder.newInstance());
-         } else if (value instanceof JTextArea)
-         {
-            String id = (String) ((Map.Entry) o).getKey();
-            EntityReference entityReference = EntityReference.parseEntityReference( id );
-            fieldBuilder.prototype().field().set(entityReference);
-            fieldBuilder.prototype().value().set(((JTextArea)map.get( id )).getText());
-            fields.add(fieldBuilder.newInstance());
-         } else if (value instanceof JXDatePicker)
-         {
-            String id = (String) ((Map.Entry) o).getKey();
-            EntityReference entityReference = EntityReference.parseEntityReference( id );
-            fieldBuilder.prototype().field().set(entityReference);
-            fieldBuilder.prototype().value().set(((JXDatePicker)map.get( id )).getDate().toString());
+
+            if (value instanceof JTextField)
+            {
+               fieldBuilder.prototype().value().set(((JTextField)map.get( id )).getText());
+            } else if (value instanceof JTextArea)
+            {
+               fieldBuilder.prototype().value().set(((JTextArea)map.get( id )).getText());
+            } else if (value instanceof JXDatePicker)
+            {
+               fieldBuilder.prototype().value().set(((JXDatePicker)map.get( id )).getDate().toString());
+            }
             fields.add(fieldBuilder.newInstance());
          }
       }
