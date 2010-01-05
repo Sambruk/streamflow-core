@@ -25,6 +25,8 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -41,21 +43,20 @@ public class FieldValueEditModel
       implements Refreshable, EventListener, EventHandler
 {
    private FieldDefinitionValue value;
-
-   @Uses
-   CommandQueryClient client;
-
-   @Structure
-   ValueBuilderFactory vbf;
+   private CommandQueryClient client;
+   private ValueBuilderFactory vbf;
 
    private EventHandlerFilter eventFilter;
 
-   public FieldValueEditModel()
+   public FieldValueEditModel( @Uses CommandQueryClient client, @Structure ValueBuilderFactory vbf )
    {
+      this.client = client;
+      this.vbf = vbf;
+      refresh();
       eventFilter = new EventHandlerFilter( this, "changedNote" );
    }
 
-   public FieldDefinitionValue getField()
+   public FieldDefinitionValue getFieldDefinition()
    {
       return value;
    }
@@ -88,9 +89,18 @@ public class FieldValueEditModel
          FieldDefinitionValue fieldDefinitionValue = client.query( "field", FieldDefinitionValue.class );
          value = vbf.newValueBuilder( FieldDefinitionValue.class ).withPrototype( fieldDefinitionValue ).prototype();
 
-         value.fieldValue().set(
-               vbf.newValueBuilder( FieldValue.class ).withPrototype( fieldDefinitionValue.fieldValue().get() ).prototype()
-         );
+         FieldValue field = fieldDefinitionValue.fieldValue().get();
+         if (field instanceof TextFieldValue)
+         {
+            value.fieldValue().set(
+                  vbf.newValueBuilder(TextFieldValue.class ).withPrototype( (TextFieldValue) field ).prototype()
+            );
+         } else if (field instanceof PageBreakFieldValue)
+         {
+            value.fieldValue().set(
+                  vbf.newValueBuilder(PageBreakFieldValue.class ).withPrototype( (PageBreakFieldValue) field ).prototype()
+            );
+         }
 
       } catch (ResourceException e)
       {

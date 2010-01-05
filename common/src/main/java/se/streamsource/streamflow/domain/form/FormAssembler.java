@@ -32,7 +32,10 @@ public class FormAssembler
             EffectiveFormFieldsValue.class,
             SubmittedFieldValue.class,
             FormValue.class,
+            FormDefinitionValue.class,
             FieldValue.class,
+            TextFieldValue.class,
+            PageBreakFieldValue.class,
             FieldDefinitionValue.class,
             SubmittedFormValue.class,
             SubmitFormDTO.class ).visibleIn( Visibility.application );

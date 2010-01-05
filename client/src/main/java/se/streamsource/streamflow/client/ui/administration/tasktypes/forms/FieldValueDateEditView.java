@@ -45,7 +45,7 @@ public class FieldValueDateEditView
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();
-      FieldDefinitionValue value = model.getField();
+      FieldDefinitionValue value = model.getFieldDefinition();
 
       FormLayout formLayout = new FormLayout(
             "pref, 4dlu, 150dlu", "" );

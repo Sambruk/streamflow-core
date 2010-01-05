@@ -27,6 +27,7 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.domain.form.FormDefinitionValue;
 
 import javax.swing.AbstractListModel;
 import java.util.List;
@@ -36,23 +37,23 @@ public class FormsListModel
       implements Refreshable
 {
    private List<ListItemValue> forms;
+   private FormDefinitionValue formValue;
 
    WeakModelMap<String, FormSubmitModel> formSubmitModels = new WeakModelMap<String, FormSubmitModel>()
    {
       @Override
       protected FormSubmitModel newModel(String key)
       {
-         List<ListItemValue> itemValues;
          try
          {
-            itemValues = client.getSubClient( key ).query( "fields", ListValue.class ).items().get();
+            formValue = client.getSubClient( key ).query( "form", FormDefinitionValue.class );
          } catch (ResourceException e)
          {
             throw new OperationException(WorkspaceResources.could_not_get_form, e);
          }
 
-         return obf.newObjectBuilder(FormSubmitModel.class)
-               .use(client, itemValues, EntityReference.parseEntityReference( key )).newInstance();
+         return obf.newObjectBuilder( FormSubmitModel.class )
+               .use( client, formValue, EntityReference.parseEntityReference( key ) ).newInstance();
       }
    };
 
@@ -84,9 +85,9 @@ public class FormsListModel
       return forms.get(i);
    }
 
-   public List<ListItemValue> formsList()
+   public FormDefinitionValue formDefinition()
    {
-      return forms;
+      return formValue;
    }
 
    public FormSubmitModel getFormSubmitModel(String key)

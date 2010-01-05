@@ -16,99 +16,64 @@ package se.streamsource.streamflow.client.ui.task;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
 import org.jdesktop.application.ApplicationContext;
 import org.netbeans.spi.wizard.WizardPage;
-import org.qi4j.api.entity.EntityReference;
+import org.netbeans.spi.wizard.WizardPanelNavResult;
+import org.netbeans.spi.wizard.Wizard;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.SubmitFormDTO;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+import org.qi4j.api.entity.EntityReference;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class FormSubmitWizardPage
-    extends WizardPage
+      extends WizardPage
 {
-    private DefaultFormBuilder formBuilder;
-    FormLayout formLayout = new FormLayout(
-            "pref, 4dlu, 80dlu","");
+   public FormSubmitWizardPage(@Uses java.util.List<ListItemValue> fields,
+                               @Uses Map wizardValueMap)
+   {
+      setLayout(new BorderLayout());
+      JPanel panel = new JPanel( new FormLayout( ) );
 
-    private Map<EntityReference, TextField> allFields;
+      FormLayout formLayout = new FormLayout( "100dlu", "" );
+      DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
 
-    @Structure
-    ValueBuilderFactory vbf;
-
-    private FormSubmitModel model;
-
-    private JPanel panel;
-
-    public FormSubmitWizardPage(@Service ApplicationContext context,
-                                @Uses FormSubmitModel model)
-    {
-        ActionMap am = context.getActionMap(this);
-        setActionMap(am);
-        setLayout(new FlowLayout());
-        allFields = new HashMap<EntityReference, TextField>();
-        setLayout(new BorderLayout());
-        JScrollPane scroll = new JScrollPane();
-        panel = new JPanel();
-        scroll.setViewportView(panel);
-        add(scroll,  BorderLayout.CENTER);
-        this.model = model;
-    }
-
-    public void updateView(String pageId)
-    {
-        panel.removeAll();
-        formBuilder = new DefaultFormBuilder(formLayout, panel);
-
-        for (ListItemValue value : model.fieldsForPage(pageId))
-        {
-            TextField textField = new TextField();
-            allFields.put(value.entity().get(), textField);
-            formBuilder.append(value.description().get(), textField);
-        }
-        revalidate();
-        repaint();
-    }
-
-
-    private SubmitFormDTO getSubmitFormDTO()
-    {
-        ValueBuilder<SubmitFormDTO> submittedFormBuilder = vbf.newValueBuilder(SubmitFormDTO.class);
-        ValueBuilder<SubmittedFieldValue> fieldBuilder =vbf.newValueBuilder(SubmittedFieldValue.class);
-        java.util.List<SubmittedFieldValue> fields = new ArrayList<SubmittedFieldValue>();
-
-        for (Map.Entry<EntityReference, TextField> stringComponentEntry : this.allFields.entrySet())
-        {
-            fieldBuilder.prototype().field().set(stringComponentEntry.getKey());
-            fieldBuilder.prototype().value().set(stringComponentEntry.getValue().getText());
-            fields.add(fieldBuilder.newInstance());
-        }
-
-      submittedFormBuilder.prototype().values().set( fields );
-      submittedFormBuilder.prototype().form().set( model.formEntityReference() );
-      return submittedFormBuilder.newInstance();
+      for (ListItemValue value : fields)
+      {
+         TextField textField = new TextField();
+         wizardValueMap.put( value.entity().get().identity(), textField );
+         formBuilder.append(value.description().get(), textField);
+      }
+      JScrollPane scroll = new JScrollPane(panel);
+      add(scroll,  BorderLayout.CENTER);
    }
 
-    public Map<EntityReference, TextField> getEnteredFields()
-    {
-        return allFields;
-    }
-
-    public void submit()
-    {
-        model.submit(getSubmitFormDTO());
-    }
+   private WizardPanelNavResult forward( Map map )
+   {
+      for (Object o : map.entrySet())
+      {
+         Object value = ((Map.Entry) o).getValue();
+         if (value instanceof TextField)
+         {
+            String id = (String) ((Map.Entry) o).getKey();
+            String fieldValue = ((TextField) map.get( id )).getText();
+            if (fieldValue == null || fieldValue.equals( "" ))
+            {
+               setProblem( i18n.text( WorkspaceResources.fill_all_fields));
+               return WizardPanelNavResult.REMAIN_ON_PAGE;
+            }
+         }
+      }
+      return WizardPanelNavResult.PROCEED;
+   }
 }

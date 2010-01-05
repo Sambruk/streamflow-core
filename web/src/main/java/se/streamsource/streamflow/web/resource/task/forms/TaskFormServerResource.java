@@ -28,14 +28,21 @@ import org.restlet.data.Status;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.form.FormValue;
+import se.streamsource.streamflow.domain.form.FormDefinitionValue;
+import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.form.Fields;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.domain.form.FormsQueries;
+import se.streamsource.streamflow.web.domain.form.Field;
+import se.streamsource.streamflow.web.domain.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
 import se.streamsource.streamflow.web.domain.tasktype.TaskType;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Mapped to:
@@ -53,14 +60,13 @@ public class TaskFormServerResource
    @Structure
    Qi4jSPI spi;
 
-   public TaskFormServerResource()
+   public TaskFormServerResource() throws ResourceException
    {
       setNegotiated( true );
       getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
    }
 
-
-   public FormValue form()
+   public FormDefinitionValue form() throws ResourceException
    {
       String formId = getRequest().getAttributes().get("form").toString();
 
@@ -68,33 +74,38 @@ public class TaskFormServerResource
 
       FormEntity form = uow.get(FormEntity.class, formId);
 
-      ValueBuilder<FormValue> builder = vbf.newValueBuilder(FormValue.class);
+      ValueBuilder<FormDefinitionValue> builder =
+            vbf.newValueBuilder(FormDefinitionValue.class);
 
       builder.prototype().note().set(form.note().get());
       builder.prototype().description().set(form.description().get());
       builder.prototype().form().set(EntityReference.parseEntityReference(formId));
+      builder.prototype().fields().set( new ArrayList<FieldDefinitionValue>() );
 
-      return builder.newInstance();
-   }
+      ValueBuilder<FieldDefinitionValue> fieldBuilder = vbf.newValueBuilder( FieldDefinitionValue.class );
 
-
-   public ListValue fields() throws ResourceException
-   {
-      String formId = getRequest().getAttributes().get( "form" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
 
       Fields.Data fields;
       try
       {
          fields = uow.get( Fields.Data.class, formId );
+         for (Field field : fields.fields())
+         {
+            FieldEntity entity = (FieldEntity) field;
+            fieldBuilder.prototype().fieldValue().set( entity.fieldValue().get() );
+            fieldBuilder.prototype().field().set( EntityReference.parseEntityReference( entity.identity().get() ));
+            fieldBuilder.prototype().description().set( field.getDescription() );
+            fieldBuilder.prototype().note().set( entity.note().get() );
+            builder.prototype().fields().get().add( fieldBuilder.newInstance() );
+         }
+
       } catch (NoSuchEntityException e)
       {
          throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND, e );
       }
 
-      return new ListValueBuilder( vbf ).addDescribableItems( fields.fields() ).newList();
+      return builder.newInstance();
    }
-
 
    @Override
    protected String getConditionalIdentityAttribute()

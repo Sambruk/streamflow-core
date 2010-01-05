@@ -132,5 +132,6 @@ public enum AdministrationResources
    tasktypes_tab,
    could_not_refresh_list_of_tasktypes,
    could_not_add_tasktype,
+   page_break_field_type,
    reset_password_failed
 }

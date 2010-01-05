@@ -19,6 +19,8 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -61,7 +63,8 @@ public class FormDefinitionFieldsServerResource
       switch (fieldType)
       {
          case text:
-            ValueBuilder<FieldValue> valueBuilder = vbf.newValueBuilder( FieldValue.class );
+            ValueBuilder<TextFieldValue> valueBuilder = vbf.newValueBuilder( TextFieldValue.class );
+            valueBuilder.prototype().width().set( 30 );
             value = valueBuilder.newInstance();
             break;
          case number:
@@ -70,7 +73,8 @@ public class FormDefinitionFieldsServerResource
          case multi_selection:
          case comment:
          case page_break:
-
+            value = vbf.newValue( PageBreakFieldValue.class);
+            break;
       }
       return value;
    }

@@ -109,5 +109,6 @@ public enum WorkspaceResources
    tasktype_label,
    could_not_refresh,
    search_tasktype,
+   fill_all_fields,
    search_user
 }

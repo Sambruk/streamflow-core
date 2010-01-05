@@ -31,6 +31,9 @@ import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.domain.form.FormValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
@@ -113,9 +116,20 @@ public class FormEditAdminView
                   ListItemValue fieldValue = (ListItemValue) list.getModel().getElementAt( idx );
                   FieldValueEditModel editModel = fieldsView.getModel().getFieldModel( fieldValue.entity().get().identity() );
 
-                  setRightComponent(
-                        obf.newObjectBuilder( FieldValueTextEditView.class ).
-                              use( editModel ).newInstance() );
+                  FieldValue value = editModel.getFieldDefinition().fieldValue().get();
+
+                  // switch on value
+                  if (value instanceof TextFieldValue)
+                  {
+                     setRightComponent(
+                           obf.newObjectBuilder( FieldValueTextEditView.class ).
+                                 use( editModel ).newInstance() );
+                  } else if (value instanceof PageBreakFieldValue)
+                  {
+                     setRightComponent( obf.newObjectBuilder( FieldValuePageBreakEditView.class ).
+                                 use( editModel ).newInstance() );
+                  }
+
                } else
                {
                   setRightComponent( new JPanel() );

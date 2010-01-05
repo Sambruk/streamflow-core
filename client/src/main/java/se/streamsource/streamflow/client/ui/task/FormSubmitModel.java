@@ -15,15 +15,26 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
+import se.streamsource.streamflow.domain.form.FormDefinitionValue;
+import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Collections;
 
 /**
  * Model for a FormDefinition
@@ -31,23 +42,29 @@ import java.util.List;
 public class FormSubmitModel
 {
    @Uses
-   List<ListItemValue> fieldValues;
+   private FormDefinitionValue formDefinition;
 
    @Uses
-   EntityReference formEntityReference;
+   private EntityReference formEntityReference;
 
    @Uses
-   CommandQueryClient client;
+   private CommandQueryClient client;
+
+   @Structure
+   private ValueBuilderFactory vbf;
+
+   private String[] pageIds;
+   private String[] pageNames;
+   private Map<String, ListValue> wizardPageMap;
 
    public List<ListItemValue> fieldsForPage(String pageId)
    {
-      // find field in page with id
-      return fieldValues;
+      return wizardPageMap.get( pageId ).items().get();
    }
 
-   public List<ListItemValue> fields()
+   public FormDefinitionValue formDefinition()
    {
-      return fieldValues;
+      return formDefinition;
    }
 
    public EntityReference formEntityReference()
@@ -64,5 +81,52 @@ public class FormSubmitModel
       {
          throw new OperationException(WorkspaceResources.could_not_submit_form, e);
       }
+   }
+
+   public void setUpWizardPages()
+   {
+      if (wizardPageMap == null)
+      {
+         wizardPageMap = new HashMap<String, ListValue>();
+
+         ValueBuilder<ListValue> listBuilder = vbf.newValueBuilder( ListValue.class );
+         ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
+         List<String> pageIds = new ArrayList<String>();
+         List<String> pageNames = new ArrayList<String>();
+         pageIds.add( formDefinition.form().get().identity() );
+         pageNames.add( formDefinition.description().get() );
+
+         for (FieldDefinitionValue value : formDefinition.fields().get())
+         {
+            if (value.fieldValue().get() instanceof PageBreakFieldValue)
+            {
+               wizardPageMap.put( pageIds.get( pageIds.size()-1 ), listBuilder.newInstance());
+               listBuilder.prototype().items().get().clear();
+               pageIds.add( value.field().get().identity() );
+               pageNames.add( value.description().get() );
+            } else
+            {
+               itemBuilder.prototype().entity().set( value.field().get() );
+               itemBuilder.prototype().description().set( value.description().get() );
+               listBuilder.prototype().items().get().add( itemBuilder.newInstance() );
+            }
+         }
+         wizardPageMap.put( pageIds.get( pageIds.size()-1 ), listBuilder.newInstance());
+
+         this.pageIds = new String[ pageIds.size() ];
+         pageIds.toArray( this.pageIds );
+         this.pageNames = new String[ pageNames.size() ];
+         pageNames.toArray( this.pageNames );
+      }
+   }
+
+   public String[] getPageIds()
+   {
+      return pageIds;
+   }
+
+   public String[] getPageNames()
+   {
+      return pageNames;
    }
 }

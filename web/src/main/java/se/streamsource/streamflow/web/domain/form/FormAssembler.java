@@ -33,6 +33,6 @@ public class FormAssembler
             FormEntity.class,
             FieldEntity.class ).visibleIn( Visibility.application );
 
-      moduleAssembly.addValues( TextFieldValue.class ).visibleIn( Visibility.application );
+      //moduleAssembly.addValues( TextFieldValue.class ).visibleIn( Visibility.application );
    }
 }

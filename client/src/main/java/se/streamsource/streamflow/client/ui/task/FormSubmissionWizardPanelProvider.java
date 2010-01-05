@@ -17,37 +17,72 @@ package se.streamsource.streamflow.client.ui.task;
 import org.netbeans.spi.wizard.WizardController;
 import org.netbeans.spi.wizard.WizardException;
 import org.netbeans.spi.wizard.WizardPanelProvider;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.entity.EntityReference;
 
 import javax.swing.*;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.awt.TextField;
+
+import se.streamsource.streamflow.domain.form.SubmitFormDTO;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 
 /**
  * JAVADOC
  */
 public class FormSubmissionWizardPanelProvider
-    extends WizardPanelProvider
+      extends WizardPanelProvider
 {
-    public static final String FORM_SUBMISSION_STEP = "FORM_SUBMISSION_STEP";
+   public static final String FORM_SUBMISSION_STEP = "FORM_SUBMISSION_STEP";
 
-    private FormSubmitWizardPage submitView;
+   private FormSubmitModel formSubmitModel;
+   private ObjectBuilderFactory obf;
+   private ValueBuilderFactory vbf;
+   private Map<String, FormSubmitWizardPage> viewMap = new HashMap<String, FormSubmitWizardPage>();
 
-    protected FormSubmissionWizardPanelProvider(FormSubmitWizardPage submitView,
-                                                String title, String[] pageIds, String[] pageNames)
-    {
-        super(title, pageIds, pageNames);
-        this.submitView = submitView;
-    }
+   protected FormSubmissionWizardPanelProvider( ObjectBuilderFactory obf,
+                                                ValueBuilderFactory vbf,
+         FormSubmitModel formSubmitModel,
+         String title, String[] pageIds, String[] pageNames)
+   {
+      super(title, pageIds, pageNames);
+      this.formSubmitModel = formSubmitModel;
+      this.obf = obf;
+      this.vbf = vbf;
+   }
 
-    protected JComponent createPanel(WizardController wizardController, String pageId, final Map map)
-    {
-        submitView.updateView(pageId);
-        return submitView;
-    }
+   protected JComponent createPanel(WizardController wizardController, String pageId, final Map map)
+   {
+      return obf.newObjectBuilder(FormSubmitWizardPage.class)
+            .use( formSubmitModel.fieldsForPage( pageId ), map ).newInstance();
+   }
 
-    @Override
-    protected Object finish(Map map) throws WizardException
-    {
-        submitView.submit();
-        return null;
-    }
+   @Override
+   protected Object finish(Map map) throws WizardException
+   {
+      ValueBuilder<SubmitFormDTO> submittedFormBuilder = vbf.newValueBuilder(SubmitFormDTO.class);
+      ValueBuilder<SubmittedFieldValue> fieldBuilder =vbf.newValueBuilder(SubmittedFieldValue.class);
+      java.util.List<SubmittedFieldValue> fields = new ArrayList<SubmittedFieldValue>();
+
+      for (Object o : map.entrySet())
+      {
+         Object value = ((Map.Entry) o).getValue();
+         if (value instanceof TextField)
+         {
+            String id = (String) ((Map.Entry) o).getKey();
+            EntityReference entityReference = EntityReference.parseEntityReference( id );
+            fieldBuilder.prototype().field().set(entityReference);
+            fieldBuilder.prototype().value().set(((TextField)map.get( id )).getText());
+            fields.add(fieldBuilder.newInstance());
+         }
+      }
+      submittedFormBuilder.prototype().values().set( fields );
+      submittedFormBuilder.prototype().form().set( formSubmitModel.formEntityReference() );
+      formSubmitModel.submit( submittedFormBuilder.newInstance() );
+      return null;
+   }
 }

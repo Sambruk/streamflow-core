@@ -55,7 +55,7 @@ public class FieldCreationDialog
       nameField = new TextField();
       formBuilder.append( i18n.text( AdministrationResources.name_label ), nameField );
       //box = new JComboBox(new String[]{"Text","Number","Date","Single selection", "Multi selection", "Comment", "Page break"});
-      box = new JComboBox( new String[]{"Text"} );
+      box = new JComboBox( new FieldTypes[] {FieldTypes.text, FieldTypes.page_break});
       formBuilder.append( "Value Type", box );
       add( panel, BorderLayout.CENTER );
    }
@@ -76,7 +76,7 @@ public class FieldCreationDialog
 
    public FieldTypes getFieldType()
    {
-      return FieldTypes.text;
+      return (FieldTypes) box.getSelectedItem();
    }
 
    public String name()
