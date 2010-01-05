@@ -106,7 +106,7 @@ public class TaskSubmittedFormsView
       FormsListModel formsListModel = obf.newObjectBuilder(FormsListModel.class)
             .use( model.getClient() ).newInstance();
       FormSubmitWizardController wizardController = obf.newObjectBuilder(FormSubmitWizardController.class).
-            use(formsListModel).newInstance();
+            use( formsListModel ).newInstance();
       Wizard wizard = wizardController.createWizard();
       Point onScreen = main.getMainFrame().getLocationOnScreen();
       WizardDisplayer.showWizard(wizard, new Rectangle(onScreen, new Dimension( 800, 600 )));

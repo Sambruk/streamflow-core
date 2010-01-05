@@ -23,6 +23,7 @@ import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
@@ -76,6 +77,9 @@ public class FormDefinitionFieldsServerResource
             value = textAreaBuilder.newInstance();
             break;
          case number:
+            ValueBuilder<NumberFieldValue> numberBuilder = vbf.newValueBuilder( NumberFieldValue.class );
+            numberBuilder.prototype().integer().set( true );
+            value = numberBuilder.newInstance();
             break;
          case date:
             value = vbf.newValue( DateFieldValue.class );

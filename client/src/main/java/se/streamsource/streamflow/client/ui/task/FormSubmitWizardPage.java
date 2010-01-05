@@ -33,11 +33,13 @@ import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.NumberFieldValue;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.text.NumberFormat;
 
 /**
  * JAVADOC
@@ -68,6 +70,13 @@ public class FormSubmitWizardPage
          } else if ( value.fieldValue().get() instanceof DateFieldValue)
          {
             component = new JXDatePicker();
+         } else if ( value.fieldValue().get() instanceof NumberFieldValue)
+         {
+            NumberFieldValue field = (NumberFieldValue) value.fieldValue().get();
+            
+            NumberFormat numberInstance = NumberFormat.getNumberInstance();
+            numberInstance.setParseIntegerOnly( field.integer().get() );
+            component = new JFormattedTextField( numberInstance );
          } else
          {
             component = new JTextField( );

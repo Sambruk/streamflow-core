@@ -134,5 +134,8 @@ public enum AdministrationResources
    could_not_add_tasktype,
    page_break_field_type,
    text_area_field_type,
-   width_label, rows_label, reset_password_failed
+   width_label,
+   rows_label,
+   integer_label,
+   reset_password_failed
 }

@@ -38,6 +38,7 @@ public class FormAssembler
             TextFieldValue.class,
             TextAreaFieldValue.class,
             PageBreakFieldValue.class,
+            NumberFieldValue.class,
             FieldDefinitionValue.class,
             SubmittedFormValue.class,
             SubmitFormDTO.class ).visibleIn( Visibility.application );
