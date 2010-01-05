@@ -21,6 +21,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.entity.EntityReference;
+import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
 import java.util.Map;
@@ -70,12 +71,26 @@ public class FormSubmissionWizardPanelProvider
       for (Object o : map.entrySet())
       {
          Object value = ((Map.Entry) o).getValue();
-         if (value instanceof TextField)
+         if (value instanceof JTextField)
          {
             String id = (String) ((Map.Entry) o).getKey();
             EntityReference entityReference = EntityReference.parseEntityReference( id );
             fieldBuilder.prototype().field().set(entityReference);
-            fieldBuilder.prototype().value().set(((TextField)map.get( id )).getText());
+            fieldBuilder.prototype().value().set(((JTextField)map.get( id )).getText());
+            fields.add(fieldBuilder.newInstance());
+         } else if (value instanceof JTextArea)
+         {
+            String id = (String) ((Map.Entry) o).getKey();
+            EntityReference entityReference = EntityReference.parseEntityReference( id );
+            fieldBuilder.prototype().field().set(entityReference);
+            fieldBuilder.prototype().value().set(((JTextArea)map.get( id )).getText());
+            fields.add(fieldBuilder.newInstance());
+         } else if (value instanceof JXDatePicker)
+         {
+            String id = (String) ((Map.Entry) o).getKey();
+            EntityReference entityReference = EntityReference.parseEntityReference( id );
+            fieldBuilder.prototype().field().set(entityReference);
+            fieldBuilder.prototype().value().set(((JXDatePicker)map.get( id )).getDate().toString());
             fields.add(fieldBuilder.newInstance());
          }
       }
