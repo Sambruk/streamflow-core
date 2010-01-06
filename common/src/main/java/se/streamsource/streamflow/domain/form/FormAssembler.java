@@ -36,7 +36,7 @@ public class FormAssembler
             FieldValue.class,
             DateFieldValue.class,
             TextFieldValue.class,
-            TextAreaFieldValue.class,
+            SingleSelectionFieldValue.class,
             PageBreakFieldValue.class,
             NumberFieldValue.class,
             FieldDefinitionValue.class,

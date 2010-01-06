@@ -37,6 +37,7 @@ import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.task.FieldDTO;
@@ -70,6 +71,7 @@ public class CommonResourceAssembler
             StringDTO.class,
             DateDTO.class,
             IntegerDTO.class,
+            NamedIndexDTO.class,
             EntityReferenceDTO.class,
             NewCommentCommand.class,
             NewUserCommand.class,

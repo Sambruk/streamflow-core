@@ -27,7 +27,6 @@ import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
@@ -106,12 +105,7 @@ public class FieldValueEditModel
          value = vbf.newValueBuilder( FieldDefinitionValue.class ).withPrototype( fieldDefinitionValue ).prototype();
 
          FieldValue field = fieldDefinitionValue.fieldValue().get();
-         if (field instanceof TextAreaFieldValue)
-         {
-           value.fieldValue().set(
-                 vbf.newValueBuilder( TextAreaFieldValue.class ).withPrototype( (TextAreaFieldValue) field ).prototype()
-           );
-         } else if (field instanceof TextFieldValue)
+         if (field instanceof TextFieldValue)
          {
             value.fieldValue().set(
                   vbf.newValueBuilder(TextFieldValue.class ).withPrototype( (TextFieldValue) field ).prototype()
@@ -144,4 +138,8 @@ public class FieldValueEditModel
       return false;
    }
 
+   public CommandQueryClient getClient()
+   {
+      return client;
+   }
 }

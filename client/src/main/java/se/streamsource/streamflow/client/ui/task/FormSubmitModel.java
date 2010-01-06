@@ -88,11 +88,7 @@ public class FormSubmitModel
       if (wizardPageMap == null)
       {
          wizardPageMap = new HashMap<String, List<FieldDefinitionValue>>();
-
-         //ValueBuilder<ListValue> listBuilder = vbf.newValueBuilder( ListValue.class );
-         //ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
          List<FieldDefinitionValue> wizardPage = new ArrayList<FieldDefinitionValue>();
-         //ValueBuilder<List<FieldDefinitionValue>> listBuilder = new vbf.newValueBuilder( List.class );
          List<String> pageIds = new ArrayList<String>();
          List<String> pageNames = new ArrayList<String>();
          pageIds.add( formDefinition.form().get().identity() );
@@ -109,9 +105,6 @@ public class FormSubmitModel
             } else
             {
                wizardPage.add( value );
-               //itemBuilder.prototype().entity().set( value.field().get() );
-               //itemBuilder.prototype().description().set( value.description().get() );
-               //listBuilder.prototype().items().get().add( itemBuilder.newInstance() );
             }
          }
          wizardPageMap.put( pageIds.get( pageIds.size()-1 ), wizardPage);

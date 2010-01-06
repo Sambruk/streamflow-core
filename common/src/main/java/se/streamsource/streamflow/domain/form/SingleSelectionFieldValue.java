@@ -15,12 +15,17 @@
 package se.streamsource.streamflow.domain.form;
 
 import org.qi4j.api.property.Property;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface TextAreaFieldValue
-      extends TextFieldValue
+public interface SingleSelectionFieldValue
+      extends FieldValue
 {
-   Property<Integer> rows();
+   @UseDefaults
+   Property<List<String>> values();
 }

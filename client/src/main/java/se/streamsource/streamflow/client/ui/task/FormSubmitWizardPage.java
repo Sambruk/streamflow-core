@@ -16,29 +16,21 @@ package se.streamsource.streamflow.client.ui.task;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDatePicker;
 import org.netbeans.spi.wizard.WizardPage;
 import org.netbeans.spi.wizard.WizardPanelNavResult;
-import org.netbeans.spi.wizard.Wizard;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.entity.EntityReference;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.SingleSelectionFieldValue;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.text.NumberFormat;
 
 /**
@@ -59,14 +51,16 @@ public class FormSubmitWizardPage
       for (FieldDefinitionValue value : fields)
       {
          JComponent component;
-         if (value.fieldValue().get() instanceof TextAreaFieldValue)
-         {
-            TextAreaFieldValue field = (TextAreaFieldValue) value.fieldValue().get();
-            component = new JTextArea( field.rows().get(), field.width().get() );
-         } else if (value.fieldValue().get() instanceof TextFieldValue)
+         if (value.fieldValue().get() instanceof TextFieldValue)
          {
             TextFieldValue field = (TextFieldValue) value.fieldValue().get();
-            component = new JTextField( field.width().get() );
+            if ( field.rows().get() != null && field.rows().get() > 1)
+            {
+               component = new JTextArea( field.rows().get(),  field.width().get() );
+            } else
+            {
+               component = new JTextField( field.width().get() );
+            }
          } else if ( value.fieldValue().get() instanceof DateFieldValue)
          {
             component = new JXDatePicker();
@@ -77,6 +71,10 @@ public class FormSubmitWizardPage
             NumberFormat numberInstance = NumberFormat.getNumberInstance();
             numberInstance.setParseIntegerOnly( field.integer().get() );
             component = new JFormattedTextField( numberInstance );
+         } else if ( value.fieldValue().get() instanceof SingleSelectionFieldValue)
+         {
+            SingleSelectionFieldValue field = (SingleSelectionFieldValue) value.fieldValue().get();
+            component = new JComboBox( field.values().get().toArray() );
          } else
          {
             component = new JTextField( );

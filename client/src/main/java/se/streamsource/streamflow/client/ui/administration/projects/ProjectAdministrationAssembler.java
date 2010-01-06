@@ -26,10 +26,12 @@ import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.Field
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormEditAdminView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValuePageBreakEditView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueTextAreaEditView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueDateEditView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueObserver;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueNumberEditView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueSingleSelectionEditView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.SelectionElementsModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.SelectionElementsView;
 
 /**
  * JAVADOC
@@ -52,15 +54,20 @@ public class ProjectAdministrationAssembler
       UIAssemblers.addMV( module, ProjectMembersModel.class,
             ProjectMembersView.class );
 
-      UIAssemblers.addMV( module, FieldsModel.class, FieldsView.class );
+      UIAssemblers.addMV( module,
+            FieldsModel.class, FieldsView.class );
 
-      UIAssemblers.addMV( module, FieldValueEditModel.class, FieldValueTextEditView.class );
+      UIAssemblers.addMV( module,
+            FieldValueEditModel.class, FieldValueTextEditView.class);
+
+      UIAssemblers.addMV( module,
+            SelectionElementsModel.class, SelectionElementsView.class);
 
       UIAssemblers.addViews( module, 
             FieldValuePageBreakEditView.class,
-            FieldValueTextAreaEditView.class,
             FieldValueDateEditView.class,
-            FieldValueNumberEditView.class );
+            FieldValueNumberEditView.class,
+            FieldValueSingleSelectionEditView.class);
 
       UIAssemblers.addDialogs( module, FieldCreationDialog.class );
 

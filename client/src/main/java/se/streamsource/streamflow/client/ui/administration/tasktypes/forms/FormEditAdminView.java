@@ -34,9 +34,9 @@ import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.SingleSelectionFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
@@ -122,12 +122,7 @@ public class FormEditAdminView
                   FieldValue value = editModel.getFieldDefinition().fieldValue().get();
 
                   // switch on value
-                  if (value instanceof TextAreaFieldValue)
-                  {
-                     setRightComponent(
-                           obf.newObjectBuilder( FieldValueTextAreaEditView.class ).
-                                 use( editModel ).newInstance() );
-                  } else if (value instanceof TextFieldValue)
+                  if (value instanceof TextFieldValue)
                   {
                      setRightComponent(
                            obf.newObjectBuilder( FieldValueTextEditView.class ).
@@ -143,6 +138,10 @@ public class FormEditAdminView
                   } else if (value instanceof NumberFieldValue)
                   {
                      setRightComponent( obf.newObjectBuilder( FieldValueNumberEditView.class ).
+                           use( editModel ).newInstance() );
+                  } else if (value instanceof SingleSelectionFieldValue)
+                  {
+                     setRightComponent( obf.newObjectBuilder( FieldValueSingleSelectionEditView.class ).
                            use( editModel ).newInstance() );
                   }
 

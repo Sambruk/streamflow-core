@@ -12,19 +12,19 @@
  *
  */
 
-package se.streamsource.streamflow.domain.form;
+package se.streamsource.streamflow.resource.roles;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.common.Optional;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC
  */
-public interface TextFieldValue
-      extends FieldValue
+public interface NamedIndexDTO
+      extends ValueComposite
 {
-   Property<Integer> width();
+   Property<String> name();
 
-   @Optional
-   Property<Integer> rows();
+   Property<Integer> index();
 }

@@ -20,15 +20,11 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 
@@ -36,8 +32,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
-import java.util.Observable;
-import java.util.Observer;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
@@ -77,6 +71,7 @@ public class FieldValueTextEditView
 
       bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldValueTemplate.mandatory(), fieldValueBinder ).
             appendLine( AdministrationResources.width_label, TEXTFIELD, fieldValueTemplate.width(), fieldValueBinder).
+            appendLine( AdministrationResources.rows_label, TEXTFIELD, fieldValueTemplate.rows(), fieldValueBinder).
             appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
             appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() );
 

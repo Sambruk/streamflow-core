@@ -21,17 +21,13 @@ import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.domain.form.SingleSelectionFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
-import se.streamsource.streamflow.web.domain.form.FormsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.util.List;
 
 /**
  * Mapped to:
@@ -70,12 +66,6 @@ public class FormDefinitionFieldsServerResource
             textBuilder.prototype().width().set( 30 );
             value = textBuilder.newInstance();
             break;
-         case text_area:
-            ValueBuilder<TextAreaFieldValue> textAreaBuilder = vbf.newValueBuilder( TextAreaFieldValue.class );
-            textAreaBuilder.prototype().width().set( 30 );
-            textAreaBuilder.prototype().rows().set( 5 );
-            value = textAreaBuilder.newInstance();
-            break;
          case number:
             ValueBuilder<NumberFieldValue> numberBuilder = vbf.newValueBuilder( NumberFieldValue.class );
             numberBuilder.prototype().integer().set( true );
@@ -85,6 +75,8 @@ public class FormDefinitionFieldsServerResource
             value = vbf.newValue( DateFieldValue.class );
             break;
          case single_selection:
+            ValueBuilder<SingleSelectionFieldValue> single = vbf.newValueBuilder( SingleSelectionFieldValue.class );
+            value = single.newInstance();
             break;
          case multi_selection:
             break;

@@ -25,11 +25,9 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import static org.qi4j.api.usecase.UsecaseBuilder.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.web.domain.form.Field;
@@ -143,9 +141,6 @@ public interface TestDataService
          commentForm.changeNote( "This is a comment form. Use it to capture any comments related to the current task." );
          ValueBuilder<TextFieldValue> builder = vbf.newValueBuilder( TextFieldValue.class );
          builder.prototype().width().set( 30 );
-         ValueBuilder<TextAreaFieldValue> textAreaBuilder = vbf.newValueBuilder( TextAreaFieldValue.class );
-         textAreaBuilder.prototype().width().set( 30 );
-         textAreaBuilder.prototype().rows().set( 10 );
          ValueBuilder<DateFieldValue> dateBuilder = vbf.newValueBuilder( DateFieldValue.class );
          ValueBuilder<PageBreakFieldValue> pageBreakBuilder = vbf.newValueBuilder( PageBreakFieldValue.class );
          Field commentField = commentForm.createField( "Comment", builder.newInstance() );
@@ -162,13 +157,15 @@ public interface TestDataService
          emailForm.changeNote( "Form for entering and sending an email" );
          emailForm.createField( "To", builder.newInstance() ).changeNote( "Enter address of receiver. Note it must be a valid email" );
          emailForm.createField( "Subject", builder.newInstance() ).changeNote( "Subject of the mail" );
-         emailForm.createField( "Content", textAreaBuilder.newInstance() ).changeNote( "Mail content" );
+         builder.prototype().rows().set( 10 );
+         emailForm.createField( "Content", builder.newInstance() ).changeNote( "Mail content" );
          emailForm.createField( "Expected response", pageBreakBuilder.newInstance() );
          emailForm.createField( "Expect resonse", dateBuilder.newInstance() ).changeNote( "Empty means no response needed" );
 
          Form resetPasswordForm = passwordReset.createForm();
          resetPasswordForm.changeDescription( "Reset password" );
          resetPasswordForm.changeNote( "Reset password for a user" );
+         builder.prototype().rows().set( 0 );
          resetPasswordForm.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
 
          // Create labels

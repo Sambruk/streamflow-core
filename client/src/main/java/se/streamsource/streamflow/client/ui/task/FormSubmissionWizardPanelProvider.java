@@ -87,6 +87,9 @@ public class FormSubmissionWizardPanelProvider
             } else if (value instanceof JXDatePicker)
             {
                fieldBuilder.prototype().value().set(((JXDatePicker)map.get( id )).getDate().toString());
+            } else if (value instanceof JComboBox)
+            {
+               fieldBuilder.prototype().value().set( ((JComboBox) map.get( id )).getSelectedItem().toString() );
             }
             fields.add(fieldBuilder.newInstance());
          }
