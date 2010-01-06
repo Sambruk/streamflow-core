@@ -22,12 +22,18 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 import java.awt.BorderLayout;
 import java.awt.TextField;
+import java.awt.Component;
 
 /**
  * Select a name for something.
@@ -54,7 +60,16 @@ public class FieldCreationDialog
 
       nameField = new TextField();
       formBuilder.append( i18n.text( AdministrationResources.name_label ), nameField );
-      box = new JComboBox( new FieldTypes[] {FieldTypes.text, FieldTypes.date, FieldTypes.number, FieldTypes.single_selection, FieldTypes.page_break});
+      box = new JComboBox( new FieldTypes[] { FieldTypes.text, FieldTypes.date, FieldTypes.number, FieldTypes.single_selection, FieldTypes.page_break} );
+      box.setRenderer( new DefaultListCellRenderer() {
+
+         @Override
+         public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
+         {
+            FieldTypes type = (FieldTypes) o;
+            return super.getListCellRendererComponent( jList, i18n.text( AdministrationResources.valueOf( type.toString() ) ), i, b, b1 );
+         }
+      });
       formBuilder.append( "Value Type", box );
       add( panel, BorderLayout.CENTER );
    }

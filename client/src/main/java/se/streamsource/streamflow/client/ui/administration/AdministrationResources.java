@@ -137,5 +137,12 @@ public enum AdministrationResources
    width_label,
    rows_label,
    integer_label,
-   reset_password_failed
+   reset_password_failed,
+   text,
+   number,
+   date,
+   single_selection,
+   multi_selection,
+   comment,
+   page_break
 }
