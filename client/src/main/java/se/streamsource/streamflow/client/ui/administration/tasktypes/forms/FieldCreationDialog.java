@@ -36,7 +36,7 @@ import java.awt.TextField;
 import java.awt.Component;
 
 /**
- * Select a name for something.
+ * A dialog for creating a form field. One must provide a name and a type of the field.
  */
 public class FieldCreationDialog
       extends JPanel
@@ -60,7 +60,13 @@ public class FieldCreationDialog
 
       nameField = new TextField();
       formBuilder.append( i18n.text( AdministrationResources.name_label ), nameField );
-      box = new JComboBox( new FieldTypes[] { FieldTypes.text, FieldTypes.date, FieldTypes.number, FieldTypes.single_selection, FieldTypes.page_break} );
+      box = new JComboBox( new FieldTypes[] {
+            FieldTypes.text,
+            FieldTypes.date,
+            FieldTypes.number,
+            FieldTypes.single_selection,
+            FieldTypes.page_break} );
+
       box.setRenderer( new DefaultListCellRenderer() {
 
          @Override
