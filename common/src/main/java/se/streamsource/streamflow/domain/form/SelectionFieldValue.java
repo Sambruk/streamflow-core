@@ -23,9 +23,12 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public interface SingleSelectionFieldValue
+public interface SelectionFieldValue
       extends FieldValue
 {
    @UseDefaults
    Property<List<String>> values();
+
+   @UseDefaults
+   Property<Boolean> multiple();
 }

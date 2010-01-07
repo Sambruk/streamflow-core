@@ -29,7 +29,7 @@ import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.Field
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueDateEditView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueObserver;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueNumberEditView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueSingleSelectionEditView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueSelectionEditView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.SelectionElementsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.SelectionElementsView;
 
@@ -67,7 +67,7 @@ public class ProjectAdministrationAssembler
             FieldValuePageBreakEditView.class,
             FieldValueDateEditView.class,
             FieldValueNumberEditView.class,
-            FieldValueSingleSelectionEditView.class);
+            FieldValueSelectionEditView.class);
 
       UIAssemblers.addDialogs( module, FieldCreationDialog.class );
 

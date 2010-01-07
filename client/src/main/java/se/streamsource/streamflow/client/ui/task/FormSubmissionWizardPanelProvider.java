@@ -90,6 +90,10 @@ public class FormSubmissionWizardPanelProvider
             } else if (value instanceof JComboBox)
             {
                fieldBuilder.prototype().value().set( ((JComboBox) map.get( id )).getSelectedItem().toString() );
+            } else if (value instanceof MultiSelectPanel)
+            {
+               MultiSelectPanel multiSelect = (MultiSelectPanel) value;
+               fieldBuilder.prototype().value().set( multiSelect.getChecked() );
             }
             fields.add(fieldBuilder.newInstance());
          }

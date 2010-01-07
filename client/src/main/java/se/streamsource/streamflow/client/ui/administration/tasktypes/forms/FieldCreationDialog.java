@@ -64,7 +64,7 @@ public class FieldCreationDialog
             FieldTypes.text,
             FieldTypes.date,
             FieldTypes.number,
-            FieldTypes.single_selection,
+            FieldTypes.selection,
             FieldTypes.page_break} );
 
       box.setRenderer( new DefaultListCellRenderer() {

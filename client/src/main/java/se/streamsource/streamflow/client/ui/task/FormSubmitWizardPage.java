@@ -26,7 +26,7 @@ import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.SingleSelectionFieldValue;
+import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -71,10 +71,16 @@ public class FormSubmitWizardPage
             NumberFormat numberInstance = NumberFormat.getNumberInstance();
             numberInstance.setParseIntegerOnly( field.integer().get() );
             component = new JFormattedTextField( numberInstance );
-         } else if ( value.fieldValue().get() instanceof SingleSelectionFieldValue)
+         } else if ( value.fieldValue().get() instanceof SelectionFieldValue)
          {
-            SingleSelectionFieldValue field = (SingleSelectionFieldValue) value.fieldValue().get();
-            component = new JComboBox( field.values().get().toArray() );
+            SelectionFieldValue field = (SelectionFieldValue) value.fieldValue().get();
+            if ( field.multiple().get() )
+            {
+               component = new MultiSelectPanel( field.values().get() );
+            } else
+            {
+               component = new JComboBox( field.values().get().toArray() );
+            }
          } else
          {
             component = new JTextField( );

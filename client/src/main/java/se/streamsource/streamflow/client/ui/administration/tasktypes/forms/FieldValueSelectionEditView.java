@@ -17,48 +17,34 @@ package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.ApplicationActionMap;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.FieldTypes;
-import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.domain.form.SingleSelectionFieldValue;
+import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JList;
-import javax.swing.JButton;
-import javax.swing.AbstractListModel;
 import java.awt.BorderLayout;
-import java.awt.TextArea;
-import java.awt.TextField;
-import java.util.Observer;
-import java.util.Observable;
 
 /**
  * JAVADOC
  */
-public class FieldValueSingleSelectionEditView
+public class FieldValueSelectionEditView
       extends JScrollPane
 {
    StateBinder fieldDefinitionBinder;
    StateBinder fieldValueBinder;
 
-   public FieldValueSingleSelectionEditView( @Service ApplicationContext context,
+   public FieldValueSelectionEditView( @Service ApplicationContext context,
                                              @Uses FieldValueEditModel model,
                                              @Structure ObjectBuilderFactory obf)
    {
@@ -76,13 +62,16 @@ public class FieldValueSingleSelectionEditView
 
       fieldValueBinder = new StateBinder();
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
+      SelectionFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( SelectionFieldValue.class );
 
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.page_break_field_type ) ) );
 
-      bb.appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
-            appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() );
+      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldValueTemplate.mandatory(), fieldValueBinder ).
+            appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
+            appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() ).
+            appendLine( AdministrationResources.multi_selection, CHECKBOX, fieldValueTemplate.multiple(), fieldValueBinder);
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );

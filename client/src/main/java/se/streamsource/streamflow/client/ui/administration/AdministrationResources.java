@@ -141,8 +141,8 @@ public enum AdministrationResources
    text,
    number,
    date,
-   single_selection,
-   multi_selection,
+   selection,
    comment,
-   page_break
+   page_break,
+   multi_selection
 }

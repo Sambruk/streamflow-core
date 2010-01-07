@@ -20,7 +20,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.domain.form.SingleSelectionFieldValue;
+import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -28,8 +28,6 @@ import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 import se.streamsource.streamflow.web.domain.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 /**
  * Mapped to:
@@ -132,6 +130,25 @@ public class FormDefinitionFieldServerResource
       }
    }
 
+   public void changemultiple( BooleanDTO multiple)
+   {
+      String identity = getRequest().getAttributes().get( "form" ).toString();
+      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      FormEntity form = uow.get( FormEntity.class, identity );
+      checkPermission( form );
+      FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
+
+      FieldValue value = field.fieldValue().get();
+      if ( value instanceof SelectionFieldValue)
+      {
+         ValueBuilder<SelectionFieldValue> builder =
+               vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) value );
+         builder.prototype().multiple().set( multiple.bool().get() );
+         field.changeFieldValue( builder.newInstance() );
+      }
+   }
+
    public void addselectionelement()
    {
       String identity = getRequest().getAttributes().get( "form" ).toString();
@@ -142,10 +159,10 @@ public class FormDefinitionFieldServerResource
       FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
 
       FieldValue value = field.fieldValue().get();
-      if ( value instanceof SingleSelectionFieldValue)
+      if ( value instanceof SelectionFieldValue)
       {
-         ValueBuilder<SingleSelectionFieldValue> builder =
-               vbf.newValueBuilder( SingleSelectionFieldValue.class ).withPrototype( (SingleSelectionFieldValue) value );
+         ValueBuilder<SelectionFieldValue> builder =
+               vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) value );
          builder.prototype().values().get().add( "" );
          field.changeFieldValue( builder.newInstance() );
       }
@@ -161,10 +178,10 @@ public class FormDefinitionFieldServerResource
       FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
 
       FieldValue value = field.fieldValue().get();
-      if ( value instanceof SingleSelectionFieldValue)
+      if ( value instanceof SelectionFieldValue)
       {
-         ValueBuilder<SingleSelectionFieldValue> builder =
-               vbf.newValueBuilder( SingleSelectionFieldValue.class ).withPrototype( (SingleSelectionFieldValue) value );
+         ValueBuilder<SelectionFieldValue> builder =
+               vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) value );
          if (builder.prototype().values().get().size() > index.integer().get() )
          {
             builder.prototype().values().get().remove( index.integer().get().intValue() );
@@ -183,10 +200,10 @@ public class FormDefinitionFieldServerResource
       FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
 
       FieldValue value = field.fieldValue().get();
-      if ( value instanceof SingleSelectionFieldValue)
+      if ( value instanceof SelectionFieldValue)
       {
-         ValueBuilder<SingleSelectionFieldValue> builder =
-               vbf.newValueBuilder( SingleSelectionFieldValue.class ).withPrototype( (SingleSelectionFieldValue) value );
+         ValueBuilder<SelectionFieldValue> builder =
+               vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) value );
          String element = builder.prototype().values().get().remove( moveElement.index().get().intValue() );
          if ( "up".equals( moveElement.name().get()) )
          {
@@ -209,13 +226,25 @@ public class FormDefinitionFieldServerResource
       FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
 
       FieldValue value = field.fieldValue().get();
-      if ( value instanceof SingleSelectionFieldValue)
+      if ( value instanceof SelectionFieldValue)
       {
-         ValueBuilder<SingleSelectionFieldValue> builder =
-               vbf.newValueBuilder( SingleSelectionFieldValue.class ).withPrototype( (SingleSelectionFieldValue) value );
+         ValueBuilder<SelectionFieldValue> builder =
+               vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) value );
          builder.prototype().values().get().set( newNameDTO.index().get(), newNameDTO.name().get() );
          field.changeFieldValue( builder.newInstance() );
       }
+   }
+
+   public void move( IntegerDTO newIndex )
+   {
+      String identity = getRequest().getAttributes().get( "form" ).toString();
+      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      FormEntity form = uow.get( FormEntity.class, identity );
+      checkPermission( form );
+      FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
+
+      form.moveField( field, newIndex.integer().get() );
    }
 
    public void deleteOperation()

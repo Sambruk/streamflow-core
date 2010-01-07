@@ -143,6 +143,7 @@ public class FieldsModel
       try
       {
          client.getSubClient( ""+fromIndex ).putCommand( "move", builder.newInstance() );
+         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );

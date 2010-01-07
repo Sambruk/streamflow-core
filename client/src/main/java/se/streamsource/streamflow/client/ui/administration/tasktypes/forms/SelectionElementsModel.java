@@ -25,11 +25,10 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.SingleSelectionFieldValue;
+import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 
-import javax.swing.AbstractListModel;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
@@ -55,10 +54,10 @@ public class SelectionElementsModel
          FieldDefinitionValue fieldDefinitionValue = client.query( "field", FieldDefinitionValue.class );
 
          FieldValue field = fieldDefinitionValue.fieldValue().get();
-         if (field instanceof SingleSelectionFieldValue)
+         if (field instanceof SelectionFieldValue)
          {
-            SingleSelectionFieldValue singleSelectionField = (SingleSelectionFieldValue) field;
-            elements = singleSelectionField.values().get();
+            SelectionFieldValue selectionField = (SelectionFieldValue) field;
+            elements = selectionField.values().get();
             fireTableDataChanged();
          }
       } catch (ResourceException e)

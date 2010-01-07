@@ -23,7 +23,7 @@ import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.SingleSelectionFieldValue;
+import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.form.FormEntity;
@@ -74,11 +74,9 @@ public class FormDefinitionFieldsServerResource
          case date:
             value = vbf.newValue( DateFieldValue.class );
             break;
-         case single_selection:
-            ValueBuilder<SingleSelectionFieldValue> single = vbf.newValueBuilder( SingleSelectionFieldValue.class );
-            value = single.newInstance();
-            break;
-         case multi_selection:
+         case selection:
+            ValueBuilder<SelectionFieldValue> selection = vbf.newValueBuilder( SelectionFieldValue.class );
+            value = selection.newInstance();
             break;
          case comment:
             break;

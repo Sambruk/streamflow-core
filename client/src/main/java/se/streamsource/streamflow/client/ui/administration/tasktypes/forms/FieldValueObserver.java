@@ -76,6 +76,15 @@ public class FieldValueObserver
          {
             throw new OperationException( TaskResources.could_not_change_rows, e );
          }
+      } else if (property.qualifiedName().name().equals( "multiple" ))
+      {
+         try
+         {
+            model.changeMultiple( (Boolean) property.get());
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_multiple, e );
+         }
       }
 
    }
