@@ -81,21 +81,25 @@ public class FormSubmissionWizardPanelProvider
             if (value instanceof JTextField)
             {
                fieldBuilder.prototype().value().set(((JTextField)map.get( id )).getText());
+               fields.add(fieldBuilder.newInstance());
             } else if (value instanceof JTextArea)
             {
                fieldBuilder.prototype().value().set(((JTextArea)map.get( id )).getText());
+               fields.add(fieldBuilder.newInstance());
             } else if (value instanceof JXDatePicker)
             {
                fieldBuilder.prototype().value().set(((JXDatePicker)map.get( id )).getDate().toString());
+               fields.add(fieldBuilder.newInstance());
             } else if (value instanceof JComboBox)
             {
                fieldBuilder.prototype().value().set( ((JComboBox) map.get( id )).getSelectedItem().toString() );
+               fields.add(fieldBuilder.newInstance());
             } else if (value instanceof MultiSelectPanel)
             {
                MultiSelectPanel multiSelect = (MultiSelectPanel) value;
                fieldBuilder.prototype().value().set( multiSelect.getChecked() );
+               fields.add(fieldBuilder.newInstance());
             }
-            fields.add(fieldBuilder.newInstance());
          }
       }
       submittedFormBuilder.prototype().values().set( fields );

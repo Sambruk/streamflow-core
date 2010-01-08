@@ -85,6 +85,15 @@ public class FieldValueObserver
          {
             throw new OperationException( TaskResources.could_not_change_multiple, e );
          }
+      } else if ( property.qualifiedName().name().equals( "comment" ))
+      {
+         try
+         {
+            model.changeComment( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_change_comment, e );
+         }
       }
 
    }

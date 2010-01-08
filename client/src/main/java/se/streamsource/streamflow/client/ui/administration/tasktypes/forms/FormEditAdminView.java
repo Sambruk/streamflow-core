@@ -37,6 +37,7 @@ import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
@@ -142,6 +143,10 @@ public class FormEditAdminView
                   } else if (value instanceof SelectionFieldValue)
                   {
                      setRightComponent( obf.newObjectBuilder( FieldValueSelectionEditView.class ).
+                           use( editModel ).newInstance() );
+                  } else if ( value instanceof CommentFieldValue)
+                  {
+                     setRightComponent( obf.newObjectBuilder( FieldValueCommentEditView.class ).
                            use( editModel ).newInstance() );
                   }
 

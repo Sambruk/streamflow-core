@@ -43,6 +43,7 @@ public enum TaskResources
    could_not_change_rows,
    could_not_change_width,
    could_not_change_multiple,
+   could_not_change_comment,
 
    // Task statuses
    task_status_active_icon,

@@ -104,6 +104,13 @@ public class FieldValueEditModel
       client.putCommand( "changemultiple", builder.newInstance() );
    }
 
+   public void changeComment( String comment ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( comment );
+      client.putCommand( "changecomment", builder.newInstance() );
+   }
+
    public void refresh() throws OperationException
    {
       try

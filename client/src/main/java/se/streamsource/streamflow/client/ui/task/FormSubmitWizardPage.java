@@ -27,6 +27,7 @@ import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,7 +46,7 @@ public class FormSubmitWizardPage
       setLayout(new BorderLayout());
       JPanel panel = new JPanel( new FormLayout( ) );
 
-      FormLayout formLayout = new FormLayout( "100dlu", "" );
+      FormLayout formLayout = new FormLayout( "200dlu", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
 
       for (FieldDefinitionValue value : fields)
@@ -81,6 +82,10 @@ public class FormSubmitWizardPage
             {
                component = new JComboBox( field.values().get().toArray() );
             }
+         } else if ( value.fieldValue().get() instanceof CommentFieldValue )
+         {
+           CommentFieldValue field = (CommentFieldValue) value.fieldValue().get();
+           component = new JLabel( field.comment().get() );
          } else
          {
             component = new JTextField( );

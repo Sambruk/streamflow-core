@@ -21,6 +21,7 @@ import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -245,6 +246,25 @@ public class FormDefinitionFieldServerResource
       FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
 
       form.moveField( field, newIndex.integer().get() );
+   }
+
+   public void changecomment( StringDTO newComment )
+   {
+      String identity = getRequest().getAttributes().get( "form" ).toString();
+      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      FormEntity form = uow.get( FormEntity.class, identity );
+      checkPermission( form );
+      FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
+
+      FieldValue value = field.fieldValue().get();
+      if ( value instanceof CommentFieldValue )
+      {
+         ValueBuilder<CommentFieldValue> builder =
+               vbf.newValueBuilder( CommentFieldValue.class ).withPrototype( (CommentFieldValue) value );
+         builder.prototype().comment().set( newComment.string().get() );
+         field.changeFieldValue( builder.newInstance() );
+      }
    }
 
    public void deleteOperation()
