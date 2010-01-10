@@ -18,7 +18,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import java.util.Date;
@@ -38,7 +38,7 @@ public interface TaskDTO
 
    Property<Date> creationDate();
 
-   Property<TaskStates> status();
+   Property<States> status();
 
    Property<ListValue> labels();
 }

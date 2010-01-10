@@ -18,8 +18,8 @@ import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.web.domain.group.GroupEntity;
-import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
 
 /**
  * JAVADOC
@@ -38,13 +38,13 @@ public class GroupsSteps
    @Given("group named $name")
    public void givenGroup( String name )
    {
-      givenGroup = ouSteps.givenOu.getGroupByName( name );
+      givenGroup = (GroupEntity) ouSteps.givenOu.getGroupByName( name );
    }
 
    @When("a group named $name is created")
    public void createGroup( String name )
    {
-      givenGroup = ouSteps.givenOu.createGroup( name );
+      givenGroup = (GroupEntity) ouSteps.givenOu.createGroup( name );
    }
 
    @When("group is added")
@@ -62,7 +62,7 @@ public class GroupsSteps
    @When("groups are merged with $name")
    public void mergeGroups( String ouName )
    {
-      Groups mergeToGroups = (Groups) organizationsSteps.givenOrganization.getOrganizationalUnitByName( ouName );
+      Groups mergeToGroups = organizationsSteps.givenOrganization.getOrganizationalUnitByName( ouName );
       ouSteps.givenOu.mergeGroups( mergeToGroups );
    }
 }

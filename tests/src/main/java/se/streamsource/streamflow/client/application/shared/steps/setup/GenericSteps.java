@@ -22,7 +22,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.MemoryEventStoreService;
+import se.streamsource.streamflow.infrastructure.event.source.MemoryEventStoreService;
 
 import java.util.Collections;
 import java.util.List;

@@ -20,11 +20,11 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.tasktype.SelectedTaskTypes;
-import se.streamsource.streamflow.web.domain.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.tasktype.TaskTypes;
+import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**

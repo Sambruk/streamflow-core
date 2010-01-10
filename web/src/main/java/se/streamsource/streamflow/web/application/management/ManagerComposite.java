@@ -37,14 +37,14 @@ import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEventPlayer;
+import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
-import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.task.Inbox;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 
 import java.io.File;

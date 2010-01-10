@@ -23,7 +23,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.task.TaskActions;
+import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -41,11 +41,11 @@ public class TaskActionsModel
    @Uses
    private CommandQueryClient client;
 
-   public TaskActions actions()
+   public Actions actions()
    {
       try
       {
-         return client.query( "actions", TaskActions.class );
+         return client.query( "actions", Actions.class );
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_perform_operation, e);
@@ -129,6 +129,19 @@ public class TaskActionsModel
       }
    }
 
+   public void addLabel( EntityReference entityReference )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( entityReference );
+         client.putCommand( "label", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
    public void assignToMe()
    {
       try
@@ -198,29 +211,17 @@ public class TaskActionsModel
       }
    }
 
-   public void forward( EntityReference to)
+   public void sendTo( EntityReference to)
    {
       try
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( to );
-         client.postCommand( "forward", builder.newInstance() );
+         client.postCommand( "sendto", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
       }
-   }
-
-   public void finish()
-   {
-      try
-      {
-         client.postCommand( "finish" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
-
    }
 
    public void reject()
@@ -258,13 +259,11 @@ public class TaskActionsModel
       }
    }
 
-   public void addLabel( EntityReference entityReference )
+   public void unassign()
    {
       try
       {
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( entityReference );
-         client.putCommand( "label", builder.newInstance() );
+         client.postCommand( "unassign" );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);

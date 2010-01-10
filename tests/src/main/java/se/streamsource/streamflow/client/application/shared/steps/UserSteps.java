@@ -20,7 +20,7 @@ import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 
 import static org.jbehave.Ensure.*;
 

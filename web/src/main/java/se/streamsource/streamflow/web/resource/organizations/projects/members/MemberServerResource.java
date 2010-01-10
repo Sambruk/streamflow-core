@@ -17,8 +17,8 @@ package se.streamsource.streamflow.web.resource.organizations.projects.members;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;
@@ -34,8 +34,8 @@ public class MemberServerResource
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      String member = getRequest().getAttributes().get( "member" ).toString();
-      Participant participant = uow.get( Participant.class, member );
+      String memberId = getRequest().getAttributes().get( "member" ).toString();
+      Member member = uow.get( Member.class, memberId );
 
       String id = getRequest().getAttributes().get( "project" ).toString();
       Project project = uow.get( Project.class, id );
@@ -47,19 +47,19 @@ public class MemberServerResource
       {
          throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
       }
-      project.addMember( participant );
+      project.addMember( member );
    }
 
    public void deleteOperation() throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      String member = getRequest().getAttributes().get( "member" ).toString();
-      Participant participant = uow.get( Participant.class, member );
+      String memberId = getRequest().getAttributes().get( "member" ).toString();
+      Member member = uow.get( Member.class, memberId );
 
       String id = getRequest().getAttributes().get( "project" ).toString();
       Project project = uow.get( Project.class, id );
       checkPermission( project );
-      project.removeMember( participant );
+      project.removeMember( member );
    }
 }

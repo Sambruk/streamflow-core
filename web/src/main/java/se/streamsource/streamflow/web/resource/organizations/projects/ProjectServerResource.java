@@ -23,13 +23,13 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.project.ProjectRole;
-import se.streamsource.streamflow.web.domain.project.ProjectRoles;
-import se.streamsource.streamflow.web.domain.project.Projects;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
+import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;

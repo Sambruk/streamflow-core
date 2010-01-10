@@ -21,7 +21,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.rest.MBeanServerImporter;
-import se.streamsource.streamflow.infrastructure.event.DomainEventPlayerService;
+import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
 
 import javax.management.MBeanServer;

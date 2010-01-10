@@ -15,9 +15,9 @@
 package se.streamsource.streamflow.web.resource.users.workspace.projects;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.group.Participation;
+import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -34,9 +34,9 @@ public class WorkspaceProjectsServerResource
       ListValueBuilder listBuilder = new ListValueBuilder( vbf );
 
       String id = (String) getRequest().getAttributes().get( "user" );
-      Participation.Data participant = uow.get( Participation.Data.class, id );
+      ProjectQueries memberships = uow.get( ProjectQueries.class, id );
 
-      return listBuilder.addDescribableItems( participant.allProjects() ).newList();
+      return listBuilder.addDescribableItems( memberships.allProjects() ).newList();
    }
 
 }

@@ -14,21 +14,28 @@
 
 package se.streamsource.streamflow.web.resource.task;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.entity.EntityReference;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
-import se.streamsource.streamflow.domain.task.TaskActions;
+import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.task.*;
-import se.streamsource.streamflow.web.domain.user.User;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
-import se.streamsource.streamflow.web.domain.tasktype.TaskTypeQueries;
-import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
-import se.streamsource.streamflow.web.domain.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.label.Label;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.task.TaskLabelsQueries;
+import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import javax.security.auth.Subject;
@@ -50,15 +57,15 @@ public class TaskActionsServerResource
    }
 
    // List possible actions
-   public TaskActions actions()
+   public Actions actions()
    {
-      ValueBuilder<TaskActions> builder = vbf.newValueBuilder( TaskActions.class );
+      ValueBuilder<Actions> builder = vbf.newValueBuilder( se.streamsource.streamflow.domain.interaction.gtd.Actions.class );
       List<String> actions = builder.prototype().actions().get();
 
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
-      UserEntity user = getUser();
+      Actor actor = getActor();
 
-      task.addActions( user, actions);
+      task.addActions( actor, actions);
 
       return builder.newInstance();
    }
@@ -102,15 +109,15 @@ public class TaskActionsServerResource
    {
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
 
-      User user = getUser();
+      Actor actor = getActor();
 
       if (task.assignedTo().get() == null)
       {
-         // Inbox or Delegations/WaitingFor
-         Delegations delegations = (Delegations) task.delegatedTo().get();
-         delegations.accept( task, user );
+         // Delegations
+         Owner owner = (Owner) task.delegatedTo().get();
+         task.assignTo( actor );
+         task.sendTo( owner );
       }
-
    }
 
    public void label( EntityReferenceDTO reference )
@@ -118,7 +125,7 @@ public class TaskActionsServerResource
       UnitOfWork uow = uowf.currentUnitOfWork();
       String taskId = (String) getRequest().getAttributes().get( "task" );
 
-      TaskEntity task = uow.get( TaskEntity.class, taskId );
+      Labelable task = uow.get( Labelable.class, taskId );
       Label label = uow.get( Label.class, reference.entity().get().identity() );
 
       task.addLabel( label );
@@ -126,17 +133,13 @@ public class TaskActionsServerResource
 
    public void assign()
    {
-      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
+      Assignable task = uowf.currentUnitOfWork().get( Assignable.class, getRequest().getAttributes().get( "task" ).toString() );
 
-      Owner owner = task.owner().get();
+      Assignee assignee = getActor();
 
-      User user = getUser();
-
-      if (task.assignedTo().get() == null)
+      if (!task.isAssigned())
       {
-         // Inbox or Delegations/WaitingFor
-         Inbox inbox = (Inbox) owner;
-         inbox.assignTo( task, user );
+         task.assignTo( assignee );
       }
    }
 
@@ -146,62 +149,42 @@ public class TaskActionsServerResource
 
       Owner owner = task.owner().get();
 
-      User user = getUser();
+      Actor actor = getActor();
 
-      if (task.assignedTo().get() == null)
+      if (!task.isAssigned())
       {
          // Inbox or WaitingFor
-         if (task.isDelegatedBy( user ))
+         if (task.isDelegatedBy( actor ))
          {
-            WaitingFor waitingFor = task.delegatedFrom().get();
-            waitingFor.completeWaitingForTask( task, user );
+            task.sendTo( owner );
 
-         } else
-         {
-            Inbox inbox = (Inbox) owner;
-            inbox.completeTask( task, user );
          }
-      } else
-      {
-         Assignments assignments = (Assignments) owner;
-         assignments.completeAssignedTask( task );
+
+         task.assignTo( actor );
       }
+
+      task.complete();
    }
 
    public void done()
    {
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
-      User user = getUser();
+      Actor actor = getActor();
 
-      Delegations delegations = (Delegations) task.delegatedTo().get();
-      delegations.finishDelegatedTask( task, user );
+      task.assignTo( actor );
+      task.sendTo( (Owner) task.delegatedTo().get() );
+      task.done();
    }
 
-   public void finish()
-   {
-      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
-      WaitingFor waitingFor = task.delegatedFrom().get();
-      waitingFor.completeFinishedTask( task );
-   }
-
-   public void forward( EntityReferenceDTO entity )
+   public void sendto( EntityReferenceDTO entity )
    {
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
 
-      Inbox toInbox = uowf.currentUnitOfWork().get( Inbox.class, entity.entity().get().identity() );
+      Owner toOwner = uowf.currentUnitOfWork().get( Owner.class, entity.entity().get().identity() );
 
-      Owner owner = task.owner().get();
+      task.unassign();
 
-      if (task.assignedTo().get() == null)
-      {
-         // Inbox or Delegations/WaitingFor
-         Inbox inbox = (Inbox) owner;
-         inbox.forwardTo( task, toInbox );
-      } else
-      {
-         Assignments assignments = (Assignments) owner;
-         assignments.forwardAssignedTaskTo( task, toInbox );
-      }
+      task.sendTo( toOwner );
    }
 
    public void delegate( EntityReferenceDTO entity )
@@ -212,63 +195,39 @@ public class TaskActionsServerResource
 
       Owner owner = task.owner().get();
 
-      User user = getUser();
+      Actor actor = getActor();
 
-      if (task.assignedTo().get() == null)
-      {
-         // Inbox or Delegations/WaitingFor
-         Inbox inbox = (Inbox) owner;
-         inbox.delegateTo( task, to, user );
-      } else
-      {
-         Assignments assignments = (Assignments) owner;
-         assignments.delegateAssignedTaskTo( task, to );
-      }
+      task.unassign();
+
+      task.delegateTo( to, actor, owner );
    }
 
    public void drop()
    {
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
 
-      Owner owner = task.owner().get();
+      Actor actor = getActor();
 
-      User user = getUser();
-
-      if (task.assignedTo().get() == null)
+      if (!task.isAssigned())
       {
-         // Inbox or Delegations/WaitingFor
-         Inbox inbox = (Inbox) owner;
-         inbox.dropTask( task, user );
-      } else
-      {
-         Assignments assignments = (Assignments) owner;
-         assignments.dropAssignedTask( task );
+         task.assignTo( actor );
       }
 
+      task.drop();
    }
 
    public void redo()
    {
-      TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
-      WaitingFor waitingFor = task.delegatedFrom().get();
-      waitingFor.redoFinishedTask( task );
+      Status task = uowf.currentUnitOfWork().get( Status.class, getRequest().getAttributes().get( "task" ).toString() );
+      task.redo();
    }
 
    public void reject()
    {
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
 
-      if (task.assignedTo().get() == null)
-      {
-         // Delegations
-         Delegations delegations = (Delegations) task.delegatedTo().get();
-         delegations.reject( task );
-      } else
-      {
-         Owner owner = task.owner().get();
-         Assignments assignments = (Assignments) owner;
-         assignments.rejectAssignedTask(task);
-      }
+      task.unassign();
+      task.rejectDelegation();
    }
 
    public void tasktype( EntityReferenceDTO dto )
@@ -286,7 +245,20 @@ public class TaskActionsServerResource
          task.changeTaskType( null );
    }
 
-   private UserEntity getUser()
+   public void unassign()
+   {
+      Assignable task = uowf.currentUnitOfWork().get( Assignable.class, getRequest().getAttributes().get( "task" ).toString() );
+
+      task.unassign();
+   }
+
+   public void deleteOperation()
+   {
+      Removable task = uowf.currentUnitOfWork().get( Removable.class, getRequest().getAttributes().get( "task" ).toString() );
+      task.deleteEntity();
+   }
+
+   private Actor getActor()
    {
       Subject subject = Subject.getSubject( AccessController.getContext() );
       if (subject == null)
@@ -297,7 +269,7 @@ public class TaskActionsServerResource
          if (iterator.hasNext())
          {
             String userName = iterator.next().getName();
-            return uowf.currentUnitOfWork().get( UserEntity.class, userName );
+            return uowf.currentUnitOfWork().get( Actor.class, userName );
          } else
             return null;
       }

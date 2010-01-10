@@ -22,18 +22,17 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.web.domain.organization.Organization;
-import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.role.Role;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.role.Role;
 
 import java.util.logging.Logger;
-
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * Ensure that the most basic entities are always created. This includes:
@@ -79,7 +78,7 @@ public interface BootstrapDataService
             } catch (NoSuchEntityException e)
             {
                // Create admin
-               admin = organizations.createUser( UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME );
+               admin = (UserEntity) organizations.createUser( UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME );
 
                ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder( ContactValue.class );
                contactBuilder.prototype().name().set( "Administrator" );

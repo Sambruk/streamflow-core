@@ -17,7 +17,7 @@ package se.streamsource.streamflow.web.resource.users.workspace.user.delegations
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.DelegationsQueries;
+import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**

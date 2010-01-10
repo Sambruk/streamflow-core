@@ -17,8 +17,8 @@ package se.streamsource.streamflow.web.resource.organizations.groups;
 import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.Groups;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.resource.Path;
 
 import java.util.ArrayList;

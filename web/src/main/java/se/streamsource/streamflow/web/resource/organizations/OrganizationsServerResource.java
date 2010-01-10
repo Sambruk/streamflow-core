@@ -37,10 +37,10 @@ import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
-import se.streamsource.streamflow.web.domain.organization.Organizations;
-import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationsQueries;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.organizations.Organizations;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.io.BufferedReader;

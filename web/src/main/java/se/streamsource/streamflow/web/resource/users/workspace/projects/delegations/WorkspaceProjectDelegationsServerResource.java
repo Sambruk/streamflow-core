@@ -16,14 +16,15 @@ package se.streamsource.streamflow.web.resource.users.workspace.projects.delegat
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.DelegationsQueries;
-import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -47,8 +48,8 @@ public class WorkspaceProjectDelegationsServerResource
    protected void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
    {
       ((DelegatedTaskDTO) prototype).delegatedOn().set( task.delegatedOn().get() );
-      Owner owner = uowf.currentUnitOfWork().get( Owner.class, task.owner().get().identity().get() );
-      ((DelegatedTaskDTO) prototype).delegatedFrom().set( owner.getDescription() );
+      Owner owner = task.owner().get();
+      ((DelegatedTaskDTO) prototype).delegatedFrom().set( ((Describable)owner).getDescription() );
 
       super.buildTask( prototype, labelBuilder, labelPrototype, task );
    }

@@ -18,7 +18,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 
 import java.util.Date;
 
@@ -43,7 +43,7 @@ public class WaitingForTaskTableFormatter
             String.class,
             String.class,
             Date.class,
-            TaskStates.class
+            States.class
             };
    }
 

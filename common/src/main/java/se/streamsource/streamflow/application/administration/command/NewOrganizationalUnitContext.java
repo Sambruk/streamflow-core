@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.application.administration.command;
 
-import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.domain.Context;
 
 /**

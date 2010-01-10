@@ -18,8 +18,8 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 
 /**
  * JAVADOC
@@ -50,7 +50,7 @@ public class InboxSteps
       try
       {
          UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
-         projectsSteps.givenProject.forwardTo( givenTask, user );
+         givenTask.sendTo( user );
       } catch (Exception e)
       {
          genericSteps.setThrowable( e );
@@ -62,7 +62,7 @@ public class InboxSteps
    {
       try
       {
-         projectsSteps.givenProject.completeTask( givenTask, orgsSteps.givenUser );
+         givenTask.complete();
       } catch (Exception e)
       {
          genericSteps.setThrowable( e );

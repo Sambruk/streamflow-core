@@ -19,10 +19,11 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnitRefactoring;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitsQueries;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 
 /**
  * JAVADOC
@@ -49,7 +50,7 @@ public class OrganizationalUnitsSteps
    @Given("organizational unit named $name")
    public void givenOU( String name )
    {
-      givenOrganizationalUnits = ((OrganizationalUnits.Data) givenOrganizationalUnits).getOrganizationalUnitByName( name );
+      givenOrganizationalUnits = ((OrganizationalUnitsQueries) givenOrganizationalUnits).getOrganizationalUnitByName( name );
       givenOu = (OrganizationalUnitEntity) givenOrganizationalUnits;
    }
 
@@ -72,7 +73,7 @@ public class OrganizationalUnitsSteps
       try
       {
          OrganizationalUnits organizationalUnits = ((OrganizationalUnitRefactoring.Data) givenOrganizationalUnits).getParent();
-         OrganizationalUnit removeOu = ((OrganizationalUnits.Data) organizationalUnits).getOrganizationalUnitByName( name );
+         OrganizationalUnit removeOu = ((OrganizationalUnitsQueries) organizationalUnits).getOrganizationalUnitByName( name );
          organizationalUnits.removeOrganizationalUnit( removeOu );
       } catch (Exception e)
       {

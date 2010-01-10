@@ -25,8 +25,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.web.domain.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 
 import java.util.Date;
 
@@ -67,7 +67,7 @@ public class SubmittedFormsSteps
    {
       ValueBuilder<SubmittedFieldValue> builder = vbf.newValueBuilder( SubmittedFieldValue.class );
 
-      FieldEntity entity = formsSteps.givenForm.getFieldByName( field );
+      Field entity = formsSteps.givenForm.getFieldByName( field );
       builder.prototype().field().set( EntityReference.getEntityReference( entity ) );
       builder.prototype().value().set( value );
 

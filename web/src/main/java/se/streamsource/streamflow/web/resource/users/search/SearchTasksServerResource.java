@@ -14,26 +14,24 @@
 
 package se.streamsource.streamflow.web.resource.users.search;
 
-import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.error.ErrorResources;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
-import se.streamsource.streamflow.web.domain.label.Labelable;
-import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 import java.security.Principal;
@@ -46,8 +44,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -180,7 +176,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
    private QueryBuilder<TaskEntity> buildLabelQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
    {
       search = search.substring( "label:".length() );
-      queryBuilder = queryBuilder.where( eq( QueryExpressions.oneOf( templateFor( Labelable.Data.class ).labels() ).description(), search ) );
+      queryBuilder = queryBuilder.where( eq( templateFor(Describable.Data.class, oneOf( templateFor( Labelable.Data.class ).labels()) ).description(), search ) );
       return queryBuilder;
    }
 
@@ -366,12 +362,12 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
    {
       if (task.assignedTo().get() != null)
       {
-         ((SearchTaskDTO) prototype).assignedTo().set( task.assignedTo().get().getDescription() );
+         ((SearchTaskDTO) prototype).assignedTo().set( ((Describable)task.assignedTo().get()).getDescription() );
       } else
       {
          ((SearchTaskDTO) prototype).assignedTo().set( null );
       }
-      ((SearchTaskDTO) prototype).project().set( task.owner().get().getDescription() );
+      ((SearchTaskDTO) prototype).project().set( ((Describable)task.owner().get()).getDescription() );
 
    }
 

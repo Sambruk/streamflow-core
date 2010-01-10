@@ -61,7 +61,9 @@ public class ServerEntityStoreAssembler
                      "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity" ).
                forEntities( "se.streamsource.streamflow.web.domain.organization.OrganizationEntity",
                      "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity" ).
-               renameManyAssociation( "roles", "projectRoles" );
+               renameManyAssociation( "roles", "projectRoles" ).
+               toVersion( "0.3.20.0" ).
+               forEntities( "se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" );
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
       }

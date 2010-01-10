@@ -27,7 +27,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
@@ -39,16 +39,16 @@ import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.Participation;
-import se.streamsource.streamflow.web.domain.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.label.Labelable;
-import se.streamsource.streamflow.web.domain.project.Members;
-import se.streamsource.streamflow.web.domain.project.OwningOrganizationalUnit;
-import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Owner;
-import se.streamsource.streamflow.web.domain.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.group.Participation;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
@@ -57,13 +57,12 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static java.util.Arrays.asList;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static java.util.Arrays.*;
 
 /**
  * Generate statistics data to a JDBC database. This service
@@ -215,10 +214,10 @@ public interface StatisticsService
                         if (assignee == null)
                            continue;
 
-                        stmt.setString( idx++, assignee.getDescription() );
-                        stmt.setString( idx++, owner.getDescription() );
+                        stmt.setString( idx++, ((Describable)assignee).getDescription() );
+                        stmt.setString( idx++, ((Describable)owner).getDescription() );
                         OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
-                        Describable.Data organizationalUnit = (Describable.Data) po.organizationalUnit().get();
+                        OrganizationalUnit organizationalUnit = po.organizationalUnit().get();
 
                         // Figure out which group the user belongs to
                         Participation.Data participant = (Participation.Data) assignee;
@@ -226,8 +225,8 @@ public interface StatisticsService
                         findgroup:
                         for (Group group : participant.groups())
                         {
-                           Members.Data members = (Members.Data) owner;
-                           if (members.members().contains( group ))
+                           Participation.Data members = (Participation.Data) owner;
+                           if (members.groups().contains( group ))
                            {
                               groupName = group.getDescription();
                               break findgroup;
@@ -236,18 +235,18 @@ public interface StatisticsService
 
                         stmt.setString( idx++, groupName );
 
-                        stmt.setString( idx, organizationalUnit.description().get() );
+                        stmt.setString( idx, organizationalUnit.getDescription() );
 
                         stmt.executeUpdate();
                         stmt.close();
 
                         // Add Label information
                         Labelable.Data labelable = task;
-                        for (LabelEntity labelEntity : labelable.labels())
+                        for (Label labelEntity : labelable.labels())
                         {
                            stmt = conn.prepareStatement( sql.getProperty( "labels.insert" ) );
                            stmt.setString( 1, id );
-                           stmt.setString( 2, labelEntity.description().get() );
+                           stmt.setString( 2, labelEntity.getDescription() );
                            stmt.executeUpdate();
                            stmt.close();
                         }

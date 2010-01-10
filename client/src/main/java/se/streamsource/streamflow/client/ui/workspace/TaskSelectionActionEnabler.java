@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.JXTable;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 
 import javax.swing.Action;
 
@@ -39,6 +39,6 @@ public class TaskSelectionActionEnabler
    @Override
    public boolean isSelectedValueValid()
    {
-      return !((TaskStates) table.getValueAt( table.convertRowIndexToModel( table.getSelectedRow() ), completedColumn )).equals( TaskStates.COMPLETED );
+      return !((States) table.getValueAt( table.convertRowIndexToModel( table.getSelectedRow() ), completedColumn )).equals( States.COMPLETED );
    }
 }

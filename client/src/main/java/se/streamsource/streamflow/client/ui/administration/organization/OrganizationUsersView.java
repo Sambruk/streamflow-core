@@ -33,7 +33,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.SelectOrganizationUsersDialog;
 import se.streamsource.streamflow.client.ui.administration.SelectOrganizationUsersDialogModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.domain.ListValueBuilder;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;

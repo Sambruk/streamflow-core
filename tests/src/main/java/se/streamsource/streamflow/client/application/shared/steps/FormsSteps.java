@@ -23,9 +23,10 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.web.domain.form.Field;
-import se.streamsource.streamflow.web.domain.form.FormEntity;
-import se.streamsource.streamflow.web.domain.form.Forms;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
 
 /**
  * JAVADOC
@@ -48,7 +49,7 @@ public class FormsSteps
    @Structure
    ValueBuilderFactory vbf;
 
-   public FormEntity givenForm;
+   public Form givenForm;
 
    @Given("form named $form")
    public void givenForm( String form )

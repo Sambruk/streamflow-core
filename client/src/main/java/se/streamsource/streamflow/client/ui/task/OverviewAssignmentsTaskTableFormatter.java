@@ -20,7 +20,7 @@ import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 
 import java.util.Date;
 
@@ -43,7 +43,7 @@ public class OverviewAssignmentsTaskTableFormatter
             String.class,
             String.class,
             Date.class,
-            TaskStates.class
+            States.class
             };
    }
 

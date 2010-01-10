@@ -18,7 +18,7 @@ import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 
 /**
  * JAVADOC
@@ -35,13 +35,13 @@ public class ProjectsSteps
    @Given("project named $project")
    public void givenProject( String name )
    {
-      givenProject = ouSteps.givenOu.getProjectByName( name );
+      givenProject = (ProjectEntity) ouSteps.givenOu.getProjectByName( name );
    }
 
    @When("a project named $name is created")
    public void createProject( String name )
    {
-      givenProject = ouSteps.givenOu.createProject( name );
+      givenProject = (ProjectEntity) ouSteps.givenOu.createProject( name );
    }
 
    @When("project is added")

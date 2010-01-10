@@ -24,9 +24,9 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 
 /**
  * JAVADOC
@@ -73,7 +73,7 @@ public class OrganizationsSteps
    {
       try
       {
-         givenOrganization = organizations.createOrganization( name );
+         givenOrganization = (OrganizationEntity) organizations.createOrganization( name );
       } catch (Exception e)
       {
          genericSteps.setThrowable( e );
@@ -86,7 +86,7 @@ public class OrganizationsSteps
    {
       try
       {
-         givenUser = organizations.createUser( newUser, newUser );
+         givenUser = (UserEntity) organizations.createUser( newUser, newUser );
       } catch (Exception e)
       {
          genericSteps.setThrowable( e );

@@ -17,7 +17,7 @@ package se.streamsource.streamflow.web.resource.users.workspace.projects.inbox;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.InboxQueries;
+import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**

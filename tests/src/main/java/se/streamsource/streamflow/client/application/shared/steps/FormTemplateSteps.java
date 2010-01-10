@@ -18,7 +18,7 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.form.FormTemplateEntity;
+import se.streamsource.streamflow.web.domain.structure.form.FormTemplate;
 
 /**
  * JAVADOC
@@ -58,7 +58,7 @@ public class FormTemplateSteps
    {
       try
       {
-         FormTemplateEntity form = formTemplatesSteps.givenTemplate;
+         FormTemplate form = formTemplatesSteps.givenTemplate;
 
          form.removeField( fieldDefinitionsSteps.givenField );
       } catch (Exception e)

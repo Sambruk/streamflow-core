@@ -20,12 +20,13 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.label.Label;
-import se.streamsource.streamflow.web.domain.label.Labels;
-import se.streamsource.streamflow.web.domain.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -57,10 +58,10 @@ public class SelectedLabelsServerResource
       UnitOfWork uow = uowf.currentUnitOfWork();
       String id = (String) getRequest().getAttributes().get( "labels" );
       String organization = (String) getRequest().getAttributes().get( "organization" );
-      SelectedLabels.Data selectedLabels = uow.get( SelectedLabels.Data.class, id );
+      PossibleLabelsQueries possibleLabelsQueries = uow.get( PossibleLabelsQueries.class, id );
       Labels.Data labels = uow.get( Labels.Data.class, organization );
 
-      return selectedLabels.possibleLabels( labels.labels() );
+      return possibleLabelsQueries.possibleLabels( labels.labels() );
    }
 
    public void createlabel( StringDTO name ) throws ResourceException
@@ -73,7 +74,8 @@ public class SelectedLabelsServerResource
       Labels labels = uow.get( Labels.class, org );
       SelectedLabels selectedLabels = uow.get( SelectedLabels.class, identity );
 
-      selectedLabels.createLabel( labels, name.string().get() );
+      Label label = labels.createLabel( name.string().get() );
+      selectedLabels.addLabel( label );
    }
 
    public void addlabel( EntityReferenceDTO labelDTO ) throws ResourceException

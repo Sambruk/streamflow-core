@@ -29,7 +29,6 @@ public interface Contactable
 
    ContactValue getContact();
 
-
    interface Data
    {
       Property<ContactValue> contact();

@@ -16,6 +16,7 @@ package se.streamsource.streamflow.infrastructure.event;
 
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.infrastructure.event.source.MemoryEventStoreService;
 
 /**
  * JAVADOC

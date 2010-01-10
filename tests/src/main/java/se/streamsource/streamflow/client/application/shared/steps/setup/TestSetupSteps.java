@@ -34,13 +34,12 @@ import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSt
 import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.SubmittedFormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.TaskTypesSteps;
-import se.streamsource.streamflow.web.domain.organization.Organizations;
-import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.task.Assignments;
-import se.streamsource.streamflow.web.domain.task.Inbox;
-import se.streamsource.streamflow.web.domain.task.Task;
-import se.streamsource.streamflow.web.domain.task.WaitingFor;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.organizations.Organizations;
+import se.streamsource.streamflow.web.domain.structure.user.User;
 
 /**
  * JAVADOC
@@ -132,16 +131,12 @@ public class TestSetupSteps
    @Structure
    UnitOfWorkFactory uowf;
 
-   public Task assignedTask;
-   public Task unassignedTask;
-   public Task unreadAssignedTask;
-   public Task readAssignedTask;
-   public Task unreadInboxTask;
-   public Task readInboxTask;
-   public Task readWaitingForTask;
-   public Task unreadWaitingForTask;
-   public Task readDelegatedTask;
-   public Task unreadDelegatedTask;
+   public TaskEntity assignedTask;
+   public TaskEntity unassignedTask;
+   public TaskEntity readAssignedTask;
+   public TaskEntity readInboxTask;
+   public TaskEntity readWaitingForTask;
+   public TaskEntity readDelegatedTask;
 
    @Given("basic setup 1")
    public void setup1() throws Exception
@@ -243,17 +238,16 @@ public class TestSetupSteps
       assignedTask = user.createTask();
       assignedTask.assignTo( user );
       Inbox inbox = user;
-      unreadInboxTask = user.createTask();
       readInboxTask = user.createTask();
 
-      Assignments assignments = organizationsSteps.givenOrganizations().getUserByName( USER2 );
-      unreadAssignedTask = assignments.createAssignedTask( user );
-      readAssignedTask = assignments.createAssignedTask( user );
+      UserEntity user2 = organizationsSteps.givenOrganizations().getUserByName( USER2 );
+      readAssignedTask = user2.createTask();
+      readAssignedTask.assignTo( user2 );
 
       ouSteps.givenOrganization();
       ouSteps.givenOU( OU1 );
       projectsSteps.givenProject( PROJECT1 );
-      Project project = projectsSteps.givenProject;
+      ProjectEntity project = projectsSteps.givenProject;
       project.addMember( user );
       project.createTask();
       project.createTask().assignTo( user );
@@ -267,14 +261,8 @@ public class TestSetupSteps
       project.createTask();
       project.createTask();
 
-      WaitingFor waitingFor = project;
-      UserEntity user2 = organizationsSteps.givenOrganizations().getUserByName( USER2 );
-      unreadWaitingForTask = project.createTask();
-      project.delegateTo( unreadWaitingForTask, project, user2 );
-
       readWaitingForTask = project.createTask();
-      project.delegateTo( readWaitingForTask, project, user2 );
-      readWaitingForTask.delegateTo( user, user2, waitingFor );
+      readWaitingForTask.delegateTo( user, user2, project );
 
       genericSteps.clearEvents();
    }
@@ -286,7 +274,7 @@ public class TestSetupSteps
       organizationsSteps.givenOrganization( "Organization" );
       organizations.createUser( USER1, "password1" ).join( organizationsSteps.givenOrganization );
       organizations.createUser( USER2, "password2" ).join( organizationsSteps.givenOrganization );
-      UserEntity entity = organizations.createUser( DISABLED_USER, "password3" );
+      User entity = organizations.createUser( DISABLED_USER, "password3" );
 
       entity.join( organizationsSteps.givenOrganization );
       entity.changeEnabled( false );

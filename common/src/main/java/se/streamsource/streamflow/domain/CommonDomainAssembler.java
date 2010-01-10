@@ -19,7 +19,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import se.streamsource.streamflow.domain.contact.ContactAssembler;
 import se.streamsource.streamflow.domain.form.FormAssembler;
-import se.streamsource.streamflow.domain.task.TaskActions;
+import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 
 /**
  * JAVADOC
@@ -31,6 +31,6 @@ public class CommonDomainAssembler
       new ContactAssembler().assemble( domainLayer.moduleAssembly( "Contact" ) );
       new FormAssembler().assemble( domainLayer.moduleAssembly( "Form" ) );
 
-      domainLayer.moduleAssembly( "Task" ).addValues( TaskActions.class ).visibleIn( Visibility.application );
+      domainLayer.moduleAssembly( "Task" ).addValues( Actions.class ).visibleIn( Visibility.application );
    }
 }

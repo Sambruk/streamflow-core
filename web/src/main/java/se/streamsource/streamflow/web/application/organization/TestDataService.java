@@ -22,29 +22,31 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
-import se.streamsource.streamflow.web.domain.form.Field;
-import se.streamsource.streamflow.web.domain.form.Form;
-import se.streamsource.streamflow.web.domain.form.FormTemplates;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.label.Label;
-import se.streamsource.streamflow.web.domain.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.organization.Organizations;
-import se.streamsource.streamflow.web.domain.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.project.Project;
-import se.streamsource.streamflow.web.domain.project.ProjectRole;
-import se.streamsource.streamflow.web.domain.task.Task;
-import se.streamsource.streamflow.web.domain.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.user.User;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organizations.Organizations;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.task.Task;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.Date;
 import java.util.List;
@@ -187,7 +189,7 @@ public interface TestDataService
          info2.addSelectedTaskType( bug );
          info2.addSelectedTaskType( improvement );
 
-         info2.addMember( developers );
+         info2.addMember( (Member) developers );
          info2.addMember( user );
 
          Project itSupport = admin.createProject( "IT support" );
@@ -198,7 +200,7 @@ public interface TestDataService
          invoicing.addMember( user );
 
          // Create tasks
-         Task task = project.createTask();
+         Task task = ((Inbox)project).createTask();
          task.changeDescription( "Arbetsuppgift 0" );
 
          SubmittedFormValue submitted = createSubmittedForm( user, commentForm, commentField, "Remember that this Task is important" );
@@ -212,7 +214,7 @@ public interface TestDataService
 
 
          for (int i = 1; i < 30; i++)
-            project.createTask().changeDescription( "Arbetsuppgift " + i );
+            ((Inbox)project).createTask().changeDescription( "Arbetsuppgift " + i );
 
          // Create labels
          for (int i = 1; i < 10; i++)

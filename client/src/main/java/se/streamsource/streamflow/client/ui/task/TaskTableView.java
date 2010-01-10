@@ -34,7 +34,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 
 import javax.swing.*;
@@ -130,7 +130,7 @@ public class TaskTableView
             return format.format( time );
          }
       } ) );
-      taskTable.setDefaultRenderer( TaskStates.class, new TaskStatusTableCellRenderer() );
+      taskTable.setDefaultRenderer( States.class, new TaskStatusTableCellRenderer() );
 
       taskTable.addHighlighter( HighlighterFactory.createAlternateStriping() );
 
@@ -145,7 +145,7 @@ public class TaskTableView
             if (componentAdapter != null)
             {
                Object value = componentAdapter.getValue( componentAdapter.getColumnCount() - 1 );
-               return value.equals(TaskStates.DROPPED) || value.equals(TaskStates.COMPLETED);
+               return value.equals( States.DROPPED) || value.equals( States.COMPLETED);
             } else
             return false;
          }

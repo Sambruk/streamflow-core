@@ -16,9 +16,9 @@ package se.streamsource.streamflow.web.resource.organizations.roles;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.domain.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.role.RoleEntity;
-import se.streamsource.streamflow.web.domain.role.Roles;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
+import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**

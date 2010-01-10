@@ -23,7 +23,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
 import se.streamsource.streamflow.client.ui.workspace.SelectTaskTypeDialog;
 import se.streamsource.streamflow.client.ui.administration.label.SelectLabelsDialog;
-import se.streamsource.streamflow.domain.task.TaskActions;
+import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -64,7 +64,7 @@ public class TaskActionsView
 
    public void refresh()
    {
-      TaskActions actions = model.actions();
+      Actions actions = model.actions();
 
       actionsPanel.removeAll();
 
@@ -125,7 +125,6 @@ public class TaskActionsView
    public void delete()
    {
       model.delete();
-      refresh();
    }
 
    @Action
@@ -143,21 +142,14 @@ public class TaskActionsView
    }
 
    @Action
-   public void finish()
-   {
-      model.finish();
-      refresh();
-   }
-
-   @Action
-   public void forward()
+   public void sendto()
    {
       SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.use( model ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog);
 
       if (dialog.getSelected() != null)
       {
-         model.forward( dialog.getSelected() );
+         model.sendTo( dialog.getSelected() );
          refresh();
       }
    }
@@ -202,6 +194,13 @@ public class TaskActionsView
          model.taskType( dialog.getSelected() );
          refresh();
       }
+   }
+
+   @Action
+   public void unassign()
+   {
+      model.unassign();
+      refresh();
    }
 
    public void setModel( TaskActionsModel taskActionsModel )

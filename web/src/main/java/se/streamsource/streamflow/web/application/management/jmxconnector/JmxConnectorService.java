@@ -26,7 +26,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import se.streamsource.streamflow.web.domain.user.UserAuthentication;
+import se.streamsource.streamflow.web.domain.interaction.authentication.Authentication;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import javax.management.MBeanServer;
 import javax.management.remote.JMXAuthenticator;
@@ -149,7 +150,7 @@ public interface JmxConnectorService
                String username = aCredentials[0];
                String password = aCredentials[1];
 
-               UserAuthentication user = unitOfWork.get( UserAuthentication.class, username );
+               Authentication user = unitOfWork.get( Authentication.class, username );
 
                if (!user.login( password ))
                {

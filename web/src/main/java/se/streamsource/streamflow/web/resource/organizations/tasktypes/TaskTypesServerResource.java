@@ -18,7 +18,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.tasktype.TaskTypes;
+import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -32,7 +33,7 @@ public class TaskTypesServerResource
    {
       String orgId = (String) getRequest().getAttributes().get( "organization" );
 
-      TaskTypes taskTypes = uowf.currentUnitOfWork().get( TaskTypes.class, orgId );
+      TaskTypesQueries taskTypes = uowf.currentUnitOfWork().get( TaskTypesQueries.class, orgId );
 
       checkPermission( taskTypes );
 

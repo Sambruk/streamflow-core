@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.domain.contact;
 
-import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.structure.Describable;
 
 /**
  * JAVADOC

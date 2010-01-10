@@ -17,11 +17,9 @@ package se.streamsource.streamflow.web.resource.organizations.groups.participant
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.Groups;
-import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.group.Participants;
+import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
+import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -34,24 +32,14 @@ public class ParticipantsServerResource
    public ListValue participants()
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
-      String identity = getRequest().getAttributes().get( "ou" ).toString();
-      Groups.Data groups = uow.get( Groups.Data.class, identity );
 
       ListValueBuilder builder = new ListValueBuilder( vbf );
       String groupId = getRequest().getAttributes().get( "group" ).toString();
-      for (Group group : groups.groups())
+      Participants.Data participants = uow.get( Participants.Data.class, groupId );
+      for (Participant participant : participants.participants())
       {
-         if (group.identity().get().equals( groupId ))
-         {
-            Participants.Data participants = uow.get( Participants.Data.class, groupId );
-            for (Participant participant : participants.participants())
-            {
-               builder.addListItem( participant.getDescription(), EntityReference.getEntityReference( participant ) );
-            }
-            return builder.newList();
-         }
+         builder.addListItem( participant.getDescription(), EntityReference.getEntityReference( participant ) );
       }
-
       return builder.newList();
    }
 }

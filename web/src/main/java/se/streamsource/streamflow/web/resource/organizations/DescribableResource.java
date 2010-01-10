@@ -16,7 +16,7 @@ package se.streamsource.streamflow.web.resource.organizations;
 
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.domain.roles.Describable;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**

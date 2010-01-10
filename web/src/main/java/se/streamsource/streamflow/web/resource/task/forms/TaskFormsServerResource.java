@@ -14,32 +14,25 @@
 
 package se.streamsource.streamflow.web.resource.task.forms;
 
-import org.qi4j.api.entity.EntityReference;
 import static org.qi4j.api.entity.EntityReference.getEntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
-import org.restlet.data.Status;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.form.Fields;
-import se.streamsource.streamflow.web.domain.form.FormEntity;
-import se.streamsource.streamflow.web.domain.form.FormsQueries;
-import se.streamsource.streamflow.web.domain.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.form.SubmittedForms;
-import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
-import se.streamsource.streamflow.web.domain.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
+import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;

@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.web.domain.comment.CommentValue;
+import se.streamsource.streamflow.web.domain.interaction.comment.CommentValue;
 
 import java.util.Date;
 

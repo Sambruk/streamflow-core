@@ -19,8 +19,8 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.form.FieldTemplates;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.FieldTemplates;
 
 /**
  * JAVADOC
@@ -34,7 +34,7 @@ public class FieldDefinitionsSteps
    @Uses
    OrganizationsSteps orgsSteps;
 
-   public FieldEntity givenField;
+   public Field givenField;
 
    @Given("field definition named $name")
    public void givenFieldDefinition( String name )

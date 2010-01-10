@@ -15,7 +15,6 @@
 package se.streamsource.streamflow.web.resource.task.forms;
 
 import org.qi4j.api.entity.EntityReference;
-import static org.qi4j.api.entity.EntityReference.getEntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
@@ -27,21 +26,14 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.form.FormValue;
-import se.streamsource.streamflow.domain.form.FormDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.form.Fields;
-import se.streamsource.streamflow.web.domain.form.FormEntity;
-import se.streamsource.streamflow.web.domain.form.FormsQueries;
-import se.streamsource.streamflow.web.domain.form.Field;
-import se.streamsource.streamflow.web.domain.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.tasktype.TypedTask;
-import se.streamsource.streamflow.web.domain.tasktype.TaskType;
+import se.streamsource.streamflow.domain.form.FormDefinitionValue;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
-import java.util.List;
 import java.util.ArrayList;
 
 /**
@@ -72,7 +64,7 @@ public class TaskFormServerResource
 
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      FormEntity form = uow.get(FormEntity.class, formId);
+      FormEntity form = uow.get( FormEntity.class, formId);
 
       ValueBuilder<FormDefinitionValue> builder =
             vbf.newValueBuilder(FormDefinitionValue.class);

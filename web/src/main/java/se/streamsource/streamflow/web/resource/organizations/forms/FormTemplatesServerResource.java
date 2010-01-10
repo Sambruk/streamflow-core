@@ -17,11 +17,11 @@ package se.streamsource.streamflow.web.resource.organizations.forms;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
+import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.form.Form;
-import se.streamsource.streamflow.web.domain.form.FormQueries;
-import se.streamsource.streamflow.web.domain.form.FormTemplates;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.entity.form.FormQueries;
+import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**

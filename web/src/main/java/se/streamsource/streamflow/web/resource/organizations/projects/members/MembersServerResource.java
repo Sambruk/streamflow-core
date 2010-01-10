@@ -16,16 +16,15 @@ package se.streamsource.streamflow.web.resource.organizations.projects.members;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.group.Group;
-import se.streamsource.streamflow.web.domain.group.Participant;
-import se.streamsource.streamflow.web.domain.organization.OrganizationQueries;
-import se.streamsource.streamflow.web.domain.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.project.Members;
-import se.streamsource.streamflow.web.domain.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -62,7 +61,7 @@ public class MembersServerResource
 
       for (ListItemValue user : list.items().get())
       {
-         if (!project.members().contains( uow.get( Participant.class, user.entity().get().identity() ) ))
+         if (!project.members().contains( uow.get( Member.class, user.entity().get().identity() ) ))
          {
             listBuilder.addListItem( user.description().get(), user.entity().get() );
          }
@@ -89,7 +88,7 @@ public class MembersServerResource
 
       for (ListItemValue grp : list.items().get())
       {
-         if (!group.members().contains( uow.get( Group.class, grp.entity().get().identity() ) ))
+         if (!group.members().contains( uow.get( Member.class, grp.entity().get().identity() ) ))
          {
             listBuilder.addListItem( grp.description().get(), grp.entity().get() );
          }

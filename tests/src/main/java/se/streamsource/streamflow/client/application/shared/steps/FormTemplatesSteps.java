@@ -19,8 +19,8 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
-import se.streamsource.streamflow.web.domain.form.FormTemplateEntity;
-import se.streamsource.streamflow.web.domain.form.FormTemplates;
+import se.streamsource.streamflow.web.domain.structure.form.FormTemplate;
+import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
 
 /**
  * JAVADOC
@@ -37,7 +37,7 @@ public class FormTemplatesSteps
    @Uses
    OrganizationsSteps orgsSteps;
 
-   public FormTemplateEntity givenTemplate;
+   public FormTemplate givenTemplate;
 
    @Given("form template named $form")
    public void givenFormTemplate( String name )

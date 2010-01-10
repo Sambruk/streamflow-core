@@ -16,7 +16,6 @@ package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -27,7 +26,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.task.TaskStates;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -38,7 +37,6 @@ import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
-import javax.swing.SwingUtilities;
 import java.util.List;
 
 /**
@@ -62,7 +60,7 @@ public class TaskTableModel
    public TaskTableModel()
    {
       eventFilter = new EventHandlerFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedTaskType", "changedStatus",
-            "changedOwner","assignedTo","delegatedTo");
+            "changedOwner","assignedTo","delegatedTo", "deletedEntity");
    }
 
    public void notifyEvent( DomainEvent event )
@@ -105,12 +103,12 @@ public class TaskTableModel
                }
             }
             eventList.set( idx, valueBuilder.newInstance() );
-         } else if ("addedLabel,changedTaskType,changedOwner,assignedTo,delegatedTo".indexOf(eventName) != -1)
+         } else if ("addedLabel,changedTaskType,changedOwner,assignedTo,delegatedTo,deletedEntity".indexOf(eventName) != -1)
          {
             refresh();
          } else if (eventName.equals("changedStatus"))
          {
-            TaskStates newStatus = TaskStates.valueOf( EventParameters.getParameter( event, "param1" ));
+            States newStatus = States.valueOf( EventParameters.getParameter( event, "param1" ));
             updatedTask.status().set( newStatus );
             eventList.set( idx, valueBuilder.newInstance() );            
          }

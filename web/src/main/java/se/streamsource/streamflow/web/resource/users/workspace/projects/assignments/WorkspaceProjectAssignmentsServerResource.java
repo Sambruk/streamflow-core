@@ -17,9 +17,11 @@ package se.streamsource.streamflow.web.resource.users.workspace.projects.assignm
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.task.Assignee;
-import se.streamsource.streamflow.web.domain.task.Assignments;
-import se.streamsource.streamflow.web.domain.task.AssignmentsQueries;
+import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
+import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.structure.task.Task;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -46,8 +48,9 @@ public class WorkspaceProjectAssignmentsServerResource
       UnitOfWork uow = uowf.currentUnitOfWork();
       String projectId = (String) getRequest().getAttributes().get( "project" );
       String userId = (String) getRequest().getAttributes().get( "user" );
-      Assignments assignments = uow.get( Assignments.class, projectId );
+      Inbox inbox = uow.get( Inbox.class, projectId );
       Assignee assignee = uow.get( Assignee.class, userId );
-      assignments.createAssignedTask( assignee );
+      Task task = inbox.createTask( );
+      ((Assignable)task).assignTo( assignee );
    }
 }

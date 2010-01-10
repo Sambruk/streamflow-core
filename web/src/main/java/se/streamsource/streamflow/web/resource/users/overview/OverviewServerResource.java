@@ -24,7 +24,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
-import se.streamsource.streamflow.web.domain.group.OverviewQueries;
+import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.io.IOException;

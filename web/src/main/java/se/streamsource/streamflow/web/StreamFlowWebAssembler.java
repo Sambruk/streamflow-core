@@ -14,13 +14,9 @@
 
 package se.streamsource.streamflow.web;
 
-import org.qi4j.bootstrap.ApplicationAssembler;
-import org.qi4j.bootstrap.ApplicationAssembly;
-import org.qi4j.bootstrap.ApplicationAssemblyFactory;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.*;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
+import se.streamsource.streamflow.resource.CommonResourceAssembler;
 import se.streamsource.streamflow.web.application.console.ConsoleAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.migration.MigrationAssembler;
@@ -28,7 +24,15 @@ import se.streamsource.streamflow.web.application.organization.BootstrapAssemble
 import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.application.statistics.StatisticsAssembler;
 import se.streamsource.streamflow.web.configuration.ConfigurationAssembler;
-import se.streamsource.streamflow.web.domain.WebDomainAssembler;
+import se.streamsource.streamflow.web.domain.interaction.comment.CommentAssembler;
+import se.streamsource.streamflow.web.domain.entity.form.FormAssembler;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
+import se.streamsource.streamflow.web.domain.entity.organization.RoleAssembler;
+import se.streamsource.streamflow.web.domain.entity.task.TaskAssembler;
+import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeAssembler;
+import se.streamsource.streamflow.web.domain.entity.user.UserAssembler;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectAssembler;
+import se.streamsource.streamflow.web.domain.entity.label.LabelAssembler;
 import se.streamsource.streamflow.web.infrastructure.database.DatabaseAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
@@ -118,6 +122,16 @@ public class StreamFlowWebAssembler
    protected void assembleDomainLayer( LayerAssembly domainLayer ) throws AssemblyException
    {
       new CommonDomainAssembler().assemble( domainLayer );
-      new WebDomainAssembler().assemble( domainLayer );
+      new CommentAssembler().assemble( domainLayer.moduleAssembly( "Comments" ) );
+      new CommonResourceAssembler().assemble( domainLayer.moduleAssembly( "Common" ) );
+      new FormAssembler().assemble( domainLayer.moduleAssembly( "Forms" ) );
+      new GroupAssembler().assemble( domainLayer.moduleAssembly( "Groups" ) );
+      new LabelAssembler().assemble( domainLayer.moduleAssembly( "Labels" ) );
+      new OrganizationAssembler().assemble( domainLayer.moduleAssembly( "Organizations" ) );
+      new ProjectAssembler().assemble( domainLayer.moduleAssembly( "Projects" ) );
+      new RoleAssembler().assemble( domainLayer.moduleAssembly( "Roles" ) );
+      new TaskAssembler().assemble( domainLayer.moduleAssembly( "Tasks" ) );
+      new TaskTypeAssembler().assemble( domainLayer.moduleAssembly( "Task types" ) );
+      new UserAssembler().assemble( domainLayer.moduleAssembly( "Users" ) );
    }
 }
