@@ -57,13 +57,40 @@ public class ServerEntityStoreAssembler
          MigrationBuilder migrationBuilder = new MigrationBuilder( "0.0" );
          migrationBuilder.
                toVersion( "0.1.14.357" ).
-               renameEntity( "se.streamsource.streamflow.web.domain.project.RoleEntity",
-                     "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity" ).
-               forEntities( "se.streamsource.streamflow.web.domain.organization.OrganizationEntity",
-                     "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity" ).
-               renameManyAssociation( "roles", "projectRoles" ).
-               toVersion( "0.3.20.0" ).
-               forEntities( "se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" );
+                  renameEntity( "se.streamsource.streamflow.web.domain.project.RoleEntity",
+                        "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity" ).
+                  forEntities( "se.streamsource.streamflow.web.domain.organization.OrganizationEntity",
+                        "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity" ).
+                     renameManyAssociation( "roles", "projectRoles" ).
+                  end().
+               toVersion( "0.3.20.962" ).
+                  renamePackage( "se.streamsource.streamflow.web.domain.form", "se.streamsource.streamflow.web.domain.entity.form" ).
+                     withEntities( "FieldEntity",
+                                   "FieldTemplateEntity",
+                                   "FormEntity",
+                                   "FormTemplateEntity").
+                  end().
+                  renameEntity( "se.streamsource.streamflow.web.domain.label.LabelEntity","se.streamsource.streamflow.web.domain.entity.label.LabelEntity" ).
+                  renamePackage("se.streamsource.streamflow.web.domain.organization", "se.streamsource.streamflow.web.domain.entity.organization").
+                     withEntities( "GroupEntity",
+                                   "OrganizationalUnitEntity",
+                                   "OrganizationEntity",
+                                   "OrganizationsEntity",
+                                   "RoleEntity").
+                  end().
+                  renamePackage( "se.streamsource.streamflow.web.domain.project", "se.streamsource.streamflow.web.domain.entity.project" ).
+                     withEntities( "ProjectEntity", "ProjectRoleEntity" ).
+                  end().
+                  renamePackage( "se.streamsource.streamflow.web.domain.task", "se.streamsource.streamflow.web.domain.entity.task" ).
+                     withEntities( "TaskEntity").
+                  end().
+                  renamePackage( "se.streamsource.streamflow.web.domain.tasktype", "se.streamsource.streamflow.web.domain.entity.tasktype" ).
+                     withEntities( "TaskTypeEntity").
+                  end().
+                  renamePackage( "se.streamsource.streamflow.web.domain.user", "se.streamsource.streamflow.web.domain.entity.user" ).
+                     withEntities( "UserEntity").
+                  end()
+                  ;
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
       }
