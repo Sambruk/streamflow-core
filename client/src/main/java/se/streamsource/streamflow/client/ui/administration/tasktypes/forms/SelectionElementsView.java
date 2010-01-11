@@ -19,11 +19,16 @@ import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -48,11 +53,18 @@ import java.awt.Color;
 public class SelectionElementsView
       extends JPanel
 {
-   private JXTable elementList;
+   private JXList elementList;
 
    private JButton upButton;
    private JButton downButton;
    private SelectionElementsModel model;
+
+   @Service
+   DialogService dialogs;
+
+   @Uses
+   Iterable<NameDialog> nameDialogs;
+
 
    public SelectionElementsView( @Service ApplicationContext context,
                                  @Uses SelectionElementsModel model )
@@ -71,22 +83,22 @@ public class SelectionElementsView
       toolbar.add( downButton );
       upButton.setEnabled( false );
       downButton.setEnabled( false );
+      toolbar.add( new JButton( am.get( "rename" ) ) );
 
       model.refresh();
-      elementList = new JXTable( model );
-      elementList.setSortable( false );
-      elementList.setDefaultRenderer( String.class, new DefaultTableCellRenderer() {
-
+      elementList = new JXList( model );
+      elementList.setCellRenderer( new DefaultListCellRenderer()
+      {
          @Override
-         public Component getTableCellRendererComponent( JTable jTable, Object o, boolean b, boolean b1, int i, int i1 )
+         public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
          {
             if ("".equals( o ))
             {
-               Component cell = super.getTableCellRendererComponent( jTable, i18n.text( WorkspaceResources.name_label ), b, b1, i, i1 );
+               Component cell = super.getListCellRendererComponent( jList, i18n.text( WorkspaceResources.name_label ), i, b, b1);
                cell.setForeground( Color.GRAY );
                return cell;
             }
-            return super.getTableCellRendererComponent( jTable, o, b, b1, i, i1 );
+            return super.getListCellRendererComponent( jList, o, i, b, b1 );    //To change body of overridden methods use File | Settings | File Templates.
          }
       });
 
@@ -96,6 +108,7 @@ public class SelectionElementsView
       add( toolbar, BorderLayout.SOUTH );
 
       elementList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+      elementList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "rename" ) ) );
       elementList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 
       elementList.getSelectionModel().addListSelectionListener( new ListSelectionListener()
@@ -105,10 +118,10 @@ public class SelectionElementsView
          {
             if (!e.getValueIsAdjusting())
             {
-               int idx = elementList.getSelectedRow();
+               int idx = elementList.getSelectedIndex();
 
                upButton.setEnabled( idx != 0 );
-               downButton.setEnabled( idx != elementList.getModel().getRowCount() - 1 );
+               downButton.setEnabled( idx != elementList.getModel().getSize() - 1 );
                if (idx == -1)
                {
                   upButton.setEnabled( false );
@@ -129,7 +142,7 @@ public class SelectionElementsView
    @org.jdesktop.application.Action
    public void remove( )
    {
-      int index = elementList.getSelectedRow();
+      int index = elementList.getSelectedIndex();
       if (index != -1)
       {
          model.removeElement( index );
@@ -140,22 +153,36 @@ public class SelectionElementsView
    @org.jdesktop.application.Action
    public void up()
    {
-      int index = elementList.getSelectedRow();
-      if (index > 0 && index < elementList.getModel().getRowCount())
+      int index = elementList.getSelectedIndex();
+      if (index > 0 && index < elementList.getModel().getSize())
       {
          model.moveElement( "up", index );
-         elementList.setRowSelectionInterval( index-1, index-1 );
+         elementList.setSelectedIndex( index-1 );
       }
    }
 
    @org.jdesktop.application.Action
    public void down()
    {
-      int index = elementList.getSelectedRow();
-      if (index >= 0 && index < elementList.getModel().getRowCount() - 1)
+      int index = elementList.getSelectedIndex();
+      if (index >= 0 && index < elementList.getModel().getSize() - 1)
       {
          model.moveElement( "down", index );
-         elementList.setRowSelectionInterval( index+1, index+1 );
+         elementList.setSelectedIndex( index+1 );
       }
    }
+
+   @org.jdesktop.application.Action
+   public void rename()
+   {
+      NameDialog dialog = nameDialogs.iterator().next();
+
+      dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.change_selection_field_name ));
+
+      if ( dialog.name() != null &&  !dialog.name().equals( "" ))
+      {
+         model.changeElementName( dialog.name(), elementList.getSelectedIndex() ); 
+      }
+   }
+
 }

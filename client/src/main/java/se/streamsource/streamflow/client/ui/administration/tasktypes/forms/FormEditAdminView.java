@@ -26,6 +26,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.domain.form.FormFieldEditing;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -123,7 +124,12 @@ public class FormEditAdminView
                   FieldValue value = editModel.getFieldDefinition().fieldValue().get();
 
                   // switch on value
-                  if (value instanceof TextFieldValue)
+                  if (value instanceof FormFieldEditing)
+                  {
+                     setRightComponent(
+                           obf.newObjectBuilder( ((FormFieldEditing)value).getEditorClass() ).
+                                 use( editModel ).newInstance() );
+                  } else if (value instanceof TextFieldValue)
                   {
                      setRightComponent(
                            obf.newObjectBuilder( FieldValueTextEditView.class ).

@@ -117,20 +117,6 @@ public class FieldValueEditModel
       {
          FieldDefinitionValue fieldDefinitionValue = client.query( "field", FieldDefinitionValue.class );
          value = vbf.newValueBuilder( FieldDefinitionValue.class ).withPrototype( fieldDefinitionValue ).prototype();
-
-         FieldValue field = fieldDefinitionValue.fieldValue().get();
-         if (field instanceof TextFieldValue)
-         {
-            value.fieldValue().set(
-                  vbf.newValueBuilder(TextFieldValue.class ).withPrototype( (TextFieldValue) field ).prototype()
-            );
-         } else if (field instanceof PageBreakFieldValue)
-         {
-            value.fieldValue().set(
-                  vbf.newValueBuilder(PageBreakFieldValue.class ).withPrototype( (PageBreakFieldValue) field ).prototype()
-            );
-         }
-
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_get_field, e );

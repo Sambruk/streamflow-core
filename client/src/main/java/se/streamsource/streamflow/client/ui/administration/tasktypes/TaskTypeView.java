@@ -28,9 +28,13 @@ import javax.swing.JTabbedPane;
 public class TaskTypeView
       extends JTabbedPane
 {
+   private TaskTypeModel taskTypeModel;
+
    public TaskTypeView( @Uses SelectedLabelsView selectedLabelsView ,
-                        @Uses FormsAdminView formsView)
+                        @Uses FormsAdminView formsView,
+                        @Uses TaskTypeModel taskTypeModel)
    {
+      this.taskTypeModel = taskTypeModel;
       addTab( i18n.text( AdministrationResources.labels_tab ), selectedLabelsView );
       addTab( i18n.text( AdministrationResources.forms_tab ), formsView );
    }

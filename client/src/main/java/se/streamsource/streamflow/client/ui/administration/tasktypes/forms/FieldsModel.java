@@ -81,7 +81,7 @@ public class FieldsModel
       }
    };
 
-   EventHandlerFilter eventFilter = new EventHandlerFilter( this, "changedDescription", "movedField" );
+   EventHandlerFilter eventFilter = new EventHandlerFilter( this, "changedDescription", "movedField", "removedField", "createdField", "removedField" );
 
    private List<ListItemValue> fieldsList;
 
@@ -117,7 +117,6 @@ public class FieldsModel
       try
       {
          client.putCommand( "add", builder.newInstance() );
-         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_add_field, e );
@@ -129,7 +128,6 @@ public class FieldsModel
       try
       {
          client.getSubClient( ""+index  ).deleteCommand();
-         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );
@@ -143,7 +141,6 @@ public class FieldsModel
       try
       {
          client.getSubClient( ""+fromIndex ).putCommand( "move", builder.newInstance() );
-         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );
@@ -162,9 +159,10 @@ public class FieldsModel
 
    public boolean handleEvent( DomainEvent event )
    {
+      String eventName = event.name().get();
       for (ListItemValue value : fieldsList)
       {
-         if (event.name().get().equals( "movedField" ))
+         if (eventName.equals( "movedField" ))
          {
             if (event.parameters().get().contains( value.entity().get().identity() ))
             {
@@ -177,6 +175,12 @@ public class FieldsModel
             Logger.getLogger( "adminitration" ).info( "Refresh field list" );
             refresh();
          }
+      }
+
+      if ( eventName.equals( "createdField" ) || eventName.equals( "removedField" ))
+      {
+         Logger.getLogger( "administation" ).info( "Refresh field list" );
+         refresh();
       }
 
       return false;

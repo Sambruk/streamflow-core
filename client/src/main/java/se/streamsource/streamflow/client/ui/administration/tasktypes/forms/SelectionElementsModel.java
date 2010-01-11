@@ -30,13 +30,14 @@ import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 
 import javax.swing.table.AbstractTableModel;
+import javax.swing.AbstractListModel;
 import java.util.List;
 
 /**
  * JAVADOC
  */
 public class SelectionElementsModel
-      extends AbstractTableModel
+      extends AbstractListModel
    implements Refreshable
 {
    @Uses
@@ -58,7 +59,7 @@ public class SelectionElementsModel
          {
             SelectionFieldValue selectionField = (SelectionFieldValue) field;
             elements = selectionField.values().get();
-            fireTableDataChanged();
+            fireContentsChanged( this, 0, getSize() );
          }
       } catch (ResourceException e)
       {
@@ -108,27 +109,11 @@ public class SelectionElementsModel
       }
    }
 
-   public int getRowCount()
-   {
-      return elements == null ? 0 : elements.size();
-   }
-
-   public int getColumnCount()
-   {
-      return 1;
-   }
-
-   public Object getValueAt( int row, int col )
-   {
-      return elements.get( row );
-   }
-
-   @Override
-   public void setValueAt( Object o, int row, int col )
+   public void changeElementName( String newName, int index )
    {
       ValueBuilder<NamedIndexDTO> builder = vbf.newValueBuilder( NamedIndexDTO.class );
-      builder.prototype().name().set( (String) o );
-      builder.prototype().index().set( row );
+      builder.prototype().name().set( newName );
+      builder.prototype().index().set( index );
       try
       {
          client.putCommand( "changeselectionelementname", builder.newInstance() );
@@ -139,21 +124,13 @@ public class SelectionElementsModel
       }
    }
 
-   @Override
-   public String getColumnName( int i )
+   public int getSize()
    {
-      return "Selection element";
+      return elements == null ? 0 : elements.size();
    }
 
-   @Override
-   public Class<?> getColumnClass( int i )
+   public Object getElementAt( int row )
    {
-      return String.class;
-   }
-
-   @Override
-   public boolean isCellEditable( int row, int col )
-   {
-      return true;
+      return elements.get( row );
    }
 }

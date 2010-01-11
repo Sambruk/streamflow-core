@@ -77,7 +77,7 @@ public class FieldCreationDialog
             return super.getListCellRendererComponent( jList, i18n.text( AdministrationResources.valueOf( type.toString() ) ), i, b, b1 );
          }
       });
-      formBuilder.append( "Value Type", box );
+      formBuilder.append( i18n.text( AdministrationResources.field_type_selection ) , box );
       add( panel, BorderLayout.CENTER );
    }
 

@@ -63,7 +63,7 @@ public class TaskTypesAdminView
                   ListItemValue taskTypeValue = (ListItemValue) list.getModel().getElementAt( idx );
                   TaskTypeModel taskTypeModel = taskTypesModel.getTaskTypeModel( taskTypeValue.entity().get().identity() );
                   TaskTypeView view = obf.newObjectBuilder( TaskTypeView.class ).use(
-                        taskTypeModel.getSelectedLabelsModel(), labelsModel, taskTypeModel.getFormsModel(), administrationView ).newInstance();
+                        taskTypeModel.getSelectedLabelsModel(), labelsModel, taskTypeModel.getFormsModel(), administrationView, taskTypeModel ).newInstance();
                   setRightComponent( view );
                } else
                {

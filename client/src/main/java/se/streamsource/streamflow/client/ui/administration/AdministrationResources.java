@@ -146,5 +146,7 @@ public enum AdministrationResources
    selection,
    comment,
    page_break,
+   field_type_selection,
+   change_selection_field_name,
    multi_selection
 }
