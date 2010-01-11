@@ -102,6 +102,10 @@ public interface FileConfiguration
 
          // Set application name. This is taken from the Qi4j application but can be overriden by a system property
          String application = System.getProperty( "application", app.name() );
+
+         if (!app.mode().equals(Application.Mode.production))
+            application += "-"+app.mode().name();
+
          data.application().set( application );
 
          // Temp dir
@@ -158,7 +162,7 @@ public interface FileConfiguration
 
       private void testCleanup()
       {
-         if (app.mode().equals( Application.Mode.test ))
+         if (app.mode().equals( Application.Mode.test ) || app.mode().equals(Application.Mode.development))
          {
             // Delete test data
             delete( configurationDirectory() );

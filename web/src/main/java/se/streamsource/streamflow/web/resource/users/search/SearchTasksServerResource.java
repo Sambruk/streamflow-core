@@ -15,12 +15,9 @@
 package se.streamsource.streamflow.web.resource.users.search;
 
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.restlet.data.Status;
+import org.qi4j.api.util.DateFunctions;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
@@ -28,16 +25,17 @@ import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -56,67 +54,127 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
       UnitOfWork uow = uowf.currentUnitOfWork();
 
       String queryString = query.string().get().trim();
-      if (queryString.matches( "[\\$\\.\\*\\+\\?\\(\\)\\[\\]\\|\\^\\{\\}\\\\]+" ))
-      {
-         throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, ErrorResources.search_string_malformed.toString() );
-      }
 
       if (queryString.length() > 0)
       {
-         QueryBuilder<TaskEntity> queryBuilder = module
-               .queryBuilderFactory().newQueryBuilder( TaskEntity.class );
-         List<String> searches = extractSubQueries( queryString );
+
+         StringBuilder queryBuilder = new StringBuilder();
+         List<SubQuery> searches = extractSubQueries( queryString );
          for (int i = 0; i < searches.size(); i++)
          {
-            String search = searches.get( i );
-            // Remove the optional " characters
-            search = search.replaceAll( "\"", "" );
+            SubQuery search = searches.get( i );
 
-            if (search.startsWith( "label:" ))
+            if (search.hasName( "label" ))
             {
-               queryBuilder = buildLabelQuery( queryBuilder, search );
-            } else if (search.startsWith( "assigned:" ))
-            {
-               queryBuilder = buildAssignedQuery( queryBuilder, search );
-            } else if (search.startsWith( "project:" ))
-            {
-               queryBuilder = buildProjectQuery( queryBuilder, search );
-            } else if (search.startsWith( "contact:" ))
-            {
-               queryBuilder = buildContactQuery( queryBuilder, search );
+               StringBuilder labelQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.label.LabelEntity" );
+               labelQueryBuilder.append( " description:" ).append( search.getValue() );
 
-            } else if (search.startsWith( "created:" ))
+               Query<LabelEntity> labels = module.queryBuilderFactory()
+                     .newNamedQuery( LabelEntity.class, uow, "solrquery" ).setVariable( "query", labelQueryBuilder.toString() );
+
+               if (labels.iterator().hasNext())
+               {
+                  queryBuilder.append( " labelId:(" );
+                  int count = 0;
+                  for (LabelEntity label : labels)
+                  {
+                     if (count == 0)
+                     {
+                        queryBuilder.append( label.identity().get() );
+                     } else
+                     {
+                        queryBuilder.append( " OR " ).append( label.identity().get() );
+                     }
+
+                     count++;
+                  }
+                  queryBuilder.append( ")" );
+               }
+            } else if (search.hasName( "taskType" ))
             {
-               queryBuilder = buildCreatedQuery( queryBuilder, search );
-               continue;
+               StringBuilder taskTypeQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity" );
+               taskTypeQueryBuilder.append( " description:" ).append( search.getValue() );
+
+               Query<TaskTypeEntity> taskTypes = module.queryBuilderFactory()
+                     .newNamedQuery( TaskTypeEntity.class, uow, "solrquery" ).setVariable( "query", taskTypeQueryBuilder.toString() );
+
+               if (taskTypes.iterator().hasNext())
+               {
+                  queryBuilder.append( " taskType:(" );
+                  int count = 0;
+                  for (TaskTypeEntity taskType : taskTypes)
+                  {
+                     if (count == 0)
+                     {
+                        queryBuilder.append( taskType.identity().get() );
+                     } else
+                     {
+                        queryBuilder.append( " OR " ).append( taskType.identity().get() );
+                     }
+
+                     count++;
+                  }
+                  queryBuilder.append( ")" );
+               }
+            } else if (search.hasName( "project" ))
+            {
+               StringBuilder projectQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" );
+               projectQueryBuilder.append( " description:" ).append( search.getValue() );
+
+               Query<ProjectEntity> projects = module.queryBuilderFactory()
+                     .newNamedQuery( ProjectEntity.class, uow, "solrquery" ).setVariable( "query", projectQueryBuilder.toString() );
+
+               if (projects.iterator().hasNext())
+               {
+                  queryBuilder.append( " project:(" );
+                  int count = 0;
+                  for (ProjectEntity project : projects)
+                  {
+                     if (count == 0)
+                     {
+                        queryBuilder.append( project.identity().get() );
+                     } else
+                     {
+                        queryBuilder.append( " OR " ).append( project.identity().get() );
+                     }
+
+                     count++;
+                  }
+                  queryBuilder.append( ")" );
+               }
+            } else if (search.hasName( "description", "note", "name", "contactId", "phoneNumber", "emailAddress", "assigned" ))
+            {
+               queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( search.getValue() );
+
+            } else if (search.hasName( "createdOn" ))
+            {
+               buildDateQuery( queryBuilder, search );
             } else
             {
-               queryBuilder = queryBuilder.where( or( eq( templateFor( TaskEntity.class )
-                     .taskId(), search ), matches( templateFor(
-                     TaskEntity.class ).description(), search ), matches(
-                     templateFor( TaskEntity.class ).note(), search ) ) );
+               queryBuilder.append( " " ).append( search.getValue() );
             }
          }
 
-         // TODO: Do not perform a query with null whereClause! How to check
-         // this?
-         Query<TaskEntity> tasks = queryBuilder.newQuery( uow );
-         return buildTaskList( tasks, SearchTaskDTO.class );
-      } else
-      {
-         return vbf.newValue( TaskListDTO.class );
+         if (queryBuilder.length() != 0)
+         {
+            queryBuilder.append( " type:se.streamsource.streamflow.web.domain.entity.task.TaskEntity" );
+            Query<TaskEntity> tasks = module.queryBuilderFactory()
+                  .newNamedQuery( TaskEntity.class, uow, "solrquery" ).setVariable( "query", queryBuilder.toString() );
+            return buildTaskList( tasks, SearchTaskDTO.class );
+         }
       }
+      return vbf.newValue( TaskListDTO.class );
    }
 
-   private QueryBuilder<TaskEntity> buildCreatedQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
+   private void buildDateQuery( StringBuilder queryBuilder, SubQuery search )
    {
-      search = search.substring( "created:".length() );
-      String searchDateFrom = search;
-      String searchDateTo = search;
-      if (occurrancesOfInString( "-", search ) == 1)
+      String name = search.getName();
+      String searchDateFrom = search.getValue();
+      String searchDateTo = search.getValue();
+      if (occurrancesOfInString( "-", searchDateFrom ) == 1)
       {
-         searchDateFrom = search.substring( 0, search.indexOf( "-" ) );
-         searchDateTo = search.substring( search.indexOf( "-" ) + 1, search.length() );
+         searchDateFrom = searchDateFrom.substring( 0, searchDateFrom.indexOf( "-" ) );
+         searchDateTo = searchDateTo.substring( searchDateTo.indexOf( "-" ) + 1, searchDateTo.length() );
       }
       Date referenceDate = new Date();
       Date lowerBoundDate = getLowerBoundDate( searchDateFrom,
@@ -126,65 +184,20 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 
       if (lowerBoundDate == null || upperBoundDate == null)
       {
-         return queryBuilder;
+         return;
       }
-      queryBuilder = queryBuilder.where( and( ge( templateFor( TaskEntity.class )
-            .createdOn(), lowerBoundDate ), le( templateFor(
-            TaskEntity.class ).createdOn(), upperBoundDate ) ) );
-      return queryBuilder;
+      queryBuilder.append( " " ).append( name ).append( ":[" ).
+            append( DateFunctions.toUtcString( lowerBoundDate ) ).
+            append( " TO " ).
+            append( DateFunctions.toUtcString( upperBoundDate ) ).
+            append( "]" );
    }
 
-   private QueryBuilder<TaskEntity> buildContactQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
+   protected List<SubQuery> extractSubQueries( String query )
    {
-      // TODO: Uncomment and verify Qi4J change on "matches" query expression to take ValueComposites. 
-/*      search = search.substring( "contact:".length() );
-
-      Property<List<ContactValue>> contacts = templateFor( TaskEntity.class ).contacts();
-      queryBuilder = queryBuilder.where(
-            or(
-                  matches( oneOf( contacts ).name(), search ),
-                  matches( oneOf( contacts ).phone(), search ),
-                  matches( oneOf( contacts ).contactId(), search )
-            )
-      );
-      */
-      return queryBuilder;
-   }
-
-   private QueryBuilder<TaskEntity> buildProjectQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
-   {
-      search = search.substring( "project:".length() );
-      Owner owner = templateFor( TaskEntity.class ).owner().get();
-      Describable.Data describable = templateFor(
-            Describable.Data.class, owner );
-      queryBuilder = queryBuilder.where( eq( describable.description(), search ) );
-      return queryBuilder;
-   }
-
-   private QueryBuilder<TaskEntity> buildAssignedQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
-   {
-      search = search.substring( "assigned:".length() );
-      search = getAssignedTo( search );
-      Assignee assignee = templateFor( TaskEntity.class )
-            .assignedTo().get();
-      Describable.Data describable = templateFor(
-            Describable.Data.class, assignee );
-      queryBuilder = queryBuilder.where( eq( describable.description(), search ) );
-      return queryBuilder;
-   }
-
-   private QueryBuilder<TaskEntity> buildLabelQuery( QueryBuilder<TaskEntity> queryBuilder, String search )
-   {
-      search = search.substring( "label:".length() );
-      queryBuilder = queryBuilder.where( eq( templateFor(Describable.Data.class, oneOf( templateFor( Labelable.Data.class ).labels()) ).description(), search ) );
-      return queryBuilder;
-   }
-
-   protected List<String> extractSubQueries( String query )
-   {
-      List<String> subQueries = new ArrayList<String>();
+      List<SubQuery> subQueries = new ArrayList<SubQuery>();
       // TODO: Extract regular expression to resource file.
-      String regExp = "(?:\\w+\\:)?(?:\\\"[^\\\"]*?\\\")|(?:[^\\s]+)";
+      String regExp = "((\\w+)\\:)?((\\\"([^\\\"]*)\\\")|([^\\s]+))"; // old "(?:\\w+\\:)?(?:\\\"[^\\\"]*?\\\")|(?:[^\\s]+)";
       Pattern p;
       try
       {
@@ -196,13 +209,16 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
       Matcher m = p.matcher( query );
       while (m.find())
       {
-         subQueries.add( m.group() );
+         String value = m.group( 5 );
+         if (value == null)
+            value = m.group( 3 );
+         subQueries.add( new SubQuery( m.group( 2 ), value ) );
       }
 
       if (subQueries.isEmpty())
       {
          if (query.length() > 0)
-            subQueries.add( query );
+            subQueries.add( new SubQuery( null, query ) );
       }
       return subQueries;
    }
@@ -384,5 +400,33 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
          System.out.println( "end(): " + m.end() );
       }
       return count;
+   }
+
+   class SubQuery
+   {
+      String name;
+
+      String value;
+
+      public SubQuery( String name, String value )
+      {
+         this.name = name;
+         this.value = value;
+}
+
+      public String getName()
+      {
+         return name;
+      }
+
+      public String getValue()
+      {
+         return value;
+      }
+
+      public boolean hasName( String... names )
+      {
+         return name == null ? false : Arrays.asList( names ).contains( name );
+      }
    }
 }

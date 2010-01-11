@@ -68,7 +68,7 @@
   <!-- Used to specify an alternate directory to hold all index data
        other than the default ./data under the Solr home.
        If replication is in use, this should match the replication configuration. -->
-  <dataDir>./data</dataDir>
+  <!--<dataDir>./data</dataDir> -->
 
 
   <!-- WARNING: this <indexDefaults> section only provides defaults for index writers
@@ -411,13 +411,13 @@
 
     <!-- a firstSearcher event is fired whenever a new searcher is being
          prepared but there is no current registered searcher to handle
-         requests or to gain autowarming data from. -->
+         requests or to gain autowarming data from.
     <listener event="firstSearcher" class="solr.QuerySenderListener">
       <arr name="queries">
         <lst> <str name="q">solr rocks</str><str name="start">0</str><str name="rows">10</str></lst>
         <lst><str name="q">static firstSearcher warming query from solrconfig.xml</str></lst>
       </arr>
-    </listener>
+    </listener> -->
 
     <!-- If a search request comes in and there is no current registered searcher,
          then immediately register the still warming searcher and use it.  If

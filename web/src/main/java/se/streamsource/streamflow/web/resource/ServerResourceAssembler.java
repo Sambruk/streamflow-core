@@ -14,9 +14,15 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.qi4j.api.common.Visibility;
+import org.qi4j.api.service.ServiceSelector;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.query.NamedEntityFinder;
+import org.qi4j.spi.query.NamedQueries;
+import org.qi4j.spi.query.NamedQueryDescriptor;
+import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.resource.labels.LabelsServerResource;
@@ -38,10 +44,6 @@ import se.streamsource.streamflow.web.resource.organizations.policy.Administrato
 import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.ProjectsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
 import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
@@ -50,13 +52,17 @@ import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerRes
 import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskServerResource;
-import se.streamsource.streamflow.web.resource.task.forms.TaskFormsServerResource;
-import se.streamsource.streamflow.web.resource.task.forms.TaskFormServerResource;
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
 import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskFormServerResource;
+import se.streamsource.streamflow.web.resource.task.forms.TaskFormsServerResource;
 import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
 import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
 import se.streamsource.streamflow.web.resource.users.UserServerResource;
@@ -81,6 +87,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
+import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
 /**
  * Assembler for API resources
@@ -174,7 +181,6 @@ public class ServerResourceAssembler
             TaskTypesServerResource.class,
             TaskTypeServerResource.class,
 
-            SearchTasksServerResource.class,
 
             // Events
             EventsServerResource.class,
@@ -182,5 +188,16 @@ public class ServerResourceAssembler
             // Admin
             ConsoleServerResource.class
       );
+
+      ModuleAssembly searchModule = module.layerAssembly().moduleAssembly( "Search" );
+      searchModule.addObjects(  SearchTasksServerResource.class ).visibleIn( Visibility.layer );
+      NamedQueries namedQueries = new NamedQueries();
+      NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
+      namedQueries.addQuery( queryDescriptor );
+
+      searchModule.importServices( NamedEntityFinder.class ).
+            importedBy( ServiceSelectorImporter.class ).
+            setMetaInfo( ServiceSelector.withId("solr" )).
+            setMetaInfo( namedQueries);
    }
 }

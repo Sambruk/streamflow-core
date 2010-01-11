@@ -45,7 +45,7 @@
     that avoids logging every request
 -->
 
-<schema name="example" version="1.2">
+<schema name="streamflow" version="1.2">
   <!-- attribute "name" is the name of this schema and is only used for display purposes.
        Applications should change this to reflect the nature of the search collection.
        version="1.2" is Solr's version number for the schema syntax and semantics.  It should
@@ -70,6 +70,7 @@
        exceed a certain size (in characters).
     -->
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="json" class="solr.StrField"/>
 
     <!-- boolean type: "true" or "false" -->
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
@@ -425,8 +426,34 @@
      default: a value that should be used if no value is specified
        when adding a document.
    -->
+   <!-- Streamflow lucene index fields -->
+   <field name="id" type="string" indexed="true" stored="true" required="true" />
+   <field name="lastModified" type="date" indexed="true" stored="true" required="true" />
+   <field name="type" type="string" indexed="true" stored="true" required="true" />
 
-   <field name="id" type="string" indexed="true" stored="true" required="true" /> 
+   <field name="description" type="text" indexed="true" stored="true" />
+   <field name="note" type="text" indexed="true" stored="true" multiValued="true"/>
+
+   <field name="contacts" type="json" indexed="false" stored="false"/>
+   <field name="contactId" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="name" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="phoneNumbers" type="json" indexed="false" stored="false"/>
+   <field name="phoneNumber" type="string" indexed="true" stored="true" multiValued="true"/> 
+   <field name="emailAddresses" type="json" indexed="false" stored="false" />
+   <field name="emailAddress" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="addresses" type="json" indexed="false" stored="false" />
+
+   <field name="labelId" type="string" indexed="true" stored="true" multiValued="true" />
+
+   <field name="assigned" type="string" indexed="true" stored="true" />
+
+   <field name="project" type="string" indexed="true" stored="true" />
+
+   <field name="taskType" type="string" indexed="true" stored="true" />
+
+   <field name="createdOn" type="date" indexed="true" stored="true" />
+
+   <!--
    <field name="sku" type="textTight" indexed="true" stored="true" omitNorms="true"/>
    <field name="name" type="textgen" indexed="true" stored="true"/>
    <field name="alphaNameSort" type="alphaOnlySort" indexed="true" stored="false"/>
@@ -439,13 +466,14 @@
    <field name="price"  type="float" indexed="true" stored="true"/>
    <field name="popularity" type="int" indexed="true" stored="true" />
    <field name="inStock" type="boolean" indexed="true" stored="true" />
-
+   -->
 
    <!-- Common metadata fields, named specifically to match up with
      SolrCell metadata when parsing rich documents such as Word, PDF.
      Some fields are multiValued only because Tika currently may return
      multiple values for them.
    -->
+   <!--
    <field name="title" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="subject" type="text" indexed="true" stored="true"/>
    <field name="description" type="text" indexed="true" stored="true"/>
@@ -456,7 +484,7 @@
    <field name="content_type" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="last_modified" type="date" indexed="true" stored="true"/>
    <field name="links" type="string" indexed="true" stored="true" multiValued="true"/>
-
+   -->
 
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
@@ -527,19 +555,20 @@
  <defaultSearchField>text</defaultSearchField>
 
  <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
- <solrQueryParser defaultOperator="OR"/>
+ <solrQueryParser defaultOperator="AND"/>
 
   <!-- copyField commands copy one field to another at the time a document
         is added to the index.  It's used either to index the same field differently,
         or to add multiple fields to the same field for easier/faster searching.  -->
 
-   <copyField source="cat" dest="text"/>
-   <copyField source="name" dest="text"/>
+   <copyField source="description" dest="text"/>
+   <copyField source="note" dest="text"/>
+   <!--
    <copyField source="manu" dest="text"/>
    <copyField source="features" dest="text"/>
    <copyField source="includes" dest="text"/>
    <copyField source="manu" dest="manu_exact"/>
-	
+   -->
    <!-- Above, multiple source fields are copied to the [text] field. 
 	  Another way to map multiple source fields to the same 
 	  destination field is to use the dynamic field syntax. 

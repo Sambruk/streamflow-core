@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard …berg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard ï¿½berg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,142 +13,192 @@
  */
 package se.streamsource.streamflow.web.infrastructure.index;
 
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.schema.SchemaField;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openrdf.model.Graph;
+import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.GraphImpl;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.openrdf.model.impl.ValueFactoryImpl;
+import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
-import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
-import org.qi4j.spi.entity.EntityType;
+import org.qi4j.spi.entity.ManyAssociationState;
 import org.qi4j.spi.entitystore.StateChangeListener;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * JAVADOC Add JavaDoc
  */
 public class SolrEntityIndexerMixin
-    implements StateChangeListener, Activatable
+      implements StateChangeListener, Activatable
 {
-    @Service private Repository repository;
-    @Uses private EntityStateSerializer stateSerializer;
-    @Uses private EntityTypeSerializer typeSerializer;
+   @Service
+   private EmbeddedSolrService solr;
 
-    private Set<EntityType> indexedEntityTypes;
-    private ValueFactory valueFactory;
+   @Uses
+   private EntityStateSerializer stateSerializer;
 
-    public void activate() throws Exception
-    {
-        indexedEntityTypes = new HashSet<EntityType>();
-    }
+   private ValueFactory valueFactory = new ValueFactoryImpl();
 
-    public void passivate() throws Exception
-    {
-    }
+   private SolrServer server;
+   private Map<String, SchemaField> indexedFields;
 
-    public void notifyChanges( Iterable<EntityState> entityStates )
-    {
-        try
-        {
-            // TODO: Work with Solr instead of OpenRDF
-            final RepositoryConnection connection = repository.getConnection();
-            connection.setAutoCommit( false );
-            
-            try
+   public void activate() throws Exception
+   {
+      server = solr.getSolrServer();
+      indexedFields = solr.getSolrCore().getSchema().getFields();
+   }
+
+   public void passivate() throws Exception
+   {
+   }
+
+   public void notifyChanges( Iterable<EntityState> entityStates )
+   {
+      try
+      {
+         // TODO: Work with Solr instead of OpenRDF
+         try
+         {
+            // Figure out what to update
+            for (EntityState entityState : entityStates)
             {
-                // Figure out what to update
-                final Set<EntityType> entityTypes = new HashSet<EntityType>();
-                for( EntityState entityState : entityStates )
-                {
-                    if( entityState.status().equals( EntityStatus.REMOVED ) )
-                    {
-                        removeEntityState( entityState.identity(), connection );
-                    }
-                    else if( entityState.status().equals( EntityStatus.UPDATED ) )
-                    {
-                        removeEntityState( entityState.identity(), connection );
-                        indexEntityState( entityState, connection );
-                        entityTypes.add( entityState.entityDescriptor().entityType() );
-                    }
-                    else if( entityState.status().equals( EntityStatus.NEW ) )
-                    {
-                        indexEntityState( entityState, connection );
-                        entityTypes.add( entityState.entityDescriptor().entityType() );
-                    }
-                }
-
-                // Index new types
-                for( EntityType entityType : entityTypes )
-                {
-                    if( !indexedEntityTypes.contains( entityType ) )
-                    {
-                        indexEntityType( entityType, connection );
-                        indexedEntityTypes.add( entityType );
-                    }
-                }
+               if (entityState.status().equals( EntityStatus.REMOVED ))
+               {
+                  removeEntityState( entityState.identity(), server );
+               } else if (entityState.status().equals( EntityStatus.UPDATED ))
+               {
+                  removeEntityState( entityState.identity(), server );
+                  indexEntityState( entityState, server );
+               } else if (entityState.status().equals( EntityStatus.NEW ))
+               {
+                  indexEntityState( entityState, server );
+               }
             }
-            finally
+         }
+         finally
+         {
+            if (server != null)
             {
-                if( connection != null )
-                {
-                    connection.commit();
-                    connection.close();
-                }
+               server.commit();
             }
-        }
-        catch( Throwable e )
-        {
-            e.printStackTrace();
-            //TODO What shall we do with the exception?
-        }
-    }
+         }
+      }
+      catch (Throwable e)
+      {
+         e.printStackTrace();
+         //TODO What shall we do with the exception?
+      }
+   }
 
-    private void indexEntityState( final EntityState entityState,
-                                   final RepositoryConnection connection )
-        throws RepositoryException
-    {
-        final URI entityURI = stateSerializer.createEntityURI( getValueFactory(), entityState.identity() );
-        Graph graph = new GraphImpl();
-        stateSerializer.serialize( entityState, false, graph );
-        connection.add( graph, entityURI );
-    }
+   private void indexEntityState( final EntityState entityState,
+                                  final SolrServer server )
+         throws IOException, SolrServerException, JSONException
+   {
+      Graph graph = new GraphImpl();
+      stateSerializer.serialize( entityState, false, graph );
 
-    private void removeEntityState( final EntityReference identity,
-                                    final RepositoryConnection connection )
-        throws RepositoryException
-    {
-        connection.clear( stateSerializer.createEntityURI( getValueFactory(), identity ) );
-    }
+      SolrInputDocument input = new SolrInputDocument();
+      input.addField( "id", entityState.identity().identity() );
+      input.addField( "type", entityState.entityDescriptor().entityType().type().name() );
+      input.addField( "lastModified", new Date( entityState.lastModified() ) );
 
-    private void indexEntityType( final EntityType entityType,
-                                  final RepositoryConnection connection )
-        throws RepositoryException
-    {
-        final URI compositeURI = getValueFactory().createURI( entityType.uri() );
-        // remove composite type if already present
-        connection.clear( compositeURI );
 
-        Iterable<Statement> statements = typeSerializer.serialize( entityType );
-        connection.add( statements, compositeURI );
-    }
+      ManyAssociationState labels = entityState.getManyAssociation( QualifiedName.fromClass( LabelEntity.class, "labels" ) );
+      for(EntityReference ref : labels)
+      {
+         input.addField( "labelId", ref.identity() );
+      }
 
-    private ValueFactory getValueFactory()
-    {
-        if( valueFactory == null )
-        {
-            valueFactory = repository.getValueFactory();
-        }
-        return valueFactory;
-    }
+      EntityReference assigned = entityState.getAssociation( QualifiedName.fromClass( Assignable.Data.class, "assignedTo") );
+      EntityReference project = entityState.getAssociation( QualifiedName.fromClass( Ownable.Data.class, "owner" ) );
+      EntityReference taskType = entityState.getAssociation( QualifiedName.fromClass( TypedTask.Data.class, "taskType" ) );
+
+      input.addField("assigned",  assigned == null ? "" : assigned.identity());
+      input.addField("project" , project == null ? "" : project.identity());
+      input.addField("taskType" , taskType == null ? "" : taskType.identity());
+
+      for (Statement statement : graph)
+      {
+         SchemaField field = indexedFields.get( statement.getPredicate().getLocalName() ) ;
+         if(field != null && statement.getObject() instanceof Literal)
+         {
+            String value = statement.getObject().stringValue();
+            if (field.getType().getTypeName().equals("json"))
+            {
+               if (value.charAt( 0 ) == '[')
+               {
+                  JSONArray array = new JSONArray(value);
+                  indexJson(input, array);
+               } else if (value.charAt(0) == '{')
+               {
+                  JSONObject object = new JSONObject(value);
+                  indexJson(input, object);
+               }
+            }  else
+            {
+               input.addField(field.getName(), value );
+            }
+         }
+
+      }
+      server.add( input );
+   }
+
+   private void indexJson( SolrInputDocument input, Object object ) throws JSONException
+   {
+      if (object instanceof JSONArray)
+      {
+         JSONArray array = (JSONArray) object;
+         for (int i = 0; i < array.length(); i++)
+            indexJson(input, array.get( i ));
+      } else
+      {
+         JSONObject jsonObject = (JSONObject) object;
+         Iterator keys = jsonObject.keys();
+         while (keys.hasNext())
+         {
+            Object name = keys.next();
+            Object value = jsonObject.get(name.toString());
+            if (value instanceof JSONObject || value instanceof JSONArray)
+            {
+               indexJson(input, value);
+            } else
+            {
+               SchemaField field = indexedFields.get( name.toString() );
+               if (field != null)
+               {
+                  input.addField( name.toString(), jsonObject.get(name.toString()) );
+               }
+            }
+         }
+      }
+   }
+
+   private void removeEntityState( final EntityReference identity,
+                                   final SolrServer server )
+         throws IOException, SolrServerException
+   {
+      server.deleteById( identity.identity() );
+   }
 }

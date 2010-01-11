@@ -14,10 +14,13 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
+import org.qi4j.api.service.ServiceSelector;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.query.NamedEntityFinder;
+import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 
 /**
  * Bootstrap and testdata assembler.
@@ -30,6 +33,9 @@ public class BootstrapAssembler
       module.addServices( BootstrapDataService.class ).instantiateOnStartup();
 
       if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.development)
+      {
+         module.importServices( NamedEntityFinder.class ).importedBy( ServiceSelectorImporter.class ).setMetaInfo( ServiceSelector.withId("solr" ));
          module.addServices( TestDataService.class ).instantiateOnStartup();
+      }
    }
 }
