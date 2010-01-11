@@ -18,6 +18,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
+import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
@@ -28,25 +29,15 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 public interface TaskTypeEntity
       extends DomainEntity,
 
-      // Interactions
-      Describable,
-      Describable.Data,
-      Notable,
-      Notable.Data,
-      SelectedLabels,
-
-      // Queries
-
       // Structure
-      Forms,
-
-      // Data
-
       TaskType,
-      Forms.Data,
+      Describable.Data,
+      Notable.Data,
       SelectedLabels.Data,
+      Forms.Data,
 
       // Queries
-      FormsQueries
+      FormsQueries,
+      PossibleLabelsQueries
 {
 }

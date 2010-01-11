@@ -34,6 +34,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.WaitingForQueries;
+import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -88,7 +89,8 @@ public interface ProjectEntity
       AssignmentsQueries,
       DelegationsQueries,
       InboxQueries,
-      WaitingForQueries
+      WaitingForQueries,
+      PossibleLabelsQueries
 {
    class ProjectIdGeneratorMixin
          implements IdGenerator
