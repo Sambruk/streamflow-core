@@ -66,9 +66,10 @@ public interface ServiceConfiguration
          } catch (NoSuchEntityException e)
          {
             String rdfPath = new File( config.dataDirectory(), "rdf-repository" ).getAbsolutePath();
-            NativeConfiguration nativeConfiguration = uow.newEntity( NativeConfiguration.class, "rdf-repository" );
-            nativeConfiguration.dataDirectory().set( rdfPath );
-            nativeConfiguration.tripleIndexes().set( "spoc,cspo,ospc" );
+            EntityBuilder<NativeConfiguration> builder = uow.newEntityBuilder( NativeConfiguration.class, "rdf-repository" );
+            builder.instance().dataDirectory().set( rdfPath );
+            builder.instance().tripleIndexes().set( "spoc,cspo,ospc" );
+            builder.newInstance();
          }
 
          uow.complete();

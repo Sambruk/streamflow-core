@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.rest;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.index.rdf.RdfIndexingEngineService;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.rest.entity.EntitiesResource;
@@ -44,6 +45,7 @@ public class StreamFlowRestAssembler
             EntitiesResource.class,
             EntityResource.class );
 
-      module.importServices( ChallengeAuthenticator.class );
+      module.importServices( ChallengeAuthenticator.class);
+      module.importServices( RdfIndexingEngineService.class );
    }
 }
