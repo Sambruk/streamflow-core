@@ -74,7 +74,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 
                if (labels.iterator().hasNext())
                {
-                  queryBuilder.append( " labelId:(" );
+                  queryBuilder.append( " labels:(" );
                   int count = 0;
                   for (LabelEntity label : labels)
                   {
@@ -126,7 +126,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
 
                if (projects.iterator().hasNext())
                {
-                  queryBuilder.append( " project:(" );
+                  queryBuilder.append( " owner:(" );
                   int count = 0;
                   for (ProjectEntity project : projects)
                   {

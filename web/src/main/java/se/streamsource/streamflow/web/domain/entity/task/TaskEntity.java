@@ -20,7 +20,6 @@ import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.interaction.comment.Commentable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
@@ -76,7 +75,6 @@ public interface TaskEntity
       SubmittedFormsQueries,
       TaskLabelsQueries,
       TaskTypeQueries,
-      PossibleLabelsQueries,
 
       DomainEntity
 {

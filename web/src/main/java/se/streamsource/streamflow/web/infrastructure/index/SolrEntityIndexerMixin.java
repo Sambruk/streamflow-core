@@ -20,13 +20,16 @@ import org.apache.solr.schema.SchemaField;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openrdf.model.BNode;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.GraphImpl;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
@@ -34,12 +37,7 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
-import org.qi4j.spi.entity.ManyAssociationState;
 import org.qi4j.spi.entitystore.StateChangeListener;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 
 import java.io.IOException;
 import java.util.Date;
@@ -77,7 +75,6 @@ public class SolrEntityIndexerMixin
    {
       try
       {
-         // TODO: Work with Solr instead of OpenRDF
          try
          {
             // Figure out what to update
@@ -123,41 +120,46 @@ public class SolrEntityIndexerMixin
       input.addField( "type", entityState.entityDescriptor().entityType().type().name() );
       input.addField( "lastModified", new Date( entityState.lastModified() ) );
 
-
-      ManyAssociationState labels = entityState.getManyAssociation( QualifiedName.fromClass( LabelEntity.class, "labels" ) );
-      for(EntityReference ref : labels)
-      {
-         input.addField( "labelId", ref.identity() );
-      }
-
-      EntityReference assigned = entityState.getAssociation( QualifiedName.fromClass( Assignable.Data.class, "assignedTo") );
-      EntityReference project = entityState.getAssociation( QualifiedName.fromClass( Ownable.Data.class, "owner" ) );
-      EntityReference taskType = entityState.getAssociation( QualifiedName.fromClass( TypedTask.Data.class, "taskType" ) );
-
-      input.addField("assigned",  assigned == null ? "" : assigned.identity());
-      input.addField("project" , project == null ? "" : project.identity());
-      input.addField("taskType" , taskType == null ? "" : taskType.identity());
-
       for (Statement statement : graph)
       {
-         SchemaField field = indexedFields.get( statement.getPredicate().getLocalName() ) ;
-         if(field != null && statement.getObject() instanceof Literal)
+         SchemaField field = indexedFields.get( statement.getPredicate().getLocalName() );
+         if (field != null)
          {
-            String value = statement.getObject().stringValue();
-            if (field.getType().getTypeName().equals("json"))
+            if (statement.getObject() instanceof Literal)
             {
-               if (value.charAt( 0 ) == '[')
+               String value = statement.getObject().stringValue();
+               if (field.getType().getTypeName().equals( "json" ))
                {
-                  JSONArray array = new JSONArray(value);
-                  indexJson(input, array);
-               } else if (value.charAt(0) == '{')
+                  if (value.charAt( 0 ) == '[')
+                  {
+                     JSONArray array = new JSONArray( value );
+                     indexJson( input, array );
+                  } else if (value.charAt( 0 ) == '{')
+                  {
+                     JSONObject object = new JSONObject( value );
+                     indexJson( input, object );
+                  }
+               } else
                {
-                  JSONObject object = new JSONObject(value);
-                  indexJson(input, object);
+                  input.addField( field.getName(), value );
                }
-            }  else
+            } else if (statement.getObject() instanceof URI && !"type".equals( field.getName() ))
             {
-               input.addField(field.getName(), value );
+               String value = statement.getObject().stringValue();
+               value = value.substring( value.lastIndexOf( ':' ) + 1, value.length() );
+               String name = field.getName();
+               input.addField( name, value );
+            } else if (statement.getObject() instanceof BNode)
+            {
+               Iterator<Statement> seq = graph.match( (Resource) statement.getObject(), new URIImpl( "http://www.w3.org/1999/02/22-rdf-syntax-ns#li" ), null, (Resource) null );
+               while (seq.hasNext())
+               {
+                  Statement seqStatement = seq.next();
+                  String value = seqStatement.getObject().stringValue();
+                  value = value.substring( value.lastIndexOf( ':' ) + 1, value.length() );
+
+                  input.addField( field.getName(), value );
+               }
             }
          }
 
@@ -171,7 +173,7 @@ public class SolrEntityIndexerMixin
       {
          JSONArray array = (JSONArray) object;
          for (int i = 0; i < array.length(); i++)
-            indexJson(input, array.get( i ));
+            indexJson( input, array.get( i ) );
       } else
       {
          JSONObject jsonObject = (JSONObject) object;
@@ -179,16 +181,16 @@ public class SolrEntityIndexerMixin
          while (keys.hasNext())
          {
             Object name = keys.next();
-            Object value = jsonObject.get(name.toString());
+            Object value = jsonObject.get( name.toString() );
             if (value instanceof JSONObject || value instanceof JSONArray)
             {
-               indexJson(input, value);
+               indexJson( input, value );
             } else
             {
                SchemaField field = indexedFields.get( name.toString() );
                if (field != null)
                {
-                  input.addField( name.toString(), jsonObject.get(name.toString()) );
+                  input.addField( name.toString(), jsonObject.get( name.toString() ) );
                }
             }
          }

@@ -443,11 +443,11 @@
    <field name="emailAddress" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="addresses" type="json" indexed="false" stored="false" />
 
-   <field name="labelId" type="string" indexed="true" stored="true" multiValued="true" />
+   <field name="labels" type="string" indexed="true" stored="true" multiValued="true" />
 
-   <field name="assigned" type="string" indexed="true" stored="true" />
+   <field name="assignedTo" type="string" indexed="true" stored="true" />
 
-   <field name="project" type="string" indexed="true" stored="true" />
+   <field name="owner" type="string" indexed="true" stored="true" />
 
    <field name="taskType" type="string" indexed="true" stored="true" />
 
@@ -496,9 +496,9 @@
 
    <!-- non-tokenized version of manufacturer to make it easier to sort or group
         results by manufacturer.  copied from "manu" via copyField -->
-   <field name="manu_exact" type="string" indexed="true" stored="false"/>
+   <!--<field name="manu_exact" type="string" indexed="true" stored="false"/> -->
 
-   <field name="payloads" type="payloads" indexed="true" stored="true"/>
+  <!-- <field name="payloads" type="payloads" indexed="true" stored="true"/> -->
 
    <!-- Uncommenting the following will create a "timestamp" field using
         a default value of "NOW" to indicate when each document was indexed.
@@ -563,6 +563,7 @@
 
    <copyField source="description" dest="text"/>
    <copyField source="note" dest="text"/>
+   
    <!--
    <copyField source="manu" dest="text"/>
    <copyField source="features" dest="text"/>
