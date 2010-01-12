@@ -19,8 +19,8 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.index.rdf.RdfIndexingEngineService;
 import org.qi4j.index.rdf.query.RdfQueryParserFactory;
-import org.qi4j.index.rdf.query.RdfQueryService;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.library.rdf.repository.MemoryRepositoryService;
@@ -46,7 +46,7 @@ public class EntityFinderAssembler
       }
 
       module.addObjects( EntityStateSerializer.class, EntityTypeSerializer.class );
-      module.addServices( RdfQueryService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.addServices( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
       module.addServices( RdfQueryParserFactory.class);
    }
 }
