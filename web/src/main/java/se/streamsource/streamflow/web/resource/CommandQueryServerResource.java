@@ -46,6 +46,8 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.infrastructure.event.CommandEvents;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
@@ -61,8 +63,6 @@ import java.security.AccessControlException;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Base class for command/query resources.
@@ -119,7 +119,14 @@ public class CommandQueryServerResource
             {
                // Invoke query
                Object[] args = getQueryArguments( method );
-               return returnRepresentation( invoke( method, args ), variant );
+
+               long start = System.currentTimeMillis();
+               Representation result = returnRepresentation( invoke( method, args ), variant );
+               long end = System.currentTimeMillis();
+
+               Logger log = LoggerFactory.getLogger( "monitor.rest.query" );
+               log.info( "{}\t{}\t{}", new Object[]{operation, (end-start), getRequest().getResourceRef().toString()} );
+               return result;
             } else
             {
                // Show form
@@ -154,7 +161,14 @@ public class CommandQueryServerResource
             uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( operation ) );
 
             commandEvents.reset();
+
+            long start = System.currentTimeMillis();
             Representation rep = returnRepresentation( invoke( method, args ), variant );
+            long end = System.currentTimeMillis();
+
+            Logger log = LoggerFactory.getLogger( "monitor.rest.command" );
+            log.info( "{}\t{}\t{}", new Object[]{operation, (end-start), getRequest().getResourceRef().toString()} );
+
             try
             {
                uow.complete();
@@ -205,7 +219,7 @@ public class CommandQueryServerResource
          if (uow != null)
             uow.discard();
 
-         Logger.getLogger( "command" ).log( Level.SEVERE, "Could not process command:" + operation, ex );
+         LoggerFactory.getLogger( "command" ).error( "Could not process command: {}", operation, ex );
 
          setStatus( Status.SERVER_ERROR_INTERNAL );
          return new ObjectRepresentation( ex, MediaType.APPLICATION_JAVA_OBJECT );
@@ -306,7 +320,7 @@ public class CommandQueryServerResource
             return (Representation) returnValue;
          } else
          {
-            Logger.getLogger( getClass().getName() ).warning( "Unknown result type:" + returnValue.getClass().getName() );
+            LoggerFactory.getLogger( "command" ).warn( "Unknown result type:" + returnValue.getClass().getName() );
             return new EmptyRepresentation();
          }
       } else
@@ -465,7 +479,7 @@ public class CommandQueryServerResource
             throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
          }
 
-         Logger.getLogger( "command" ).log( Level.SEVERE, "Could not invoke command:" + method.getName(), e.getTargetException() );
+         LoggerFactory.getLogger( "command" ).error( "Could not invoke command:" + method.getName(), e.getTargetException() );
 
          getResponse().setEntity( new ObjectRepresentation( e ) );
 

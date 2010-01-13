@@ -49,6 +49,8 @@ public class ManagementAssembler
 
          module.addServices( EventManagerService.class, DomainEventPlayerService.class ).instantiateOnStartup();
          module.addServices( ErrorLogService.class ).instantiateOnStartup();
+
+         module.addServices( MonitorLoggingService.class ).instantiateOnStartup();
       }
    }
 }

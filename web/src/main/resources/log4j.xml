@@ -3,17 +3,22 @@
 <log4j:configuration>
     <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
+            <param name="ConversionPattern" value="%5p %c{1} - %m%n"/>
         </layout>
     </appender>
 
     <!-- Custom log levels -->
-    <logger name="org.apache.solr" additivity="true">
+    <logger name="org.apache.solr">
         <level value="WARN"/>
     </logger>
-    <logger name="org.qi4j.index.rdf.query" additivity="true">
+    <logger name="org.qi4j.index.rdf.query">
         <level value="WARN"/>
     </logger>
+
+    <!-- Monitors -->
+    <logger name="monitor" additivity="true">
+    </logger>
+    
     <root>
         <level value="INFO"></level>
         <appender-ref ref="stdout"/>

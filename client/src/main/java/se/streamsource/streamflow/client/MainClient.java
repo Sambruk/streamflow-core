@@ -14,7 +14,9 @@
 
 package se.streamsource.streamflow.client;
 
-import javax.swing.UnsupportedLookAndFeelException;
+import org.apache.log4j.Logger;
+
+import javax.swing.*;
 import java.util.Locale;
 
 /**
@@ -37,6 +39,9 @@ public class MainClient
 //        Locale.setDefault(Locale.ENGLISH);
 
       org.jdesktop.application.Application.launch( StreamFlowApplication.class, args );
+
+      Logger.getLogger( "status" ).setAdditivity( false );
+      Logger.getLogger( "progress" ).setAdditivity( false );
    }
 
    public void stop()
