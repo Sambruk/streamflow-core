@@ -20,6 +20,7 @@ import se.streamsource.streamflow.client.ui.AccountSelector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -32,7 +33,9 @@ public class AccountSelectionView
    public AccountSelectionView( @Uses final AccountSelector accountSelector )
    {
       JPanel accountSelection = new JPanel( new BorderLayout() );
-      accountSelection.add( accountSelector, BorderLayout.CENTER );
+      JScrollPane scroll = new JScrollPane( );
+      scroll.getViewport().add( accountSelector );
+      accountSelection.add( scroll, BorderLayout.CENTER );
       accountSelection.setMinimumSize( new Dimension( 300, 200 ) );
       accountSelection.setPreferredSize( new Dimension( 300, 200 ) );
       accountSelection.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), i18n.text( WorkspaceResources.select_account ) ) );
