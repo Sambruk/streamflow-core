@@ -33,6 +33,7 @@ import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
+import se.streamsource.streamflow.web.resource.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.labels.SelectedLabelServerResource;
 import se.streamsource.streamflow.web.resource.labels.SelectedLabelsServerResource;
@@ -59,8 +60,8 @@ import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeS
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskServerResource;
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
@@ -98,6 +99,7 @@ public class APIv1Router
       attach( "/users/{user}", userFilter );
 
       attach( "/users/{labels}/workspace/user/labels", createServerResourceFinder( LabelsServerResource.class ) );
+      attach( "/users/{labels}/workspace/user/labels/{label}", createServerResourceFinder( LabelServerResource.class ) );
 
       // Organizations
       attach( "/organizations", createServerResourceFinder( OrganizationsServerResource.class ) );
@@ -107,18 +109,21 @@ public class APIv1Router
       attach( "/organizations/{organization}/roles/{role}", createServerResourceFinder( RoleServerResource.class ) );
       attach( "/organizations/{organization}/forms", createServerResourceFinder( FormTemplatesServerResource.class ) );
       attach( "/organizations/{organization}/forms/{form}", createServerResourceFinder( FormTemplateServerResource.class ) );
+      attach( "/organizations/{labels}/selectedlabels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
+      attach( "/organizations/{labels}/selectedlabels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
       attach( "/organizations/{policy}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
       attach( "/organizations/{organization}/administrators/{administrator}", createServerResourceFinder( AdministratorServerResource.class ) );
       attach( "/organizations/{organizationalunits}/organizationalunits", createServerResourceFinder( OrganizationalUnitsServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes", createServerResourceFinder( TaskTypesServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{tasktype}", createServerResourceFinder( TaskTypeServerResource.class ) );
-      attach( "/organizations/{organization}/tasktypes/{labels}/labels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
-      attach( "/organizations/{organization}/tasktypes/{labels}/labels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{labels}/selectedlabels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{labels}/selectedlabels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms", createServerResourceFinder( FormDefinitionsServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}", createServerResourceFinder( FormDefinitionServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/fields", createServerResourceFinder( FormDefinitionFieldsServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/fields/{index}", createServerResourceFinder( FormDefinitionFieldServerResource.class ) );
       attach( "/organizations/{labels}/labels", createServerResourceFinder( LabelsServerResource.class ) );
+      attach( "/organizations/{labels}/labels/{label}", createServerResourceFinder( LabelServerResource.class ) );
 
       // OrganizationalUnits
       attach( "/organizations/{organization}/organizationalunits/{policy}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
@@ -131,15 +136,15 @@ public class APIv1Router
       attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{project}", createServerResourceFinder( ProjectServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{project}/members", createServerResourceFinder( MembersServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{project}/members/{member}", createServerResourceFinder( MemberServerResource.class ) );
-      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{labels}/labels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
-      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{labels}/labels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{labels}/selectedlabels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{labels}/selectedlabels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{tasktypes}/tasktypes", createServerResourceFinder( SelectedTaskTypesServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/projects/{tasktypes}/tasktypes/{tasktype}", createServerResourceFinder( SelectedTaskTypeServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/administrators", createServerResourceFinder( AdministratorsServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{ou}/administrators/{administrator}", createServerResourceFinder( AdministratorServerResource.class ) );
       attach( "/organizations/{organization}/organizationalunits/{organizationalunits}/organizationalunits", createServerResourceFinder( OrganizationalUnitsServerResource.class ) );
-      attach( "/organizations/{organization}/organizationalunits/{labels}/labels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
-      attach( "/organizations/{organization}/organizationalunits/{labels}/labels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{labels}/selectedlabels", createServerResourceFinder( SelectedLabelsServerResource.class ) );
+      attach( "/organizations/{organization}/organizationalunits/{labels}/selectedlabels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
 
       // Tasks
       attach( "/tasks/{task}", createServerResourceFinder( TaskServerResource.class ) );

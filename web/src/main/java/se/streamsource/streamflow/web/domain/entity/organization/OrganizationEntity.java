@@ -23,11 +23,13 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FieldDefinitionsQueries;
 import se.streamsource.streamflow.web.domain.entity.form.FormQueries;
+import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.form.FieldTemplates;
 import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
@@ -63,6 +65,7 @@ public interface OrganizationEntity
       RolePolicy.Data,
       Roles.Data,
       PermissionQueries,
+      SelectedLabels.Data,
       TaskTypes.Data,
 
       //Queries
@@ -71,6 +74,7 @@ public interface OrganizationEntity
       OrganizationParticipationsQueries,
       OrganizationQueries,
       OrganizationalUnitsQueries,
+      PossibleLabelsQueries,
       TaskTypesQueries
 {
    abstract class LifecycleConcern

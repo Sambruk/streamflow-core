@@ -31,9 +31,10 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /organizations/{organization}/tasktypes/{labels}/labels
- * /organizations/{organization}/organizationalunits/{labels}/labels
- * /organizations/{organization}/organizationalunits/{ou}/projects/{labels}/labels
+ * /organizations/{labels}/selectedlabels
+ * /organizations/{organization}/tasktypes/{labels}/selectedlabels
+ * /organizations/{organization}/organizationalunits/{labels}/selectedlabels
+ * /organizations/{organization}/organizationalunits/{ou}/projects/{labels}/selectedlabels
  */
 public class SelectedLabelsServerResource
       extends CommandQueryServerResource
@@ -58,6 +59,8 @@ public class SelectedLabelsServerResource
       UnitOfWork uow = uowf.currentUnitOfWork();
       String id = (String) getRequest().getAttributes().get( "labels" );
       String organization = (String) getRequest().getAttributes().get( "organization" );
+      if (organization == null)
+         organization = id;
       PossibleLabelsQueries possibleLabelsQueries = uow.get( PossibleLabelsQueries.class, id );
       Labels.Data labels = uow.get( Labels.Data.class, organization );
 

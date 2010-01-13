@@ -19,6 +19,7 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.structure.form.FieldTemplates;
 import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
@@ -36,6 +37,7 @@ public interface Organization
       Labels,
       OrganizationalUnits,
       Roles,
+      SelectedLabels,
       TaskTypes,
       Removable
 {

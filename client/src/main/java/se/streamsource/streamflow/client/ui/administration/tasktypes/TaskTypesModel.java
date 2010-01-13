@@ -57,7 +57,7 @@ public class TaskTypesModel
       protected TaskTypeModel newModel( String key )
       {
          CommandQueryClient taskTypeClient = client.getSubClient( key );
-         SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( taskTypeClient.getSubClient( "labels" ) ).newInstance();
+         SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( taskTypeClient.getSubClient( "selectedlabels" ) ).newInstance();
          FormsModel formsModel = obf.newObjectBuilder( FormsModel.class ).use( taskTypeClient.getSubClient( "forms" ) ).newInstance();
 
          return obf.newObjectBuilder( TaskTypeModel.class ).use( selectedLabelsModel, formsModel, taskTypeClient ).newInstance();

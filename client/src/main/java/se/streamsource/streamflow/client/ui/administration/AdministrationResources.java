@@ -124,6 +124,7 @@ public enum AdministrationResources
    could_not_create_label,
    could_not_change_description,
    labels_tab,
+   selected_labels_tab,
    could_not_get_organization,
    create_user_title,
    reset_password_title,
@@ -148,5 +149,7 @@ public enum AdministrationResources
    page_break,
    field_type_selection,
    change_selection_field_name,
-   multi_selection
+   multi_selection,
+   task_types_tab,
+   members_tab
 }

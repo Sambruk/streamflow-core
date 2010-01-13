@@ -17,18 +17,28 @@ package se.streamsource.streamflow.web.resource.labels;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.domain.structure.Describable;
 
 /**
  * Mapped to:
- * /organizations/{organization}/tasktypes/{labels}/selectedlabels/{label}
- * /organizations/{organization}/organizationalunits/{labels}/selectedlabels/{label}
- * /organizations/{organization}/organizationalunits/{ou}/projects/{labels}/selectedlabels/{label}
+ * /users/{labels}/labels/{label}
+ * /organizations/{labels}/labels/{label}
  */
-public class SelectedLabelServerResource
+public class LabelServerResource
       extends CommandQueryServerResource
 {
+   public void changedescription( StringDTO stringValue )
+   {
+      String labelId = (String) getRequest().getAttributes().get( "label" );
+      Describable describable = uowf.currentUnitOfWork().get( Describable.class, labelId );
+
+      checkPermission( describable );
+      describable.changeDescription( stringValue.string().get() );
+   }
+
    public void deleteOperation() throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -36,7 +46,7 @@ public class SelectedLabelServerResource
       String labelsId = getRequest().getAttributes().get( "labels" ).toString();
       String identity = getRequest().getAttributes().get( "label" ).toString();
 
-      SelectedLabels labels = uow.get( SelectedLabels.class, labelsId );
+      Labels labels = uow.get( Labels.class, labelsId );
       Label label = uow.get( Label.class, identity );
 
       labels.removeLabel( label );

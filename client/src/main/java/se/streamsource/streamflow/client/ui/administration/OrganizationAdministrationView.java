@@ -15,14 +15,14 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Uses;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
+import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesAdminView;
 
-import javax.swing.JTabbedPane;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -31,12 +31,14 @@ public class OrganizationAdministrationView
       extends JTabbedPane
 {
    public OrganizationAdministrationView( @Uses LabelsView labelsView,
+                                          @Uses SelectedLabelsView selectedLabelsView,
                                           @Uses RolesView rolesView,
                                           @Uses TaskTypesAdminView taskTypesView,
                                           @Uses AdministratorsView administratorsAdmin
    )
    {
       addTab( text( AdministrationResources.labels_tab ), labelsView );
+      addTab( text( AdministrationResources.selected_labels_tab ), selectedLabelsView );
       addTab( text( AdministrationResources.tasktypes_tab ), taskTypesView );
 //        addTab( text( AdministrationResources.roles_tab ), rolesView );
       addTab( text( AdministrationResources.administrators_tab ), administratorsAdmin );

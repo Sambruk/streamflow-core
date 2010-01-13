@@ -13,18 +13,22 @@
  */
 package se.streamsource.streamflow.web.domain.entity.task;
 
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 
 @Mixins(TaskLabelsQueries.Mixin.class)
 public interface TaskLabelsQueries
@@ -52,30 +56,42 @@ public interface TaskLabelsQueries
 
          if (ownable.owner().get() instanceof SelectedLabels)
          {
-            for (Label label : ((SelectedLabels.Data) ownable.owner().get()).selectedLabels())
-            {
-               if (!labelable.labels().contains( (LabelEntity) label ))
-               {
-                  listBuilder.addDescribable( label );
-               }
-            }
+            addLabels( listBuilder, ((SelectedLabels.Data) ownable.owner().get()).selectedLabels() );
          }
 
          if (type.taskType().get() != null)
          {
             SelectedLabels.Data taskType = (SelectedLabels.Data) type.taskType().get();
-            for (Label label : taskType.selectedLabels())
-            {
-               if (!labelable.labels().contains( (LabelEntity) label ))
-               {
-                  listBuilder.addDescribable( label );
-               }
-            }
+            addLabels( listBuilder, taskType.selectedLabels() );
          }
 
-         // TODO Add from OU if owner is a Project
+         if (ownable.owner().get() instanceof OwningOrganizationalUnit.Data)
+         {
+            // Add labels from OU
+            OwningOrganizationalUnit.Data ownerOU = (OwningOrganizationalUnit.Data) ownable.owner().get();
+            OrganizationalUnit ou = ownerOU.organizationalUnit().get();
+            SelectedLabels.Data ouLabels = (SelectedLabels.Data) ou;
+            addLabels( listBuilder, ouLabels.selectedLabels() );
+
+            // Add labels from Organization of OU
+            OwningOrganization ownerOrg = (OwningOrganization) ou;
+            Organization org = ownerOrg.organization().get();
+            SelectedLabels.Data orgLabels = (SelectedLabels.Data) org;
+            addLabels( listBuilder, orgLabels.selectedLabels() );
+         }
 
          return listBuilder.newList();
+      }
+
+      private void addLabels( ListValueBuilder listBuilder, ManyAssociation<Label> selectedLabels )
+      {
+         for (Label label : selectedLabels)
+         {
+            if (!labelable.labels().contains( label ))
+            {
+               listBuilder.addDescribable( label );
+            }
+         }
       }
    }
 }

@@ -25,6 +25,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
+import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -47,6 +48,7 @@ public class OrganizationalUnitAdministrationModel
 
    private GroupsModel groupsModel;
    private ProjectsModel projectsModel;
+   private SelectedLabelsModel selectedLabelsModel;
    private AdministratorsModel administratorsModel;
    private CommandQueryClient client;
 
@@ -56,6 +58,7 @@ public class OrganizationalUnitAdministrationModel
 
       groupsModel = obf.newObjectBuilder( GroupsModel.class ).use( client.getSubClient( "groups" )).newInstance();
       projectsModel = obf.newObjectBuilder( ProjectsModel.class ).use( client.getSubClient( "projects" ), this).newInstance();
+      selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( client.getSubClient( "selectedlabels" ), this).newInstance();
       administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( client.getSubClient( "administrators" )).newInstance();
    }
 
@@ -72,6 +75,11 @@ public class OrganizationalUnitAdministrationModel
    public ProjectsModel projectsModel()
    {
       return projectsModel;
+   }
+
+   public SelectedLabelsModel selectedLabelsModel()
+   {
+      return selectedLabelsModel;
    }
 
    public AdministratorsModel administratorsModel()

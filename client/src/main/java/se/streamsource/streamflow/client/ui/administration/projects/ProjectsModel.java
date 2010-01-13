@@ -60,7 +60,7 @@ public class ProjectsModel
       protected ProjectModel newModel( String key )
       {
          CommandQueryClient projectClient = client.getSubClient( key );
-         SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( projectClient.getSubClient( "labels" ) ).newInstance();
+         SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( projectClient.getSubClient( "selectedlabels" ) ).newInstance();
          SelectedTaskTypesModel selectedTaskTypesModel = obf.newObjectBuilder( SelectedTaskTypesModel.class ).use( projectClient.getSubClient( "tasktypes" ) ).newInstance();
          ProjectMembersModel projectMembersModel = obf.newObjectBuilder(ProjectMembersModel.class).use( projectClient.getSubClient( "members" ) ).newInstance();
 

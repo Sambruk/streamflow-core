@@ -29,19 +29,14 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRende
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Admin of labels on organizational level.
@@ -115,6 +110,7 @@ public class LabelsView
       {
          ListItemValue selected = (ListItemValue) labelList.getSelectedValue();
          model.removeLabel( selected.entity().get().identity() );
+         model.refresh();
       }
    }
 
@@ -127,6 +123,7 @@ public class LabelsView
       if (dialog.name() != null)
       {
          model.changeDescription( labelList.getSelectedIndex(), dialog.name() );
+         model.refresh();
       }
    }
 }

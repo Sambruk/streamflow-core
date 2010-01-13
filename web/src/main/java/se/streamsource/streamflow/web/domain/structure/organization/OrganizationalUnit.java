@@ -17,7 +17,7 @@ package se.streamsource.streamflow.web.domain.structure.organization;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.streamflow.web.domain.structure.organization.Projects;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
  * JAVADOC
@@ -30,6 +30,7 @@ public interface OrganizationalUnit
       OrganizationalUnits,
       Projects,
       Removable,
-      RolePolicy
+      RolePolicy,
+      SelectedLabels
 {
 }

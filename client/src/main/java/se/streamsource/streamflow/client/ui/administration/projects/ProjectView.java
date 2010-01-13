@@ -15,10 +15,12 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.qi4j.api.injection.scope.Uses;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesView;
 
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -32,8 +34,8 @@ public class ProjectView
    {
       super();
 
-      addTab( "Members", membersView );
-      addTab( "Labels", selectedLabelsView );
-      addTab( "Task types", selectedTaskTypesView );
+      addTab( text(AdministrationResources.members_tab), membersView );
+      addTab( text(AdministrationResources.selected_labels_tab), selectedLabelsView );
+      addTab( text(AdministrationResources.task_types_tab), selectedTaskTypesView );
    }
 }

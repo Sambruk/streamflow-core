@@ -23,8 +23,10 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
+import se.streamsource.streamflow.web.resource.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.labels.SelectedLabelServerResource;
 import se.streamsource.streamflow.web.resource.labels.SelectedLabelsServerResource;
@@ -87,7 +89,6 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
-import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
 /**
  * Assembler for API resources
@@ -137,6 +138,7 @@ public class ServerResourceAssembler
             WorkspaceProjectDelegationsServerResource.class,
             WorkspaceProjectWaitingForServerResource.class,
             LabelsServerResource.class,
+            LabelServerResource.class,
             SelectedLabelsServerResource.class,
             SelectedLabelServerResource.class,
 
