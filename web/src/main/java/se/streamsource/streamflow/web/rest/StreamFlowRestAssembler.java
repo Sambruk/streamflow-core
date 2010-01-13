@@ -46,6 +46,5 @@ public class StreamFlowRestAssembler
             EntityResource.class );
 
       module.importServices( ChallengeAuthenticator.class);
-      module.importServices( RdfIndexingEngineService.class );
    }
 }
