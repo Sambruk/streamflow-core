@@ -110,5 +110,6 @@ public enum WorkspaceResources
    could_not_refresh,
    search_tasktype,
    fill_all_fields,
+   mandatory_field_missing, 
    search_user
 }

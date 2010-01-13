@@ -17,20 +17,16 @@ package se.streamsource.streamflow.client.ui.task;
 import org.netbeans.spi.wizard.WizardController;
 import org.netbeans.spi.wizard.WizardException;
 import org.netbeans.spi.wizard.WizardPanelProvider;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.entity.EntityReference;
-import org.jdesktop.swingx.JXDatePicker;
-
-import javax.swing.*;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.awt.TextField;
-
 import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+
+import javax.swing.JComponent;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * JAVADOC
@@ -72,34 +68,14 @@ public class FormSubmissionWizardPanelProvider
       {
          Object value = ((Map.Entry) o).getValue();
 
-         if (value instanceof JComponent)
+         if (value instanceof String)
          {
             String id = (String) ((Map.Entry) o).getKey();
             EntityReference entityReference = EntityReference.parseEntityReference( id );
             fieldBuilder.prototype().field().set(entityReference);
 
-            if (value instanceof JTextField)
-            {
-               fieldBuilder.prototype().value().set(((JTextField)map.get( id )).getText());
-               fields.add(fieldBuilder.newInstance());
-            } else if (value instanceof JTextArea)
-            {
-               fieldBuilder.prototype().value().set(((JTextArea)map.get( id )).getText());
-               fields.add(fieldBuilder.newInstance());
-            } else if (value instanceof JXDatePicker)
-            {
-               fieldBuilder.prototype().value().set(((JXDatePicker)map.get( id )).getDate().toString());
-               fields.add(fieldBuilder.newInstance());
-            } else if (value instanceof JComboBox)
-            {
-               fieldBuilder.prototype().value().set( ((JComboBox) map.get( id )).getSelectedItem().toString() );
-               fields.add(fieldBuilder.newInstance());
-            } else if (value instanceof MultiSelectPanel)
-            {
-               MultiSelectPanel multiSelect = (MultiSelectPanel) value;
-               fieldBuilder.prototype().value().set( multiSelect.getChecked() );
-               fields.add(fieldBuilder.newInstance());
-            }
+            fieldBuilder.prototype().value().set( (String) value );
+            fields.add(fieldBuilder.newInstance());
          }
       }
       submittedFormBuilder.prototype().values().set( fields );

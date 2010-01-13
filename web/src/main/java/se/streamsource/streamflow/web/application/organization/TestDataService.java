@@ -30,6 +30,8 @@ import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -50,6 +52,8 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
 
 /**
  * Generates test data
@@ -138,31 +142,46 @@ public interface TestDataService
          project.addSelectedTaskType( bug );
          project.addSelectedTaskType( improvement );
 
-         Form commentForm = bug.createForm();
-         commentForm.changeDescription( "CommentForm" );
-         commentForm.changeNote( "This is a comment form. Use it to capture any comments related to the current task." );
+         Form bugreport = bug.createForm();
+         bugreport.changeDescription( "Bug Report" );
+         bugreport.changeNote( "A form to capture a bug report" );
          ValueBuilder<TextFieldValue> builder = vbf.newValueBuilder( TextFieldValue.class );
          builder.prototype().width().set( 30 );
          ValueBuilder<DateFieldValue> dateBuilder = vbf.newValueBuilder( DateFieldValue.class );
          ValueBuilder<PageBreakFieldValue> pageBreakBuilder = vbf.newValueBuilder( PageBreakFieldValue.class );
-         Field commentField = commentForm.createField( "Comment", builder.newInstance() );
+         ValueBuilder<NumberFieldValue> numberBuilder = vbf.newValueBuilder( NumberFieldValue.class );
+         ValueBuilder<SelectionFieldValue> selectionBuilder = vbf.newValueBuilder( SelectionFieldValue.class );
+         List<String> values = new ArrayList<String>();
+         values.add( "Male" );
+         values.add( "Female" );
+         selectionBuilder.prototype().values().set( values );
+         builder.prototype().mandatory().set( true );
+         bugreport.createField( "Bugname", builder.newInstance() );
+         numberBuilder.prototype().integer().set( true );
+         numberBuilder.prototype().mandatory().set( true );
+         bugreport.createField( "Bug ID", numberBuilder.newInstance() );
+         builder.prototype().rows().set( 5 );
+         bugreport.createField( "Description", builder.newInstance() );
+         bugreport.createField( "Date Information", pageBreakBuilder.newInstance() );
+         dateBuilder.prototype().mandatory().set( true );
+         bugreport.createField( "Discovered", dateBuilder.newInstance() );
+         bugreport.createField( "Gender", selectionBuilder.newInstance() );
 
          Form statusForm = bug.createForm();
          statusForm.changeDescription( "StatusForm" );
          statusForm.changeNote( "This is the Status form. \nWhen urgencies occur please upgrade the status of the current task" );
          Field statusField = statusForm.createField( "Status", builder.newInstance() );
 
-         organization.createFormTemplate( commentForm );
+         organization.createFormTemplate( bugreport );
 
          Form emailForm = improvement.createForm();
          emailForm.changeDescription( "Email form" );
          emailForm.changeNote( "Form for entering and sending an email" );
+         builder.prototype().rows().set( 0 );
          emailForm.createField( "To", builder.newInstance() ).changeNote( "Enter address of receiver. Note it must be a valid email" );
          emailForm.createField( "Subject", builder.newInstance() ).changeNote( "Subject of the mail" );
          builder.prototype().rows().set( 10 );
          emailForm.createField( "Content", builder.newInstance() ).changeNote( "Mail content" );
-         emailForm.createField( "Expected response", pageBreakBuilder.newInstance() );
-         emailForm.createField( "Expect resonse", dateBuilder.newInstance() ).changeNote( "Empty means no response needed" );
 
          Form resetPasswordForm = passwordReset.createForm();
          resetPasswordForm.changeDescription( "Reset password" );
@@ -203,10 +222,7 @@ public interface TestDataService
          Task task = ((Inbox)project).createTask();
          task.changeDescription( "Arbetsuppgift 0" );
 
-         SubmittedFormValue submitted = createSubmittedForm( user, commentForm, commentField, "Remember that this Task is important" );
-         task.submitForm( submitted );
-
-         submitted = createSubmittedForm( user, statusForm, statusField, "Progress is slow" );
+         SubmittedFormValue submitted = createSubmittedForm( user, statusForm, statusField, "Progress is slow" );
          task.submitForm( submitted );
 
          submitted = createSubmittedForm( user, statusForm, statusField, "Progress is getting better" );
