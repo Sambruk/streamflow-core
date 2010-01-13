@@ -36,6 +36,6 @@ public class ProjectView
 
       addTab( text(AdministrationResources.members_tab), membersView );
       addTab( text(AdministrationResources.selected_labels_tab), selectedLabelsView );
-      addTab( text(AdministrationResources.task_types_tab), selectedTaskTypesView );
+      addTab( text(AdministrationResources.tasktypes_tab), selectedTaskTypesView );
    }
 }

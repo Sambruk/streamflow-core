@@ -150,6 +150,5 @@ public enum AdministrationResources
    field_type_selection,
    change_selection_field_name,
    multi_selection,
-   task_types_tab,
    members_tab
 }
