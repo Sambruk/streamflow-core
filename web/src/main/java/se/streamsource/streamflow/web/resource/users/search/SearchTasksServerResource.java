@@ -142,7 +142,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
                   }
                   queryBuilder.append( ")" );
                }
-            } else if (search.hasName( "description", "note", "name", "contactId", "phoneNumber", "emailAddress", "assigned" ))
+            } else if (search.hasName( "description", "note", "name", "contactId", "phoneNumber", "emailAddress", "assignedTo" ))
             {
                queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( search.getValue() );
 
