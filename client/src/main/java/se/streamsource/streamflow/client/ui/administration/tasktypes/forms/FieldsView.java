@@ -115,7 +115,7 @@ public class FieldsView
    public void add()
    {
       FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, "Add new field to form" );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_field_to_form));
 
       if (dialog.name() != null && !"".equals( dialog.name() ))
       {

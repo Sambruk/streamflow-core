@@ -109,6 +109,7 @@ public enum AdministrationResources
    description_label,
    could_not_get_field,
    text_field_type,
+   date_field_type,
    fields_label,
    type_label,
    could_not_get_fields,
@@ -137,6 +138,7 @@ public enum AdministrationResources
    comment_field_type,
    comment_label,
    text_area_field_type,
+   number_field_type,
    width_label,
    rows_label,
    integer_label,
@@ -149,6 +151,8 @@ public enum AdministrationResources
    page_break,
    field_type_selection,
    change_selection_field_name,
-   multi_selection,
+   multi_selection, 
+   add_field_to_form, 
+   selection_field_type,
    members_tab
 }

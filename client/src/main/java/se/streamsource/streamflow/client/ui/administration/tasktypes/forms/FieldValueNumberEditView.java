@@ -66,7 +66,7 @@ public class FieldValueNumberEditView
 
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
-      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text_area_field_type ) ) );
+      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.number_field_type ) ) );
 
       bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldValueTemplate.mandatory(), fieldValueBinder ).
             appendLine( AdministrationResources.integer_label, CHECKBOX, fieldValueTemplate.integer(), fieldValueBinder ).
