@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
+<log4j:configuration>
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- Custom log levels -->
+    <logger name="org.apache.solr" additivity="true">
+        <level value="WARN"/>
+    </logger>
+    <logger name="org.qi4j.index.rdf.query" additivity="true">
+        <level value="WARN"/>
+    </logger>
+    <root>
+        <level value="INFO"></level>
+        <appender-ref ref="stdout"/>
+    </root>
+</log4j:configuration>
+        

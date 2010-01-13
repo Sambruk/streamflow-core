@@ -16,7 +16,11 @@ package se.streamsource.streamflow.web;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestApplication;
+
+import java.util.logging.Logger;
+import java.util.logging.Handler;
 
 /**
  * JAVADOC
@@ -32,6 +36,15 @@ public class MainWeb
 
    public void start() throws Exception
    {
+      // Remove default handlers - we do our own logging!
+      for (Handler handler : Logger.getLogger( "" ).getHandlers())
+      {
+         Logger.getLogger( "" ).removeHandler( handler );
+      }
+
+      // Install SL4J Bridge. This will eventually delegate to log4j for logging
+      SLF4JBridgeHandler.install();
+
       component = new Component();
       component.getServers().add( Protocol.HTTP, 8040 );
       component.getClients().add( Protocol.CLAP );
