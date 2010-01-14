@@ -433,6 +433,7 @@
 
    <field name="description" type="text" indexed="true" stored="true" />
    <field name="note" type="text" indexed="true" stored="true" multiValued="true"/>
+   <field name="taskId" type="string" indexed="true" stored="true" />
 
    <field name="contacts" type="json" indexed="false" stored="false"/>
    <field name="contactId" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -563,6 +564,7 @@
 
    <copyField source="description" dest="text"/>
    <copyField source="note" dest="text"/>
+   <copyField source="taskId" dest="text" />
    
    <!--
    <copyField source="manu" dest="text"/>

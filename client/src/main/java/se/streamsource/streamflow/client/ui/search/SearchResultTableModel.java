@@ -34,7 +34,7 @@ public class SearchResultTableModel
 
    public void search( String text )
    {
-      searchString = text;
+      searchString = SearchTerms.translate( text );
 
       refresh();
    }

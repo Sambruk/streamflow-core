@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.menu;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
@@ -33,6 +34,7 @@ import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -60,7 +62,7 @@ public class AccountsModel
    @Service
    Uniform client;
 
-   TransactionList<ListItemValue> accounts = new TransactionList<ListItemValue>( new BasicEventList<ListItemValue>() );
+   TransactionList<ListItemValue> accounts = new TransactionList<ListItemValue>( new SortedList<ListItemValue>( new BasicEventList<ListItemValue>(), new ListItemComparator() ));
 
    WeakModelMap<String, AccountModel> models = new WeakModelMap<String, AccountModel>()
    {
