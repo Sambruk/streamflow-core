@@ -23,14 +23,16 @@ import org.qi4j.api.query.QueryBuilder;
 import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.spi.structure.ModuleSPI;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 @Mixins(OrganizationQueries.Mixin.class)
 public interface OrganizationQueries
@@ -67,6 +69,8 @@ public interface OrganizationQueries
             )
                   .newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
+            users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
+
             try
             {
                for (Participant participant : users)
@@ -96,6 +100,8 @@ public interface OrganizationQueries
                         matches( templateFor( GroupEntity.class ).description(), "^" + query ) ) ).
                   newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 
+            groups.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
+
             try
             {
                for (Participant participant : groups)
@@ -123,6 +129,8 @@ public interface OrganizationQueries
                   eq( templateFor( ProjectEntity.class ).removed(), false ),
                   matches( templateFor( ProjectEntity.class ).description(), "^" + query ) ) ).
                   newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+            projects.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
 
             try
             {

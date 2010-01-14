@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.administration.groups;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -26,6 +27,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -49,7 +51,8 @@ public class GroupsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   BasicEventList<ListItemValue> groups = new BasicEventList<ListItemValue>( );
+   SortedList<ListItemValue> groups = new SortedList<ListItemValue>(new BasicEventList<ListItemValue>( ), new ListItemComparator() );
+
 
    WeakModelMap<String, GroupModel> groupModels = new WeakModelMap<String, GroupModel>()
    {

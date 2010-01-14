@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -25,6 +26,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
@@ -53,7 +55,7 @@ public class ProjectsModel
    @Uses
    CommandQueryClient client;
 
-   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
+   SortedList<ListItemValue> eventList = new SortedList<ListItemValue>( new BasicEventList<ListItemValue>(), new ListItemComparator() );
 
    WeakModelMap<String, ProjectModel> projectModels = new WeakModelMap<String, ProjectModel>()
    {
@@ -73,7 +75,7 @@ public class ProjectsModel
       }
    };
 
-   public BasicEventList<ListItemValue> getProjectList()
+   public SortedList<ListItemValue> getProjectList()
    {
       return eventList;
    }

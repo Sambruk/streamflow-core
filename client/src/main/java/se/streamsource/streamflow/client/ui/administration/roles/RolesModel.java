@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.administration.roles;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -24,6 +25,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -44,7 +46,7 @@ public class RolesModel
    @Uses
    CommandQueryClient client;
 
-   private BasicEventList<ListItemValue> roles = new BasicEventList<ListItemValue>( );
+   private SortedList<ListItemValue> roles = new SortedList<ListItemValue>( new BasicEventList<ListItemValue>( ), new ListItemComparator() );
 
    public EventList<ListItemValue> getRoles()
    {

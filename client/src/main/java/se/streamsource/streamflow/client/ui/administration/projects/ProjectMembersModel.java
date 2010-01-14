@@ -15,12 +15,14 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
@@ -47,9 +49,9 @@ public class ProjectMembersModel
    @Structure
    ObjectBuilderFactory obf;
 
-   private BasicEventList<ListItemValue> members = new BasicEventList<ListItemValue>( );
+   private SortedList<ListItemValue> members = new SortedList( new BasicEventList<ListItemValue>( ), new ListItemComparator() );
 
-   public BasicEventList<ListItemValue> getMembers()
+   public SortedList<ListItemValue> getMembers()
    {
       return members;
    }
