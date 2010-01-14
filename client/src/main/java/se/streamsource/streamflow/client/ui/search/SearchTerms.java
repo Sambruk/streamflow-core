@@ -25,15 +25,22 @@ public class SearchTerms
 {
    private static Map<Locale, List<String>> i18nSearchTerms = new HashMap<Locale, List<String>>();
    private static Locale sv_SE_gov = new Locale( "sv", "SE", "gov" );
+   private static Locale sv_SE = new Locale( "sv", "SE" );
    //createdOn, taskType, project, label, assignedTo, description, note, name, contactId, phoneNumber, emailAddress.
+   private static List<String> searchTerms_sv_SE =
+         Arrays.asList( "skapad:", "ärendetyp:", "projekt:", "etikett:", "tilldelad:", "namn:", "kontaktid:", "telefon:", "email:" );
    private static List<String> searchTerms_sv_SE_gov =
          Arrays.asList( "skapad:", "ärendetyp:", "funktion:", "etikett:", "tilldelad:", "namn:", "personnr:", "telefon:", "email:" );
+   private static List<String> searchTerms_en_GB =
+         Arrays.asList( "created:", "tasktype:", "project:", "label:", "assigned:", "name:", "contactid:", "phone:", "email:" );
    private static List<String> searchTerms =
          Arrays.asList( "createdOn:", "taskType:", "project:", "label:", "assignedTo:", "name:", "contactId:", "phoneNumber:", "emailAddress:" );
 
    static
    {
       i18nSearchTerms.put( sv_SE_gov, searchTerms_sv_SE_gov );
+      i18nSearchTerms.put( sv_SE, searchTerms_sv_SE );
+      i18nSearchTerms.put( Locale.UK, searchTerms_en_GB );
    }
 
    public static String translate( String search )
