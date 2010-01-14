@@ -152,8 +152,10 @@ public interface TestDataService
          ValueBuilder<NumberFieldValue> numberBuilder = vbf.newValueBuilder( NumberFieldValue.class );
          ValueBuilder<SelectionFieldValue> selectionBuilder = vbf.newValueBuilder( SelectionFieldValue.class );
          List<String> values = new ArrayList<String>();
-         values.add( "Male" );
-         values.add( "Female" );
+         values.add( "Critical" );
+         values.add( "High" );
+         values.add( "Normal" );
+         values.add( "Low" );
          selectionBuilder.prototype().values().set( values );
          builder.prototype().mandatory().set( true );
          bugreport.createField( "Bugname", builder.newInstance() );
@@ -165,7 +167,13 @@ public interface TestDataService
          bugreport.createField( "Date Information", pageBreakBuilder.newInstance() );
          dateBuilder.prototype().mandatory().set( true );
          bugreport.createField( "Discovered", dateBuilder.newInstance() );
-         bugreport.createField( "Gender", selectionBuilder.newInstance() );
+         bugreport.createField( "Priority", selectionBuilder.newInstance() );
+         selectionBuilder.prototype().multiple().set( true );
+         selectionBuilder.prototype().mandatory().set( false );
+         values.clear();
+         values.add( "Server" );
+         values.add( "Client" );
+         bugreport.createField( "Bug Location", selectionBuilder.newInstance() ).changeNote( "Indicate what part of the application the bug is. Optional" );
 
          Form statusForm = bug.createForm();
          statusForm.changeDescription( "StatusForm" );

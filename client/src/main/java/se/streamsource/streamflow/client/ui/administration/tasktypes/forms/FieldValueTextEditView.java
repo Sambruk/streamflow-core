@@ -52,8 +52,7 @@ public class FieldValueTextEditView
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();
-      FormLayout formLayout = new FormLayout(
-            "200dlu", "" );
+      FormLayout formLayout = new FormLayout( "200dlu", "" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setDefaultDialogBorder();

@@ -47,6 +47,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -89,6 +90,8 @@ public class FormSubmitWizardPage
          } else if ( value.fieldValue().get() instanceof DateFieldValue)
          {
             component = new JXDatePicker();
+            JXDatePicker date = (JXDatePicker) component;
+            date.setFormats( new SimpleDateFormat( i18n.text( WorkspaceResources.date_format )) );
          } else if ( value.fieldValue().get() instanceof NumberFieldValue)
          {
             NumberFieldValue field = (NumberFieldValue) value.fieldValue().get();
@@ -176,7 +179,7 @@ public class FormSubmitWizardPage
          } else if (component instanceof JXDatePicker)
          {
             JXDatePicker datePicker = (JXDatePicker) component;
-            value = datePicker.getDate().toString();
+            value = datePicker.getDate()==null ? "" : datePicker.getEditor().getText(  );
          } else if (component instanceof JComboBox)
          {
             JComboBox box = (JComboBox) component;
