@@ -68,6 +68,7 @@ public interface PossibleActions
                         actions.add( "drop" );
                         actions.add( "delete" );
                         actions.add( "unassign" );
+                        actions.add( "tasktype" );
                         actions.add( "label" );
                      }
                   }
