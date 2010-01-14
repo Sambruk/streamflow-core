@@ -163,7 +163,9 @@ public interface TestDataService
          numberBuilder.prototype().mandatory().set( true );
          bugreport.createField( "Bug ID", numberBuilder.newInstance() );
          builder.prototype().rows().set( 5 );
+         builder.prototype().mandatory().set( false );
          bugreport.createField( "Description", builder.newInstance() );
+         builder.prototype().mandatory().set( true );
          bugreport.createField( "Date Information", pageBreakBuilder.newInstance() );
          dateBuilder.prototype().mandatory().set( true );
          bugreport.createField( "Discovered", dateBuilder.newInstance() );
