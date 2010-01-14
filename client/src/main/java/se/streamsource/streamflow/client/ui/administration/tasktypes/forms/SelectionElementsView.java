@@ -83,7 +83,6 @@ public class SelectionElementsView
       toolbar.add( downButton );
       upButton.setEnabled( false );
       downButton.setEnabled( false );
-      toolbar.add( new JButton( am.get( "rename" ) ) );
 
       model.refresh();
       elementList = new JXList( model );
@@ -108,7 +107,6 @@ public class SelectionElementsView
       add( toolbar, BorderLayout.SOUTH );
 
       elementList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
-      elementList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "rename" ) ) );
       elementList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 
       elementList.getSelectionModel().addListSelectionListener( new ListSelectionListener()
@@ -135,7 +133,14 @@ public class SelectionElementsView
    @org.jdesktop.application.Action
    public void add()
    {
-      model.addElement( );
+      NameDialog dialog = nameDialogs.iterator().next();
+
+      dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.name_label ));
+
+      if ( dialog.name() != null &&  !dialog.name().equals( "" ))
+      {
+         model.addElement( dialog.name() );
+      }
    }
 
 
@@ -171,18 +176,4 @@ public class SelectionElementsView
          elementList.setSelectedIndex( index+1 );
       }
    }
-
-   @org.jdesktop.application.Action
-   public void rename()
-   {
-      NameDialog dialog = nameDialogs.iterator().next();
-
-      dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.change_selection_field_name ));
-
-      if ( dialog.name() != null &&  !dialog.name().equals( "" ))
-      {
-         model.changeElementName( dialog.name(), elementList.getSelectedIndex() ); 
-      }
-   }
-
 }

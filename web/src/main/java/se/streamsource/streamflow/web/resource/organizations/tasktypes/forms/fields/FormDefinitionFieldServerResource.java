@@ -150,7 +150,7 @@ public class FormDefinitionFieldServerResource
       }
    }
 
-   public void addselectionelement()
+   public void addselectionelement( StringDTO name )
    {
       String identity = getRequest().getAttributes().get( "form" ).toString();
       String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
@@ -164,7 +164,7 @@ public class FormDefinitionFieldServerResource
       {
          ValueBuilder<SelectionFieldValue> builder =
                vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) value );
-         builder.prototype().values().get().add( "" );
+         builder.prototype().values().get().add( name.string().get() );
          field.changeFieldValue( builder.newInstance() );
       }
    }
@@ -213,25 +213,6 @@ public class FormDefinitionFieldServerResource
          {
             builder.prototype().values().get().add( moveElement.index().get()+1, element );
          }
-         field.changeFieldValue( builder.newInstance() );
-      }
-   }
-
-   public void changeselectionelementname( NamedIndexDTO newNameDTO )
-   {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
-
-      FieldValue value = field.fieldValue().get();
-      if ( value instanceof SelectionFieldValue)
-      {
-         ValueBuilder<SelectionFieldValue> builder =
-               vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) value );
-         builder.prototype().values().get().set( newNameDTO.index().get(), newNameDTO.name().get() );
          field.changeFieldValue( builder.newInstance() );
       }
    }

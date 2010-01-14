@@ -28,6 +28,7 @@ import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.AbstractListModel;
@@ -67,11 +68,13 @@ public class SelectionElementsModel
       }
    }
 
-   public void addElement( )
+   public void addElement( String name )
    {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( name );
       try
       {
-         client.putCommand( "addselectionelement" );
+         client.putCommand( "addselectionelement", builder.newInstance() );
          refresh();
       } catch (ResourceException e)
       {
@@ -106,21 +109,6 @@ public class SelectionElementsModel
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );
-      }
-   }
-
-   public void changeElementName( String newName, int index )
-   {
-      ValueBuilder<NamedIndexDTO> builder = vbf.newValueBuilder( NamedIndexDTO.class );
-      builder.prototype().name().set( newName );
-      builder.prototype().index().set( index );
-      try
-      {
-         client.putCommand( "changeselectionelementname", builder.newInstance() );
-         refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_add_field, e );
       }
    }
 
