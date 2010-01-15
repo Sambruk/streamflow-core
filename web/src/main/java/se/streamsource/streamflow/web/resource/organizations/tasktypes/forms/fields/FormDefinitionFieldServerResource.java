@@ -22,6 +22,9 @@ import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
@@ -55,20 +58,6 @@ public class FormDefinitionFieldServerResource
       return builder.newInstance();
    }
 
-   public void updatemandatory( BooleanDTO mandatory )
-   {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
-
-      FieldValue fieldValue = vbf.newValueBuilder( FieldValue.class ).withPrototype( field.fieldValue().get() ).prototype();
-      fieldValue.mandatory().set( mandatory.bool().get() );
-      field.fieldValue().set( fieldValue );
-   }
-
    public void changedescription( StringDTO newDescription )
    {
       String identity = getRequest().getAttributes().get( "form" ).toString();
@@ -91,6 +80,45 @@ public class FormDefinitionFieldServerResource
       FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
 
       field.changeNote( newNote.string().get() );
+   }
+
+   public void updatemandatory( BooleanDTO mandatory )
+   {
+      String identity = getRequest().getAttributes().get( "form" ).toString();
+      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      FormEntity form = uow.get( FormEntity.class, identity );
+      checkPermission( form );
+      FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
+
+      ValueBuilder<? extends FieldValue> builder = getBuilderOfType( field.fieldValue().get() );
+      builder.prototype().mandatory().set( mandatory.bool().get() );
+
+      field.changeFieldValue( builder.newInstance() );
+   }
+
+   private ValueBuilder<? extends FieldValue> getBuilderOfType(FieldValue field)
+   {
+      if ( field instanceof TextFieldValue)
+      {
+         return vbf.newValueBuilder( TextFieldValue.class ).withPrototype( (TextFieldValue) field );
+      } else if (field instanceof DateFieldValue)
+      {
+         return vbf.newValueBuilder( DateFieldValue.class ).withPrototype( (DateFieldValue) field );
+      } else if ( field instanceof NumberFieldValue)
+      {
+         return vbf.newValueBuilder( NumberFieldValue.class ).withPrototype( (NumberFieldValue) field );
+      } else if ( field instanceof SelectionFieldValue)
+      {
+         return vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) field );
+      } else if ( field instanceof PageBreakFieldValue)
+      {
+         return vbf.newValueBuilder( PageBreakFieldValue.class ).withPrototype( (PageBreakFieldValue) field );
+      } else if ( field instanceof CommentFieldValue)
+      {
+         return vbf.newValueBuilder( CommentFieldValue.class ).withPrototype( (CommentFieldValue) field );
+      }
+      return null;
    }
 
    public void changewidth( IntegerDTO newWidth )

@@ -169,6 +169,7 @@ public interface TestDataService
          bugreport.createField( "Date Information", pageBreakBuilder.newInstance() );
          dateBuilder.prototype().mandatory().set( true );
          bugreport.createField( "Discovered", dateBuilder.newInstance() );
+         selectionBuilder.prototype().mandatory().set( true );
          bugreport.createField( "Priority", selectionBuilder.newInstance() );
          selectionBuilder.prototype().multiple().set( true );
          selectionBuilder.prototype().mandatory().set( false );
