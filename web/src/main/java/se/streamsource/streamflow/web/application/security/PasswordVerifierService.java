@@ -15,9 +15,7 @@
 package se.streamsource.streamflow.web.application.security;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
@@ -54,27 +52,10 @@ public class PasswordVerifierService
       {
          Authentication user = unitOfWork.get( Authentication.class, username );
 
-         if (user.login( new String( password ) ))
-         {
-            unitOfWork.discard();
-            return true;
-         } else
-         {
-            try
-            {
-               // Save failed login count
-               unitOfWork.complete();
-            } catch (UnitOfWorkCompletionException e)
-            {
-               e.printStackTrace();
-            }
-
-            return false;
-         }
-      } catch (NoSuchEntityException e)
+         return user.login( new String( password ) );
+      } finally
       {
          unitOfWork.discard();
-         return false;
       }
    }
 }
