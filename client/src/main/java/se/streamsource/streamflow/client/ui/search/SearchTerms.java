@@ -14,47 +14,37 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
-import java.util.Locale;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
-import java.util.Iterator;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
+/**
+ * Class for translating search terms from application language to server default.
+ */
 public class SearchTerms
 {
-   private static Map<Locale, List<String>> i18nSearchTerms = new HashMap<Locale, List<String>>();
-   private static Locale sv_SE_gov = new Locale( "sv", "SE", "gov" );
-   private static Locale sv_SE = new Locale( "sv", "SE" );
-   //createdOn, taskType, project, label, assignedTo, name, contactId, phoneNumber, emailAddress, today, yesterday, hour, week.
-   private static List<String> searchTerms_sv_SE =
-         Arrays.asList( "skapad:", "ärendetyp:", "projekt:", "etikett:", "tilldelad:", "namn:", "kontaktid:", "telefon:", "email:", "idag", "igår", "timme", "vecka" );
-   private static List<String> searchTerms_sv_SE_gov =
-         Arrays.asList( "skapad:", "ärendetyp:", "funktion:", "etikett:", "tilldelad:", "namn:", "personnr:", "telefon:", "email:", "idag", "igår", "timme", "vecka" );
-   private static List<String> searchTerms_en_GB =
-         Arrays.asList( "created:", "tasktype:", "project:", "label:", "assigned:", "name:", "contactid:", "phone:", "email:", "today", "yesterday", "hour", "week" );
-   private static List<String> searchTerms =
-         Arrays.asList( "createdOn:", "taskType:", "project:", "label:", "assignedTo:", "name:", "contactId:", "phoneNumber:", "emailAddress:", "today", "yesterday", "hour", "week" );
-
-   static
-   {
-      i18nSearchTerms.put( sv_SE_gov, searchTerms_sv_SE_gov );
-      i18nSearchTerms.put( sv_SE, searchTerms_sv_SE );
-      i18nSearchTerms.put( Locale.UK, searchTerms_en_GB );
-   }
 
    public static String translate( String search )
    {
       String translation = search;
-      List<String> usedSearchTermsLang = i18nSearchTerms.get( Locale.getDefault() );
-      for (Iterator<String> stringIterator = usedSearchTermsLang.iterator(); stringIterator.hasNext();)
+
+      for(SearchTermsResources term: SearchTermsResources.values())
       {
-         String term = stringIterator.next();
-         if (translation.contains( term ))
+         String searchTerm = i18n.text(term);
+         if (translation.contains( searchTerm ))
          {
-            translation = translation.replace( term, searchTerms.get( usedSearchTermsLang.indexOf( term ) ) );
+            if( term.equals(SearchTermsResources.today)
+                  || term.equals(SearchTermsResources.yesterday)
+                  || term.equals(SearchTermsResources.hour)
+                  || term.equals(SearchTermsResources.week))
+            {
+               translation = translation.replace( searchTerm, term.name() );
+            } else
+            {
+               translation = translation.replace( searchTerm, term.name() + ":" );
+            }
+
          }
       }
+
       return translation;
    }
 }
