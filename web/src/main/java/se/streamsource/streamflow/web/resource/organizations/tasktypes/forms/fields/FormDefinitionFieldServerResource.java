@@ -217,6 +217,25 @@ public class FormDefinitionFieldServerResource
       }
    }
 
+   public void changeselectionelementname( NamedIndexDTO newNameDTO )
+   {
+      String identity = getRequest().getAttributes().get( "form" ).toString();
+      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      FormEntity form = uow.get( FormEntity.class, identity );
+      checkPermission( form );
+      FieldEntity field = (FieldEntity) form.fields().get( Integer.parseInt( fieldIndex ) );
+
+      FieldValue value = field.fieldValue().get();
+      if ( value instanceof SelectionFieldValue)
+      {
+         ValueBuilder<SelectionFieldValue> builder =
+               vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) value );
+         builder.prototype().values().get().set( newNameDTO.index().get(), newNameDTO.name().get() );
+         field.changeFieldValue( builder.newInstance() );
+      }
+   }
+
    public void move( IntegerDTO newIndex )
    {
       String identity = getRequest().getAttributes().get( "form" ).toString();

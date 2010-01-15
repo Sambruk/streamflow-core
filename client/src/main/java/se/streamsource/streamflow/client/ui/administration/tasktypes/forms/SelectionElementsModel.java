@@ -112,6 +112,21 @@ public class SelectionElementsModel
       }
    }
 
+   public void changeElementName( String newName, int index )
+   {
+      ValueBuilder<NamedIndexDTO> builder = vbf.newValueBuilder( NamedIndexDTO.class );
+      builder.prototype().name().set( newName );
+      builder.prototype().index().set( index );
+      try
+      {
+         client.putCommand( "changeselectionelementname", builder.newInstance() );
+         refresh();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_add_field, e );
+      }
+   }
+
    public int getSize()
    {
       return elements == null ? 0 : elements.size();
