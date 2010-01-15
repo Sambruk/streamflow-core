@@ -26,15 +26,15 @@ public class SearchTerms
    private static Map<Locale, List<String>> i18nSearchTerms = new HashMap<Locale, List<String>>();
    private static Locale sv_SE_gov = new Locale( "sv", "SE", "gov" );
    private static Locale sv_SE = new Locale( "sv", "SE" );
-   //createdOn, taskType, project, label, assignedTo, description, note, name, contactId, phoneNumber, emailAddress.
+   //createdOn, taskType, project, label, assignedTo, name, contactId, phoneNumber, emailAddress, today, yesterday, hour, week.
    private static List<String> searchTerms_sv_SE =
-         Arrays.asList( "skapad:", "ärendetyp:", "projekt:", "etikett:", "tilldelad:", "namn:", "kontaktid:", "telefon:", "email:" );
+         Arrays.asList( "skapad:", "ärendetyp:", "projekt:", "etikett:", "tilldelad:", "namn:", "kontaktid:", "telefon:", "email:", "idag", "igår", "timme", "vecka" );
    private static List<String> searchTerms_sv_SE_gov =
-         Arrays.asList( "skapad:", "ärendetyp:", "funktion:", "etikett:", "tilldelad:", "namn:", "personnr:", "telefon:", "email:" );
+         Arrays.asList( "skapad:", "ärendetyp:", "funktion:", "etikett:", "tilldelad:", "namn:", "personnr:", "telefon:", "email:", "idag", "igår", "timme", "vecka" );
    private static List<String> searchTerms_en_GB =
-         Arrays.asList( "created:", "tasktype:", "project:", "label:", "assigned:", "name:", "contactid:", "phone:", "email:" );
+         Arrays.asList( "created:", "tasktype:", "project:", "label:", "assigned:", "name:", "contactid:", "phone:", "email:", "today", "yesterday", "hour", "week" );
    private static List<String> searchTerms =
-         Arrays.asList( "createdOn:", "taskType:", "project:", "label:", "assignedTo:", "name:", "contactId:", "phoneNumber:", "emailAddress:" );
+         Arrays.asList( "createdOn:", "taskType:", "project:", "label:", "assignedTo:", "name:", "contactId:", "phoneNumber:", "emailAddress:", "today", "yesterday", "hour", "week" );
 
    static
    {
