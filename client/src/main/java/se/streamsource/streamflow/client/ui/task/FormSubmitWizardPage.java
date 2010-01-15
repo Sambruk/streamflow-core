@@ -126,7 +126,12 @@ public class FormSubmitWizardPage
 
          componentFieldMap.put( value.field().get(), component );
          wizardValueMap.put( value.field().get().identity(), "" );
-         formBuilder.append( value.description().get(), component );
+         StringBuilder componentName = new StringBuilder( value.description().get() );
+         if ( value.fieldValue().get().mandatory().get() )
+         {
+            componentName.append( " (*)" );
+         }
+         formBuilder.append( componentName.toString(), component );
       }
 
       JComponent validationResultsComponent = ValidationResultViewFactory.createReportList(validationResultModel);
