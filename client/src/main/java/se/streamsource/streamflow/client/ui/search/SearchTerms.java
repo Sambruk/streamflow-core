@@ -34,7 +34,8 @@ public class SearchTerms
             if( term.equals(SearchTermsResources.today)
                   || term.equals(SearchTermsResources.yesterday)
                   || term.equals(SearchTermsResources.hour)
-                  || term.equals(SearchTermsResources.week))
+                  || term.equals(SearchTermsResources.week)
+                  || term.equals(SearchTermsResources.me))
             {
                translation = translation.replace( searchTerm, term.name() );
             } else

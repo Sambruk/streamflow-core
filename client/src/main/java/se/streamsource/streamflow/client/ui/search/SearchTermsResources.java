@@ -28,5 +28,6 @@ public enum SearchTermsResources
    today,
    yesterday,
    hour,
-   week
+   week,
+   me
 }

@@ -142,13 +142,16 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
                   }
                   queryBuilder.append( ")" );
                }
-            } else if (search.hasName( "description", "note", "name", "contactId", "phoneNumber", "emailAddress", "assignedTo" ))
+            } else if (search.hasName( "description", "note", "name", "contactId", "phoneNumber", "emailAddress" ))
             {
                queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( search.getValue() );
 
             } else if (search.hasName( "createdOn" ))
             {
                buildDateQuery( queryBuilder, search );
+            } else if (search.hasName( "assignedTo" ))
+            {
+               queryBuilder.append(" ").append( search.getName() ).append( ":" ).append( getAssignedTo( search.getValue() ));
             } else
             {
                queryBuilder.append( " " ).append( search.getValue() );
