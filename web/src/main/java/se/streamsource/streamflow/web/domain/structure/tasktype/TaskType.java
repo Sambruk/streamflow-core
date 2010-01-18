@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.domain.structure.tasktype;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
@@ -23,6 +24,6 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
  * JAVADOC
  */
 public interface TaskType
-   extends Describable, Notable, SelectedLabels, Forms
+   extends Describable, Notable, SelectedLabels, Forms, Removable
 {
 }

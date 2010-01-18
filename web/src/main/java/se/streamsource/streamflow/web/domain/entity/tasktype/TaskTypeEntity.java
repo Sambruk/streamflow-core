@@ -14,18 +14,29 @@
 
 package se.streamsource.streamflow.web.domain.entity.tasktype;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 
 /**
  * JAVADOC
  */
+@Concerns(TaskTypeEntity.RemovableConcern.class)
 public interface TaskTypeEntity
       extends DomainEntity,
 
@@ -40,4 +51,47 @@ public interface TaskTypeEntity
       FormsQueries,
       PossibleLabelsQueries
 {
+   abstract class RemovableConcern
+      extends ConcernOf<Removable>
+      implements Removable
+   {
+      @Structure
+      QueryBuilderFactory qbf;
+
+      @Structure
+      UnitOfWorkFactory uowf;
+
+      @This
+      TaskType taskType;
+
+      public boolean removeEntity()
+      {
+         boolean removed = next.removeEntity();
+
+         // Remove all usages of this task-type
+         if (removed)
+         {
+            {
+               SelectedTaskTypes.Data selectedTaskTypes = QueryExpressions.templateFor( SelectedTaskTypes.Data.class );
+               Query<SelectedTaskTypes> taskTypeUsages = qbf.newQueryBuilder( SelectedTaskTypes.class ).
+                     where( QueryExpressions.contains(selectedTaskTypes.selectedTaskTypes(), taskType )).
+                     newQuery( uowf.currentUnitOfWork() );
+
+               for (SelectedTaskTypes taskTypeUsage : taskTypeUsages)
+               {
+                  taskTypeUsage.removeSelectedTaskType( taskType );
+               }
+            }
+         }
+
+         return removed;
+      }
+
+      public void deleteEntity()
+      {
+         next.deleteEntity();
+      }
+   }
+
 }
+
