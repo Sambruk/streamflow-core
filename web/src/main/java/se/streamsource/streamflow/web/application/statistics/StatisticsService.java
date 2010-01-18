@@ -31,14 +31,14 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -48,7 +48,10 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
@@ -132,13 +135,16 @@ public interface StatisticsService
                boolean accept = super.accept( event );
                if (accept)
                {
-                  if (event.parameters().get().indexOf( "COMPLETED" ) != -1)
+                  String params = event.parameters().get();
+                  if (params.indexOf( "COMPLETED" ) != -1 ||
+                      params.indexOf( "ACTIVE" ) != -1)
                      return true;
                }
 
                return false;
             }
-         }.withNames( "changedStatus", "statusChanged" );
+         }.withNames( "changedStatus", "statusChanged" )
+          .withUsecases( "complete", "reactivate" );
 
          visit( null ); // Trigger a load
       }
@@ -200,53 +206,77 @@ public interface StatisticsService
                      Owner owner = task.owner().get();
                      if (owner instanceof Project)
                      {
-                        PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "completed.insert" ) );
-                        int idx = 1;
-                        String id = task.identity().get();
-                        stmt.setString( idx++, id );
-                        stmt.setString( idx++, task.taskId().get() );
-                        stmt.setString( idx++, task.description().get() );
-                        stmt.setString( idx++, task.note().get() );
-                        stmt.setTimestamp( idx++, new java.sql.Timestamp( task.createdOn().get().getTime() ) );
-                        stmt.setTimestamp( idx++, new java.sql.Timestamp( domainEvent.on().get().getTime() ) );
-                        stmt.setLong( idx++, domainEvent.on().get().getTime() - task.createdOn().get().getTime() );
-                        Assignee assignee = task.assignedTo().get();
-                        if (assignee == null)
-                           continue;
-
-                        stmt.setString( idx++, ((Describable)assignee).getDescription() );
-                        stmt.setString( idx++, ((Describable)owner).getDescription() );
-                        OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
-                        OrganizationalUnit organizationalUnit = po.organizationalUnit().get();
-
-                        // Figure out which group the user belongs to
-                        Participation.Data participant = (Participation.Data) assignee;
-                        String groupName = null;
-                        findgroup:
-                        for (Group group : participant.groups())
+                        if (domainEvent.usecase().get().equals("complete"))
                         {
-                           Participation.Data members = (Participation.Data) owner;
-                           if (members.groups().contains( group ))
+                           PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "completed.insert" ) );
+                           int idx = 1;
+                           String id = task.identity().get();
+                           stmt.setString( idx++, id );
+                           stmt.setString( idx++, task.taskId().get() );
+                           stmt.setString( idx++, task.description().get() );
+                           stmt.setString( idx++, task.note().get() );
+                           stmt.setTimestamp( idx++, new java.sql.Timestamp( task.createdOn().get().getTime() ) );
+                           stmt.setTimestamp( idx++, new java.sql.Timestamp( domainEvent.on().get().getTime() ) );
+                           stmt.setLong( idx++, domainEvent.on().get().getTime() - task.createdOn().get().getTime() );
+                           Assignee assignee = task.assignedTo().get();
+                           if (assignee == null)
+                              continue;
+
+                           stmt.setString( idx++, ((Describable)assignee).getDescription() );
+
+                           TaskType taskType = task.taskType().get();
+                           if (taskType != null)
+                              stmt.setString( idx, taskType.getDescription());
+                           else
+                              stmt.setString( idx, null );
+                           idx++;
+
+                           stmt.setString( idx++, ((Describable)owner).getDescription() );
+                           OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
+                           OrganizationalUnit organizationalUnit = po.organizationalUnit().get();
+
+                           // Figure out which group the user belongs to
+                           Participation.Data participant = (Participation.Data) assignee;
+                           String groupName = null;
+                           findgroup:
+                           for (Group group : participant.groups())
                            {
-                              groupName = group.getDescription();
-                              break findgroup;
+                              Members.Data members = (Members.Data) owner;
+                              if (members.members().contains( (Member) group ))
+                              {
+                                 groupName = group.getDescription();
+                                 break findgroup;
+                              }
                            }
-                        }
 
-                        stmt.setString( idx++, groupName );
+                           stmt.setString( idx++, groupName );
 
-                        stmt.setString( idx, organizationalUnit.getDescription() );
+                           stmt.setString( idx, organizationalUnit.getDescription() );
 
-                        stmt.executeUpdate();
-                        stmt.close();
+                           stmt.executeUpdate();
+                           stmt.close();
 
-                        // Add Label information
-                        Labelable.Data labelable = task;
-                        for (Label labelEntity : labelable.labels())
+                           // Add Label information
+                           Labelable.Data labelable = task;
+                           for (Label labelEntity : labelable.labels())
+                           {
+                              stmt = conn.prepareStatement( sql.getProperty( "labels.insert" ) );
+                              stmt.setString( 1, id );
+                              stmt.setString( 2, labelEntity.getDescription() );
+                              stmt.executeUpdate();
+                              stmt.close();
+                           }
+                        } else
                         {
-                           stmt = conn.prepareStatement( sql.getProperty( "labels.insert" ) );
+                           // Reactivated - remove statistics
+                           PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "completed.delete" ) );
+                           String id = task.identity().get();
                            stmt.setString( 1, id );
-                           stmt.setString( 2, labelEntity.getDescription() );
+                           stmt.executeUpdate();
+                           stmt.close();
+
+                           stmt = conn.prepareStatement( sql.getProperty("labels.delete" ));
+                           stmt.setString(1, id);
                            stmt.executeUpdate();
                            stmt.close();
                         }

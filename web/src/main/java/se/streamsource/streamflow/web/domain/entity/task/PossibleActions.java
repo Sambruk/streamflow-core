@@ -70,6 +70,9 @@ public interface PossibleActions
                         actions.add( "unassign" );
                         actions.add( "tasktype" );
                         actions.add( "label" );
+                     } else if (task.isStatus( States.COMPLETED ))
+                     {
+                        actions.add( "reactivate" );
                      }
                   }
                } else
@@ -171,6 +174,9 @@ public interface PossibleActions
                         actions.add( "unassign" );
                         actions.add( "tasktype" );
                         actions.add( "label" );
+                     } else if (task.isStatus( States.COMPLETED ))
+                     {
+                        actions.add( "reactivate" );
                      }
                   }
                } else

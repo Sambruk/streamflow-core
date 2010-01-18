@@ -31,6 +31,7 @@ public class EventQuery
    private Date afterDate; // Only return events after this date
    private Date beforeDate; // Only return events before this date
    private List<String> names; // Only return events with these names
+   private List<String> usecases; // Only return events with these usecases
    private List<String> entities; // Only return events on these entity
    private List<String> by; // Only return events caused by these users
 
@@ -47,6 +48,16 @@ public class EventQuery
    public EventQuery beforeDate( Date beforeDate )
    {
       this.beforeDate = beforeDate;
+      return this;
+   }
+
+   public EventQuery withUsecases( String... name )
+   {
+      if (usecases == null)
+         usecases = new ArrayList<String>();
+
+      usecases.addAll( Arrays.asList( name ) );
+
       return this;
    }
 
@@ -85,6 +96,9 @@ public class EventQuery
          return false;
 
       if (beforeDate != null && event.on().get().after( beforeDate ))
+         return false;
+
+      if (usecases != null && !usecases.contains( event.usecase().get() ))
          return false;
 
       if (names != null && !names.contains( event.name().get() ))

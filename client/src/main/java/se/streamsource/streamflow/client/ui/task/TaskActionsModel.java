@@ -224,6 +224,17 @@ public class TaskActionsModel
       }
    }
 
+   public void reactivate()
+   {
+      try
+      {
+         client.postCommand( "reactivate" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
    public void reject()
    {
       try

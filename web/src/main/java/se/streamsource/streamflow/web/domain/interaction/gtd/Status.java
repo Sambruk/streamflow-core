@@ -66,42 +66,27 @@ public interface Status
 
       public void complete()
       {
-         if (status().get().equals( States.ACTIVE ) || status().get().equals( DONE ))
-         {
-            changedStatus( DomainEvent.CREATE, COMPLETED );
-         }
+         changedStatus( DomainEvent.CREATE, COMPLETED );
       }
 
       public void drop()
       {
-         if (status().get().equals( States.ACTIVE ) || status().get().equals( DONE ))
-         {
-            changedStatus( DomainEvent.CREATE, DROPPED );
-         }
+         changedStatus( DomainEvent.CREATE, DROPPED );
       }
 
       public void redo()
       {
-         if (status().get().equals( DONE))
-         {
-            changedStatus( DomainEvent.CREATE, States.ACTIVE );
-         }
+         changedStatus( DomainEvent.CREATE, States.ACTIVE );
       }
 
       public void done()
       {
-         if (status().get().equals( States.ACTIVE ))
-         {
-            changedStatus( DomainEvent.CREATE, DONE );
-         }
+         changedStatus( DomainEvent.CREATE, DONE );
       }
 
       public void reactivate()
       {
-         if (status().get().equals( DONE ) || status().get().equals( COMPLETED ))
-         {
-            changedStatus( DomainEvent.CREATE, States.ACTIVE );
-         }
+         changedStatus( DomainEvent.CREATE, States.ACTIVE );
       }
 
       public boolean isStatus( States status )

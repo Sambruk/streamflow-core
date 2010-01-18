@@ -177,6 +177,13 @@ public class TaskActionsView
    }
 
    @Action
+   public void reactivate()
+   {
+      model.reactivate();
+      refresh();
+   }
+
+   @Action
    public void reject()
    {
       model.reject();

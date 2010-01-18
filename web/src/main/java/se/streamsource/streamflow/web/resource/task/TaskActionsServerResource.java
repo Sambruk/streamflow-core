@@ -216,6 +216,12 @@ public class TaskActionsServerResource
       task.drop();
    }
 
+   public void reactivate()
+   {
+      Status task = uowf.currentUnitOfWork().get( Status.class, getRequest().getAttributes().get( "task" ).toString() );
+      task.reactivate();
+   }
+
    public void redo()
    {
       Status task = uowf.currentUnitOfWork().get( Status.class, getRequest().getAttributes().get( "task" ).toString() );
