@@ -17,27 +17,37 @@ package se.streamsource.streamflow.web.domain.interaction.gtd;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.concern.Concerns;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
+import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.States.DROPPED;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
 
 /**
  * Status for a task. Possible transitions are:
  * Active -> Completed, Dropped, Done
  * Done -> Active, Dropped, Completed
- * Completed -> Archived
+ * Completed -> Active
  * Dropped -> Archived
  */
+@Concerns(MethodConstraintsConcern.class)
 @Mixins(Status.Mixin.class)
 public interface Status
 {
+   @HasStatus({ACTIVE, DONE})
    void complete();
 
+   @HasStatus(ACTIVE)
    void done();
 
-   void activate();
-
+   @HasStatus({ACTIVE, DONE})
    void drop();
 
+   @HasStatus({COMPLETED, DROPPED})
+   void reactivate();
+
+   @HasStatus(DONE)
    void redo();
 
    boolean isStatus( States status );
@@ -56,23 +66,23 @@ public interface Status
 
       public void complete()
       {
-         if (status().get().equals( States.ACTIVE ) || status().get().equals( States.DONE ))
+         if (status().get().equals( States.ACTIVE ) || status().get().equals( DONE ))
          {
-            changedStatus( DomainEvent.CREATE, States.COMPLETED );
+            changedStatus( DomainEvent.CREATE, COMPLETED );
          }
       }
 
       public void drop()
       {
-         if (status().get().equals( States.ACTIVE ) || status().get().equals( States.DONE ))
+         if (status().get().equals( States.ACTIVE ) || status().get().equals( DONE ))
          {
-            changedStatus( DomainEvent.CREATE, States.DROPPED );
+            changedStatus( DomainEvent.CREATE, DROPPED );
          }
       }
 
       public void redo()
       {
-         if (status().get().equals( States.DONE))
+         if (status().get().equals( DONE))
          {
             changedStatus( DomainEvent.CREATE, States.ACTIVE );
          }
@@ -82,13 +92,13 @@ public interface Status
       {
          if (status().get().equals( States.ACTIVE ))
          {
-            changedStatus( DomainEvent.CREATE, States.DONE );
+            changedStatus( DomainEvent.CREATE, DONE );
          }
       }
 
-      public void activate()
+      public void reactivate()
       {
-         if (status().get().equals( States.DONE ) || status().get().equals( States.COMPLETED ))
+         if (status().get().equals( DONE ) || status().get().equals( COMPLETED ))
          {
             changedStatus( DomainEvent.CREATE, States.ACTIVE );
          }

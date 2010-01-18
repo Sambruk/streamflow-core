@@ -12,43 +12,53 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.interaction.gtd;
+package se.streamsource.streamflow.web.domain;
 
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.common.AppliesToFilter;
 import org.qi4j.api.concern.GenericConcern;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
+import org.qi4j.api.constraint.ConstraintViolation;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.injection.scope.Invocation;
+import org.qi4j.api.composite.Composite;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Collections;
 
 /**
- * JAVADOC
+ * Check method constraints. A method constraint is an 
  */
 @AppliesTo(MethodConstraintsConcern.Filter.class)
 public class MethodConstraintsConcern
    extends GenericConcern
 {
-   @Invocation Method method;
+   Constraint<Annotation, Object> constraint;
+   private Annotation annotation;
 
-   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   public MethodConstraintsConcern( @Invocation Method method ) throws IllegalAccessException, InstantiationException
    {
       for (Annotation annotation : method.getAnnotations())
       {
-         if (annotation.getClass().getAnnotation( ConstraintDeclaration.class ) != null)
+         if (annotation.annotationType().getAnnotation( ConstraintDeclaration.class ) != null)
          {
-            Constraints constraints = annotation.getClass().getAnnotation( Constraints.class );
+            this.annotation = annotation;
+            Constraints constraints = annotation.annotationType().getAnnotation( Constraints.class );
             for (Class<? extends Constraint<?, ?>> aClass : constraints.value())
             {
-               Constraint<Annotation, Object> constraint = (Constraint<Annotation, Object>) aClass.newInstance();
-               if (!constraint.isValid( annotation, proxy ))
-                  return null;
+               constraint = (Constraint<Annotation, Object>) aClass.newInstance();
             }
          }
       }
+   }
+
+   public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+   {
+      if (!constraint.isValid( annotation, proxy ))
+         throw new ConstraintViolationException((Composite) proxy, method, Collections.singleton( new ConstraintViolation(annotation.annotationType().getSimpleName(), annotation, proxy) ));
 
       return next.invoke( proxy, method, args );
    }
@@ -60,7 +70,7 @@ public class MethodConstraintsConcern
       {
          for (Annotation annotation : method.getAnnotations())
          {
-            if (annotation.getClass().getAnnotation( ConstraintDeclaration.class ) != null)
+            if (annotation.annotationType().getAnnotation( ConstraintDeclaration.class ) != null)
             {
                return true;
             }

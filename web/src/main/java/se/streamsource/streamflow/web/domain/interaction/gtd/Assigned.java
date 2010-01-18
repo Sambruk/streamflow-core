@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Check that a Task is assigned or not
+ * Check that an assignable is assigned or not
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
@@ -31,13 +31,11 @@ public @interface Assigned
    public abstract boolean value() default true;
 
    public class Constraint
-         implements org.qi4j.api.constraint.Constraint<Assigned, Assignable.Data>
+         implements org.qi4j.api.constraint.Constraint<Assigned, Assignable>
    {
-      public boolean isValid( Assigned assigned, Assignable.Data value )
+      public boolean isValid( Assigned assigned, Assignable value )
       {
-         Assignee assignee = value.assignedTo().get();
-
-         return assigned.value() == (assignee != null);
+         return assigned.value() == value.isAssigned();
       }
    }
 }

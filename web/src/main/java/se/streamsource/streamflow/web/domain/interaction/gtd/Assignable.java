@@ -15,20 +15,19 @@
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
 
 import java.util.Date;
 
 /**
  * JAVADOC
  */
-@Concerns(Assignable.AssignOnStatusChangeConcern.class)
+@Concerns({MethodConstraintsConcern.class})
 @Mixins(Assignable.Mixin.class)
 public interface Assignable
 {
@@ -94,26 +93,4 @@ public interface Assignable
          assignedOn().set( null );
       }
    }
-
-   abstract class AssignOnStatusChangeConcern
-         extends ConcernOf<Status>
-         implements Status
-   {
-      @This
-      Data state;
-
-      @This
-      Assignable assignable;
-
-      public void complete()
-      {
-         next.complete();
-      }
-
-      public void drop()
-      {
-         next.drop();
-      }
-   }
-
 }
