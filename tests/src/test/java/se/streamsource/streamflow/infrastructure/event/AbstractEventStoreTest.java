@@ -31,7 +31,7 @@ import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 
 /**
@@ -82,9 +82,9 @@ public abstract class AbstractEventStoreTest
    {
       final int[] count = new int[1];
 
-      eventStore.transactionsAfter( 0, new TransactionHandler()
+      eventStore.transactionsAfter( 0, new TransactionVisitor()
       {
-         public boolean handleTransaction( TransactionEvents transaction )
+         public boolean visit( TransactionEvents transaction )
          {
             count[0]++;
             System.out.println( transaction.toJSON() );
@@ -101,9 +101,9 @@ public abstract class AbstractEventStoreTest
    {
       final int[] count = new int[1];
 
-      eventStore.transactionsAfter( 0, new TransactionHandler()
+      eventStore.transactionsAfter( 0, new TransactionVisitor()
       {
-         public boolean handleTransaction( TransactionEvents transaction )
+         public boolean visit( TransactionEvents transaction )
          {
             count[0]++;
 
@@ -118,11 +118,11 @@ public abstract class AbstractEventStoreTest
    public void getEventsAfterDate()
    {
       TransactionTimestampFilter timestamp;
-      eventStore.transactionsAfter( 0, timestamp = new TransactionTimestampFilter( 0, new TransactionHandler()
+      eventStore.transactionsAfter( 0, timestamp = new TransactionTimestampFilter( 0, new TransactionVisitor()
       {
          int count = 0;
 
-         public boolean handleTransaction( TransactionEvents transaction )
+         public boolean visit( TransactionEvents transaction )
          {
             count++;
 
@@ -133,9 +133,9 @@ public abstract class AbstractEventStoreTest
       final long lastTimeStamp = timestamp.lastTimestamp();
 
       final int[] count = new int[1];
-      eventStore.transactionsAfter( lastTimeStamp, new TransactionHandler()
+      eventStore.transactionsAfter( lastTimeStamp, new TransactionVisitor()
       {
-         public boolean handleTransaction( TransactionEvents transaction )
+         public boolean visit( TransactionEvents transaction )
          {
             Assert.assertThat( transaction.timestamp().get(), CoreMatchers.not( lastTimeStamp ) );
 

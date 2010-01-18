@@ -23,11 +23,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import java.util.logging.Logger;
 
 /**
@@ -35,7 +34,7 @@ import java.util.logging.Logger;
  */
 public class AdministrationModel
       extends DefaultTreeModel
-      implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventVisitor
 {
    @Structure
    ObjectBuilderFactory obf;
@@ -49,7 +48,7 @@ public class AdministrationModel
       }
    };
 
-   private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "removedOrganizationalUnit", "addedOrganizationalUnit" );
+   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "removedOrganizationalUnit", "addedOrganizationalUnit" );
 
    public AdministrationModel( @Uses AdministrationNode root )
    {
@@ -98,10 +97,10 @@ public class AdministrationModel
    {
       getRoot().notifyEvent( event );
 
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       Logger.getLogger( "administration" ).info( "Refresh organizational overview" );
       getRoot().refresh();

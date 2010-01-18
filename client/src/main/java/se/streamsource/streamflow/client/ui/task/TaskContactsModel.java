@@ -28,8 +28,8 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 
 import java.util.Collections;
@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  * List of contacts for a task
  */
 public class TaskContactsModel
-      implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventVisitor
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -50,7 +50,7 @@ public class TaskContactsModel
 
    TransactionList<ContactValue> eventList = new TransactionList<ContactValue>(new BasicEventList<ContactValue>( ));
 
-   EventHandlerFilter eventFilter = new EventHandlerFilter( this, "addedContact", "deletedContact", "updatedContact" );
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "addedContact", "deletedContact", "updatedContact" );
 
    public TaskContactsModel()
    {
@@ -104,10 +104,10 @@ public class TaskContactsModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {

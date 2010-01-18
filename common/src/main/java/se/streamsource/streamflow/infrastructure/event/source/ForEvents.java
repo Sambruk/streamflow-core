@@ -20,18 +20,18 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
  * JAVADOC
  */
 public class ForEvents
-      implements TransactionHandler
+      implements TransactionVisitor
 {
-   private EventHandlerFilter filter;
+   private EventVisitorFilter filter;
 
-   public ForEvents( EventSpecification specification, EventHandler handler )
+   public ForEvents( EventSpecification specification, EventVisitor visitor )
    {
-      filter = new EventHandlerFilter( specification, handler );
+      filter = new EventVisitorFilter( specification, visitor );
    }
 
-   public boolean handleTransaction( TransactionEvents transaction )
+   public boolean visit( TransactionEvents transaction )
    {
-      new TransactionEventAdapter( filter ).handleTransaction( transaction );
+      new TransactionEventAdapter( filter ).visit( transaction );
       return false;
    }
 }

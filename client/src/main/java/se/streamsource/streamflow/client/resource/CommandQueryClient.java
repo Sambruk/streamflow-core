@@ -44,7 +44,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +70,7 @@ public final class CommandQueryClient
    private  Module module;
 
    @Service
-   private  TransactionHandler transactionHandler;
+   private TransactionVisitor transactionVisitor;
 
    @Uses
    private Uniform client;
@@ -367,7 +367,7 @@ public final class CommandQueryClient
 
                final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
 
-               transactionHandler.handleTransaction( transactionEvents );
+               transactionVisitor.visit( transactionEvents );
             }
          } catch (Exception e)
          {

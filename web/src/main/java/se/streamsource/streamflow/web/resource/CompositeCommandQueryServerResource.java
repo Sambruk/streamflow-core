@@ -53,7 +53,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
@@ -89,7 +89,7 @@ import java.util.logging.Logger;
  */
 public class CompositeCommandQueryServerResource
       extends BaseServerResource
-      implements TransactionHandler
+      implements TransactionVisitor
 {
    @Uses
    TransientComposite composite;
@@ -422,7 +422,7 @@ public class CompositeCommandQueryServerResource
       return post( representation, variant );
    }
 
-   public boolean handleTransaction( TransactionEvents transaction )
+   public boolean visit( TransactionEvents transaction )
    {
       transactions = Collections.singletonList( transaction );
 

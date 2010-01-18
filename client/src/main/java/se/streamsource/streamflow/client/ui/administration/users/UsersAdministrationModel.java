@@ -29,8 +29,8 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 
 public class UsersAdministrationModel
       extends AbstractTableModel
-      implements EventListener, EventHandler
+      implements EventListener, EventVisitor
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -54,7 +54,7 @@ public class UsersAdministrationModel
    private Class[] columnClasses;
    private boolean[] columnEditable;
 
-   private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "createdUser", "changedEnabled" );
+   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdUser", "changedEnabled" );
 
    private CommandQueryClient client;
 
@@ -177,10 +177,10 @@ public class UsersAdministrationModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       Logger.getLogger( "administration" ).info( "Refresh organizations users" );
       refresh();

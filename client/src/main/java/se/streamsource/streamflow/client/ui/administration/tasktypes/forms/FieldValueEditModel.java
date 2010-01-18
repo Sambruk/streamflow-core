@@ -24,13 +24,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
@@ -41,20 +38,20 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class FieldValueEditModel
-      implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventVisitor
 {
    private FieldDefinitionValue value;
    private CommandQueryClient client;
    private ValueBuilderFactory vbf;
 
-   private EventHandlerFilter eventFilter;
+   private EventVisitorFilter eventFilter;
 
    public FieldValueEditModel( @Uses CommandQueryClient client, @Structure ValueBuilderFactory vbf )
    {
       this.client = client;
       this.vbf = vbf;
       refresh();
-      eventFilter = new EventHandlerFilter( this, "changedNote" );
+      eventFilter = new EventVisitorFilter( this, "changedNote" );
    }
 
    public FieldDefinitionValue getFieldDefinition()
@@ -125,10 +122,10 @@ public class FieldValueEditModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       if (value.field().get().identity().equals( event.entity().get() ))
       {

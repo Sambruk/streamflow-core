@@ -26,10 +26,8 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 import java.io.IOException;
@@ -79,8 +77,6 @@ public abstract class AbstractEventStoreMixin
    public void passivate() throws Exception
    {
    }
-
-   public abstract void transactionsAfter( long afterTimestamp, TransactionHandler handler );
 
    public void notifyEvent( DomainEvent event )
    {

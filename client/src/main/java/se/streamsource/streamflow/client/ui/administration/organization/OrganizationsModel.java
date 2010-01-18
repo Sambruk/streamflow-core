@@ -27,8 +27,8 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 
 import javax.swing.AbstractListModel;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 public class OrganizationsModel
       extends AbstractListModel
-      implements EventListener, EventHandler
+      implements EventListener, EventVisitor
 {
    @Structure
    ObjectBuilderFactory obf;
@@ -44,7 +44,7 @@ public class OrganizationsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "createdOrganization", "createdUser" );
+   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdOrganization", "createdUser" );
 
    WeakModelMap<String, OrganizationUsersModel> organizationUsersModels = new WeakModelMap<String, OrganizationUsersModel>()
    {
@@ -96,7 +96,7 @@ public class OrganizationsModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
 
       for (OrganizationUsersModel model : organizationUsersModels)
       {
@@ -104,7 +104,7 @@ public class OrganizationsModel
       }
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       Logger.getLogger( "administration" ).info( "Refresh organizations" );
       refresh();

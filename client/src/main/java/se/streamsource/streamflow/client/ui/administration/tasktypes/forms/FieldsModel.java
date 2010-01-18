@@ -31,8 +31,8 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import javax.swing.AbstractListModel;
@@ -44,7 +44,7 @@ import java.util.logging.Logger;
  */
 public class FieldsModel
       extends AbstractListModel
-      implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventVisitor
 {
    @Uses
    CommandQueryClient client;
@@ -81,7 +81,7 @@ public class FieldsModel
       }
    };
 
-   EventHandlerFilter eventFilter = new EventHandlerFilter( this, "changedDescription", "movedField", "removedField", "createdField", "removedField" );
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedDescription", "movedField", "removedField", "createdField", "removedField" );
 
    private List<ListItemValue> fieldsList;
 
@@ -149,7 +149,7 @@ public class FieldsModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
       for (FieldValueEditModel fieldModel : fieldModels)
       {
          fieldModel.notifyEvent( event );
@@ -157,7 +157,7 @@ public class FieldsModel
 
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       String eventName = event.name().get();
       for (ListItemValue value : fieldsList)

@@ -31,13 +31,13 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -71,10 +71,10 @@ import java.util.logging.Logger;
  */
 @Mixins(StatisticsService.Mixin.class)
 public interface StatisticsService
-      extends TransactionHandler, Configuration, Activatable, ServiceComposite
+      extends TransactionVisitor, Configuration, Activatable, ServiceComposite
 {
    class Mixin
-         implements TransactionHandler, Activatable
+         implements TransactionVisitor, Activatable
    {
       @Structure
       Qi4j api;
@@ -140,7 +140,7 @@ public interface StatisticsService
             }
          }.withNames( "changedStatus", "statusChanged" );
 
-         handleTransaction( null ); // Trigger a load
+         visit( null ); // Trigger a load
       }
 
       public void passivate() throws Exception
@@ -148,7 +148,7 @@ public interface StatisticsService
          source.unregisterListener( this );
       }
 
-      public boolean handleTransaction( TransactionEvents transaction )
+      public boolean visit( TransactionEvents transaction )
       {
          if (config.configuration().enabled().get())
          {
@@ -170,7 +170,7 @@ public interface StatisticsService
             eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
                   timestamp = new TransactionTimestampFilter( config.configuration().lastEventDate().get(),
                         new TransactionEventAdapter(
-                              new EventHandlerFilter( completedFilter, eventCollector = new EventCollector() ) ) ) );
+                              new EventVisitorFilter( completedFilter, eventCollector = new EventCollector() ) ) ) );
 
             // Handle all stateChanged(COMPLETED) events
             if (!eventCollector.events().isEmpty())

@@ -14,12 +14,12 @@
 
 package se.streamsource.streamflow.infrastructure.event.source;
 
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
  * JAVADOC
  */
-public interface EventHandler
+public interface TransactionVisitor
 {
-   boolean handleEvent( DomainEvent event );
+   boolean visit( TransactionEvents transaction );
 }

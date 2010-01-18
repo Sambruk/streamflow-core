@@ -17,8 +17,8 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 
 import javax.swing.tree.DefaultTreeModel;
 import java.util.logging.Logger;
@@ -28,15 +28,15 @@ import java.util.logging.Logger;
  */
 public class WorkspaceModel
       extends DefaultTreeModel
-      implements EventListener, EventHandler
+      implements EventListener, EventVisitor
 {
-   public EventHandlerFilter eventHandlerFilter;
+   public EventVisitorFilter eventHandlerFilter;
 
    public WorkspaceModel( @Uses WorkspaceNode node )
    {
       super( node );
 
-      eventHandlerFilter = new EventHandlerFilter( this, "joinedProject", "leftProject", "joinedGroup", "leftGroup",
+      eventHandlerFilter = new EventVisitorFilter( this, "joinedProject", "leftProject", "joinedGroup", "leftGroup",
             "createdProject", "removedProject" );
    }
 
@@ -50,10 +50,10 @@ public class WorkspaceModel
    {
       getRoot().notifyEvent( event );
 
-      eventHandlerFilter.handleEvent( event );
+      eventHandlerFilter.visit( event );
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       Logger.getLogger( "workspace" ).info( "Refresh project list" );
       getRoot().getProjectsNode().refresh();

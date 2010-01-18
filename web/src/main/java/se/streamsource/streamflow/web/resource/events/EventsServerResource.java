@@ -24,7 +24,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -47,33 +47,66 @@ public class EventsServerResource
    protected Representation get( Variant variant ) throws ResourceException
    {
       String after = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "after" );
-
-      final long afterDate = after == null ? 0 : Long.parseLong( after );
-
-      WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_PLAIN )
+      if (after != null)
       {
-         public void write( final Writer writer ) throws IOException
-         {
-            store.transactionsAfter( afterDate, new TransactionHandler()
-            {
-               public boolean handleTransaction( TransactionEvents transaction )
-               {
-                  try
-                  {
-                     String json = transaction.toJSON();
-                     writer.write( json );
-                     writer.write( '\n' );
+         final long afterDate = Long.parseLong( after );
 
-                     return true;
-                  } catch (IOException e)
-                  {
-                     return false;
-                  }
-               }
-            } );
+         WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_PLAIN )
+         {
+            public void write( final Writer writer ) throws IOException
+            {
+               store.transactionsAfter( afterDate, new RESTTransactionVisitor( writer ) );
+            }
+         };
+
+         representation.setCharacterSet( CharacterSet.UTF_8 );
+         return representation;
+      } else
+      {
+         String before = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "before" );
+
+         final long beforeDate = before == null ? System.currentTimeMillis() : Long.parseLong( before );
+
+         WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_PLAIN )
+         {
+            public void write( final Writer writer ) throws IOException
+            {
+               store.transactionsBefore( beforeDate, new RESTTransactionVisitor( writer ) );
+            }
+         };
+
+         representation.setCharacterSet( CharacterSet.UTF_8 );
+         return representation;
+      }
+   }
+
+   private static class RESTTransactionVisitor implements TransactionVisitor
+   {
+      int maxResults = 100;
+      int currentResults = 0;
+
+      private final Writer writer;
+
+      public RESTTransactionVisitor( Writer writer )
+      {
+         this.writer = writer;
+      }
+
+      public boolean visit( TransactionEvents transaction )
+      {
+         try
+         {
+            String json = transaction.toJSON();
+            writer.write( json );
+            writer.write( '\n' );
+
+            currentResults++;
+
+            return currentResults < maxResults;
+         } catch (IOException e)
+         {
+            return false;
          }
-      };
-      representation.setCharacterSet( CharacterSet.UTF_8 );
-      return representation;
+      }
    }
 }

@@ -39,7 +39,7 @@ import se.streamsource.streamflow.infrastructure.event.source.AbstractEventStore
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -173,7 +173,7 @@ public interface JdbmEventStoreService
          }
       }
 
-      public void transactionsAfter( long afterTimestamp, TransactionHandler handler )
+      public void transactionsAfter( long afterTimestamp, TransactionVisitor visitor )
       {
          // Lock datastore first
          lock.lock();
@@ -191,7 +191,39 @@ public interface JdbmEventStoreService
                // Get next transaction
                TransactionEvents events = readTransactionEvents( tuple );
 
-               if (!handler.handleTransaction( events ))
+               if (!visitor.visit( events ))
+               {
+                  return;
+               }
+            }
+         } catch (Exception e)
+         {
+            logger.log( Level.WARNING, "Could not iterate transactions", e );
+         } finally
+         {
+            lock.unlock();
+         }
+      }
+
+      public void transactionsBefore( long beforeTimestamp, TransactionVisitor visitor )
+      {
+         // Lock datastore first
+         lock.lock();
+
+         final Long beforeTime = beforeTimestamp - 1;
+
+         try
+         {
+            final TupleBrowser browser = index.browse( beforeTime );
+
+            Tuple tuple = new Tuple();
+
+            while (browser.getPrevious( tuple ))
+            {
+               // Get previous transaction
+               TransactionEvents events = readTransactionEvents( tuple );
+
+               if (!visitor.visit( events ))
                {
                   return;
                }

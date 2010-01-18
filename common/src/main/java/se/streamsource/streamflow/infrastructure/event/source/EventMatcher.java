@@ -20,7 +20,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
  * JAVADOC
  */
 public class EventMatcher
-      implements EventHandler, Runnable
+      implements EventVisitor, Runnable
 {
    private boolean match;
    private EventSpecification specification;
@@ -30,7 +30,7 @@ public class EventMatcher
       this.specification = specification;
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       if (specification.accept( event ))
       {

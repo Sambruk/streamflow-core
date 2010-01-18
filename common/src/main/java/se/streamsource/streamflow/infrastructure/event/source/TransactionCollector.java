@@ -23,11 +23,11 @@ import java.util.List;
  * JAVADOC
  */
 public class TransactionCollector
-      implements TransactionHandler
+      implements TransactionVisitor
 {
    List<TransactionEvents> transactions = new ArrayList<TransactionEvents>();
 
-   public boolean handleTransaction( TransactionEvents transaction )
+   public boolean visit( TransactionEvents transaction )
    {
       transactions.add( transaction );
       return true;

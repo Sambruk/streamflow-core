@@ -30,8 +30,8 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
@@ -44,7 +44,7 @@ import java.util.logging.Logger;
  */
 public class FormsModel
       extends AbstractListModel
-      implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventVisitor
 
 {
    @Uses
@@ -58,11 +58,11 @@ public class FormsModel
 
    private List<ListItemValue> formsList;
 
-   private EventHandlerFilter eventFilter;
+   private EventVisitorFilter eventFilter;
 
    public FormsModel()
    {
-      eventFilter = new EventHandlerFilter( this, "createdForm", "removedForm", "changedDescription" );
+      eventFilter = new EventVisitorFilter( this, "createdForm", "removedForm", "changedDescription" );
    }
 
    WeakModelMap<String, FormModel> formModels = new WeakModelMap<String, FormModel>()
@@ -125,14 +125,14 @@ public class FormsModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
       for (FormModel model : formModels)
       {
          model.notifyEvent( event );
       }
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       Logger.getLogger( "administration" ).info( "Refresh project form definitions" );
       refresh();

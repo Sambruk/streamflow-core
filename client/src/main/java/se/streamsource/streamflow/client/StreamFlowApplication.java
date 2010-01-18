@@ -54,7 +54,7 @@ import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 
@@ -156,9 +156,9 @@ public class StreamFlowApplication
 
       this.accountsModel = accountsModel;
 
-      subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventHandler()
+      subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventVisitor()
       {
-         public boolean handleEvent( DomainEvent event )
+         public boolean visit( DomainEvent event )
          {
             accountsModel.notifyEvent( event );
 

@@ -46,9 +46,9 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.MemoryEventStoreService;
 import se.streamsource.streamflow.infrastructure.event.TimeService;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.application.security.AccessPolicy;
 import se.streamsource.streamflow.web.infrastructure.event.CommandEventListenerService;
@@ -78,7 +78,7 @@ public class CommandQueryResourceTest
    {
       new EntityTestAssembler().assemble( moduleAssembly );
       moduleAssembly.addServices( CommandEventListenerService.class, MemoryEventStoreService.class, EventSourceService.class, DomainEventFactoryService.class );
-      moduleAssembly.importServices( TransactionHandler.class );
+      moduleAssembly.importServices( TransactionVisitor.class );
       moduleAssembly.importServices( AccessPolicy.class, TimeService.class ).importedBy( NewObjectImporter.class );
       moduleAssembly.addObjects( TimeService.class, ResourceFinder.class, TestTransactionHandler.class, TestAccessPolicy.class, CommandQueryClient.class, TestServerResource.class );
       moduleAssembly.addValues( StringDTO.class, TransactionEvents.class, DomainEvent.class );
@@ -169,18 +169,18 @@ public class CommandQueryResourceTest
    }
 
    public static class TestTransactionHandler
-         implements TransactionHandler
+         implements TransactionVisitor
    {
-      public boolean handleTransaction( TransactionEvents transaction )
+      public boolean visit( TransactionEvents transaction )
       {
-         new TransactionEventAdapter( new EventHandler()
+         new TransactionEventAdapter( new EventVisitor()
          {
-            public boolean handleEvent( DomainEvent event )
+            public boolean visit( DomainEvent event )
             {
                System.out.println( event );
                return true;
             }
-         } ).handleTransaction( transaction );
+         } ).visit( transaction );
          return true;
       }
    }

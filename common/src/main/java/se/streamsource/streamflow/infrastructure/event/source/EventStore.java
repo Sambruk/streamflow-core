@@ -22,11 +22,13 @@ public interface EventStore
    /**
     * Get list of event transactions after the given timestamp. If they are on the exact same timestamp, they will not be included.
     * <p/>
-    * The method uses the visitor pattern, so a handler is sent in which is given each transaction, one at a time.
+    * The method uses the visitor pattern, so a visitor is sent in which is given each transaction, one at a time.
     *
     * @param afterTimestamp
-    * @param handler
+    * @param visitor
     * @return
     */
-   void transactionsAfter( long afterTimestamp, TransactionHandler handler );
+   void transactionsAfter( long afterTimestamp, TransactionVisitor visitor );
+
+   void transactionsBefore( long beforeTimestamp, TransactionVisitor visitor);
 }

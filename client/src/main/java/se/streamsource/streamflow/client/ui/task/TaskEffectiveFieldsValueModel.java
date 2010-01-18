@@ -24,8 +24,8 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 
@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  */
 public class TaskEffectiveFieldsValueModel
       extends AbstractTableModel
-      implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventVisitor
 
 {
 
@@ -61,7 +61,7 @@ public class TaskEffectiveFieldsValueModel
 
    List<EffectiveFieldDTO> effectiveFields = Collections.emptyList();
 
-   EventHandlerFilter eventFilter = new EventHandlerFilter( this, "submittedForm" );
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "submittedForm" );
 
    public void refresh()
    {
@@ -116,10 +116,10 @@ public class TaskEffectiveFieldsValueModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {

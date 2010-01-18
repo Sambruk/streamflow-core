@@ -19,32 +19,32 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * Takes a list of DomainEvents and filters them according to a given event specification.
  */
-public class EventHandlerFilter
-      implements EventHandler
+public class EventVisitorFilter
+      implements EventVisitor
 {
-   private EventHandler handler;
+   private EventVisitor visitor;
    private EventSpecification eventSpecification;
 
-   public EventHandlerFilter( EventHandler handler, String... name )
+   public EventVisitorFilter( EventVisitor visitor, String... name )
    {
-      this( new EventQuery().withNames( name ), handler );
+      this( new EventQuery().withNames( name ), visitor );
    }
 
-   public EventHandlerFilter( String entityId, EventHandler handler, String... name )
+   public EventVisitorFilter( String entityId, EventVisitor visitor, String... name )
    {
-      this( new EventQuery().onEntities( entityId ).withNames( name ), handler );
+      this( new EventQuery().onEntities( entityId ).withNames( name ), visitor );
    }
 
-   public EventHandlerFilter( EventSpecification eventSpecification, EventHandler handler )
+   public EventVisitorFilter( EventSpecification eventSpecification, EventVisitor visitor )
    {
-      this.handler = handler;
+      this.visitor = visitor;
       this.eventSpecification = eventSpecification;
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       if (eventSpecification.accept( event ))
-         return handler.handleEvent( event );
+         return visitor.visit( event );
       else
          return true;
    }

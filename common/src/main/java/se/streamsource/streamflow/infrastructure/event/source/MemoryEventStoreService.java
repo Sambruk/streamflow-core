@@ -25,15 +25,14 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -64,7 +63,7 @@ public interface MemoryEventStoreService
       {
       }
 
-      public void transactionsAfter( long afterTimestamp, TransactionHandler handler )
+      public void transactionsAfter( long afterTimestamp, TransactionVisitor visitor )
       {
          // Lock datastore first
          lock.lock();
@@ -79,7 +78,43 @@ public interface MemoryEventStoreService
                JSONObject json = (JSONObject) tokener.nextValue();
                TransactionEvents tx = (TransactionEvents) transactionEventsType.fromJSON( json, module );
 
-               if (!handler.handleTransaction( tx ))
+               if (!visitor.visit( tx ))
+               {
+                  return;
+               }
+            }
+         } catch (JSONException e)
+         {
+            logger.log( Level.WARNING, "Could not deserialize events", e );
+         } finally
+         {
+            lock.unlock();
+         }
+      }
+
+      public void transactionsBefore( long beforeTimestamp, TransactionVisitor visitor )
+      {
+         // Lock datastore first
+         lock.lock();
+         try
+         {
+            Long startTime = beforeTimestamp - 1;
+            Collection<String> txsBeforeDate = store.headMap( startTime ).values();
+
+            // Reverse the list - this could be done more easily in JDK1.6
+            LinkedList<String> values = new LinkedList<String>();
+            for (String json : txsBeforeDate)
+            {
+               values.addFirst( json );
+            }
+
+            for (String txJson : values)
+            {
+               JSONTokener tokener = new JSONTokener( txJson );
+               JSONObject json = (JSONObject) tokener.nextValue();
+               TransactionEvents tx = (TransactionEvents) transactionEventsType.fromJSON( json, module );
+
+               if (!visitor.visit( tx ))
                {
                   return;
                }

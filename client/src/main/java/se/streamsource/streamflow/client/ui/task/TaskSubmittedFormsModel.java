@@ -26,8 +26,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * List of contacts for a task
  */
 public class TaskSubmittedFormsModel
-      implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventVisitor
 
 {
    @Structure
@@ -52,7 +52,7 @@ public class TaskSubmittedFormsModel
 
    BasicEventList<SubmittedFormListDTO> submittedForms = new BasicEventList<SubmittedFormListDTO>( );
 
-   EventHandlerFilter eventFilter = new EventHandlerFilter( this, "submittedForm" );
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "submittedForm" );
 
    public void refresh()
    {
@@ -82,10 +82,10 @@ public class TaskSubmittedFormsModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {

@@ -26,13 +26,13 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 
 import java.util.List;
 
 public class TaskLabelSelectionModel
-      implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventVisitor
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -43,12 +43,12 @@ public class TaskLabelSelectionModel
 
    private BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
 
-   private EventHandlerFilter eventFilter;
+   private EventVisitorFilter eventFilter;
 
    public TaskLabelSelectionModel( @Uses CommandQueryClient client )
    {
       this.client = client;
-      eventFilter = new EventHandlerFilter( client.getReference().getParentRef().getLastSegment(), this, "changedTaskType" );
+      eventFilter = new EventVisitorFilter( client.getReference().getParentRef().getLastSegment(), this, "changedTaskType" );
    }
 
    public BasicEventList<ListItemValue> getList()
@@ -73,10 +73,10 @@ public class TaskLabelSelectionModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       refresh();
 

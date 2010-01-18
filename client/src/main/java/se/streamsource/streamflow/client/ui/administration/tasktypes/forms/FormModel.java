@@ -26,8 +26,8 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import java.util.Observable;
@@ -38,13 +38,13 @@ import java.util.logging.Logger;
  */
 public class FormModel
       extends Observable
-      implements Refreshable, EventListener, EventHandler
+      implements Refreshable, EventListener, EventVisitor
 
 {
    @Structure
    ObjectBuilderFactory obf;
 
-   private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "changedNote", "movedField", "changedDescription" );
+   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedNote", "movedField", "changedDescription" );
 
    @Uses
    CommandQueryClient client;
@@ -78,7 +78,7 @@ public class FormModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
       for (FieldsModel fieldsModel : fieldsModels)
       {
          fieldsModel.notifyEvent( event );
@@ -86,7 +86,7 @@ public class FormModel
 
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       if (formValue.form().get().identity().equals( event.entity().get() ))
       {

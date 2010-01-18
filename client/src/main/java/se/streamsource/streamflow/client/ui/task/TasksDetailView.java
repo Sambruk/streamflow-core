@@ -18,11 +18,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.Icon;
@@ -84,7 +84,7 @@ public class TasksDetailView
 
    @Structure
    ObjectBuilderFactory obf;
-   private TransactionHandler subscriber;
+   private TransactionVisitor subscriber;
 
    public TasksDetailView( @Service EventSource events )
    {
@@ -92,9 +92,9 @@ public class TasksDetailView
 
       setPreferredSize( new Dimension( getWidth(), 500 ) );
 
-      subscriber = new ForEvents( new EventQuery().withNames( "changedDescription" ), new EventHandler()
+      subscriber = new ForEvents( new EventQuery().withNames( "changedDescription" ), new EventVisitor()
       {
-         public boolean handleEvent( DomainEvent event )
+         public boolean visit( DomainEvent event )
          {
             String id = event.entity().get();
             for (int i = 0; i < getComponentCount(); i++)

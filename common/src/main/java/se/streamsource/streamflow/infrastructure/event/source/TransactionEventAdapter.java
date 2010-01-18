@@ -21,20 +21,20 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
  * JAVADOC
  */
 public class TransactionEventAdapter
-      implements TransactionHandler
+      implements TransactionVisitor
 {
-   private EventHandler handler;
+   private EventVisitor visitor;
 
-   public TransactionEventAdapter( EventHandler handler )
+   public TransactionEventAdapter( EventVisitor visitor )
    {
-      this.handler = handler;
+      this.visitor = visitor;
    }
 
-   public boolean handleTransaction( TransactionEvents transaction )
+   public boolean visit( TransactionEvents transaction )
    {
       for (DomainEvent domainEvent : transaction.events().get())
       {
-         if (!handler.handleEvent( domainEvent ))
+         if (!visitor.visit( domainEvent ))
             return false;
       }
       return true;

@@ -34,7 +34,7 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +78,7 @@ public interface EventSourceService
 
       private Map<UnitOfWork, List<DomainEvent>> uows = new ConcurrentHashMap<UnitOfWork, List<DomainEvent>>();
 
-      private List<TransactionHandler> listeners = synchronizedList( new ArrayList<TransactionHandler>() );
+      private List<TransactionVisitor> listeners = synchronizedList( new ArrayList<TransactionVisitor>() );
 
       private Logger logger;
       private ExecutorService eventNotifier;
@@ -97,12 +97,12 @@ public interface EventSourceService
 
       // EventSource implementation
 
-      public void registerListener( TransactionHandler subscriber )
+      public void registerListener( TransactionVisitor subscriber )
       {
          listeners.add( subscriber );
       }
 
-      public void unregisterListener( TransactionHandler subscriber )
+      public void unregisterListener( TransactionVisitor subscriber )
       {
          listeners.remove( subscriber );
       }
@@ -133,9 +133,9 @@ public interface EventSourceService
 
                         synchronized (listeners)
                         {
-                           for (final TransactionHandler listener : listeners)
+                           for (final TransactionVisitor listener : listeners)
                            {
-                              listener.handleTransaction( transaction );
+                              listener.visit( transaction );
                            }
                         }
                      }

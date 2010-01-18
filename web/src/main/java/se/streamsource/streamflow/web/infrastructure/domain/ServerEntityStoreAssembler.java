@@ -63,6 +63,7 @@ public class ServerEntityStoreAssembler
                         "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity" ).
                      renameManyAssociation( "roles", "projectRoles" ).
                   end().
+               toVersion("0.2.18.0").
                toVersion( "0.3.20.962" ).
                   renamePackage( "se.streamsource.streamflow.web.domain.form", "se.streamsource.streamflow.web.domain.entity.form" ).
                      withEntities( "FieldEntity",
@@ -72,12 +73,12 @@ public class ServerEntityStoreAssembler
                   end().
                   renameEntity( "se.streamsource.streamflow.web.domain.label.LabelEntity","se.streamsource.streamflow.web.domain.entity.label.LabelEntity" ).
                   renamePackage("se.streamsource.streamflow.web.domain.organization", "se.streamsource.streamflow.web.domain.entity.organization").
-                     withEntities( "GroupEntity",
-                                   "OrganizationalUnitEntity",
+                     withEntities( "OrganizationalUnitEntity",
                                    "OrganizationEntity",
-                                   "OrganizationsEntity",
-                                   "RoleEntity").
+                                   "OrganizationsEntity").
                   end().
+                  renameEntity( "se.streamsource.streamflow.web.domain.group.GroupEntity", "se.streamsource.streamflow.web.domain.entity.organization.GroupEntity" ).
+                  renameEntity( "se.streamsource.streamflow.web.domain.role.RoleEntity", "se.streamsource.streamflow.web.domain.entity.organization.RoleEntity" ).
                   renamePackage( "se.streamsource.streamflow.web.domain.project", "se.streamsource.streamflow.web.domain.entity.project" ).
                      withEntities( "ProjectEntity", "ProjectRoleEntity" ).
                   end().

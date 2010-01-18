@@ -42,7 +42,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
@@ -129,7 +129,7 @@ public interface ManagerComposite
       public File exports;
       public File backup;
 
-      public TransactionHandler failedLoginListener;
+      public TransactionVisitor failedLoginListener;
 
       public void activate() throws Exception
       {
@@ -579,9 +579,9 @@ public interface ManagerComposite
 
          final IOException[] ex = new IOException[0];
 
-         eventStore.transactionsAfter( 0, new TransactionHandler()
+         eventStore.transactionsAfter( 0, new TransactionVisitor()
          {
-            public boolean handleTransaction( TransactionEvents transaction )
+            public boolean visit( TransactionEvents transaction )
             {
                try
                {
@@ -623,9 +623,9 @@ public interface ManagerComposite
 
          final IOException[] ex = new IOException[0];
 
-         eventStore.transactionsAfter( from, new TransactionHandler()
+         eventStore.transactionsAfter( from, new TransactionVisitor()
          {
-            public boolean handleTransaction( TransactionEvents transaction )
+            public boolean visit( TransactionEvents transaction )
             {
                if (transaction.timestamp().get() > to)
                   return false;

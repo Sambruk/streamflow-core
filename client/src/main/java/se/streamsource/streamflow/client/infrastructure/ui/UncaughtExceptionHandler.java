@@ -61,7 +61,7 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
          source = EventQueue.getCurrentEvent().getSource();
       } catch (NullPointerException npe)
       {
-         // STREAMFLOW-75 Unchaught exception handler does not popup on Windows
+         // STREAMFLOW-75 Unchaught exception visitor does not popup on Windows
          // therefor we have to consume any nullpointer here to be able to continue
       }
       final Frame frame = source instanceof Component ? (Frame) SwingUtilities.getAncestorOfClass( Frame.class, (Component) source ) : main.getMainFrame();

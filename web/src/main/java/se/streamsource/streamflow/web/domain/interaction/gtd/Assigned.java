@@ -31,11 +31,11 @@ public @interface Assigned
    public abstract boolean value() default true;
 
    public class Constraint
-         implements org.qi4j.api.constraint.Constraint<Assigned, Assignable>
+         implements org.qi4j.api.constraint.Constraint<Assigned, Assignable.Data>
    {
-      public boolean isValid( Assigned assigned, Assignable value )
+      public boolean isValid( Assigned assigned, Assignable.Data value )
       {
-         Assignee assignee = ((Assignable.Data) value).assignedTo().get();
+         Assignee assignee = value.assignedTo().get();
 
          return assigned.value() == (assignee != null);
       }

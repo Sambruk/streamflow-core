@@ -30,8 +30,8 @@ import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
 import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.resource.task.TaskListDTO;
@@ -43,7 +43,7 @@ import java.util.List;
  * Base class for all models that list tasks
  */
 public class TaskTableModel
-      implements EventListener, EventHandler, Refreshable
+      implements EventListener, EventVisitor, Refreshable
 {
    @Uses
    protected CommandQueryClient client;
@@ -55,20 +55,20 @@ public class TaskTableModel
 
    protected BasicEventList<TaskDTO> eventList = new BasicEventList<TaskDTO>();
 
-   private EventHandlerFilter eventFilter;
+   private EventVisitorFilter eventFilter;
 
    public TaskTableModel()
    {
-      eventFilter = new EventHandlerFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedTaskType", "changedStatus",
+      eventFilter = new EventVisitorFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedTaskType", "changedStatus",
             "changedOwner","assignedTo","delegatedTo", "deletedEntity");
    }
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
    }
 
-   public boolean handleEvent( final DomainEvent event )
+   public boolean visit( final DomainEvent event )
    {
       TaskDTO updatedTask = getTask( event );
 

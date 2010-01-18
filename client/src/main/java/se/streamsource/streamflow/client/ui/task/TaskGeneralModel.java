@@ -25,8 +25,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -41,13 +41,13 @@ import java.util.Observable;
 public class TaskGeneralModel
       extends Observable
       implements Refreshable, EventListener,
-      EventHandler
+      EventVisitor
 
 {
    @Structure
    ValueBuilderFactory vbf;
 
-   EventHandlerFilter eventFilter;
+   EventVisitorFilter eventFilter;
 
    private CommandQueryClient client;
 
@@ -59,7 +59,7 @@ public class TaskGeneralModel
    public TaskGeneralModel( @Uses CommandQueryClient client )
    {
       this.client = client;
-      eventFilter = new EventHandlerFilter( client.getReference().getParentRef().getLastSegment(), this, "addedLabel",
+      eventFilter = new EventVisitorFilter( client.getReference().getParentRef().getLastSegment(), this, "addedLabel",
             "removedLabel", "changedOwner", "changedTaskType" );
    }
 
@@ -152,12 +152,12 @@ public class TaskGeneralModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
 
       taskLabelsModel.notifyEvent( event );
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       refresh();
       return true;

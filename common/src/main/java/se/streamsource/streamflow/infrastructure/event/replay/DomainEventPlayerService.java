@@ -28,7 +28,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.replay.EventReplayException;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -71,9 +71,9 @@ public interface DomainEventPlayerService
       public void replayEvents( long afterDate ) throws EventReplayException
       {
          final EventReplayException[] ex = new EventReplayException[1];
-         eventStore.transactionsAfter( afterDate, new TransactionHandler()
+         eventStore.transactionsAfter( afterDate, new TransactionVisitor()
          {
-            public boolean handleTransaction( TransactionEvents transaction )
+            public boolean visit( TransactionEvents transaction )
             {
                UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Event replay" ) );
                DomainEvent currentEvent = null;

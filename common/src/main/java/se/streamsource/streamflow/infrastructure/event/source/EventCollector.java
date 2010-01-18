@@ -23,11 +23,11 @@ import java.util.List;
  * JAVADOC
  */
 public class EventCollector
-      implements EventHandler
+      implements EventVisitor
 {
    List<DomainEvent> events = new ArrayList<DomainEvent>();
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       events.add( event );
       return true;

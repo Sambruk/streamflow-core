@@ -22,10 +22,10 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
@@ -48,7 +48,7 @@ public interface EventManagerService
       extends Activatable, ServiceComposite
 {
    class Mixin
-         implements Activatable, TransactionHandler
+         implements Activatable, TransactionVisitor
    {
       @Service
       EventSource source;
@@ -89,11 +89,11 @@ public interface EventManagerService
          source.unregisterListener( this );
       }
 
-      public synchronized boolean handleTransaction( TransactionEvents transaction )
+      public synchronized boolean visit( TransactionEvents transaction )
       {
-         new TransactionEventAdapter( new EventHandler()
+         new TransactionEventAdapter( new EventVisitor()
          {
-            public boolean handleEvent( DomainEvent event )
+            public boolean visit( DomainEvent event )
             {
                final Notification notification = new Notification( "domainevent", objectName, seq++, event.on().get().getTime(), event.name().get() );
                notification.setUserData( event.toJSON() );
@@ -113,7 +113,7 @@ public interface EventManagerService
                } );
                return true;
             }
-         } ).handleTransaction( transaction );
+         } ).visit( transaction );
 
          return true;
       }

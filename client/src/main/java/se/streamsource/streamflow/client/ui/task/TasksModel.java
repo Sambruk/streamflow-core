@@ -21,15 +21,15 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandlerFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
 
 /**
  * Model that keeps track of all task models
  */
 public class TasksModel
-      implements EventListener, EventHandler
+      implements EventListener, EventVisitor
 {
    @Uses
    CommandQueryClient client;
@@ -66,7 +66,7 @@ public class TasksModel
       }
    };
 
-   private EventHandlerFilter eventFilter = new EventHandlerFilter( this, "deletedTask", "deletedAssignedTask", "deletedWaitingForTask" );
+   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "deletedTask", "deletedAssignedTask", "deletedWaitingForTask" );
 
 
    public TaskModel task( String id )
@@ -76,7 +76,7 @@ public class TasksModel
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.handleEvent( event );
+      eventFilter.visit( event );
 
       for (TaskModel model : models)
       {
@@ -84,7 +84,7 @@ public class TasksModel
       }
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       String key = EventParameters.getParameter( event, "param1" );
       models.remove( key );

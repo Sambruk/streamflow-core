@@ -20,7 +20,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
  * JAVADOC
  */
 public abstract class OnEvents
-      implements TransactionHandler, Runnable
+      implements TransactionVisitor, Runnable
 {
    EventSpecification specification;
 
@@ -29,7 +29,7 @@ public abstract class OnEvents
       specification = new EventQuery().withNames( eventNames );
    }
 
-   public boolean handleTransaction( TransactionEvents transaction )
+   public boolean visit( TransactionEvents transaction )
    {
       EventMatcher handler = new EventMatcher( specification )
       {
@@ -39,7 +39,7 @@ public abstract class OnEvents
             OnEvents.this.run();
          }
       };
-      new TransactionEventAdapter( handler ).handleTransaction( transaction );
+      new TransactionEventAdapter( handler ).visit( transaction );
 
       if (handler.matches())
          handler.run();

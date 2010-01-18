@@ -22,10 +22,10 @@ import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventHandler;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionHandler;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import javax.swing.ActionMap;
 import javax.swing.JScrollPane;
@@ -37,11 +37,11 @@ import javax.swing.table.DefaultTableModel;
  */
 public class DebugWindow
       extends FrameView
-      implements TransactionHandler, EventHandler
+      implements TransactionVisitor, EventVisitor
 {
    public JXTable eventTable;
    public DefaultTableModel eventModel;
-   public TransactionHandler handler;
+   public TransactionVisitor visitor;
 
    public DebugWindow( @Service Application application,
                        @Service EventSource eventSource )
@@ -68,17 +68,17 @@ public class DebugWindow
 
       frame.setSize( 400, 400 );
 
-      handler = new TransactionEventAdapter( this );
+      visitor = new TransactionEventAdapter( this );
    }
 
-   public boolean handleTransaction( TransactionEvents transaction )
+   public boolean visit( TransactionEvents transaction )
    {
-      handler.handleTransaction( transaction );
+      visitor.visit( transaction );
 
       return true;
    }
 
-   public boolean handleEvent( DomainEvent event )
+   public boolean visit( DomainEvent event )
    {
       eventModel.addRow( new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()} );
       return true;
