@@ -23,7 +23,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.SearchMenuBar;
@@ -31,7 +30,7 @@ import se.streamsource.streamflow.client.ui.task.InboxTaskTableFormatter;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Search window
@@ -64,10 +63,7 @@ public class SearchWindow
                   frame.getContentPane().removeAll();
 
                   AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                  CommandQueryClient client = selectedAccount.userResource();
-                  CommandQueryClient search = client.getSubClient( "search");
-                  SearchResultTableModel searchResults = obf.newObjectBuilder( SearchResultTableModel.class ).use( search, selectedAccount.tasks() ).newInstance();
-
+                  SearchResultTableModel searchResults = selectedAccount.search();
 
                   SearchView searchView = obf.newObjectBuilder( SearchView.class ).use( searchResults, selectedAccount.tasks(), new InboxTaskTableFormatter() ).newInstance();
 

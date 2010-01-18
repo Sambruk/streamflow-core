@@ -32,6 +32,6 @@ public class SearchAssembler
 
       UIAssemblers.addViews( module, SearchView.class);
 
-      module.addObjects( SearchResultTableModel.class );
+      module.addObjects( SearchResultTableModel.class ).visibleIn( Visibility.layer );
    }
 }

@@ -232,7 +232,7 @@ public class AccountModel
       return overviewModel;
    }
 
-   public TaskTableModel search()
+   public SearchResultTableModel search()
    {
       if (searchResults == null)
       {

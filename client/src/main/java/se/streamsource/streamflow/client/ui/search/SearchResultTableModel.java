@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.search;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -55,8 +56,8 @@ public class SearchResultTableModel
             {
                public void run()
                {
-                  eventList.clear();
-                  eventList.addAll( newRoot.tasks().get() );
+                  EventListSynch.synchronize( newRoot.tasks().get(), eventList );
+                  tasks = newRoot;
                }
             });
          }
