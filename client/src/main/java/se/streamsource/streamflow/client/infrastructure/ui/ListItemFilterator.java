@@ -15,12 +15,13 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 import ca.odell.glazedlists.TextFilterator;
+import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import java.util.List;
 
 /**
- * JAVADOC
+ * Filter for ListItemValues. Will filter on descriptions, and group if available
  */
 public class ListItemFilterator
       implements TextFilterator<ListItemValue>
@@ -28,5 +29,8 @@ public class ListItemFilterator
    public void getFilterStrings( List<String> strings, ListItemValue listItemValue )
    {
       strings.add( listItemValue.description().get() );
+
+      if (listItemValue instanceof GroupedListItemValue)
+         strings.add( ((GroupedListItemValue)listItemValue).group().get() );
    }
 }

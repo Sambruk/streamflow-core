@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -56,13 +57,13 @@ public interface TaskLabelsQueries
 
          if (ownable.owner().get() instanceof SelectedLabels)
          {
-            addLabels( listBuilder, ((SelectedLabels.Data) ownable.owner().get()).selectedLabels() );
+            addLabels( listBuilder, ((SelectedLabels.Data) ownable.owner().get()).selectedLabels(), (Describable) ownable.owner().get() );
          }
 
          if (type.taskType().get() != null)
          {
             SelectedLabels.Data taskType = (SelectedLabels.Data) type.taskType().get();
-            addLabels( listBuilder, taskType.selectedLabels() );
+            addLabels( listBuilder, taskType.selectedLabels(), (Describable) taskType );
          }
 
          if (ownable.owner().get() instanceof OwningOrganizationalUnit.Data)
@@ -71,25 +72,26 @@ public interface TaskLabelsQueries
             OwningOrganizationalUnit.Data ownerOU = (OwningOrganizationalUnit.Data) ownable.owner().get();
             OrganizationalUnit ou = ownerOU.organizationalUnit().get();
             SelectedLabels.Data ouLabels = (SelectedLabels.Data) ou;
-            addLabels( listBuilder, ouLabels.selectedLabels() );
+            addLabels( listBuilder, ouLabels.selectedLabels(), ou );
 
             // Add labels from Organization of OU
             OwningOrganization ownerOrg = (OwningOrganization) ou;
             Organization org = ownerOrg.organization().get();
             SelectedLabels.Data orgLabels = (SelectedLabels.Data) org;
-            addLabels( listBuilder, orgLabels.selectedLabels() );
+            addLabels( listBuilder, orgLabels.selectedLabels(), org );
          }
 
-         return listBuilder.newList();
+         ListValue list = listBuilder.newList();
+         return list;
       }
 
-      private void addLabels( ListValueBuilder listBuilder, ManyAssociation<Label> selectedLabels )
+      private void addLabels( ListValueBuilder listBuilder, ManyAssociation<Label> selectedLabels, Describable group )
       {
          for (Label label : selectedLabels)
          {
             if (!labelable.labels().contains( label ))
             {
-               listBuilder.addDescribable( label );
+               listBuilder.addDescribable( label, group );
             }
          }
       }

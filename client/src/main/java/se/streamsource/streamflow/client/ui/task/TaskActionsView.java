@@ -42,7 +42,7 @@ public class TaskActionsView
    protected ObjectBuilder<SelectTaskTypeDialog> taskTypeDialog;
 
    @Uses
-   protected ObjectBuilder<SelectLabelsDialog> labelSelectionDialog;
+   protected ObjectBuilder<TaskLabelsDialog> labelSelectionDialog;
 
    @Service
    DialogService dialogs;
@@ -157,7 +157,7 @@ public class TaskActionsView
    @Action
    public void label()
    {
-      SelectLabelsDialog dialog = labelSelectionDialog.use(model.getPossibleLabels()).newInstance();
+      TaskLabelsDialog dialog = labelSelectionDialog.use(model.getPossibleLabels()).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog);
 
       if (dialog.getSelectedLabels() != null)

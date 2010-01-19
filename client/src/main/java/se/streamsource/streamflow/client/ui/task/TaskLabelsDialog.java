@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration.label;
+package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
@@ -20,7 +20,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
+import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -31,13 +31,13 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public class SelectLabelsDialog
+public class TaskLabelsDialog
       extends JPanel
 {
-   public FilteredList filteredList = new FilteredList();
+   public GroupedFilteredList filteredList = new GroupedFilteredList();
    public List<ListItemValue> selected;
 
-   public SelectLabelsDialog( @Service ApplicationContext context, @Uses EventList<ListItemValue> list )
+   public TaskLabelsDialog( @Service ApplicationContext context, @Uses EventList<ListItemValue> list )
    {
       setActionMap( context.getActionMap( this ) );
 
