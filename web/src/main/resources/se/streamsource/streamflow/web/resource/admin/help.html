@@ -34,19 +34,32 @@ The following commands can be used in BeanShell scripts:
 Here are some sample scripts for common tasks.
 <h3>Get user</h3>
 <pre>
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 admin = uow.get(UserEntity.class, "administrator");
 state(admin); // Print state of admin user
 </pre>
 
 <h3>Find user</h3>
 <pre>
-import se.streamsource.streamflow.web.domain.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import org.qi4j.api.query.QueryExpressions;
 template = QueryExpressions.templateFor(UserEntity.class);
 admin = query.newQueryBuilder(UserEntity.class).where(QueryExpressions.eq(template.identity(), "administrator")).newQuery(uow).find();
 print(admin);
 </pre>
 
+<h3>Delete user</h3>
+<pre>
+import se.streamsource.streamflow.web.domain.structure.user.User;
+entity = uow.get(User.class,"username");
+uow.remove(entity);
+</pre>
+
+
+<h3>Attention:</h3>
+<pre>
+Any operation that alters the content of the entity store demands the RDF and Solr index to be reindexed.
+To do so start jconsole and connect to the JMXConnector and trigger a reindex in StreamFlow/Manager.
+</pre>
 </body>
 </html>
