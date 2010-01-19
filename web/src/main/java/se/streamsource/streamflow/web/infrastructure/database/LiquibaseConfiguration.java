@@ -14,21 +14,22 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * Configuration for Liquibase
  */
-public class DatabaseAssembler
-      implements Assembler
+public interface LiquibaseConfiguration
+      extends ConfigurationComposite
 {
-   public void assemble( ModuleAssembly module ) throws AssemblyException
-   {
-      module.addServices( MySQLDatabaseService.class ).visibleIn( Visibility.application );
+   @UseDefaults
+   Property<Boolean> shouldRunLiquibase();
 
-      module.addServices( LiquibaseService.class ).instantiateOnStartup();
-   }
+   @UseDefaults
+   Property<String> contexts();
+
+   @UseDefaults
+   Property<String> changeLog();
 }

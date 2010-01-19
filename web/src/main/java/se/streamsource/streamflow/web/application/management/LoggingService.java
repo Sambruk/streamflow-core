@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.apache.log4j.FileAppender;
+import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.qi4j.api.injection.scope.Service;
@@ -28,8 +28,8 @@ import java.io.File;
 /**
  * JAVADOC
  */
-@Mixins(MonitorLoggingService.Mixin.class)
-public interface MonitorLoggingService
+@Mixins(LoggingService.Mixin.class)
+public interface LoggingService
    extends ServiceComposite, Activatable
 {
    class Mixin
@@ -40,15 +40,30 @@ public interface MonitorLoggingService
 
       public void activate() throws Exception
       {
-         Logger logger = Logger.getLogger( MonitorLoggingService.class );
+         Logger logger = Logger.getLogger( LoggingService.class );
 
+         // Monitors
          File monitorDirectory = new File(fileConfig.logDirectory(), "monitor");
          monitorDirectory.mkdirs();
 
          File restQueryLog = new File(monitorDirectory, "query.log");
-         Logger.getLogger( "monitor.rest.query" ).addAppender( new FileAppender(new PatternLayout("%m%n"), restQueryLog.getAbsolutePath() ));
-
+         Logger.getLogger( "monitor.rest.query" ).addAppender( new DailyRollingFileAppender(new PatternLayout("%m%n"), restQueryLog.getAbsolutePath(), "'.'yyyy-ww" ));
          logger.info( "Logging query performance to:"+restQueryLog );
+
+         File restCommandLog = new File(monitorDirectory, "command.log");
+         Logger.getLogger( "monitor.rest.command" ).addAppender( new DailyRollingFileAppender(new PatternLayout("%m%n"), restCommandLog.getAbsolutePath(), "'.'yyyy-ww" ));
+         logger.info( "Logging command performance to:"+restCommandLog );
+
+         // Access logging
+         File accessLog = new File(fileConfig.logDirectory(), "access.log");
+         Logger.getLogger( "org.restlet.Component.LogService" ).addAppender( new DailyRollingFileAppender(new PatternLayout("%m%n"), accessLog.getAbsolutePath(), "'.'yyyy-ww" ));
+         logger.info( "Logging HTTP access to:"+accessLog );
+
+         // General logging
+         File generalLog = new File(fileConfig.logDirectory(), "streamflow.log");
+         Logger.getRootLogger().addAppender( new DailyRollingFileAppender(new PatternLayout("%5p %c{1} - %m%n"), generalLog.getAbsolutePath(), "'.'yyyy-ww" ));
+         logger.info( "Logging StreamFlow messages:"+generalLog );
+
       }
 
       public void passivate() throws Exception

@@ -16,7 +16,11 @@
     </logger>
 
     <!-- Monitors -->
-    <logger name="monitor" additivity="true">
+    <logger name="monitor" additivity="false">
+    </logger>
+
+    <!-- HTTP logging -->
+    <logger name="org.restlet.Component.LogService" additivity="false">
     </logger>
     
     <root>

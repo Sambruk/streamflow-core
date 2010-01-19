@@ -30,6 +30,7 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
+import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.MySQLDatabaseConfiguration;
 
 import java.util.prefs.Preferences;
@@ -52,11 +53,15 @@ public class ConfigurationAssembler
       module.addEntities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StatisticsConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MySQLDatabaseConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StartupMigrationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
 
       module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
+      module.forMixin( MySQLDatabaseConfiguration.class ).declareDefaults().autoReconnectForPools().set( true );
+      module.forMixin( MySQLDatabaseConfiguration.class ).declareDefaults().properties().set("");
+      module.forMixin( LiquibaseConfiguration.class ).declareDefaults().changeLog().set("changelog.xml");
 
       // Configuration store
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();

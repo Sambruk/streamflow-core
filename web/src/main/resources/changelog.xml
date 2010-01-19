@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.7"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.7 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.7.xsd">
+    <preConditions>
+        <dbms type="mysql"/>
+        <sqlCheck expectedResult="1">select 1</sqlCheck>
+        <runningAs username="streamflow"/>
+    </preConditions>
+
+    <changeSet id="1" author="rickardoberg">
+        <comment>
+            Initial tables
+        </comment>
+        <createTable tableName="completed">
+            <column name="id" type="varchar(60)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="task_id" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="note" type="clob">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="completed_on" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assigned" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tasktype" type="varchar(256)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="project" type="varchar(256)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="assigned_group" type="varchar(256)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="organization" type="varchar(256)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="labels">
+            <column name="id" type="varchar(60)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="label" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="rickardoberg">
+        <addColumn tableName="completed">
+            <column name="dummy" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
