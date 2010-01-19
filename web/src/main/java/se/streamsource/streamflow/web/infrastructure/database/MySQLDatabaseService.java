@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.This;
@@ -38,8 +37,6 @@ public interface MySQLDatabaseService
       @This
       Configuration<MySQLDatabaseConfiguration> config;
 
-      public MysqlConnectionPoolDataSource dataSource;
-
       public void activate() throws Exception
       {
          Class.forName( "com.mysql.jdbc.Driver" );
@@ -47,6 +44,19 @@ public interface MySQLDatabaseService
          setUsername( config.configuration().username().get() );
          setPassword( config.configuration().password().get() );
          setUrl( "jdbc:mysql://" + config.configuration().host().get() + "/streamflow" );
+
+         addConnectionProperty( "autoReconnectForPools", ""+Boolean.valueOf(config.configuration().autoReconnectForPools().get() ));
+
+         String props = config.configuration().properties().get();
+         String[] properties = props.split( "," );
+         for (String property : properties)
+         {
+            if (property.trim().length() > 0)
+            {
+               String[] keyvalue = property.trim().split("=" );
+               addConnectionProperty( keyvalue[0], keyvalue[1] );
+            }
+         }
       }
 
       public void passivate() throws Exception

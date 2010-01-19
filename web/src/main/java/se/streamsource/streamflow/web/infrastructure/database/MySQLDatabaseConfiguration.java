@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
 
@@ -28,4 +29,10 @@ public interface MySQLDatabaseConfiguration
    Property<String> username();
 
    Property<String> password();
+
+   @UseDefaults
+   Property<Boolean> autoReconnectForPools();
+
+   @UseDefaults
+   Property<String> properties();
 }
