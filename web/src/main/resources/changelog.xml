@@ -61,10 +61,4 @@
             </column>
         </createTable>
     </changeSet>
-
-    <changeSet id="2" author="rickardoberg">
-        <addColumn tableName="completed">
-            <column name="dummy" type="varchar(255)"/>
-        </addColumn>
-    </changeSet>
 </databaseChangeLog>

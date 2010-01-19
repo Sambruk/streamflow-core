@@ -111,7 +111,7 @@ public class TaskActionsServerResource
 
       Actor actor = getActor();
 
-      if (task.assignedTo().get() == null)
+      if (!task.isAssigned())
       {
          // Delegations
          Owner owner = (Owner) task.delegatedTo().get();
@@ -171,7 +171,8 @@ public class TaskActionsServerResource
       TaskEntity task = uowf.currentUnitOfWork().get( TaskEntity.class, getRequest().getAttributes().get( "task" ).toString() );
       Actor actor = getActor();
 
-      task.assignTo( actor );
+      if (!task.isAssigned())
+         task.assignTo( actor );
       task.sendTo( (Owner) task.delegatedTo().get() );
       task.done();
    }
@@ -197,7 +198,8 @@ public class TaskActionsServerResource
 
       Actor actor = getActor();
 
-      task.unassign();
+      if (task.isAssigned())
+         task.unassign();
 
       task.delegateTo( to, actor, owner );
    }
