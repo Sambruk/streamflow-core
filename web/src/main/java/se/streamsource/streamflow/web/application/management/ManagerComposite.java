@@ -577,7 +577,7 @@ public interface ManagerComposite
 
          final Writer writer = new OutputStreamWriter( out, "UTF-8" );
 
-         final IOException[] ex = new IOException[0];
+         final IOException[] ex = new IOException[1];
 
          eventStore.transactionsAfter( 0, new TransactionVisitor()
          {
