@@ -23,15 +23,19 @@ import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingIconPanel;
 import org.jdesktop.swingx.renderer.WrappingProvider;
-import org.jdesktop.swingx.search.SearchFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.task.AssignmentsTaskTableFormatter;
+import se.streamsource.streamflow.client.ui.task.DelegationsTaskTableFormatter;
+import se.streamsource.streamflow.client.ui.task.InboxTaskTableFormatter;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import se.streamsource.streamflow.client.ui.task.*;
+import se.streamsource.streamflow.client.ui.task.TaskTableView;
+import se.streamsource.streamflow.client.ui.task.TasksModel;
+import se.streamsource.streamflow.client.ui.task.WaitingForTaskTableFormatter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -80,13 +84,7 @@ public class WorkspaceView
 
 
       this.model = model;
-      workspaceTree = new JXTree()
-      {
-         protected void doFind()
-         {
-            SearchFactory.getInstance().showFindBar( this, getSearchable() );
-         }
-      };
+      workspaceTree = new JXTree();
       workspaceTree.expandAll();
       workspaceTree.setRootVisible( false );
       workspaceTree.setShowsRootHandles( false );
