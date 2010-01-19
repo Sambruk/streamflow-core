@@ -89,7 +89,7 @@ public class TaskTypesView
    {
       NameDialog dialog = nameDialogs.iterator().next();
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_project_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_tasktype_title ) );
 
       if (dialog.name() != null)
       {

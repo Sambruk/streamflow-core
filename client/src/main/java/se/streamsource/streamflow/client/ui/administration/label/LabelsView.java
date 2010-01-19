@@ -91,7 +91,7 @@ public class LabelsView
    {
       NameDialog dialog = nameDialogs.iterator().next();
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_project_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_label_title ) );
 
       if (dialog.name() != null)
       {

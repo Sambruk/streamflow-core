@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.label;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
@@ -27,6 +28,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRende
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.ActionMap;
@@ -92,7 +94,7 @@ public class SelectedLabelsView
 */
       SelectLabelsDialog dialog = labelsDialogs.use( modelSelected.getPossibleLabels() ).newInstance();
 
-      dialogs.showOkCancelHelpDialog( this, dialog );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.chose_label_title ) );
 
       if (dialog.getSelectedLabels() != null)
       {

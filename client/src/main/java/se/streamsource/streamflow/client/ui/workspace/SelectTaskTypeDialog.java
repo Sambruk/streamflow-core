@@ -52,7 +52,7 @@ public class SelectTaskTypeDialog
    {
       super( new GridLayout(1, 1) );
 
-      setName( i18n.text( WorkspaceResources.search_tasktype ) );
+      setName( i18n.text( WorkspaceResources.chose_tasktype ) );
       setActionMap( context.getActionMap( this ) );
 
       taskTypesList = new FilteredList();

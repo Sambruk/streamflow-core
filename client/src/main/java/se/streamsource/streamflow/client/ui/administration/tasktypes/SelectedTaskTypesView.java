@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
@@ -26,6 +27,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.ActionMap;
@@ -79,7 +81,7 @@ public class SelectedTaskTypesView
    {
       SelectTaskTypesDialog dialog = taskTypesDialogs.use( modelSelected.getPossibleTaskTypes() ).newInstance();
 
-      dialogs.showOkCancelHelpDialog( this, dialog );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_tasktype_title ) );
 
       if (dialog.getSelectedTaskTypes() != null)
       {
