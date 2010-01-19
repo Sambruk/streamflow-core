@@ -78,7 +78,7 @@ public class SelectedLabelsServerResource
       SelectedLabels selectedLabels = uow.get( SelectedLabels.class, identity );
 
       Label label = labels.createLabel( name.string().get() );
-      selectedLabels.addLabel( label );
+      selectedLabels.addSelectedLabel( label );
    }
 
    public void addlabel( EntityReferenceDTO labelDTO ) throws ResourceException
@@ -90,6 +90,6 @@ public class SelectedLabelsServerResource
       SelectedLabels labels = uow.get( SelectedLabels.class, identity );
       Label label = uow.get( Label.class, labelDTO.entity().get().identity() );
 
-      labels.addLabel( label );
+      labels.addSelectedLabel( label );
    }
 }

@@ -24,45 +24,45 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(SelectedLabels.Mixin.class)
 public interface SelectedLabels
 {
-   void addLabel( Label label );
+   void addSelectedLabel( Label label );
 
-   void removeLabel( Label label );
+   void removeSelectedLabel( Label label );
 
-   boolean hasLabel( Label label );
+   boolean hasSelectedLabel( Label label );
 
    interface Data
    {
       ManyAssociation<Label> selectedLabels();
 
-      void addedLabel( DomainEvent event, Label label );
+      void addedSelectedLabel( DomainEvent event, Label label );
 
-      void removedLabel( DomainEvent event, Label label );
+      void removedSelectedLabel( DomainEvent event, Label label );
    }
 
    abstract class Mixin
          implements SelectedLabels, Data
    {
-      public void addLabel( Label label )
+      public void addSelectedLabel( Label label )
       {
-         addedLabel( DomainEvent.CREATE, label );
+         addedSelectedLabel( DomainEvent.CREATE, label );
       }
 
-      public void removeLabel( Label label )
+      public void removeSelectedLabel( Label label )
       {
-         removedLabel( DomainEvent.CREATE, label );
+         removedSelectedLabel( DomainEvent.CREATE, label );
       }
 
-      public boolean hasLabel( Label label )
+      public boolean hasSelectedLabel( Label label )
       {
          return selectedLabels().contains( label );
       }
 
-      public void addedLabel( DomainEvent event, Label label )
+      public void addedSelectedLabel( DomainEvent event, Label label )
       {
          selectedLabels().add( label );
       }
 
-      public void removedLabel( DomainEvent event, Label label )
+      public void removedSelectedLabel( DomainEvent event, Label label )
       {
          selectedLabels().remove( label );
       }

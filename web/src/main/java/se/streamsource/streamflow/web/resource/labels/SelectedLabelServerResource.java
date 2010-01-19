@@ -39,7 +39,7 @@ public class SelectedLabelServerResource
       SelectedLabels labels = uow.get( SelectedLabels.class, labelsId );
       Label label = uow.get( Label.class, identity );
 
-      labels.removeLabel( label );
+      labels.removeSelectedLabel( label );
    }
 
 }

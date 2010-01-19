@@ -69,7 +69,7 @@ public interface LabelEntity
 
                for (SelectedLabels labelUsage : labelUsages)
                {
-                  labelUsage.removeLabel( label );
+                  labelUsage.removeSelectedLabel( label );
                }
             }
 

@@ -70,7 +70,7 @@ public interface Labelable
          {
             for (Label labelEntity : labels())
             {
-               if (currentSelection.hasLabel( labelEntity ))
+               if (currentSelection.hasSelectedLabel( labelEntity ))
                   removedLabels.add( labelEntity );
             }
          } else if (currentSelection == null)
@@ -80,7 +80,7 @@ public interface Labelable
          {
             for (Label labelEntity : labels())
             {
-               if (currentSelection.hasLabel( labelEntity ) && !nextSelection.hasLabel( labelEntity ))
+               if (currentSelection.hasSelectedLabel( labelEntity ) && !nextSelection.hasSelectedLabel( labelEntity ))
                   removedLabels.add( labelEntity );
             }
          }

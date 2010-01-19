@@ -103,12 +103,12 @@ public interface TestDataService
          // Create task types
          TaskType newFeature = organization.createTaskType( "New feature" );
          TaskType bug = organization.createTaskType( "Bug" );
-         bug.addLabel( minor );
-         bug.addLabel( major );
-         bug.addLabel( critical );
+         bug.addSelectedLabel( minor );
+         bug.addSelectedLabel( major );
+         bug.addSelectedLabel( critical );
          TaskType improvement = organization.createTaskType( "Improvement" );
-         improvement.addLabel( minor );
-         improvement.addLabel( major );
+         improvement.addSelectedLabel( minor );
+         improvement.addSelectedLabel( major );
          TaskType passwordReset = organization.createTaskType( "Reset password" );
 
          // Create suborganizations
@@ -209,14 +209,14 @@ public interface TestDataService
          resetPasswordForm.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
 
          // Create labels
-         project.addLabel( question );
-         project.addLabel( issueChase );
-         project.addLabel( suggestion );
+         project.addSelectedLabel( question );
+         project.addSelectedLabel( issueChase );
+         project.addSelectedLabel( suggestion );
 
          for (int i = 0; i < 50; i++)
          {
             Label label = organization.createLabel( "Label " + i );
-            project.addLabel( label );
+            project.addSelectedLabel( label );
          }
 
          project.addMember( user );
