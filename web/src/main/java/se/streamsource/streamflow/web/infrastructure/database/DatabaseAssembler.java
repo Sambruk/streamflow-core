@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.infrastructure.database;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -29,6 +30,11 @@ public class DatabaseAssembler
    {
       module.addServices( MySQLDatabaseService.class ).visibleIn( Visibility.application );
 
-      module.addServices( LiquibaseService.class ).instantiateOnStartup();
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.production ))
+      {
+         // Liquibase migration
+    	 module.addServices( LiquibaseService.class ).instantiateOnStartup();
+      }       
    }
 }
