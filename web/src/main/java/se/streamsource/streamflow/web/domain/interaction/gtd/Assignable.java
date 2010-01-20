@@ -31,10 +31,8 @@ import java.util.Date;
 @Mixins(Assignable.Mixin.class)
 public interface Assignable
 {
-   @Assigned(false)
    void assignTo( Assignee assignee );
 
-   @Assigned
    void unassign();
 
    boolean isAssigned();
