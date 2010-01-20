@@ -22,12 +22,12 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
-import static org.qi4j.api.query.QueryExpressions.contains;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
@@ -81,6 +81,11 @@ public interface TaskTypesQueries
 
          if (taskType != null)
             projects = projects.where( contains( template.selectedTaskTypes(), taskType ) );
+         else
+         {
+            projects = projects.where( and( eq( templateFor( Removable.Data.class ).removed(), false ),
+                                            isNotNull( templateFor(OwningOrganizationalUnit.Data.class).organizationalUnit() )));
+         }
 
          Query<Project> query = projects.newQuery( uowf.currentUnitOfWork() );
 
