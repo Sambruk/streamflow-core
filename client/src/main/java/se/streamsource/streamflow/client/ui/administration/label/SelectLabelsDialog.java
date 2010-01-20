@@ -21,6 +21,8 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -40,7 +42,7 @@ public class SelectLabelsDialog
    public SelectLabelsDialog( @Service ApplicationContext context, @Uses EventList<ListItemValue> list )
    {
       setActionMap( context.getActionMap( this ) );
-
+      setName( i18n.text( WorkspaceResources.select_labels ) );
       setLayout( new BorderLayout() );
 
       filteredList.setEventList( list );
