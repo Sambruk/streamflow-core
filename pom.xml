@@ -92,10 +92,10 @@
         <developer>
             <id>rickardoberg</id>
             <name>Rickard Öberg</name>
-            <email>rickard.oberg@jayway.se</email>
-            <url>http://www.jayway.se</url>
+            <email>rickard.oberg@jayway.com</email>
+            <url>http://www.jayway.com</url>
             <organization>Jayway</organization>
-            <organizationUrl>http://www.jayway.se</organizationUrl>
+            <organizationUrl>http://www.jayway.com</organizationUrl>
             <roles>
                 <role>Innovator</role>
                 <role>Developer</role>
@@ -117,10 +117,10 @@
         <developer>
             <id>henrikbernstrom</id>
             <name>Henrik Bernström</name>
-            <email>henrik.bernstrom@jayway.se</email>
-            <url>http://www.jayway.se</url>
+            <email>henrik.bernstrom@jayway.com</email>
+            <url>http://www.jayway.com</url>
             <organization>Jayway</organization>
-            <organizationUrl>http://www.jayway.se</organizationUrl>
+            <organizationUrl>http://www.jayway.com</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -129,10 +129,10 @@
         <developer>
             <id>arvidhuss</id>
             <name>Arvid Huss</name>
-            <email>arvid.huss@jayway.se</email>
-            <url>http://www.jayway.se</url>
+            <email>arvid.huss@jayway.com</email>
+            <url>http://www.jayway.com</url>
             <organization>Jayway</organization>
-            <organizationUrl>http://www.jayway.se</organizationUrl>
+            <organizationUrl>http://www.jayway.com</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -141,13 +141,26 @@
         <developer>
             <id>ulrik</id>
             <name>Ulrik Sandberg</name>
-            <email>ulrik.sandberg@jayway.se</email>
-            <url>http://www.jayway.se</url>
+            <email>ulrik.sandberg@jayway.com</email>
+            <url>http://www.jayway.com</url>
             <organization>Jayway</organization>
-            <organizationUrl>http://www.jayway.se</organizationUrl>
+            <organizationUrl>http://www.jayway.com</organizationUrl>
             <roles>
-                <role>ScrumMaster</role>
+                <role>Technical Mento</role>
                 <role>Project Admin</role>
+            </roles>
+            <timezone>UTC+1</timezone>
+        </developer>
+        <developer>
+            <id>lottagranvik</id>
+            <name>Lotta Granvik</name>
+            <email>lotta.granvik@jayway.com</email>
+            <url>http://www.jayway.com</url>
+            <organization>Jayway</organization>
+            <organizationUrl>http://www.jayway.com</organizationUrl>
+            <roles>
+                <role>Scrum Master</role>
+                <role>Test Manager</role>
             </roles>
             <timezone>UTC+1</timezone>
         </developer>
@@ -348,9 +361,9 @@
 					<breakiterator>true</breakiterator>
 					<header>StreamFlow</header>
 					<quiet>true</quiet>
-					<stylesheetfile>${basedir}/src/main/javadoc/javadoc.css</stylesheetfile>
-					<overview>${basedir}/src/main/javadoc/overview.html</overview>
-					<javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
+					<stylesheetfile>${project.parent.basedir}/src/main/javadoc/javadoc.css</stylesheetfile>
+					<overview>${project.parent.basedir}/src/main/javadoc/overview.html</overview>
+					<javadocDirectory>${project.parent.basedir}/src/main/javadoc</javadocDirectory>
 					<excludePackageNames />
 					<links>
 						<link>http://java.sun.com/j2se/1.5.0/docs/api</link>
