@@ -25,6 +25,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHand
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.StringUtils;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import javax.swing.ActionMap;
@@ -86,7 +87,7 @@ public class TaskContactsView
                cell.setForeground( Color.GRAY );
                return cell;
             }
-            return super.getListCellRendererComponent( jList, contact.name().get(), i, b, b1 );
+            return super.getListCellRendererComponent( jList, StringUtils.truncateWithPeriods(contact.name().get(), 25), i, b, b1 );
          }
       } );
       add( contactsScrollPane, BorderLayout.CENTER );
