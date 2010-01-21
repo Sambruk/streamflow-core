@@ -23,29 +23,16 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
-import org.restlet.data.Reference;
-import org.restlet.Context;
+import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.resource.CommandQueryClient;
-import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
-import javax.swing.ActionMap;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Point;
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 /**
  * JAVADOC
@@ -79,6 +66,7 @@ public class TaskSubmittedFormsView
       setMinimumSize( new Dimension( 150, 0 ) );
 
       submittedForms = new JXList();
+      submittedForms.setPreferredSize( new Dimension( 150, 1000 ) );
       submittedForms.setCellRenderer( new DefaultListCellRenderer()
       {
          @Override

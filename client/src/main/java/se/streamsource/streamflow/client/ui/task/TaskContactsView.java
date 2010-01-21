@@ -25,21 +25,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHand
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.StringUtils;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
-import javax.swing.ActionMap;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.LayoutFocusTraversalPolicy;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.IOException;
@@ -67,10 +56,12 @@ public class TaskContactsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
       setMinimumSize( new Dimension( 150, 0 ) );
+      setMaximumSize( new Dimension(150,1000) );
 
       contactView = obf.newObject( TaskContactView.class );
 
       contacts = new JList();
+      contacts.setPreferredSize( new Dimension(150,1000) );
       contacts.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       JScrollPane contactsScrollPane = new JScrollPane();
       contactsScrollPane.setViewportView( contacts );
@@ -87,7 +78,11 @@ public class TaskContactsView
                cell.setForeground( Color.GRAY );
                return cell;
             }
-            return super.getListCellRendererComponent( jList, StringUtils.truncateWithPeriods(contact.name().get(), 25), i, b, b1 );
+
+            String name = contact.name().get();
+            String text = name;
+
+            return super.getListCellRendererComponent( jList, text, i, b, b1 );
          }
       } );
       add( contactsScrollPane, BorderLayout.CENTER );
