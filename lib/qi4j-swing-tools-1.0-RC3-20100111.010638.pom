@@ -1,0 +1,18 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.qi4j</groupId>
+    <artifactId>qi4j-tools</artifactId>
+    <version>1.0-RC3-SNAPSHOT</version>
+  </parent>
+  <groupId>org.qi4j.swing</groupId>
+  <artifactId>qi4j-swing-tools</artifactId>
+  <version>1.0-RC3-SNAPSHOT</version>
+  <name>Qi4j Tools (Build POM)</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>entity-viewer</module>
+    <module>envisage</module>
+  </modules>
+</project>
