@@ -75,7 +75,9 @@ public class TaskSubmittedFormsView
             SubmittedFormListDTO listDTO = (SubmittedFormListDTO) o;
             String dateString = formatter.format( listDTO.submissionDate().get() );
             String listItem = dateString + ":" + listDTO.form().get() + " (" + listDTO.submitter().get() + ")";
-            return super.getListCellRendererComponent( jList, listItem, i, b, b1 );
+            JLabel component =  (JLabel) super.getListCellRendererComponent( jList, listDTO.form().get(), i, b, b1 );
+            component.setToolTipText( listItem );
+            return component;
          }
       } );
       JScrollPane submittedFormsScollPane = new JScrollPane();
