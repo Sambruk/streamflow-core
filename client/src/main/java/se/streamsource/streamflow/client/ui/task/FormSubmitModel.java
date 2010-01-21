@@ -27,6 +27,7 @@ import se.streamsource.streamflow.domain.form.SubmitFormDTO;
 import se.streamsource.streamflow.domain.form.FormDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -55,9 +56,9 @@ public class FormSubmitModel
 
    private String[] pageIds;
    private String[] pageNames;
-   private Map<String, List<FieldDefinitionValue>> wizardPageMap;
+   private Map<String, List<FieldSubmissionValue>> wizardPageMap;
 
-   public List<FieldDefinitionValue> fieldsForPage(String pageId)
+   public List<FieldSubmissionValue> fieldsForPage(String pageId)
    {
       return wizardPageMap.get( pageId );
    }
@@ -87,21 +88,21 @@ public class FormSubmitModel
    {
       if (wizardPageMap == null)
       {
-         wizardPageMap = new HashMap<String, List<FieldDefinitionValue>>();
-         List<FieldDefinitionValue> wizardPage = new ArrayList<FieldDefinitionValue>();
+         wizardPageMap = new HashMap<String, List<FieldSubmissionValue>>();
+         List<FieldSubmissionValue> wizardPage = new ArrayList<FieldSubmissionValue>();
          List<String> pageIds = new ArrayList<String>();
          List<String> pageNames = new ArrayList<String>();
          pageIds.add( formDefinition.form().get().identity() );
          pageNames.add( formDefinition.description().get() );
 
-         for (FieldDefinitionValue value : formDefinition.fields().get())
+         for (FieldSubmissionValue value : formDefinition.fields().get())
          {
-            if (value.fieldValue().get() instanceof PageBreakFieldValue)
+            if (value.field().get().fieldValue().get() instanceof PageBreakFieldValue)
             {
                wizardPageMap.put( pageIds.get( pageIds.size()-1 ), wizardPage);
-               wizardPage = new ArrayList<FieldDefinitionValue>();
-               pageIds.add( value.field().get().identity() );
-               pageNames.add( value.description().get() );
+               wizardPage = new ArrayList<FieldSubmissionValue>();
+               pageIds.add( value.field().get().field().get().identity() );
+               pageNames.add( value.field().get().description().get() );
             } else
             {
                wizardPage.add( value );

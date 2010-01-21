@@ -19,19 +19,14 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.api.common.Optional;
 
-import java.util.List;
-
 /**
  * JAVADOC
  */
-public interface FormDefinitionValue
+public interface FieldSubmissionValue
       extends ValueComposite
 {
-   Property<EntityReference> form();
+   Property<FieldDefinitionValue> field();
 
-   Property<String> description();
-
-   Property<String> note();
-
-   Property<List<FieldSubmissionValue>> fields();
+   @Optional
+   Property<String> value();
 }

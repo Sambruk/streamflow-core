@@ -41,6 +41,7 @@ public class FormAssembler
             PageBreakFieldValue.class,
             NumberFieldValue.class,
             FieldDefinitionValue.class,
+            FieldSubmissionValue.class,
             SubmittedFormValue.class,
             SubmitFormDTO.class ).visibleIn( Visibility.application );
    }

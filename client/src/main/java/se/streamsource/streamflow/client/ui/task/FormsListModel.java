@@ -85,11 +85,6 @@ public class FormsListModel
       return forms.get(i);
    }
 
-   public FormDefinitionValue formDefinition()
-   {
-      return formValue;
-   }
-
    public FormSubmitModel getFormSubmitModel(String key)
    {
       return formSubmitModels.get(key);

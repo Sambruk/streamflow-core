@@ -17,22 +17,24 @@ import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.awt.FlowLayout;
 
 public class MultiSelectPanel extends JPanel
 {
 
-   List<JCheckBox> checkBoxes;
+   Map<String, JCheckBox> checkBoxMap;
 
    public MultiSelectPanel( List<String> elements )
    {
       super(new FlowLayout( FlowLayout.LEFT ) );
 
-      checkBoxes = new ArrayList<JCheckBox>();
+      checkBoxMap = new HashMap<String, JCheckBox>();
       for (String element : elements)
       {
          JCheckBox checkBox = new JCheckBox( element );
-         checkBoxes.add(checkBox);
+         checkBoxMap.put( element, checkBox );
          add( checkBox );
       }
    }
@@ -41,7 +43,7 @@ public class MultiSelectPanel extends JPanel
    {
       StringBuilder sb = new StringBuilder();
       boolean first = true;
-      for (JCheckBox checkBox : checkBoxes)
+      for (JCheckBox checkBox : checkBoxMap.values())
       {
          if ( checkBox.isSelected() )
          {
@@ -51,5 +53,15 @@ public class MultiSelectPanel extends JPanel
          }
       }
       return sb.toString();
+   }
+
+   public void setChecked( String checked )
+   {
+      if ( checked == null) return;
+      String[] boxes = checked.split( ", " );
+      for (String box : boxes)
+      {
+         checkBoxMap.get( box ).setSelected( true );
+      }
    }
 }

@@ -28,6 +28,7 @@ import org.netbeans.spi.wizard.WizardPage;
 import org.netbeans.spi.wizard.WizardPanelNavResult;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.common.Optional;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
@@ -36,6 +37,9 @@ import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.FormDefinitionValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -48,8 +52,13 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Date;
+import java.util.Calendar;
+import java.util.Collections;
 
 /**
  * JAVADOC
@@ -57,11 +66,11 @@ import java.util.HashMap;
 public class FormSubmitWizardPage
       extends WizardPage
 {
-   private java.util.List<FieldDefinitionValue> fields;
+   private java.util.List<FieldSubmissionValue> fields;
    private java.util.Map<EntityReference, JComponent> componentFieldMap;
    private ValidationResultModel validationResultModel;
 
-   public FormSubmitWizardPage(@Uses java.util.List<FieldDefinitionValue> fields,
+   public FormSubmitWizardPage(@Uses java.util.List<FieldSubmissionValue> fields,
                                @Uses Map wizardValueMap)
    {
       this.fields = fields;
@@ -74,63 +83,84 @@ public class FormSubmitWizardPage
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
 
-      for (FieldDefinitionValue value : fields)
+      for (FieldSubmissionValue value : fields)
       {
          JComponent component;
-         if ( value.fieldValue().get() instanceof TextFieldValue)
+         if ( value.field().get().fieldValue().get() instanceof TextFieldValue)
          {
-            TextFieldValue field = (TextFieldValue) value.fieldValue().get();
+            TextFieldValue field = (TextFieldValue) value.field().get().fieldValue().get();
             if ( field.rows().get() != null && field.rows().get() > 1)
             {
                component = new JTextArea( field.rows().get(),  field.width().get() );
+               ((JTextArea)component).setText( value.value().get() );
             } else
             {
                component = new JTextField( field.width().get() );
+               ((JTextField)component).setText( value.value().get() );
             }
-         } else if ( value.fieldValue().get() instanceof DateFieldValue)
+         } else if ( value.field().get().fieldValue().get() instanceof DateFieldValue)
          {
             component = new JXDatePicker();
             JXDatePicker date = (JXDatePicker) component;
-            date.setFormats( new SimpleDateFormat( i18n.text( WorkspaceResources.date_format )) );
-         } else if ( value.fieldValue().get() instanceof NumberFieldValue)
+            SimpleDateFormat dateFormat = new SimpleDateFormat( i18n.text( WorkspaceResources.date_format ) );
+            date.setFormats( dateFormat );
+            if ( value.value().get() != null )
+            {
+               try
+               {
+                  date.setDate( dateFormat.parse( value.value().get() ) );
+               } catch (ParseException e)
+               {
+                  e.printStackTrace();
+               }
+            }
+
+         } else if ( value.field().get().fieldValue().get() instanceof NumberFieldValue)
          {
-            NumberFieldValue field = (NumberFieldValue) value.fieldValue().get();
+            NumberFieldValue field = (NumberFieldValue) value.field().get().fieldValue().get();
 
             NumberFormat numberInstance = NumberFormat.getNumberInstance();
             numberInstance.setParseIntegerOnly( field.integer().get() );
             component = new JFormattedTextField( numberInstance );
-         } else if ( value.fieldValue().get() instanceof SelectionFieldValue)
+            ((JFormattedTextField)component).setText( value.value().get() );
+         } else if ( value.field().get().fieldValue().get() instanceof SelectionFieldValue)
          {
-            SelectionFieldValue field = (SelectionFieldValue) value.fieldValue().get();
+            SelectionFieldValue field = (SelectionFieldValue) value.field().get().fieldValue().get();
             if ( field.multiple().get() )
             {
                component = new MultiSelectPanel( field.values().get() );
+               ((MultiSelectPanel)component).setChecked( value.value().get() );
             } else
             {
                component = new JComboBox( field.values().get().toArray() );
+               ((JComboBox)component).setSelectedItem( value.value().get() );
             }
-         } else if ( value.fieldValue().get() instanceof CommentFieldValue )
+         } else if ( value.field().get().fieldValue().get() instanceof CommentFieldValue )
          {
-            CommentFieldValue field = (CommentFieldValue) value.fieldValue().get();
+            CommentFieldValue field = (CommentFieldValue) value.field().get().fieldValue().get();
             component = new JLabel( field.comment().get() );
          } else
          {
+            // Error!!!!
             component = new JTextField( );
          }
 
          // set tool tip
-         if ( value.note().get().length() > 0 )
+         if ( value.field().get().note().get().length() > 0 )
          {
-            component.setToolTipText( value.note().get() );
+            component.setToolTipText( value.field().get().note().get() );
          }
 
-         componentFieldMap.put( value.field().get(), component );
-         wizardValueMap.put( value.field().get().identity(), "" );
-         StringBuilder componentName = new StringBuilder( value.description().get() );
-         if ( value.fieldValue().get().mandatory().get() )
+         componentFieldMap.put( value.field().get().field().get(), component );
+         wizardValueMap.put( value.field().get().field().get().identity(), "" );
+         StringBuilder componentName = new StringBuilder( "<html>" );
+
+         componentName.append( value.field().get().description().get() );
+         if ( value.field().get().fieldValue().get().mandatory().get() )
          {
-            componentName.append( " (*)" );
+            componentName.append( " <font color='red'>*</font>" );
          }
+         componentName.append( "</html>" );
          formBuilder.append( componentName.toString(), component );
       }
 
@@ -169,9 +199,9 @@ public class FormSubmitWizardPage
 
    private void mapValues( Map map )
    {
-      for (FieldDefinitionValue field : fields)
+      for (FieldSubmissionValue field : fields)
       {
-         JComponent component = componentFieldMap.get( field.field().get() );
+         JComponent component = componentFieldMap.get( field.field().get().field().get() );
          String value = "";
          if (component instanceof JTextField)
          {
@@ -188,27 +218,30 @@ public class FormSubmitWizardPage
          } else if (component instanceof JComboBox)
          {
             JComboBox box = (JComboBox) component;
-            value = box.getSelectedItem().toString();
+            if ( box.getSelectedItem() != null)
+            {
+               value = box.getSelectedItem().toString();
+            }
          } else if (component instanceof MultiSelectPanel)
          {
             MultiSelectPanel multiSelect = (MultiSelectPanel) component;
             value = multiSelect.getChecked();
          }
-         map.put( field.field().get().identity(), value );
+         map.put( field.field().get().field().get().identity(), value );
       }
    }
 
    private ValidationResult validatePage( Map map ) {
       ValidationResult validationResult = new ValidationResult();
 
-      for (FieldDefinitionValue field : fields)
+      for (FieldSubmissionValue field : fields)
       {
-         if ( field.fieldValue().get().mandatory().get() )
+         if ( field.field().get().fieldValue().get().mandatory().get() )
          {
-            String value = (String) map.get( field.field().get().identity() );
+            String value = (String) map.get( field.field().get().field().get().identity() );
             if (ValidationUtils.isEmpty( value ))
             {
-               validationResult.addError( i18n.text(WorkspaceResources.mandatory_field_missing) + ": " + field.description().get() );
+               validationResult.addError( i18n.text(WorkspaceResources.mandatory_field_missing) + ": " + field.field().get().description().get() );
             }
          }
       }
