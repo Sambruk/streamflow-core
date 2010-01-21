@@ -14,28 +14,8 @@
 
 package se.streamsource.streamflow.client.util;
 
-/**
- * JAVADOC
- */
 public class StringUtils
 {
-	/**
-	 * Truncates <code>toTruncate</code> to <code>length</code> number of characters.
-	 * 
-	 * @param	toTruncate	the string to truncate
-	 * @param	length		the number of characters the truncated string will consist of
-	 * @return the truncated string.
-	 */
-	public static String truncate(String toTruncate, int length)
-	{
-		if (toTruncate == null || toTruncate.length() <= length )
-		{
-			return toTruncate;
-		}
-
-		return toTruncate.substring(0, length);
-	}
-	
 	/**
 	 * Truncates <code>toTruncate</code> to <code>length</code> number of characters
 	 * and appends three truncation periods "..." at the end of the string.
@@ -46,8 +26,12 @@ public class StringUtils
 	 */
 	public static String truncateWithPeriods(String toTruncate, int length)
 	{
-		StringBuilder builder = new StringBuilder(truncate(toTruncate, length));
-		builder.append("...");
-		return builder.toString();
+      if (toTruncate != null && toTruncate.length() > length)
+      {
+         toTruncate = toTruncate.substring( 0, length-3 );
+         toTruncate += "...";
+         return toTruncate;
+      } else
+         return toTruncate;
 	}
 }
