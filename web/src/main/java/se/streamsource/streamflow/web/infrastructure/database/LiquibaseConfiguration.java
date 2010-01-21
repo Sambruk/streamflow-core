@@ -25,7 +25,7 @@ public interface LiquibaseConfiguration
       extends ConfigurationComposite
 {
    @UseDefaults
-   Property<Boolean> shouldRunLiquibase();
+   Property<Boolean> enabled();
 
    @UseDefaults
    Property<String> contexts();

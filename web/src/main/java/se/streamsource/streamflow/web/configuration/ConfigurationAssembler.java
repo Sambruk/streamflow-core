@@ -61,7 +61,7 @@ public class ConfigurationAssembler
       module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
       module.forMixin( MySQLDatabaseConfiguration.class ).declareDefaults().autoReconnectForPools().set( true );
       module.forMixin( MySQLDatabaseConfiguration.class ).declareDefaults().properties().set("");
-      module.forMixin( LiquibaseConfiguration.class ).declareDefaults().shouldRunLiquibase().set(true);
+      module.forMixin( LiquibaseConfiguration.class ).declareDefaults().enabled().set(true);
       module.forMixin( LiquibaseConfiguration.class ).declareDefaults().changeLog().set("changelog.xml");
 
       // Configuration store

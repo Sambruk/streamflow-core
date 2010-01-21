@@ -17,22 +17,23 @@ package se.streamsource.streamflow.web.infrastructure.database;
 import liquibase.FileOpener;
 import liquibase.Liquibase;
 import liquibase.database.DatabaseFactory;
-import liquibase.exception.JDBCException;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Wrapper service for LiquiBase
@@ -49,16 +50,14 @@ public interface LiquibaseService
 
       @Service
       DataSource dataSource;
-      private Logger log;
 
       public void activate() throws Exception
       {
-         log = Logger.getLogger( LiquibaseService.class.getName() );
+         Logger log = LoggerFactory.getLogger( LiquibaseService.class.getName() );
 
-         boolean shouldRunProperty = config.configuration().shouldRunLiquibase().get();
-         if (!shouldRunProperty)
+         boolean enabled = config.configuration().enabled().get();
+         if (!enabled)
          {
-            log.info( "LiquiBase did not run" );
             return;
          }
 
@@ -90,16 +89,27 @@ public interface LiquibaseService
          }
          catch (SQLException e)
          {
+            Throwable ex = e;
+            while (ex.getCause() != null)
+               ex = ex.getCause();
+
+            if (ex instanceof ConnectException)
+            {
+               log.warn( "Could not connect to database; LiquiBase should be disabled" );
+               return;
+            }
+
+            log.error( "LiquiBase could not perform database migration", e );
+
             if (c != null)
                try
                {
                   c.rollback();
                   c.close();
                }
-               catch (SQLException ex)
+               catch (SQLException ex1)
                {
                }
-            throw new JDBCException( e );
          }
       }
 
