@@ -98,6 +98,9 @@ public class ProjectServerResource
       } catch (AccessControlException ae)
       {
          throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
+      } catch (IllegalStateException ie)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
       }
    }
 }
