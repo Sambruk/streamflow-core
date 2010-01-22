@@ -66,7 +66,7 @@ public class TaskContactsServerResource
          contactBuilder.prototype().isCompany().set( contact.isCompany().get() );
          contactBuilder.prototype().note().set( contact.note().get() );
          contactBuilder.prototype().picture().set( contact.picture().get() );
-
+         contactBuilder.prototype().contactId().set( contact.contactId().get() );
          contactBuilder.prototype().addresses().set( contact.addresses().get() );
          contactBuilder.prototype().emailAddresses().set( contact.emailAddresses().get() );
          contactBuilder.prototype().phoneNumbers().set( contact.phoneNumbers().get() );
