@@ -15,6 +15,37 @@
     <description>StreamFlow WAR packaging</description>
     <build>
         <plugins>
+            <!-- Resources -->
+            <plugin>
+              <artifactId>maven-resources-plugin</artifactId>
+              <version>2.4.1</version>
+              <executions>
+                <execution>
+                  <id>copy-resources</id>
+                  <!-- here the phase you need -->
+                  <phase>process-resources</phase>
+                  <goals>
+                    <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+                    <resources>
+                      <resource>
+                        <directory>${basedir}/../web/src/main/resources</directory>
+                          <includes>
+                              <include>version.properties</include>
+                              <include>solrconfig.xml</include>
+                              <include>schema.xml</include>
+                              <include>changelog.xml</include>
+                              <include>log4j.xml</include>
+                          </includes>
+                      </resource>
+                    </resources>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+
             <!-- War -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
