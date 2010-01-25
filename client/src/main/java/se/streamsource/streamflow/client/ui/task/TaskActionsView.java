@@ -38,12 +38,6 @@ public class TaskActionsView
    @Uses
    protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
 
-   @Uses
-   protected ObjectBuilder<SelectTaskTypeDialog> taskTypeDialog;
-
-   @Uses
-   protected ObjectBuilder<TaskLabelsDialog> labelSelectionDialog;
-
    @Service
    DialogService dialogs;
 
@@ -155,21 +149,6 @@ public class TaskActionsView
    }
 
    @Action
-   public void label()
-   {
-      TaskLabelsDialog dialog = labelSelectionDialog.use(model.getPossibleLabels()).newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog);
-
-      if (dialog.getSelectedLabels() != null)
-      {
-         for (ListItemValue listItemValue : dialog.getSelectedLabels())
-         {
-            model.addLabel( listItemValue.entity().get() );
-         }
-      }
-   }
-
-   @Action
    public void redo()
    {
       model.redo();
@@ -188,19 +167,6 @@ public class TaskActionsView
    {
       model.reject();
       refresh();
-   }
-
-   @Action
-   public void tasktype()
-   {
-      SelectTaskTypeDialog dialog = taskTypeDialog.use( model.getPossibleTaskTypes() ).newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog);
-
-      if (dialog.getSelected() != null)
-      {
-         model.taskType( dialog.getSelected() );
-         refresh();
-      }
    }
 
    @Action

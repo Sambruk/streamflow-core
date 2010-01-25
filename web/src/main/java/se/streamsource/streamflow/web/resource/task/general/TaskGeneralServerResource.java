@@ -31,9 +31,13 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.task.TaskLabelsQueries;
+import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -119,5 +123,49 @@ public class TaskGeneralServerResource
       Label label = uow.get( Label.class, reference.entity().get().identity() );
 
       task.removeLabel( label );
+   }
+
+   public ListValue possibletasktypes()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "task" );
+      TaskTypeQueries task = uow.get( TaskTypeQueries.class, id );
+
+      return task.taskTypes();
+   }
+
+   public void tasktype( EntityReferenceDTO dto )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "task" );
+      TypedTask task = uow.get( TypedTask.class, id );
+
+      EntityReference entityReference = dto.entity().get();
+      if (entityReference != null)
+      {
+         TaskType taskType = uow.get( TaskType.class, entityReference.identity() );
+         task.changeTaskType( taskType );
+      } else
+         task.changeTaskType( null );
+   }
+
+   public ListValue possiblelabels()
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String id = (String) getRequest().getAttributes().get( "task" );
+      TaskLabelsQueries labels = uow.get( TaskLabelsQueries.class, id );
+
+      return labels.possibleLabels();
+   }
+
+   public void label( EntityReferenceDTO reference )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      String taskId = (String) getRequest().getAttributes().get( "task" );
+
+      Labelable task = uow.get( Labelable.class, taskId );
+      Label label = uow.get( Label.class, reference.entity().get().identity() );
+
+      task.addLabel( label );
    }
 }

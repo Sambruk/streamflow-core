@@ -70,15 +70,6 @@ public class TaskActionsServerResource
       return builder.newInstance();
    }
 
-   public ListValue possibletasktypes()
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      String id = (String) getRequest().getAttributes().get( "task" );
-      TaskTypeQueries task = uow.get( TaskTypeQueries.class, id );
-
-      return task.taskTypes();
-   }
-
    public ListValue possibleprojects()
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -95,15 +86,6 @@ public class TaskActionsServerResource
       return task.possibleUsers();
    }
 
-   public ListValue possiblelabels()
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      String id = (String) getRequest().getAttributes().get( "task" );
-      TaskLabelsQueries labels = uow.get( TaskLabelsQueries.class, id );
-
-      return labels.possibleLabels();
-   }
-
    // Commands
    public void accept()
    {
@@ -118,17 +100,6 @@ public class TaskActionsServerResource
          task.assignTo( actor );
          task.sendTo( owner );
       }
-   }
-
-   public void label( EntityReferenceDTO reference )
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      String taskId = (String) getRequest().getAttributes().get( "task" );
-
-      Labelable task = uow.get( Labelable.class, taskId );
-      Label label = uow.get( Label.class, reference.entity().get().identity() );
-
-      task.addLabel( label );
    }
 
    public void assign()
@@ -236,21 +207,6 @@ public class TaskActionsServerResource
 
       task.unassign();
       task.rejectDelegation();
-   }
-
-   public void tasktype( EntityReferenceDTO dto )
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      String id = (String) getRequest().getAttributes().get( "task" );
-      TypedTask task = uow.get( TypedTask.class, id );
-
-      EntityReference entityReference = dto.entity().get();
-      if (entityReference != null)
-      {
-         TaskType taskType = uow.get( TaskType.class, entityReference.identity() );
-         task.changeTaskType( taskType );
-      } else
-         task.changeTaskType( null );
    }
 
    public void unassign()

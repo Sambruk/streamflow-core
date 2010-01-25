@@ -20,9 +20,16 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
@@ -131,6 +138,37 @@ public class TaskGeneralModel
       return taskLabelsModel;
    }
 
+   public EventList<ListItemValue> getPossibleTaskTypes()
+   {
+      try
+      {
+         BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+
+         ListValue listValue = client.query( "possibletasktypes", ListValue.class );
+         list.addAll( listValue.items().get() );
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh, e );
+      }
+   }
+
+   public EventList<ListItemValue> getPossibleLabels()
+   {
+      try
+      {
+         BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+
+         ListValue listValue = client.query( "possiblelabels", ListValue.class );
+         list.addAll( listValue.items().get() );
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh, e );
+      }
+   }
 
    public void refresh()
    {
@@ -161,6 +199,43 @@ public class TaskGeneralModel
    {
       refresh();
       return true;
+   }
+
+   public void taskType( EntityReference selected )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( selected );
+         client.putCommand( "tasktype", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
+   public void addLabel( EntityReference entityReference )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( entityReference );
+         client.putCommand( "label", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
+   public Actions actions()
+   {
+      try
+      {
+         return client.query( "actions", Actions.class );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_perform_operation, e);
+      }
    }
 
 }
