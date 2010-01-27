@@ -261,7 +261,6 @@ public class TaskGeneralView extends JScrollPane implements Observer
 
 		labels.setLabelsModel(model.labelsModel());
 		forms.setFormsModel(model.formsModel());
-		// labelSelection.setLabelSelectionModel( model.selectionModel() );
 
 		ListItemValue value = general.taskType().get();
 		selectedTaskType
@@ -290,6 +289,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
 			ListItemValue value = model.getGeneral().taskType().get();
 			selectedTaskType.setText(value == null ? "" : value.description()
 					.get());
+			forms.setFormsModel(model.formsModel());
 		}
 	}
 
