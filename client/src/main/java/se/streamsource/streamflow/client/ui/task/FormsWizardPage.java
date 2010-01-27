@@ -53,7 +53,7 @@ public class FormsWizardPage
       ActionMap am = context.getActionMap(this);
       setActionMap(am);
       this.model = model;
-      model.refresh();
+//      model.refresh();
       setLayout(new BorderLayout());
       formList = new JList(model);
       formList.setName(SELECTED_FORM);
@@ -61,7 +61,7 @@ public class FormsWizardPage
       JScrollPane scroll = new JScrollPane();
       scroll.setViewportView(formList);
       add(scroll, BorderLayout.CENTER);
-      addAncestorListener(new RefreshWhenVisible(model, this));
+//      addAncestorListener(new RefreshWhenVisible(model, this));
    }
 
    public FormsListModel getModel()

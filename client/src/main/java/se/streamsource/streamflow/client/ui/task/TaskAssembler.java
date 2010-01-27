@@ -85,13 +85,20 @@ public class TaskAssembler
             FormSubmitModel.class,
             FormSubmitWizardPage.class );
 
+//      UIAssemblers.addMV( module,
+//              FormsListModel.class,
+//              FormsWizardPage.class );
+
       UIAssemblers.addMV( module,
-            FormsListModel.class,
-            FormsWizardPage.class );
+              FormsListModel.class,
+              PossibleFormsView.class );
 
-      UIAssemblers.addMV( module, TaskActionsModel.class, TaskActionsView.class );
+      UIAssemblers.addMV( module, 
+    		  TaskActionsModel.class, 
+    		  TaskActionsView.class );
 
-      UIAssemblers.addControllers( module, FormSubmitWizardController.class );
+      UIAssemblers.addControllers( module, 
+    		  FormSubmitWizardController.class );
 
 
    }

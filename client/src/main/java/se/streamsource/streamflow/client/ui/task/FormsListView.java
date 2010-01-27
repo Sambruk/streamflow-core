@@ -48,13 +48,13 @@ public class FormsListView
       setActionMap( am );
       setMinimumSize( new Dimension( 150, 0 ) );
       this.model = model;
-      model.refresh();
+//      model.refresh();
 
       JPanel panel = new JPanel( new BorderLayout() );
       formList = new JList( model );
       formList.setCellRenderer( new ListItemListCellRenderer() );
       panel.add( formList, BorderLayout.CENTER );
       setViewportView( panel );
-      addAncestorListener( new RefreshWhenVisible( model, this ) );
+//      addAncestorListener( new RefreshWhenVisible( model, this ) );
    }
 }

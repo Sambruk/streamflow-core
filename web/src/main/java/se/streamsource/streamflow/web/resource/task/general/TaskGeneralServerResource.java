@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.web.resource.task.general;
 
+import static org.qi4j.api.entity.EntityReference.getEntityReference;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
@@ -33,6 +35,7 @@ import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskLabelsQueries;
 import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
@@ -167,5 +170,26 @@ public class TaskGeneralServerResource
       Label label = uow.get( Label.class, reference.entity().get().identity() );
 
       task.addLabel( label );
+   }
+
+   public ListValue possibleforms()
+   {
+      String taskId = getRequest().getAttributes().get( "task" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+
+      TypedTask.Data typedTask = uow.get( TypedTask.Data.class, taskId );
+
+      TaskType taskType = typedTask.taskType().get();
+
+      ListValue formsList;
+      if (taskType != null)
+      {
+         FormsQueries forms = uow.get( FormsQueries.class, getEntityReference( taskType ).identity() );
+         formsList = forms.applicableFormDefinitionList();
+      } else
+      {
+         formsList = vbf.newValue( ListValue.class );
+      }
+      return formsList;
    }
 }

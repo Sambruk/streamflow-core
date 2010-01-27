@@ -69,244 +69,257 @@ import com.jgoodies.forms.layout.Sizes;
  */
 public class TaskGeneralView extends JScrollPane implements Observer
 {
-   @Service
-   DialogService dialogs;
+	@Service
+	DialogService dialogs;
 
-   @Service
-   UncaughtExceptionHandler exception;
+	@Service
+	UncaughtExceptionHandler exception;
 
-   @Uses
-   protected ObjectBuilder<SelectTaskTypeDialog> taskTypeDialog;
+	@Uses
+	protected ObjectBuilder<SelectTaskTypeDialog> taskTypeDialog;
 
-   @Uses
-   protected ObjectBuilder<TaskLabelsDialog> labelSelectionDialog;
+	@Uses
+	protected ObjectBuilder<TaskLabelsDialog> labelSelectionDialog;
 
-//   TaskLabelSelectionView labelSelection;
+	// TaskLabelSelectionView labelSelection;
 
-   private StateBinder taskBinder;
+	private StateBinder taskBinder;
 
-   TaskGeneralModel model;
+	TaskGeneralModel model;
 
-   public ValueBuilder<TaskGeneralDTO> valueBuilder;
-   public JTextField descriptionField;
-   private JScrollPane notePane;
-   public JXDatePicker dueOnField;
-   private JLabel issueLabel;
-   public JPanel leftForm;
-   public JPanel rightForm;
-   public JPanel bottomForm;
-   public TaskLabelsView labels;
-   public RefreshWhenVisible refresher;
-   public JLabel selectedTaskType = new JLabel();
+	public ValueBuilder<TaskGeneralDTO> valueBuilder;
+	public JTextField descriptionField;
+	private JScrollPane notePane;
+	public JXDatePicker dueOnField;
+	private JLabel issueLabel;
+	public JPanel leftForm;
+	public JPanel rightForm;
+	public JPanel bottomForm;
+	public TaskLabelsView labels;
+	public PossibleFormsView forms;
+	public RefreshWhenVisible refresher;
+	public JLabel selectedTaskType = new JLabel();
 
-   public TaskGeneralView( @Service ApplicationContext appContext, @Uses TaskLabelsView labels)
-   {
-      this.labels = labels;
-//      this.labelSelection = labels.labelSelection();
-      setActionMap( appContext.getActionMap( this ) );
+	public TaskGeneralView(@Service ApplicationContext appContext,
+			@Uses TaskLabelsView labels, @Uses PossibleFormsView forms)
+	{
+		this.labels = labels;
+		this.forms = forms;
+		// this.labelSelection = labels.labelSelection();
+		setActionMap(appContext.getActionMap(this));
 
-      // Layout and form for the left panel
-      FormLayout leftLayout = new FormLayout(
-            "165dlu",
-            "" );
+		// Layout and form for the left panel
+		FormLayout leftLayout = new FormLayout("165dlu", "");
 
-      leftForm = new JPanel();
-      leftForm.setFocusable( false );
-      DefaultFormBuilder leftBuilder = new DefaultFormBuilder( leftLayout, leftForm );
-      leftBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY8,
-            Sizes.DLUX8,
-            Sizes.DLUY2,
-            Sizes.DLUX4 ) );
+		leftForm = new JPanel();
+		leftForm.setFocusable(false);
+		DefaultFormBuilder leftBuilder = new DefaultFormBuilder(leftLayout,
+				leftForm);
+		leftBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY8,
+				Sizes.DLUX8, Sizes.DLUY2, Sizes.DLUX4));
 
+		taskBinder = new StateBinder();
+		taskBinder.addConverter(new StateBinder.Converter()
+		{
+			public Object toComponent(Object value)
+			{
+				if (value instanceof ListItemValue)
+				{
+					return ((ListItemValue) value).description().get();
+				} else
+					return value;
+			}
 
-      taskBinder = new StateBinder();
-      taskBinder.addConverter( new StateBinder.Converter()
-      {
-         public Object toComponent( Object value )
-         {
-            if (value instanceof ListItemValue)
-            {
-               return ((ListItemValue) value).description().get();
-            } else
-               return value;
-         }
+			public Object fromComponent(Object value)
+			{
+				return value;
+			}
+		});
+		taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
+		TaskGeneralDTO template = taskBinder
+				.bindingTemplate(TaskGeneralDTO.class);
 
-         public Object fromComponent( Object value )
-         {
-            return value;
-         }
-      } );
-      taskBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
-      TaskGeneralDTO template = taskBinder.bindingTemplate( TaskGeneralDTO.class );
+		BindingFormBuilder leftBindingBuilder = new BindingFormBuilder(
+				leftBuilder, taskBinder);
+		leftBindingBuilder.appendLine(WorkspaceResources.id_label,
+				issueLabel = (JLabel) LABEL.newField(), template.taskId());
 
-      BindingFormBuilder leftBindingBuilder = new BindingFormBuilder( leftBuilder, taskBinder );
-      leftBindingBuilder.appendLine( WorkspaceResources.id_label, issueLabel = (JLabel) LABEL.newField(), template.taskId() );
+		leftBindingBuilder.appendLine(WorkspaceResources.title_label,
+				descriptionField = (JTextField) TEXTFIELD.newField(),
+				template.description()).appendLine(
+				WorkspaceResources.due_on_label,
+				dueOnField = (JXDatePicker) DATEPICKER.newField(),
+				template.dueOn());
 
-      leftBindingBuilder.appendLine( WorkspaceResources.title_label, descriptionField = (JTextField) TEXTFIELD.newField(), template.description() )
-            .appendLine( WorkspaceResources.due_on_label, dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() );
+		// Layout and form for the right panel
+		FormLayout rightLayout = new FormLayout("60dlu, 5dlu, 40:grow",
+				"pref, pref, pref, pref, pref, pref, pref");
 
-      // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout(
-            "50dlu, 5dlu, 50:grow",
-            "pref, pref, pref, pref, pref, pref, pref" );
+		rightForm = new JPanel(rightLayout);
+		rightForm.setFocusable(false);
+		DefaultFormBuilder rightBuilder = new DefaultFormBuilder(rightLayout,
+				rightForm);
+		rightBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY8,
+				Sizes.DLUX4, Sizes.DLUY2, Sizes.DLUX8));
 
-      rightForm = new JPanel( rightLayout );
-      rightForm.setFocusable( false );
-      DefaultFormBuilder rightBuilder = new DefaultFormBuilder( rightLayout, rightForm );
-      rightBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY8,
-            Sizes.DLUX4,
-            Sizes.DLUY2,
-            Sizes.DLUX8 ) );
+		selectedTaskType.setFont(selectedTaskType.getFont().deriveFont(
+				Font.BOLD));
+		taskBinder.bind(selectedTaskType, template.taskType());
+		CellConstraints cc = new CellConstraints();
+		ActionMap am = getActionMap();
+		javax.swing.Action taskTypeAction = am.get("tasktype");
+		JButton taskTypeButton = new JButton(taskTypeAction);
+		taskTypeButton.setHorizontalAlignment(SwingConstants.LEFT);
+		rightBuilder.add(taskTypeButton, cc.xy(1, 1));
+		rightBuilder.add(selectedTaskType, cc.xy(3, 1));
+		rightBuilder.nextLine();
+		javax.swing.Action labelAction = am.get("label");
+		JButton labelButton = new JButton(labelAction);
+		labelButton.setHorizontalAlignment(SwingConstants.LEFT);
+		rightBuilder.add(labelButton, cc.xyw(1, 2, 1));
+		rightBuilder.nextLine();
+		rightBuilder.add(labels, cc.xyw(1, 3, 3));
+		rightBuilder.nextLine();
+		rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ), cc.xy( 1, 4 ) );
+		rightBuilder.nextLine();
+		rightBuilder.add(forms, cc.xyw(1, 5, 3));
 
+		// Layout and form for the bottom panel
+		FormLayout bottomLayout = new FormLayout("250dlu:grow",
+				"15dlu,fill:pref:grow");
 
-      selectedTaskType.setFont( selectedTaskType.getFont().deriveFont( Font.BOLD ) );
-      taskBinder.bind( selectedTaskType, template.taskType() );
-      CellConstraints cc = new CellConstraints();
-      ActionMap am = getActionMap();
-      javax.swing.Action taskTypeAction = am.get( "tasktype" );
-      JButton taskTypeButton = new JButton( taskTypeAction );
-      taskTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
-      rightBuilder.add( taskTypeButton, cc.xy( 1, 1 ) );
-      rightBuilder.add( selectedTaskType, cc.xy( 3, 1 ) );
-      rightBuilder.nextLine();
-      javax.swing.Action labelAction = am.get( "label" );
-      JButton labelButton = new JButton( labelAction );
-      labelButton.setHorizontalAlignment( SwingConstants.LEFT );
-      rightBuilder.add( labelButton, cc.xyw( 1, 2, 1 ) );
-      rightBuilder.nextLine();
-      rightBuilder.add( labels, cc.xyw( 1, 3, 3 ) );
+		bottomForm = new JPanel();
+		bottomForm.setFocusable(false);
+		DefaultFormBuilder bottomBuilder = new DefaultFormBuilder(bottomLayout,
+				bottomForm);
+		bottomBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY2,
+				Sizes.DLUX8, Sizes.DLUY8, Sizes.DLUX8));
 
-      // Layout and form for the bottom panel
-      FormLayout bottomLayout = new FormLayout(
-            "250dlu:grow",
-            "15dlu,fill:pref:grow" );
+		notePane = (JScrollPane) TEXTAREA.newField();
+		notePane.setMinimumSize(new Dimension(10, 50));
 
-      bottomForm = new JPanel();
-      bottomForm.setFocusable( false );
-      DefaultFormBuilder bottomBuilder = new DefaultFormBuilder( bottomLayout, bottomForm );
-      bottomBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
-            Sizes.DLUX8,
-            Sizes.DLUY8,
-            Sizes.DLUX8 ) );
+		BindingFormBuilder bottomBindingBuilder = new BindingFormBuilder(
+				bottomBuilder, taskBinder);
+		bottomBindingBuilder.appendLine(WorkspaceResources.note_label,
+				notePane, template.note());
 
+		JPanel formsContainer = new JPanel(new BorderLayout());
+		formsContainer.add(leftForm, BorderLayout.WEST);
+		formsContainer.add(rightForm, BorderLayout.CENTER);
 
-      notePane = (JScrollPane) TEXTAREA.newField();
-      notePane.setMinimumSize( new Dimension( 10, 50 ) );
+		JPanel borderLayoutContainer = new JPanel(new BorderLayout());
+		borderLayoutContainer.add(formsContainer, BorderLayout.NORTH);
+		borderLayoutContainer.add(bottomForm, BorderLayout.CENTER);
 
-      BindingFormBuilder bottomBindingBuilder = new BindingFormBuilder( bottomBuilder, taskBinder );
-      bottomBindingBuilder.appendLine( WorkspaceResources.note_label, notePane, template.note() );
+		setViewportView(borderLayoutContainer);
 
-      JPanel formsContainer = new JPanel( new BorderLayout() );
-      formsContainer.add( leftForm, BorderLayout.WEST );
-      formsContainer.add( rightForm, BorderLayout.CENTER );
+		taskBinder.addObserver(this);
 
-      JPanel borderLayoutContainer = new JPanel( new BorderLayout() );
-      borderLayoutContainer.add( formsContainer, BorderLayout.NORTH );
-      borderLayoutContainer.add( bottomForm, BorderLayout.CENTER );
+		setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
+		setFocusCycleRoot(true);
+		setFocusable(true);
 
-      setViewportView( borderLayoutContainer );
+		addFocusListener(new FocusListener()
+		{
+			public void focusGained(FocusEvent e)
+			{
+				Component defaultComp = getFocusTraversalPolicy()
+						.getDefaultComponent(leftForm);
+				if (defaultComp != null)
+				{
+					defaultComp.requestFocusInWindow();
+				}
+			}
 
-      taskBinder.addObserver( this );
+			public void focusLost(FocusEvent e)
+			{
+			}
+		});
 
-      setFocusTraversalPolicy( new LayoutFocusTraversalPolicy() );
-      setFocusCycleRoot( true );
-      setFocusable( true );
+		refresher = new RefreshWhenVisible(this);
+		addAncestorListener(refresher);
+	}
 
-      addFocusListener( new FocusListener()
-      {
-         public void focusGained( FocusEvent e )
-         {
-            Component defaultComp = getFocusTraversalPolicy().getDefaultComponent( leftForm );
-            if (defaultComp != null)
-            {
-               defaultComp.requestFocusInWindow();
-            }
-         }
+	public void setModel(TaskGeneralModel taskGeneralModel)
+	{
+		if (model != null)
+			model.deleteObserver(this);
 
-         public void focusLost( FocusEvent e )
-         {
-         }
-      } );
+		model = taskGeneralModel;
 
-      refresher = new RefreshWhenVisible( this );
-      addAncestorListener( refresher );
-   }
+		refresher.setRefreshable(model);
 
-   public void setModel( TaskGeneralModel taskGeneralModel )
-   {
-      if (model != null)
-         model.deleteObserver( this );
+		TaskGeneralDTO general = model.getGeneral();
+		valueBuilder = general.buildWith();
+		taskBinder.updateWith(general);
 
-      model = taskGeneralModel;
+		// Check if issue id should be visible
+		boolean issueVisible = model.getGeneral().taskId().get() != null;
+		issueLabel.setVisible(issueVisible);
+		((JLabel) issueLabel.getClientProperty("labeledBy"))
+				.setVisible(issueVisible);
 
-      refresher.setRefreshable( model );
+		labels.setLabelsModel(model.labelsModel());
+		forms.setFormsModel(model.formsModel());
+		// labelSelection.setLabelSelectionModel( model.selectionModel() );
 
-      TaskGeneralDTO general = model.getGeneral();
-      valueBuilder = general.buildWith();
-      taskBinder.updateWith( general );
+		ListItemValue value = general.taskType().get();
+		selectedTaskType
+				.setText(value == null ? "" : value.description().get());
 
-      // Check if issue id should be visible
-      boolean issueVisible = model.getGeneral().taskId().get() != null;
-      issueLabel.setVisible( issueVisible );
-      ((JLabel) issueLabel.getClientProperty( "labeledBy" ))
-            .setVisible( issueVisible );
+		taskGeneralModel.addObserver(this);
+	}
 
-      labels.setLabelsModel( model.labelsModel() );
-//      labelSelection.setLabelSelectionModel( model.selectionModel() );
+	public void update(Observable o, Object arg)
+	{
+		if (o == taskBinder)
+		{
+			Property property = (Property) arg;
+			if (property.qualifiedName().name().equals("description"))
+			{
+				model.changeDescription((String) property.get());
+			} else if (property.qualifiedName().name().equals("note"))
+			{
+				model.changeNote((String) property.get());
+			} else if (property.qualifiedName().name().equals("dueOn"))
+			{
+				model.changeDueOn((Date) property.get());
+			}
+		} else
+		{
+			ListItemValue value = model.getGeneral().taskType().get();
+			selectedTaskType.setText(value == null ? "" : value.description()
+					.get());
+		}
+	}
 
-      ListItemValue value = general.taskType().get();
-      selectedTaskType.setText( value == null ? "" : value.description().get() );
+	@Action
+	public void tasktype()
+	{
+		SelectTaskTypeDialog dialog = taskTypeDialog.use(
+				model.getPossibleTaskTypes()).newInstance();
+		dialogs.showOkCancelHelpDialog(this, dialog);
 
-      taskGeneralModel.addObserver( this );
-   }
+		if (dialog.getSelected() != null)
+		{
+			model.taskType(dialog.getSelected());
+			// refresh();
+		}
+	}
 
-   public void update( Observable o, Object arg )
-   {
-      if (o == taskBinder)
-      {
-         Property property = (Property) arg;
-         if (property.qualifiedName().name().equals( "description" ))
-         {
-            model.changeDescription( (String) property.get() );
-         } else if (property.qualifiedName().name().equals( "note" ))
-         {
-            model.changeNote( (String) property.get() );
-         } else if (property.qualifiedName().name().equals( "dueOn" ))
-         {
-            model.changeDueOn( (Date) property.get() );
-         }
-      } else
-      {
-         ListItemValue value = model.getGeneral().taskType().get();
-         selectedTaskType.setText( value == null ? "" : value.description().get() );
-      }
-   }
-   
-   @Action
-   public void tasktype()
-   {
-      SelectTaskTypeDialog dialog = taskTypeDialog.use( model.getPossibleTaskTypes() ).newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog);
+	@Action
+	public void label()
+	{
+		TaskLabelsDialog dialog = labelSelectionDialog.use(
+				model.getPossibleLabels()).newInstance();
+		dialogs.showOkCancelHelpDialog(this, dialog);
 
-      if (dialog.getSelected() != null)
-      {
-         model.taskType( dialog.getSelected() );
-//         refresh();
-      }
-   }
-
-   @Action
-   public void label()
-   {
-      TaskLabelsDialog dialog = labelSelectionDialog.use(model.getPossibleLabels()).newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog);
-
-      if (dialog.getSelectedLabels() != null)
-      {
-         for (ListItemValue listItemValue : dialog.getSelectedLabels())
-         {
-            model.addLabel( listItemValue.entity().get() );
-         }
-      }
-   }
+		if (dialog.getSelectedLabels() != null)
+		{
+			for (ListItemValue listItemValue : dialog.getSelectedLabels())
+			{
+				model.addLabel(listItemValue.entity().get());
+			}
+		}
+	}
 }

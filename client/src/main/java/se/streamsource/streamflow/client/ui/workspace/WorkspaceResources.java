@@ -108,6 +108,7 @@ public enum WorkspaceResources
    form_submit_description,
    select_form,
    tasktype_label,
+   forms_label,
    could_not_refresh, 
    chose_tasktype,
    search_tasktype,

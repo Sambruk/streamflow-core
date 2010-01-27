@@ -45,6 +45,11 @@ public enum Icons
    // Admin
    account,
    deleteLabel, 
-   organization,
-
+   organization, 
+   
+   // Forms
+   formSubmit,
+   formMandatorySubmit,
+   formSubmitted,
+   
 }
