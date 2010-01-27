@@ -147,7 +147,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
 
       // Layout and form for the right panel
       FormLayout rightLayout = new FormLayout(
-            "40dlu, 5dlu, 50:grow, 5dlu, 16dlu",
+            "50dlu, 5dlu, 50:grow",
             "pref, pref, pref, pref, pref, pref, pref" );
 
       rightForm = new JPanel( rightLayout );
@@ -162,22 +162,19 @@ public class TaskGeneralView extends JScrollPane implements Observer
       selectedTaskType.setFont( selectedTaskType.getFont().deriveFont( Font.BOLD ) );
       taskBinder.bind( selectedTaskType, template.taskType() );
       CellConstraints cc = new CellConstraints();
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.tasktype_label ) ), cc.xy( 1, 1 ) );
-      rightBuilder.add( selectedTaskType, cc.xy( 3, 1 ) );
-//      Actions actions = model.actions();
       ActionMap am = getActionMap();
       javax.swing.Action taskTypeAction = am.get( "tasktype" );
       JButton taskTypeButton = new JButton( taskTypeAction );
       taskTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
-      rightBuilder.add( taskTypeButton, cc.xy( 5, 1 ) );
+      rightBuilder.add( taskTypeButton, cc.xy( 1, 1 ) );
+      rightBuilder.add( selectedTaskType, cc.xy( 3, 1 ) );
       rightBuilder.nextLine();
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.labels_label ) ), cc.xyw( 1, 2, 3 ) );
       javax.swing.Action labelAction = am.get( "label" );
       JButton labelButton = new JButton( labelAction );
-      taskTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
-      rightBuilder.add( labelButton, cc.xyw( 5, 2, 1 ) );
+      labelButton.setHorizontalAlignment( SwingConstants.LEFT );
+      rightBuilder.add( labelButton, cc.xyw( 1, 2, 1 ) );
       rightBuilder.nextLine();
-      rightBuilder.add( labels, cc.xyw( 1, 3, 5 ) );
+      rightBuilder.add( labels, cc.xyw( 1, 3, 3 ) );
 
       // Layout and form for the bottom panel
       FormLayout bottomLayout = new FormLayout(
