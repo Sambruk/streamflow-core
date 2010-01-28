@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
@@ -9,53 +10,17 @@
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
-        <version.qi4j-core>1.0-RC3-20100121.010613</version.qi4j-core>
-        <version.qi4j-lib>1.0-RC3-20100121.010014</version.qi4j-lib>
-        <version.qi4j-ext>1.0-RC3-20100121.010934</version.qi4j-ext>
-        <version.qi4j-tools>1.0-RC3-20100111.010638</version.qi4j-tools>
-        <version.restlet>2.0-20091006.210103</version.restlet>
+        <version.qi4j-core>1.0</version.qi4j-core>
+        <version.qi4j-lib>1.0</version.qi4j-lib>
+        <version.qi4j-ext>1.0</version.qi4j-ext>
+        <version.qi4j-tools>1.0</version.qi4j-tools>
+        <version.restlet>2.0-STREAMFLOW-20091006.210103</version.restlet>
     </properties>
 
     <repositories>
         <repository>
-            <id>ops4j-snapshot</id>
-            <url>http://repository.ops4j.org/mvn-snapshots</url>
-        </repository>
-        <repository>
-            <id>ops4j-repository</id>
-            <url>http://repository.ops4j.org/maven2</url>
-        </repository>
-        <repository>
-            <id>javadev-repository</id>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
-        <repository>
-            <id>prefuse-repository</id>
-            <url>http://www.astrogrid.org/maven/</url>
-        </repository>
-        <repository>
-            <id>aduna</id>
-            <url>http://repo.aduna-software.org/maven2/releases/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>maven-restlet</id>
-            <name>Public online Restlet repository</name>
-            <url>http://maven.restlet.org</url>
-        </repository>
-        <repository>
-            <id>webstart</id>
-            <url>http://repository.codehaus.org</url>
-        </repository>
-        <repository>
-            <id>Apache</id>
-            <url>http://mirrors.sunsite.dk/maven2</url>
-        </repository>
-        <repository>
-            <id>JBoss</id>
-            <url>http://repository.jboss.org/maven2</url>
+            <id>nexus</id>
+            <url>http://waybuild.gotdns.com/nexus/content/groups/public</url>
         </repository>
     </repositories>
 
@@ -277,59 +242,60 @@
                     </container>
                 </configuration>
             </plugin>
-			<plugin>
-				<groupId>com.agilejava.docbkx</groupId>
-				<artifactId>docbkx-maven-plugin</artifactId>
-				<version>2.0.6</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate-html</goal>
-							<goal>generate-pdf</goal>
-						</goals>
-						<phase>pre-site</phase>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.docbook</groupId>
-						<artifactId>docbook-xml</artifactId>
-						<version>4.4</version>
-						<scope>runtime</scope>
-					</dependency>
-				</dependencies>
-				<configuration>
+            <plugin>
+                <groupId>com.agilejava.docbkx</groupId>
+                <artifactId>docbkx-maven-plugin</artifactId>
+                <version>2.0.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-html</goal>
+                            <goal>generate-pdf</goal>
+                        </goals>
+                        <phase>pre-site</phase>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.docbook</groupId>
+                        <artifactId>docbook-xml</artifactId>
+                        <version>4.4</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+                <configuration>
                     <includes>index.xml</includes>
-					<chunkedOutput>true</chunkedOutput>
-					<htmlStylesheet>css/html.css</htmlStylesheet>
-					<xincludeSupported>true</xincludeSupported>
-					<htmlCustomization>src/docbkx/resources/xsl/html_chunk.xsl</htmlCustomization>
-					<foCustomization>src/docbkx/resources/xsl/fopdf.xsl</foCustomization>
-					<entities>
-						<entity>
-							<name>version</name>
-							<value>${pom.version}</value>
-						</entity>
-					</entities>
-					<postProcess>
-						<copy todir="target/site/reference">
-							<fileset dir="target/docbkx">
-								<include name="**/*.html" />
-								<include name="**/*.pdf" />
-							</fileset>
-						</copy>
+                    <chunkedOutput>true</chunkedOutput>
+                    <htmlStylesheet>css/html.css</htmlStylesheet>
+                    <xincludeSupported>true</xincludeSupported>
+                    <htmlCustomization>src/docbkx/resources/xsl/html_chunk.xsl</htmlCustomization>
+                    <foCustomization>src/docbkx/resources/xsl/fopdf.xsl</foCustomization>
+                    <entities>
+                        <entity>
+                            <name>version</name>
+                            <value>${pom.version}</value>
+                        </entity>
+                    </entities>
+                    <postProcess>
+                        <copy todir="target/site/reference">
+                            <fileset dir="target/docbkx">
+                                <include name="**/*.html"/>
+                                <include name="**/*.pdf"/>
+                            </fileset>
+                        </copy>
                         <copy todir="target/site/reference/html">
                             <fileset dir="src/docbkx/resources">
-								<include name="**/*.css" />
-								<include name="**/*.png" />
-								<include name="**/*.gif" />
-								<include name="**/*.jpg" />
-							</fileset>
-						</copy>
-                        <move file="target/site/reference/pdf/index.pdf" tofile="target/site/reference/pdf/streamflow-reference.pdf" failonerror="false" />
-					</postProcess>
-				</configuration>
-			</plugin>
+                                <include name="**/*.css"/>
+                                <include name="**/*.png"/>
+                                <include name="**/*.gif"/>
+                                <include name="**/*.jpg"/>
+                            </fileset>
+                        </copy>
+                        <move file="target/site/reference/pdf/index.pdf"
+                              tofile="target/site/reference/pdf/streamflow-reference.pdf" failonerror="false"/>
+                    </postProcess>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -339,49 +305,49 @@
         </resources>
     </build>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<configuration>
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<configuration>
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<aggregate>true</aggregate>
-					<breakiterator>true</breakiterator>
-					<header>StreamFlow</header>
-					<quiet>true</quiet>
-					<stylesheetfile>${project.parent.basedir}/src/main/javadoc/javadoc.css</stylesheetfile>
-					<overview>${project.parent.basedir}/src/main/javadoc/overview.html</overview>
-					<javadocDirectory>${project.parent.basedir}/src/main/javadoc</javadocDirectory>
-					<excludePackageNames />
-					<links>
-						<link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-						<link>http://www.restlet.org/documentation/snapshot/jse/api/</link>
-					</links>
-				</configuration>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>javadoc</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			<plugin>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
+    <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <breakiterator>true</breakiterator>
+                    <header>StreamFlow</header>
+                    <quiet>true</quiet>
+                    <stylesheetfile>${project.parent.basedir}/src/main/javadoc/javadoc.css</stylesheetfile>
+                    <overview>${project.parent.basedir}/src/main/javadoc/overview.html</overview>
+                    <javadocDirectory>${project.parent.basedir}/src/main/javadoc</javadocDirectory>
+                    <excludePackageNames/>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://www.restlet.org/documentation/snapshot/jse/api/</link>
+                    </links>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <licenses>
         <license>
@@ -513,12 +479,36 @@
                 <artifactId>org.osgi.core</artifactId>
                 <version>4.0.0</version>
             </dependency>
-<!--
+            <!-- Test -->
+            <dependency>
+                <groupId>org.jmock</groupId>
+                <artifactId>jmock</artifactId>
+                <version>2.4.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>2.3</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.4</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+            </dependency>
+            <!--
 
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi_R4_core</artifactId>
-            <version>1.0</version>
--->
+                        <groupId>org.osgi</groupId>
+                        <artifactId>osgi_R4_core</artifactId>
+                        <version>1.0</version>
+            -->
         </dependencies>
     </dependencyManagement>
 </project>
