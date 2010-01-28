@@ -32,6 +32,7 @@
                     <resources>
                       <resource>
                         <directory>${basedir}/../web/src/main/resources</directory>
+                          <filtering>true</filtering>                          
                           <includes>
                               <include>version.properties</include>
                               <include>solrconfig.xml</include>
