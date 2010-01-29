@@ -41,14 +41,14 @@
 
     <distributionManagement>
         <repository>
-            <id>jayway.release</id>
-            <name>Jayway Release Repo</name>
-            <url>http://192.168.0.146:8081/nexus/content/repositories/releases</url>
+            <id>releases</id>
+            <name>Waybuild Release Repo</name>
+            <url>http://waybuild.gotdns.com/nexus/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
-            <id>jayway.snapshot</id>
-            <name>Jayway Snapshot Repo</name>
-            <url>http://192.168.0.146:8081/nexus/content/repositories/snapshots</url>
+            <id>snapshots</id>
+            <name>Waybuild Snapshot Repo</name>
+            <url>http://waybuild.gotdns.com/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
