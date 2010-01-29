@@ -32,17 +32,18 @@ public class FormAssembler
             EffectiveFormFieldsValue.class,
             SubmittedFieldValue.class,
             FormValue.class,
-            FormDefinitionValue.class,
+            FormSubmissionValue.class,
             FieldValue.class,
+            FieldValueDTO.class,
             DateFieldValue.class,
             TextFieldValue.class,
             CommentFieldValue.class,
             SelectionFieldValue.class,
-            PageBreakFieldValue.class,
             NumberFieldValue.class,
             FieldDefinitionValue.class,
             FieldSubmissionValue.class,
             SubmittedFormValue.class,
+            SubmittedPageValue.class,
             SubmitFormDTO.class ).visibleIn( Visibility.application );
    }
 }

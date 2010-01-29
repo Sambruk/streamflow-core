@@ -14,24 +14,18 @@
 
 package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.api.common.Optional;
-
-import java.util.List;
+import org.qi4j.api.entity.EntityReference;
 
 /**
  * JAVADOC
  */
-public interface FormDefinitionValue
+public interface FieldValueDTO
       extends ValueComposite
 {
-   Property<EntityReference> form();
+   Property<EntityReference> field();
 
-   Property<String> description();
-
-   Property<String> note();
-
-   Property<List<FieldSubmissionValue>> fields();
+   Property<String> value();
 }
