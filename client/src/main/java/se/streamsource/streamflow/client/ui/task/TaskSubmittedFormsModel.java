@@ -59,7 +59,7 @@ public class TaskSubmittedFormsModel
       try
       {
          submittedForms.clear();
-         submittedForms.addAll( client.query( "tasksubmittedforms", SubmittedFormsListDTO.class ).forms().get() );
+         submittedForms.addAll( client.query( "listsubmittedforms", SubmittedFormsListDTO.class ).forms().get() );
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );

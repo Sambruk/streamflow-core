@@ -48,7 +48,7 @@ public class PossibleFormView extends JPanel
       addMouseListener( this );
    }
 
-   public ListItemValue label()
+   public ListItemValue form()
    {
       return itemValue;
    }

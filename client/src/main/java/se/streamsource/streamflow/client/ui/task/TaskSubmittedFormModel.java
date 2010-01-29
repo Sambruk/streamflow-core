@@ -39,7 +39,7 @@ public class TaskSubmittedFormModel
    {
       try
       {
-         form = client.query( "form", index ,SubmittedFormDTO.class );
+         form = client.query( "submittedform", index ,SubmittedFormDTO.class );
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_get_submitted_form, e );

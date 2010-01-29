@@ -84,22 +84,6 @@ public class TaskSubmittedFormsView
       submittedFormsScollPane.setViewportView( submittedForms );
 
       add( submittedFormsScollPane, BorderLayout.CENTER );
-
-      JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "add" ) ) );
-      add( toolbar, BorderLayout.SOUTH );
-   }
-
-   @org.jdesktop.application.Action
-   public void add() throws IOException, ResourceException
-   {
-      FormsListModel formsListModel = obf.newObjectBuilder(FormsListModel.class)
-            .use( model.getClient() ).newInstance();
-      FormSubmitWizardController wizardController = obf.newObjectBuilder(FormSubmitWizardController.class).
-            use( formsListModel ).newInstance();
-      Wizard wizard = wizardController.createWizard();
-      Point onScreen = main.getMainFrame().getLocationOnScreen();
-      WizardDisplayer.showWizard(wizard, new Rectangle(onScreen, new Dimension( 800, 600 )));
    }
 
    public void setModel( TaskSubmittedFormsModel model )

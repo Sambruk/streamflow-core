@@ -151,6 +151,17 @@ public class BindingFormBuilder
       return this;
    }
 
+   public BindingFormBuilder append( String name, Component component,
+                                     Property property, StateBinder stateBinderIn )
+   {
+      JLabel label = formBuilder.append( name );
+      label.setFocusable( false );
+      label.setLabelFor( component );
+      formBuilder.nextLine();
+      return append( component, property, stateBinderIn );
+   }
+
+
    public BindingFormBuilder append( Enum resourceKey, Component component,
                                      Property property, StateBinder stateBinderIn, Object... args )
    {

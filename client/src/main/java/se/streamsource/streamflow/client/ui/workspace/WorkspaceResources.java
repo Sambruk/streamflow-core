@@ -113,6 +113,8 @@ public enum WorkspaceResources
    chose_tasktype,
    search_tasktype,
    fill_all_fields,
-   mandatory_field_missing, 
+   mandatory_field_missing,
+   could_not_get_form_submission,
+   could_not_parse_date,
    search_user
 }

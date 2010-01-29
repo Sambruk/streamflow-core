@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
 
 public class MultiSelectPanel extends JPanel
 {
@@ -36,6 +38,14 @@ public class MultiSelectPanel extends JPanel
          JCheckBox checkBox = new JCheckBox( element );
          checkBoxMap.put( element, checkBox );
          add( checkBox );
+      }
+   }
+
+   public void addActionPerformedListener( ActionListener listener )
+   {
+      for (JCheckBox box : checkBoxMap.values())
+      {
+         box.addActionListener( listener );
       }
    }
 

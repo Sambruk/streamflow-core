@@ -28,18 +28,20 @@ import org.netbeans.spi.wizard.WizardPage;
 import org.netbeans.spi.wizard.WizardPanelNavResult;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.domain.form.FormDefinitionValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -51,37 +53,40 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Observer;
+import java.util.Observable;
 import java.util.Date;
-import java.util.Calendar;
-import java.util.Collections;
 
 /**
  * JAVADOC
  */
-public class FormSubmitWizardPage
+public class FormSubmissionWizardPage
       extends WizardPage
+   implements Observer
 {
    private java.util.List<FieldSubmissionValue> fields;
    private java.util.Map<EntityReference, JComponent> componentFieldMap;
+   private java.util.Map<StateBinder, EntityReference> fieldBinders;
    private ValidationResultModel validationResultModel;
+   private FormSubmissionModel model;
 
-   public FormSubmitWizardPage(@Uses java.util.List<FieldSubmissionValue> fields,
-                               @Uses Map wizardValueMap)
+   public FormSubmissionWizardPage( @Uses SubmittedPageValue page,
+                                @Uses FormSubmissionModel model)
    {
-      this.fields = fields;
+      super( page.title().get() );
+      this.fields = page.fields().get();
+      this.model = model;
       componentFieldMap = new HashMap<EntityReference, JComponent>();
       validationResultModel = new DefaultValidationResultModel();
       setLayout(new BorderLayout());
       JPanel panel = new JPanel( new FormLayout( ) );
 
-      FormLayout formLayout = new FormLayout( "pref, 2dlu, pref:grow");
-
+      fieldBinders = new HashMap<StateBinder, EntityReference>( fields.size() );
+      FormLayout formLayout = new FormLayout( "200dlu", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
+      BindingFormBuilder bb = new BindingFormBuilder( formBuilder, null );
 
       for (FieldSubmissionValue value : fields)
       {
@@ -92,29 +97,13 @@ public class FormSubmitWizardPage
             if ( field.rows().get() != null && field.rows().get() > 1)
             {
                component = new JTextArea( field.rows().get(),  field.width().get() );
-               ((JTextArea)component).setText( value.value().get() );
             } else
             {
                component = new JTextField( field.width().get() );
-               ((JTextField)component).setText( value.value().get() );
             }
          } else if ( value.field().get().fieldValue().get() instanceof DateFieldValue)
          {
             component = new JXDatePicker();
-            JXDatePicker date = (JXDatePicker) component;
-            SimpleDateFormat dateFormat = new SimpleDateFormat( i18n.text( WorkspaceResources.date_format ) );
-            date.setFormats( dateFormat );
-            if ( value.value().get() != null )
-            {
-               try
-               {
-                  date.setDate( dateFormat.parse( value.value().get() ) );
-               } catch (ParseException e)
-               {
-                  e.printStackTrace();
-               }
-            }
-
          } else if ( value.field().get().fieldValue().get() instanceof NumberFieldValue)
          {
             NumberFieldValue field = (NumberFieldValue) value.field().get().fieldValue().get();
@@ -122,18 +111,17 @@ public class FormSubmitWizardPage
             NumberFormat numberInstance = NumberFormat.getNumberInstance();
             numberInstance.setParseIntegerOnly( field.integer().get() );
             component = new JFormattedTextField( numberInstance );
-            ((JFormattedTextField)component).setText( value.value().get() );
          } else if ( value.field().get().fieldValue().get() instanceof SelectionFieldValue)
          {
             SelectionFieldValue field = (SelectionFieldValue) value.field().get().fieldValue().get();
             if ( field.multiple().get() )
             {
                component = new MultiSelectPanel( field.values().get() );
-               ((MultiSelectPanel)component).setChecked( value.value().get() );
+               //((MultiSelectPanel)component).setChecked( value.value().get() );
             } else
             {
                component = new JComboBox( field.values().get().toArray() );
-               ((JComboBox)component).setSelectedItem( value.value().get() );
+               //((JComboBox)component).setSelectedItem( value.value().get() );
             }
          } else if ( value.field().get().fieldValue().get() instanceof CommentFieldValue )
          {
@@ -152,32 +140,42 @@ public class FormSubmitWizardPage
          }
 
          componentFieldMap.put( value.field().get().field().get(), component );
-         wizardValueMap.put( value.field().get().field().get().identity(), "" );
-         StringBuilder componentName = new StringBuilder( "<html>" );
 
-         componentName.append( value.field().get().description().get() );
-         if ( value.field().get().fieldValue().get().mandatory().get() )
-         {
-            componentName.append( " <font color='red'>*</font>" );
-         }
-         componentName.append( "</html>" );
-         formBuilder.append( componentName.toString(), component );
+         StateBinder stateBinder = new StateBinder();
+         FieldSubmissionValue value1 = stateBinder.bindingTemplate( FieldSubmissionValue.class );
+
+         bb.append( getName( value ), component, value1.value(), stateBinder );
+
+         fieldBinders.put( stateBinder, value.field().get().field().get() );
+         stateBinder.addObserver( this );
+         stateBinder.updateWith( value );
       }
 
       JComponent validationResultsComponent = ValidationResultViewFactory.createReportList(validationResultModel);
       formBuilder.appendRow("top:30dlu:g");
 
       CellConstraints cc = new CellConstraints();
-      formBuilder.add(validationResultsComponent, cc.xywh(1, formBuilder.getRow() + 1, 3, 1, "fill, bottom"));
+      formBuilder.add(validationResultsComponent, cc.xywh(1, formBuilder.getRow() + 1, 1, 1, "fill, bottom"));
 
       JScrollPane scroll = new JScrollPane(panel);
       add(scroll,  BorderLayout.CENTER);
    }
 
+   private String getName( FieldSubmissionValue value )
+   {
+      StringBuilder componentName = new StringBuilder( "<html>" );
+      componentName.append( value.field().get().description().get() );
+      if ( value.field().get().fieldValue().get().mandatory().get() )
+      {
+         componentName.append( " <font color='red'>*</font>" );
+      }
+      componentName.append( "</html>" );
+      return componentName.toString();
+   }
+
    @Override
    public WizardPanelNavResult allowNext( String s, Map map, Wizard wizard )
    {
-      mapValues( map );
       ValidationResult validation = validatePage( map );
       validationResultModel.setResult( validation );
 
@@ -196,11 +194,12 @@ public class FormSubmitWizardPage
       return allowNext( s, map, wizard );
    }
 
+   private ValidationResult validatePage( Map map ) {
+      ValidationResult validationResult = new ValidationResult();
 
-   private void mapValues( Map map )
-   {
       for (FieldSubmissionValue field : fields)
       {
+
          JComponent component = componentFieldMap.get( field.field().get().field().get() );
          String value = "";
          if (component instanceof JTextField)
@@ -227,18 +226,9 @@ public class FormSubmitWizardPage
             MultiSelectPanel multiSelect = (MultiSelectPanel) component;
             value = multiSelect.getChecked();
          }
-         map.put( field.field().get().field().get().identity(), value );
-      }
-   }
 
-   private ValidationResult validatePage( Map map ) {
-      ValidationResult validationResult = new ValidationResult();
-
-      for (FieldSubmissionValue field : fields)
-      {
          if ( field.field().get().fieldValue().get().mandatory().get() )
          {
-            String value = (String) map.get( field.field().get().field().get().identity() );
             if (ValidationUtils.isEmpty( value ))
             {
                validationResult.addError( i18n.text(WorkspaceResources.mandatory_field_missing) + ": " + field.field().get().description().get() );
@@ -248,4 +238,24 @@ public class FormSubmitWizardPage
       return validationResult;
    }
 
+   public void update( Observable observable, Object arg )
+   {
+      Property property = (Property) arg;
+      if ( property.qualifiedName().name().equals( "value" ))
+      {
+         try
+         {
+            if ( property.get() instanceof Date)
+            {
+               model.updateField( fieldBinders.get( (StateBinder) observable ), ""+((Date)property.get()).getTime() );
+            } else
+            {
+               model.updateField( fieldBinders.get( (StateBinder) observable ), property.get().toString() );
+            }
+         } catch (ResourceException e)
+         {
+            throw new OperationException( TaskResources.could_not_update_field, e );
+         }
+      }
+   }
 }

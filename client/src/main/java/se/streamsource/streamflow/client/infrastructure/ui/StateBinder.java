@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.JComboBox;
 import javax.swing.text.JTextComponent;
 import java.awt.Component;
 import java.awt.Dialog;
@@ -61,6 +62,12 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import se.streamsource.streamflow.client.ui.task.MultiSelectPanel;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.OperationException;
 
 /**
  * JAVADOC
@@ -85,7 +92,9 @@ public class StateBinder
             JScrollPane.class,
             JPasswordField.class,
             JCheckBox.class,
-            JXDatePicker.class );
+            JXDatePicker.class,
+            JComboBox.class,
+            MultiSelectPanel.class );
 
       errorMessages = ResourceBundle.getBundle( getClass().getName() );
    }
@@ -360,7 +369,22 @@ public class StateBinder
       public Binding bind( Component component, Object property )
       {
          final Binding binding = new Binding( this, component, property, stateBinder );
-         if (component instanceof JTextField)
+
+         if (component instanceof JPasswordField)
+         {
+            final JPasswordField passwordField = (JPasswordField) component;
+            passwordField.setInputVerifier( new PropertyInputVerifier( binding ) );
+
+            passwordField.addActionListener( new ActionListener()
+            {
+               public void actionPerformed( ActionEvent e )
+               {
+                  KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent( passwordField );
+               }
+            } );
+
+            return binding;
+         } else if (component instanceof JTextField)
          {
             final JTextField textField = (JTextField) component;
 
@@ -371,20 +395,6 @@ public class StateBinder
                public void actionPerformed( ActionEvent e )
                {
                   KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent( textField );
-               }
-            } );
-
-            return binding;
-         } else if (component instanceof JPasswordField)
-         {
-            final JPasswordField passwordField = (JPasswordField) component;
-            passwordField.setInputVerifier( new PropertyInputVerifier( binding ) );
-
-            passwordField.addActionListener( new ActionListener()
-            {
-               public void actionPerformed( ActionEvent e )
-               {
-                  KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent( passwordField );
                }
             } );
 
@@ -432,6 +442,30 @@ public class StateBinder
             } );
 
             return binding;
+         } else if (component instanceof JComboBox)
+         {
+            final JComboBox comboBox = (JComboBox) component;
+
+            comboBox.addActionListener( new ActionListener() {
+
+               public void actionPerformed( ActionEvent actionEvent )
+               {
+                  binding.updateProperty( ((JComboBox)actionEvent.getSource()).getSelectedItem() );
+               }
+            });
+            return binding;
+         } else if (component instanceof MultiSelectPanel)
+         {
+            final MultiSelectPanel multi = (MultiSelectPanel) component;
+            multi.addActionPerformedListener( new ActionListener() {
+
+               public void actionPerformed( ActionEvent actionEvent )
+               {
+                  binding.updateProperty( multi.getChecked() );
+               }
+            });
+
+            return binding;
          }
 
 
@@ -440,17 +474,17 @@ public class StateBinder
 
       public void updateComponent( Component component, Object value )
       {
-         if (component instanceof JTextComponent)
+         if (component instanceof JPasswordField)
+         {
+            JPasswordField passwordField = (JPasswordField) component;
+            passwordField.setText( value.toString() );
+         } else if (component instanceof JTextComponent)
          {
             JTextComponent textField = (JTextComponent) component;
             String text = value.toString();
             textField.setText( text );
             textField.setCaretPosition( 0 );
 
-         } else if (component instanceof JPasswordField)
-         {
-            JPasswordField passwordField = (JPasswordField) component;
-            passwordField.setText( value.toString() );
          } else if (component instanceof JCheckBox)
          {
             JCheckBox checkBox = (JCheckBox) component;
@@ -462,7 +496,21 @@ public class StateBinder
          } else if (component instanceof JXDatePicker)
          {
             JXDatePicker datePicker = (JXDatePicker) component;
-            datePicker.setDate( (Date) value );
+            if ( value instanceof String)
+            {
+               datePicker.setDate( new Date( new Long( (String) value ) ) );
+            } else
+            {
+               datePicker.setDate( (Date) value );
+            }
+         } else if (component instanceof JComboBox)
+         {
+            JComboBox box = (JComboBox) component;
+            box.setSelectedItem( value );
+         } else if (component instanceof MultiSelectPanel)
+         {
+            MultiSelectPanel multi = (MultiSelectPanel) component;
+            multi.setChecked( (String) value );
          }
       }
    }
