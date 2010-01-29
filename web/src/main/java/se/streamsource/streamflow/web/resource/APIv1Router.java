@@ -60,8 +60,10 @@ import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeS
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.fields.FormDefinitionFieldsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.fields.FormDefinitionFieldServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.FormDefinitionPagesServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.FormDefinitionPageServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskServerResource;
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
@@ -122,8 +124,10 @@ public class APIv1Router
       attach( "/organizations/{organization}/tasktypes/{labels}/selectedlabels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms", createServerResourceFinder( FormDefinitionsServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}", createServerResourceFinder( FormDefinitionServerResource.class ) );
-      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/fields", createServerResourceFinder( FormDefinitionFieldsServerResource.class ) );
-      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/fields/{index}", createServerResourceFinder( FormDefinitionFieldServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/pages", createServerResourceFinder( FormDefinitionPagesServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/pages/{page}", createServerResourceFinder( FormDefinitionPageServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/pages/{page}/fields", createServerResourceFinder( FormDefinitionFieldsServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/pages/{page}/fields/{index}", createServerResourceFinder( FormDefinitionFieldServerResource.class ) );
       attach( "/organizations/{labels}/labels", createServerResourceFinder( LabelsServerResource.class ) );
       attach( "/organizations/{labels}/labels/{label}", createServerResourceFinder( LabelServerResource.class ) );
 
@@ -156,7 +160,7 @@ public class APIv1Router
       attach( "/tasks/{task}/contacts", createServerResourceFinder( TaskContactsServerResource.class ) );
       attach( "/tasks/{task}/contacts/{index}", createServerResourceFinder( TaskContactServerResource.class ) );
       attach( "/tasks/{task}/forms", createServerResourceFinder( TaskFormsServerResource.class ) );
-      attach( "/tasks/{task}/forms/{form}", createServerResourceFinder( TaskFormServerResource.class ) );
+      attach( "/tasks/{task}/forms/{formsubmission}", createServerResourceFinder( TaskFormServerResource.class ) );
 
       // Events
       attach( "/events", createServerResourceFinder( EventsServerResource.class ) );
