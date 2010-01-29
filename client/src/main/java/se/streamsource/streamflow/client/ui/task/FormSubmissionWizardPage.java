@@ -117,11 +117,9 @@ public class FormSubmissionWizardPage
             if ( field.multiple().get() )
             {
                component = new MultiSelectPanel( field.values().get() );
-               //((MultiSelectPanel)component).setChecked( value.value().get() );
             } else
             {
                component = new JComboBox( field.values().get().toArray() );
-               //((JComboBox)component).setSelectedItem( value.value().get() );
             }
          } else if ( value.field().get().fieldValue().get() instanceof CommentFieldValue )
          {

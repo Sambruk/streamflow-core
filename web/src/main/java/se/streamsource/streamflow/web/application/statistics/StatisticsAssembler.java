@@ -28,10 +28,6 @@ public class StatisticsAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
-      if (mode.equals( Application.Mode.production ))
-      {
-         module.addServices( StatisticsService.class ).identifiedBy( "statistics" ).instantiateOnStartup().visibleIn( Visibility.layer );
-      }
+      module.addServices( StatisticsService.class ).identifiedBy( "statistics" ).instantiateOnStartup().visibleIn( Visibility.layer );
    }
 }
