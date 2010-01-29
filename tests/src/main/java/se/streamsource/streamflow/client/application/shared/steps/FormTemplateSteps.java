@@ -53,6 +53,7 @@ public class FormTemplateSteps
        }
    }*/
 
+   /*
    @When("a field is removed from form")
    public void removeField() throws Exception
    {
@@ -65,7 +66,7 @@ public class FormTemplateSteps
       {
          genericSteps.setThrowable( e );
       }
-   }
+   }*/
 
 
 }

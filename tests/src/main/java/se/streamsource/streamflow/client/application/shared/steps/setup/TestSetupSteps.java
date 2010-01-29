@@ -166,8 +166,8 @@ public class TestSetupSteps
       taskTypesSteps.givenTaskType( TASKTYPE1 );
 
       formsSteps.createForm( SOME_FORM );
-      formsSteps.createField( SOME_FIELD );
-      formsSteps.createField( SOME_FIELD );
+      //formsSteps.createField( SOME_FIELD );
+      //formsSteps.createField( SOME_FIELD );
 
       formTemplatesSteps.createTemplate();
 

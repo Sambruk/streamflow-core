@@ -71,16 +71,16 @@ public class SubmittedFormsQueriesSteps
       organizationsSteps.givenUser( TestSetupSteps.USER1 );
       inboxSteps.createTask();
       submittedFormsSteps.createForm();
-      submittedFormsSteps.addFieldValueToForm( TestSetupSteps.SOME_FIELD, TestSetupSteps.SOME_VALUE );
+      //submittedFormsSteps.addFieldValueToForm( TestSetupSteps.SOME_FIELD, TestSetupSteps.SOME_VALUE );
       submittedFormsSteps.submissionDateIsNow();
       submittedFormsSteps.submitterIsSet();
-      submittedFormsSteps.submitForm();
+      //submittedFormsSteps.submitForm();
 
       submittedFormsSteps.createForm();
-      submittedFormsSteps.addFieldValueToForm( TestSetupSteps.SOME_FIELD, TestSetupSteps.SOME_VALUE2 );
+      //submittedFormsSteps.addFieldValueToForm( TestSetupSteps.SOME_FIELD, TestSetupSteps.SOME_VALUE2 );
       submittedFormsSteps.submissionDateIsNow();
       submittedFormsSteps.submitterIsSet();
-      submittedFormsSteps.submitForm();
+      //submittedFormsSteps.submitForm();
 
       genericSteps.clearEvents();
    }

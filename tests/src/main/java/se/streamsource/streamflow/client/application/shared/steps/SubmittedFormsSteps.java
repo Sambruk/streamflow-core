@@ -61,7 +61,7 @@ public class SubmittedFormsSteps
       form = formBuilder.prototype();
       form.form().set( EntityReference.getEntityReference( formsSteps.givenForm ) );
    }
-
+/*
    @When("field $name with value $value is added to form")
    public void addFieldValueToForm( String field, String value )
    {
@@ -73,7 +73,7 @@ public class SubmittedFormsSteps
 
       form.values().get().add( builder.newInstance() );
    }
-
+*/
    @When("submission date is now")
    public void submissionDateIsNow()
    {
@@ -86,6 +86,7 @@ public class SubmittedFormsSteps
       form.submitter().set( EntityReference.getEntityReference( organizationsSteps.givenUser ) );
    }
 
+   /*
    @When("form is submitted")
    public void submitForm() throws Exception
    {
@@ -99,7 +100,7 @@ public class SubmittedFormsSteps
       {
          genericSteps.setThrowable( e );
       }
-   }
+   }*/
 
    @Then("effective field value for field $field is $value")
    public void removed( String form, String value ) throws Exception

@@ -85,7 +85,7 @@ public class FormsSteps
          genericSteps.setThrowable( e );
       }
    }
-
+/*
    @When("a field named $name is added to form")
    public void createField( String someField )
    {
@@ -99,5 +99,5 @@ public class FormsSteps
    {
       Field field = givenForm.getFieldByName( name );
       givenForm.removeField( field );
-   }
+   }*/
 }
