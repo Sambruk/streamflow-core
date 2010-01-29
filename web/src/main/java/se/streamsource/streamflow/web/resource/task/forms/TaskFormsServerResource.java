@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.resource.task.forms;
 
 import static org.qi4j.api.entity.EntityReference.getEntityReference;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -29,7 +30,11 @@ import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionsQueries;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
@@ -38,6 +43,8 @@ import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import java.util.Date;
 
@@ -63,50 +70,12 @@ public class TaskFormsServerResource
       getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
    }
 
-   public ListValue possibleforms()
-   {
-      String taskId = getRequest().getAttributes().get( "task" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-
-      TypedTask.Data typedTask = uow.get( TypedTask.Data.class, taskId );
-
-      TaskType taskType = typedTask.taskType().get();
-
-      ListValue formsList;
-      if (taskType != null)
-      {
-         FormsQueries forms = uow.get( FormsQueries.class, getEntityReference( taskType ).identity() );
-         formsList = forms.applicableFormDefinitionList();
-      } else
-      {
-         formsList = vbf.newValue( ListValue.class );
-      }
-      return formsList;
-   }
-
-   public SubmittedFormsListDTO tasksubmittedforms()
+   public SubmittedFormsListDTO listsubmittedforms()
    {
       String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
       SubmittedFormsQueries forms = uowf.currentUnitOfWork().get( SubmittedFormsQueries.class, formsQueryId );
 
       return forms.getSubmittedForms();
-   }
-
-   public void submitform( SubmitFormDTO submitDTO )
-   {
-      String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
-      SubmittedForms forms = uowf.currentUnitOfWork().get( SubmittedForms.class, formsQueryId );
-
-      UserEntity user = uowf.currentUnitOfWork().get( UserEntity.class, getClientInfo().getUser().getIdentifier() );
-
-      ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
-
-      formBuilder.prototype().submitter().set( getEntityReference( user ) );
-      formBuilder.prototype().form().set( submitDTO.form().get() );
-      formBuilder.prototype().submissionDate().set( new Date() );
-      formBuilder.prototype().values().set( submitDTO.values().get() );
-
-      forms.submitForm( formBuilder.newInstance() );
    }
 
    public EffectiveFieldsDTO effectivefields()
@@ -118,13 +87,39 @@ public class TaskFormsServerResource
       return fields.effectiveFields();
    }
 
-   public SubmittedFormDTO form( IntegerDTO index) throws ResourceException
+   public SubmittedFormDTO submittedform( IntegerDTO index) throws ResourceException
    {
       String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
       SubmittedFormsQueries forms = uowf.currentUnitOfWork().get( SubmittedFormsQueries.class, formsQueryId );
       return forms.getSubmittedForm( index.integer().get() );
    }
 
+
+   public void formsubmission( EntityReferenceDTO formDTO )
+   {
+      String formSubmissionsId = getRequest().getAttributes().get( "task" ).toString();
+
+      FormSubmissions formSubmissions = uowf.currentUnitOfWork().get( FormSubmissions.class, formSubmissionsId );
+
+      Form form = uowf.currentUnitOfWork().get( Form.class, formDTO.entity().get().identity() );
+
+      FormSubmission formSubmission = formSubmissions.getFormSubmission( form );
+
+      if ( formSubmission == null)
+      {
+         formSubmission = formSubmissions.createFormSubmission( form );
+         formSubmissions.addFormSubmission( formSubmission );
+      }
+   }
+
+   public ListValue listformsubmissions() 
+   {
+      String formSubmissionsId = getRequest().getAttributes().get( "task" ).toString();
+
+      FormSubmissionsQueries formSubmissions = uowf.currentUnitOfWork().get( FormSubmissionsQueries.class, formSubmissionsId );
+
+      return formSubmissions.getFormSubmissions();
+   }
 
    @Override
    protected String getConditionalIdentityAttribute()

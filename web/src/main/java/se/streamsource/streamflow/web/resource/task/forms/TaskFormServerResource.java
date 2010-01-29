@@ -14,41 +14,32 @@
 
 package se.streamsource.streamflow.web.resource.task.forms;
 
-import org.qi4j.api.entity.EntityReference;
+import static org.qi4j.api.entity.EntityReference.getEntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
-import org.restlet.data.Status;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.FormDefinitionValue;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
-import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.structure.form.Field;
-import se.streamsource.streamflow.web.domain.structure.form.Fields;
+import se.streamsource.streamflow.domain.form.FieldValueDTO;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.Date;
 
 /**
  * Mapped to:
- * /tasks/{task}/forms/{form}
+ * /tasks/{task}/forms/{formsubmission}
  */
 public class TaskFormServerResource
       extends CommandQueryServerResource
@@ -68,77 +59,56 @@ public class TaskFormServerResource
       getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
    }
 
-   public FormDefinitionValue form() throws ResourceException
+   // GET
+   public FormSubmissionValue formsubmission() throws ResourceException
    {
-      String formId = getRequest().getAttributes().get("form").toString();
-
-      String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
+      String formSubmissionId = getRequest().getAttributes().get("formsubmission").toString();
 
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      SubmittedForms.Data forms = uow.get( SubmittedForms.Data.class, formsQueryId );
+      FormSubmission formSubmission = uow.get( FormSubmission.class, formSubmissionId );
 
-      SubmittedFormValue submitted = null;
-      for (SubmittedFormValue dto : forms.submittedForms().get())
+      return formSubmission.getFormSubmission();
+   }
+
+   public void updatefield( FieldValueDTO field )
+   {
+      String formSubmissionId = getRequest().getAttributes().get("formsubmission").toString();
+
+      UnitOfWork uow = uowf.currentUnitOfWork();
+
+      FormSubmission formSubmission = uow.get( FormSubmission.class, formSubmissionId );
+
+      ValueBuilder<FormSubmissionValue> builder = vbf.newValueBuilder( FormSubmissionValue.class ).withPrototype( formSubmission.getFormSubmission() );
+
+      for (SubmittedPageValue pageValue : builder.prototype().pages().get())
       {
-         if (dto.form().get().identity().equals( formId ))
+         for ( FieldSubmissionValue value : pageValue.fields().get() )
          {
-            if ( submitted == null || submitted.submissionDate().get().before( dto.submissionDate().get() ))
+            if ( value.field().get().field().get().equals( field.field().get() ) )
             {
-               submitted = dto;
+               value.value().set( field.value().get() );
             }
          }
       }
-      Map<String, String> submittedValues = null;
-      if ( submitted != null )
-      {
-         submittedValues = new HashMap<String, String>();
 
-         for (SubmittedFieldValue fieldValue : submitted.values().get())
-         {
-            submittedValues.put( fieldValue.field().get().identity(), fieldValue.value().get() );
-         }
-      }
+      formSubmission.changeFormSubmission( builder.newInstance() );
+   }
 
-      FormEntity form = uow.get( FormEntity.class, formId);
+   public void submitform( )
+   {
+      String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
+      String formSubmissionId = getRequest().getAttributes().get("formsubmission").toString();
 
-      ValueBuilder<FormDefinitionValue> builder =
-            vbf.newValueBuilder(FormDefinitionValue.class);
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      SubmittedForms forms = uow.get( SubmittedForms.class, formsQueryId );
 
-      builder.prototype().note().set(form.note().get());
-      builder.prototype().description().set(form.description().get());
-      builder.prototype().form().set(EntityReference.parseEntityReference(formId));
-      builder.prototype().fields().set( new ArrayList<FieldSubmissionValue>() );
+      UserEntity user = uow.get( UserEntity.class, getClientInfo().getUser().getIdentifier() );
 
-      ValueBuilder<FieldSubmissionValue> fieldBuilder = vbf.newValueBuilder( FieldSubmissionValue.class );
-      ValueBuilder<FieldDefinitionValue> fieldDefinitionBuilder = vbf.newValueBuilder( FieldDefinitionValue.class );
+      FormSubmission formSubmission = uow.get( FormSubmission.class, formSubmissionId );
+      checkPermission( formSubmission );
 
-      Fields.Data fields;
-      try
-      {
-         fields = uow.get( Fields.Data.class, formId );
-         for (Field field : fields.fields())
-         {
-            FieldEntity entity = (FieldEntity) field;
-
-            fieldDefinitionBuilder.prototype().fieldValue().set( entity.fieldValue().get() );
-            fieldDefinitionBuilder.prototype().field().set( EntityReference.parseEntityReference( entity.identity().get() ));
-            fieldDefinitionBuilder.prototype().description().set( field.getDescription() );
-            fieldDefinitionBuilder.prototype().note().set( entity.note().get() );
-            fieldBuilder.prototype().field().set( fieldDefinitionBuilder.newInstance() );
-            if ( submittedValues != null )
-            {
-               fieldBuilder.prototype().value().set( submittedValues.get( entity.identity().get() ));
-            }
-            builder.prototype().fields().get().add( fieldBuilder.newInstance() );
-         }
-
-      } catch (NoSuchEntityException e)
-      {
-         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND, e );
-      }
-
-      return builder.newInstance();
+      forms.submitForm( formSubmission.getFormSubmission(), getEntityReference( user ) );
    }
 
    @Override
