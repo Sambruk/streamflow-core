@@ -19,9 +19,9 @@ import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
 
 /**
- * Configuration for the MySQL DataSource
+ * Configuration for the DataSource pool
  */
-public interface MySQLDatabaseConfiguration
+public interface DatabaseConfiguration
       extends ConfigurationComposite
 {
    Property<String> host();
@@ -29,9 +29,6 @@ public interface MySQLDatabaseConfiguration
    Property<String> username();
 
    Property<String> password();
-
-   @UseDefaults
-   Property<Boolean> autoReconnectForPools();
 
    @UseDefaults
    Property<String> properties();

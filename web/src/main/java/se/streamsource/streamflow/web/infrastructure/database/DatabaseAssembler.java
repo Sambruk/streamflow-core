@@ -20,6 +20,8 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 
+import javax.sql.DataSource;
+
 /**
  * JAVADOC
  */
@@ -28,7 +30,11 @@ public class DatabaseAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( MySQLDatabaseService.class ).visibleIn( Visibility.application );
+      module.addServices( DataSourceService.class ).identifiedBy( "datasource" ).visibleIn( Visibility.application );
+      module.importServices( DataSource.class ).
+            importedBy( ServiceInstanceImporter.class ).
+            setMetaInfo( "datasource" ).
+            identifiedBy( "streamflow" ).visibleIn( Visibility.application );
 
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
       if (mode.equals( Application.Mode.production ))

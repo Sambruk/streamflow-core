@@ -101,6 +101,8 @@ public class APIv1Router
       attach( "/users/{labels}/workspace/user/labels", createServerResourceFinder( LabelsServerResource.class ) );
       attach( "/users/{labels}/workspace/user/labels/{label}", createServerResourceFinder( LabelServerResource.class ) );
 
+//      attach ("/users", createServerResourceFinder( CompositeCommandQueryServerResource.class ));
+
       // Organizations
       attach( "/organizations", createServerResourceFinder( OrganizationsServerResource.class ) );
 // Test of composite CQSR        attach("/organizations/{entity}", createServerCompositeFinder(OrganizationCompositeResource.class));

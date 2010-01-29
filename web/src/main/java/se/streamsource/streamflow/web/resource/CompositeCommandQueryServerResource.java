@@ -14,85 +14,45 @@
 
 package se.streamsource.streamflow.web.resource;
 
-import org.json.JSONException;
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.constraint.Name;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.property.StateHolder;
-import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.util.Classes;
 import org.qi4j.api.value.Value;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.property.PropertyDescriptor;
-import org.qi4j.spi.property.PropertyType;
-import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.util.Annotations;
-import org.qi4j.spi.value.ValueDescriptor;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
-import org.restlet.data.Status;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.ObjectRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
-import org.restlet.representation.WriterRepresentation;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
+import org.restlet.resource.ServerResource;
 
-import javax.security.auth.Subject;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessControlException;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.logging.Logger;
 
 /**
- * Base class for command/query resources.
+ * Handle requests to command/query resources.
  * <p/>
- * GET: if has ?operation=name then show XHTML form
- * for invoking operation with name "name". Otherwise
- * return whatever makes sense (listing, query form(s), etc.)
+ * GET:
+ * If the request has ?command=name then show XHTML form
+ * for invoking command with name "name".
+ * If the request has ?query=name then , if parameters are
+ * required then show XHTML form for it, otherwise perform query.
+ * If neither query parameter is available, show listing of available
+ * commands, queries, and subresources.
  * <p/>
- * POST: post of form must include names "operation" and "command",
- * where "operation" is the name of the method to invoke and "command
- * is the JSON-serialized command value.
+ * POST: post of form must include query parameter "command" which is
+ * the name of the method to invoke and the body is the JSON-serialized command value.
  * <p/>
- * PUT: put of form must include names "operation" and "command",
- * where "operation" is the name of the method to invoke and "command
- * is the JSON-serialized command value. Must be an idempotent operation.
+ * PUT: put of form must include query parameter "command" which is
+ * the name of the method to invoke and the body is the JSON-serialized command value.
  * <p/>
  * DELETE: resources implement this on their own.
  */
 public class CompositeCommandQueryServerResource
-      extends BaseServerResource
-      implements TransactionVisitor
+      extends ServerResource
+//      implements TransactionVisitor
 {
-   @Uses
-   TransientComposite composite;
+   /**
+   protected
+   @Structure
+   UnitOfWorkFactory uowf;
+
+   @Structure
+   TransientBuilderFactory tbf;
+
+   protected
+   @Structure
+   Qi4jSPI spi;
 
    @Structure
    protected ValueBuilderFactory vbf;
@@ -114,17 +74,86 @@ public class CompositeCommandQueryServerResource
    @Override
    protected Representation get( Variant variant ) throws ResourceException
    {
-      String operation = getOperation();
-      if (operation.equals( "getOperation" ))
+      String command = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "command" );
+      if (command != null)
       {
-         return listOperations();
-      } else
+         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( command ) );
+
+         // GET on command -> show XHTML form
+         try
+         {
+            Object resource = tbf.newTransient( UsersComposite.class );
+
+            // Find the resource first
+            Reference relative = getRequest().getResourceRef().getRelativeRef();
+
+            try
+            {
+               resource = getResource(resource, relative.getSegments());
+
+               return commandForm(resource, command);
+            } catch (Exception e)
+            {
+               throw new ResourceException(e);
+            }
+         } finally
+         {
+            uow.discard();
+         }
+      }
+
+      String query = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "query" );
+      if (query != null)
       {
-         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( operation ) );
+         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( query ) );
+
+         // GET on query -> perform query or show XHTML form
+         try
+         {
+            Object resource = tbf.newTransient( UsersComposite.class );
+
+            // Find the resource first
+            Reference relative = getRequest().getResourceRef().getRelativeRef();
+
+            try
+            {
+               resource = getResource(resource, relative.getSegments());
+
+               return query(resource, query);
+            } catch (Exception e)
+            {
+               throw new ResourceException(e);
+            }
+         } finally
+         {
+            uow.discard();
+         }
+      }
+
+      // Show information about this resource
+      UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getRequest().getResourceRef().getRemainingPart( )) );
+      Object resource = tbf.newTransient( UsersComposite.class );
+
+      // Find the resource first
+      Reference relative = getRequest().getResourceRef().getRelativeRef();
+
+      try
+      {
+         resource = getResource(resource, relative.getSegments());
+
+         return resourceInfo(resource);
+      } catch (Exception e)
+      {
+         throw new ResourceException(e);
+      }
+
+      else
+      {
+         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( command ) );
 
          try
          {
-            Method method = getResourceMethod( operation );
+            Method method = getResourceMethod( command, resource );
 
             if (isCommandMethod( method ))
             {
@@ -162,7 +191,7 @@ public class CompositeCommandQueryServerResource
                {
                   // Invoke query
                   Object[] args = getQueryArguments( method );
-                  return returnRepresentation( invoke( method, args ), variant );
+                  return returnRepresentation( invoke( resource, method, args ), variant );
                } else
                {
                   String form = "";
@@ -201,20 +230,98 @@ public class CompositeCommandQueryServerResource
       }
    }
 
-   protected String getOperation()
+   private Representation query(Object resource, String query)
    {
-      String operation = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "operation" );
-      if (operation == null)
+      Method queryMethod = getQueryMethod(resource.getClass(), query );
+
+      if (queryMethod.getParameterTypes().length == 0)
       {
-         operation = getRequest().getMethod().getName().toLowerCase() + "Operation";
+         // Invoke query
+         Object result = queryMethod.invoke( resource );
+      } else
+      {
+
       }
-      return operation;
+
+      String form = "";
+
+      Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) queryMethod.getParameterTypes()[0];
+      ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
+
+      for (PropertyDescriptor propertyDescriptor : valueDescriptor.state().properties())
+      {
+         String propertyInput = propertyDescriptor.qualifiedName().name() +
+               ":<input type=\"text\" name=\"" +
+               propertyDescriptor.qualifiedName().name() + "\"/><br/>";
+
+         form += propertyInput;
+      }
+
+      try
+      {
+         String template = TemplateUtil.getTemplate( "resources/query.html", getClass() );
+         String html = TemplateUtil.eval( template,
+               "$name", method.getName(),
+               "$content", form );
+
+         // Show query form
+         return new StringRepresentation( html, MediaType.TEXT_HTML );
+      } catch (IOException e)
+      {
+         throw new ResourceException( e );
+      }
+
    }
 
-   protected Representation listOperations() throws ResourceException
+   private Method getQueryMethod( Class aClass, String query )
+   {
+      for (Method method : aClass.getMethods())
+      {
+         if (method.getName().equals(query))
+            return method;
+      }
+      return null;
+   }
+
+   private Representation commandForm( Object resource, String command )
+   {
+      return new StringRepresentation("<html>TODO</html>");
+   }
+
+   private Object getResource( Object resource, List<String> segments ) throws IllegalAccessException, InvocationTargetException
+   {
+      for (String segment : segments)
+      {
+         Method resourceMethod = getSubResourceMethod( resource.getClass() );
+         resource = resourceMethod.invoke( resource, segment );
+      }
+
+      return resource;
+   }
+
+   private Method getSubResourceMethod(Class resourceClass)
+   {
+      Method[] methods = resourceClass.getMethods();
+      for (Method method : methods)
+      {
+         if (method.getAnnotation( SubResource.class ) != null)
+               return method;
+      }
+      return null;
+   }
+
+/x
+   protected String getCommand()
+   {
+      String command = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "command" );
+      return command;
+   }
+x/
+
+   protected Representation listOperations(Object resource) throws ResourceException
    {
       // List methods
-      Method[] methods = composite.getClass().getMethods();
+      Method[] methods = resource.getClass().getMethods();
       StringBuilder queries = new StringBuilder( "" );
       for (Method method : methods)
       {
@@ -236,7 +343,7 @@ public class CompositeCommandQueryServerResource
       }
 
       StringBuilder links = new StringBuilder( "" );
-      for (Class mixinType : Classes.interfacesOf( composite.getClass().getInterfaces()[0] ))
+      for (Class mixinType : Classes.interfacesOf( resource.getClass().getInterfaces()[0] ))
       {
          Path path = (Path) mixinType.getAnnotation( Path.class );
          if (path != null)
@@ -275,12 +382,13 @@ public class CompositeCommandQueryServerResource
    @Override
    final protected Representation post( Representation entity, Variant variant ) throws ResourceException
    {
-      String operation = getOperation();
+      String operation = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "command" );
       UnitOfWork uow = null;
+      Object resource = null;
       source.registerListener( this );
       try
       {
-         Method method = getResourceMethod( operation );
+         Method method = getResourceMethod( operation, resource );
          Object[] args = getCommandArguments( method );
 
          int tries = 0;
@@ -291,7 +399,7 @@ public class CompositeCommandQueryServerResource
             getCommandRoles( uow, method, args );
 
             // Invoke command
-            invoke( method, args );
+            invoke( resource, method, args );
 
             try
             {
@@ -429,10 +537,10 @@ public class CompositeCommandQueryServerResource
       return true;
    }
 
-   private Method getResourceMethod( String operation )
+   private Method getResourceMethod( String operation, Object resource )
          throws ResourceException
    {
-      for (Method method : composite.getClass().getInterfaces()[0].getMethods())
+      for (Method method : resource.getClass().getInterfaces()[0].getMethods())
       {
          if (method.getName().equals( operation ))
          {
@@ -461,7 +569,7 @@ public class CompositeCommandQueryServerResource
     *
     * @param method
     * @return
-    */
+    *x
    private boolean isCommandMethod( Method method )
    {
       return method.getReturnType().equals( Void.TYPE ) && method.getParameterTypes().length > 0 && Value.class.isAssignableFrom( method.getParameterTypes()[0] );
@@ -544,7 +652,7 @@ public class CompositeCommandQueryServerResource
       return args;
    }
 
-   private Object invoke( final Method method, final Object[] args )
+   private Object invoke( final Object resource, final Method method, final Object[] args )
          throws ResourceException
    {
       try
@@ -557,7 +665,7 @@ public class CompositeCommandQueryServerResource
             {
                public Object run() throws Exception
                {
-                  return method.invoke( composite, args );
+                  return method.invoke( resource, args );
                }
             } );
 
@@ -626,4 +734,5 @@ public class CompositeCommandQueryServerResource
       } );
       return builder.newInstance();
    }
+   */
 }

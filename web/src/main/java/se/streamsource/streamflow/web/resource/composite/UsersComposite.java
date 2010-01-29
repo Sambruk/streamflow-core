@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,22 +12,25 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.entity.user;
+package se.streamsource.streamflow.web.resource.composite;
 
-import static org.qi4j.api.common.Visibility.application;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.api.composite.TransientComposite;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.user.NewUserCommand;
 
 /**
  * JAVADOC
  */
-public class UserAssembler
-      implements Assembler
+public interface UsersComposite
+   extends TransientComposite
 {
-   public void assemble( ModuleAssembly module )
-         throws AssemblyException
-   {
-      module.addEntities( UserEntity.class ).visibleIn( application );
-   }
+   // Queries
+   ListValue findbyusername(String name);
+
+   // Commands
+   void createuser( NewUserCommand command);
+
+   // Subresources
+   @SubResource
+   UserComposite user(String id);
 }

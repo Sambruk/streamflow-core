@@ -14,13 +14,13 @@
 
 package se.streamsource.streamflow.domain.structure;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
 
 /**
  * Role for maintaining descriptions of entities.
@@ -28,13 +28,13 @@ import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 @Mixins(Describable.Mixin.class)
 public interface Describable
 {
-   void changeDescription( @MaxLength(50) String newDescription );
+   void changeDescription( @Optional @MaxLength(50) String newDescription );
 
    String getDescription();
 
    interface Data
    {
-      @UseDefaults
+      @UseDefaults @Optional
       Property<String> description();
 
       void changedDescription( DomainEvent event, String description );
