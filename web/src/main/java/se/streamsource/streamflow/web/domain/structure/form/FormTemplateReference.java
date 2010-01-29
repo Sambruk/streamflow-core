@@ -49,27 +49,29 @@ public interface FormTemplateReference
          implements FormTemplateReference, Data
    {
       @This
-      Fields.Data fieldsData;
-
-      @This
-      Fields fields;
+      Pages.Data pagesData;
 
       public void synchronizeWithTemplate()
       {
          // First remove all local fields
-         for (Field field : fieldsData.fields())
+         for (Page page : pagesData.pages())
          {
-            fieldsData.removedField( DomainEvent.CREATE, field );
+            pagesData.removedPage( DomainEvent.CREATE, page );
          }
 
          // Copy fields from template
-         Fields.Data templateFields = (Fields.Data) template().get();
-         for (Field templateField : templateFields.fields())
+         Pages.Data templatePages = (Pages.Data) template().get();
+         for (Page page : templatePages.pages())
          {
-            Field field = fields.createField( templateField.getDescription(), ((FieldValueDefinition.Data) templateField).fieldValue().get() );
-            field.copyFromTemplate( templateField );
+            Fields.Data templateFields = (Fields.Data) template().get();
+            for (Field templateField : templateFields.fields())
+            {
+               Field field = page.createField( templateField.getDescription(), ((FieldValueDefinition.Data) templateField).fieldValue().get() );
+               field.copyFromTemplate( templateField );
+            }
+            // TODO What else should be copied? Description? Note?
          }
-         // TODO What else should be copied? Description? Note?
+
 
          formSynchronized( DomainEvent.CREATE );
       }

@@ -20,10 +20,7 @@ import se.streamsource.streamflow.domain.structure.Notable;
 /**
  * JAVADOC
  */
-public interface Form
- extends Describable,
-      Notable,
-      Pages,
-      FormTemplateReference
+public interface FormSubmission
+ extends FormSubmissionReference
 {
 }

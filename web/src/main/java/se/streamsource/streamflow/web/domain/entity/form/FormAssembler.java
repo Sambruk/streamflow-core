@@ -18,6 +18,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 
 /**
  * JAVADOC
@@ -30,6 +31,9 @@ public class FormAssembler
       moduleAssembly.addEntities(
             FormTemplateEntity.class,
             FormEntity.class,
-            FieldEntity.class ).visibleIn( Visibility.application );
+            FormSubmissionEntity.class,
+            FieldEntity.class,
+            PageEntity.class,
+            PageTemplateEntity.class).visibleIn( Visibility.application );
    }
 }

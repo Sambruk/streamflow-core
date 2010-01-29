@@ -14,16 +14,16 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
+import se.streamsource.streamflow.domain.structure.Describable;
 
 /**
  * JAVADOC
  */
-public interface Form
- extends Describable,
-      Notable,
-      Pages,
-      FormTemplateReference
+public interface Page
+      extends PageTemplate,
+      Fields,
+      Describable,
+      Notable
 {
 }

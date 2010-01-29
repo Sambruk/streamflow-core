@@ -12,18 +12,24 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.structure.form;
+package se.streamsource.streamflow.web.domain.entity.form;
 
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.Page;
+import se.streamsource.streamflow.web.domain.structure.form.Fields;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 
 /**
  * JAVADOC
  */
-public interface Form
- extends Describable,
-      Notable,
-      Pages,
-      FormTemplateReference
+public interface PageEntity
+      extends PageTemplateEntity, 
+      Page,
+      Fields.Data,
+      Describable.Data,
+      Notable.Data,
+      DomainEntity
 {
 }

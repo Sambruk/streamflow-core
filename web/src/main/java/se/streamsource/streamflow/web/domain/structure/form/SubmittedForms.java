@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.domain.structure.form;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
+import static org.qi4j.api.entity.EntityReference.getEntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
@@ -26,10 +27,14 @@ import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -37,7 +42,7 @@ import java.util.List;
 @Mixins(SubmittedForms.Mixin.class)
 public interface SubmittedForms
 {
-   void submitForm( SubmittedFormValue form );
+   void submitForm( FormSubmissionValue formSubmissionValue, EntityReference submitter );
 
    interface Data
    {
@@ -47,7 +52,7 @@ public interface SubmittedForms
       @Optional
       Property<EffectiveFormFieldsValue> effectiveFieldValues();
 
-      void submittedForm( DomainEvent event, SubmittedFormValue form );
+      void submittedForm( DomainEvent event, FormSubmissionValue formSubmissionValue, EntityReference submitter );
 
       String getEffectiveValue( Field field );
    }
@@ -58,31 +63,54 @@ public interface SubmittedForms
       @Structure
       ValueBuilderFactory vbf;
 
-      public void submitForm( SubmittedFormValue form )
+      public void submitForm( FormSubmissionValue formSubmissionValue, EntityReference submitter )
       {
-         submittedForm( DomainEvent.CREATE, form );
+         submittedForm( DomainEvent.CREATE, formSubmissionValue, submitter );
       }
 
-      public void submittedForm( DomainEvent event, SubmittedFormValue form )
+      public void submittedForm( DomainEvent event, FormSubmissionValue formSubmissionValue, EntityReference submitter )
       {
+         ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
+
+         formBuilder.prototype().submitter().set( submitter );
+         formBuilder.prototype().form().set( formSubmissionValue.form().get() );
+         formBuilder.prototype().submissionDate().set( new Date() );
+
+         ValueBuilder<SubmittedFieldValue> fieldBuilder = vbf.newValueBuilder( SubmittedFieldValue.class );
+         for (SubmittedPageValue pageValue : formSubmissionValue.pages().get())
+         {
+            for (FieldSubmissionValue field : pageValue.fields().get())
+            {
+               fieldBuilder.prototype().field().set( field.field().get().field().get() );
+               if ( field.value().get() == null )
+               {
+                  fieldBuilder.prototype().value().set( "" );
+               } else
+
+               fieldBuilder.prototype().value().set( field.value().get() );
+
+               formBuilder.prototype().values().get().add( fieldBuilder.newInstance() );
+            }
+         }
+
          List<SubmittedFormValue> forms = submittedForms().get();
-         forms.add( form );
+         forms.add( formBuilder.newInstance() );
          submittedForms().set( forms );
 
          //Recalculate effective values
-         ValueBuilder<EffectiveFieldValue> fieldBuilder = vbf.newValueBuilder( EffectiveFieldValue.class );
+         ValueBuilder<EffectiveFieldValue> eFieldBuilder = vbf.newValueBuilder( EffectiveFieldValue.class );
 
          LinkedHashMap<EntityReference, EffectiveFieldValue> effectiveValues = new LinkedHashMap<EntityReference, EffectiveFieldValue>();
          for (SubmittedFormValue submittedFormValue : forms)
          {
-            fieldBuilder.prototype().submissionDate().set( submittedFormValue.submissionDate().get() );
-            fieldBuilder.prototype().submitter().set( submittedFormValue.submitter().get() );
+            eFieldBuilder.prototype().submissionDate().set( submittedFormValue.submissionDate().get() );
+            eFieldBuilder.prototype().submitter().set( submittedFormValue.submitter().get() );
 
             for (SubmittedFieldValue fieldValue : submittedFormValue.values().get())
             {
-               fieldBuilder.prototype().field().set( fieldValue.field().get() );
-               fieldBuilder.prototype().value().set( fieldValue.value().get() );
-               effectiveValues.put( fieldValue.field().get(), fieldBuilder.newInstance() );
+               eFieldBuilder.prototype().field().set( fieldValue.field().get() );
+               eFieldBuilder.prototype().value().set( fieldValue.value().get() );
+               effectiveValues.put( fieldValue.field().get(), eFieldBuilder.newInstance() );
             }
          }
 

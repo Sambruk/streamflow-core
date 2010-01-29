@@ -19,6 +19,7 @@ import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.form.FormTemplate;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
+import se.streamsource.streamflow.web.domain.structure.form.Pages;
 
 /**
  * JAVADOC
@@ -28,7 +29,7 @@ public interface FormTemplateEntity
       FormTemplate,
       Describable.Data,
       Notable.Data,
-      Fields.Data,
+      Pages.Data,
       DomainEntity
 {
 }

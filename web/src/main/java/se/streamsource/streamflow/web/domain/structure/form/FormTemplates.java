@@ -68,10 +68,14 @@ public interface FormTemplates
          template.changeDescription( fromForm.getDescription() );
          template.changeNote( fromForm.getNote() );
 
-         for (Field field : ((Fields.Data)fromForm).fields())
+         for (Page page : ((Pages.Data)fromForm).pages())
          {
-            Field templateField = template.createField( field.getDescription(), ((FieldValueDefinition.Data) field).fieldValue().get() );
-            templateField.copyFromTemplate( field );
+            Page templatePage = template.createPage( page.getDescription() );
+            for (Field field : ((Fields.Data)page).fields())
+            {
+               Field templateField = templatePage.createField( field.getDescription(), ((FieldValueDefinition.Data) field).fieldValue().get() );
+               templateField.copyFromTemplate( field );
+            }
          }
 
          return template;
