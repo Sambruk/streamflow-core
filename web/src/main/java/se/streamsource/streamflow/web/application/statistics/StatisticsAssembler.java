@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.application.statistics;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -27,6 +28,10 @@ public class StatisticsAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( StatisticsService.class ).identifiedBy( "statistics" ).instantiateOnStartup().visibleIn( Visibility.layer );
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.production ))
+      {
+         module.addServices( StatisticsService.class ).identifiedBy( "statistics" ).instantiateOnStartup().visibleIn( Visibility.layer );
+      }
    }
 }
