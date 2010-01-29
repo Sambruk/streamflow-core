@@ -56,8 +56,8 @@ import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeS
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.fields.FormDefinitionFieldsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.fields.FormDefinitionFieldServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.fields.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskServerResource;
 import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
