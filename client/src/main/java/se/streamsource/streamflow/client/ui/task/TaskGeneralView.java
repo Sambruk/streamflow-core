@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
@@ -150,9 +151,14 @@ public class TaskGeneralView extends JScrollPane implements Observer
 				WorkspaceResources.due_on_label,
 				dueOnField = (JXDatePicker) DATEPICKER.newField(),
 				template.dueOn());
+        // Limit pickable dates to future
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        calendar.add( Calendar.DAY_OF_MONTH, 1 );
+		dueOnField.getMonthView().setLowerBound( calendar.getTime() );
 
 		// Layout and form for the right panel
-		FormLayout rightLayout = new FormLayout("60dlu, 5dlu, 40:grow",
+		FormLayout rightLayout = new FormLayout("70dlu, 5dlu, 30:grow",
 				"pref, pref, pref, pref, pref, pref, pref");
 
 		rightForm = new JPanel(rightLayout);

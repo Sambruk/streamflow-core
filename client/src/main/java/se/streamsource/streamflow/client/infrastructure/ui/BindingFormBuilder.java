@@ -182,11 +182,6 @@ public class BindingFormBuilder
 
       if (component instanceof JXDatePicker)
       {
-         // Limit pickable dates to future
-         Calendar calendar = Calendar.getInstance();
-         calendar.setTime( new Date() );
-         calendar.add( Calendar.DAY_OF_MONTH, 1 );
-         ((JXDatePicker) component).getMonthView().setLowerBound( calendar.getTime() );
          // Set date format
          ((JXDatePicker) component).setFormats( new SimpleDateFormat( getResource( WorkspaceResources.date_format ) ) );
       }
