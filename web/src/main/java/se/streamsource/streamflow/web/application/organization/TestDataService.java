@@ -32,6 +32,9 @@ import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -40,6 +43,8 @@ import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
+import se.streamsource.streamflow.web.domain.structure.form.Page;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -156,7 +161,6 @@ public interface TestDataService
          ValueBuilder<TextFieldValue> builder = vbf.newValueBuilder( TextFieldValue.class );
          builder.prototype().width().set( 30 );
          ValueBuilder<DateFieldValue> dateBuilder = vbf.newValueBuilder( DateFieldValue.class );
-         ValueBuilder<PageBreakFieldValue> pageBreakBuilder = vbf.newValueBuilder( PageBreakFieldValue.class );
          ValueBuilder<NumberFieldValue> numberBuilder = vbf.newValueBuilder( NumberFieldValue.class );
          ValueBuilder<SelectionFieldValue> selectionBuilder = vbf.newValueBuilder( SelectionFieldValue.class );
          List<String> values = new ArrayList<String>();
@@ -166,30 +170,32 @@ public interface TestDataService
          values.add( "Low" );
          selectionBuilder.prototype().values().set( values );
          builder.prototype().mandatory().set( true );
-         bugreport.createField( "Bugname", builder.newInstance() );
+         Page page = bugreport.createPage( "General Info" );
+         page.createField( "Bugname", builder.newInstance() );
          numberBuilder.prototype().integer().set( true );
          numberBuilder.prototype().mandatory().set( true );
-         bugreport.createField( "Bug ID", numberBuilder.newInstance() );
+         page.createField( "Bug ID", numberBuilder.newInstance() );
          builder.prototype().rows().set( 5 );
          builder.prototype().mandatory().set( false );
-         bugreport.createField( "Description", builder.newInstance() );
+         page.createField( "Description", builder.newInstance() );
          builder.prototype().mandatory().set( true );
-         bugreport.createField( "Date Information", pageBreakBuilder.newInstance() );
+         page = bugreport.createPage( "Date Information" );
          dateBuilder.prototype().mandatory().set( true );
-         bugreport.createField( "Discovered", dateBuilder.newInstance() );
+         page.createField( "Discovered", dateBuilder.newInstance() );
          selectionBuilder.prototype().mandatory().set( true );
-         bugreport.createField( "Priority", selectionBuilder.newInstance() );
+         page.createField( "Priority", selectionBuilder.newInstance() );
          selectionBuilder.prototype().multiple().set( true );
          selectionBuilder.prototype().mandatory().set( false );
          values.clear();
          values.add( "Server" );
          values.add( "Client" );
-         bugreport.createField( "Bug Location", selectionBuilder.newInstance() ).changeNote( "Indicate what part of the application the bug is. Optional" );
+         page.createField( "Bug Location", selectionBuilder.newInstance() ).changeNote( "Indicate what part of the application the bug is. Optional" );
 
          Form statusForm = bug.createForm();
          statusForm.changeDescription( "StatusForm" );
          statusForm.changeNote( "This is the Status form. \nWhen urgencies occur please upgrade the status of the current task" );
-         Field statusField = statusForm.createField( "Status", builder.newInstance() );
+         page = statusForm.createPage( "Status Form" );
+         Field statusField = page.createField( "Status", builder.newInstance() );
 
          organization.createFormTemplate( bugreport );
 
@@ -197,16 +203,18 @@ public interface TestDataService
          emailForm.changeDescription( "Email form" );
          emailForm.changeNote( "Form for entering and sending an email" );
          builder.prototype().rows().set( 0 );
-         emailForm.createField( "To", builder.newInstance() ).changeNote( "Enter address of receiver. Note it must be a valid email" );
-         emailForm.createField( "Subject", builder.newInstance() ).changeNote( "Subject of the mail" );
+         page = emailForm.createPage( "Email Form" );
+         page.createField( "To", builder.newInstance() ).changeNote( "Enter address of receiver. Note it must be a valid email" );
+         page.createField( "Subject", builder.newInstance() ).changeNote( "Subject of the mail" );
          builder.prototype().rows().set( 10 );
-         emailForm.createField( "Content", builder.newInstance() ).changeNote( "Mail content" );
+         page.createField( "Content", builder.newInstance() ).changeNote( "Mail content" );
 
          Form resetPasswordForm = passwordReset.createForm();
          resetPasswordForm.changeDescription( "Reset password" );
          resetPasswordForm.changeNote( "Reset password for a user" );
          builder.prototype().rows().set( 0 );
-         resetPasswordForm.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
+         page = resetPasswordForm.createPage( "Reset password form" );
+         page.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
 
          // Create labels
          project.addSelectedLabel( question );
@@ -241,11 +249,16 @@ public interface TestDataService
          Task task = ((Inbox)project).createTask();
          task.changeDescription( "Arbetsuppgift 0" );
 
-         SubmittedFormValue submitted = createSubmittedForm( user, statusForm, statusField, "Progress is slow" );
-         task.submitForm( submitted );
+         task.changeTaskType( bug );
+         FormSubmission formSubmission = task.createFormSubmission( statusForm );
+         task.addFormSubmission( formSubmission );
+         FormSubmissionValue value = (FormSubmissionValue) formSubmission.getFormSubmission().buildWith().prototype();
 
-         submitted = createSubmittedForm( user, statusForm, statusField, "Progress is getting better" );
-         task.submitForm( submitted );
+         prepareStatusSubmission( value, "Progress is getting better" );
+         task.submitForm( value, EntityReference.getEntityReference( testUser ) );
+         prepareStatusSubmission( value, "Progress is getting better" );
+         task.submitForm( value, EntityReference.getEntityReference( someUser ));
+         formSubmission.changeFormSubmission( value );
 
 
          for (int i = 1; i < 30; i++)
@@ -259,21 +272,15 @@ public interface TestDataService
          uow.complete();
       }
 
-      private SubmittedFormValue createSubmittedForm( UserEntity user, Form form, Field field, String value )
+      private void prepareStatusSubmission( FormSubmissionValue formSubmission, String status)
       {
-         ValueBuilder<SubmittedFormValue> builder = vbf.newValueBuilder( SubmittedFormValue.class );
-         builder.prototype().submissionDate().set( new Date() );
-         builder.prototype().submitter().set( EntityReference.getEntityReference( user ) );
-         builder.prototype().form().set( EntityReference.getEntityReference( form ) );
-
-         List<SubmittedFieldValue> list = builder.prototype().values().get();
-
-         ValueBuilder<SubmittedFieldValue> fieldBuilder = vbf.newValueBuilder( SubmittedFieldValue.class );
-         fieldBuilder.prototype().field().set( EntityReference.getEntityReference( field ) );
-         fieldBuilder.prototype().value().set( value );
-         list.add( fieldBuilder.newInstance() );
-
-         return builder.newInstance();
+         for (SubmittedPageValue pageValue : formSubmission.pages().get())
+         {
+            for (FieldSubmissionValue value : pageValue.fields().get())
+            {
+               value.value().set( status );
+            }
+         }
       }
 
 
