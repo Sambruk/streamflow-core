@@ -26,12 +26,16 @@ import se.streamsource.streamflow.web.domain.structure.form.Pages;
  * JAVADOC
  */
 public interface FormEntity
-      extends
+      extends DomainEntity,
       Form,
+
+      // Data
       FormTemplateReference.Data,
       Describable.Data,
       Notable.Data,
       Pages.Data,
-      DomainEntity
+
+      // Queries
+      PageQueries
 {
 }
