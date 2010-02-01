@@ -246,7 +246,7 @@ public interface TestDataService
          FormSubmission formSubmission = task.createFormSubmission( statusForm );
          FormSubmissionValue value = (FormSubmissionValue) formSubmission.getFormSubmission().buildWith().prototype();
 
-         prepareStatusSubmission( value, "Progress is getting better" );
+         prepareStatusSubmission( value, "Progress is slow" );
          task.submitForm( value, EntityReference.getEntityReference( testUser ) );
          prepareStatusSubmission( value, "Progress is getting better" );
          formSubmission.changeFormSubmission( value );

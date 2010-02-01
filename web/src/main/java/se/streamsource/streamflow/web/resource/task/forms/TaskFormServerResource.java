@@ -59,25 +59,22 @@ public class TaskFormServerResource
       getVariants().add( new Variant( MediaType.APPLICATION_JSON ) );
    }
 
-   // GET
    public FormSubmissionValue formsubmission() throws ResourceException
    {
-      String formSubmissionId = getRequest().getAttributes().get("formsubmission").toString();
-
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      FormSubmission formSubmission = uow.get( FormSubmission.class, formSubmissionId );
+      FormSubmission formSubmission =
+            uow.get( FormSubmission.class, getRequest().getAttributes().get("formsubmission").toString() );
 
       return formSubmission.getFormSubmission();
    }
 
    public void updatefield( FieldValueDTO field )
    {
-      String formSubmissionId = getRequest().getAttributes().get("formsubmission").toString();
-
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      FormSubmission formSubmission = uow.get( FormSubmission.class, formSubmissionId );
+      FormSubmission formSubmission =
+            uow.get( FormSubmission.class, getRequest().getAttributes().get("formsubmission").toString() );
 
       ValueBuilder<FormSubmissionValue> builder = vbf.newValueBuilder( FormSubmissionValue.class ).withPrototype( formSubmission.getFormSubmission() );
 
