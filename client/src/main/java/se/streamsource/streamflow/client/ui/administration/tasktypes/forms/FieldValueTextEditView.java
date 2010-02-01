@@ -68,7 +68,7 @@ public class FieldValueTextEditView
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text_field_type ) ) );
 
-      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldValueTemplate.mandatory(), fieldValueBinder ).
+      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldDefinitionTemplate.mandatory() ).
             appendLine( AdministrationResources.width_label, TEXTFIELD, fieldValueTemplate.width(), fieldValueBinder).
             appendLine( AdministrationResources.rows_label, TEXTFIELD, fieldValueTemplate.rows(), fieldValueBinder).
             appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).

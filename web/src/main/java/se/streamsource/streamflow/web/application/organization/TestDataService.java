@@ -169,23 +169,16 @@ public interface TestDataService
          values.add( "Normal" );
          values.add( "Low" );
          selectionBuilder.prototype().values().set( values );
-         builder.prototype().mandatory().set( true );
          Page page = bugreport.createPage( "General Info" );
-         page.createField( "Bugname", builder.newInstance() );
+         page.createField( "Bugname", builder.newInstance() ).changeMandatory( true );
          numberBuilder.prototype().integer().set( true );
-         numberBuilder.prototype().mandatory().set( true );
-         page.createField( "Bug ID", numberBuilder.newInstance() );
+         page.createField( "Bug ID", numberBuilder.newInstance() ).changeMandatory( true );
          builder.prototype().rows().set( 5 );
-         builder.prototype().mandatory().set( false );
          page.createField( "Description", builder.newInstance() );
-         builder.prototype().mandatory().set( true );
          page = bugreport.createPage( "Date Information" );
-         dateBuilder.prototype().mandatory().set( true );
-         page.createField( "Discovered", dateBuilder.newInstance() );
-         selectionBuilder.prototype().mandatory().set( true );
-         page.createField( "Priority", selectionBuilder.newInstance() );
+         page.createField( "Discovered", dateBuilder.newInstance() ).changeMandatory( true );
+         page.createField( "Priority", selectionBuilder.newInstance() ).changeMandatory( true );
          selectionBuilder.prototype().multiple().set( true );
-         selectionBuilder.prototype().mandatory().set( false );
          values.clear();
          values.add( "Server" );
          values.add( "Client" );
@@ -195,7 +188,7 @@ public interface TestDataService
          statusForm.changeDescription( "StatusForm" );
          statusForm.changeNote( "This is the Status form. \nWhen urgencies occur please upgrade the status of the current task" );
          page = statusForm.createPage( "Status Form" );
-         Field statusField = page.createField( "Status", builder.newInstance() );
+         page.createField( "Status", builder.newInstance() ).changeMandatory( true );
 
          organization.createFormTemplate( bugreport );
 
@@ -251,14 +244,13 @@ public interface TestDataService
 
          task.changeTaskType( bug );
          FormSubmission formSubmission = task.createFormSubmission( statusForm );
-         task.addFormSubmission( formSubmission );
          FormSubmissionValue value = (FormSubmissionValue) formSubmission.getFormSubmission().buildWith().prototype();
 
          prepareStatusSubmission( value, "Progress is getting better" );
          task.submitForm( value, EntityReference.getEntityReference( testUser ) );
          prepareStatusSubmission( value, "Progress is getting better" );
-         task.submitForm( value, EntityReference.getEntityReference( someUser ));
          formSubmission.changeFormSubmission( value );
+         task.submitForm( value, EntityReference.getEntityReference( someUser ));
 
 
          for (int i = 1; i < 30; i++)

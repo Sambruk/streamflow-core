@@ -169,7 +169,7 @@ public class FormSubmissionWizardPage
    {
       StringBuilder componentName = new StringBuilder( "<html>" );
       componentName.append( value.field().get().description().get() );
-      if ( value.field().get().fieldValue().get().mandatory().get() )
+      if ( value.field().get().mandatory().get() )
       {
          componentName.append( " <font color='red'>*</font>" );
       }
@@ -231,7 +231,7 @@ public class FormSubmissionWizardPage
             value = multiSelect.getChecked();
          }
 
-         if ( field.field().get().fieldValue().get().mandatory().get() )
+         if ( field.field().get().mandatory().get() )
          {
             if (ValidationUtils.isEmpty( value ))
             {

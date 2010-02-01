@@ -24,6 +24,4 @@ import org.qi4j.api.value.ValueComposite;
 public interface FieldValue
       extends ValueComposite
 {
-   @UseDefaults
-   Property<Boolean> mandatory();
 }

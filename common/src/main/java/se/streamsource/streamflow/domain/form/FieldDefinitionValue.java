@@ -17,6 +17,7 @@ package se.streamsource.streamflow.domain.form;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.api.common.UseDefaults;
 
 /**
  * JAVADOC
@@ -31,4 +32,7 @@ public interface FieldDefinitionValue
    Property<String> note();
 
    Property<FieldValue> fieldValue();
+
+   @UseDefaults
+   Property<Boolean> mandatory();
 }

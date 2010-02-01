@@ -107,8 +107,7 @@ public class TaskFormsServerResource
 
       if ( formSubmission == null)
       {
-         formSubmission = formSubmissions.createFormSubmission( form );
-         formSubmissions.addFormSubmission( formSubmission );
+         formSubmissions.createFormSubmission( form );
       }
    }
 

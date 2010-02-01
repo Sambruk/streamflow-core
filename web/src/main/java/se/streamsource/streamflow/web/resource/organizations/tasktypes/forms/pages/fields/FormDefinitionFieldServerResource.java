@@ -100,34 +100,7 @@ public class FormDefinitionFieldServerResource
       PageEntity pageEntity = uow.get( PageEntity.class, pageId );
       FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
 
-      ValueBuilder<? extends FieldValue> builder = getBuilderOfType( field.fieldValue().get() );
-      builder.prototype().mandatory().set( mandatory.bool().get() );
-
-      field.changeFieldValue( builder.newInstance() );
-   }
-
-   private ValueBuilder<? extends FieldValue> getBuilderOfType(FieldValue field)
-   {
-      if ( field instanceof TextFieldValue)
-      {
-         return vbf.newValueBuilder( TextFieldValue.class ).withPrototype( (TextFieldValue) field );
-      } else if (field instanceof DateFieldValue)
-      {
-         return vbf.newValueBuilder( DateFieldValue.class ).withPrototype( (DateFieldValue) field );
-      } else if ( field instanceof NumberFieldValue)
-      {
-         return vbf.newValueBuilder( NumberFieldValue.class ).withPrototype( (NumberFieldValue) field );
-      } else if ( field instanceof SelectionFieldValue)
-      {
-         return vbf.newValueBuilder( SelectionFieldValue.class ).withPrototype( (SelectionFieldValue) field );
-      } else if ( field instanceof PageBreakFieldValue)
-      {
-         return vbf.newValueBuilder( PageBreakFieldValue.class ).withPrototype( (PageBreakFieldValue) field );
-      } else if ( field instanceof CommentFieldValue)
-      {
-         return vbf.newValueBuilder( CommentFieldValue.class ).withPrototype( (CommentFieldValue) field );
-      }
-      return null;
+      field.changeMandatory( mandatory.bool().get() );
    }
 
    public void changewidth( IntegerDTO newWidth )

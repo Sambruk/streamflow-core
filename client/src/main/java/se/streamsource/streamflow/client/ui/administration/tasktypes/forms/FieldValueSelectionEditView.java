@@ -68,7 +68,7 @@ public class FieldValueSelectionEditView
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.selection_field_type ) ) );
 
-      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldValueTemplate.mandatory(), fieldValueBinder ).
+      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldDefinitionTemplate.mandatory() ).
             appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
             appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() ).
             appendLine( AdministrationResources.multi_selection, CHECKBOX, fieldValueTemplate.multiple(), fieldValueBinder);

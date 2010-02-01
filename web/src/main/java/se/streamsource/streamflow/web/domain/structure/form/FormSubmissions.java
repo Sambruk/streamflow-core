@@ -43,15 +43,11 @@ public interface FormSubmissions
 
    FormSubmission createFormSubmission( Form form );
 
-   void addFormSubmission( FormSubmission formSubmission );
-
    interface Data
    {
       ManyAssociation<FormSubmission> formSubmissions();
 
       FormSubmission createdFormSubmission( DomainEvent event, Form form );
-
-      void addedFormSubmission( DomainEvent event, FormSubmission formSubmission );
    }
 
    abstract class Mixin
@@ -101,16 +97,6 @@ public interface FormSubmissions
          return null;
       }
 
-      public void addFormSubmission( FormSubmission formSubmission )
-      {
-         if ( formSubmissions().contains( formSubmission ))
-         {
-            return;
-         }
-
-         addedFormSubmission( DomainEvent.CREATE, formSubmission );
-      }
-
       public FormSubmission createdFormSubmission( DomainEvent event, Form form )
       {
          EntityBuilder<FormSubmission> submissionEntityBuilder = uowf.currentUnitOfWork().newEntityBuilder( FormSubmission.class );
@@ -138,6 +124,7 @@ public interface FormSubmissions
                valueBuilder.prototype().description().set( field.getDescription() );
                valueBuilder.prototype().note().set( field.getNote() );
                valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ));
+               valueBuilder.prototype().mandatory().set( field.getMandatory() );
                valueBuilder.prototype().fieldValue().set( ((FieldValueDefinition.Data) field).fieldValue().get() );
 
                fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
@@ -148,12 +135,10 @@ public interface FormSubmissions
 
          submissionEntityBuilder.instance().changeFormSubmission( builder.newInstance() );
 
-         return submissionEntityBuilder.newInstance();
-      }
-
-      public void addedFormSubmission( DomainEvent event, FormSubmission formSubmission )
-      {
+         FormSubmission formSubmission = submissionEntityBuilder.newInstance();
          formSubmissions().add( formSubmission );
+
+         return formSubmission;
       }
    }
 }
