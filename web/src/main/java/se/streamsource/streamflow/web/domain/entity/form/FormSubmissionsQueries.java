@@ -60,22 +60,6 @@ public interface FormSubmissionsQueries
       @Structure
       ValueBuilderFactory vbf;
 
-      public ListValue getFormSubmissions()
-      {
-         ValueBuilder<ListValue> listBuilder = vbf.newValueBuilder( ListValue.class );
-         ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
-
-
-         for (FormSubmission submission : formSubmissions.formSubmissions())
-         {
-            itemBuilder.prototype().description().set( ((FormSubmissionEntity)submission).identity().get() );
-            itemBuilder.prototype().entity().set( submission.getFormSubmission().form().get() );
-
-            listBuilder.prototype().items().get().add( itemBuilder.newInstance() );
-         }
-         return listBuilder.newInstance();
-      }
-
       public EntityReferenceDTO getFormSubmission( EntityReference form )
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );

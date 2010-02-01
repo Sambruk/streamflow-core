@@ -44,7 +44,8 @@ public class FormSubmissionModel
    private CommandQueryClient client;
    private List<WizardPage> pages;
 
-   public FormSubmissionModel( @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
+   public FormSubmissionModel( @Uses CommandQueryClient client,
+                               @Structure ObjectBuilderFactory obf )
    {
       this.client = client;
 
@@ -73,17 +74,6 @@ public class FormSubmissionModel
    public String getTitle()
    {
       return formSubmission.description().get();
-   }
-
-   public void submit( )
-   {
-      try
-      {
-         client.postCommand( "submitform" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_submit_form, e);
-      }
    }
 
    public void updateField( EntityReference reference, String name ) throws ResourceException

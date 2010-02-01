@@ -27,7 +27,6 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -60,7 +59,7 @@ public class PossibleFormsModel extends AbstractListModel
             client.postCommand( "createformsubmission", builder.newInstance() );
             EntityReferenceDTO formSubmission = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
             return obf.newObjectBuilder( FormSubmissionModel.class )
-                  .use( client.getSubClient( formSubmission.entity().get().identity() ), EntityReference.parseEntityReference( key ) ).newInstance();
+                  .use( client.getSubClient( formSubmission.entity().get().identity() ) ).newInstance();
          } catch (ResourceException e)
          {
             throw new OperationException(WorkspaceResources.could_not_get_form, e);
@@ -92,5 +91,18 @@ public class PossibleFormsModel extends AbstractListModel
    public FormSubmissionModel getFormSubmitModel(String key)
    {
       return formSubmitModels.get(key);
+   }
+
+   public void submit( EntityReference form )
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( form );
+      try
+      {
+         client.postCommand( "submit", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_submit_form, e);
+      }
    }
 }

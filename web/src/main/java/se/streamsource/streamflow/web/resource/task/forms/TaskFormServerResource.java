@@ -80,21 +80,6 @@ public class TaskFormServerResource
       formSubmission.changeFormSubmission( builder.newInstance() );
    }
 
-   public void submitform( )
-   {
-      UnitOfWork uow = uowf.currentUnitOfWork();
-
-      SubmittedForms forms =
-            uow.get( SubmittedForms.class, getRequest().getAttributes().get( "task" ).toString() );
-
-      FormSubmission formSubmission =
-            uow.get( FormSubmission.class, getRequest().getAttributes().get("formsubmission").toString() );
-
-      checkPermission( formSubmission );
-
-      forms.submitForm( formSubmission.getFormSubmission(), parseEntityReference( getClientInfo().getUser().getIdentifier() ) );
-   }
-
    @Override
    protected String getConditionalIdentityAttribute()
    {

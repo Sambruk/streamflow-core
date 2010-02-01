@@ -85,16 +85,16 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
    {
 	   // Open up the wizard with the correct form for submission.
       Component component = ((Component) e.getSource());
-      PossibleFormView formsView = (PossibleFormView) component.getParent();
+      final PossibleFormView formsView = (PossibleFormView) component.getParent();
 
-      final FormSubmissionModel model = modelForms.getFormSubmitModel( formsView.form().entity().get().identity() );
+      FormSubmissionModel model = modelForms.getFormSubmitModel( formsView.form().entity().get().identity() );
 
       Wizard wizard = WizardPage.createWizard( model.getTitle(), model.getPages(), new WizardPage.WizardResultProducer()
       {
 
          public Object finish( Map map ) throws WizardException
          {
-            model.submit();
+            modelForms.submit( formsView.form().entity().get() );
             return null;
          }
 

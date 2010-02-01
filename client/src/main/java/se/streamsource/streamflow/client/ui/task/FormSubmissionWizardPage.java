@@ -44,6 +44,7 @@ import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -68,8 +69,7 @@ public class FormSubmissionWizardPage
       extends WizardPage
    implements Observer
 {
-   private java.util.List<FieldSubmissionValue> fields;
-   private java.util.Map<EntityReference, JComponent> componentFieldMap;
+   private java.util.Map<FieldDefinitionValue, JComponent> componentFieldMap;
    private java.util.Map<StateBinder, EntityReference> fieldBinders;
    private ValidationResultModel validationResultModel;
    private FormSubmissionModel model;
@@ -78,19 +78,18 @@ public class FormSubmissionWizardPage
                                     @Uses FormSubmissionModel model)
    {
       super( page.title().get() );
-      this.fields = page.fields().get();
       this.model = model;
-      componentFieldMap = new HashMap<EntityReference, JComponent>();
+      componentFieldMap = new HashMap<FieldDefinitionValue, JComponent>();
       validationResultModel = new DefaultValidationResultModel();
       setLayout(new BorderLayout());
       JPanel panel = new JPanel( new FormLayout( ) );
 
-      fieldBinders = new HashMap<StateBinder, EntityReference>( fields.size() );
+      fieldBinders = new HashMap<StateBinder, EntityReference>( page.fields().get().size() );
       FormLayout formLayout = new FormLayout( "200dlu", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, null );
 
-      for (FieldSubmissionValue value : fields)
+      for (FieldSubmissionValue value : page.fields().get() )
       {
          JComponent component;
          if ( value.field().get().fieldValue().get() instanceof TextFieldValue)
@@ -143,7 +142,7 @@ public class FormSubmissionWizardPage
             component.setToolTipText( value.field().get().note().get() );
          }
 
-         componentFieldMap.put( value.field().get().field().get(), component );
+         componentFieldMap.put( value.field().get(), component );
 
          StateBinder stateBinder = new StateBinder();
          FieldSubmissionValue value1 = stateBinder.bindingTemplate( FieldSubmissionValue.class );
@@ -180,7 +179,7 @@ public class FormSubmissionWizardPage
    @Override
    public WizardPanelNavResult allowNext( String s, Map map, Wizard wizard )
    {
-      ValidationResult validation = validatePage( map );
+      ValidationResult validation = validatePage( );
       validationResultModel.setResult( validation );
 
       if ( validation.hasErrors())
@@ -198,13 +197,14 @@ public class FormSubmissionWizardPage
       return allowNext( s, map, wizard );
    }
 
-   private ValidationResult validatePage( Map map ) {
+   private ValidationResult validatePage( ) {
       ValidationResult validationResult = new ValidationResult();
 
-      for (FieldSubmissionValue field : fields)
+
+      for (Map.Entry<FieldDefinitionValue, JComponent> entry : componentFieldMap.entrySet())
       {
 
-         JComponent component = componentFieldMap.get( field.field().get().field().get() );
+         JComponent component = entry.getValue();
          String value = "";
          if (component instanceof JTextField)
          {
@@ -231,11 +231,11 @@ public class FormSubmissionWizardPage
             value = multiSelect.getChecked();
          }
 
-         if ( field.field().get().mandatory().get() )
+         if ( entry.getKey().mandatory().get() )
          {
             if (ValidationUtils.isEmpty( value ))
             {
-               validationResult.addError( i18n.text(WorkspaceResources.mandatory_field_missing) + ": " + field.field().get().description().get() );
+               validationResult.addError( i18n.text(WorkspaceResources.mandatory_field_missing) + ": " + entry.getKey().description().get() );
             }
          }
       }
