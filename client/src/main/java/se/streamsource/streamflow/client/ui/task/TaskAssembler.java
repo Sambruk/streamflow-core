@@ -86,7 +86,7 @@ public class TaskAssembler
             FormSubmissionWizardPage.class );
 
       UIAssemblers.addMV( module,
-              FormsListModel.class,
+              PossibleFormsModel.class,
               PossibleFormsView.class );
 
       UIAssemblers.addMV( module, 

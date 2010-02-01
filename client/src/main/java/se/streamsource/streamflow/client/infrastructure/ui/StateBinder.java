@@ -22,6 +22,7 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.util.DateFunctions;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 
@@ -498,7 +499,7 @@ public class StateBinder
             JXDatePicker datePicker = (JXDatePicker) component;
             if ( value instanceof String)
             {
-               datePicker.setDate( new Date( new Long( (String) value ) ) );
+               datePicker.setDate( DateFunctions.fromString( (String) value ));
             } else
             {
                datePicker.setDate( (Date) value );

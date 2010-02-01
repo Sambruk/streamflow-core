@@ -29,11 +29,13 @@ import org.netbeans.spi.wizard.WizardPanelNavResult;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.util.DateFunctions;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
@@ -96,7 +98,11 @@ public class FormSubmissionWizardPage
             TextFieldValue field = (TextFieldValue) value.field().get().fieldValue().get();
             if ( field.rows().get() != null && field.rows().get() > 1)
             {
-               component = new JTextArea( field.rows().get(),  field.width().get() );
+               JScrollPane scroll = (JScrollPane) TEXTAREA.newField();
+               JTextArea text = (JTextArea) scroll.getViewport().getView();
+               text.setRows( field.rows().get());
+               text.setColumns( field.width().get() );
+               component = scroll;
             } else
             {
                component = new JTextField( field.width().get() );
@@ -204,9 +210,9 @@ public class FormSubmissionWizardPage
          {
             JTextField textField = (JTextField) component;
             value = textField.getText(  );
-         } else if (component instanceof JTextArea)
+         } else if (component instanceof JScrollPane)
          {
-            JTextArea textArea = (JTextArea) component;
+            JTextArea textArea = (JTextArea) ((JScrollPane) component).getViewport().getView();
             value = textArea.getText();
          } else if (component instanceof JXDatePicker)
          {
@@ -245,7 +251,7 @@ public class FormSubmissionWizardPage
          {
             if ( property.get() instanceof Date)
             {
-               model.updateField( fieldBinders.get( (StateBinder) observable ), ""+((Date)property.get()).getTime() );
+               model.updateField( fieldBinders.get( (StateBinder) observable ), DateFunctions.toUtcString((Date)property.get()) );
             } else
             {
                model.updateField( fieldBinders.get( (StateBinder) observable ), property.get().toString() );

@@ -39,7 +39,7 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
    StreamFlowApplication main;
 
 
-   private FormsListModel modelForms;
+   private PossibleFormsModel modelForms;
 
    private JPanel formPanel;
 
@@ -52,7 +52,7 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
       add( formPanel, BorderLayout.SOUTH );
    }
 
-   public void setFormsModel( FormsListModel modelForm )
+   public void setFormsModel( PossibleFormsModel modelForm )
    {
       this.modelForms = modelForm;
       modelForm.getForms().addListEventListener( this );

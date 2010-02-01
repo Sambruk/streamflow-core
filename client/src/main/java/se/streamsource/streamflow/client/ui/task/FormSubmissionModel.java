@@ -79,7 +79,7 @@ public class FormSubmissionModel
    {
       try
       {
-         client.postCommand( "submitform", formSubmission );
+         client.postCommand( "submitform" );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_submit_form, e);

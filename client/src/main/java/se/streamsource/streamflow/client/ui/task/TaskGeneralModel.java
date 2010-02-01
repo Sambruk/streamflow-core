@@ -66,9 +66,9 @@ public class TaskGeneralModel extends Observable implements Refreshable,
 	TaskLabelsModel taskLabelsModel;
 
    @Uses
-   FormsListModel formsListModel;
+   PossibleFormsModel possibleFormsModel;
 
-	public TaskGeneralModel(@Uses CommandQueryClient client)
+   public TaskGeneralModel(@Uses CommandQueryClient client)
 	{
 		this.client = client;
 		eventFilter = new EventVisitorFilter(client.getReference()
@@ -147,9 +147,9 @@ public class TaskGeneralModel extends Observable implements Refreshable,
 		return taskLabelsModel;
 	}
 
-	public FormsListModel formsModel()
+	public PossibleFormsModel formsModel()
 	{
-      return formsListModel;
+      return possibleFormsModel;
 	}
 
 	public EventList<ListItemValue> getPossibleTaskTypes()
@@ -215,7 +215,7 @@ public class TaskGeneralModel extends Observable implements Refreshable,
 
 			taskLabelsModel.setLabels(general.labels().get());
 
-			formsListModel.setForms( getPossibleForms() );
+			possibleFormsModel.setForms( getPossibleForms() );
 
 			setChanged();
 			notifyObservers();

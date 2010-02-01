@@ -34,7 +34,7 @@ import ca.odell.glazedlists.EventList;
 
 import java.util.List;
 
-public class FormsListModel extends AbstractListModel
+public class PossibleFormsModel extends AbstractListModel
 {
    @Uses
    CommandQueryClient client;
