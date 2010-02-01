@@ -52,35 +52,19 @@ public class PossibleFormsModel extends AbstractListModel
       @Override
       protected FormSubmissionModel newModel(String key)
       {
-         String formSubmissionId = null;
          try
          {
             ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
             builder.prototype().entity().set( EntityReference.parseEntityReference( key ));
 
-            client.postCommand( "formsubmission", builder.newInstance() );
-            ListValue formSubmissions = client.query( "listformsubmissions", ListValue.class );
-
-            for (ListItemValue value : formSubmissions.items().get())
-            {
-               if ( value.entity().get().identity().equals( key ) )
-               {
-                  formSubmissionId = value.description().get();
-               }
-            }
-
-            if ( formSubmissionId == null)
-            {
-               throw new OperationException(WorkspaceResources.could_not_get_form_submission, null);
-            }
-
+            client.postCommand( "createformsubmission", builder.newInstance() );
+            EntityReferenceDTO formSubmission = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
+            return obf.newObjectBuilder( FormSubmissionModel.class )
+                  .use( client.getSubClient( formSubmission.entity().get().identity() ), EntityReference.parseEntityReference( key ) ).newInstance();
          } catch (ResourceException e)
          {
             throw new OperationException(WorkspaceResources.could_not_get_form, e);
          }
-
-         return obf.newObjectBuilder( FormSubmissionModel.class )
-               .use( client.getSubClient( formSubmissionId ), EntityReference.parseEntityReference( key ) ).newInstance();
       }
    };
 

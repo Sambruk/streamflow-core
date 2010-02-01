@@ -75,7 +75,7 @@ public class FormSubmissionWizardPage
    private FormSubmissionModel model;
 
    public FormSubmissionWizardPage( @Uses SubmittedPageValue page,
-                                @Uses FormSubmissionModel model)
+                                    @Uses FormSubmissionModel model)
    {
       super( page.title().get() );
       this.fields = page.fields().get();
@@ -251,10 +251,10 @@ public class FormSubmissionWizardPage
          {
             if ( property.get() instanceof Date)
             {
-               model.updateField( fieldBinders.get( (StateBinder) observable ), DateFunctions.toUtcString((Date)property.get()) );
+               model.updateField( fieldBinders.get( observable ), DateFunctions.toUtcString((Date)property.get()) );
             } else
             {
-               model.updateField( fieldBinders.get( (StateBinder) observable ), property.get().toString() );
+               model.updateField( fieldBinders.get( observable ), property.get().toString() );
             }
          } catch (ResourceException e)
          {

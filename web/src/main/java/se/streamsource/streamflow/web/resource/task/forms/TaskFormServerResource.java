@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.web.resource.task.forms;
 
-import static org.qi4j.api.entity.EntityReference.getEntityReference;
+import static org.qi4j.api.entity.EntityReference.parseEntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -25,12 +25,9 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -44,15 +41,6 @@ import java.util.Date;
 public class TaskFormServerResource
       extends CommandQueryServerResource
 {
-   @Structure
-   UnitOfWorkFactory uowf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   Qi4jSPI spi;
-
    public TaskFormServerResource() throws ResourceException
    {
       setNegotiated( true );
@@ -94,18 +82,17 @@ public class TaskFormServerResource
 
    public void submitform( )
    {
-      String formsQueryId = getRequest().getAttributes().get( "task" ).toString();
-      String formSubmissionId = getRequest().getAttributes().get("formsubmission").toString();
-
       UnitOfWork uow = uowf.currentUnitOfWork();
-      SubmittedForms forms = uow.get( SubmittedForms.class, formsQueryId );
 
-      UserEntity user = uow.get( UserEntity.class, getClientInfo().getUser().getIdentifier() );
+      SubmittedForms forms =
+            uow.get( SubmittedForms.class, getRequest().getAttributes().get( "task" ).toString() );
 
-      FormSubmission formSubmission = uow.get( FormSubmission.class, formSubmissionId );
+      FormSubmission formSubmission =
+            uow.get( FormSubmission.class, getRequest().getAttributes().get("formsubmission").toString() );
+
       checkPermission( formSubmission );
 
-      forms.submitForm( formSubmission.getFormSubmission(), getEntityReference( user ) );
+      forms.submitForm( formSubmission.getFormSubmission(), parseEntityReference( getClientInfo().getUser().getIdentifier() ) );
    }
 
    @Override

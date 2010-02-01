@@ -22,6 +22,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.entity.EntityReference;
+import static org.qi4j.api.entity.EntityReference.parseEntityReference;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
@@ -34,6 +35,7 @@ import se.streamsource.streamflow.resource.task.FieldDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
@@ -46,7 +48,8 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 @Mixins(FormSubmissionsQueries.Mixin.class)
 public interface FormSubmissionsQueries
 {
-   ListValue getFormSubmissions();
+   EntityReferenceDTO getFormSubmission( EntityReference form );
+
 
    class Mixin
          implements FormSubmissionsQueries
@@ -62,6 +65,7 @@ public interface FormSubmissionsQueries
          ValueBuilder<ListValue> listBuilder = vbf.newValueBuilder( ListValue.class );
          ValueBuilder<ListItemValue> itemBuilder = vbf.newValueBuilder( ListItemValue.class );
 
+
          for (FormSubmission submission : formSubmissions.formSubmissions())
          {
             itemBuilder.prototype().description().set( ((FormSubmissionEntity)submission).identity().get() );
@@ -69,8 +73,22 @@ public interface FormSubmissionsQueries
 
             listBuilder.prototype().items().get().add( itemBuilder.newInstance() );
          }
-
          return listBuilder.newInstance();
+      }
+
+      public EntityReferenceDTO getFormSubmission( EntityReference form )
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         for (FormSubmission submission : formSubmissions.formSubmissions())
+         {
+            if ( submission.getFormSubmission().form().get().equals( form ) )
+            {
+               FormSubmissionEntity entity = (FormSubmissionEntity) submission;
+               builder.prototype().entity().set( parseEntityReference( entity.identity().get() ));
+               return builder.newInstance();
+            }
+         }
+         return null;
       }
    }
 }
