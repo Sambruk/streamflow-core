@@ -28,6 +28,7 @@ import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
+import se.streamsource.streamflow.web.domain.entity.form.PageQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
@@ -46,6 +47,16 @@ public class FormDefinitionPagesServerResource
       checkPermission( form );
 
       return new ListValueBuilder( vbf ).addDescribableItems( form.pages() ).newList();
+   }
+
+   public ListValue pagesdetails()
+   {
+      String identity = getRequest().getAttributes().get( "form" ).toString();
+      UnitOfWork uow = uowf.currentUnitOfWork();
+      PageQueries pageQueries = uow.get( PageQueries.class, identity );
+      checkPermission( pageQueries );
+
+      return pageQueries.getPageDetails();
    }
 
    public void add( StringDTO name )
