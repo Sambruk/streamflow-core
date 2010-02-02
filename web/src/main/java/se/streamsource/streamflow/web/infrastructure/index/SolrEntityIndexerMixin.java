@@ -30,7 +30,6 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.GraphImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
@@ -38,12 +37,7 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
-import org.qi4j.spi.entity.ManyAssociationState;
 import org.qi4j.spi.entitystore.StateChangeListener;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 
 import java.io.IOException;
 import java.util.Date;
@@ -75,6 +69,8 @@ public class SolrEntityIndexerMixin
 
    public void passivate() throws Exception
    {
+      server = null;
+      indexedFields = null;
    }
 
    public void notifyChanges( Iterable<EntityState> entityStates )

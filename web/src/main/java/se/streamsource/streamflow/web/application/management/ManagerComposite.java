@@ -37,15 +37,17 @@ import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
-import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
+import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
+import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -118,6 +120,12 @@ public interface ManagerComposite
       @Service
       ServiceReference<Repository> repository;
 
+      @Service
+      ServiceReference<EmbeddedSolrService> solr;
+
+      @Service
+      ServiceReference<SolrQueryService> solrIndexer;
+
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -162,6 +170,8 @@ public interface ManagerComposite
       {
          // Delete current index
          removeRdfRepository();
+         // Remove Lucene index
+         removeSolrLuceneIndex();
 
          // Reindex state
          reindexer.reindex();
@@ -436,6 +446,16 @@ public interface ManagerComposite
          removeDirectory( new File( fileConfig.dataDirectory(), "rdf-repository" ) );
          ((Activatable) repository).activate();
          ((Activatable) entityFinder).activate();
+      }
+
+      private void removeSolrLuceneIndex()
+            throws Exception
+      {
+         ((Activatable)solrIndexer).passivate();
+         ((Activatable)solr).passivate();
+         removeDirectory( new File( fileConfig.dataDirectory(), "solr" ) );
+         ((Activatable)solr).activate();
+         ((Activatable)solrIndexer).activate();
       }
 
       private void removeApplicationDatabase()
