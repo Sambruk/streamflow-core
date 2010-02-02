@@ -34,14 +34,9 @@ public class PossibleFormView extends JPanel
       setFocusable( true );
       this.setRequestFocusEnabled( true );
 
-      JXLabel label = new JXLabel( itemValue.description().get() );
-      button = new JButton( i18n.icon( Icons.formSubmit, 16 ) );
-      button.setBorder( new EmptyBorder( new Insets( 0, 0, 0, 0 ) ) );
-      button.setFocusable( false );
+      button = new JButton( itemValue.description().get(), i18n.icon( Icons.formSubmit, 16 ) );
 
-      this.add( label );
       this.add( button );
-      setBorder( BorderFactory.createEtchedBorder() );
 
       addFocusListener( this );
       addKeyListener( this );

@@ -38,7 +38,6 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
    @Service
    StreamFlowApplication main;
 
-
    private PossibleFormsModel modelForms;
 
    private JPanel formPanel;
