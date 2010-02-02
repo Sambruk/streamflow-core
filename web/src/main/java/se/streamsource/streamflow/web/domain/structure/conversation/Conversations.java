@@ -21,6 +21,7 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
@@ -28,6 +29,7 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 /**
  * JAVADOC
  */
+@Mixins(Conversations.Mixin.class)
 public interface Conversations
 {
    Conversation createConversation(String topic, Creator creator);
@@ -36,7 +38,7 @@ public interface Conversations
    {
       ManyAssociation<Conversation> conversations();
 
-      Conversation conversationCreated( DomainEvent event, String id );
+      Conversation conversationCreated( DomainEvent event, String id, Creator creator );
    }
 
    abstract class Mixin

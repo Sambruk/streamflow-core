@@ -42,7 +42,7 @@ import java.util.Date;
 @Mixins(SubmittedForms.Mixin.class)
 public interface SubmittedForms
 {
-   void submitForm( FormSubmissionValue formSubmissionValue, EntityReference submitter );
+   void submitForm( FormSubmission formSubmission, Submitter submitter );
 
    interface Data
    {
@@ -52,7 +52,7 @@ public interface SubmittedForms
       @Optional
       Property<EffectiveFormFieldsValue> effectiveFieldValues();
 
-      void submittedForm( DomainEvent event, FormSubmissionValue formSubmissionValue, EntityReference submitter );
+      void submittedForm( DomainEvent event, FormSubmission formSubmission, Submitter submitter );
 
       String getEffectiveValue( Field field );
    }
@@ -63,21 +63,22 @@ public interface SubmittedForms
       @Structure
       ValueBuilderFactory vbf;
 
-      public void submitForm( FormSubmissionValue formSubmissionValue, EntityReference submitter )
+      public void submitForm( FormSubmission formSubmission, Submitter submitter )
       {
-         submittedForm( DomainEvent.CREATE, formSubmissionValue, submitter );
+         submittedForm( DomainEvent.CREATE, formSubmission, submitter );
       }
 
-      public void submittedForm( DomainEvent event, FormSubmissionValue formSubmissionValue, EntityReference submitter )
+      public void submittedForm( DomainEvent event, FormSubmission formSubmission, Submitter submitter )
       {
+         FormSubmissionValue value = formSubmission.getFormSubmission();
          ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
 
-         formBuilder.prototype().submitter().set( submitter );
-         formBuilder.prototype().form().set( formSubmissionValue.form().get() );
+         formBuilder.prototype().submitter().set( EntityReference.getEntityReference( submitter ) );
+         formBuilder.prototype().form().set( value.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
          ValueBuilder<SubmittedFieldValue> fieldBuilder = vbf.newValueBuilder( SubmittedFieldValue.class );
-         for (SubmittedPageValue pageValue : formSubmissionValue.pages().get())
+         for (SubmittedPageValue pageValue : value.pages().get())
          {
             for (FieldSubmissionValue field : pageValue.fields().get())
             {

@@ -37,11 +37,13 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEnt
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -142,6 +144,8 @@ public interface TestDataService
                task.assignTo( user );
 
                Conversation conversation = task.createConversation( "Questions", testUser );
+               ConversationEntity conversationEntity = (ConversationEntity) conversation;
+               conversationEntity.addParticipant( testUser );
                conversation.createMessage( "Test message", testUser );
             }
          }
@@ -243,14 +247,8 @@ public interface TestDataService
 
          task.changeTaskType( bug );
          FormSubmission formSubmission = task.createFormSubmission( statusForm );
-         FormSubmissionValue value = (FormSubmissionValue) formSubmission.getFormSubmission().buildWith().prototype();
-
-         prepareStatusSubmission( value, "Progress is slow" );
-         task.submitForm( value, EntityReference.getEntityReference( testUser ) );
-         prepareStatusSubmission( value, "Progress is getting better" );
-         formSubmission.changeFormSubmission( value );
-         task.submitForm( value, EntityReference.getEntityReference( someUser ));
-
+         submitStatus(task, formSubmission, "Progress is slow", (Submitter) testUser );
+         submitStatus(task, formSubmission, "Progress is getting better", (Submitter) someUser );
 
          for (int i = 1; i < 30; i++)
             ((Inbox)project).createTask().changeDescription( "Arbetsuppgift " + i );
@@ -263,20 +261,24 @@ public interface TestDataService
          uow.complete();
       }
 
-      private void prepareStatusSubmission( FormSubmissionValue formSubmission, String status)
+      private void submitStatus( Task task, FormSubmission formSubmission, String status, Submitter submitter )
       {
-         for (SubmittedPageValue pageValue : formSubmission.pages().get())
+         FormSubmissionValue submissionValue = (FormSubmissionValue) formSubmission.getFormSubmission().buildWith().prototype();
+         for (SubmittedPageValue pageValue : submissionValue.pages().get())
          {
             for (FieldSubmissionValue value : pageValue.fields().get())
             {
                value.value().set( status );
             }
          }
+         formSubmission.changeFormSubmission( submissionValue );
+         task.submitForm( formSubmission, submitter );
       }
 
 
       public void passivate() throws Exception
       {
       }
+
    }
 }

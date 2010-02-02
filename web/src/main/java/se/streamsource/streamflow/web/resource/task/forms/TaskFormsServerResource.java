@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
@@ -132,7 +133,9 @@ public class TaskFormsServerResource
       FormSubmission formSubmission =
             uow.get( FormSubmission.class, dto.entity().get().identity() );
 
-      task.submitForm( formSubmission.getFormSubmission(), parseEntityReference( getClientInfo().getUser().getIdentifier() ) );
+      Submitter submitter = uow.get( Submitter.class, getClientInfo().getUser().getIdentifier() );
+
+      task.submitForm( formSubmission, submitter );
    }
 
    @Override

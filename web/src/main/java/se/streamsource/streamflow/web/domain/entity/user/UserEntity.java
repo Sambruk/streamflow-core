@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
 /**
  * JAVADOC
@@ -56,6 +57,7 @@ public interface UserEntity
       ConversationParticipant,
       OrganizationParticipations,
       Labels,
+      Submitter,
 
       // Queries
       AssignmentsQueries,

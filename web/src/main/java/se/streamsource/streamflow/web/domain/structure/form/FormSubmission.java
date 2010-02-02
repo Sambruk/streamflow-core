@@ -16,11 +16,51 @@ package se.streamsource.streamflow.web.domain.structure.form;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.mixin.Mixins;
 
 /**
  * JAVADOC
  */
+@Mixins(FormSubmission.Mixin.class)
 public interface FormSubmission
- extends FormSubmissionReference
 {
+   FormSubmissionValue getFormSubmission();
+
+   void changeFormSubmission( FormSubmissionValue formSubmission );
+
+   interface Data
+   {
+      Property<FormSubmissionValue> formSubmissionValue();
+
+      void changedFormSubmission( DomainEvent event, FormSubmissionValue formSubmission);
+   }
+
+   abstract class Mixin
+      implements FormSubmission, Data
+   {
+      @Structure
+      ValueBuilderFactory vbf;
+
+      public FormSubmissionValue getFormSubmission()
+      {
+         return formSubmissionValue().get();
+      }
+
+
+      public void changeFormSubmission( FormSubmissionValue formSubmission )
+      {
+         changedFormSubmission( DomainEvent.CREATE, formSubmission );
+      }
+
+      public void changedFormSubmission( DomainEvent event, FormSubmissionValue formSubmission )
+      {
+         formSubmissionValue().set( formSubmission );
+      }
+   }
+
 }

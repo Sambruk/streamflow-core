@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,19 +11,8 @@
  * limitations under the License.
  *
  */
-
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import se.streamsource.streamflow.domain.structure.Notable;
-import se.streamsource.streamflow.domain.structure.Describable;
-
-/**
- * JAVADOC
- */
-public interface Page
-      extends
-      Fields,
-      Describable,
-      Notable
+public interface Submitter
 {
 }

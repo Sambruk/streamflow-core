@@ -33,6 +33,7 @@ import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeAssembler;
 import se.streamsource.streamflow.web.domain.entity.user.UserAssembler;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectAssembler;
 import se.streamsource.streamflow.web.domain.entity.label.LabelAssembler;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationAssembler;
 import se.streamsource.streamflow.web.infrastructure.database.DatabaseAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
@@ -124,6 +125,7 @@ public class StreamFlowWebAssembler
       new CommonDomainAssembler().assemble( domainLayer );
       new CommentAssembler().assemble( domainLayer.moduleAssembly( "Comments" ) );
       new CommonResourceAssembler().assemble( domainLayer.moduleAssembly( "Common" ) );
+      new ConversationAssembler().assemble( domainLayer.moduleAssembly( "Conversations" ));
       new FormAssembler().assemble( domainLayer.moduleAssembly( "Forms" ) );
       new GroupAssembler().assemble( domainLayer.moduleAssembly( "Groups" ) );
       new LabelAssembler().assemble( domainLayer.moduleAssembly( "Labels" ) );
