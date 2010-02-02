@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,20 +12,28 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.interaction.gtd;
+package se.streamsource.streamflow.web.domain.structure.conversation;
 
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
+import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.property.Immutable;
+import org.qi4j.api.property.Property;
+
+import java.util.Date;
 
 /**
- * An Actor is an entity that can participate in work.
- * Can be either a User, ExternalUser or ServiceUser (TODO)
+ * JAVADOC
  */
-public interface Actor
-   extends
-      Assignee,
-      Creator,
-      Delegator,
-      Delegatee,
-      Owner
+public interface Message
 {
+   interface Data
+   {
+      @Immutable
+      Association<ConversationParticipant> sender();
+
+      @Immutable
+      Property<Date> createdOn();
+
+      @Immutable
+      Property<String> body();
+   }
 }

@@ -42,7 +42,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 import java.util.List;
 

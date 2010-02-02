@@ -12,20 +12,11 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.interaction.gtd;
-
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
+package se.streamsource.streamflow.web.domain.structure.created;
 
 /**
- * An Actor is an entity that can participate in work.
- * Can be either a User, ExternalUser or ServiceUser (TODO)
+ * JAVADOC
  */
-public interface Actor
-   extends
-      Assignee,
-      Creator,
-      Delegator,
-      Delegatee,
-      Owner
+public interface Creator
 {
 }

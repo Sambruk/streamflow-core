@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.interaction.gtd;
+package se.streamsource.streamflow.web.domain.structure.created;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;

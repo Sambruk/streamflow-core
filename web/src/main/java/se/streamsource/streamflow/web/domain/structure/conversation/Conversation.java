@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,11 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.interaction.gtd;
+package se.streamsource.streamflow.web.domain.structure.conversation;
+
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 /**
  * JAVADOC
  */
-public interface Creator
+public interface Conversation
+   extends Describable, CreatedOn, Messages
 {
 }

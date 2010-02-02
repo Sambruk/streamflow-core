@@ -30,6 +30,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.WaitingForQueries;
 import se.streamsource.streamflow.web.domain.interaction.authentication.Authentication;
 import se.streamsource.streamflow.web.domain.interaction.comment.Commenter;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
@@ -52,6 +53,7 @@ public interface UserEntity
       User,
       Commenter,
       Contactable,
+      ConversationParticipant,
       OrganizationParticipations,
       Labels,
 

@@ -15,6 +15,8 @@
 package se.streamsource.streamflow.web.domain.structure.user;
 
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
@@ -23,6 +25,12 @@ import se.streamsource.streamflow.web.domain.structure.project.Member;
  * JAVADOC
  */
 public interface User
-   extends Member, Participant, OrganizationParticipations, UserAuthentication, Describable
+   extends Creator,
+      Member,
+      ConversationParticipant,
+      Participant,
+      OrganizationParticipations,
+      UserAuthentication,
+      Describable
 {
 }
