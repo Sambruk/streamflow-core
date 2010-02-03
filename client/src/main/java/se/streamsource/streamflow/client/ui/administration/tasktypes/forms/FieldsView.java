@@ -14,27 +14,31 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.StreamFlowResources;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.ConfirmationDialog;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import java.awt.BorderLayout;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
+
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.GroupedList;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import ca.odell.glazedlists.EventList;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 
 /**
  * JAVADOC
@@ -42,7 +46,7 @@ import java.awt.BorderLayout;
 public class FieldsView
       extends JPanel
 {
-   private JList fieldList;
+   private GroupedList fieldList;
 
    @Service
    DialogService dialogs;
@@ -76,8 +80,12 @@ public class FieldsView
       downButton.setEnabled( false );
 
       model.refresh();
-      fieldList = new JList( model );
-      fieldList.setCellRenderer( new ListItemListCellRenderer() );
+//      fieldList = new JList( model );
+//      fieldList.setCellRenderer( new ListItemListCellRenderer() );
+      EventList<ListItemValue> pagesAndFields = model.getPagesAndFieldsList();
+
+      fieldList = new GroupedList();
+      fieldList.setEventList( pagesAndFields );
 
       scrollPanel.setViewportView( fieldList );
 
@@ -89,26 +97,27 @@ public class FieldsView
       add( scrollPanel, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
 
-      fieldList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
-      fieldList.addListSelectionListener( new ListSelectionListener()
-      {
 
-         public void valueChanged( ListSelectionEvent e )
-         {
-            if (!e.getValueIsAdjusting())
-            {
-               int idx = fieldList.getSelectedIndex();
-
-               upButton.setEnabled( idx != 0 );
-               downButton.setEnabled( idx != fieldList.getModel().getSize() - 1 );
-               if (idx == -1)
-               {
-                  upButton.setEnabled( false );
-                  downButton.setEnabled( false );
-               }
-            }
-         }
-      } );
+//      fieldList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+//      fieldList.addListSelectionListener( new ListSelectionListener()
+//      {
+//
+//         public void valueChanged( ListSelectionEvent e )
+//         {
+//            if (!e.getValueIsAdjusting())
+//            {
+//               int idx = fieldList.getSelectedIndex();
+//
+//               upButton.setEnabled( idx != 0 );
+//               downButton.setEnabled( idx != fieldList.getModel().getSize() - 1 );
+//               if (idx == -1)
+//               {
+//                  upButton.setEnabled( false );
+//                  downButton.setEnabled( false );
+//               }
+//            }
+//         }
+//      } );
    }
 
    @org.jdesktop.application.Action
@@ -127,43 +136,43 @@ public class FieldsView
    @org.jdesktop.application.Action
    public void remove()
    {
-      int index = fieldList.getSelectedIndex();
-      if (index != -1)
-      {
-         ConfirmationDialog dialog = confirmationDialog.iterator().next();
-         dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
-         if (dialog.isConfirmed())
-         {
-            model.removeField( index );
-            model.fieldModels.clear();
-            fieldList.clearSelection();
-         }
-      }
+//      int index = fieldList.getSelectedIndex();
+//      if (index != -1)
+//      {
+//         ConfirmationDialog dialog = confirmationDialog.iterator().next();
+//         dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+//         if (dialog.isConfirmed())
+//         {
+//            model.removeField( index );
+//            model.fieldModels.clear();
+//            fieldList.clearSelection();
+//         }
+//      }
    }
 
    @org.jdesktop.application.Action
    public void up()
    {
-      int index = fieldList.getSelectedIndex();
-      if (index > 0 && index < fieldList.getModel().getSize())
-      {
-         model.moveField( index, index - 1 );
-         fieldList.setSelectedIndex( index - 1 );
-      }
+//      int index = fieldList.getSelectedIndex();
+//      if (index > 0 && index < fieldList.getModel().getSize())
+//      {
+//         model.moveField( index, index - 1 );
+//         fieldList.setSelectedIndex( index - 1 );
+//      }
    }
 
    @org.jdesktop.application.Action
    public void down()
    {
-      int index = fieldList.getSelectedIndex();
-      if (index >= 0 && index < fieldList.getModel().getSize() - 1)
-      {
-         model.moveField( index, index + 1 );
-         fieldList.setSelectedIndex( index + 1 );
-      }
+//      int index = fieldList.getSelectedIndex();
+//      if (index >= 0 && index < fieldList.getModel().getSize() - 1)
+//      {
+//         model.moveField( index, index + 1 );
+//         fieldList.setSelectedIndex( index + 1 );
+//      }
    }
 
-   public JList getFieldList()
+   public GroupedList getFieldList()
    {
       return fieldList;
    }

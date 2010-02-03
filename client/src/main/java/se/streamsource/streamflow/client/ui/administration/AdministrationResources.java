@@ -135,6 +135,7 @@ public enum AdministrationResources
    could_not_remove_tasktype,
    tasktypes_tab,
    could_not_refresh_list_of_tasktypes,
+   could_not_refresh_list_of_form_pages_and_fields,
    could_not_add_tasktype,
    page_break_field_type,
    comment_field_type,

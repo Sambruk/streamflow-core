@@ -105,65 +105,65 @@ public class FormEditAdminView
 
       setDividerLocation( 400 );
 
-      final JList list = fieldsView.getFieldList();
-
-      fieldsView.getFieldList().addListSelectionListener( new ListSelectionListener()
-      {
-
-         public void valueChanged( ListSelectionEvent e )
-         {
-            if (!e.getValueIsAdjusting())
-            {
-               int idx = list.getSelectedIndex();
-
-               if (idx < list.getModel().getSize() && idx >= 0)
-               {
-                  ListItemValue fieldValue = (ListItemValue) list.getModel().getElementAt( idx );
-                  FieldValueEditModel editModel = fieldsView.getModel().getFieldModel( fieldValue.entity().get().identity() );
-
-                  FieldValue value = editModel.getFieldDefinition().fieldValue().get();
-
-                  // switch on value
-                  if (value instanceof FormFieldEditing)
-                  {
-                     setRightComponent(
-                           obf.newObjectBuilder( ((FormFieldEditing)value).getEditorClass() ).
-                                 use( editModel ).newInstance() );
-                  } else if (value instanceof TextFieldValue)
-                  {
-                     setRightComponent(
-                           obf.newObjectBuilder( FieldValueTextEditView.class ).
-                                 use( editModel ).newInstance() );
-                  } else if (value instanceof DateFieldValue) {
-                     setRightComponent(
-                           obf.newObjectBuilder( FieldValueDateEditView.class ).
-                                 use( editModel ).newInstance() );
-                  } else if (value instanceof PageBreakFieldValue)
-                  {
-                     setRightComponent( obf.newObjectBuilder( FieldValuePageBreakEditView.class ).
-                           use( editModel ).newInstance() );
-                  } else if (value instanceof NumberFieldValue)
-                  {
-                     setRightComponent( obf.newObjectBuilder( FieldValueNumberEditView.class ).
-                           use( editModel ).newInstance() );
-                  } else if (value instanceof SelectionFieldValue)
-                  {
-                     setRightComponent( obf.newObjectBuilder( FieldValueSelectionEditView.class ).
-                           use( editModel ).newInstance() );
-                  } else if ( value instanceof CommentFieldValue)
-                  {
-                     setRightComponent( obf.newObjectBuilder( FieldValueCommentEditView.class ).
-                           use( editModel ).newInstance() );
-                  }
-
-               } else
-               {
-                  setRightComponent( new JPanel() );
-               }
-            }
-
-         }
-      } );
+//      final JList list = fieldsView.getFieldList();
+//
+//      fieldsView.getFieldList().addListSelectionListener( new ListSelectionListener()
+//      {
+//
+//         public void valueChanged( ListSelectionEvent e )
+//         {
+//            if (!e.getValueIsAdjusting())
+//            {
+//               int idx = list.getSelectedIndex();
+//
+//               if (idx < list.getModel().getSize() && idx >= 0)
+//               {
+//                  ListItemValue fieldValue = (ListItemValue) list.getModel().getElementAt( idx );
+//                  FieldValueEditModel editModel = fieldsView.getModel().getFieldModel( fieldValue.entity().get().identity() );
+//
+//                  FieldValue value = editModel.getFieldDefinition().fieldValue().get();
+//
+//                  // switch on value
+//                  if (value instanceof FormFieldEditing)
+//                  {
+//                     setRightComponent(
+//                           obf.newObjectBuilder( ((FormFieldEditing)value).getEditorClass() ).
+//                                 use( editModel ).newInstance() );
+//                  } else if (value instanceof TextFieldValue)
+//                  {
+//                     setRightComponent(
+//                           obf.newObjectBuilder( FieldValueTextEditView.class ).
+//                                 use( editModel ).newInstance() );
+//                  } else if (value instanceof DateFieldValue) {
+//                     setRightComponent(
+//                           obf.newObjectBuilder( FieldValueDateEditView.class ).
+//                                 use( editModel ).newInstance() );
+//                  } else if (value instanceof PageBreakFieldValue)
+//                  {
+//                     setRightComponent( obf.newObjectBuilder( FieldValuePageBreakEditView.class ).
+//                           use( editModel ).newInstance() );
+//                  } else if (value instanceof NumberFieldValue)
+//                  {
+//                     setRightComponent( obf.newObjectBuilder( FieldValueNumberEditView.class ).
+//                           use( editModel ).newInstance() );
+//                  } else if (value instanceof SelectionFieldValue)
+//                  {
+//                     setRightComponent( obf.newObjectBuilder( FieldValueSelectionEditView.class ).
+//                           use( editModel ).newInstance() );
+//                  } else if ( value instanceof CommentFieldValue)
+//                  {
+//                     setRightComponent( obf.newObjectBuilder( FieldValueCommentEditView.class ).
+//                           use( editModel ).newInstance() );
+//                  }
+//
+//               } else
+//               {
+//                  setRightComponent( new JPanel() );
+//               }
+//            }
+//
+//         }
+//      } );
    }
 
    public void update( Observable observable, Object arg )

@@ -57,7 +57,7 @@ public class FormModel
       protected FieldsModel newModel( String key )
       {
          return obf.newObjectBuilder( FieldsModel.class )
-               .use( client.getSubClient( "fields" ) ).newInstance();
+               .use( client.getSubClient( "pages" ) ).newInstance();
       }
    };
 

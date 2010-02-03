@@ -23,6 +23,7 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
@@ -56,6 +57,8 @@ import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeS
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.FormDefinitionPageServerResource;
+import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.FormDefinitionPagesServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.fields.FormDefinitionFieldServerResource;
 import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.fields.FormDefinitionFieldsServerResource;
 import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
@@ -171,6 +174,8 @@ public class ServerResourceAssembler
             FormDefinitionServerResource.class,
             FormDefinitionFieldsServerResource.class,
             FormDefinitionFieldServerResource.class,
+            FormDefinitionPageServerResource.class,
+            FormDefinitionPagesServerResource.class,
             SelectedTaskTypesServerResource.class,
             SelectedTaskTypeServerResource.class,
 

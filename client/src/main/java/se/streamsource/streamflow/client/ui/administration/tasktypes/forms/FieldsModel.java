@@ -14,12 +14,18 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.swing.AbstractListModel;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
@@ -34,10 +40,8 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
-
-import javax.swing.AbstractListModel;
-import java.util.List;
-import java.util.logging.Logger;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 
 /**
  * JAVADOC
@@ -62,7 +66,7 @@ public class FieldsModel
       {
          try
          {
-            ListValue value = client.query( "fields", ListValue.class );
+            ListValue value = client.query( "pagesdetails", ListValue.class );
             int index = 0;
             for (ListItemValue listItemValue : value.items().get())
             {
@@ -83,7 +87,7 @@ public class FieldsModel
 
    EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedDescription", "movedField", "removedField", "createdField", "removedField" );
 
-   private List<ListItemValue> fieldsList;
+   private BasicEventList<ListItemValue> fieldsList;
 
    public int getSize()
    {
@@ -99,14 +103,23 @@ public class FieldsModel
    {
       try
       {
-         fieldsList = client.query( "fields", ListValue.class ).items().get();
-         fireContentsChanged( this, 0, getSize() );
+          fieldsList = new BasicEventList<ListItemValue>();
+
+          List list = client.query( "pagesdetails", ListValue.class ).items().get();
+          fieldsList.addAll( list );
+
+          fireContentsChanged( this, 0, getSize() );
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_refresh_list_of_members, e );
+         throw new OperationException( AdministrationResources.could_not_refresh_list_of_form_pages_and_fields, e );
       }
    }
-
+   
+   public EventList<ListItemValue> getPagesAndFieldsList()
+   {
+	   return fieldsList;
+   }
+   
    public void addField( String name, FieldTypes fieldType )
    {
 
