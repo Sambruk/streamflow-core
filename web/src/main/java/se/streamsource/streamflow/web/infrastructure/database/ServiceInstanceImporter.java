@@ -22,7 +22,8 @@ import org.qi4j.api.service.ServiceImporterException;
 import org.qi4j.api.service.ServiceReference;
 
 /**
- * JAVADOC
+ * Use a registered service that implements ServiceImporter to do the actual
+ * import.
  */
 public class ServiceInstanceImporter
    implements ServiceImporter
@@ -30,29 +31,37 @@ public class ServiceInstanceImporter
    @Structure
    ServiceFinder finder;
 
+   ServiceImporter service;
+
    String serviceId;
 
    public Object importService( ImportedServiceDescriptor importedServiceDescriptor ) throws ServiceImporterException
    {
-      serviceId = importedServiceDescriptor.metaInfo( String.class );
-
-      for (ServiceReference<ServiceImporter> reference : finder.<ServiceImporter>findServices( ServiceImporter.class ))
-      {
-         if (reference.identity().equals( serviceId ))
-            return reference.get().importService( importedServiceDescriptor );
-      }
-
-      throw new ServiceImporterException("No service importer with id '"+ serviceId +"' was found");
+      return getServiceImporter().importService( importedServiceDescriptor );
    }
 
    public boolean isActive( Object o )
    {
-      for (ServiceReference<ServiceImporter> reference : finder.<ServiceImporter>findServices( ServiceImporter.class ))
+      return getServiceImporter().isActive( o );
+   }
+
+   private ServiceImporter getServiceImporter()
+   {
+      if (service == null)
       {
-         if (reference.identity().equals(serviceId))
-            return reference.get().isActive( o );
+         for (ServiceReference<ServiceImporter> reference : finder.<ServiceImporter>findServices( ServiceImporter.class ))
+         {
+            if (reference.identity().equals( serviceId ))
+            {
+               service = reference.get();
+               break;
+            }
+         }
       }
 
-      return false;
+      if (service == null)
+         throw new ServiceImporterException("No service importer with id '"+ serviceId +"' was found");
+
+      return service;
    }
 }
