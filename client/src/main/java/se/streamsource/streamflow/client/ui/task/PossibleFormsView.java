@@ -99,6 +99,7 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
 
          public boolean cancel( Map map )
          {
+            modelForms.discard( formsView.form().entity().get() );
             return true;
          }
       } );

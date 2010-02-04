@@ -23,6 +23,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import org.netbeans.spi.wizard.WizardPage;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
@@ -40,15 +41,14 @@ public class FormSubmissionModel
    @Structure
    private ValueBuilderFactory vbf;
 
-   private FormSubmissionValue formSubmission;
    private CommandQueryClient client;
+   private FormSubmissionValue formSubmission;
    private List<WizardPage> pages;
 
-   public FormSubmissionModel( @Uses CommandQueryClient client,
-                               @Structure ObjectBuilderFactory obf )
+   public FormSubmissionModel(@Uses CommandQueryClient client,
+                              @Structure ObjectBuilderFactory obf)
    {
       this.client = client;
-
       try
       {
          formSubmission = (FormSubmissionValue) client.query( "formsubmission", FormSubmissionValue.class ).buildWith().prototype();

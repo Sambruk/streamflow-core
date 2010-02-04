@@ -106,6 +106,18 @@ public class TaskFormsServerResource
       formSubmissions.createFormSubmission( form );
    }
 
+   public void discard( EntityReferenceDTO formDTO )
+   {
+      UnitOfWork uow = uowf.currentUnitOfWork();
+
+      FormSubmissions formSubmissions =
+            uow.get( FormSubmissions.class, getRequest().getAttributes().get( "task" ).toString() );
+
+      Form form = uow.get( Form.class, formDTO.entity().get().identity() );
+
+      formSubmissions.discardFormSubmission( form );
+   }
+
    public EntityReferenceDTO formsubmission( EntityReferenceDTO formDTO ) 
    {
       UnitOfWork uow = uowf.currentUnitOfWork();

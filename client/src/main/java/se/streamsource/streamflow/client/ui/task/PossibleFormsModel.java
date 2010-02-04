@@ -105,4 +105,18 @@ public class PossibleFormsModel extends AbstractListModel
          throw new OperationException(WorkspaceResources.could_not_submit_form, e);
       }
    }
+
+   public void discard( EntityReference form )
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( form );
+      try
+      {
+         client.postCommand( "discard", builder.newInstance() );
+         formSubmitModels.remove( form.identity() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_discard_form_submission, e);
+      }
+   }
 }

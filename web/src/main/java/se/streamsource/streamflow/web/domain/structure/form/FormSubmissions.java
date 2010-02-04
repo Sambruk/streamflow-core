@@ -27,6 +27,8 @@ import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
@@ -43,11 +45,15 @@ public interface FormSubmissions
 
    FormSubmission createFormSubmission( Form form );
 
+   void discardFormSubmission( Form form );
+
    interface Data
    {
       ManyAssociation<FormSubmission> formSubmissions();
 
       FormSubmission createdFormSubmission( DomainEvent event, Form form );
+
+      void discardedFormSubmission( DomainEvent event, FormSubmission formSubmission );
    }
 
    abstract class Mixin
@@ -58,6 +64,9 @@ public interface FormSubmissions
 
       @This
       TypedTask.Data typedTask;
+
+      @This
+      SubmittedForms.Data submittedForms;
 
       @Structure
       UnitOfWorkFactory uowf;
@@ -99,6 +108,8 @@ public interface FormSubmissions
 
       public FormSubmission createdFormSubmission( DomainEvent event, Form form )
       {
+         SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
+
          EntityBuilder<FormSubmission> submissionEntityBuilder = uowf.currentUnitOfWork().newEntityBuilder( FormSubmission.class );
 
          ValueBuilder<FormSubmissionValue> builder = vbf.newValueBuilder( FormSubmissionValue.class );
@@ -128,6 +139,7 @@ public interface FormSubmissions
                valueBuilder.prototype().fieldValue().set( ((FieldValueDefinition.Data) field).fieldValue().get() );
 
                fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
+               fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );
                pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );
             }
             builder.prototype().pages().get().add( pageBuilder.newInstance() );
@@ -139,6 +151,48 @@ public interface FormSubmissions
          formSubmissions().add( formSubmission );
 
          return formSubmission;
+      }
+
+      private String getSubmittedValue( Field field, SubmittedFormValue submittedFormValue )
+      {
+         if ( submittedFormValue == null)
+            return null;
+
+         for (SubmittedFieldValue submittedFieldValue : submittedFormValue.values().get())
+         {
+            if ( submittedFieldValue.field().get().equals( EntityReference.getEntityReference( field )))
+            {
+               return submittedFieldValue.value().get();
+            }
+         }
+         return null;
+      }
+
+      private SubmittedFormValue findLatestSubmittedForm( Form form )
+      {
+         SubmittedFormValue value = null;
+         for (SubmittedFormValue submittedFormValue : submittedForms.submittedForms().get())
+         {
+            if ( submittedFormValue.form().get().equals( EntityReference.getEntityReference( form )))
+            {
+               value = submittedFormValue;
+            }
+         }
+         return value;
+      }
+
+      public void discardFormSubmission( Form form )
+      {
+         FormSubmission formSubmission = getFormSubmission( form );
+         if ( formSubmission != null )
+         {
+            discardedFormSubmission( DomainEvent.CREATE, formSubmission );
+         }
+      }
+
+      public void discardedFormSubmission( DomainEvent event, FormSubmission formSubmission )
+      {
+         formSubmissions().remove( formSubmission );
       }
    }
 }
