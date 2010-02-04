@@ -14,17 +14,20 @@
 
 package se.streamsource.streamflow.web.domain.entity.form;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.domain.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
-import se.streamsource.streamflow.web.domain.structure.form.Field;
+
+import java.util.ArrayList;
 
 /**
  * JAVADOC
@@ -32,7 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.form.Field;
 @Mixins(PageQueries.Mixin.class)
 public interface PageQueries
 {
-   public ListValue getPageDetails();
+   public ListValue getPagesSummary();
 
    class Mixin
          implements PageQueries
@@ -43,19 +46,22 @@ public interface PageQueries
       @Structure
       ValueBuilderFactory vbf;
 
-      public ListValue getPageDetails()
+      public ListValue getPagesSummary()
       {
-         ListValueBuilder builder = new ListValueBuilder( vbf );
+         ValueBuilder<ListValue> listBuilder = vbf.newValueBuilder( ListValue.class );
+         ValueBuilder<PageListItemValue> pageBuilder = vbf.newValueBuilder( PageListItemValue.class );
+         listBuilder.prototype().items().set( new ArrayList<ListItemValue>() );
+
          for (Page page : pages.pages())
          {
-            PageEntity entity = (PageEntity) page;
+            pageBuilder.prototype().description().set( page.getDescription() );
+            pageBuilder.prototype().entity().set( EntityReference.getEntityReference( page ));
 
-            for (Field field : entity.fields())
-            {
-               builder.addDescribable( field, page );
-            }
+            listBuilder.prototype().items().get().add( pageBuilder.newInstance() );
+            listBuilder.prototype().items().get().addAll( new ListValueBuilder( vbf).addDescribableItems( ((PageEntity)page).fields() ).newList().items().get() );
          }
-         return builder.newList();
+
+         return listBuilder.newInstance();
       }
    }
 }

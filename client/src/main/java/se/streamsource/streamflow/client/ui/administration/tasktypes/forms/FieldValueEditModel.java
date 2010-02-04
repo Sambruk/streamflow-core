@@ -108,12 +108,18 @@ public class FieldValueEditModel
       client.putCommand( "changecomment", builder.newInstance() );
    }
 
+   public void move( String direction ) throws ResourceException
+   {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( direction );
+      client.putCommand( "move", builder.newInstance() );
+   }
+
    public void refresh() throws OperationException
    {
       try
       {
-         FieldDefinitionValue fieldDefinitionValue = client.query( "field", FieldDefinitionValue.class );
-         value = vbf.newValueBuilder( FieldDefinitionValue.class ).withPrototype( fieldDefinitionValue ).prototype();
+         value = (FieldDefinitionValue) client.query( "field", FieldDefinitionValue.class ).buildWith().prototype();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_get_field, e );
@@ -138,5 +144,10 @@ public class FieldValueEditModel
    public CommandQueryClient getClient()
    {
       return client;
+   }
+
+   public void remove() throws ResourceException
+   {
+      client.deleteCommand();
    }
 }

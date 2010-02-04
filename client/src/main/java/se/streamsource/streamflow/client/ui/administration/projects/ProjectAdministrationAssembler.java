@@ -25,7 +25,7 @@ import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.Field
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldsView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormEditAdminView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValuePageBreakEditView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.PageEditView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueDateEditView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueObserver;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueNumberEditView;
@@ -33,6 +33,7 @@ import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.Field
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.SelectionElementsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.SelectionElementsView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueCommentEditView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.PageEditModel;
 
 /**
  * JAVADOC
@@ -64,8 +65,10 @@ public class ProjectAdministrationAssembler
       UIAssemblers.addMV( module,
             SelectionElementsModel.class, SelectionElementsView.class);
 
+      UIAssemblers.addMV( module,
+            PageEditModel.class, PageEditView.class);
+
       UIAssemblers.addViews( module, 
-            FieldValuePageBreakEditView.class,
             FieldValueDateEditView.class,
             FieldValueNumberEditView.class,
             FieldValueSelectionEditView.class,

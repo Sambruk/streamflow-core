@@ -127,7 +127,7 @@ public class APIv1Router
       attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/pages", createServerResourceFinder( FormDefinitionPagesServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/pages/{page}", createServerResourceFinder( FormDefinitionPageServerResource.class ) );
       attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/pages/{page}/fields", createServerResourceFinder( FormDefinitionFieldsServerResource.class ) );
-      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/pages/{page}/fields/{index}", createServerResourceFinder( FormDefinitionFieldServerResource.class ) );
+      attach( "/organizations/{organization}/tasktypes/{forms}/forms/{form}/pages/{page}/fields/{field}", createServerResourceFinder( FormDefinitionFieldServerResource.class ) );
       attach( "/organizations/{labels}/labels", createServerResourceFinder( LabelsServerResource.class ) );
       attach( "/organizations/{labels}/labels/{label}", createServerResourceFinder( LabelServerResource.class ) );
 

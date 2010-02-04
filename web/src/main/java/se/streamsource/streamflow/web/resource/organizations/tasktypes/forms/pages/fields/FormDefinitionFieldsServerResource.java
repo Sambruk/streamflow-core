@@ -30,6 +30,7 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * Mapped to:
@@ -40,26 +41,26 @@ public class FormDefinitionFieldsServerResource
 {
    public ListValue fields()
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
+      PageEntity pageEntity = getPageEntity();
 
       return new ListValueBuilder( vbf ).addDescribableItems( pageEntity.fields() ).newList();
    }
 
    public void add( CreateFieldDTO createFieldDTO )
    {
+      PageEntity pageEntity = getPageEntity();
+
+      pageEntity.createField( createFieldDTO.name().get(), getFieldValue( createFieldDTO.fieldType().get() ) );
+   }
+
+   private PageEntity getPageEntity()
+   {
       String identity = getRequest().getAttributes().get( "form" ).toString();
       String pageId = getRequest().getAttributes().get( "page" ).toString();
       UnitOfWork uow = uowf.currentUnitOfWork();
       FormEntity form = uow.get( FormEntity.class, identity );
       checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-
-      pageEntity.createField( createFieldDTO.name().get(), getFieldValue( createFieldDTO.fieldType().get() ) );
+      return uow.get( PageEntity.class, pageId );
    }
 
    private FieldValue getFieldValue( FieldTypes fieldType )

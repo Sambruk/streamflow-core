@@ -17,6 +17,9 @@ package se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pa
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.constraint.ConstraintViolationException;
+import org.restlet.resource.ResourceException;
+import org.restlet.data.Status;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
@@ -36,125 +39,101 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:
- * /organizations/{organization}/tasktypes/{forms}/forms/{form}/pages/{page}/fields/{index}
+ * /organizations/{organization}/tasktypes/{forms}/forms/{form}/pages/{page}/fields/{field}
  */
 public class FormDefinitionFieldServerResource
       extends CommandQueryServerResource
 {
-   public FieldDefinitionValue field()
+   public FieldDefinitionValue field() throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity fieldEntity = getFieldEntity();
 
       ValueBuilder<FieldDefinitionValue> builder = vbf.newValueBuilder( FieldDefinitionValue.class );
-      builder.prototype().field().set( EntityReference.getEntityReference( field ) );
-      builder.prototype().note().set( field.note().get() );
-      builder.prototype().description().set( field.description().get() );
-      builder.prototype().fieldValue().set( field.fieldValue().get() );
+      builder.prototype().field().set( EntityReference.getEntityReference( fieldEntity ) );
+      builder.prototype().note().set( fieldEntity.note().get() );
+      builder.prototype().description().set( fieldEntity.description().get() );
+      builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
 
       return builder.newInstance();
    }
 
-   public void changedescription( StringDTO newDescription )
+   private void contains( PageEntity pageEntity, FieldEntity fieldEntity )
+         throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
-
-      field.changeDescription( newDescription.string().get() );
+      if ( !pageEntity.fields().contains( fieldEntity ))
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+      }
    }
 
-   public void changenote( StringDTO newNote )
+   public void changedescription( StringDTO newDescription ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity fieldEntity = getFieldEntity();
 
-      field.changeNote( newNote.string().get() );
+      fieldEntity.changeDescription( newDescription.string().get() );
    }
 
-   public void updatemandatory( BooleanDTO mandatory )
+   public void changenote( StringDTO newNote ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity fieldEntity = getFieldEntity();
 
-      field.changeMandatory( mandatory.bool().get() );
+      fieldEntity.changeNote( newNote.string().get() );
    }
 
-   public void changewidth( IntegerDTO newWidth )
+   public void updatemandatory( BooleanDTO mandatory ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity fieldEntity = getFieldEntity();
 
-      FieldValue value = field.fieldValue().get();
+      fieldEntity.changeMandatory( mandatory.bool().get() );
+   }
+
+   public void changewidth( IntegerDTO newWidth ) throws ResourceException
+   {
+      FieldEntity fieldEntity = getFieldEntity();
+
+      FieldValue value = fieldEntity.fieldValue().get();
       if ( value instanceof TextFieldValue)
       {
          ValueBuilder<TextFieldValue> builder =
                vbf.newValueBuilder( TextFieldValue.class ).withPrototype( (TextFieldValue) value );
          builder.prototype().width().set( newWidth.integer().get() );
-         field.changeFieldValue( builder.newInstance() );
+         fieldEntity.changeFieldValue( builder.newInstance() );
       }
    }
 
-   public void changerows( IntegerDTO newRows )
+   public void changerows( IntegerDTO newRows ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity fieldEntity = getFieldEntity();
 
-      FieldValue value = field.fieldValue().get();
+      FieldValue value = fieldEntity.fieldValue().get();
       if ( value instanceof TextFieldValue)
       {
          ValueBuilder<TextFieldValue> builder =
                vbf.newValueBuilder( TextFieldValue.class ).withPrototype( (TextFieldValue) value );
          builder.prototype().rows().set( newRows.integer().get() );
-         field.changeFieldValue( builder.newInstance() );
+         fieldEntity.changeFieldValue( builder.newInstance() );
       }
    }
 
-   public void changemultiple( BooleanDTO multiple)
+   private FieldEntity getFieldEntity()
+         throws ResourceException
    {
       String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      String fieldId = getRequest().getAttributes().get( "field" ).toString();
       String pageId = getRequest().getAttributes().get( "page" ).toString();
       UnitOfWork uow = uowf.currentUnitOfWork();
       FormEntity form = uow.get( FormEntity.class, identity );
       checkPermission( form );
       PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity fieldEntity = uow.get( FieldEntity.class, fieldId);
+
+      contains( pageEntity, fieldEntity );
+      return fieldEntity;
+   }
+
+   public void changemultiple( BooleanDTO multiple) throws ResourceException
+   {
+      FieldEntity field = getFieldEntity();
 
       FieldValue value = field.fieldValue().get();
       if ( value instanceof SelectionFieldValue)
@@ -166,16 +145,9 @@ public class FormDefinitionFieldServerResource
       }
    }
 
-   public void addselectionelement( StringDTO name )
+   public void addselectionelement( StringDTO name ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity field = getFieldEntity();
 
       FieldValue value = field.fieldValue().get();
       if ( value instanceof SelectionFieldValue)
@@ -187,16 +159,9 @@ public class FormDefinitionFieldServerResource
       }
    }
 
-   public void removeselectionelement( IntegerDTO index )
+   public void removeselectionelement( IntegerDTO index ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity field = getFieldEntity();
 
       FieldValue value = field.fieldValue().get();
       if ( value instanceof SelectionFieldValue)
@@ -211,16 +176,9 @@ public class FormDefinitionFieldServerResource
       }
    }
 
-   public void moveselectionelement( NamedIndexDTO moveElement )
+   public void moveselectionelement( NamedIndexDTO moveElement ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity field = getFieldEntity();
 
       FieldValue value = field.fieldValue().get();
       if ( value instanceof SelectionFieldValue)
@@ -239,16 +197,9 @@ public class FormDefinitionFieldServerResource
       }
    }
 
-   public void changeselectionelementname( NamedIndexDTO newNameDTO )
+   public void changeselectionelementname( NamedIndexDTO newNameDTO ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity field = getFieldEntity();
 
       FieldValue value = field.fieldValue().get();
       if ( value instanceof SelectionFieldValue)
@@ -260,30 +211,28 @@ public class FormDefinitionFieldServerResource
       }
    }
 
-   public void move( IntegerDTO newIndex )
+   public void move( StringDTO direction ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      FieldEntity field = getFieldEntity();
       String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      PageEntity pageEntity = uowf.currentUnitOfWork().get( PageEntity.class, pageId );
 
-      pageEntity.moveField( field, newIndex.integer().get() );
+      int index = pageEntity.fields().toList().indexOf( field );
+      if ( direction.string().get().equalsIgnoreCase( "UP" ))
+      {
+         try
+         {
+            pageEntity.moveField( field, index-1 );
+         } catch( ConstraintViolationException e) {}
+      } else
+      {
+         pageEntity.moveField( field, index+1 );
+      }
    }
 
-   public void changecomment( StringDTO newComment )
+   public void changecomment( StringDTO newComment ) throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
-      String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      FieldEntity field = getFieldEntity();
 
       FieldValue value = field.fieldValue().get();
       if ( value instanceof CommentFieldValue )
@@ -295,16 +244,12 @@ public class FormDefinitionFieldServerResource
       }
    }
 
-   public void deleteOperation()
+   public void deleteOperation() throws ResourceException
    {
-      String identity = getRequest().getAttributes().get( "form" ).toString();
-      String fieldIndex = getRequest().getAttributes().get( "index" ).toString();
+      FieldEntity field = getFieldEntity();
+
       String pageId = getRequest().getAttributes().get( "page" ).toString();
-      UnitOfWork uow = uowf.currentUnitOfWork();
-      FormEntity form = uow.get( FormEntity.class, identity );
-      checkPermission( form );
-      PageEntity pageEntity = uow.get( PageEntity.class, pageId );
-      FieldEntity field = (FieldEntity) pageEntity.fields().get( Integer.parseInt( fieldIndex ) );
+      PageEntity pageEntity = uowf.currentUnitOfWork().get( PageEntity.class, pageId );
 
       pageEntity.removeField( field );
    }

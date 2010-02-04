@@ -45,7 +45,7 @@ public class FieldCreationDialog
    FormLayout formLayout = new FormLayout(
          "pref, 4dlu, 150dlu", "" );
    private TextField nameField;
-   String name;
+   private String name;
    private JComboBox box;
 
 

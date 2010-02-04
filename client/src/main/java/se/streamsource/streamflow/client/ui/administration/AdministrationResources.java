@@ -157,5 +157,9 @@ public enum AdministrationResources
    multi_selection, 
    add_field_to_form, 
    selection_field_type,
+   could_not_create_page,
+   could_not_find_field,
+   could_not_move_page,
+   could_not_move_field,
    members_tab
 }

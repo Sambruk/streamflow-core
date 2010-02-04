@@ -15,22 +15,17 @@
 package se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.CreateFieldDTO;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldTypes;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
-import se.streamsource.streamflow.domain.form.SelectionFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageQueries;
+import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.structure.form.Page;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * Mapped to:
@@ -49,14 +44,14 @@ public class FormDefinitionPagesServerResource
       return new ListValueBuilder( vbf ).addDescribableItems( form.pages() ).newList();
    }
 
-   public ListValue pagesdetails()
+   public ListValue pagessummary()
    {
       String identity = getRequest().getAttributes().get( "form" ).toString();
       UnitOfWork uow = uowf.currentUnitOfWork();
       PageQueries pageQueries = uow.get( PageQueries.class, identity );
       checkPermission( pageQueries );
 
-      return pageQueries.getPageDetails();
+      return pageQueries.getPagesSummary();
    }
 
    public void add( StringDTO name )

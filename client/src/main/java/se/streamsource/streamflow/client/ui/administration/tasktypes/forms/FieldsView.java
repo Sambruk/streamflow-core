@@ -30,15 +30,14 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
+import se.streamsource.streamflow.domain.form.FieldTypes;
 import ca.odell.glazedlists.EventList;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
 
 /**
  * JAVADOC
@@ -58,8 +57,6 @@ public class FieldsView
    Iterable<ConfirmationDialog> confirmationDialog;
 
    private FieldsModel model;
-   private JButton upButton;
-   private JButton downButton;
 
    public FieldsView( @Service ApplicationContext context,
                       @Uses FieldsModel model )
@@ -72,16 +69,10 @@ public class FieldsView
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "add" ) ) );
       toolbar.add( new JButton( am.get( "remove" ) ) );
-      upButton = new JButton( am.get( "up" ) );
-      toolbar.add( upButton );
-      downButton = new JButton( am.get( "down" ) );
-      toolbar.add( downButton );
-      upButton.setEnabled( false );
-      downButton.setEnabled( false );
+      toolbar.add( new JButton( am.get( "up" ) ) );
+      toolbar.add( new JButton( am.get( "down" ) ) );
 
       model.refresh();
-//      fieldList = new JList( model );
-//      fieldList.setCellRenderer( new ListItemListCellRenderer() );
       EventList<ListItemValue> pagesAndFields = model.getPagesAndFieldsList();
 
       fieldList = new GroupedList();
@@ -98,26 +89,9 @@ public class FieldsView
       add( toolbar, BorderLayout.SOUTH );
 
 
-//      fieldList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
-//      fieldList.addListSelectionListener( new ListSelectionListener()
-//      {
-//
-//         public void valueChanged( ListSelectionEvent e )
-//         {
-//            if (!e.getValueIsAdjusting())
-//            {
-//               int idx = fieldList.getSelectedIndex();
-//
-//               upButton.setEnabled( idx != 0 );
-//               downButton.setEnabled( idx != fieldList.getModel().getSize() - 1 );
-//               if (idx == -1)
-//               {
-//                  upButton.setEnabled( false );
-//                  downButton.setEnabled( false );
-//               }
-//            }
-//         }
-//      } );
+      fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+      fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "up" ) ) );
+      fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "down" ) ) );
    }
 
    @org.jdesktop.application.Action
@@ -128,7 +102,25 @@ public class FieldsView
 
       if (dialog.name() != null && !"".equals( dialog.name() ))
       {
-         model.addField( dialog.name(), dialog.getFieldType() );
+         if ( FieldTypes.page_break.equals( dialog.getFieldType() ))
+         {
+            model.addPage( dialog.name() );
+            fieldList.getList().clearSelection();
+         } else
+         {
+            ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
+            if ( selected != null)
+            {
+               if ( selected instanceof PageListItemValue)
+               {
+                  model.addField( selected.entity().get(), dialog.name(), dialog.getFieldType() );
+                  fieldList.getList().clearSelection();
+               } else
+               {
+                  // show help message
+               }
+            }
+         }
       }
    }
 
@@ -136,40 +128,61 @@ public class FieldsView
    @org.jdesktop.application.Action
    public void remove()
    {
-//      int index = fieldList.getSelectedIndex();
-//      if (index != -1)
-//      {
-//         ConfirmationDialog dialog = confirmationDialog.iterator().next();
-//         dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
-//         if (dialog.isConfirmed())
-//         {
-//            model.removeField( index );
-//            model.fieldModels.clear();
-//            fieldList.clearSelection();
-//         }
-//      }
+      int index = fieldList.getList().getSelectedIndex();
+      if (index != -1)
+      {
+         ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+         if (dialog.isConfirmed())
+         {
+
+            ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
+            if ( selected instanceof PageListItemValue)
+            {
+               model.removePage( selected.entity().get() );
+            } else
+            {
+               model.removeField( selected.entity().get() );
+            }
+            fieldList.getList().clearSelection();
+         }
+      }
    }
 
    @org.jdesktop.application.Action
    public void up()
    {
-//      int index = fieldList.getSelectedIndex();
-//      if (index > 0 && index < fieldList.getModel().getSize())
-//      {
-//         model.moveField( index, index - 1 );
-//         fieldList.setSelectedIndex( index - 1 );
-//      }
+      int index = fieldList.getList().getSelectedIndex();
+      if (index != -1)
+      {
+         ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
+         if ( selected instanceof PageListItemValue)
+         {
+            model.movePage( selected.entity().get(), "up" );
+         } else
+         {
+            model.moveField( selected.entity().get(), "up" );
+         }
+         fieldList.getList().setSelectedIndex( index );
+      }
    }
 
    @org.jdesktop.application.Action
    public void down()
    {
-//      int index = fieldList.getSelectedIndex();
-//      if (index >= 0 && index < fieldList.getModel().getSize() - 1)
-//      {
-//         model.moveField( index, index + 1 );
-//         fieldList.setSelectedIndex( index + 1 );
-//      }
+      int index = fieldList.getList().getSelectedIndex();
+      if (index != -1)
+      {
+         ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
+         if ( selected instanceof PageListItemValue)
+         {
+            model.movePage( selected.entity().get(), "down" );
+         } else
+         {
+            model.moveField( selected.entity().get(), "down" );
+         }
+         fieldList.getList().setSelectedIndex( index );
+      }
    }
 
    public GroupedList getFieldList()

@@ -24,6 +24,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.streamflow.client.OperationException;
@@ -35,11 +36,14 @@ import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
+import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
@@ -59,35 +63,44 @@ public class FieldsModel
    @Structure
    ObjectBuilderFactory obf;
 
-
    WeakModelMap<String, FieldValueEditModel> fieldModels = new WeakModelMap<String, FieldValueEditModel>()
    {
       protected FieldValueEditModel newModel( String key )
       {
-         try
+         PageListItemValue current = null;
+         CommandQueryClient fieldClient = null;
+         for (ListItemValue listItemValue : fieldsList)
          {
-            ListValue value = client.query( "pagesdetails", ListValue.class );
-            int index = 0;
-            for (ListItemValue listItemValue : value.items().get())
+            if ( listItemValue instanceof PageListItemValue)
             {
-               if (listItemValue.entity().get().identity().equals( key ))
+               current = (PageListItemValue) listItemValue;
+            } else if ( listItemValue.entity().get().identity().equals( key ))
+            {
+               if ( current == null)
                {
-                  break;
+                  throw new OperationException( AdministrationResources.could_not_find_field, new IllegalArgumentException( key ));
                }
-               index++;
+               fieldClient = client.getSubClient( current.entity().get().identity() ).getSubClient( "fields" ).getSubClient( key );
             }
-            return obf.newObjectBuilder( FieldValueEditModel.class )
-                  .use( client.getSubClient( ""+index ) ).newInstance();
-         } catch (ResourceException e)
-         {
-            throw new OperationException( AdministrationResources.could_not_get_form, e );
          }
+
+         return obf.newObjectBuilder( FieldValueEditModel.class )
+               .use( fieldClient ).newInstance();
       }
    };
 
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedDescription", "movedField", "removedField", "createdField", "removedField" );
+   WeakModelMap<String, PageEditModel> pageModels = new WeakModelMap<String, PageEditModel>()
+   {
+      protected PageEditModel newModel( String key )
+      {
+         return obf.newObjectBuilder( PageEditModel.class ).use( client.getSubClient( key )).newInstance();
+      }
+   };
 
-   private BasicEventList<ListItemValue> fieldsList;
+
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedDescription", "movedField", "movedPage", "removedField", "createdField", "removedPage", "createdPage" );
+
+   private BasicEventList<ListItemValue> fieldsList = new BasicEventList<ListItemValue>();
 
    public int getSize()
    {
@@ -103,25 +116,26 @@ public class FieldsModel
    {
       try
       {
-          fieldsList = new BasicEventList<ListItemValue>();
+         List<ListItemValue> list = ((ListValue)client.query( "pagessummary", ListValue.class ).buildWith().prototype()).items().get();
+         fieldsList.clear();
+         fieldsList.addAll( list );
 
-          List list = client.query( "pagesdetails", ListValue.class ).items().get();
-          fieldsList.addAll( list );
-
-          fireContentsChanged( this, 0, getSize() );
+         fireContentsChanged( this, 0, getSize() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_form_pages_and_fields, e );
       }
    }
-   
+
    public EventList<ListItemValue> getPagesAndFieldsList()
    {
-	   return fieldsList;
+      return fieldsList;
    }
-   
-   public void addField( String name, FieldTypes fieldType )
+
+   public void addField( EntityReference page, String name, FieldTypes fieldType )
    {
+
+      CommandQueryClient subClient = client.getSubClient( page.identity() ).getSubClient( "fields" );
 
       ValueBuilder<CreateFieldDTO> builder = vbf.newValueBuilder( CreateFieldDTO.class );
       builder.prototype().name().set( name );
@@ -129,73 +143,112 @@ public class FieldsModel
 
       try
       {
-         client.putCommand( "add", builder.newInstance() );
+         subClient.putCommand( "add", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_add_field, e );
       }
    }
 
-   public void removeField( int index )
+   public void addPage( String pageName )
    {
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( pageName );
+
       try
       {
-         client.getSubClient( ""+index  ).deleteCommand();
+         client.postCommand( "add", builder.newInstance() );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_create_page, e );
+      }
+   }
+
+   public void removeField( EntityReference field )
+   {
+      FieldValueEditModel model = getFieldModel( field.identity() );
+      try
+      {
+         model.remove();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );
       }
    }
 
-   public void moveField( int fromIndex, int newIndex )
+   public void removePage( EntityReference page )
    {
-      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
-      builder.prototype().integer().set( newIndex );
+      PageEditModel model = getPageModel( page.identity() );
+
       try
       {
-         client.getSubClient( ""+fromIndex ).putCommand( "move", builder.newInstance() );
+         model.remove();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );
+      }
+   }
+
+   public void moveField( EntityReference field, String direction )
+   {
+      FieldValueEditModel model = getFieldModel( field.identity() );
+      try
+      {
+         model.move( direction );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_move_field, e );
+      }
+   }
+
+   public void movePage( EntityReference page, String direction )
+   {
+      PageEditModel model = getPageModel( page.identity() );
+      try
+      {
+         model.move( direction );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_move_page, e );
       }
    }
 
    public void notifyEvent( DomainEvent event )
    {
       eventFilter.visit( event );
+      for (PageEditModel pageModel : pageModels)
+      {
+         pageModel.notifyEvent( event );
+      }
       for (FieldValueEditModel fieldModel : fieldModels)
       {
          fieldModel.notifyEvent( event );
       }
-
    }
 
    public boolean visit( DomainEvent event )
    {
       String eventName = event.name().get();
+      int index = 0;
       for (ListItemValue value : fieldsList)
       {
-         if (eventName.equals( "movedField" ))
-         {
-            if (event.parameters().get().contains( value.entity().get().identity() ))
-            {
-               fieldModels.clear();
-            }
-         }
-
          if (event.entity().get().equals( value.entity().get().identity() ))
          {
-            Logger.getLogger( "adminitration" ).info( "Refresh field list" );
-            refresh();
+            if ( eventName.equals( "changedDescription" ) )
+            {
+               // only update element
+               String description = EventParameters.getParameter( event, "param1" );
+               fieldsList.get( index ).description().set( description );
+               fireContentsChanged( this, index, index+1 );
+            }
          }
+         index++;
       }
-
-      if ( eventName.equals( "createdField" ) || eventName.equals( "removedField" ))
+      if ( !eventName.equals( "changedDescription" ))
       {
-         Logger.getLogger( "administation" ).info( "Refresh field list" );
+         Logger.getLogger( "adminitration" ).info( "Refresh field list" );
          refresh();
       }
-
       return false;
    }
 
@@ -203,4 +256,9 @@ public class FieldsModel
    {
       return fieldModels.get( id );
    }
-}
+
+   public PageEditModel getPageModel( String id )
+   {
+      return pageModels.get( id );
+   }
+   }

@@ -31,19 +31,27 @@ import ca.odell.glazedlists.swing.EventListModel;
 /**
  * JAVADOC
  */
-public class GroupedList
+public class FormFieldsList
       extends JPanel
 {
    private JList list;
+   private EventListModel listModel;
    public JScrollPane pane = new JScrollPane();
 
-   public GroupedList()
+   public FormFieldsList()
    {
       setLayout( new BorderLayout() );
 
       list = new JList();
-      list.setCellRenderer( new PageItemListCellRenderer(  ) );
-
+      list.setCellRenderer( new SeparatorListCellRenderer(new ListItemListCellRenderer()) );
+      list.getSelectionModel().addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (list.getSelectedValue() instanceof SeparatorList.Separator)
+               list.clearSelection();
+         }
+      });
       pane.setViewportView( list );
 
       add( pane, BorderLayout.CENTER );
@@ -61,6 +69,10 @@ public class GroupedList
 
    public void setEventList( EventList<ListItemValue> eventList )
    {
-      list.setModel( new EventListModel<ListItemValue>( eventList ) );
+      SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( eventList, new ListItemComparator() );
+
+      listModel = new EventListModel<ListItemValue>( new SeparatorList<ListItemValue>( sortedIssues, new ListItemGroupingComparator(), 1, 10000 ) );
+
+      list.setModel( listModel );
    }
 }

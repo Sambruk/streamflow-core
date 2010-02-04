@@ -23,6 +23,7 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
@@ -81,7 +82,7 @@ public class CommonResourceAssembler
       module.addValues( TasksQuery.class ).visibleIn( Visibility.application );
 
       // Result values
-      module.addValues( ListValue.class, ListItemValue.class, GroupedListItemValue.class,
+      module.addValues( ListValue.class, ListItemValue.class, GroupedListItemValue.class, PageListItemValue.class,
             TaskListDTO.class,
             InboxTaskDTO.class,
             TaskGeneralDTO.class,
