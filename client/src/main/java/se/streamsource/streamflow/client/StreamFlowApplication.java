@@ -14,6 +14,22 @@
 
 package se.streamsource.streamflow.client;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EventObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ProxyActions;
 import org.jdesktop.application.SingleFrameApplication;
@@ -37,11 +53,11 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
+
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
@@ -54,21 +70,9 @@ import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
-
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import javax.swing.UnsupportedLookAndFeelException;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EventObject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Controller for the application
@@ -141,6 +145,23 @@ public class StreamFlowApplication
          MacOsUIExtension osUIExtension = new MacOsUIExtension( this );
          osUIExtension.attachMacUIExtension();
          osUIExtension.convertAccelerators();
+         
+         // General UI settings
+         String toolTipDismissDelay = i18n.text( StreamFlowResources.tooltip_delay_dismiss );
+         String toolTipInitialDelay = i18n.text( StreamFlowResources.tooltip_delay_initial );
+         String toolTipReshowDelay = i18n.text( StreamFlowResources.tooltip_delay_reshow );
+         if(toolTipInitialDelay != null && !toolTipInitialDelay.trim().equals(""))
+         {
+            ToolTipManager.sharedInstance().setInitialDelay(Integer.parseInt(toolTipInitialDelay));
+         }
+         if(toolTipDismissDelay != null && !toolTipDismissDelay.trim().equals(""))
+         {
+            ToolTipManager.sharedInstance().setDismissDelay(Integer.parseInt(toolTipDismissDelay));
+         }
+         if(toolTipReshowDelay != null && !toolTipReshowDelay.trim().equals(""))
+         {
+            ToolTipManager.sharedInstance().setReshowDelay(Integer.parseInt(toolTipReshowDelay));
+         }
       } catch (Throwable e)
       {
          //Do nothing
