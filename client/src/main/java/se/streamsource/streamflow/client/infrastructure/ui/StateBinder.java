@@ -25,25 +25,11 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
+import se.streamsource.streamflow.client.ui.task.MultiSelectPanel;
 
-import javax.swing.InputVerifier;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.JComboBox;
+import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.KeyboardFocusManager;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -63,12 +49,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
-import se.streamsource.streamflow.client.ui.task.MultiSelectPanel;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.OperationException;
 
 /**
  * JAVADOC
@@ -475,6 +455,9 @@ public class StateBinder
 
       public void updateComponent( Component component, Object value )
       {
+         if (value == null)
+            return;
+
          if (component instanceof JPasswordField)
          {
             JPasswordField passwordField = (JPasswordField) component;
