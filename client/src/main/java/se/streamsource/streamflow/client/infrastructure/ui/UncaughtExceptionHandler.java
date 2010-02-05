@@ -24,18 +24,13 @@ import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowResources;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Frame;
+import javax.swing.*;
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.logging.Level;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
@@ -108,7 +103,16 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                   showErrorDialog( ex, frame, text( ErrorResources.unauthorized_access ) );
                } else
                {
-                  showErrorDialog( ex, frame, text( StreamFlowResources.valueOf( HtmlErrorMessageExtractor.parse( ex.getMessage() ) ) ) );
+                  String message = ex.getMessage();
+                  if (message != null)
+                  {
+                     message = HtmlErrorMessageExtractor.parse( ex.getMessage() );
+                     showErrorDialog( ex, frame, text( StreamFlowResources.valueOf( HtmlErrorMessageExtractor.parse( ex.getMessage() ) ) ) );
+                  } else
+                  {
+                     // once again in case the resource enum does not exist
+                     showErrorDialog( ex, frame );
+                  }
                }
             } catch (IllegalArgumentException iae)
             {
