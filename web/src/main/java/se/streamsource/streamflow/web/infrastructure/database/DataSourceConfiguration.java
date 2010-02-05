@@ -21,10 +21,12 @@ import org.qi4j.api.property.Property;
 /**
  * Configuration for the DataSource pool
  */
-public interface DatabaseConfiguration
+public interface DataSourceConfiguration
       extends ConfigurationComposite
 {
-   Property<String> host();
+   Property<String> driver();
+
+   Property<String> url();
 
    Property<String> username();
 

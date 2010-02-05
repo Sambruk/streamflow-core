@@ -34,7 +34,7 @@ public class DatabaseAssembler
       module.importServices( DataSource.class ).
             importedBy( ServiceInstanceImporter.class ).
             setMetaInfo( "datasource" ).
-            identifiedBy( "streamflow" ).visibleIn( Visibility.application );
+            identifiedBy( "streamflowds" ).visibleIn( Visibility.application );
 
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
       if (mode.equals( Application.Mode.production ))

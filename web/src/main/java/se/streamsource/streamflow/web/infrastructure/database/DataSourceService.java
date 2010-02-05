@@ -16,9 +16,10 @@ package se.streamsource.streamflow.web.infrastructure.database;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.DataSources;
+import org.qi4j.api.composite.PropertyMapper;
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ImportedServiceDescriptor;
@@ -26,9 +27,19 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.service.ServiceImporter;
 import org.qi4j.api.service.ServiceImporterException;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.UsecaseBuilder;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.sql.SQLException;
 
 /**
  * DataSource service. Sets up and exposes a DataSource that can be used in the application.
@@ -40,59 +51,120 @@ public interface DataSourceService
    class Mixin
          implements Activatable, ServiceImporter
    {
-      @This
-      Configuration<DatabaseConfiguration> config;
-
       ComboPooledDataSource pool;
 
       @Structure
       Module module;
 
+      Map<String, ComboPooledDataSource> pools = new HashMap<String, ComboPooledDataSource>( );
+
+      @Structure
+      UnitOfWorkFactory uowf;
+      public Logger logger = LoggerFactory.getLogger( DataSourceService.class );
+
       public void activate() throws Exception
       {
-         pool = new ComboPooledDataSource( );
-
-         Class.forName( "com.mysql.jdbc.Driver" );
-         pool.setDriverClass("com.mysql.jdbc.Driver" );
-         pool.setJdbcUrl( "jdbc:mysql://" + config.configuration().host().get() + "/streamflow" );
-
-         String props = config.configuration().properties().get();
-         String[] properties = props.split( "," );
-         Properties poolProperties = new Properties();
-         for (String property : properties)
-         {
-            if (property.trim().length() > 0)
-            {
-               String[] keyvalue = property.trim().split("=" );
-               poolProperties.setProperty( keyvalue[0], keyvalue[1] );
-            }
-         }
-         pool.setProperties( poolProperties );
-
-         pool.setUser( config.configuration().username().get() );
-         pool.setPassword( config.configuration().password().get() );
-         pool.setMaxConnectionAge( 60*60 ); // One hour max age
-
-         LoggerFactory.getLogger( DataSourceService.class ).info( "Starting up DataSource for:{}", pool.getUser()+"@"+pool.getJdbcUrl() );
-
-         // Test the pool
-         pool.getConnection().close();
       }
 
       public void passivate() throws Exception
       {
-         DataSources.destroy( pool ); 
-         pool = null;
+         for (ComboPooledDataSource pool : pools.values())
+         {
+            DataSources.destroy( pool );
+         }
+         pools.clear();
       }
 
-      public Object importService( ImportedServiceDescriptor importedServiceDescriptor ) throws ServiceImporterException
+      public synchronized Object importService( ImportedServiceDescriptor importedServiceDescriptor ) throws ServiceImporterException
       {
+         ComboPooledDataSource pool = pools.get( importedServiceDescriptor.identity() );
+         if (pool == null)
+         {
+            // Instantiate pool
+            pool = new ComboPooledDataSource( );
+
+            UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase("Create DataSource pool" ));
+
+            try
+            {
+               DataSourceConfiguration config = getConfiguration(uow, importedServiceDescriptor.identity());
+
+               Class.forName( config.driver().get() );
+               pool.setDriverClass(config.driver().get() );
+               pool.setJdbcUrl( config.url().get());
+
+               String props = config.properties().get();
+               String[] properties = props.split( "," );
+               Properties poolProperties = new Properties();
+               for (String property : properties)
+               {
+                  if (property.trim().length() > 0)
+                  {
+                     String[] keyvalue = property.trim().split("=" );
+                     poolProperties.setProperty( keyvalue[0], keyvalue[1] );
+                  }
+               }
+               pool.setProperties( poolProperties );
+
+               pool.setUser( config.username().get() );
+               pool.setPassword( config.password().get() );
+               pool.setMaxConnectionAge( 60*60 ); // One hour max age
+
+               logger.info( "Starting up DataSource '"+importedServiceDescriptor.identity()+"' for:{}", pool.getUser()+"@"+pool.getJdbcUrl() );
+
+               uow.complete();
+
+               pools.put( importedServiceDescriptor.identity(), pool );
+            } catch (Exception e)
+            {
+               throw new ServiceImporterException(e);
+            }
+
+            // Test the pool
+            try
+            {
+               pool.getConnection().close();
+               logger.info( "Database for DataSource is up!" );
+            } catch (SQLException e)
+            {
+               logger.warn("Database for DataSource is not currently available");
+            }
+         }
          return pool;
+      }
+
+      private DataSourceConfiguration getConfiguration( UnitOfWork uow, String identity ) throws InstantiationException
+      {
+         try
+         {
+            return uow.get( DataSourceConfiguration.class, identity );
+         } catch (NoSuchEntityException e)
+         {
+            EntityBuilder<DataSourceConfiguration> configBuilder = uow.newEntityBuilder( DataSourceConfiguration.class, identity );
+
+            // Check for defaults
+            String s = identity + ".properties";
+            InputStream asStream = DataSourceConfiguration.class.getClassLoader().getResourceAsStream( s );
+            if( asStream != null )
+            {
+                try
+                {
+                    PropertyMapper.map( asStream, configBuilder.instance() );
+                }
+                catch( IOException e1 )
+                {
+                    InstantiationException exception = new InstantiationException( "Could not read underlying Properties file." );
+                    exception.initCause( e1 );
+                    throw exception;
+                }
+            }
+            return configBuilder.newInstance();
+         }
       }
 
       public boolean isActive( Object o )
       {
-         return pool != null;
+         return pools.containsValue( o );
       }
    }
 }
