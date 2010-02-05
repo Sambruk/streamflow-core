@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.application.management.jmxconnector.JmxCon
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
-import se.streamsource.streamflow.web.infrastructure.database.DatabaseConfiguration;
+import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
 
 import java.util.prefs.Preferences;
 
@@ -52,14 +52,14 @@ public class ConfigurationAssembler
       module.addEntities( NativeConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StatisticsConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( DatabaseConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( DataSourceConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StartupMigrationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
 
       module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
-      module.forMixin( DatabaseConfiguration.class ).declareDefaults().properties().set("");
+      module.forMixin( DataSourceConfiguration.class ).declareDefaults().properties().set("");
       module.forMixin( LiquibaseConfiguration.class ).declareDefaults().enabled().set(true);
       module.forMixin( LiquibaseConfiguration.class ).declareDefaults().changeLog().set("changelog.xml");
 
