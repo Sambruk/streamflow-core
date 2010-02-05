@@ -23,6 +23,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
@@ -109,9 +110,22 @@ public interface SubmittedForms
 
             for (SubmittedFieldValue fieldValue : submittedFormValue.values().get())
             {
-               eFieldBuilder.prototype().field().set( fieldValue.field().get() );
-               eFieldBuilder.prototype().value().set( fieldValue.value().get() );
-               effectiveValues.put( fieldValue.field().get(), eFieldBuilder.newInstance() );
+               EffectiveFieldValue effectiveFieldValue = effectiveValues.get( fieldValue.field().get() );
+               if ( effectiveFieldValue != null )
+               {
+                  if ( !effectiveFieldValue.value().get().equals( fieldValue.value().get() ))
+                  {
+                     eFieldBuilder.prototype().field().set( fieldValue.field().get() );
+                     eFieldBuilder.prototype().value().set( fieldValue.value().get() );
+                     effectiveValues.put( fieldValue.field().get(), eFieldBuilder.newInstance() );
+                  }
+
+               } else
+               {
+                  eFieldBuilder.prototype().field().set( fieldValue.field().get() );
+                  eFieldBuilder.prototype().value().set( fieldValue.value().get() );
+                  effectiveValues.put( fieldValue.field().get(), eFieldBuilder.newInstance() );
+               }
             }
          }
 
@@ -128,7 +142,9 @@ public interface SubmittedForms
       {
          EffectiveFormFieldsValue effectiveFormFieldsValue = effectiveFieldValues().get();
          if (effectiveFormFieldsValue == null)
+         {
             return null;
+         }
 
          // Find value among effective fields collection
          EntityReference fieldRef = EntityReference.getEntityReference( field );

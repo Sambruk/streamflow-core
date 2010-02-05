@@ -126,15 +126,18 @@ public interface SubmittedFormsQueries
          {
             for (EffectiveFieldValue fieldValue : effectiveFormFields.fields().get())
             {
-               fieldDTO.submissionDate().set( fieldValue.submissionDate().get() );
+               if ( !"".equals( fieldValue.value().get()))
+               {
+                  fieldDTO.submissionDate().set( fieldValue.submissionDate().get() );
 
-               Describable.Data submitter = uow.get( Describable.Data.class, fieldValue.submitter().get().identity() );
-               fieldDTO.submitter().set( submitter.description().get() );
+                  Describable.Data submitter = uow.get( Describable.Data.class, fieldValue.submitter().get().identity() );
+                  fieldDTO.submitter().set( submitter.description().get() );
 
-               fieldDTO.fieldValue().set( fieldValue.value().get() );
-               Describable.Data fieldName = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
-               fieldDTO.fieldName().set( fieldName.description().get() );
-               list.effectiveFields().get().add( fieldBuilder.newInstance() );
+                  fieldDTO.fieldValue().set( fieldValue.value().get() );
+                  Describable.Data fieldName = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
+                  fieldDTO.fieldName().set( fieldName.description().get() );
+                  list.effectiveFields().get().add( fieldBuilder.newInstance() );
+               }
             }
          }
 

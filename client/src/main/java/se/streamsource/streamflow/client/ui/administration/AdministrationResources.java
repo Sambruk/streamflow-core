@@ -161,5 +161,6 @@ public enum AdministrationResources
    could_not_find_field,
    could_not_move_page,
    could_not_move_field,
+   add_page_title,
    members_tab
 }

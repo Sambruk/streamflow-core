@@ -22,7 +22,6 @@ import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.PageBreakFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.ListValueBuilder;
@@ -30,7 +29,6 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * Mapped to:
@@ -89,9 +87,6 @@ public class FormDefinitionFieldsServerResource
             ValueBuilder<CommentFieldValue> comment = vbf.newValueBuilder( CommentFieldValue.class );
             comment.prototype().comment().set( "" );
             value = comment.newInstance();
-            break;
-         case page_break:
-            value = vbf.newValue( PageBreakFieldValue.class);
             break;
       }
       return value;

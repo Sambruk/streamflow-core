@@ -22,6 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JList;
+import javax.swing.ListModel;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
@@ -32,11 +34,11 @@ import se.streamsource.streamflow.client.infrastructure.ui.GroupedList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
-import se.streamsource.streamflow.domain.form.FieldTypes;
 import ca.odell.glazedlists.EventList;
 
 /**
@@ -49,6 +51,9 @@ public class FieldsView
 
    @Service
    DialogService dialogs;
+
+   @Uses
+   Iterable<NameDialog> pageCreationDialog;
 
    @Uses
    Iterable<FieldCreationDialog> fieldCreationDialog;
@@ -67,7 +72,8 @@ public class FieldsView
       ActionMap am = context.getActionMap( this );
 
       JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "add" ) ) );
+      toolbar.add( new JButton( am.get( "addPage" ) ) );
+      toolbar.add( new JButton( am.get( "addField" ) ) );
       toolbar.add( new JButton( am.get( "remove" ) ) );
       toolbar.add( new JButton( am.get( "up" ) ) );
       toolbar.add( new JButton( am.get( "down" ) ) );
@@ -88,39 +94,58 @@ public class FieldsView
       add( scrollPanel, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
 
-
+      fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "addField" ) ) );
       fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
       fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "up" ) ) );
       fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "down" ) ) );
    }
 
    @org.jdesktop.application.Action
-   public void add()
+   public void addField()
    {
       FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_field_to_form));
 
       if (dialog.name() != null && !"".equals( dialog.name() ))
       {
-         if ( FieldTypes.page_break.equals( dialog.getFieldType() ))
+         PageListItemValue page = findSelectedPage( fieldList.getList().getSelectedValue() );
+         if ( page != null)
          {
-            model.addPage( dialog.name() );
+            model.addField( page.entity().get(), dialog.name(), dialog.getFieldType() );
             fieldList.getList().clearSelection();
-         } else
+         }
+      }
+   }
+
+   private PageListItemValue findSelectedPage( Object selected )
+   {
+      ListModel model = fieldList.getList().getModel();
+      if ( selected instanceof PageListItemValue)
+      {
+         return (PageListItemValue) selected;
+      } else
+      {
+         int index = fieldList.getList().getSelectedIndex();
+         for ( int i=index; i>=0; i-- )
          {
-            ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
-            if ( selected != null)
+            if ( model.getElementAt( i ) instanceof PageListItemValue)
             {
-               if ( selected instanceof PageListItemValue)
-               {
-                  model.addField( selected.entity().get(), dialog.name(), dialog.getFieldType() );
-                  fieldList.getList().clearSelection();
-               } else
-               {
-                  // show help message
-               }
+               return (PageListItemValue) model.getElementAt( i );
             }
          }
+      }
+      return null;
+   }
+
+   @org.jdesktop.application.Action
+   public void addPage()
+   {
+      NameDialog dialog = pageCreationDialog.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_page_title ) );
+
+      if ( dialog.name()!=null && !"".equals( dialog.name() ))
+      {
+         model.addPage( dialog.name() );
       }
    }
 

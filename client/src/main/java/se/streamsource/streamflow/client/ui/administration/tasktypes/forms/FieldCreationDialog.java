@@ -65,7 +65,6 @@ public class FieldCreationDialog
             FieldTypes.date,
             FieldTypes.number,
             FieldTypes.selection,
-            FieldTypes.page_break,
             FieldTypes.comment} );
 
       box.setRenderer( new DefaultListCellRenderer() {
