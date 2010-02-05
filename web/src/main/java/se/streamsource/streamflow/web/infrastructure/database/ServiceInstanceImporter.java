@@ -37,6 +37,8 @@ public class ServiceInstanceImporter
 
    public Object importService( ImportedServiceDescriptor importedServiceDescriptor ) throws ServiceImporterException
    {
+      serviceId = importedServiceDescriptor.metaInfo( String.class );
+
       return getServiceImporter().importService( importedServiceDescriptor );
    }
 
