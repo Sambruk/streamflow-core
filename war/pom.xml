@@ -37,8 +37,6 @@
                               <include>version.properties</include>
                               <include>solrconfig.xml</include>
                               <include>schema.xml</include>
-                              <include>changelog.xml</include>
-                              <include>log4j.xml</include>
                           </includes>
                       </resource>
                     </resources>
