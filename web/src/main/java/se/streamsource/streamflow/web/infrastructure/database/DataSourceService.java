@@ -17,7 +17,6 @@ package se.streamsource.streamflow.web.infrastructure.database;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.DataSources;
 import org.qi4j.api.composite.PropertyMapper;
-import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -31,22 +30,22 @@ import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.sql.SQLException;
 
 /**
  * DataSource service. Sets up and exposes a DataSource that can be used in the application.
  */
 @Mixins(DataSourceService.Mixin.class)
 public interface DataSourceService
-      extends ServiceImporter, Configuration, Activatable, ServiceComposite
+      extends ServiceImporter, Activatable, ServiceComposite
 {
    class Mixin
          implements Activatable, ServiceImporter
