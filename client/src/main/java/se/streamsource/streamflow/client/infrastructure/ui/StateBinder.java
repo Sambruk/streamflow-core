@@ -26,6 +26,7 @@ import org.qi4j.api.util.DateFunctions;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 import se.streamsource.streamflow.client.ui.task.MultiSelectPanel;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -540,7 +541,7 @@ public class StateBinder
          if (!result)
          {
             Window window = WindowUtils.findWindow( input );
-            StringBuilder message = new StringBuilder( "Invalid value" );
+            StringBuilder message = new StringBuilder( i18n.text( AdministrationResources.invalid_value ) );
 
             if (exception instanceof ConstraintViolationException)
             {
