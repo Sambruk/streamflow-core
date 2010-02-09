@@ -23,5 +23,4 @@ import org.qi4j.api.common.Optional;
 public interface CommentFieldValue
       extends FieldValue
 {
-   Property<String> comment();
 }

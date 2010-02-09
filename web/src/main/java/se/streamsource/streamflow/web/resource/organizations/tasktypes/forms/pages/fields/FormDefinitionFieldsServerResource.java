@@ -85,7 +85,6 @@ public class FormDefinitionFieldsServerResource
             break;
          case comment:
             ValueBuilder<CommentFieldValue> comment = vbf.newValueBuilder( CommentFieldValue.class );
-            comment.prototype().comment().set( "" );
             value = comment.newInstance();
             break;
       }

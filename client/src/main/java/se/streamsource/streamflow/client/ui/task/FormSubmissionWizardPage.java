@@ -129,7 +129,7 @@ public class FormSubmissionWizardPage
          } else if ( value.field().get().fieldValue().get() instanceof CommentFieldValue )
          {
             CommentFieldValue field = (CommentFieldValue) value.field().get().fieldValue().get();
-            component = new JLabel( field.comment().get() );
+            component = new JLabel( "TODO" );
          } else
          {
             // Error!!!!

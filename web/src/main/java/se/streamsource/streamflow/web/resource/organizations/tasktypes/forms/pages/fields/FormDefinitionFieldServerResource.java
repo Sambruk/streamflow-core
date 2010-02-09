@@ -234,10 +234,7 @@ public class FormDefinitionFieldServerResource
       FieldValue value = field.fieldValue().get();
       if ( value instanceof CommentFieldValue )
       {
-         ValueBuilder<CommentFieldValue> builder =
-               vbf.newValueBuilder( CommentFieldValue.class ).withPrototype( (CommentFieldValue) value );
-         builder.prototype().comment().set( newComment.string().get() );
-         field.changeFieldValue( builder.newInstance() );
+         field.changeDescription( newComment.string().get() );
       }
    }
 

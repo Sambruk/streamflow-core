@@ -78,8 +78,7 @@ public class FieldValueCommentEditView
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.comment_field_type ) ) );
 
       bb.appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
-            appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() ).
-            appendLine( AdministrationResources.comment_label, TEXTAREA, fieldValueTemplate.comment(), fieldValueBinder);
+            appendLine( AdministrationResources.comment_label, TEXTAREA, fieldDefinitionTemplate.note() );
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );
