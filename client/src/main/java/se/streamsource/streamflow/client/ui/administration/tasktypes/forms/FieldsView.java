@@ -146,6 +146,7 @@ public class FieldsView
       if ( dialog.name()!=null && !"".equals( dialog.name() ))
       {
          model.addPage( dialog.name() );
+         fieldList.getList().clearSelection();
       }
    }
 
