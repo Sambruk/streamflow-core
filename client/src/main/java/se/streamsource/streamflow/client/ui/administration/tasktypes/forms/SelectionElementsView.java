@@ -184,7 +184,7 @@ public class SelectionElementsView
    {
       NameDialog dialog = nameDialogs.iterator().next();
 
-      dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.change_selection_field_name ));
+      dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.rename ));
 
       if ( dialog.name() != null &&  !dialog.name().equals( "" ))
       {
