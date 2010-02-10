@@ -59,8 +59,11 @@ public class FormSubmissionModel
       pages = new ArrayList<WizardPage>( formSubmission.pages().get().size() );
       for (SubmittedPageValue page : formSubmission.pages().get())
       {
-         pages.add( obf.newObjectBuilder( FormSubmissionWizardPage.class)
-            .use( this, page ).newInstance() );
+         if ( page.fields().get() != null && page.fields().get().size() >0 )
+         {
+            pages.add( obf.newObjectBuilder( FormSubmissionWizardPage.class)
+                  .use( this, page ).newInstance() );
+         }
       }
    }
 
