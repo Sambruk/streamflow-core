@@ -91,7 +91,7 @@ public class FormSubmissionWizardPage
 
       for (FieldSubmissionValue value : page.fields().get() )
       {
-         JComponent component;
+         JComponent component = null;
          if ( value.field().get().fieldValue().get() instanceof TextFieldValue)
          {
             TextFieldValue field = (TextFieldValue) value.field().get().fieldValue().get();
@@ -128,30 +128,14 @@ public class FormSubmissionWizardPage
             }
          } else if ( value.field().get().fieldValue().get() instanceof CommentFieldValue )
          {
-            CommentFieldValue field = (CommentFieldValue) value.field().get().fieldValue().get();
-            component = new JLabel( "TODO" );
-         } else
-         {
-            // Error!!!!
-            component = new JTextField( );
+            bb.append( new JLabel( value.field().get().note().get() ) );
          }
 
-         // set tool tip
-         if ( value.field().get().note().get().length() > 0 )
+         if ( component != null )
          {
-            component.setToolTipText( value.field().get().note().get() );
+            bindComponent( bb, value, component );
          }
 
-         componentFieldMap.put( value.field().get(), component );
-
-         StateBinder stateBinder = new StateBinder();
-         FieldSubmissionValue value1 = stateBinder.bindingTemplate( FieldSubmissionValue.class );
-
-         bb.append( getName( value ), component, value1.value(), stateBinder );
-
-         fieldBinders.put( stateBinder, value.field().get().field().get() );
-         stateBinder.addObserver( this );
-         stateBinder.updateWith( value );
       }
 
       JComponent validationResultsComponent = ValidationResultViewFactory.createReportList(validationResultModel);
@@ -162,6 +146,25 @@ public class FormSubmissionWizardPage
 
       JScrollPane scroll = new JScrollPane(panel);
       add(scroll,  BorderLayout.CENTER);
+   }
+
+   private void bindComponent( BindingFormBuilder bb, FieldSubmissionValue value, JComponent component )
+   {
+      if ( value.field().get().note().get().length() > 0 )
+      {
+         component.setToolTipText( value.field().get().note().get() );
+      }
+
+      componentFieldMap.put( value.field().get(), component );
+
+      StateBinder stateBinder = new StateBinder();
+      FieldSubmissionValue value1 = stateBinder.bindingTemplate( FieldSubmissionValue.class );
+
+      bb.append( getName( value ), component, value1.value(), stateBinder );
+
+      fieldBinders.put( stateBinder, value.field().get().field().get() );
+      stateBinder.addObserver( this );
+      stateBinder.updateWith( value );
    }
 
    private String getName( FieldSubmissionValue value )

@@ -38,16 +38,16 @@ import java.util.ArrayList;
  */
 public class FormSubmissionModel
 {
-   @Structure
    private ValueBuilderFactory vbf;
-
    private CommandQueryClient client;
    private FormSubmissionValue formSubmission;
    private List<WizardPage> pages;
 
    public FormSubmissionModel(@Uses CommandQueryClient client,
-                              @Structure ObjectBuilderFactory obf)
+                              @Structure ObjectBuilderFactory obf,
+                              @Structure ValueBuilderFactory vbf)
    {
+      this.vbf = vbf;
       this.client = client;
       try
       {
