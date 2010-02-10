@@ -164,5 +164,6 @@ public enum AdministrationResources
    add_page_title,
    invalid_value,
    rename,
+   description_cannot_be_more_than_50, 
    members_tab
 }

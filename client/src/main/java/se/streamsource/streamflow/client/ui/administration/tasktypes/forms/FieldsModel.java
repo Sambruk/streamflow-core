@@ -146,7 +146,7 @@ public class FieldsModel
          subClient.putCommand( "add", builder.newInstance() );
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_add_field, e );
+         throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
       }
    }
 
@@ -160,7 +160,7 @@ public class FieldsModel
          client.postCommand( "add", builder.newInstance() );
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_create_page, e );
+         throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
       }
    }
 

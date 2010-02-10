@@ -106,7 +106,7 @@ public class FormsModel
          client.postCommand( "create", builder.newInstance() );
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_add_form_definition, e );
+         throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
       }
    }
 
