@@ -17,6 +17,7 @@ package se.streamsource.streamflow.resource.task;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -36,6 +37,7 @@ public interface TaskGeneralDTO
 
    Property<ListValue> labels();
 
+   @MaxLength(50)
    Property<String> description();
 
    Property<String> note();
