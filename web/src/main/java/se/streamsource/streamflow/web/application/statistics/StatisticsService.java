@@ -56,14 +56,9 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import javax.sql.DataSource;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import static java.util.Arrays.asList;
-import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -100,7 +95,6 @@ public interface StatisticsService
       public Logger logger;
       private Properties sql;
 
-      private boolean initialized = false;
       private EventSpecification completedFilter;
 
       private Usecase usecase = UsecaseBuilder.newUsecase( "Log statistics" );
@@ -158,19 +152,6 @@ public interface StatisticsService
       {
          if (config.configuration().enabled().get())
          {
-            if (!initialized)
-            {
-               try
-               {
-                  createTables();
-                  initialized = true;
-               } catch (SQLException e)
-               {
-                  logger.log( Level.SEVERE, "Could not create statistics tables", e );
-                  return false;
-               }
-            }
-
             TransactionTimestampFilter timestamp;
             EventCollector eventCollector;
             eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
@@ -323,45 +304,6 @@ public interface StatisticsService
          }
 
          return true;
-      }
-
-
-      private void createTables()
-            throws SQLException
-      {
-         // Create tables
-         Connection conn = dataSource.getConnection();
-
-         try
-         {
-            DatabaseMetaData dmd = conn.getMetaData();
-
-            Set<String> createTables = new HashSet<String>();
-            createTables.addAll( asList( "completed", "labels" ) );
-
-            ResultSet tables = dmd.getTables( null, null, "%", null );
-            while (tables.next())
-            {
-               String tableName = tables.getString( "TABLE_NAME" ).toLowerCase();
-               createTables.remove( tableName );
-            }
-            tables.close();
-
-            for (String createTable : createTables)
-            {
-               String create = sql.getProperty( createTable + ".create" );
-               try
-               {
-                  boolean ok = conn.createStatement().execute( create );
-               } catch (SQLException e)
-               {
-                  throw e;
-               }
-            }
-         } finally
-         {
-            conn.close();
-         }
       }
    }
 }
