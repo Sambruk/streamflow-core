@@ -29,7 +29,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 @Mixins(Accounts.Mixin.class)
 public interface Accounts
 {
-   Account newAccount();
+   Account newAccount( AccountSettingsValue accountSettings );
 
    void removeAccount( Account removedAccount );
 
@@ -52,11 +52,10 @@ public interface Accounts
       @Structure
       ValueBuilderFactory vbf;
 
-      public Account newAccount()
+      public Account newAccount( AccountSettingsValue accountSettings )
       {
-         AccountSettingsValue settings = vbf.newValue( AccountSettingsValue.class );
          EntityBuilder<Account> builder = uowf.currentUnitOfWork().newEntityBuilder( Account.class );
-         builder.instance().updateSettings( settings );
+         builder.instance().updateSettings( accountSettings );
          Account account = builder.newInstance();
          state.accounts().add( state.accounts().count(), account );
          return account;

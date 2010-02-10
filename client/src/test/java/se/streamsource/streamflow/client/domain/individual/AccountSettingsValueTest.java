@@ -33,7 +33,7 @@ public class AccountSettingsValueTest
       module.addObjects( getClass() );
    }
 
-   @Test
+   @Test(expected = ConstraintViolationException.class)
    public void testDefaultValues()
    {
       objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
@@ -61,6 +61,8 @@ public class AccountSettingsValueTest
 
       ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
       settings.prototype().server().set( "http://ec2-79-125-55-249.eu-west-1.compute.amazonaws.com:8040/streamflow" );
+      settings.prototype().userName().set( "noinvisiblecharsallowed" );
+      settings.prototype().password().set( "noinvisiblecharsallowed" );
       settings.newInstance();
    }
 
@@ -71,18 +73,26 @@ public class AccountSettingsValueTest
       objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
 
       ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
-      settings.prototype().userName().set( "madsenevoldsen" );
+      settings.prototype().userName().set( "mads.enevoldsen" );
    }
 
    @Test(expected = ConstraintViolationException.class)
-   public void testUserNameConstraintViolation()
+   public void testUserNameSwedishCharConstraintViolation()
    {
       objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
 
       ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
-      settings.prototype().userName().set( "mads.enevoldsen" );
+      settings.prototype().userName().set( "börjebärnstråm" );
    }
 
+   @Test(expected = ConstraintViolationException.class)
+   public void testUserNameWhiteSpaceCharConstraintViolation()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
+
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.prototype().userName().set( "mads enevoldsen" );
+   }
 
    @Test
    public void testPassword()
@@ -90,16 +100,35 @@ public class AccountSettingsValueTest
       objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
 
       ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
-      settings.prototype().password().set( "secret" );
+      settings.prototype().password().set( "secret1!?(){}[]%&" );
    }
 
+
    @Test(expected = ConstraintViolationException.class)
-   public void testPasswordConstraintViolation()
+   public void testPasswordShortConstraintViolation()
    {
       objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
 
       ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
-      settings.prototype().password().set( "mySecret#!()%#" );
+      settings.prototype().password().set( "a" );
+   }
+
+   @Test(expected = ConstraintViolationException.class)
+   public void testPasswordLongConstraintViolation()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
+
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.prototype().password().set( "thisislongerthanthirtycharacters" );
+   }
+
+   @Test(expected = ConstraintViolationException.class)
+   public void testPasswordWhitspaceConstraintViolation()
+   {
+      objectBuilderFactory.newObjectBuilder( AccountSettingsValueTest.class ).injectTo( this );
+
+      ValueBuilder<AccountSettingsValue> settings = valueBuilderFactory.newValueBuilder( AccountSettingsValue.class );
+      settings.prototype().password().set( "my Secret" );
    }
 
 }

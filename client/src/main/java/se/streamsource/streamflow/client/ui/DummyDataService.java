@@ -79,15 +79,13 @@ public interface DummyDataService
             builder.prototype().userName().set( "administrator" );
             builder.prototype().password().set( "administrator" );
 
-            final Account account = individual.newAccount();
-            account.updateSettings( builder.newInstance() );
+            final Account account = individual.newAccount(builder.newInstance());
 
-            final Account account2 = individual.newAccount();
+
             builder.prototype().name().set( "Test server someuser" );
             builder.prototype().userName().set("someuser");
             builder.prototype().password().set("someuser");
-            account2.updateSettings( builder.newInstance() );
-
+            final Account account2 = individual.newAccount( builder.newInstance() );
 
             CommandQueryClient server = account.server( client );
             ClientResource version = new ClientResource(server.getReference().clone().addSegment( "static" ).addSegment( "version.html" ));
