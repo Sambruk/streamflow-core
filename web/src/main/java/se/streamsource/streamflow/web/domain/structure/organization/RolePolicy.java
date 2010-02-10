@@ -95,11 +95,14 @@ public interface RolePolicy
 
       public void revokeRoles( Participant participant )
       {
-         ParticipantRolesValue roles = getRoles( participant );
-         for (EntityReference entityReference : roles.roles().get())
+         if (hasRoles( participant ))
          {
-            Role role = uowf.currentUnitOfWork().get( Role.class, entityReference.identity() );
-            revokeRole( participant, role );
+            ParticipantRolesValue roles = getRoles( participant );
+            for (EntityReference entityReference : roles.roles().get())
+            {
+               Role role = uowf.currentUnitOfWork().get( Role.class, entityReference.identity() );
+               revokeRole( participant, role );
+            }
          }
       }
 
