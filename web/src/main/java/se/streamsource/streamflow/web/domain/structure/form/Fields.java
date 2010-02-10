@@ -82,7 +82,7 @@ public interface Fields
 
       public void moveField( Field field, Integer toIdx )
       {
-         if (!fields().contains( field ) || fields().count() < toIdx)
+         if (!fields().contains( field ) || fields().count() <= toIdx)
             return;
 
          movedField( DomainEvent.CREATE, field, toIdx );

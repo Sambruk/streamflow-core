@@ -82,7 +82,7 @@ public interface Pages
 
       public void movePage( Page page, Integer toIdx )
       {
-         if (!pages().contains( page ) || pages().count() < toIdx)
+         if (!pages().contains( page ) || pages().count() <= toIdx)
             return;
 
          movedPage( DomainEvent.CREATE, page, toIdx );
