@@ -32,10 +32,12 @@ import java.util.Observer;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.SwingConstants;
 
@@ -49,8 +51,10 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 
+import se.streamsource.streamflow.client.MacOsUIExtension;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
@@ -110,10 +114,12 @@ public class TaskGeneralView extends JScrollPane implements Observer
 	{
 		this.labels = labels;
 		this.forms = forms;
-      getVerticalScrollBar().setUnitIncrement(30);
+		getVerticalScrollBar().setUnitIncrement(30);
 
 		// this.labelSelection = labels.labelSelection();
 		setActionMap(appContext.getActionMap(this));
+		MacOsUIExtension.convertAccelerators(appContext.getActionMap(
+				TaskGeneralView.class, this));
 
 		// Layout and form for the left panel
 		FormLayout leftLayout = new FormLayout("165dlu", "");
@@ -181,12 +187,21 @@ public class TaskGeneralView extends JScrollPane implements Observer
 		ActionMap am = getActionMap();
 		javax.swing.Action taskTypeAction = am.get("tasktype");
       taskTypeButton = new JButton(taskTypeAction);
+		taskTypeButton.registerKeyboardAction(taskTypeAction, (KeyStroke) taskTypeAction
+				.getValue(javax.swing.Action.ACCELERATOR_KEY),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+		NotificationGlassPane.registerButton(taskTypeButton);
 		taskTypeButton.setHorizontalAlignment(SwingConstants.LEFT);
 		rightBuilder.add( taskTypeButton, cc.xy(1, 1));
 		rightBuilder.add(selectedTaskType, cc.xy(3, 1));
 		rightBuilder.nextLine();
 		javax.swing.Action labelAction = am.get("label");
       labelButton = new JButton(labelAction);
+		NotificationGlassPane.registerButton(labelButton);
+		labelButton.registerKeyboardAction(labelAction, (KeyStroke) labelAction
+				.getValue(javax.swing.Action.ACCELERATOR_KEY),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+
 		labelButton.setHorizontalAlignment(SwingConstants.LEFT);
 		rightBuilder.add( labelButton, cc.xyw(1, 2, 1));
 		rightBuilder.nextLine();

@@ -16,165 +16,178 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+
+import se.streamsource.streamflow.client.MacOsUIExtension;
+import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 
 import javax.swing.*;
+
 import java.awt.*;
 
 /**
  * JAVADOC
  */
-public class TaskActionsView
-   extends JPanel
+public class TaskActionsView extends JPanel
 {
-   @Uses
-   protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+	@Uses
+	protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
 
-   @Service
-   DialogService dialogs;
+	@Service
+	DialogService dialogs;
 
-   private TaskActionsModel model;
+	@Service
+	StreamFlowApplication controller;
 
-   private JPanel actionsPanel = new JPanel();
+	private TaskActionsModel model;
 
-   public TaskActionsView(@Service ApplicationContext context)
-   {
-      setLayout( new BorderLayout());
+	private JPanel actionsPanel = new JPanel();
 
-      actionsPanel.setLayout(new GridLayout(0, 1));
+	public TaskActionsView(@Service ApplicationContext context)
+	{
+		setLayout(new BorderLayout());
+		actionsPanel.setLayout(new GridLayout(0, 1));
+		add(actionsPanel, BorderLayout.NORTH);
+		setActionMap(context.getActionMap(this));
+		MacOsUIExtension.convertAccelerators(context.getActionMap(
+				TaskActionsView.class, this));
+	}
 
-      add( actionsPanel, BorderLayout.NORTH);
+	public void refresh()
+	{
+		Actions actions = model.actions();
 
-      setActionMap( context.getActionMap(this ));
-   }
+		actionsPanel.removeAll();
 
-   public void refresh()
-   {
-      Actions actions = model.actions();
+		ActionMap am = getActionMap();
 
-      actionsPanel.removeAll();
+		for (String action : actions.actions().get())
+		{
+			javax.swing.Action action1 = am.get(action);
+			if (action1 != null)
+			{
+				JButton button = new JButton(action1);
+				button.registerKeyboardAction(action1, (KeyStroke) action1
+						.getValue(javax.swing.Action.ACCELERATOR_KEY),
+						JComponent.WHEN_IN_FOCUSED_WINDOW);
+				button.setHorizontalAlignment(SwingConstants.LEFT);
+				actionsPanel.add(button);
+				NotificationGlassPane.registerButton(button);
+			}
+		}
 
-      ActionMap am = getActionMap();
+		revalidate();
+		repaint();
+	}
 
-      for (String action : actions.actions().get())
-      {
-         javax.swing.Action action1 = am.get( action );
-         if (action1 != null)
-         {
-            JButton button = new JButton( action1 );
-            button.setHorizontalAlignment( SwingConstants.LEFT );
-            actionsPanel.add(button);
-         }
-      }
+	// Task actions
+	@Action
+	public void accept()
+	{
+		model.accept();
+		refresh();
+	}
 
-      revalidate();
-      repaint();
-   }
+	@Action
+	public void assign()
+	{
+		model.assignToMe();
+		refresh();
+	}
 
-   // Task actions
-   @Action
-   public void accept()
-   {
-      model.accept();
-      refresh();
-   }
+	@Action
+	public void complete()
+	{
+		model.complete();
+		refresh();
+	}
 
-   @Action
-   public void assign()
-   {
-      model.assignToMe();
-      refresh();
-   }
+	@Action
+	public void delegate()
+	{
+		SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.use(
+				model).newInstance();
+		dialogs.showOkCancelHelpDialog(this, dialog);
 
-   @Action
-   public void complete()
-   {
-      model.complete();
-      refresh();
-   }
+		if (dialog.getSelected() != null)
+		{
+			model.delegate(dialog.getSelected());
+			refresh();
+		}
 
-   @Action
-   public void delegate()
-   {
-      SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.use( model ).newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog);
+	}
 
-      if (dialog.getSelected() != null)
-      {
-         model.delegate( dialog.getSelected() );
-         refresh();
-      }
+	@Action
+	public void delete()
+	{
+		model.delete();
+	}
 
-   }
+	@Action
+	public void done()
+	{
+		model.done();
+		refresh();
+	}
 
-   @Action
-   public void delete()
-   {
-      model.delete();
-   }
+	@Action
+	public void drop()
+	{
+		model.drop();
+		refresh();
+	}
 
-   @Action
-   public void done()
-   {
-      model.done();
-      refresh();
-   }
+	@Action
+	public void sendto()
+	{
+		SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.use(
+				model).newInstance();
+		dialogs.showOkCancelHelpDialog(this, dialog);
 
-   @Action
-   public void drop()
-   {
-      model.drop();
-      refresh();
-   }
+		if (dialog.getSelected() != null)
+		{
+			model.sendTo(dialog.getSelected());
+			refresh();
+		}
+	}
 
-   @Action
-   public void sendto()
-   {
-      SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.use( model ).newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog);
+	@Action
+	public void redo()
+	{
+		model.redo();
+		refresh();
+	}
 
-      if (dialog.getSelected() != null)
-      {
-         model.sendTo( dialog.getSelected() );
-         refresh();
-      }
-   }
+	@Action
+	public void reactivate()
+	{
+		model.reactivate();
+		refresh();
+	}
 
-   @Action
-   public void redo()
-   {
-      model.redo();
-      refresh();
-   }
+	@Action
+	public void reject()
+	{
+		model.reject();
+		refresh();
+	}
 
-   @Action
-   public void reactivate()
-   {
-      model.reactivate();
-      refresh();
-   }
+	@Action
+	public void unassign()
+	{
+		model.unassign();
+		refresh();
+	}
 
-   @Action
-   public void reject()
-   {
-      model.reject();
-      refresh();
-   }
-
-   @Action
-   public void unassign()
-   {
-      model.unassign();
-      refresh();
-   }
-
-   public void setModel( TaskActionsModel taskActionsModel )
-   {
-      this.model = taskActionsModel;
-   }
+	public void setModel(TaskActionsModel taskActionsModel)
+	{
+		this.model = taskActionsModel;
+	}
 }

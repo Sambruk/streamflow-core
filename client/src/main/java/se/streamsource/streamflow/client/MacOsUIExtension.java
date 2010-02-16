@@ -13,13 +13,13 @@
  */
 package se.streamsource.streamflow.client;
 
-import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationAdapter;
-import com.apple.eawt.ApplicationEvent;
-
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.KeyStroke;
+
+import com.apple.eawt.Application;
+import com.apple.eawt.ApplicationAdapter;
+import com.apple.eawt.ApplicationEvent;
 
 public class MacOsUIExtension
 {
@@ -64,10 +64,42 @@ public class MacOsUIExtension
       {
          Action action = actions.get( key );
          KeyStroke keyStroke = (KeyStroke) action.getValue( Action.ACCELERATOR_KEY );
+         Object ack = action.getValue(Action.ACTION_COMMAND_KEY);
          if (keyStroke != null && keyStroke.toString().contains( "ctrl" ))
          {
             keyStroke = KeyStroke.getKeyStroke( keyStroke.toString().replace( "ctrl", "meta" ) );
             action.putValue( Action.ACCELERATOR_KEY, keyStroke );
+         }
+         String toolTip = (String) action.getValue( Action.SHORT_DESCRIPTION );
+         if (toolTip != null && toolTip.contains( "ctrl" ))
+         {
+        	toolTip = toolTip.replace( "ctrl", "meta" );
+            action.putValue( Action.SHORT_DESCRIPTION, toolTip );
+         }
+      }
+   }
+
+   /**
+    * Replace all "ctrl" keystrokes with "meta" (Apple command) keystrokes.
+    */
+   public static void convertAccelerators(ActionMap actions)
+   {
+      Object[] keys = actions.allKeys();
+      for (Object key : keys)
+      {
+         Action action = actions.get( key );
+         KeyStroke keyStroke = (KeyStroke) action.getValue( Action.ACCELERATOR_KEY );
+         Object ack = action.getValue(Action.ACTION_COMMAND_KEY);
+         if (keyStroke != null && keyStroke.toString().contains( "ctrl" ))
+         {
+            keyStroke = KeyStroke.getKeyStroke( keyStroke.toString().replace( "ctrl", "meta" ) );
+            action.putValue( Action.ACCELERATOR_KEY, keyStroke );
+         }
+         String toolTip = (String) action.getValue( Action.SHORT_DESCRIPTION );
+         if (toolTip != null && toolTip.contains( "ctrl" ))
+         {
+        	toolTip = toolTip.replace( "ctrl", "meta" );
+            action.putValue( Action.SHORT_DESCRIPTION, toolTip );
          }
       }
    }

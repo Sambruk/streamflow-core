@@ -30,9 +30,12 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
+
+import se.streamsource.streamflow.client.MacOsUIExtension;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.resource.task.TaskDTO;
@@ -84,6 +87,8 @@ public class TaskTableView
 
       ActionMap am = context.getActionMap( TaskTableView.class, this );
       setActionMap( am );
+      MacOsUIExtension.convertAccelerators(context.getActionMap(
+				TaskTableView.class, this));
 
       // Toolbar
       JPanel toolbar = new JPanel();
@@ -217,7 +222,13 @@ public class TaskTableView
       ActionMap am = getActionMap();
       Action action = am.get( name );
       action.putValue( Action.SMALL_ICON, i18n.icon( (ImageIcon) action.getValue( Action.SMALL_ICON ), 16 ) );
-      toolbar.add( new JButton( action ) );
+      JButton button = new JButton(action);
+      button.registerKeyboardAction(action, (KeyStroke) action
+				.getValue(javax.swing.Action.ACCELERATOR_KEY),
+				JComponent.WHEN_IN_FOCUSED_WINDOW);
+      NotificationGlassPane.registerButton(button);
+
+      toolbar.add( button );
       return action;
    }
 
