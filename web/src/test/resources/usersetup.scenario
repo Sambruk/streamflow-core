@@ -1,0 +1,24 @@
+Scenario: set up users
+Given root context
+Given subcontext users
+
+When command createuser with
+{"username":"user1","password":"password1"}
+
+And command createuser with
+{"username":"user2","password":"password2"}
+
+And command createuser with
+{"username":"disableduser","password":"password3"}
+
+Given root context
+Given subcontext organizations
+
+When query organizations
+Given context for link 1
+Given subcontext users
+
+When command join with
+{"entity":"disableduser"}
+
+Then no events occurred

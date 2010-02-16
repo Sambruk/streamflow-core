@@ -20,6 +20,7 @@ import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
@@ -58,7 +59,8 @@ public interface LabelsContext
       public LabelContext context( String id )
       {
          context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ));
-         return null;
+
+         return subContext( LabelContext.class );
       }
    }
 }
