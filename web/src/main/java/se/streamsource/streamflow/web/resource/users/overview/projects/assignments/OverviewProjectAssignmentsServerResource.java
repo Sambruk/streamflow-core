@@ -27,6 +27,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class OverviewProjectAssignmentsServerResource
       extends CommandQueryServerResource
 {
+/*
    public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -36,4 +37,5 @@ public class OverviewProjectAssignmentsServerResource
 
       return assignmentsQueries.assignmentsTasks( null );
    }
+*/
 }

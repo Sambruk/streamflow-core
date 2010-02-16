@@ -31,6 +31,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class WorkspaceProjectAssignmentsServerResource
       extends AbstractTaskListServerResource
 {
+/*
    public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -42,6 +43,7 @@ public class WorkspaceProjectAssignmentsServerResource
 
       return queries.assignmentsTasks( assignee );
    }
+*/
 
    public void createtask()
    {

@@ -27,12 +27,14 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class OverviewProjectWaitingForServerResource
       extends AbstractTaskListServerResource
 {
+/*
    public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
       String waitingForId = (String) getRequest().getAttributes().get( "project" );
       WaitingForQueries waitingFor = uow.get( WaitingForQueries.class, waitingForId );
 
-      return waitingFor.waitingForTasks( null );
+      return waitingFor.waitingFor( null );
    }
+*/
 }

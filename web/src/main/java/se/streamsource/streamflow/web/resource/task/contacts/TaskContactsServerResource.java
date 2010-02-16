@@ -79,7 +79,6 @@ public class TaskContactsServerResource
       return rep;
    }
 
-
    public void add( ContactValue newContact )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();

@@ -19,7 +19,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.FormTemplate;
 import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;

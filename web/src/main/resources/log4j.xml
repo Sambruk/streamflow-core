@@ -12,7 +12,7 @@
         <level value="WARN"/>
     </logger>
     <logger name="org.qi4j.index.rdf.query">
-        <level value="WARN"/>
+        <level value="INFO"/>
     </logger>
 
     <!-- Monitors -->
@@ -20,8 +20,8 @@
     </logger>
 
     <!-- HTTP logging -->
-    <logger name="org.restlet.Component.LogService" additivity="false">
-    </logger>
+<!--    <logger name="org.restlet.Component.LogService" additivity="false">
+    </logger> -->
     
     <root>
         <level value="INFO"></level>

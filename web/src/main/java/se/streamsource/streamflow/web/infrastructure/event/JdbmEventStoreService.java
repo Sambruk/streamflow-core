@@ -48,6 +48,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -108,7 +109,8 @@ public interface JdbmEventStoreService
 
       public void removeTo( Date date ) throws IOException
       {
-         lock.lock();
+
+         lock();
 
          try
          {
@@ -139,7 +141,7 @@ public interface JdbmEventStoreService
       {
          try
          {
-            lock.lock();
+            lock();
             String valueJson;
             BufferedReader reader = new BufferedReader( in );
             int count = 0;
@@ -176,7 +178,7 @@ public interface JdbmEventStoreService
       public void transactionsAfter( long afterTimestamp, TransactionVisitor visitor )
       {
          // Lock datastore first
-         lock.lock();
+         lock();
 
          final Long afterTime = afterTimestamp + 1;
 
@@ -208,7 +210,7 @@ public interface JdbmEventStoreService
       public void transactionsBefore( long beforeTimestamp, TransactionVisitor visitor )
       {
          // Lock datastore first
-         lock.lock();
+         lock();
 
          final Long beforeTime = beforeTimestamp - 1;
 

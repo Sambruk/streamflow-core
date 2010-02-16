@@ -70,6 +70,7 @@ public class TaskActionsServerResource
       return builder.newInstance();
    }
 
+/*
    public ListValue possibleprojects()
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -85,6 +86,7 @@ public class TaskActionsServerResource
 
       return task.possibleUsers();
    }
+*/
 
    // Commands
    public void accept()

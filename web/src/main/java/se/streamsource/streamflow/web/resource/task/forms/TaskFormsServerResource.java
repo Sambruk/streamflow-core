@@ -14,42 +14,24 @@
 
 package se.streamsource.streamflow.web.resource.task.forms;
 
-import org.qi4j.api.entity.EntityReference;
-import static org.qi4j.api.entity.EntityReference.*;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.spi.Qi4jSPI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.form.SubmitFormDTO;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
-import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionsQueries;
-import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.Submitter;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-
-import java.util.Date;
+import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionsQueries;
+import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
+import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
  * Mapped to:

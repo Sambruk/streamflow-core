@@ -1,11 +1,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>$title</title>
+    <title>$name</title>
 </head>
 
 <body>
-<form action="" method="POST">
-    <input name="operation" value="$name" type="hidden"/>
+<h1>$name</h1>
+<form action="?command=$name" method="POST">
     $content
     <input value="Send command" type="submit"/>
 </form>

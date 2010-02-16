@@ -29,6 +29,7 @@ import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 public class TaskTypesServerResource
       extends CommandQueryServerResource
 {
+/*
    public ListValue tasktypes()
    {
       String orgId = (String) getRequest().getAttributes().get( "organization" );
@@ -39,6 +40,7 @@ public class TaskTypesServerResource
 
       return taskTypes.taskTypeList();
    }
+*/
 
    public void createtasktype( StringDTO name ) throws ResourceException
    {

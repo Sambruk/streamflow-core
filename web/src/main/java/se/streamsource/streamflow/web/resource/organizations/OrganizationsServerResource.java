@@ -37,10 +37,12 @@ import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
-import se.streamsource.streamflow.web.domain.structure.organizations.Organizations;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.io.BufferedReader;
@@ -96,7 +98,7 @@ public class OrganizationsServerResource
 
    public UserEntityListDTO users()
    {
-      OrganizationsQueries orgs = uowf.currentUnitOfWork().get( OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID );
+      UsersQueries orgs = uowf.currentUnitOfWork().get( UsersQueries.class, UsersEntity.USERS_ID );
 
       checkPermission( orgs );
 
@@ -105,7 +107,7 @@ public class OrganizationsServerResource
 
    public void createuser( NewUserCommand userCommand ) throws ResourceException
    {
-      Organizations organizations = uowf.currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+      Users organizations = uowf.currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID );
 
       checkPermission( organizations );
 
@@ -141,7 +143,7 @@ public class OrganizationsServerResource
 
       UnitOfWork uow = uowf.currentUnitOfWork();
 
-      Organizations organizations = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+      Users organizations = uow.get( Users.class, UsersEntity.USERS_ID );
 
       checkPermission( organizations );
 
@@ -249,6 +251,7 @@ public class OrganizationsServerResource
 
    }
 
+/*
    public ListValue organizations() throws ResourceException
    {
       OrganizationsQueries organizations = uowf.currentUnitOfWork()
@@ -256,8 +259,9 @@ public class OrganizationsServerResource
 
       checkPermission( organizations );
 
-      return organizations.organizations();
+      return new organizations.organizations();
    }
+*/
 
    public void resetpassword( ResetPasswordCommand command )
    {

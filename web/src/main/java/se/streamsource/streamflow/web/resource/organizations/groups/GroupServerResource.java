@@ -17,16 +17,9 @@ package se.streamsource.streamflow.web.resource.organizations.groups;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.ListValueBuilder;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.streamflow.web.domain.structure.group.Participant;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -65,6 +58,7 @@ public class GroupServerResource
       groups.removeGroup( group );
    }
 
+/*
    public ListValue findusers( StringDTO query ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -119,5 +113,6 @@ public class GroupServerResource
 
       return listBuilder.newList();
    }
+*/
 
 }

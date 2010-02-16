@@ -34,6 +34,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class WorkspaceProjectDelegationsServerResource
       extends AbstractTaskListServerResource
 {
+/*
    public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -41,8 +42,9 @@ public class WorkspaceProjectDelegationsServerResource
 
       DelegationsQueries delegations = uow.get( DelegationsQueries.class, id );
 
-      return delegations.delegationsTasks();
+      return delegations.delegations();
    }
+*/
 
    @Override
    protected void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )

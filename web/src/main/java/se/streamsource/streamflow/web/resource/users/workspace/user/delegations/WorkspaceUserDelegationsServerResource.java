@@ -27,12 +27,14 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class WorkspaceUserDelegationsServerResource
       extends AbstractTaskListServerResource
 {
+/*
    public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
       String userId = (String) getRequest().getAttributes().get( "user" );
       DelegationsQueries delegations = uow.get( DelegationsQueries.class, userId );
 
-      return delegations.delegationsTasks();
+      return delegations.delegations();
    }
+*/
 }

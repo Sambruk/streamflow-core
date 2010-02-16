@@ -24,6 +24,7 @@ import se.streamsource.streamflow.web.application.organization.BootstrapAssemble
 import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.application.statistics.StatisticsAssembler;
 import se.streamsource.streamflow.web.configuration.ConfigurationAssembler;
+import se.streamsource.streamflow.web.context.ContextsAssembler;
 import se.streamsource.streamflow.web.domain.interaction.comment.CommentAssembler;
 import se.streamsource.streamflow.web.domain.entity.form.FormAssembler;
 import se.streamsource.streamflow.web.domain.entity.organization.*;
@@ -63,17 +64,21 @@ public class StreamFlowWebAssembler
       LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
       LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );
       LayerAssembly domainLayer = assembly.layerAssembly( "Domain" );
+      LayerAssembly contextLayer = assembly.layerAssembly( "Context" );
       LayerAssembly appLayer = assembly.layerAssembly( "Application" );
       LayerAssembly webLayer = assembly.layerAssembly( "Web" );
 
-      webLayer.uses( appLayer, domainLayer, domainInfrastructureLayer );
-      appLayer.uses( domainLayer, domainInfrastructureLayer, configurationLayer );
+      webLayer.uses( appLayer, contextLayer, domainLayer, domainInfrastructureLayer );
+      appLayer.uses( contextLayer, domainLayer, domainInfrastructureLayer, configurationLayer );
+      contextLayer.uses(domainLayer);
       domainLayer.uses( domainInfrastructureLayer );
       domainInfrastructureLayer.uses( configurationLayer );
 
       assembleWebLayer( webLayer );
 
       assembleApplicationLayer( appLayer );
+
+      assembleContextLayer( contextLayer );
 
       assembleDomainLayer( domainLayer );
 
@@ -103,6 +108,7 @@ public class StreamFlowWebAssembler
       new EmbeddedSolrAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Search Engine" ));
    }
 
+
    protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
    {
       ModuleAssembly restModule = webLayer.moduleAssembly( "REST" );
@@ -118,6 +124,12 @@ public class StreamFlowWebAssembler
       new SecurityAssembler().assemble( appLayer.moduleAssembly( "Security" ) );
       new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Organization" ) );
       new StatisticsAssembler().assemble( appLayer.moduleAssembly( "Statistics" ) );
+   }
+
+   protected void assembleContextLayer( LayerAssembly contextLayer ) throws AssemblyException
+   {
+      ModuleAssembly moduleAssembly = contextLayer.moduleAssembly( "Context" );
+      new ContextsAssembler().assemble( moduleAssembly );
    }
 
    protected void assembleDomainLayer( LayerAssembly domainLayer ) throws AssemblyException

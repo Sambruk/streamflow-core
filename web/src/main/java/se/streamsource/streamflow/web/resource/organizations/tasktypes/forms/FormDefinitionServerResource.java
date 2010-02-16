@@ -14,14 +14,12 @@
 
 package se.streamsource.streamflow.web.resource.organizations.tasktypes.forms;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.entity.EntityReference;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -65,6 +63,7 @@ public class FormDefinitionServerResource
    }
 
 
+/*
    public void deleteOperation()
    {
       String formsId = getRequest().getAttributes().get( "forms" ).toString();
@@ -80,4 +79,5 @@ public class FormDefinitionServerResource
 
       forms.removeForm( form );
    }
+*/
 }

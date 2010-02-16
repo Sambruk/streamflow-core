@@ -20,7 +20,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
@@ -54,6 +54,7 @@ public class SelectedLabelsServerResource
       return new ListValueBuilder( vbf ).addDescribableItems( labels.selectedLabels() ).newList();
    }
 
+/*
    public ListValue possiblelabels()
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -67,6 +68,7 @@ public class SelectedLabelsServerResource
       return possibleLabelsQueries.possibleLabels( labels.labels() );
    }
 
+*/
    public void createlabel( StringDTO name ) throws ResourceException
    {
       String org = getRequest().getAttributes().get( "organization" ).toString();

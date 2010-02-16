@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.resource;
 
-import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -33,49 +32,6 @@ import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
-import se.streamsource.streamflow.web.resource.labels.LabelServerResource;
-import se.streamsource.streamflow.web.resource.labels.LabelsServerResource;
-import se.streamsource.streamflow.web.resource.labels.SelectedLabelServerResource;
-import se.streamsource.streamflow.web.resource.labels.SelectedLabelsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
-import se.streamsource.streamflow.web.resource.organizations.OrganizationalUnitServerResource;
-import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplateServerResource;
-import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplatesServerResource;
-import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
-import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
-import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.organizationalunits.OrganizationalUnitsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorServerResource;
-import se.streamsource.streamflow.web.resource.organizations.policy.AdministratorsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.ProjectServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.members.MemberServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.members.MembersServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypeServerResource;
-import se.streamsource.streamflow.web.resource.organizations.projects.tasktypes.SelectedTaskTypesServerResource;
-import se.streamsource.streamflow.web.resource.organizations.roles.RoleServerResource;
-import se.streamsource.streamflow.web.resource.organizations.roles.RolesServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypeServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.TaskTypesServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.FormDefinitionsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.fields.FormDefinitionFieldsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.fields.FormDefinitionFieldServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.FormDefinitionPagesServerResource;
-import se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.FormDefinitionPageServerResource;
-import se.streamsource.streamflow.web.resource.task.TaskActionsServerResource;
-import se.streamsource.streamflow.web.resource.task.TaskServerResource;
-import se.streamsource.streamflow.web.resource.task.comments.TaskCommentsServerResource;
-import se.streamsource.streamflow.web.resource.task.contacts.TaskContactServerResource;
-import se.streamsource.streamflow.web.resource.task.contacts.TaskContactsServerResource;
-import se.streamsource.streamflow.web.resource.task.forms.TaskFormServerResource;
-import se.streamsource.streamflow.web.resource.task.forms.TaskFormsServerResource;
-import se.streamsource.streamflow.web.resource.task.general.TaskGeneralServerResource;
-import se.streamsource.streamflow.web.resource.users.UserAccessFilter;
-import se.streamsource.streamflow.web.resource.users.UsersRouter;
-import se.streamsource.streamflow.web.resource.users.UsersServerResource;
-import se.streamsource.streamflow.web.rest.CompositeFinder;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
 
 /**
@@ -91,8 +47,10 @@ public class APIv1Router
       super( context );
       this.factory = factory;
 
-      attach( createServerResourceFinder( StreamFlowServerResource.class ) );
+      attach(new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( DCICommandQueryServerResource.class )));
 
+//      attach( createServerResourceFinder( StreamFlowServerResource.class ) );
+/*
       // Users
       attach( "/users", createServerResourceFinder( UsersServerResource.class, false ) );
 
@@ -103,7 +61,7 @@ public class APIv1Router
       attach( "/users/{labels}/workspace/user/labels", createServerResourceFinder( LabelsServerResource.class ) );
       attach( "/users/{labels}/workspace/user/labels/{label}", createServerResourceFinder( LabelServerResource.class ) );
 
-//      attach ("/users", createServerResourceFinder( CompositeCommandQueryServerResource.class ));
+//      attach ("/users", createServerResourceFinder( DCICommandQueryServerResource.class ));
 
       // Organizations
       attach( "/organizations", createServerResourceFinder( OrganizationsServerResource.class ) );
@@ -153,15 +111,15 @@ public class APIv1Router
       attach( "/organizations/{organization}/organizationalunits/{labels}/selectedlabels/{label}", createServerResourceFinder( SelectedLabelServerResource.class ) );
 
       // Tasks
-      attach( "/tasks/{task}", createServerResourceFinder( TaskServerResource.class ) );
-      attach( "/tasks/{task}/actions", createServerResourceFinder( TaskActionsServerResource.class ) );
-      attach( "/tasks/{task}/general", createServerResourceFinder( TaskGeneralServerResource.class ) );
-      attach( "/tasks/{task}/comments", createServerResourceFinder( TaskCommentsServerResource.class ) );
-      attach( "/tasks/{task}/contacts", createServerResourceFinder( TaskContactsServerResource.class ) );
-      attach( "/tasks/{task}/contacts/{index}", createServerResourceFinder( TaskContactServerResource.class ) );
-      attach( "/tasks/{task}/forms", createServerResourceFinder( TaskFormsServerResource.class ) );
-      attach( "/tasks/{task}/forms/{formsubmission}", createServerResourceFinder( TaskFormServerResource.class ) );
-
+x      attach( "/tasks/{task}", createServerResourceFinder( TaskServerResource.class ) );
+x      attach( "/tasks/{task}/actions", createServerResourceFinder( TaskActionsServerResource.class ) );
+x      attach( "/tasks/{task}/general", createServerResourceFinder( TaskGeneralServerResource.class ) );
+x      attach( "/tasks/{task}/comments", createServerResourceFinder( TaskCommentsServerResource.class ) );
+x      attach( "/tasks/{task}/contacts", createServerResourceFinder( TaskContactsServerResource.class ) );
+x      attach( "/tasks/{task}/contacts/{index}", createServerResourceFinder( TaskContactServerResource.class ) );
+x      attach( "/tasks/{task}/forms", createServerResourceFinder( TaskFormsServerResource.class ) );
+x      attach( "/tasks/{task}/forms/{formsubmission}", createServerResourceFinder( TaskFormServerResource.class ) );
+      */
       // Events
       attach( "/events", createServerResourceFinder( EventsServerResource.class ) );
 
@@ -200,13 +158,4 @@ public class APIv1Router
       } else
          return finder;
    }
-
-   private Restlet createServerCompositeFinder( Class<? extends TransientComposite> resource )
-   {
-      CompositeFinder finder = factory.newObject( CompositeFinder.class );
-      finder.setTargetClass( resource );
-
-      return finder;
-   }
-
 }

@@ -20,7 +20,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
@@ -49,6 +49,7 @@ public class SelectedTaskTypesServerResource
       return new ListValueBuilder( vbf ).addDescribableItems( taskTypes.selectedTaskTypes() ).newList();
    }
 
+/*
    public ListValue possibletasktypes()
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -59,6 +60,7 @@ public class SelectedTaskTypesServerResource
 
       return selectedLabels.possibleTaskTypes( taskTypes.taskTypes() );
    }
+*/
 
    public void addtasktype( EntityReferenceDTO taskTypeDTO ) throws ResourceException
    {

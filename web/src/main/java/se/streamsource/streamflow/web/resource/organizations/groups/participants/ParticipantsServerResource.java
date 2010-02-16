@@ -17,7 +17,7 @@ package se.streamsource.streamflow.web.resource.organizations.groups.participant
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;

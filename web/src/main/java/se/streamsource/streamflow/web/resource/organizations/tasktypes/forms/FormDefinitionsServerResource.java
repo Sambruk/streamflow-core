@@ -23,7 +23,6 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**
@@ -39,11 +38,14 @@ public class FormDefinitionsServerResource
 
       UnitOfWork uow = uowf.currentUnitOfWork();
 
+/*
       FormsQueries forms = uow.get( FormsQueries.class, identity );
 
       checkPermission( forms );
+*/
 
-      return forms.applicableFormDefinitionList();
+      return null;
+//      return forms.applicableFormDefinitionList();
    }
 
    public void remove( EntityReferenceDTO formReference ) throws ResourceException

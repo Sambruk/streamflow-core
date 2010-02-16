@@ -28,6 +28,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListS
 public class WorkspaceProjectWaitingForServerResource
       extends AbstractTaskListServerResource
 {
+/*
    public TaskListDTO tasks( TasksQuery query )
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -36,6 +37,7 @@ public class WorkspaceProjectWaitingForServerResource
 
       Delegator delegator = uow.get( Delegator.class, userId );
       WaitingForQueries queries = uow.get( WaitingForQueries.class, projectId );
-      return queries.waitingForTasks( delegator );
+      return queries.waitingFor( delegator );
    }
+*/
 }

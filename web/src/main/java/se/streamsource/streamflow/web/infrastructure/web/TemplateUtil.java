@@ -45,6 +45,9 @@ public class TemplateUtil
          String variable = parameters[i];
          String value = parameters[i + 1];
 
+         if (value == null)
+            throw new IllegalArgumentException("Value for variable "+variable+" is null");
+
          template = template.replace( variable, value );
       }
 

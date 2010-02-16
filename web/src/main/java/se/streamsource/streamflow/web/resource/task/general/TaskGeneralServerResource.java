@@ -14,8 +14,6 @@
 
 package se.streamsource.streamflow.web.resource.task.general;
 
-import static org.qi4j.api.entity.EntityReference.getEntityReference;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWork;
@@ -32,13 +30,12 @@ import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
-import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskLabelsQueries;
 import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
@@ -134,7 +131,7 @@ public class TaskGeneralServerResource
       String id = (String) getRequest().getAttributes().get( "task" );
       TaskTypeQueries task = uow.get( TaskTypeQueries.class, id );
 
-      return task.taskTypes();
+      return null; // task.taskTypes();
    }
 
    public void tasktype( EntityReferenceDTO dto )
@@ -158,7 +155,7 @@ public class TaskGeneralServerResource
       String id = (String) getRequest().getAttributes().get( "task" );
       TaskLabelsQueries labels = uow.get( TaskLabelsQueries.class, id );
 
-      return labels.possibleLabels();
+      return null; // labels.possibleLabels();
    }
 
    public void label( EntityReferenceDTO reference )
@@ -184,12 +181,12 @@ public class TaskGeneralServerResource
       ListValue formsList;
       if (taskType != null)
       {
-         FormsQueries forms = uow.get( FormsQueries.class, getEntityReference( taskType ).identity() );
-         formsList = forms.applicableFormDefinitionList();
+         // FormsQueries forms = uow.get( FormsQueries.class, getEntityReference( taskType ).identity() );
+         //formsList = forms.applicableFormDefinitionList();
       } else
       {
          formsList = vbf.newValue( ListValue.class );
       }
-      return formsList;
+      return null; // formsList;
    }
 }

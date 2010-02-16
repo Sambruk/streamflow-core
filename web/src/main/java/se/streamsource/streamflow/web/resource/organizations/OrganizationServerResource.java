@@ -24,9 +24,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.entity.form.FormQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationParticipationsQueries;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
@@ -61,7 +59,7 @@ public class OrganizationServerResource
       return getHtml( "resources/organization.html" );
    }
 
-   public ListValue findusers( StringDTO query )
+/*   public ListValue findusers( StringDTO query )
    {
       String orgId = getRequest().getAttributes().get( "organization" ).toString();
 
@@ -167,6 +165,6 @@ public class OrganizationServerResource
          uop.leave( org );
       }
    }
-
+*/
 
 }

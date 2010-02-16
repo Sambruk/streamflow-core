@@ -75,6 +75,7 @@ public class OrganizationalUnitServerResource
       }
    }
 
+/*
    public void merge( EntityReferenceDTO moveValue ) throws ResourceException
    {
       String ouId = (String) getRequest().getAttributes().get( "ou" );
@@ -91,4 +92,5 @@ public class OrganizationalUnitServerResource
          throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
       }
    }
+*/
 }

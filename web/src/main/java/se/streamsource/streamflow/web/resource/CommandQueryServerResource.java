@@ -279,7 +279,7 @@ public class CommandQueryServerResource
       try
       {
          String template = TemplateUtil.getTemplate( "resources/links.html",
-               CompositeCommandQueryServerResource.class );
+               DCICommandQueryServerResource.class );
          String content = TemplateUtil.eval( template,
                "$queries", queries.toString(),
                "$commands", commands.toString(),

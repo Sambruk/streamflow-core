@@ -17,13 +17,11 @@ package se.streamsource.streamflow.web.resource.organizations.policy;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
@@ -39,6 +37,7 @@ import java.util.List;
 public class AdministratorsServerResource
       extends CommandQueryServerResource
 {
+/*
    public ListValue administrators()
    {
       UnitOfWork unitOfWork = uowf.currentUnitOfWork();
@@ -60,6 +59,7 @@ public class AdministratorsServerResource
       return builder.newList();
    }
 
+*/
    public void addadministrator( StringDTO participantId ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -77,6 +77,7 @@ public class AdministratorsServerResource
       role.grantRole( participant, adminRole );
    }
 
+/*
    public ListValue findusers( StringDTO query ) throws ResourceException
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
@@ -126,4 +127,5 @@ public class AdministratorsServerResource
 
       return listBuilder.newList();
    }
+*/
 }
