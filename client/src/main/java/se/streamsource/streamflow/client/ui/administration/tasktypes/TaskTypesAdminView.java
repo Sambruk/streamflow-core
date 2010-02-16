@@ -21,6 +21,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -60,8 +61,8 @@ public class TaskTypesAdminView
                int idx = list.getSelectedIndex();
                if (idx < list.getModel().getSize() && idx >= 0)
                {
-                  ListItemValue taskTypeValue = (ListItemValue) list.getModel().getElementAt( idx );
-                  TaskTypeModel taskTypeModel = taskTypesModel.getTaskTypeModel( taskTypeValue.entity().get().identity() );
+                  LinkValue taskTypeLink = (LinkValue) list.getModel().getElementAt( idx );
+                  TaskTypeModel taskTypeModel = taskTypesModel.getTaskTypeModel( taskTypeLink.id().get() );
                   TaskTypeView view = obf.newObjectBuilder( TaskTypeView.class ).use(
                         taskTypeModel.getSelectedLabelsModel(), labelsModel, taskTypeModel.getFormsModel(), administrationView, taskTypeModel ).newInstance();
                   setRightComponent( view );

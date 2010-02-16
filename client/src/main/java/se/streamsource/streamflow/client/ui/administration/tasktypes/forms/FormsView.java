@@ -26,6 +26,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRende
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -69,7 +70,7 @@ public class FormsView
       setActionMap( am );
       formList = new JList( model );
 
-      formList.setCellRenderer( new ListItemListCellRenderer() );
+      formList.setCellRenderer( new LinkListCellRenderer() );
 
       add( formList, BorderLayout.CENTER );
 

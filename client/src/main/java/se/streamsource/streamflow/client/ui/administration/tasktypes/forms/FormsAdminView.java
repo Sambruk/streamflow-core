@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -58,8 +59,8 @@ public class FormsAdminView
 
                if (idx < list.getModel().getSize() && idx >= 0)
                {
-                  ListItemValue formValue = (ListItemValue) list.getModel().getElementAt( idx );
-                  FormModel formModel = formsView.getModel().getFormModel( formValue.entity().get().identity() );
+                  LinkValue formValue = (LinkValue) list.getModel().getElementAt( idx );
+                  FormModel formModel = formsView.getModel().getFormModel( formValue.id().get() );
 
                   FormView formView = obf.newObjectBuilder( FormView.class ).
                         use( formModel, adminView ).newInstance();

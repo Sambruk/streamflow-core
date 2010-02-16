@@ -31,6 +31,8 @@ import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.Forms
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -50,7 +52,7 @@ public class TaskTypesModel
    @Uses
    CommandQueryClient client;
 
-   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
+   BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
 
    WeakModelMap<String, TaskTypeModel> taskTypeModels = new WeakModelMap<String, TaskTypeModel>()
    {
@@ -64,7 +66,7 @@ public class TaskTypesModel
       }
    };
 
-   public BasicEventList<ListItemValue> getTaskTypeList()
+   public BasicEventList<LinkValue> getTaskTypeList()
    {
       return eventList;
    }
@@ -75,7 +77,7 @@ public class TaskTypesModel
       {
          // Get TaskType list
          eventList.clear();
-         eventList.addAll( client.query( "tasktypes", ListValue.class ).items().get() );
+         eventList.addAll( client.query( "tasktypes", LinksValue.class ).links().get() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

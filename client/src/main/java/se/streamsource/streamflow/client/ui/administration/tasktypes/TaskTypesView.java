@@ -25,10 +25,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -71,8 +73,8 @@ public class TaskTypesView
       popup.add( am.get( "rename" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      projectList = new JListPopup( new EventListModel<ListItemValue>( model.getTaskTypeList() ), popup );
-      projectList.setCellRenderer( new ListItemListCellRenderer() );
+      projectList = new JListPopup( new EventListModel<LinkValue>( model.getTaskTypeList() ), popup );
+      projectList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( projectList );
       add( scrollPane, BorderLayout.CENTER );
 

@@ -28,6 +28,8 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
@@ -56,7 +58,7 @@ public class FormsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private List<ListItemValue> formsList;
+   private List<LinkValue> formsList;
 
    private EventVisitorFilter eventFilter;
 
@@ -89,7 +91,7 @@ public class FormsModel
    {
       try
       {
-         formsList = client.query( "forms", ListValue.class ).items().get();
+         formsList = client.query( "forms", LinksValue.class ).links().get();
          fireContentsChanged( this, 0, getSize() );
       } catch (ResourceException e)
       {
