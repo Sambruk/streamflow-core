@@ -18,6 +18,7 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 
@@ -57,7 +58,7 @@ public class OrganizationalUnitSteps
       {
          OrganizationalUnitRefactoring orgUnit1 = ouSteps.givenOu;
          OrganizationalUnitRefactoring orgUnit2 = orgsSteps.givenOrganization.getOrganizationalUnitByName( ou2 );
-         orgUnit1.mergeOrganizationalUnit( orgUnit2 );
+         orgUnit1.mergeOrganizationalUnit( (OrganizationalUnit) orgUnit2 );
       } catch (Exception e)
       {
          genericSteps.setThrowable( e );

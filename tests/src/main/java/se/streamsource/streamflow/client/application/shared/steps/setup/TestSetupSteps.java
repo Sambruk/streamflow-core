@@ -34,12 +34,13 @@ import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSt
 import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.SubmittedFormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.TaskTypesSteps;
+import se.streamsource.streamflow.client.application.shared.steps.UsersSteps;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.structure.organizations.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 /**
  * JAVADOC
@@ -122,6 +123,10 @@ public class TestSetupSteps
 
    @Optional
    @Uses
+   UsersSteps usersSteps;
+
+   @Optional
+   @Uses
    SubmittedFormsSteps submittedFormsSteps;
 
    @Optional
@@ -180,13 +185,13 @@ public class TestSetupSteps
       organizationsSteps.givenOrganization( "Organization" );
       ouSteps.givenOrganization();
       ouSteps.givenOU( OU1 );
-      organizationsSteps.givenUser( USER1 );
+      usersSteps.givenUser( USER1 );
       groupsSteps.createGroup( GROUP1 );
       participantsSteps.joinGroup();
       ouSteps.givenOrganization();
       ouSteps.givenOU( OU2 );
       groupsSteps.createGroup( GROUP2 );
-      organizationsSteps.givenUser( USER2 );
+      usersSteps.givenUser( USER2 );
       participantsSteps.joinGroup();
 
       genericSteps.clearEvents();
@@ -224,7 +229,7 @@ public class TestSetupSteps
       ouSteps.givenOrganization();
       ouSteps.givenOU( OU1 );
       projectsSteps.givenProject( PROJECT1 );
-      organizationsSteps.givenUser( USER1 );
+      usersSteps.givenUser( USER1 );
       membersSteps.addMember();
 
       genericSteps.clearEvents();
@@ -233,14 +238,14 @@ public class TestSetupSteps
    @Given("basic task setup")
    public void setupTasks() throws Exception
    {
-      UserEntity user = organizationsSteps.givenOrganizations().getUserByName( USER1 );
+      UserEntity user = usersSteps.givenUsers().getUserByName( USER1 );
       unassignedTask = user.createTask();
       assignedTask = user.createTask();
       assignedTask.assignTo( user );
       Inbox inbox = user;
       readInboxTask = user.createTask();
 
-      UserEntity user2 = organizationsSteps.givenOrganizations().getUserByName( USER2 );
+      UserEntity user2 = usersSteps.givenUsers().getUserByName( USER2 );
       readAssignedTask = user2.createTask();
       readAssignedTask.assignTo( user2 );
 
@@ -270,15 +275,15 @@ public class TestSetupSteps
    @Given("basic user setup")
    public void setupUsers() throws Exception
    {
-      Organizations organizations = organizationsSteps.givenOrganizations();
+      Users users = usersSteps.givenUsers();
       organizationsSteps.givenOrganization( "Organization" );
-      organizations.createUser( USER1, "password1" ).join( organizationsSteps.givenOrganization );
-      organizations.createUser( USER2, "password2" ).join( organizationsSteps.givenOrganization );
-      User entity = organizations.createUser( DISABLED_USER, "password3" );
+      users.createUser( USER1, "password1" ).join( organizationsSteps.givenOrganization );
+      users.createUser( USER2, "password2" ).join( organizationsSteps.givenOrganization );
+      User entity = users.createUser( DISABLED_USER, "password3" );
 
       entity.join( organizationsSteps.givenOrganization );
       entity.changeEnabled( false );
-      entity = organizations.createUser( USER_NOT_IN_AN_ORGANIZATION, "password4" );
+      entity = users.createUser( USER_NOT_IN_AN_ORGANIZATION, "password4" );
       genericSteps.clearEvents();
    }
 }

@@ -43,26 +43,20 @@ public class StreamFlowWebDomainTestAssembler
    protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException
    {
       appLayer.applicationAssembly().setMode( Application.Mode.test );
-//        super.assembleApplicationLayer(appLayer);
       new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Bootstrap" ) );
-   }
 
-   @Override
-   protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
-   {
-   }
-
-   @Override
-   protected void assembleDomainLayer( LayerAssembly domainLayer ) throws AssemblyException
-   {
-      super.assembleDomainLayer( domainLayer );
-      ModuleAssembly moduleAssembly = domainLayer.moduleAssembly( "Test" );
+      ModuleAssembly moduleAssembly = appLayer.moduleAssembly( "Test" );
       moduleAssembly.addObjects( testClass );
       moduleAssembly.importServices( EventListener.class ).visibleIn( Visibility.application );
 
       for (Object serviceObject : serviceObjects)
       {
-         domainLayer.applicationAssembly().setMetaInfo( serviceObject );
+         appLayer.applicationAssembly().setMetaInfo( serviceObject );
       }
+   }
+
+   @Override
+   protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
+   {
    }
 }

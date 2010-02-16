@@ -31,6 +31,9 @@ public class InboxSteps
    OrganizationsSteps orgsSteps;
 
    @Uses
+   UsersSteps usersSteps;
+
+   @Uses
    ProjectsSteps projectsSteps;
 
    @Uses
@@ -49,7 +52,7 @@ public class InboxSteps
    {
       try
       {
-         UserEntity user = orgsSteps.givenOrganizations().getUserByName( name );
+         UserEntity user = usersSteps.givenUsers().getUserByName( name );
          givenTask.sendTo( user );
       } catch (Exception e)
       {

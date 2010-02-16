@@ -40,6 +40,8 @@ public class SubmittedFormsQueriesSteps
    @Uses
    OrganizationsSteps organizationsSteps;
 
+   @Uses
+   UsersSteps usersSteps;
 
    @Uses
    SubmittedFormsSteps submittedFormsSteps;
@@ -68,7 +70,7 @@ public class SubmittedFormsQueriesSteps
       projectsSteps.givenProject( TestSetupSteps.PROJECT1 );
 
       formsSteps.givenForm( TestSetupSteps.SOME_FORM );
-      organizationsSteps.givenUser( TestSetupSteps.USER1 );
+      usersSteps.givenUser( TestSetupSteps.USER1 );
       inboxSteps.createTask();
       submittedFormsSteps.createForm();
       //submittedFormsSteps.addFieldValueToForm( TestSetupSteps.SOME_FIELD, TestSetupSteps.SOME_VALUE );

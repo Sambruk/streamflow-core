@@ -1,0 +1,25 @@
+Scenario: Create user
+Given root context
+Given subcontext users
+
+When interaction createuser with
+{"username":"test","password":"test"}
+
+Then events createdUser occurred
+
+Scenario: List users
+Given root context
+Given subcontext users
+
+When query users without parameters
+
+Then result contains "username":"test"
+
+Scenario: Find user
+Given root context
+Given subcontext users
+
+When query findbyusername with
+{"string":"test"}
+
+Then result contains "foo"

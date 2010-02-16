@@ -20,17 +20,18 @@ import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.application.shared.steps.setup.GenericSteps;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 
 /**
  * JAVADOC
  */
-public class OrganizationsSteps
+public class UsersSteps
       extends Steps
 {
    @Structure
@@ -42,31 +43,43 @@ public class OrganizationsSteps
    @Uses
    GenericSteps genericSteps;
 
-   public OrganizationsEntity organizations;
+   public UsersEntity users;
 
    public OrganizationEntity givenOrganization;
    public UserEntity givenUser;
 
-   @Given("organization named $org")
-   public void givenOrganization( String name )
+   @Given("user named $user")
+   public void givenUser( String name )
    {
-      givenOrganization = organizations.getOrganizationByName( name );
+      givenUser = users.getUserByName( name );
    }
 
-   @Given("the organizations")
-   public OrganizationsEntity givenOrganizations()
+   @Given("the users")
+   public UsersEntity givenUsers()
    {
       UnitOfWork uow = uowf.currentUnitOfWork();
-      organizations = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
-      return organizations;
+      users = uow.get( UsersEntity.class, UsersEntity.USERS_ID);
+      return users;
    }
 
-   @When("a new organization named $name is created")
-   public void createOrganization( String name ) throws Exception
+   @When("a new user named $newUser is created")
+   public void createUser( String newUser ) throws UnitOfWorkCompletionException
    {
       try
       {
-         givenOrganization = (OrganizationEntity) organizations.createOrganization( name );
+         givenUser = (UserEntity) users.createUser( newUser, newUser );
+      } catch (Exception e)
+      {
+         genericSteps.setThrowable( e );
+      }
+   }
+
+   @When("a faulty user named $first $second is created")
+   public void createUser( String first, String second ) throws UnitOfWorkCompletionException
+   {
+      try
+      {
+         users.createUser( first + " " + second, "pwd" );
       } catch (Exception e)
       {
          genericSteps.setThrowable( e );

@@ -52,10 +52,12 @@ public class WaitingForSteps
    @Given("first waitingFor task")
    public void givenWaitingForTask() throws UnitOfWorkCompletionException
    {
+/*
       uowf.currentUnitOfWork().apply();
-      TaskListDTO list = projectsSteps.givenProject.waitingForTasks( orgsSteps.givenUser );
+      TaskListDTO list = projectsSteps.givenProject.waitingFor( orgsSteps.givenUser );
       TaskDTO task = list.tasks().get().get( 0 );
       givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
+*/
    }
 
 /*
