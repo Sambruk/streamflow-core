@@ -19,8 +19,12 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ResourceValue;
+import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
@@ -82,7 +86,15 @@ public class CommonResourceAssembler
       module.addValues( TasksQuery.class ).visibleIn( Visibility.application );
 
       // Result values
-      module.addValues( ListValue.class, ListItemValue.class, GroupedListItemValue.class, PageListItemValue.class,
+      module.addValues(
+            ResourceValue.class,
+            LinkValue.class,
+            LinksValue.class,
+            TitledLinkValue.class,
+            ListValue.class,
+            ListItemValue.class,
+            GroupedListItemValue.class,
+            PageListItemValue.class,
             TaskListDTO.class,
             InboxTaskDTO.class,
             TaskGeneralDTO.class,

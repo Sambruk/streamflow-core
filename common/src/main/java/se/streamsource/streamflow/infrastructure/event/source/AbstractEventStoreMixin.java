@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
@@ -94,7 +95,7 @@ public abstract class AbstractEventStoreMixin
                   try
                   {
                      // Lock store so noone else can interrupt
-                     lock.lock();
+                     lock();
 
                      // Store all events from this UoW as one transaction
                      ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
@@ -151,6 +152,25 @@ public abstract class AbstractEventStoreMixin
 
    abstract protected void storeEvents( TransactionEvents transaction )
          throws IOException;
+
+   /**
+    * Fix for this bug:
+    * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6822370
+    */
+   protected void lock()
+   {
+      while (true)
+      {
+         try
+         {
+            lock.tryLock( 1000, TimeUnit.MILLISECONDS );
+            break;
+         } catch (InterruptedException e)
+         {
+            // Try again
+         }
+      }
+   }
 
 
    protected long getCurrentTimestamp()
