@@ -30,6 +30,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -152,15 +154,15 @@ public class TaskGeneralModel extends Observable implements Refreshable,
       return possibleFormsModel;
 	}
 
-	public EventList<ListItemValue> getPossibleTaskTypes()
+	public EventList<LinkValue> getPossibleTaskTypes()
 	{
 		try
 		{
-			BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+			BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-			ListValue listValue = client.query("possibletasktypes",
-					ListValue.class);
-			list.addAll(listValue.items().get());
+			LinksValue listValue = client.query("possibletasktypes",
+					LinksValue.class);
+			list.addAll(listValue.links().get());
 
 			return list;
 		} catch (ResourceException e)
@@ -170,15 +172,15 @@ public class TaskGeneralModel extends Observable implements Refreshable,
 		}
 	}
 
-	public EventList<ListItemValue> getPossibleLabels()
+	public EventList<LinkValue> getPossibleLabels()
 	{
 		try
 		{
-			BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+			BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-			ListValue listValue = client.query("possiblelabels",
-					ListValue.class);
-			list.addAll(listValue.items().get());
+			LinksValue listValue = client.getSubClient( "labels" ).query("possiblelabels",
+					LinksValue.class);
+			list.addAll(listValue.links().get());
 
 			return list;
 		} catch (ResourceException e)
@@ -256,17 +258,7 @@ public class TaskGeneralModel extends Observable implements Refreshable,
 
 	public void addLabel(EntityReference entityReference)
 	{
-		try
-		{
-			ValueBuilder<EntityReferenceDTO> builder = vbf
-					.newValueBuilder(EntityReferenceDTO.class);
-			builder.prototype().entity().set(entityReference);
-			client.putCommand("label", builder.newInstance());
-		} catch (ResourceException e)
-		{
-			throw new OperationException(
-					WorkspaceResources.could_not_perform_operation, e);
-		}
+      taskLabelsModel.addLabel( entityReference );
 	}
 
 	public Actions actions()

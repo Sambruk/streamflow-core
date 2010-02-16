@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -37,9 +38,9 @@ public class SelectLabelsDialog
       extends JPanel
 {
    public FilteredList filteredList = new FilteredList();
-   public List<ListItemValue> selected;
+   public List<LinkValue> selected;
 
-   public SelectLabelsDialog( @Service ApplicationContext context, @Uses EventList<ListItemValue> list )
+   public SelectLabelsDialog( @Service ApplicationContext context, @Uses EventList<LinkValue> list )
    {
       setActionMap( context.getActionMap( this ) );
       setName( i18n.text( WorkspaceResources.select_labels ) );
@@ -49,7 +50,7 @@ public class SelectLabelsDialog
       add( filteredList, BorderLayout.CENTER );
    }
 
-   public Iterable<ListItemValue> getSelectedLabels()
+   public Iterable<LinkValue> getSelectedLabels()
    {
       return selected;
    }
@@ -57,10 +58,10 @@ public class SelectLabelsDialog
    @Action
    public void execute()
    {
-      selected = new ArrayList<ListItemValue>();
+      selected = new ArrayList<LinkValue>();
       for (Object item : filteredList.getList().getSelectedValues())
       {
-         selected.add( (ListItemValue) item );
+         selected.add( (LinkValue) item );
       }
 
       WindowUtils.findWindow( this ).dispose();

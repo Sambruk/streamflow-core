@@ -21,6 +21,7 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JPanel;
@@ -37,7 +38,7 @@ public class SelectTaskTypesDialog
    public FilteredList filteredList = new FilteredList();
    public List<ListItemValue> selected;
 
-   public SelectTaskTypesDialog( @Service ApplicationContext context, @Uses EventList<ListItemValue> list )
+   public SelectTaskTypesDialog( @Service ApplicationContext context, @Uses EventList<LinkValue> list )
    {
       setActionMap( context.getActionMap( this ) );
 

@@ -19,11 +19,14 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -74,15 +77,15 @@ public class WorkspaceProjectsNode
       {
          CommandQueryClient user = account.userResource();
          CommandQueryClient projectsClient = user.getSubClient( "workspace" ).getSubClient( "projects" );
-         ListValue projects = projectsClient.query( "projects", ListValue.class ).<ListValue>buildWith().prototype();
+         LinksValue projects = projectsClient.query( "projects", LinksValue.class ).<LinksValue>buildWith().prototype();
 
          super.removeAllChildren();
 
-         Collections.sort( projects.items().get(), new ListItemComparator() );
+         Collections.sort( projects.links().get(), new LinkComparator() );
 
-         for (ListItemValue project : projects.items().get())
+         for (LinkValue project : projects.links().get())
          {
-            CommandQueryClient projectClient = projectsClient.getSubClient( project.entity().get().identity() );
+            CommandQueryClient projectClient = projectsClient.getClient( project.href().get() );
             CommandQueryClient projectInboxClientResource = projectClient.getSubClient( "inbox" );
             CommandQueryClient projectAssignmentsClientResource = projectClient.getSubClient( "assignments" );
             CommandQueryClient projectDelegationsClientResource = projectClient.getSubClient( "delegations" );
@@ -104,7 +107,7 @@ public class WorkspaceProjectsNode
                   delegationsNode,
                   waitingForNode,
                   account.tasks(),
-                  project.description().get() ).newInstance() );
+                  project.text().get() ).newInstance() );
          }
 
       } catch (ResourceException e)

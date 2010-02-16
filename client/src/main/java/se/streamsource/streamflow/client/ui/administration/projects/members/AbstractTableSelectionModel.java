@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects.members;
 
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.table.AbstractTableModel;
@@ -37,14 +38,14 @@ public abstract class AbstractTableSelectionModel<T>
       clearSelection();
    }
 
-   public ListValue getModel()
+   public LinksValue getModel()
    {
       return model;
    }
 
-   private ListValue model;
+   private LinksValue model;
 
-   public void setModel( ListValue projects )
+   public void setModel( LinksValue projects )
    {
       this.model = projects;
       clearSelection();
@@ -71,7 +72,7 @@ public abstract class AbstractTableSelectionModel<T>
    public int getRowCount()
    {
       if (model == null) return 0;
-      return model.items().get().size();
+      return model.links().get().size();
    }
 
    public int getColumnCount()

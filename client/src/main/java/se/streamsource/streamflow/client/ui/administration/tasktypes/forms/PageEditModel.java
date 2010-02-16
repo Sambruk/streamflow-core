@@ -14,38 +14,24 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
-import java.util.List;
 import java.util.logging.Logger;
-
-import javax.swing.AbstractListModel;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.domain.form.CreateFieldDTO;
-import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.PageDefinitionValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 
 /**
  * JAVADOC

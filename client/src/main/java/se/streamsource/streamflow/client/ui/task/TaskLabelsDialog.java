@@ -21,7 +21,9 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,9 +37,9 @@ public class TaskLabelsDialog
       extends JPanel
 {
    public GroupedFilteredList filteredList = new GroupedFilteredList();
-   public List<ListItemValue> selected;
+   public List<LinkValue> selected;
 
-   public TaskLabelsDialog( @Service ApplicationContext context, @Uses EventList<ListItemValue> list )
+   public TaskLabelsDialog( @Service ApplicationContext context, @Uses EventList<TitledLinkValue> list )
    {
       setActionMap( context.getActionMap( this ) );
 
@@ -47,7 +49,7 @@ public class TaskLabelsDialog
       add( filteredList, BorderLayout.CENTER );
    }
 
-   public Iterable<ListItemValue> getSelectedLabels()
+   public Iterable<LinkValue> getSelectedLabels()
    {
       return selected;
    }
@@ -55,10 +57,10 @@ public class TaskLabelsDialog
    @Action
    public void execute()
    {
-      selected = new ArrayList<ListItemValue>();
+      selected = new ArrayList<LinkValue>();
       for (Object item : filteredList.getList().getSelectedValues())
       {
-         selected.add( (ListItemValue) item );
+         selected.add( (LinkValue) item );
       }
 
       WindowUtils.findWindow( this ).dispose();

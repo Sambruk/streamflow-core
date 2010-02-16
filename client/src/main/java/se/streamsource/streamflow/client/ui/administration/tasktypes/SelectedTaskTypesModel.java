@@ -26,8 +26,8 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -41,14 +41,14 @@ public class SelectedTaskTypesModel
    @Uses
    CommandQueryClient client;
 
-   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
+   BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
 
    @Structure
    ValueBuilderFactory vbf;
 
-   private ListValue list;
+   private LinksValue list;
 
-   public EventList<ListItemValue> getTaskTypeList()
+   public EventList<LinkValue> getTaskTypeList()
    {
       return eventList;
    }
@@ -58,12 +58,12 @@ public class SelectedTaskTypesModel
       try
       {
          // Get tasktype list
-         ListValue newList = client.query( "selectedtasktypes", ListValue.class );
+         LinksValue newList = client.query( "selectedtasktypes", LinksValue.class );
 
          if (list == null || !newList.equals( list ))
          {
             eventList.clear();
-            eventList.addAll( newList.items().get() );
+            eventList.addAll( newList.links().get() );
             list = newList;
          }
 
@@ -73,12 +73,12 @@ public class SelectedTaskTypesModel
       }
    }
 
-   public EventList<ListItemValue> getPossibleTaskTypes()
+   public EventList<LinkValue> getPossibleTaskTypes()
    {
       try
       {
-         BasicEventList<ListItemValue> possibleTaskTypes = new BasicEventList<ListItemValue>();
-         possibleTaskTypes.addAll( client.query( "possibletasktypes", ListValue.class ).items().get() );
+         BasicEventList<LinkValue> possibleTaskTypes = new BasicEventList<LinkValue>();
+         possibleTaskTypes.addAll( client.query( "possibletasktypes", LinksValue.class ).links().get() );
          return possibleTaskTypes;
       } catch (ResourceException e)
       {

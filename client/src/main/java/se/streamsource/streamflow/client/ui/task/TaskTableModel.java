@@ -125,7 +125,7 @@ public class TaskTableModel
    {
       try
       {
-         final TaskListDTO newRoot = client.query( "tasks", vbf.newValue( TasksQuery.class ), TaskListDTO.class );
+         final TaskListDTO newRoot = client.query( "tasks", TaskListDTO.class );
          boolean same = newRoot.equals( tasks );
          if (!same)
          {

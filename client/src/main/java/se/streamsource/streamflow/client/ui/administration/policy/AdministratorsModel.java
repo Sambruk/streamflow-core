@@ -23,10 +23,13 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -45,9 +48,9 @@ public class AdministratorsModel
    @Uses
    CommandQueryClient client;
 
-   private SortedList<ListItemValue> administrators = new SortedList<ListItemValue>( new BasicEventList<ListItemValue>( ), new ListItemComparator() );
+   private SortedList<LinkValue> administrators = new SortedList<LinkValue>( new BasicEventList<LinkValue>( ), new LinkComparator() );
 
-   public EventList<ListItemValue> getAdministrators()
+   public EventList<LinkValue> getAdministrators()
    {
       return administrators;
    }
@@ -68,11 +71,11 @@ public class AdministratorsModel
 
    }
 
-   public void removeAdministrator( String id )
+   public void removeAdministrator( String href )
    {
       try
       {
-         client.getSubClient( id ).deleteCommand();
+         client.getClient( href ).deleteCommand();
          refresh();
       } catch (ResourceException e)
       {
@@ -84,9 +87,9 @@ public class AdministratorsModel
    {
       try
       {
-         ListValue administratorsList = client.query( "administrators", ListValue.class );
+         LinksValue administratorsList = client.query( "administrators", LinksValue.class );
          administrators.clear();
-         administrators.addAll( administratorsList.items().get() );
+         administrators.addAll( administratorsList.links().get() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

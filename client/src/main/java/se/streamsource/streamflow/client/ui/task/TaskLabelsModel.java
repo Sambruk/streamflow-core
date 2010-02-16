@@ -24,6 +24,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -60,7 +61,7 @@ public class TaskLabelsModel
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( addLabel );
-         client.postCommand( "addlabel", builder.newInstance() );
+         client.putCommand( "addlabel", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_add_label, e );
@@ -69,19 +70,11 @@ public class TaskLabelsModel
 
    public void removeLabel( EntityReference removeLabel )
    {
-      int idx = -1;
-      for (int i = 0; i < labels.size(); i++)
-      {
-         ListItemValue listItemValue = labels.get( i );
-         if (listItemValue.entity().get().equals( removeLabel ))
-            idx = i;
-      }
-
       try
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( removeLabel );
-         client.putCommand( "removelabel", builder.newInstance() );
+         client.getSubClient( removeLabel.identity() ).deleteCommand();;
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_remove_label, e );

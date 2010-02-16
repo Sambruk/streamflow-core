@@ -26,7 +26,9 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskActionsModel;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -43,7 +45,7 @@ public class SelectUserOrProjectDialog
 {
    Dimension dialogSize = new Dimension( 600, 300 );
 
-   public ListItemValue selected;
+   public LinkValue selected;
    public GroupedFilteredList projectList;
    public GroupedFilteredList userList;
 
@@ -56,8 +58,8 @@ public class SelectUserOrProjectDialog
       setName( i18n.text( WorkspaceResources.search_projects_users ) );
       setActionMap( context.getActionMap( this ) );
 
-      EventList<ListItemValue> projects = taskModel.getPossibleProjects();
-      EventList<ListItemValue> users = taskModel.getPossibleUsers();
+      EventList<TitledLinkValue> projects = taskModel.getPossibleProjects();
+      EventList<TitledLinkValue> users = taskModel.getPossibleUsers();
 
       projectList = new GroupedFilteredList();
       projectList.setEventList( projects );
@@ -87,15 +89,15 @@ public class SelectUserOrProjectDialog
 
    public EntityReference getSelected()
    {
-      return selected == null ? null : selected.entity().get();
+      return selected == null ? null : EntityReference.parseEntityReference( selected.id().get());
    }
 
    @Action
    public void execute()
    {
-      selected = (ListItemValue) projectList.getList().getSelectedValue();
+      selected = (LinkValue) projectList.getList().getSelectedValue();
       if (selected == null)
-         selected = (ListItemValue) userList.getList().getSelectedValue();
+         selected = (LinkValue) userList.getList().getSelectedValue();
 
       WindowUtils.findWindow( this ).dispose();
    }

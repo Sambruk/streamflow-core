@@ -1,6 +1,5 @@
 package se.streamsource.streamflow.client.ui.task;
 
-import org.jdesktop.swingx.JXLabel;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -8,10 +7,8 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;

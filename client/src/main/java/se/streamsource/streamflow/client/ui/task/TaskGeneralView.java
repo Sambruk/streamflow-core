@@ -42,6 +42,7 @@ import javax.swing.SwingConstants;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDatePicker;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
@@ -56,6 +57,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHand
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.SelectTaskTypeDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
@@ -100,12 +102,16 @@ public class TaskGeneralView extends JScrollPane implements Observer
 	public PossibleFormsView forms;
 	public RefreshWhenVisible refresher;
 	public JLabel selectedTaskType = new JLabel();
+   public JButton taskTypeButton;
+   public JButton labelButton;
 
-	public TaskGeneralView(@Service ApplicationContext appContext,
+   public TaskGeneralView(@Service ApplicationContext appContext,
 			@Uses TaskLabelsView labels, @Uses PossibleFormsView forms)
 	{
 		this.labels = labels;
 		this.forms = forms;
+      getVerticalScrollBar().setUnitIncrement(30);
+
 		// this.labelSelection = labels.labelSelection();
 		setActionMap(appContext.getActionMap(this));
 
@@ -174,15 +180,15 @@ public class TaskGeneralView extends JScrollPane implements Observer
 		CellConstraints cc = new CellConstraints();
 		ActionMap am = getActionMap();
 		javax.swing.Action taskTypeAction = am.get("tasktype");
-		JButton taskTypeButton = new JButton(taskTypeAction);
+      taskTypeButton = new JButton(taskTypeAction);
 		taskTypeButton.setHorizontalAlignment(SwingConstants.LEFT);
-		rightBuilder.add(taskTypeButton, cc.xy(1, 1));
+		rightBuilder.add( taskTypeButton, cc.xy(1, 1));
 		rightBuilder.add(selectedTaskType, cc.xy(3, 1));
 		rightBuilder.nextLine();
 		javax.swing.Action labelAction = am.get("label");
-		JButton labelButton = new JButton(labelAction);
+      labelButton = new JButton(labelAction);
 		labelButton.setHorizontalAlignment(SwingConstants.LEFT);
-		rightBuilder.add(labelButton, cc.xyw(1, 2, 1));
+		rightBuilder.add( labelButton, cc.xyw(1, 2, 1));
 		rightBuilder.nextLine();
 		rightBuilder.add(labels, cc.xyw(1, 3, 3));
 		rightBuilder.nextLine();
@@ -304,7 +310,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
 	{
 		SelectTaskTypeDialog dialog = taskTypeDialog.use(
 				model.getPossibleTaskTypes()).newInstance();
-		dialogs.showOkCancelHelpDialog(this, dialog);
+		dialogs.showOkCancelHelpDialog(taskTypeButton, dialog);
 
 		if (dialog.getSelected() != null)
 		{
@@ -318,13 +324,13 @@ public class TaskGeneralView extends JScrollPane implements Observer
 	{
 		TaskLabelsDialog dialog = labelSelectionDialog.use(
 				model.getPossibleLabels()).newInstance();
-		dialogs.showOkCancelHelpDialog(this, dialog);
+		dialogs.showOkCancelHelpDialog(labelButton, dialog);
 
 		if (dialog.getSelectedLabels() != null)
 		{
-			for (ListItemValue listItemValue : dialog.getSelectedLabels())
+			for (LinkValue listItemValue : dialog.getSelectedLabels())
 			{
-				model.addLabel(listItemValue.entity().get());
+				model.addLabel( EntityReference.parseEntityReference( listItemValue.id().get()));
 			}
 		}
 	}

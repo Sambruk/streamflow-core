@@ -29,7 +29,7 @@ public class OrganizationsAdministrationAssembler
 
       UIAssemblers.addMV( module, OrganizationsModel.class,
             OrganizationsView.class );
-      UIAssemblers.addMV( module, OrganizationUsersModel.class,
+      UIAssemblers.addMV( module, LinksListModel.class,
             OrganizationUsersView.class );
    }
 }

@@ -53,7 +53,6 @@ public class GroupsModel
 
    SortedList<ListItemValue> groups = new SortedList<ListItemValue>(new BasicEventList<ListItemValue>( ), new ListItemComparator() );
 
-
    WeakModelMap<String, GroupModel> groupModels = new WeakModelMap<String, GroupModel>()
    {
       @Override

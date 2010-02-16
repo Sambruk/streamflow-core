@@ -102,7 +102,7 @@ public class AccountAdministrationNode
    {
       if (usersModel == null)
       {
-         CommandQueryClient organizationsClient = accountModel.serverResource().getSubClient( "organizations" );
+         CommandQueryClient organizationsClient = accountModel.serverResource().getSubClient( "users" );
          usersModel = obf.newObjectBuilder( UsersAdministrationModel.class ).use( organizationsClient ).newInstance();
       }
 

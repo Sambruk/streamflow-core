@@ -18,6 +18,7 @@ import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import javax.swing.JLabel;
@@ -48,7 +49,7 @@ public class TableSelectionView
       super( new BorderLayout() );
       this.model = model;
 
-      model.setModel( vbf.newValueBuilder( ListValue.class ).newInstance() );
+      model.setModel( vbf.newValueBuilder( LinksValue.class ).newInstance() );
       nameField = new JTextField();
       nameField.setColumns( 10 );
       JPanel searchLine = new JPanel( new BorderLayout() );

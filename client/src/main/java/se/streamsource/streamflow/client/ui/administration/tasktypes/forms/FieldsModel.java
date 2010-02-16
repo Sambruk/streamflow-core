@@ -42,7 +42,6 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;

@@ -65,10 +65,10 @@ public class AdministrationAssembler
             ChangePasswordDialog.class,
             SelectOrganizationalUnitDialog.class,
             SelectOrganizationOrOrganizationalUnitDialog.class,
-            SelectOrganizationUsersDialog.class );
+            SelectLinksDialog.class );
       UIAssemblers.addTasks( module, TestConnectionTask.class );
 
-      UIAssemblers.addModels( module, SelectOrganizationUsersDialogModel.class );
+      UIAssemblers.addModels( module, LinksQueryListModel.class );
 
       // Other administration modules
       new LabelsAssembler().assemble( module.layerAssembly().moduleAssembly( "Labels" ) );

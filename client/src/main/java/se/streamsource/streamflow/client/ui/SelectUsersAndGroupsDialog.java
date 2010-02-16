@@ -29,13 +29,11 @@ import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Set;
@@ -78,7 +76,7 @@ public class SelectUsersAndGroupsDialog
             {
                ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
                builder.prototype().string().set( addUsersView.searchText() );
-               ListValue list = client.query( "findusers", builder.newInstance(), ListValue.class );
+               LinksValue list = client.query( "possibleusers", builder.newInstance(), LinksValue.class );
                addUsersView.getModel().setModel( list );
             } catch (ResourceException e)
             {
@@ -96,7 +94,7 @@ public class SelectUsersAndGroupsDialog
             {
                ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
                builder.prototype().string().set( addGroupsView.searchText() );
-               ListValue list = client.query( "findgroups", builder.newInstance(), ListValue.class );
+               LinksValue list = client.query( "possiblegroups", builder.newInstance(), LinksValue.class );
                addGroupsView.getModel().setModel( list );
             } catch (ResourceException e)
             {

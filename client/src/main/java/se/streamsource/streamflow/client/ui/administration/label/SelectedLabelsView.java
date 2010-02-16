@@ -19,6 +19,7 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
@@ -29,6 +30,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.ActionMap;
@@ -98,9 +100,9 @@ public class SelectedLabelsView
 
       if (dialog.getSelectedLabels() != null)
       {
-         for (ListItemValue listItemValue : dialog.getSelectedLabels())
+         for (LinkValue linkValue : dialog.getSelectedLabels())
          {
-            modelSelected.addLabel( listItemValue.entity().get() );
+            modelSelected.addLabel( EntityReference.parseEntityReference( linkValue.id().get()) );
          }
          modelSelected.refresh();
       }

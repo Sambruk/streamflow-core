@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 
 import javax.swing.JList;
@@ -43,7 +44,7 @@ public class OrganizationsView
 
       organizationsList = new JList( model );
 
-      organizationsList.setCellRenderer( new ListItemListCellRenderer() );
+      organizationsList.setCellRenderer( new LinkListCellRenderer() );
 
       JScrollPane scrollPane = new JScrollPane( organizationsList );
       add( scrollPane, BorderLayout.CENTER );

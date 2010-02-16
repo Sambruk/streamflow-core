@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.administration.organization;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JList;
@@ -54,10 +55,10 @@ public class OrganizationsAdminView
                int idx = list.getSelectedIndex();
                if (idx < list.getModel().getSize() && idx >= 0)
                {
-                  ListItemValue organizationValue = (ListItemValue) list.getModel().getElementAt( idx );
+                  LinkValue organizationValue = (LinkValue) list.getModel().getElementAt( idx );
                   OrganizationUsersView organizationView = obf.newObjectBuilder(
                         OrganizationUsersView.class ).use( organizationsView.getModel()
-                        .getOrganizationUsersModel( organizationValue.entity().get().identity() ) ).newInstance();
+                        .getOrganizationUsersModel( organizationValue.id().get() ) ).newInstance();
                   setRightComponent( organizationView );
                } else
                {

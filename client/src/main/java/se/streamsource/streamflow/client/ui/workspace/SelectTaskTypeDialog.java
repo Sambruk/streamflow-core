@@ -23,15 +23,13 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
@@ -43,10 +41,10 @@ public class SelectTaskTypeDialog
 {
    Dimension dialogSize = new Dimension( 600, 300 );
 
-   public ListItemValue selected;
+   public LinkValue selected;
    public FilteredList taskTypesList;
 
-   public SelectTaskTypeDialog( final @Uses EventList<ListItemValue> taskTypes,
+   public SelectTaskTypeDialog( final @Uses EventList<LinkValue> taskTypes,
                                       @Service ApplicationContext context,
                                       @Structure ObjectBuilderFactory obf )
    {
@@ -58,18 +56,18 @@ public class SelectTaskTypeDialog
       taskTypesList = new FilteredList();
       taskTypesList.setEventList( taskTypes );
 
-      add( new JScrollPane( taskTypesList ));
+      add( taskTypesList);
    }
 
    public EntityReference getSelected()
    {
-      return selected == null ? null : selected.entity().get();
+      return selected == null ? null : EntityReference.parseEntityReference( selected.id().get());
    }
 
    @Action
    public void execute()
    {
-      selected = (ListItemValue) taskTypesList.getList().getSelectedValue();
+      selected = (LinkValue) taskTypesList.getList().getSelectedValue();
 
       WindowUtils.findWindow( this ).dispose();
    }

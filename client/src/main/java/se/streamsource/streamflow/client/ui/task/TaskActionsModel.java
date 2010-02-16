@@ -24,11 +24,15 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.BasicEventList;
+
+import java.util.Collection;
 
 /**
  * JAVADOC
@@ -52,14 +56,14 @@ public class TaskActionsModel
       }
    }
 
-   public EventList<ListItemValue> getPossibleProjects()
+   public EventList<TitledLinkValue> getPossibleProjects()
    {
       try
       {
-         BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+         BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
 
-         ListValue listValue = client.query( "possibleprojects", ListValue.class );
-         list.addAll( listValue.items().get() );
+         LinksValue linksValue = client.query( "possiblesendtoprojects", LinksValue.class );
+         list.addAll( (Collection) linksValue.links().get() );
 
          return list;
       } catch (ResourceException e)
@@ -68,14 +72,14 @@ public class TaskActionsModel
       }
    }
 
-   public EventList<ListItemValue> getPossibleUsers()
+   public EventList<TitledLinkValue> getPossibleUsers()
    {
       try
       {
-         BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+         BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
 
-         ListValue listValue = client.query( "possibleusers", ListValue.class );
-         list.addAll( listValue.items().get() );
+         LinksValue listValue = client.query( "possiblesendtousers", LinksValue.class );
+         list.addAll( (Collection) listValue.links().get() );
 
          return list;
       } catch (ResourceException e)

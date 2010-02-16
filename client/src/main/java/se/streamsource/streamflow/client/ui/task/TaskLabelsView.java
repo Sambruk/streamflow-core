@@ -2,13 +2,10 @@ package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
-import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JPanel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;

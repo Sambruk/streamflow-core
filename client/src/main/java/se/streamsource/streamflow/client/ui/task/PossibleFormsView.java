@@ -1,30 +1,24 @@
 package se.streamsource.streamflow.client.ui.task;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Dimension;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import org.netbeans.api.wizard.WizardDisplayer;
+import org.netbeans.spi.wizard.Wizard;
+import org.netbeans.spi.wizard.WizardException;
+import org.netbeans.spi.wizard.WizardPage;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
-
-import javax.swing.JPanel;
-
-import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
-import se.streamsource.streamflow.client.StreamFlowApplication;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import org.netbeans.spi.wizard.Wizard;
-import org.netbeans.spi.wizard.WizardPage;
-import org.netbeans.spi.wizard.WizardException;
-import org.netbeans.api.wizard.WizardDisplayer;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 
 public class PossibleFormsView extends JPanel implements ListEventListener, ActionListener
 {

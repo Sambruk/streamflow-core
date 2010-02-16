@@ -25,6 +25,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -41,9 +43,9 @@ public class PossibleTaskTypesModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private BasicEventList<ListItemValue> taskTypeList = new BasicEventList<ListItemValue>();
+   private BasicEventList<LinkValue> taskTypeList = new BasicEventList<LinkValue>();
 
-   public EventList<ListItemValue> getTaskTypeList()
+   public EventList<LinkValue> getTaskTypeList()
    {
       return taskTypeList;
    }
@@ -52,10 +54,10 @@ public class PossibleTaskTypesModel
    {
       try
       {
-         ListValue taskTypes = client.query( "possibletasktypes", ListValue.class );
+         LinksValue taskTypes = client.query( "possibletasktypes", LinksValue.class );
 
          taskTypeList.clear();
-         taskTypeList.addAll( taskTypes.items().get() );
+         taskTypeList.addAll( taskTypes.links().get() );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );

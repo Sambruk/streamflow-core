@@ -21,10 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
-import se.streamsource.streamflow.client.ui.workspace.SelectTaskTypeDialog;
-import se.streamsource.streamflow.client.ui.administration.label.SelectLabelsDialog;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
 import java.awt.*;

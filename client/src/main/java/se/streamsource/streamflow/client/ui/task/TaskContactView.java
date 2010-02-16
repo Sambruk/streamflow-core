@@ -68,6 +68,7 @@ public class TaskContactView
             "" );
       form = new JPanel();
       JScrollPane scrollPane = new JScrollPane( form );
+      scrollPane.getVerticalScrollBar().setUnitIncrement(30);
       DefaultFormBuilder builder = new DefaultFormBuilder( formLayout, form );
       builder.setDefaultDialogBorder();
 

@@ -23,8 +23,8 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
@@ -46,17 +46,17 @@ public class OrganizationsModel
 
    private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdOrganization", "createdUser" );
 
-   WeakModelMap<String, OrganizationUsersModel> organizationUsersModels = new WeakModelMap<String, OrganizationUsersModel>()
+   WeakModelMap<String, LinksListModel> organizationUsersModels = new WeakModelMap<String, LinksListModel>()
    {
       @Override
-      protected OrganizationUsersModel newModel( String key )
+      protected LinksListModel newModel( String key )
       {
-         return obf.newObjectBuilder( OrganizationUsersModel.class )
-               .use( client.getSubClient(key) ).newInstance();
+         return obf.newObjectBuilder( LinksListModel.class )
+               .use( client.getSubClient(key).getSubClient( "users" ), "users" ).newInstance();
       }
    };
 
-   private List<ListItemValue> organizations;
+   private List<LinkValue> organizations;
 
    private CommandQueryClient client;
 
@@ -80,7 +80,7 @@ public class OrganizationsModel
    {
       try
       {
-         organizations = client.query("organizations", ListValue.class).items().get();
+         organizations = client.query("organizations", LinksValue.class).links().get();
          fireContentsChanged( this, 0, organizations.size() );
       } catch (ResourceException e)
       {
@@ -89,7 +89,7 @@ public class OrganizationsModel
    }
 
 
-   public OrganizationUsersModel getOrganizationUsersModel( String id )
+   public LinksListModel getOrganizationUsersModel( String id )
    {
       return organizationUsersModels.get( id );
    }
@@ -98,7 +98,7 @@ public class OrganizationsModel
    {
       eventFilter.visit( event );
 
-      for (OrganizationUsersModel model : organizationUsersModels)
+      for (LinksListModel model : organizationUsersModels)
       {
          model.notifyEvent( event );
       }

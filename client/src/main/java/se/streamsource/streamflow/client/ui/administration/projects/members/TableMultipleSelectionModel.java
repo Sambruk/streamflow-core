@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects.members;
 
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.event.TableModelEvent;
@@ -25,11 +26,11 @@ import java.util.Set;
 public class TableMultipleSelectionModel
       extends AbstractTableSelectionModel<Set<String>>
 {
-   private Map<ListItemValue, Boolean> selected;
+   private Map<LinkValue, Boolean> selected;
 
    public void clearSelection()
    {
-      selected = new HashMap<ListItemValue, Boolean>();
+      selected = new HashMap<LinkValue, Boolean>();
       fireTableChanged( new TableModelEvent( this, 0, getRowCount(), 0, TableModelEvent.DELETE ) );
    }
 
@@ -37,9 +38,9 @@ public class TableMultipleSelectionModel
    {
       Set<String> selectedIdentities = new LinkedHashSet<String>();
 
-      for (ListItemValue listItemValue : selected.keySet())
+      for (LinkValue linkValue : selected.keySet())
       {
-         selectedIdentities.add( listItemValue.entity().get().identity() );
+         selectedIdentities.add( linkValue.id().get() );
       }
       return selectedIdentities;
    }
@@ -50,9 +51,9 @@ public class TableMultipleSelectionModel
       switch (column)
       {
          case 0:
-            return selected.get( getModel().items().get().get( row ) );
+            return selected.get( getModel().links().get().get( row ) );
          case 1:
-            return getModel().items().get().get( row ).description().get();
+            return getModel().links().get().get( row ).text().get();
       }
       return null;
    }
@@ -62,10 +63,10 @@ public class TableMultipleSelectionModel
    {
       if (!(Boolean) value)
       {
-         selected.remove( getModel().items().get().get( row ) );
+         selected.remove( getModel().links().get().get( row ) );
       } else
       {
-         selected.put( getModel().items().get().get( row ), Boolean.TRUE );
+         selected.put( getModel().links().get().get( row ), Boolean.TRUE );
       }
       fireTableCellUpdated( row, column );
    }

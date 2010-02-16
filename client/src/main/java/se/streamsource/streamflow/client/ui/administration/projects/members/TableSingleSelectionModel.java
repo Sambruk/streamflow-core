@@ -14,12 +14,13 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects.members;
 
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.event.TableModelEvent;
 
 public class TableSingleSelectionModel
-      extends AbstractTableSelectionModel<ListItemValue>
+      extends AbstractTableSelectionModel<LinkValue>
 {
    private int selected;
 
@@ -29,10 +30,10 @@ public class TableSingleSelectionModel
       fireTableChanged( new TableModelEvent( this, 0, getRowCount(), 0, TableModelEvent.DELETE ) );
    }
 
-   public ListItemValue getSelected()
+   public LinkValue getSelected()
    {
       if (selected == -1) return null;
-      return getModel().items().get().get( selected );
+      return getModel().links().get().get( selected );
    }
 
    public Object getValueAt( int row, int column )
@@ -42,7 +43,7 @@ public class TableSingleSelectionModel
          case 0:
             return (row == selected);
          case 1:
-            return getModel().items().get().get( row ).description().get();
+            return getModel().links().get().get( row ).text().get();
       }
       return null;
    }
