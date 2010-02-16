@@ -14,41 +14,23 @@
 
 package se.streamsource.streamflow.web.domain.entity.organization;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
-import se.streamsource.streamflow.resource.user.UserEntityListDTO;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.structure.organizations.Organizations;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.domain.structure.Describable;
-
-import java.util.List;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 @Mixins(OrganizationsQueries.Mixin.class)
 public interface OrganizationsQueries
 {
-   public ListValue organizations();
-
-   public UserEntityListDTO users();
-
    OrganizationEntity getOrganizationByName( String name );
 
-   Query<OrganizationEntity> getAllOrganizations();
-
-   UserEntity getUserByName( String name );
+   QueryBuilder<OrganizationEntity> organizations();
 
    class Mixin
          implements OrganizationsQueries
@@ -65,37 +47,6 @@ public interface OrganizationsQueries
       @This
       Organizations.Data state;
 
-      public ListValue organizations()
-      {
-         return new ListValueBuilder( vbf ).addDescribableItems( getAllOrganizations() ).newList();
-      }
-
-      public UserEntityListDTO users()
-      {
-         Query<UserEntity> usersQuery = qbf.newQueryBuilder( UserEntity.class ).
-               newQuery( uowf.currentUnitOfWork() );
-
-         usersQuery.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
-
-
-         ValueBuilder<UserEntityListDTO> listBuilder = vbf.newValueBuilder( UserEntityListDTO.class );
-         List<UserEntityDTO> userlist = listBuilder.prototype().users().get();
-
-         ValueBuilder<UserEntityDTO> builder = vbf.newValueBuilder( UserEntityDTO.class );
-
-         for (UserEntity user : usersQuery)
-         {
-            builder.prototype().entity().set( EntityReference.getEntityReference( user ) );
-            builder.prototype().username().set( user.userName().get() );
-            builder.prototype().disabled().set( user.disabled().get() );
-
-            userlist.add( builder.newInstance() );
-         }
-
-         return listBuilder.newInstance();
-
-      }
-
       public OrganizationEntity getOrganizationByName( String name )
       {
          Describable.Data template = QueryExpressions.templateFor( Describable.Data.class );
@@ -104,15 +55,9 @@ public interface OrganizationsQueries
                newQuery( uowf.currentUnitOfWork() ).find();
       }
 
-      public Query<OrganizationEntity> getAllOrganizations()
+      public QueryBuilder<OrganizationEntity> organizations()
       {
-         return qbf.newQueryBuilder( OrganizationEntity.class ).
-               newQuery( uowf.currentUnitOfWork() );
-      }
-
-      public UserEntity getUserByName( String name )
-      {
-         return uowf.currentUnitOfWork().get( UserEntity.class, name );
+         return qbf.newQueryBuilder( OrganizationEntity.class );
       }
    }
 }

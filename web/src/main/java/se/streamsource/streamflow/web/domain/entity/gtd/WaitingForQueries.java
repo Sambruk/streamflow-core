@@ -14,43 +14,31 @@
 package se.streamsource.streamflow.web.domain.entity.gtd;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegator;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Delegator;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 
-import java.util.List;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(WaitingForQueries.Mixin.class)
 public interface WaitingForQueries
 {
-   TaskListDTO waitingForTasks( @Optional Delegator delegator );
+   QueryBuilder<Delegatable> waitingFor( @Optional Delegator delegator );
 
    boolean hasActiveOrDoneAndUnreadTasks();
 
@@ -70,27 +58,25 @@ public interface WaitingForQueries
       @This
       Owner owner;
 
-      public TaskListDTO waitingForTasks( Delegator delegator )
+      public QueryBuilder<Delegatable> waitingFor( Delegator delegator )
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
          // Find all Active delegated tasks owned by this Entity and, optionally, delegated by "delegator"
          // or delegated tasks that are marked as done
-         QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder( TaskEntity.class );
+         QueryBuilder<Delegatable> queryBuilder = qbf.newQueryBuilder( Delegatable.class );
          Association<Delegator> delegatedBy = templateFor( Delegatable.Data.class ).delegatedBy();
          Association<Owner> ownerAssociation = templateFor( Delegatable.Data.class ).delegatedFrom();
          Association<Delegatee> delegatee = templateFor( Delegatable.Data.class ).delegatedTo();
-         Query<TaskEntity> waitingForQuery = queryBuilder.where( and(
+         queryBuilder = queryBuilder.where( and(
                eq( ownerAssociation, this.owner ),
                delegator != null ? eq( delegatedBy, delegator ) : QueryExpressions.isNotNull( delegatedBy ),
                isNotNull( delegatee ),
                or(
                      QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ),
-                     eq( templateFor( Status.Data.class ).status(), States.DONE ) ) ) ).
-               newQuery( uow );
-         waitingForQuery.orderBy( orderBy( templateFor( Delegatable.Data.class ).delegatedOn() ) );
+                     eq( templateFor( Status.Data.class ).status(), States.DONE ) ) ) );
 
-         return buildTaskList( waitingForQuery, WaitingForTaskDTO.class);
+         return queryBuilder;
       }
 
       public boolean hasActiveOrDoneAndUnreadTasks()
@@ -100,7 +86,6 @@ public interface WaitingForQueries
          // Find all Active delegated tasks owned by this Entity
          // or Completed delegated tasks that are marked as unread
          QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder( TaskEntity.class );
-         Association<Delegator> delegatedBy = templateFor( Delegatable.Data.class ).delegatedBy();
          Association<Owner> ownerAssociation = templateFor( Delegatable.Data.class ).delegatedFrom();
          Association<Delegatee> delegatee = templateFor( Delegatable.Data.class ).delegatedTo();
          Query<TaskEntity> waitingForQuery = queryBuilder.where( and(
@@ -112,58 +97,6 @@ public interface WaitingForQueries
                newQuery( uow );
 
          return waitingForQuery.count() > 0;
-      }
-
-      protected TaskListDTO buildTaskList(
-            Query<TaskEntity> inboxQuery,
-            Class taskClass)
-      {
-         ValueBuilder<TaskDTO> builder = vbf.newValueBuilder( taskClass );
-         TaskDTO prototype = builder.prototype();
-         ValueBuilder<TaskListDTO> listBuilder = vbf.newValueBuilder( TaskListDTO.class );
-         TaskListDTO t = listBuilder.prototype();
-         Property<List<TaskDTO>> property = t.tasks();
-         List<TaskDTO> list = property.get();
-         ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder( ListItemValue.class );
-         ListItemValue labelPrototype = labelBuilder.prototype();
-         for (TaskEntity task : inboxQuery)
-         {
-            buildTask( prototype, labelBuilder, labelPrototype, task );
-
-            list.add( builder.newInstance() );
-         }
-         return listBuilder.newInstance();
-      }
-
-      protected <T extends TaskListDTO> void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
-      {
-         prototype.task().set( EntityReference.getEntityReference( task ) );
-         if (task.taskType().get() != null)
-            prototype.taskType().set( task.taskType().get().getDescription() );
-         else
-            prototype.taskType().set( null );
-         prototype.creationDate().set( task.createdOn().get() );
-         prototype.description().set( task.description().get() );
-         prototype.status().set( task.status().get() );
-
-         ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder( ListValue.class );
-         List<ListItemValue> labelList = labelListBuilder.prototype().items().get();
-         for (Label label : task.labels())
-         {
-            labelPrototype.entity().set( EntityReference.getEntityReference( label ) );
-            labelPrototype.description().set( label.getDescription() );
-            labelList.add( labelBuilder.newInstance() );
-         }
-         prototype.labels().set( labelListBuilder.newInstance() );
-
-         WaitingForTaskDTO taskDTO = (WaitingForTaskDTO) prototype;
-         Assignee assignee = task.assignedTo().get();
-         if (assignee != null)
-            taskDTO.assignedTo().set( ((Describable)assignee).getDescription() );
-         else
-            taskDTO.assignedTo().set( "" );
-         taskDTO.delegatedTo().set( ((Describable)task.delegatedTo().get()).getDescription() );
-         taskDTO.delegatedOn().set( task.delegatedOn().get() );
       }
    }
 }

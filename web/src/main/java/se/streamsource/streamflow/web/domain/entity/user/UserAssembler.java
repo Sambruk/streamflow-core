@@ -14,10 +14,19 @@
 
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import static org.qi4j.api.common.Visibility.application;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.api.service.ServiceSelector;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.query.NamedEntityFinder;
+import org.qi4j.spi.query.NamedQueries;
+import org.qi4j.spi.query.NamedQueryDescriptor;
+import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
+import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
+
+import static org.qi4j.api.common.Visibility.application;
 
 /**
  * JAVADOC
@@ -28,6 +37,15 @@ public class UserAssembler
    public void assemble( ModuleAssembly module )
          throws AssemblyException
    {
-      module.addEntities( UserEntity.class ).visibleIn( application );
+      module.addEntities( UsersEntity.class, UserEntity.class ).visibleIn( application );
+
+      NamedQueries namedQueries = new NamedQueries();
+      NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
+      namedQueries.addQuery( queryDescriptor );
+
+      module.importServices( NamedEntityFinder.class ).
+            importedBy( ServiceSelectorImporter.class ).
+            setMetaInfo( ServiceSelector.withId("solr" )).
+            setMetaInfo( namedQueries);
    }
 }

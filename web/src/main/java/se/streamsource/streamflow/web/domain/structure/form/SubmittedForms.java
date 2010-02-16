@@ -17,7 +17,6 @@ package se.streamsource.streamflow.web.domain.structure.form;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
-import static org.qi4j.api.entity.EntityReference.getEntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
@@ -26,16 +25,16 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Date;
 
 /**
  * JAVADOC

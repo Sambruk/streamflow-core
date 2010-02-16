@@ -31,12 +31,12 @@ import se.streamsource.streamflow.web.domain.interaction.authentication.Authenti
 import se.streamsource.streamflow.web.domain.interaction.comment.Commenter;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
 /**
  * JAVADOC
@@ -66,6 +66,7 @@ public interface UserEntity
       InboxQueries,
       WaitingForQueries,
       ProjectQueries,
+      SearchTaskQueries,
 
       // Data
       Inbox.Data,

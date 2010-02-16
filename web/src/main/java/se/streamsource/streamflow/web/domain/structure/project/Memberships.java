@@ -24,8 +24,8 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
 
 /**
  * JAVADOC

@@ -39,6 +39,7 @@ import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -123,10 +124,13 @@ public interface ProjectEntity
       @This
       AssignmentsQueries assignments;
 
+      @Structure
+      UnitOfWorkFactory uowf;
+
       public void removeMember( Member member )
       {
          // Get all active tasks in a project for a particular user and unassign.
-         for (Assignable task : assignments.assignments( (Assignee) member ))
+         for (Assignable task : assignments.assignments( (Assignee) member ).newQuery( uowf.currentUnitOfWork() ))
          {
             task.unassign();
          }
@@ -174,9 +178,9 @@ public interface ProjectEntity
 
          } else
          {
-            for (TaskDTO taskDTO : delegationsQueries.delegationsTasks().tasks().get())
+            for (Delegatable delegatable : delegationsQueries.delegations().newQuery( uowf.currentUnitOfWork() ))
             {
-               uowf.currentUnitOfWork().get( TaskEntity.class, taskDTO.task().get().identity() ).rejectDelegation();
+               uowf.currentUnitOfWork().get( TaskEntity.class, ((Identity)delegatable).identity().get() ).rejectDelegation();
             }
             members.removeAllMembers();
             return next.removeEntity();

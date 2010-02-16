@@ -21,8 +21,6 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FieldDefinitionsQueries;
-import se.streamsource.streamflow.web.domain.entity.form.FormQueries;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
@@ -69,8 +67,6 @@ public interface OrganizationEntity
       TaskTypes.Data,
 
       //Queries
-      FieldDefinitionsQueries,
-      FormQueries,
       OrganizationParticipationsQueries,
       OrganizationQueries,
       OrganizationalUnitsQueries,

@@ -23,14 +23,13 @@ import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.beans.Introspector;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * Generic mixin for simple event methods that add an entity to a collection. They have to follow this pattern:

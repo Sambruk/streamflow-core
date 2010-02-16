@@ -14,14 +14,12 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Notable;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.mixin.Mixins;
 
 /**
  * JAVADOC

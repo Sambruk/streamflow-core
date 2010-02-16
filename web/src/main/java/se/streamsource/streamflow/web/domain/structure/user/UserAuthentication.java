@@ -20,7 +20,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.user.Password;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;

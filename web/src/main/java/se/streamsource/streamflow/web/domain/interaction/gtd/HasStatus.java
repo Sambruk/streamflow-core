@@ -18,7 +18,6 @@ import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

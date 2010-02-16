@@ -15,14 +15,14 @@
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.concern.Concerns;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.States.DROPPED;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
+
+import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
 
 /**
  * Status for a task. Possible transitions are:

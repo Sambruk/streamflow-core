@@ -27,9 +27,9 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 
 /**
  * JAVADOC

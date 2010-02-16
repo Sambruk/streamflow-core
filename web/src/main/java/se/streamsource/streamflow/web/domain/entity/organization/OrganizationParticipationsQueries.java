@@ -19,23 +19,27 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(OrganizationParticipationsQueries.Mixin.class)
 public interface OrganizationParticipationsQueries
 {
-   public ListValue participatingUsers();
+   public QueryBuilder<User> users();
 
-   public ListValue nonParticipatingUsers();
+   public Query<User> possibleUsers();
 
    class Mixin
          implements OrganizationParticipationsQueries
@@ -52,36 +56,26 @@ public interface OrganizationParticipationsQueries
       @This
       OrganizationEntity organization;
 
-      public ListValue participatingUsers()
+      public QueryBuilder<User> users()
       {
-         return users( true );
+         QueryBuilder<User> usersQuery = qbf.newQueryBuilder( User.class );
+         return usersQuery.where( contains( templateFor( OrganizationParticipations.Data.class).organizations(), organization ));
       }
 
-      public ListValue nonParticipatingUsers()
+      public Query<User> possibleUsers()
       {
-         return users( false );
-      }
-
-      private ListValue users( boolean participating )
-      {
-         Query<UserEntity> usersQuery = qbf.newQueryBuilder( UserEntity.class ).
-               newQuery( uowf.currentUnitOfWork() );
-
-         usersQuery.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
-
-         ListValueBuilder userList = new ListValueBuilder( vbf );
-
-         for (UserEntity entity : usersQuery)
+         QueryBuilder<User> builder = qbf.newQueryBuilder( User.class );
+         Query<User> query = builder.newQuery( uowf.currentUnitOfWork() ).orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
+         List<User> possibleUsers = new ArrayList<User>( );
+         for (User user : query)
          {
-            if ((participating
-                  ? entity.organizations().contains( organization )
-                  : !entity.organizations().contains( organization )))
+            if (!((OrganizationParticipations.Data)user).organizations().contains( organization ))
             {
-               userList.addListItem( entity.getDescription(), EntityReference.getEntityReference( entity ) );
+               possibleUsers.add( user );
             }
          }
 
-         return userList.newList();
+         return qbf.newQueryBuilder( User.class ).newQuery( possibleUsers );
       }
    }
 }

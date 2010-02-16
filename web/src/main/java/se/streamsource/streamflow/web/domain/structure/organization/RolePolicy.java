@@ -16,11 +16,11 @@ package se.streamsource.streamflow.web.domain.structure.organization;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
-import static org.qi4j.api.entity.EntityReference.getEntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -33,6 +33,8 @@ import java.security.AccessController;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.qi4j.api.entity.EntityReference.getEntityReference;
 
 /**
  * Policy for managging Roles assigned to Participants. Participants
@@ -60,7 +62,7 @@ public interface RolePolicy
 
       boolean participantHasRole( Participant participant, Role role );
 
-      List<EntityReference> participantsWithRole( Role role );
+      List<Participant> participantsWithRole( Role role );
 
       boolean hasRoles( Participant participant );
    }
@@ -199,9 +201,10 @@ public interface RolePolicy
          return null;
       }
 
-      public List<EntityReference> participantsWithRole( Role role )
+      public List<Participant> participantsWithRole( Role role )
       {
-         List<EntityReference> participants = new ArrayList<EntityReference>();
+         UnitOfWork uow = uowf.currentUnitOfWork();
+         List<Participant> participants = new ArrayList<Participant>();
          EntityReference roleRef = getEntityReference( role );
          for (ParticipantRolesValue participantRolesValue : policy().get())
          {
@@ -209,7 +212,7 @@ public interface RolePolicy
             {
                if (participantRole.equals( roleRef ))
                {
-                  participants.add( participantRolesValue.participant().get() );
+                  participants.add( uow.get( Participant.class, participantRolesValue.participant().get().identity()) );
                   break;
                }
             }

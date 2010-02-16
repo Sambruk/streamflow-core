@@ -18,13 +18,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -33,8 +31,15 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.domain.structure.user.User;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -43,11 +48,11 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 @Mixins(TaskTypeQueries.Mixin.class)
 public interface TaskTypeQueries
 {
-   ListValue taskTypes();
+   List<TaskType> taskTypes();
 
-   ListValue possibleProjects();
+   List<Project> possibleProjects();
 
-   ListValue possibleUsers();
+   List<User> possibleUsers();
 
    class Mixin
          implements TaskTypeQueries
@@ -67,105 +72,130 @@ public interface TaskTypeQueries
       @This
       TypedTask.Data typedTask;
 
-      public ListValue taskTypes()
+      public List<TaskType> taskTypes()
       {
          Owner owner = ownable.owner().get();
          if (owner instanceof OrganizationParticipations)
          {
             OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
 
-            ValueBuilder<ListValue> builder = vbf.newValueBuilder( ListValue.class );
+            List<TaskType> taskTypes = new ArrayList<TaskType>( );
 
             for (Organization organization : orgs.organizations())
             {
-               TaskTypesQueries taskTypesList = (TaskTypesQueries) organization;
-               builder.prototype().items().get().addAll( taskTypesList.taskTypeList().items().get() );
+               TaskTypes.Data taskTypesList = (TaskTypes.Data) organization;
+               for (TaskType taskType : taskTypesList.taskTypes())
+               {
+                  taskTypes.add( taskType );
+               }
             }
 
-            return builder.newInstance();
+            return taskTypes;
          } else if (owner instanceof OwningOrganizationalUnit.Data)
          {
             OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
             OrganizationalUnit ou = ouOwner.organizationalUnit().get();
             Organization org = ((OwningOrganization) ou).organization().get();
-            return ((TaskTypesQueries)org).taskTypeList();
+
+            List<TaskType> taskTypes = new ArrayList<TaskType>( );
+
+            TaskTypes.Data taskTypesList = (TaskTypes.Data) org;
+            for (TaskType taskType : taskTypesList.taskTypes())
+            {
+               taskTypes.add( taskType );
+            }
+
+            return taskTypes;
          } else
          {
-            return vbf.newValue( ListValue.class );
+            return Collections.emptyList();
          }
       }
 
-      public ListValue possibleProjects()
+      public List<Project> possibleProjects()
       {
+
+
          Owner owner = ownable.owner().get();
          if (owner instanceof OrganizationParticipations)
          {
             OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
 
-            ValueBuilder<ListValue> builder = vbf.newValueBuilder( ListValue.class );
+            List<Project> projects = new ArrayList<Project>( );
 
             for (Organization organization : orgs.organizations())
             {
                TaskTypesQueries taskTypesQueries = (TaskTypesQueries) organization;
-               builder.prototype().items().get().addAll( taskTypesQueries.possibleProjects( typedTask.taskType().get() ).items().get() );
+               QueryBuilder<Project> builder = taskTypesQueries.possibleProjects( typedTask.taskType().get() );
+               Query<Project> query = builder.newQuery( uowf.currentUnitOfWork() );
+               for (Project project : query)
+               {
+                  projects.add( project );
+               }
             }
 
-            return builder.newInstance();
+            return projects;
          } else if (owner instanceof OwningOrganizationalUnit.Data)
          {
             OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
             OrganizationalUnit ou = ouOwner.organizationalUnit().get();
             TaskTypesQueries org = (TaskTypesQueries) ((OwningOrganization) ou).organization().get();
 
-            return org.possibleProjects( typedTask.taskType().get() );
+            List<Project> projects = new ArrayList<Project>( );
+            QueryBuilder<Project> builder = org.possibleProjects( typedTask.taskType().get() );
+            Query<Project> query = builder.newQuery( uowf.currentUnitOfWork() );
+            for (Project project : query)
+            {
+               projects.add( project );
+            }
+
+            return projects;
          } else
          {
-            return vbf.newValue( ListValue.class );
+            return Collections.emptyList();
          }
       }
 
-      public ListValue possibleUsers()
+      public List<User> possibleUsers()
       {
          Owner owner = ownable.owner().get();
          if (owner instanceof OrganizationParticipations)
          {
             OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
 
-            ListValueBuilder lvb = new ListValueBuilder(vbf);
+            List<User> users = new ArrayList<User>( );
 
             for (Organization organization : orgs.organizations())
             {
-               addUsers( lvb, organization );
+               addUsers( users, organization );
             }
 
-            return lvb.newList();
+            return users;
          } else if (owner instanceof OwningOrganizationalUnit.Data)
          {
             OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
             OrganizationalUnit ou = ouOwner.organizationalUnit().get();
             Organization org = ((OwningOrganization) ou).organization().get();
 
-            ListValueBuilder lvb = new ListValueBuilder(vbf);
+            List<User> users = new ArrayList<User>( );
 
-            addUsers(lvb, org);
+            addUsers(users, org);
 
-            return lvb.newList();
+            return users;
          } else
          {
-            return vbf.newValue( ListValue.class );
+            return Collections.emptyList();
          }
       }
 
-      private void addUsers( ListValueBuilder lvb, Organization organization )
+      private void addUsers( List<User> lvb, Organization organization )
       {
          OrganizationParticipations.Data userOrgs = QueryExpressions.templateFor(OrganizationParticipations.Data.class);
          Query<User> query = qbf.newQueryBuilder( User.class ).where( QueryExpressions.contains(userOrgs.organizations(), organization )).newQuery( uowf.currentUnitOfWork() );
 
          for (User user : query)
          {
-
-            String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
-            lvb.addDescribable( user, group );
+            lvb.add( user );
          }
       }
    }

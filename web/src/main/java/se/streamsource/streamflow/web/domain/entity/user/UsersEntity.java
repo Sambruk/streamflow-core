@@ -12,16 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.entity.organization;
+package se.streamsource.streamflow.web.domain.entity.user;
 
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.sideeffect.SideEffectOf;
-import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.PermissionQueries;
 import se.streamsource.streamflow.web.domain.interaction.authentication.Authentication;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 import java.security.AllPermission;
 import java.security.PermissionCollection;
@@ -29,16 +27,15 @@ import java.security.PermissionCollection;
 /**
  * JAVADOC
  */
-@SideEffects(OrganizationsEntity.CreateAdminRoleSideEffect.class)
-@Mixins(OrganizationsEntity.UserPermissionsMixin.class)
-public interface OrganizationsEntity
-      extends Organizations,
-      OrganizationsQueries,
-      Organizations.Data,
+@Mixins(UsersEntity.UserPermissionsMixin.class)
+public interface UsersEntity
+      extends Users,
+      UsersQueries,
+      Users.Data,
       PermissionQueries,
       DomainEntity
 {
-   public static final String ORGANIZATIONS_ID = "organizations";
+   public static final String USERS_ID = "users";
 
    class UserPermissionsMixin
          implements PermissionQueries
@@ -55,18 +52,6 @@ public interface OrganizationsEntity
          }
 
          return permissions;
-      }
-   }
-
-   abstract class CreateAdminRoleSideEffect
-      extends SideEffectOf<Organizations>
-      implements Organizations
-   {
-      public Organization createOrganization( String name )
-      {
-         Organization org = result.createOrganization(name);
-         org.createRole("Administrator");
-         return null;
       }
    }
 }

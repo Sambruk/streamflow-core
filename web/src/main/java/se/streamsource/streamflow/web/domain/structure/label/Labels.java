@@ -14,8 +14,8 @@
 
 package se.streamsource.streamflow.web.domain.structure.label;
 
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;

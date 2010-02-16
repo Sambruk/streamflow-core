@@ -19,21 +19,19 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -42,9 +40,7 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 public interface TaskTypesQueries
 {
    // Queries
-   ListValue taskTypeList();
-
-   ListValue possibleProjects( @Optional TaskType taskType );
+   QueryBuilder<Project> possibleProjects( @Optional TaskType taskType );
 
    TaskType getTaskTypeByName( String name );
 
@@ -68,12 +64,7 @@ public interface TaskTypesQueries
          return Describable.Mixin.getDescribable( taskTypes(), name );
       }
 
-      public ListValue taskTypeList()
-      {
-         return new ListValueBuilder( vbf ).addDescribableItems( taskTypes() ).newList();
-      }
-
-      public ListValue possibleProjects( TaskType taskType )
+      public QueryBuilder<Project> possibleProjects( TaskType taskType )
       {
          QueryBuilder<Project> projects = qbf.newQueryBuilder( Project.class );
 
@@ -87,16 +78,7 @@ public interface TaskTypesQueries
                                             isNotNull( templateFor(OwningOrganizationalUnit.Data.class).organizationalUnit() )));
          }
 
-         Query<Project> query = projects.newQuery( uowf.currentUnitOfWork() );
-
-         ListValueBuilder lvb = new ListValueBuilder( vbf );
-         for (Project project : query)
-         {
-            OwningOrganizationalUnit.Data ou = (OwningOrganizationalUnit.Data) project;
-            lvb.addDescribable( project, ou.organizationalUnit().get() );
-         }
-
-         return lvb.newList();
+         return projects;
       }
    }
 }

@@ -14,7 +14,7 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
-import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
@@ -32,12 +32,17 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.web.context.RootContext;
+import se.streamsource.streamflow.web.context.users.UserContext;
+import se.streamsource.streamflow.web.context.users.UsersContext;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
@@ -47,13 +52,15 @@ import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organizations.Organizations;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.structure.task.Task;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
+import se.streamsource.streamflow.web.infrastructure.web.context.InteractionContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,10 +91,11 @@ public interface TestDataService
          UserEntity user = uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME );
 
          Organizations orgs = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+         Users users = uow.get( Users.class, UsersEntity.USERS_ID );
 
-         User testUser = orgs.createUser( "testuser", "testuser" );
-         User someUser = orgs.createUser( "someuser", "someuser" );
-         User someUser2 = orgs.createUser( "someuser2", "someuser2" );
+         User testUser = users.createUser( "testuser", "testuser" );
+         User someUser = users.createUser( "someuser", "someuser" );
+         User someUser2 = users.createUser( "someuser2", "someuser2" );
 
          OrganizationEntity organization = (OrganizationEntity) user.organizations().iterator().next();
          organization.changeDescription( "WayGroup" );

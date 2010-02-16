@@ -14,33 +14,17 @@
 
 package se.streamsource.streamflow.web.domain.entity.form;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.entity.EntityReference;
-import static org.qi4j.api.entity.EntityReference.parseEntityReference;
-import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
-import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.ListValueBuilder;
-import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
-import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
-import se.streamsource.streamflow.resource.task.FieldDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+
+import static org.qi4j.api.entity.EntityReference.parseEntityReference;
 
 /**
  * JAVADOC

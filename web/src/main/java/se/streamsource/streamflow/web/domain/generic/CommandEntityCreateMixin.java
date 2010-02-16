@@ -27,13 +27,12 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * Generic mixin for simple command methods that create an entity and add it to a collection. They have to follow this pattern:

@@ -22,7 +22,6 @@ import se.streamsource.streamflow.domain.organization.OpenProjectExistsException
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
-import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 
 /**
  * An organizational unit represents a part of an organization.
@@ -32,7 +31,7 @@ public interface OrganizationalUnitRefactoring
 {
    void moveOrganizationalUnit( OrganizationalUnits to ) throws MoveOrganizationalUnitException;
 
-   void mergeOrganizationalUnit( OrganizationalUnitRefactoring to ) throws MergeOrganizationalUnitException;
+   void mergeOrganizationalUnit( OrganizationalUnit to ) throws MergeOrganizationalUnitException;
 
    void deleteOrganizationalUnit() throws OpenProjectExistsException;
 
@@ -102,7 +101,7 @@ public interface OrganizationalUnitRefactoring
          to.addOrganizationalUnit( organizationalUnit );
       }
 
-      public void mergeOrganizationalUnit( OrganizationalUnitRefactoring to ) throws MergeOrganizationalUnitException
+      public void mergeOrganizationalUnit( OrganizationalUnit to ) throws MergeOrganizationalUnitException
       {
          OrganizationalUnits parent = getParent();
          if (organizationalUnit.equals( to ))
@@ -110,8 +109,8 @@ public interface OrganizationalUnitRefactoring
             throw new MergeOrganizationalUnitException();
          }
 
-         groups.mergeGroups( (Groups) to );
-         projects.mergeProjects( (Projects) to );
+         groups.mergeGroups( to );
+         projects.mergeProjects( to );
 
          parent.removeOrganizationalUnit( organizationalUnit );
          removable.removeEntity();

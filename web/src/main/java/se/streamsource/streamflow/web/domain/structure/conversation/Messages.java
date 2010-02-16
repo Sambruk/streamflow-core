@@ -24,6 +24,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
 import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
 
 /**

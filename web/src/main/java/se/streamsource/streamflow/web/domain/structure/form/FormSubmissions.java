@@ -14,24 +14,24 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.form.FormSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 
 import java.util.ArrayList;
 

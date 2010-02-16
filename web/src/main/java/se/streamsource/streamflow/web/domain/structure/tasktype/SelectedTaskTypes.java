@@ -18,9 +18,10 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -36,7 +37,7 @@ public interface SelectedTaskTypes
    {
       ManyAssociation<TaskType> selectedTaskTypes();
 
-      ListValue possibleTaskTypes( ManyAssociation<TaskType> taskTypes );
+      List<TaskType> possibleTaskTypes( ManyAssociation<TaskType> taskTypes );
 
       void selectedTaskTypeAdded( DomainEvent event, TaskType taskType );
 
@@ -69,19 +70,19 @@ public interface SelectedTaskTypes
          selectedTaskTypes().remove( taskType );
       }
 
-      public ListValue possibleTaskTypes( ManyAssociation<TaskType> taskTypes )
+      public List<TaskType> possibleTaskTypes( ManyAssociation<TaskType> taskTypes )
       {
-         ListValueBuilder builder = new ListValueBuilder( vbf );
+         List<TaskType> possibleTaskTypes = new ArrayList<TaskType>( );
 
          for (TaskType taskType : taskTypes)
          {
             if (!selectedTaskTypes().contains( taskType ))
             {
-               builder.addDescribable( taskType );
+               possibleTaskTypes.add( taskType );
             }
          }
 
-         return builder.newList();
+         return possibleTaskTypes;
       }
    }
 }

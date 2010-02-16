@@ -20,13 +20,12 @@ import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.property.StateHolder;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * Generic mixin for simple command methods that update a property.

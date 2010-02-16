@@ -19,13 +19,13 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 
 /**
  * JAVADOC

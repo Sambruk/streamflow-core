@@ -29,7 +29,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
@@ -49,6 +48,8 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(OverviewQueries.Mixin.class)
 public interface OverviewQueries

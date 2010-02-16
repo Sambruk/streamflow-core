@@ -24,7 +24,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.library.constraints.annotation.GreaterThan;
-import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 

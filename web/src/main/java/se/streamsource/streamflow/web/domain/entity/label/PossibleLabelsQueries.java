@@ -19,10 +19,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -30,7 +31,7 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 @Mixins(PossibleLabelsQueries.Mixin.class)
 public interface PossibleLabelsQueries
 {
-   ListValue possibleLabels( ManyAssociation<Label> labels );
+   List<Label> possibleLabels( ManyAssociation<Label> labels );
 
    class Mixin
       implements PossibleLabelsQueries
@@ -41,19 +42,19 @@ public interface PossibleLabelsQueries
       @This
       SelectedLabels.Data data;
 
-      public ListValue possibleLabels( ManyAssociation<Label> labels )
+      public List<Label> possibleLabels( ManyAssociation<Label> labels )
       {
-         ListValueBuilder builder = new ListValueBuilder( vbf );
+         List<Label> possibleLabels = new ArrayList<Label>( );
 
          for (Label label : labels)
          {
             if (!data.selectedLabels().contains( label ))
             {
-               builder.addDescribable( label );
+               possibleLabels.add( label );
             }
          }
 
-         return builder.newList();
+         return possibleLabels;
       }
 
    }

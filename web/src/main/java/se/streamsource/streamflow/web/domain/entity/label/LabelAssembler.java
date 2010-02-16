@@ -18,8 +18,7 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 
-import static org.qi4j.api.common.Visibility.*;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import static org.qi4j.api.common.Visibility.application;
 
 /**
  * JAVADOC

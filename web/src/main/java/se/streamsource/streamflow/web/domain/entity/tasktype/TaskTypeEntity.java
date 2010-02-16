@@ -26,7 +26,6 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FormsQueries;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -48,7 +47,6 @@ public interface TaskTypeEntity
       Forms.Data,
 
       // Queries
-      FormsQueries,
       PossibleLabelsQueries
 {
    abstract class RemovableConcern

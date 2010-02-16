@@ -14,44 +14,30 @@
 package se.streamsource.streamflow.web.domain.entity.gtd;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
-import static org.qi4j.api.query.QueryExpressions.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
-import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
-import java.util.List;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(AssignmentsQueries.Mixin.class)
 public interface AssignmentsQueries
 {
-   Query<Assignable> assignments(@Optional Assignee assignee);
-
-   TaskListDTO assignmentsTasks( @Optional Assignee assignee );
+   QueryBuilder<Assignable> assignments(@Optional Assignee assignee);
 
    boolean assignmentsHaveActiveTasks();
 
@@ -71,23 +57,17 @@ public interface AssignmentsQueries
       @This
       Owner owner;
 
-      public Query<Assignable> assignments( Assignee assignee )
+      public QueryBuilder<Assignable> assignments( Assignee assignee )
       {
          // Find all my Active tasks assigned to optional assignee
          QueryBuilder<Assignable> queryBuilder = qbf.newQueryBuilder( Assignable.class );
          Association<Assignee> assignedId = templateFor( Assignable.Data.class ).assignedTo();
          Association<Owner> ownedId = templateFor( Ownable.Data.class ).owner();
-         Query<Assignable> assignmentsQuery = queryBuilder.where( and(
+         queryBuilder = queryBuilder.where( and(
                assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
                eq( ownedId, owner ),
-               QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) ).
-               newQuery( uowf.currentUnitOfWork() );
-         return assignmentsQuery.orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-      }
-
-      public TaskListDTO assignmentsTasks( Assignee assignee )
-      {
-         return buildTaskList( assignments(assignee ));
+               QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) );
+         return queryBuilder;
       }
 
       public boolean assignmentsHaveActiveTasks()
@@ -104,48 +84,5 @@ public interface AssignmentsQueries
          return assignmentsQuery.count() > 0;
       }
 
-      protected TaskListDTO buildTaskList(
-            Iterable<Assignable> assignmentsQuery)
-      {
-         ValueBuilder<AssignedTaskDTO> builder = vbf.newValueBuilder( AssignedTaskDTO.class );
-         AssignedTaskDTO prototype = builder.prototype();
-         ValueBuilder<TaskListDTO> listBuilder = vbf.newValueBuilder( TaskListDTO.class );
-         TaskListDTO t = listBuilder.prototype();
-         Property<List<TaskDTO>> property = t.tasks();
-         List<TaskDTO> list = property.get();
-         ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder( ListItemValue.class );
-         ListItemValue labelPrototype = labelBuilder.prototype();
-         for (Assignable task : assignmentsQuery)
-         {
-            buildTask( prototype, labelBuilder, labelPrototype, (TaskEntity) task );
-
-            list.add( builder.newInstance() );
-         }
-         return listBuilder.newInstance();
-      }
-
-      protected <T extends TaskListDTO> void buildTask( AssignedTaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
-      {
-         prototype.task().set( EntityReference.getEntityReference( task ) );
-         if (task.taskType().get() != null)
-            prototype.taskType().set( task.taskType().get().getDescription() );
-         else
-            prototype.taskType().set( null );
-         prototype.creationDate().set( task.createdOn().get() );
-         prototype.description().set( task.description().get() );
-         prototype.status().set( task.status().get() );
-
-         prototype.assignedTo().set( ((Describable)task.assignedTo().get()).getDescription() );
-
-         ValueBuilder<ListValue> labelListBuilder = vbf.newValueBuilder( ListValue.class );
-         List<ListItemValue> labelList = labelListBuilder.prototype().items().get();
-         for (Label label : task.labels())
-         {
-            labelPrototype.entity().set( EntityReference.getEntityReference( label ) );
-            labelPrototype.description().set( label.getDescription() );
-            labelList.add( labelBuilder.newInstance() );
-         }
-         prototype.labels().set( labelListBuilder.newInstance() );
-      }
    }
 }

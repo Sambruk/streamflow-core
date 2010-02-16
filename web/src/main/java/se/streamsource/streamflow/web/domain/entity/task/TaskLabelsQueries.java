@@ -18,9 +18,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.ListValueBuilder;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -31,10 +28,13 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @Mixins(TaskLabelsQueries.Mixin.class)
 public interface TaskLabelsQueries
 {
-   ListValue possibleLabels();
+   Map<Label, SelectedLabels> possibleLabels();
 
    class Mixin
          implements TaskLabelsQueries
@@ -51,19 +51,18 @@ public interface TaskLabelsQueries
       @Structure
       ValueBuilderFactory vbf;
 
-      public ListValue possibleLabels()
+      public Map<Label, SelectedLabels> possibleLabels()
       {
-         ListValueBuilder listBuilder = new ListValueBuilder( vbf );
+         Map<Label, SelectedLabels> labels = new LinkedHashMap<Label, SelectedLabels>( );
 
          if (ownable.owner().get() instanceof SelectedLabels)
          {
-            addLabels( listBuilder, ((SelectedLabels.Data) ownable.owner().get()).selectedLabels(), (Describable) ownable.owner().get() );
+            addLabels( labels, (SelectedLabels) ownable.owner().get() );
          }
 
          if (type.taskType().get() != null)
          {
-            SelectedLabels.Data taskType = (SelectedLabels.Data) type.taskType().get();
-            addLabels( listBuilder, taskType.selectedLabels(), (Describable) taskType );
+            addLabels( labels, type.taskType().get());
          }
 
          if (ownable.owner().get() instanceof OwningOrganizationalUnit.Data)
@@ -71,27 +70,25 @@ public interface TaskLabelsQueries
             // Add labels from OU
             OwningOrganizationalUnit.Data ownerOU = (OwningOrganizationalUnit.Data) ownable.owner().get();
             OrganizationalUnit ou = ownerOU.organizationalUnit().get();
-            SelectedLabels.Data ouLabels = (SelectedLabels.Data) ou;
-            addLabels( listBuilder, ouLabels.selectedLabels(), ou );
+            addLabels( labels, ou );
 
             // Add labels from Organization of OU
             OwningOrganization ownerOrg = (OwningOrganization) ou;
             Organization org = ownerOrg.organization().get();
-            SelectedLabels.Data orgLabels = (SelectedLabels.Data) org;
-            addLabels( listBuilder, orgLabels.selectedLabels(), org );
+            addLabels( labels, org );
          }
 
-         ListValue list = listBuilder.newList();
-         return list;
+         return labels;
       }
 
-      private void addLabels( ListValueBuilder listBuilder, ManyAssociation<Label> selectedLabels, Describable group )
+      private void addLabels( Map<Label, SelectedLabels> labels, SelectedLabels from)
       {
+         ManyAssociation<Label> selectedLabels = ((SelectedLabels.Data)from).selectedLabels();
          for (Label label : selectedLabels)
          {
             if (!labelable.labels().contains( label ))
             {
-               listBuilder.addDescribable( label, group );
+               labels.put( label, from );
             }
          }
       }

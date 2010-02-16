@@ -29,6 +29,7 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
@@ -36,10 +37,11 @@ import java.util.logging.Logger;
 
 /**
  * Ensure that the most basic entities are always created. This includes:
- * 1) an OrganizationsEntity
- * 2) an Organization
- * 3) an Administrator role
- * 4) an Administrator user
+ * 1) an UsersEntity
+ * 2) an OrganizationsEntity
+ * 3) an Organization
+ * 4) an Administrator role
+ * 5) an Administrator user
  */
 @Mixins(BootstrapDataService.Mixin.class)
 public interface BootstrapDataService
@@ -59,6 +61,17 @@ public interface BootstrapDataService
          UnitOfWork uow = uowf.newUnitOfWork( newUsecase( "Bootstrap data" ) );
          try
          {
+            UsersEntity users;
+            try
+            {
+               // Check if users entity exists
+               users = uow.get( UsersEntity.class, UsersEntity.USERS_ID );
+            } catch (NoSuchEntityException e)
+            {
+               // Create bootstrap data
+               users = uow.newEntity( UsersEntity.class, UsersEntity.USERS_ID );
+            }
+
             OrganizationsEntity organizations;
             try
             {
@@ -78,7 +91,7 @@ public interface BootstrapDataService
             } catch (NoSuchEntityException e)
             {
                // Create admin
-               admin = (UserEntity) organizations.createUser( UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME );
+               admin = (UserEntity) users.createUser( UserEntity.ADMINISTRATOR_USERNAME, UserEntity.ADMINISTRATOR_USERNAME );
 
                ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder( ContactValue.class );
                contactBuilder.prototype().name().set( "Administrator" );
@@ -87,7 +100,7 @@ public interface BootstrapDataService
             }
 
 
-            Query<OrganizationEntity> orgs = organizations.getAllOrganizations();
+            Query<OrganizationEntity> orgs = organizations.organizations().newQuery( uow );
 
             if (orgs.count() == 0)
             {
@@ -122,7 +135,7 @@ public interface BootstrapDataService
 
          } catch (Exception e)
          {
-            Logger.getLogger( this.getClass().getName() ).warning( "BootstrapDataService faild to start!" );
+            Logger.getLogger( this.getClass().getName() ).warning( "BootstrapDataService failed to start!" );
             e.printStackTrace();
             uow.discard();
          }
