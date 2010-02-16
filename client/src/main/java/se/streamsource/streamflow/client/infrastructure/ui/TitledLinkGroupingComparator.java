@@ -14,23 +14,23 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import ca.odell.glazedlists.TextFilterator;
 import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 
-import java.util.List;
+import java.util.Comparator;
 
 /**
- * Filter for ListItemValues. Will filter on descriptions, and group if available
+ * JAVADOC
  */
-public class ListItemFilterator
-      implements TextFilterator<ListItemValue>
+public class TitledLinkGroupingComparator
+      implements Comparator<TitledLinkValue>
 {
-   public void getFilterStrings( List<String> strings, ListItemValue listItemValue )
+   public int compare( TitledLinkValue o1, TitledLinkValue o2 )
    {
-      strings.add( listItemValue.description().get() );
+      String s1 = o1.title().get();
+      String s2 = o2.title().get();
 
-      if (listItemValue instanceof GroupedListItemValue)
-         strings.add( ((GroupedListItemValue) listItemValue).group().get() );
+      return s1.compareTo( s2 );
    }
 }

@@ -14,17 +14,13 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import ca.odell.glazedlists.SeparatorList;
-import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
-import javax.swing.ListCellRenderer;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Color;
 
 /**
  * JAVADOC

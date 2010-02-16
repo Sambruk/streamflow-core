@@ -14,38 +14,30 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import ca.odell.glazedlists.SeparatorList;
 import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-import java.awt.Component;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * JAVADOC
+ * List renderer for lists that use LinkValue as items.
  */
-public class SeparatorListCellRenderer
-   extends DefaultListCellRenderer
+public class LinkListCellRenderer extends DefaultListCellRenderer
 {
-   private ListCellRenderer next;
-
-   public SeparatorListCellRenderer( ListCellRenderer next )
-   {
-      this.next = next;
-   }
-
    public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
    {
-      if (value instanceof SeparatorList.Separator)
+      if (value instanceof LinkValue)
       {
-         SeparatorList.Separator separator = (SeparatorList.Separator) value;
-         Component component = super.getListCellRendererComponent( list, ((TitledLinkValue)separator.first()).title().get(), index, isSelected, cellHasFocus );
-         setFont( getFont().deriveFont( Font.BOLD ));
-         return component;
-      } else
-         return next.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
+         LinkValue itemValue = (LinkValue) value;
+         String val = itemValue == null ? "" : itemValue.text().get();
+
+         if (value instanceof TitledLinkValue)
+            val = "  "+val;
+
+         return super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
+      } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
    }
 }

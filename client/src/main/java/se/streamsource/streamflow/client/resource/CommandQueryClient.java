@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.resource;
 
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -22,6 +23,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
@@ -43,8 +45,10 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,6 +152,14 @@ public final class CommandQueryClient
       } );
    }
 
+   public void postEntityCommand( LinkValue link) throws ResourceException
+   {
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( EntityReference.parseEntityReference( link.id().get() ));
+
+      postCommand(link.rel().get(), builder.newInstance());
+   }
+
    public void postCommand( String operation ) throws ResourceException
    {
       postCommand( operation, new EmptyRepresentation() );
@@ -214,7 +226,7 @@ public final class CommandQueryClient
    private ClientResource invokeQuery( String operation, ValueComposite queryValue )
          throws ResourceException
    {
-      Reference ref = new Reference( reference );
+      Reference ref = new Reference( reference.toUri().toString() );
       if (queryValue != null)
          setQueryParameters( ref, queryValue );
       ref.addQueryParameter( "query", operation );
@@ -292,7 +304,7 @@ public final class CommandQueryClient
    public void deleteCommand() throws ResourceException
    {
 
-      ClientResource client = new ClientResource( new Reference( reference ) );
+      ClientResource client = new ClientResource( new Reference(reference.toUri()).toString(  ));
       client.setNext( this.client );
 
       int tries = 3;
@@ -347,8 +359,14 @@ public final class CommandQueryClient
 
    public CommandQueryClient getSubClient( String pathSegment )
    {
-      Reference subReference = reference.clone().addSegment( pathSegment );
+      Reference subReference = reference.clone().addSegment( pathSegment ).addSegment( "" );
       return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), subReference ).newInstance();
+   }
+
+   public CommandQueryClient getClient( String relativePath )
+   {
+      Reference reference = new Reference(this.reference, relativePath);
+      return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), reference ).newInstance();
    }
 
    private void processEvents( Response response )

@@ -18,9 +18,12 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -29,6 +32,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.BorderLayout;
+import java.util.Comparator;
 
 /**
  * JAVADOC
@@ -48,7 +52,7 @@ public class GroupedFilteredList
       textField = new JTextField( 20 );
 
       list = new JList();
-      list.setCellRenderer( new SeparatorListCellRenderer(new ListItemListCellRenderer()) );
+      list.setCellRenderer( new SeparatorListCellRenderer(new LinkListCellRenderer()) );
       list.getSelectionModel().addListSelectionListener( new ListSelectionListener()
       {
          public void valueChanged( ListSelectionEvent e )
@@ -78,15 +82,26 @@ public class GroupedFilteredList
       return pane;
    }
 
-   public void setEventList( EventList<ListItemValue> eventList )
+   public void setEventList( EventList<TitledLinkValue> eventList )
    {
-      SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( eventList, new ListItemComparator() );
-      FilterList<ListItemValue> textFilteredIssues = new FilterList<ListItemValue>( sortedIssues, new TextComponentMatcherEditor( textField, new ListItemFilterator() ) );
+      SortedList<TitledLinkValue> sortedIssues = new SortedList<TitledLinkValue>( eventList, new LinkComparator() );
+      final FilterList<TitledLinkValue> textFilteredIssues = new FilterList<TitledLinkValue>( sortedIssues, new TextComponentMatcherEditor( textField, new LinkFilterator() ) );
 
-      listModel = new EventListModel<ListItemValue>( new SeparatorList<ListItemValue>( textFilteredIssues, new ListItemGroupingComparator(), 1, 10000 ) );
+      listModel = new EventListModel<TitledLinkValue>( new SeparatorList<TitledLinkValue>( textFilteredIssues, new TitledLinkGroupingComparator(), 1, 10000 ) );
 
       list.setModel( listModel );
 
       textField.setText( "" );
+
+      textFilteredIssues.addListEventListener( new ListEventListener<LinkValue>()
+      {
+         public void listChanged( ListEvent<LinkValue> linkValueListEvent )
+         {
+            if (textFilteredIssues.size() == 1)
+            {
+               list.setSelectedIndex( 1 );
+            }
+         }
+      });
    }
 }

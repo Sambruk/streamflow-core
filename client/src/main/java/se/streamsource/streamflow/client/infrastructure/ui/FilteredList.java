@@ -17,14 +17,19 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
 
 /**
@@ -45,7 +50,7 @@ public class FilteredList
       textField = new JTextField( 20 );
 
       list = new JList();
-      list.setCellRenderer( new ListItemListCellRenderer() );
+      list.setCellRenderer( new LinkListCellRenderer() );
       pane.setViewportView( list );
 
       add( textField, BorderLayout.NORTH );
@@ -67,11 +72,22 @@ public class FilteredList
       return pane;
    }
 
-   public void setEventList( EventList<ListItemValue> eventList )
+   public void setEventList( EventList<LinkValue> eventList )
    {
-      SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( eventList, new ListItemComparator() );
-      FilterList<ListItemValue> textFilteredIssues = new FilterList<ListItemValue>( sortedIssues, new TextComponentMatcherEditor( textField, new ListItemFilterator() ) );
-      listModel = new EventListModel<ListItemValue>( textFilteredIssues );
+      SortedList<LinkValue> sortedIssues = new SortedList<LinkValue>( eventList, new LinkComparator() );
+      final FilterList<LinkValue> textFilteredIssues = new FilterList<LinkValue>( sortedIssues, new TextComponentMatcherEditor( textField, new LinkFilterator() ) );
+      listModel = new EventListModel<LinkValue>( textFilteredIssues );
+
+      textFilteredIssues.addListEventListener( new ListEventListener<LinkValue>()
+      {
+         public void listChanged( ListEvent<LinkValue> linkValueListEvent )
+         {
+            if (textFilteredIssues.size() == 1)
+            {
+               list.setSelectedIndex( 0 );
+            }
+         }
+      });
 
       list.setModel( listModel );
 

@@ -16,21 +16,23 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import ca.odell.glazedlists.TextFilterator;
 import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 
 import java.util.List;
 
 /**
- * Filter for ListItemValues. Will filter on descriptions, and group if available
+ * Filter for LinkValue. Will filter on texts, and titles if available
  */
-public class ListItemFilterator
-      implements TextFilterator<ListItemValue>
+public class LinkFilterator
+      implements TextFilterator<LinkValue>
 {
-   public void getFilterStrings( List<String> strings, ListItemValue listItemValue )
+   public void getFilterStrings( List<String> strings, LinkValue linkValue )
    {
-      strings.add( listItemValue.description().get() );
+      strings.add( linkValue.text().get() );
 
-      if (listItemValue instanceof GroupedListItemValue)
-         strings.add( ((GroupedListItemValue) listItemValue).group().get() );
+      if (linkValue instanceof TitledLinkValue)
+         strings.add( ((TitledLinkValue) linkValue).title().get() );
    }
 }

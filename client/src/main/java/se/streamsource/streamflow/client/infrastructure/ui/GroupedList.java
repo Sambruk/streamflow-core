@@ -19,13 +19,9 @@ import java.awt.BorderLayout;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 
 /**

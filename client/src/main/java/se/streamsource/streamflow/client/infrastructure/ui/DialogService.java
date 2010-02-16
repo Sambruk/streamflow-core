@@ -27,12 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -72,7 +67,16 @@ public class DialogService
       dialog.setModal( true );
 
       dialog.pack();
-      dialog.setLocationRelativeTo( SwingUtilities.getAncestorOfClass( Frame.class, owner ) );
+
+      if (owner instanceof JButton)
+      {
+         Point location = new Point(owner.getLocationOnScreen());
+         location.translate( 0, owner.getHeight() );
+         dialog.setLocation( location );
+      } else
+      {
+         dialog.setLocationRelativeTo( SwingUtilities.getAncestorOfClass( Frame.class, owner ) );
+      }
       return dialog;
    }
 
