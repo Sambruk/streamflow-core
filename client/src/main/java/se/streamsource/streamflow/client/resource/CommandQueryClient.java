@@ -43,8 +43,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
@@ -389,7 +387,7 @@ public final class CommandQueryClient
             }
          } catch (Exception e)
          {
-            throw new OperationException( StreamFlowResources.could_not_process_events, e );
+            throw new RuntimeException( "Could not process events", e );
          }
       }
    }
