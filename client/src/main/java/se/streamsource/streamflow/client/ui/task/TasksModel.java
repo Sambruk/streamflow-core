@@ -17,13 +17,19 @@ package se.streamsource.streamflow.client.ui.task;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.search.SearchTerms;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * Model that keeps track of all task models
@@ -36,6 +42,9 @@ public class TasksModel
 
    @Structure
    ObjectBuilderFactory obf;
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    WeakModelMap<String, TaskModel> models = new WeakModelMap<String, TaskModel>()
    {
@@ -70,6 +79,15 @@ public class TasksModel
 
    private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "deletedTask", "deletedAssignedTask", "deletedWaitingForTask" );
 
+   public LinksValue search(String query) throws ResourceException
+   {
+      query = SearchTerms.translate( query );
+
+      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      builder.prototype().string().set( query );
+
+      return client.query( "search", builder.newInstance(), LinksValue.class );
+   }
 
    public TaskModel task( String id )
    {

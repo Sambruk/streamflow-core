@@ -15,20 +15,12 @@
 package se.streamsource.streamflow.web.resource.organizations;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationParticipationsQueries;
-import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**

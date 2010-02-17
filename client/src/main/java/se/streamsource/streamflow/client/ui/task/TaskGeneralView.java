@@ -197,7 +197,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
 		rightBuilder.nextLine();
 		javax.swing.Action labelAction = am.get("label");
       labelButton = new JButton(labelAction);
-		NotificationGlassPane.registerButton(labelButton);
+//		NotificationGlassPane.registerButton(labelButton);
 		labelButton.registerKeyboardAction(labelAction, (KeyStroke) labelAction
 				.getValue(javax.swing.Action.ACCELERATOR_KEY),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);

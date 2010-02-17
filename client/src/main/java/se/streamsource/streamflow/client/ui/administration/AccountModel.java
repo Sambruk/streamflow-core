@@ -77,6 +77,7 @@ public class AccountModel
    private SearchResultTableModel searchResults;
    private AdministrationModel administrationModel;
    private TasksModel tasksModel;
+   public CommandQueryClient tasksClient;
 
    public AccountSettingsValue settings()
    {
@@ -179,7 +180,10 @@ public class AccountModel
    public TasksModel tasks()
    {
       if (tasksModel == null)
-         tasksModel = obf.newObjectBuilder( TasksModel.class ).use( this, serverResource().getSubClient( "tasks" ) ).newInstance();
+      {
+         tasksClient = serverResource().getSubClient( "tasks" );
+         tasksModel = obf.newObjectBuilder( TasksModel.class ).use( this, tasksClient ).newInstance();
+      }
 
       return tasksModel;
    }
@@ -236,9 +240,7 @@ public class AccountModel
    {
       if (searchResults == null)
       {
-         CommandQueryClient client = userResource();
-         CommandQueryClient search = client.getSubClient( "search");
-         searchResults = obf.newObjectBuilder( SearchResultTableModel.class ).use( search, tasks() ).newInstance();
+         searchResults = obf.newObjectBuilder( SearchResultTableModel.class ).use( tasks(), tasksClient ).newInstance();
       }
 
       return searchResults;

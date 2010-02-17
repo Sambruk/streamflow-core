@@ -17,8 +17,8 @@ package se.streamsource.streamflow.web.resource.organizations.projects.members;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;

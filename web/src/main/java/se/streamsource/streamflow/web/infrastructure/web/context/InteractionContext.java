@@ -66,6 +66,11 @@ public class InteractionContext
          }
       }
 
+      if (object == null)
+      {
+         throw new IllegalArgumentException("No object in context for role:"+roleClass.getSimpleName());
+      }
+
       return roleClass.cast( object );
    }
 

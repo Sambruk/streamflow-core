@@ -35,9 +35,6 @@ public interface OrganizationContext
    AdministratorsContext administrators();
 
    @SubContext
-   GroupsContext groups();
-
-   @SubContext
    LabelsContext labels();
 
    @SubContext
@@ -45,9 +42,6 @@ public interface OrganizationContext
 
    @SubContext
    OrganizationUsersContext users();
-
-   @SubContext
-   ProjectsContext projects();
 
    @SubContext
    RolesContext roles();

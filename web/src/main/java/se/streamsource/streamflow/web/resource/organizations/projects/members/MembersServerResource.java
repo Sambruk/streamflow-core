@@ -15,8 +15,8 @@
 package se.streamsource.streamflow.web.resource.organizations.projects.members;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 

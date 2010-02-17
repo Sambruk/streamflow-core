@@ -24,7 +24,6 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 /**

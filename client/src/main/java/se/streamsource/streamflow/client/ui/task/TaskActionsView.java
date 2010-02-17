@@ -79,7 +79,7 @@ public class TaskActionsView extends JPanel
 						JComponent.WHEN_IN_FOCUSED_WINDOW);
 				button.setHorizontalAlignment(SwingConstants.LEFT);
 				actionsPanel.add(button);
-				NotificationGlassPane.registerButton(button);
+//				NotificationGlassPane.registerButton(button);
 			}
 		}
 

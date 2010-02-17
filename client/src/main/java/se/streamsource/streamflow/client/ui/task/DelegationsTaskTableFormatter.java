@@ -14,13 +14,13 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.task.TaskDTO;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.resource.task.TaskValue;
 
 import java.util.Date;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 /**
  * JAVADOC
@@ -45,37 +45,35 @@ public class DelegationsTaskTableFormatter
             };
    }
 
-   public Object getColumnValue( TaskDTO taskDTO, int i )
+   public Object getColumnValue( TaskValue taskValue, int i )
    {
-      DelegatedTaskDTO delegatedTask = (DelegatedTaskDTO) taskDTO;
-
       switch (i)
       {
          case 0:
          case 1:
          {
-            return super.getColumnValue( taskDTO, i );
+            return super.getColumnValue( taskValue, i );
          }
 
          case 2:
-            return delegatedTask.delegatedFrom().get();
+            return taskValue.delegatedFrom().get();
 
          case 3:
-            return delegatedTask.delegatedOn().get();
+            return taskValue.delegatedOn().get();
 
          case 4:
-            return super.getColumnValue( taskDTO, 3 );
+            return super.getColumnValue( taskValue, 3 );
       }
 
       return null;
    }
 
-   public boolean isEditable( TaskDTO taskDTO, int i )
+   public boolean isEditable( TaskValue taskValue, int i )
    {
       return false;
    }
 
-   public TaskDTO setColumnValue( TaskDTO taskDTO, Object o, int i )
+   public TaskValue setColumnValue( TaskValue taskValue, Object o, int i )
    {
 
 

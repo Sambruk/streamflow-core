@@ -27,9 +27,9 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
-import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.security.AccessControlException;

@@ -22,20 +22,19 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
-import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
-import se.streamsource.streamflow.resource.task.TasksQuery;
+import se.streamsource.streamflow.resource.task.TaskValue;
 
 import java.util.List;
 
@@ -51,9 +50,9 @@ public class TaskTableModel
    @Structure
    protected ValueBuilderFactory vbf;
 
-   protected TaskListDTO tasks;
+   protected LinksValue tasks;
 
-   protected BasicEventList<TaskDTO> eventList = new BasicEventList<TaskDTO>();
+   protected BasicEventList<TaskValue> eventList = new BasicEventList<TaskValue>();
 
    private EventVisitorFilter eventFilter;
 
@@ -70,12 +69,12 @@ public class TaskTableModel
 
    public boolean visit( final DomainEvent event )
    {
-      TaskDTO updatedTask = getTask( event );
+      TaskValue updatedTask = getTask( event );
 
       if (updatedTask != null)
       {
          int idx = eventList.indexOf( updatedTask );
-         ValueBuilder<TaskDTO> valueBuilder = updatedTask.<TaskDTO>buildWith();
+         ValueBuilder<TaskValue> valueBuilder = updatedTask.<TaskValue>buildWith();
          updatedTask = valueBuilder.prototype();
 
          String eventName = event.name().get();
@@ -84,7 +83,7 @@ public class TaskTableModel
             try
             {
                String newDesc = EventParameters.getParameter( event, "param1" );
-               updatedTask.description().set( newDesc );
+               updatedTask.text().set( newDesc );
                eventList.set( idx, valueBuilder.newInstance() );
             } catch (Exception e)
             {
@@ -93,10 +92,10 @@ public class TaskTableModel
          } else if (eventName.equals( "removedLabel" ))
          {
             String id = EventParameters.getParameter( event, "param1" );
-            List<ListItemValue> labels = updatedTask.labels().get().items().get();
-            for (ListItemValue label : labels)
+            List<LinkValue> labels = updatedTask.labels().get().links().get();
+            for (LinkValue label : labels)
             {
-               if (label.entity().get().identity().equals( id ))
+               if (label.id().get().equals( id ))
                {
                   labels.remove( label );
                   break;
@@ -116,7 +115,7 @@ public class TaskTableModel
       return true;
    }
 
-   public EventList<TaskDTO> getEventList()
+   public EventList<TaskValue> getEventList()
    {
       return eventList;
    }
@@ -125,11 +124,11 @@ public class TaskTableModel
    {
       try
       {
-         final TaskListDTO newRoot = client.query( "tasks", TaskListDTO.class );
+         final LinksValue newRoot = client.query( "tasks", LinksValue.class );
          boolean same = newRoot.equals( tasks );
          if (!same)
          {
-               EventListSynch.synchronize( newRoot.tasks().get(), eventList );
+               EventListSynch.synchronize( newRoot.links().get(), eventList );
                tasks = newRoot;
          }
       } catch (ResourceException e)
@@ -138,17 +137,17 @@ public class TaskTableModel
       }
    }
 
-   private TaskDTO getTask( DomainEvent event )
+   private TaskValue getTask( DomainEvent event )
    {
       if (tasks == null)
          return null;
 
       for (int i = 0; i < eventList.size(); i++)
       {
-         TaskDTO taskDTO = eventList.get( i );
-         if (taskDTO.task().get().identity().equals( event.entity().get() ))
+         TaskValue taskValue = eventList.get( i );
+         if (taskValue.id().get().equals( event.entity().get() ))
          {
-            return taskDTO;
+            return taskValue;
          }
       }
 

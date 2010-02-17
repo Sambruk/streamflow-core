@@ -14,21 +14,11 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.resource.task.TaskValue;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.util.List;
 
 /**
  * JAVADOC
@@ -37,28 +27,31 @@ public class AbstractTaskListServerResource
       extends CommandQueryServerResource
 {
 
-   protected <V extends TaskDTO> TaskListDTO buildTaskList(
+/*
+   protected <V extends TaskValue> TaskListDTO buildTaskList(
          Query<TaskEntity> inboxQuery,
          Class<V> taskClass)
    {
       ValueBuilder<V> builder = vbf.newValueBuilder( taskClass );
-      TaskDTO prototype = builder.prototype();
+      TaskValue prototype = builder.prototype();
       ValueBuilder<TaskListDTO> listBuilder = vbf.newValueBuilder( TaskListDTO.class );
       TaskListDTO t = listBuilder.prototype();
-      Property<List<TaskDTO>> property = t.tasks();
-      List<TaskDTO> list = property.get();
+      Property<List<TaskValue>> property = t.tasks();
+      List<TaskValue> list = property.get();
       ValueBuilder<ListItemValue> labelBuilder = vbf.newValueBuilder( ListItemValue.class );
       ListItemValue labelPrototype = labelBuilder.prototype();
       for (TaskEntity task : inboxQuery)
       {
-         buildTask( prototype, labelBuilder, labelPrototype, task );
+//         buildTask( prototype, labelBuilder, labelPrototype, task );
 
          list.add( builder.newInstance() );
       }
       return listBuilder.newInstance();
    }
+*/
 
-   protected void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
+/*
+   protected void buildTask( TaskValue prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
    {
       prototype.task().set( EntityReference.getEntityReference( task ) );
 
@@ -85,6 +78,7 @@ public class AbstractTaskListServerResource
 
    }
 
+*/
 
    public void createTask( String inboxId )
    {
@@ -99,7 +93,7 @@ public class AbstractTaskListServerResource
     * @param prototype
     * @param task
     */
-   protected void addAdditionalValues( TaskDTO prototype, TaskEntity task )
+   protected void addAdditionalValues( TaskValue prototype, TaskEntity task )
    {
 
    }

@@ -35,10 +35,9 @@ import se.streamsource.streamflow.client.MacOsUIExtension;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TaskValue;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -67,14 +66,14 @@ public class TaskTableView
    protected JXTable taskTable;
    protected TaskCreationNode taskCreation;
    protected TaskTableModel model;
-   private TasksDetailView detailsView;
+   private TasksDetailView2 detailsView;
    protected EntityReference dialogSelection;
 
    public void init( @Service ApplicationContext context,
                      @Uses @Optional TaskCreationNode node,
                      @Uses final TasksModel tasksModel,
                      @Uses final TaskTableModel model,
-                     @Uses final TasksDetailView detailsView,
+                     @Uses final TasksDetailView2 detailsView,
                      @Uses TableFormat tableFormat)
    {
       this.taskCreation = node;
@@ -160,7 +159,7 @@ public class TaskTableView
 
       taskTable.getSelectionModel().addListSelectionListener( new ListSelectionListener()
       {
-         TaskDTO selectedTask;
+         TaskValue selectedTask;
 
          public void valueChanged( ListSelectionEvent e )
          {
@@ -170,25 +169,25 @@ public class TaskTableView
                {
                   if (taskTable.getSelectionModel().isSelectionEmpty())
                   {
-                     detailsView.removeCurrent();
+//                     detailsView.removeCurrent();
                   } else
                   {
-                     TaskDTO dto = null;
+                     TaskValue value = null;
                      try
                      {
-                        dto = getSelectedTask();
+                        value = getSelectedTask();
                      } catch (Exception e1)
                      {
                         // Ignore
                         return;
                      }
 
-                     if (dto == selectedTask)
+                     if (value == selectedTask)
                         return;
 
-                     selectedTask = dto;
+                     selectedTask = value;
 
-                     TaskModel taskModel = tasksModel.task( dto.task().get().identity() );
+                     TaskModel taskModel = tasksModel.task( value.id().get() );
 
                      detailsView.show( taskModel );
                   }
@@ -226,7 +225,7 @@ public class TaskTableView
       button.registerKeyboardAction(action, (KeyStroke) action
 				.getValue(javax.swing.Action.ACCELERATOR_KEY),
 				JComponent.WHEN_IN_FOCUSED_WINDOW);
-      NotificationGlassPane.registerButton(button);
+//      NotificationGlassPane.registerButton(button);
 
       toolbar.add( button );
       return action;
@@ -237,12 +236,12 @@ public class TaskTableView
       return taskTable;
    }
 
-   public TasksDetailView getTaskDetails()
+   public TasksDetailView2 getTaskDetails()
    {
       return detailsView;
    }
 
-   public TaskDTO getSelectedTask()
+   public TaskValue getSelectedTask()
    {
       int selectedRow = getTaskTable().getSelectedRow();
       if (selectedRow == -1)
@@ -266,9 +265,7 @@ public class TaskTableView
       {
          public void run()
          {
-            Component component1 = detailsView.getSelectedComponent();
-            if (component1 != null)
-               component1.requestFocusInWindow();
+            detailsView.requestFocusInWindow();
          }
       } );
    }

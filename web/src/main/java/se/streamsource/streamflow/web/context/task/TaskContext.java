@@ -15,9 +15,18 @@
 package se.streamsource.streamflow.web.context.task;
 
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.resource.task.TaskValue;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
+
+import java.text.SimpleDateFormat;
 
 /**
  * JAVADOC
@@ -26,6 +35,8 @@ import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
 public interface TaskContext
    extends Context, TaskActionsContext
 {
+   TaskValue info();
+
    @SubContext
    TaskGeneralContext general();
 
@@ -39,6 +50,50 @@ public interface TaskContext
       extends ContextMixin
       implements TaskContext
    {
+      public static TaskValue taskDTO(TaskEntity task, Module module)
+      {
+         ValueBuilder<TaskValue> builder = module.valueBuilderFactory().newValueBuilder( TaskValue.class );
+
+         TaskValue prototype = builder.prototype();
+
+         prototype.id().set( task.identity().get() );
+         prototype.creationDate().set( task.createdOn().get() );
+         prototype.href().set( task.identity().get()+"/" );
+         prototype.rel().set( "task" );
+         prototype.owner().set( task.owner().get().toString() );
+         prototype.status().set( task.status().get() );
+         prototype.text().set( task.description().get() );
+
+         if (task.taskType().get() != null)
+            prototype.taskType().set( task.taskType().get().getDescription() );
+
+         if (task.isAssigned())
+            prototype.assignedTo().set( ((Describable)task.assignedTo().get()).getDescription() );
+
+         // Delegation
+         if (task.isDelegated())
+         {
+            prototype.delegatedFrom().set( ((Describable)task.delegatedFrom().get()).getDescription() );
+            prototype.delegatedTo().set( ((Describable)task.delegatedTo().get()).getDescription() );
+            prototype.delegatedOn().set( task.delegatedOn().get());
+         }
+
+         // Labels
+         LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).path( "labels" ).command( "delete" );
+         for (Label label : task.labels())
+         {
+            labelsBuilder.addDescribable( label );
+         }
+         prototype.labels().set( labelsBuilder.newLinks() );
+
+         return builder.newInstance();
+      }
+
+      public TaskValue info()
+      {
+         return taskDTO(context.role( TaskEntity.class ), module);
+      }
+
       public TaskGeneralContext general()
       {
          return subContext( TaskGeneralContext.class );

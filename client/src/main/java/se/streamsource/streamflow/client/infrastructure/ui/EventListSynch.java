@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import java.util.Collection;
 
@@ -25,7 +26,7 @@ import java.util.Collection;
  */
 public class EventListSynch
 {
-    public static <T> void synchronize( Collection<T> list, EventList<T> eventList)
+    public static <T, P extends T> void synchronize( Collection<T> list, EventList<P> eventList)
    {
       if (list.size() == eventList.size())
       {
@@ -34,9 +35,9 @@ public class EventListSynch
             ((TransactionList)eventList).beginEvent();
 
          int idx = 0;
-         for (T item : list)
+         for (Object item : list)
          {
-            eventList.set( idx++, item );
+            eventList.set( idx++, (P) item );
          }
 
          if (eventList instanceof TransactionList)
@@ -48,7 +49,7 @@ public class EventListSynch
             ((TransactionList)eventList).beginEvent();
 
          eventList.clear();
-         eventList.addAll( list );
+         eventList.addAll( (Collection<? extends P>) list );
 
          if (eventList instanceof TransactionList)
             ((TransactionList)eventList).commitEvent();

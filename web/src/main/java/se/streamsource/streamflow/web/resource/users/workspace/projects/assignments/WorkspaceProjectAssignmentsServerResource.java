@@ -15,10 +15,7 @@
 package se.streamsource.streamflow.web.resource.users.workspace.projects.assignments;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
-import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
-import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.structure.task.Task;

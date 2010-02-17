@@ -35,7 +35,7 @@ public class DelegationsSteps extends Steps
 /*
       uowf.currentUnitOfWork().apply();
       TaskListDTO list = projectsSteps.givenProject.delegations();
-      TaskDTO task = list.tasks().get().get( 0 );
+      TaskValue task = list.tasks().get().get( 0 );
       givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
 */
    }

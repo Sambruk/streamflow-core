@@ -23,8 +23,6 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
-
-import se.streamsource.streamflow.web.context.ContextsAssembler;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;

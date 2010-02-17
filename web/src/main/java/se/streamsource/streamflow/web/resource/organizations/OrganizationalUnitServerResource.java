@@ -20,13 +20,11 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 

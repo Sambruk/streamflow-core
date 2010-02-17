@@ -17,13 +17,13 @@ package se.streamsource.streamflow.web.context.users.overview;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.web.context.gtd.AssignmentsContext;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -39,13 +39,13 @@ public interface OverviewProjectAssignmentsContext
       extends ContextMixin
       implements OverviewProjectAssignmentsContext
    {
-      public TaskListDTO tasks()
+      public LinksValue tasks()
       {
          AssignmentsQueries assignmentsQueries = context.role(AssignmentsQueries.class);
 
          QueryBuilder<Assignable> builder = assignmentsQueries.assignments( null );
-         Query<Assignable> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-         return AssignmentsContext.Mixin.buildTaskList( query, module.valueBuilderFactory());
+         Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
+         return TasksContext.Mixin.buildTaskList( query, module);
       }
 
    }

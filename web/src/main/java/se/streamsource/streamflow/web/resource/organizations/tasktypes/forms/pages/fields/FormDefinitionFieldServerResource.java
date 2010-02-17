@@ -14,12 +14,12 @@
 
 package se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages.fields;
 
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;

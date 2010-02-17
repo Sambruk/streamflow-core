@@ -14,20 +14,15 @@
 
 package se.streamsource.streamflow.web.resource.organizations.policy;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
+import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-
-import java.util.List;
 
 /**
  * Mapped to:

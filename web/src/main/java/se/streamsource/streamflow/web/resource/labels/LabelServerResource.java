@@ -16,11 +16,11 @@ package se.streamsource.streamflow.web.resource.labels;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.domain.structure.Describable;
 
 /**
  * Mapped to:

@@ -16,8 +16,9 @@ package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.task.TaskDTO;
+import se.streamsource.streamflow.resource.task.TaskValue;
 
 import java.util.Comparator;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.List;
  * JAVADOC
  */
 public abstract class AbstractTaskTableFormatter
-      implements WritableTableFormat<TaskDTO>, AdvancedTableFormat<TaskDTO>
+      implements WritableTableFormat<TaskValue>, AdvancedTableFormat<TaskValue>
 {
    protected String[] columnNames;
    protected Class[] columnClasses;
@@ -51,21 +52,21 @@ public abstract class AbstractTaskTableFormatter
       return null;
    }
 
-   public Object getColumnValue( TaskDTO taskDTO, int i )
+   public Object getColumnValue( TaskValue taskValue, int i )
    {
       switch (i)
       {
          case 0:
          {
-            StringBuilder desc = new StringBuilder( taskDTO.description().get() );
-            List<ListItemValue> labels = taskDTO.labels().get().items().get();
+            StringBuilder desc = new StringBuilder( taskValue.text().get() );
+            List<LinkValue> labels = taskValue.labels().get().links().get();
             if (labels.size() > 0)
             {
                desc.append( " (" );
                String comma = "";
-               for (ListItemValue label : labels)
+               for (LinkValue label : labels)
                {
-                  desc.append( comma + label.description().get() );
+                  desc.append( comma + label.text().get() );
                   comma = ",";
                }
                desc.append( ")" );
@@ -74,24 +75,24 @@ public abstract class AbstractTaskTableFormatter
          }
 
          case 1:
-            return taskDTO.taskType().get();
+            return taskValue.taskType().get();
 
          case 2:
-            return taskDTO.creationDate().get();
+            return taskValue.creationDate().get();
 
          case 3:
-            return taskDTO.status().get();
+            return taskValue.status().get();
       }
 
       return null;
    }
 
-   public boolean isEditable( TaskDTO taskDTO, int i )
+   public boolean isEditable( TaskValue taskValue, int i )
    {
       return false;
    }
 
-   public TaskDTO setColumnValue( TaskDTO taskDTO, Object o, int i )
+   public TaskValue setColumnValue( TaskValue taskValue, Object o, int i )
    {
 
 

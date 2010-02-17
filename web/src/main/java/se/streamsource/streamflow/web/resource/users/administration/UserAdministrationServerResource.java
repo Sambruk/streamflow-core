@@ -22,12 +22,12 @@ import se.streamsource.streamflow.domain.organization.AdministrationType;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
-import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;

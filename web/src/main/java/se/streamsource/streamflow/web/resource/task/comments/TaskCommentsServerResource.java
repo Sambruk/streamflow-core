@@ -28,10 +28,10 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.interaction.comment.CommentValue;
 import se.streamsource.streamflow.web.domain.interaction.comment.Commentable;
 import se.streamsource.streamflow.web.domain.interaction.comment.Commenter;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import java.util.List;

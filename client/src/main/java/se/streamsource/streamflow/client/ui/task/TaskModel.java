@@ -26,6 +26,9 @@ public class TaskModel
       implements EventListener
 {
    @Uses
+   private TaskInfoModel info;
+
+   @Uses
    private TaskActionsModel actions;
 
    @Uses
@@ -46,6 +49,11 @@ public class TaskModel
    public String taskId()
    {
       return client.getReference().getLastSegment();
+   }
+
+   public TaskInfoModel info()
+   {
+      return info;
    }
 
    public TaskCommentsModel comments()
@@ -75,6 +83,7 @@ public class TaskModel
 
    public void notifyEvent( DomainEvent event )
    {
+      info.notifyEvent( event );
       comments.notifyEvent( event );
       general.notifyEvent( event );
       contacts.notifyEvent( event );

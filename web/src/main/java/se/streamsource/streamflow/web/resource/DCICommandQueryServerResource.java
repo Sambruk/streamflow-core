@@ -61,13 +61,13 @@ import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecifica
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.web.context.RootContext;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.InteractionContext;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
-import se.streamsource.streamflow.web.context.RootContext;
 
 import javax.security.auth.Subject;
 import java.io.IOException;

@@ -14,17 +14,6 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace.projects.delegations;
 
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
-import se.streamsource.streamflow.resource.task.TasksQuery;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 /**
@@ -46,8 +35,9 @@ public class WorkspaceProjectDelegationsServerResource
    }
 */
 
+/*
    @Override
-   protected void buildTask( TaskDTO prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
+   protected void buildTask( TaskValue prototype, ValueBuilder<ListItemValue> labelBuilder, ListItemValue labelPrototype, TaskEntity task )
    {
       ((DelegatedTaskDTO) prototype).delegatedOn().set( task.delegatedOn().get() );
       Owner owner = task.owner().get();
@@ -55,4 +45,5 @@ public class WorkspaceProjectDelegationsServerResource
 
       super.buildTask( prototype, labelBuilder, labelPrototype, task );
    }
+*/
 }

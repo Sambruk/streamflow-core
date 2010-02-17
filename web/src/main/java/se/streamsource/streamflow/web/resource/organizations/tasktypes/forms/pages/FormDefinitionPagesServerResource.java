@@ -15,8 +15,8 @@
 package se.streamsource.streamflow.web.resource.organizations.tasktypes.forms.pages;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageQueries;

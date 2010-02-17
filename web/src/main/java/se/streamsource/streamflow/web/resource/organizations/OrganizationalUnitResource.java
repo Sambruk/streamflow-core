@@ -29,10 +29,10 @@ import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
-import se.streamsource.streamflow.web.domain.structure.group.Participant;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Participant;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 

@@ -44,9 +44,11 @@ public class TaskDetailView
    private TaskContactsAdminView contactsView;
    private TaskFormsAdminView formsView;
    private TaskModel model;
+   private TaskInfoView infoView;
    private TaskActionsView actionsView;
 
    public TaskDetailView( @Service ApplicationContext appContext,
+                          @Uses TaskInfoView infoView,
                           @Uses TaskGeneralView generalView,
                           @Uses TaskCommentsView commentsView,
                           @Uses TaskContactsAdminView contactsView,
@@ -55,6 +57,7 @@ public class TaskDetailView
                           @Structure ObjectBuilderFactory obf )
    {
       super(new BorderLayout());
+      this.infoView = infoView;
 
       this.actionsView = actionsView;
       tabs.setFocusable( true );
@@ -91,6 +94,8 @@ public class TaskDetailView
          }
       } );
 
+      add(infoView, BorderLayout.NORTH);
+
       add(tabs, BorderLayout.CENTER);
 
       add( actionsView, BorderLayout.EAST);
@@ -99,6 +104,7 @@ public class TaskDetailView
    public void setTaskModel( TaskModel model )
    {
       this.model = model;
+      infoView.setModel( model.info() );
       generalView.setModel( model.general() );
       commentsView.setModel( model.comments() );
       contactsView.setModel( model.contacts() );

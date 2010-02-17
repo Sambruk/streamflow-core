@@ -117,5 +117,5 @@ public enum WorkspaceResources
    could_not_get_form_submission,
    could_not_parse_date,
    could_not_discard_form_submission,
-   search_user
+   owner, search_user
 }

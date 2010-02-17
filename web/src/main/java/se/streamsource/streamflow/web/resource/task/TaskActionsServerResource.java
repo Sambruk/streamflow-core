@@ -14,28 +14,19 @@
 
 package se.streamsource.streamflow.web.resource.task;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.entity.task.TaskLabelsQueries;
-import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 
 import javax.security.auth.Subject;

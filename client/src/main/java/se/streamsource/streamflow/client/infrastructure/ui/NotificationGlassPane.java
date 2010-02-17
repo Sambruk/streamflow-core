@@ -1,13 +1,7 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -43,6 +37,36 @@ import javax.swing.Timer;
  */
 public class NotificationGlassPane extends JPanel implements MouseListener, ActionListener
 {
+   public static void install()
+   {
+      Toolkit.getDefaultToolkit().addAWTEventListener( new AWTEventListener()
+      {
+         public void eventDispatched( AWTEvent event )
+         {
+            if (event instanceof MouseEvent)
+            {
+               MouseEvent mouseEvent = (MouseEvent) event;
+               if (event.getID() == MouseEvent.MOUSE_PRESSED && event.getSource() instanceof JButton)
+               {
+                  JButton button = (JButton) event.getSource();
+                  Action action = button.getAction();
+                  if (action != null && action.getValue( Action.ACCELERATOR_KEY ) != null)
+                  {
+                     for (MouseListener mouseListener : button.getMouseListeners())
+                     {
+                        if (mouseListener instanceof NotificationGlassPane)
+                           return;
+                     }
+
+                     registerButton( button );
+                  }
+               }
+            }
+         }
+      }, AWTEvent.MOUSE_EVENT_MASK );
+   }
+
+
 	// ------------------------------------------------------------------------------------------------------------------
 	//  Fields
 	// ------------------------------------------------------------------------------------------------------------------

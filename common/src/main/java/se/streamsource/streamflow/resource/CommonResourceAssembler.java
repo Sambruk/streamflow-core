@@ -23,26 +23,22 @@ import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ResourceValue;
 import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
-import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
-import se.streamsource.streamflow.resource.assignment.AssignedTaskDTO;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
-import se.streamsource.streamflow.resource.delegation.DelegatedTaskDTO;
-import se.streamsource.streamflow.resource.inbox.InboxTaskDTO;
-import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.task.FieldDTO;
@@ -51,7 +47,7 @@ import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
+import se.streamsource.streamflow.resource.task.TaskValue;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
@@ -59,7 +55,6 @@ import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 
 /**
  * JAVADOC
@@ -95,15 +90,11 @@ public class CommonResourceAssembler
             ListItemValue.class,
             GroupedListItemValue.class,
             PageListItemValue.class,
-            TaskListDTO.class,
-            InboxTaskDTO.class,
+            TaskValue.class,
             TaskGeneralDTO.class,
             TaskContactsDTO.class,
             CommentsDTO.class,
             CommentDTO.class,
-            AssignedTaskDTO.class,
-            DelegatedTaskDTO.class,
-            WaitingForTaskDTO.class,
             TreeValue.class,
             TreeNodeValue.class,
             ProjectSummaryDTO.class,
@@ -116,8 +107,5 @@ public class CommonResourceAssembler
             SubmittedFormsListDTO.class,
             UserEntityListDTO.class,
             UserEntityDTO.class ).visibleIn( Visibility.application );
-
-      module.addValues( 
-            SearchTaskDTO.class ).visibleIn( Visibility.application );
    }
 }

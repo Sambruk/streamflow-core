@@ -16,9 +16,7 @@ package se.streamsource.streamflow.web.resource.organizations.tasktypes;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;
 

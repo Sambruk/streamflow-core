@@ -16,8 +16,8 @@ package se.streamsource.streamflow.web.resource.users.overview.projects;
 
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.resource.CommandQueryServerResource;

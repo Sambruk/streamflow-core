@@ -14,16 +14,16 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
-import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.task.TasksModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 /**
  * JAVADOC
@@ -31,11 +31,14 @@ import javax.swing.SwingUtilities;
 public class SearchResultTableModel
       extends TaskTableModel
 {
+   @Uses
+   TasksModel tasksModel;
+
    private String searchString;
 
    public void search( String text )
    {
-      searchString = SearchTerms.translate( text );
+      searchString = text;
 
       refresh();
    }
@@ -45,10 +48,7 @@ public class SearchResultTableModel
    {
       try
       {
-         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
-         builder.prototype().string().set( searchString );
-
-         final TaskListDTO newRoot = client.query( "search", builder.newInstance(), TaskListDTO.class );
+         final LinksValue newRoot = tasksModel.search( searchString );
          boolean same = newRoot.equals( tasks );
          if (!same)
          {
@@ -56,7 +56,7 @@ public class SearchResultTableModel
             {
                public void run()
                {
-                  EventListSynch.synchronize( newRoot.tasks().get(), eventList );
+                  EventListSynch.synchronize( newRoot.links().get(), eventList );
                   tasks = newRoot;
                }
             });

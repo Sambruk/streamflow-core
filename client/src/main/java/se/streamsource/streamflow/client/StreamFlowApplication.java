@@ -57,6 +57,7 @@ import org.restlet.routing.Filter;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
+import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
@@ -137,6 +138,8 @@ public class StreamFlowApplication
    ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
    {
       DOMAIN_EVENT_TYPE = module.valueDescriptor( DomainEvent.class.getName() ).valueType();
+
+      NotificationGlassPane.install();
 
       try
       {

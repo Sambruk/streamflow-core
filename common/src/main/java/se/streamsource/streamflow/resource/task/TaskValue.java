@@ -12,24 +12,46 @@
  *
  */
 
-package se.streamsource.streamflow.resource.waitingfor;
+package se.streamsource.streamflow.resource.task;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.resource.task.TaskDTO;
+import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import java.util.Date;
 
 /**
  * JAVADOC
  */
-public interface WaitingForTaskDTO
-      extends TaskDTO
+public interface TaskValue
+      extends LinkValue
 {
-   Property<String> delegatedTo();
+   Property<Date> creationDate();
 
-   @UseDefaults
+   Property<States> status();
+
+   Property<String> owner();
+
+   Property<LinksValue> labels();
+
+   @Optional
+   Property<String> taskType();
+
+   @Optional
    Property<String> assignedTo();
 
+   @Optional
    Property<Date> delegatedOn();
+
+   @Optional
+   Property<String> delegatedFrom();
+
+   @Optional
+   Property<String> delegatedTo();
 }

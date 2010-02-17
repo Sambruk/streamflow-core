@@ -14,15 +14,14 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.waitingfor.WaitingForTaskDTO;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.resource.task.TaskValue;
 
 import java.util.Date;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.delegated_to_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 /**
  * JAVADOC
@@ -48,18 +47,16 @@ public class OverviewWaitingForTaskTableFormatter
    }
 
    @Override
-   public Object getColumnValue( TaskDTO taskDTO, int i )
+   public Object getColumnValue( TaskValue taskValue, int i )
    {
-      WaitingForTaskDTO assignedTask = (WaitingForTaskDTO) taskDTO;
-
       switch (i)
       {
          case 0:
-            return super.getColumnValue( taskDTO, i );
+            return super.getColumnValue( taskValue, i );
          case 1:
-            return assignedTask.delegatedTo().get();
+            return taskValue.delegatedTo().get();
          default:
-            return super.getColumnValue( taskDTO, i-1 );
+            return super.getColumnValue( taskValue, i-1 );
       }
    }
 }

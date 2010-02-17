@@ -14,40 +14,26 @@
 
 package se.streamsource.streamflow.web.resource.users.search;
 
-import org.qi4j.api.query.Query;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.util.DateFunctions;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
-import se.streamsource.streamflow.resource.organization.search.SearchTaskDTO;
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.task.TaskDTO;
-import se.streamsource.streamflow.resource.task.TaskListDTO;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity;
 import se.streamsource.streamflow.web.resource.users.workspace.AbstractTaskListServerResource;
 
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * JAVADOC
  */
 public class SearchTasksServerResource extends AbstractTaskListServerResource
 {
+   /**
    public TaskListDTO search( StringDTO query )
          throws ResourceException
    {
@@ -225,6 +211,7 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
       }
       return subQueries;
    }
+    */
 
    /**
     * Get the calling user from the access controller context.
@@ -374,20 +361,6 @@ public class SearchTasksServerResource extends AbstractTaskListServerResource
          dateFormat = new SimpleDateFormat( "yyyyMMdd" );
       }
       return dateFormat.parse( dateAsString );
-   }
-
-   @Override
-   protected void addAdditionalValues( TaskDTO prototype, TaskEntity task )
-   {
-      if (task.assignedTo().get() != null)
-      {
-         ((SearchTaskDTO) prototype).assignedTo().set( ((Describable)task.assignedTo().get()).getDescription() );
-      } else
-      {
-         ((SearchTaskDTO) prototype).assignedTo().set( null );
-      }
-      ((SearchTaskDTO) prototype).project().set( ((Describable)task.owner().get()).getDescription() );
-
    }
 
    protected int occurrancesOfInString( String pattern, String source )
