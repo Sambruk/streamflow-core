@@ -21,6 +21,7 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskValue;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Observable;
@@ -40,6 +41,10 @@ public class TaskInfoView extends JPanel implements Observer
    private JLabel owner = new JLabel();
    private JLabel assignedTo = new JLabel();
 
+   private TaskStatusTableCellRenderer statusRenderer;
+   private JTable fakeTable;
+   private JPanel statusPanel = new JPanel();
+
    public TaskInfoView(@Service ApplicationContext appContext)
 	{
       super(new FlowLayout(FlowLayout.LEFT));
@@ -50,12 +55,16 @@ public class TaskInfoView extends JPanel implements Observer
 
       setFont( getFont().deriveFont(getFont().getSize()-2 ));
 
+      fakeTable = new JTable();
+      statusRenderer = new TaskStatusTableCellRenderer();
+      add(statusPanel);
       add(description);
       add(new JLabel(i18n.text( WorkspaceResources.created_column_header )+":"));
       add(created);
       add(new JLabel(i18n.text( WorkspaceResources.owner )+":"));
       add(owner);
       add(assignedTo);
+
 	}
 
 	public void setModel(TaskInfoModel taskInfoModel)
@@ -68,11 +77,19 @@ public class TaskInfoView extends JPanel implements Observer
 		taskInfoModel.addObserver(this);
 
       update(null, null);
+
+
 	}
 
 	public void update(Observable o, Object arg)
 	{
       TaskValue task = model.getInfo();
+
+      statusPanel.removeAll();
+      JComponent comp = (JComponent) statusRenderer.getTableCellRendererComponent( fakeTable, task.status().get(), false, false, 0, 0 );
+      comp.setBorder( BorderFactory.createEtchedBorder());
+      statusPanel.add( comp );
+
       description.setText( task.text().get());
       created.setText(format.format( task.creationDate().get())+(task.createdBy().get() != null ? "("+task.createdBy().get()+")":""));
       owner.setText( task.owner().get() );

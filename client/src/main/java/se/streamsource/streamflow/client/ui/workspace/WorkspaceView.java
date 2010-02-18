@@ -84,7 +84,7 @@ public class WorkspaceView
    private JButton selectContextButton;
    private JTextField searchField;
 
-   private Component currentSelection = new JLabel("<html><h1>Welcome to StreamFlow</h1>Begin by selecting a context by using the blue button</html>");
+   private Component currentSelection = new JLabel("<html><h1>Welcome to StreamFlow</h1>Begin by selecting a context by using the blue button</html>", JLabel.CENTER);
    public Popup popup;
    public JPanel contextPanel;
    public TasksDetailView2 detailView;
@@ -369,8 +369,11 @@ public class WorkspaceView
                add(currentSelection, BorderLayout.CENTER);
             }
 
-            popup.hide();
-            popup = null;
+            if (popup != null)
+            {
+               popup.hide();
+               popup = null;
+            }
          }
       } );
 
@@ -431,6 +434,8 @@ public class WorkspaceView
    {
       if (popup == null)
       {
+         workspaceTree.clearSelection();
+
          contextPanel.remove( searchField );
          contextPanel.add( selectedContext, BorderLayout.CENTER );
 
