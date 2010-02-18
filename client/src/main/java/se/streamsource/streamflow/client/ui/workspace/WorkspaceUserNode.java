@@ -54,4 +54,10 @@ public class WorkspaceUserNode
          listener.notifyEvent( event );
       }
    }
+
+   @Override
+   public String toString()
+   {
+      return ((AccountModel)getUserObject()).settings().name().get();
+   }
 }

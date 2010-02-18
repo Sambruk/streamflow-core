@@ -26,6 +26,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import ca.odell.glazedlists.BasicEventList;
@@ -33,7 +34,7 @@ import ca.odell.glazedlists.EventList;
 
 import java.util.List;
 
-public class PossibleFormsModel extends AbstractListModel
+public class PossibleFormsModel
 {
    @Uses
    CommandQueryClient client;
@@ -44,7 +45,7 @@ public class PossibleFormsModel extends AbstractListModel
    @Structure
    ValueBuilderFactory vbf;
 
-   BasicEventList<ListItemValue> forms = new BasicEventList<ListItemValue>( );
+   BasicEventList<LinkValue> forms = new BasicEventList<LinkValue>( );
 
    WeakModelMap<String, FormSubmissionModel> formSubmitModels = new WeakModelMap<String, FormSubmissionModel>()
    {
@@ -67,25 +68,15 @@ public class PossibleFormsModel extends AbstractListModel
       }
    };
 
-   public void setForms( List<ListItemValue> forms )
+   public void setForms( List<LinkValue> forms )
    {
       this.forms.clear();
       this.forms.addAll( forms );
    }
 
-   public EventList<ListItemValue> getForms()
+   public EventList<LinkValue> getForms()
    {
       return forms;
-   }
-
-   public int getSize()
-   {
-      return forms.size();
-   }
-
-   public Object getElementAt(int i)
-   {
-      return forms.get(i);
    }
 
    public FormSubmissionModel getFormSubmitModel(String key)

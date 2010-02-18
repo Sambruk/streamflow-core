@@ -28,7 +28,7 @@ public class TaskAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      UIAssemblers.addViews( module, TasksDetailView2.class, TableSelectionView.class, TaskContactsAdminView.class,
+      UIAssemblers.addViews( module, TasksView.class, TasksDetailView2.class, TableSelectionView.class, TaskContactsAdminView.class,
             TaskFormsAdminView.class, TaskSubmittedFormsAdminView.class );
 
       UIAssemblers.addDialogs( module, AddCommentDialog.class, TaskLabelsDialog.class );

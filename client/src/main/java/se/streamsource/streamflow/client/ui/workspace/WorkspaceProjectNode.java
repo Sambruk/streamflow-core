@@ -62,4 +62,10 @@ public class WorkspaceProjectNode
          listener.notifyEvent( event );
       }
    }
+
+   @Override
+   public String toString()
+   {
+      return projectName;
+   }
 }

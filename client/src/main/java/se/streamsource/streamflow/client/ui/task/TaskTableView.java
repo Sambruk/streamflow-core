@@ -76,13 +76,11 @@ public class TaskTableView
                      @Uses final TasksDetailView2 detailsView,
                      @Uses TableFormat tableFormat)
    {
+      setLayout( new BorderLayout() );
       this.taskCreation = node;
       this.model = model;
       this.detailsView = detailsView;
       setLayout( new BorderLayout() );
-      final JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
-      splitPane.setOneTouchExpandable( true );
-      add( splitPane, BorderLayout.CENTER );
 
       ActionMap am = context.getActionMap( TaskTableView.class, this );
       setActionMap( am );
@@ -117,9 +115,7 @@ public class TaskTableView
 
       taskTable.setAutoCreateColumnsFromModel( false );
 
-      splitPane.setTopComponent( taskScrollPane );
-      splitPane.setBottomComponent( detailsView );
-      splitPane.setResizeWeight( 0.27D );
+      add(taskScrollPane, BorderLayout.CENTER);
 
       JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
       taskTable.setDefaultEditor( Boolean.class, completableEditor );
@@ -198,7 +194,6 @@ public class TaskTableView
             }
          }
       } );
-      splitPane.setDividerLocation( 1D );
 
       addFocusListener( new FocusAdapter()
       {

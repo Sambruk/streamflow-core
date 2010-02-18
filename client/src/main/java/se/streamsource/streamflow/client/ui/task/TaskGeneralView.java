@@ -14,33 +14,11 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.DATEPICKER;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.LABEL;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutFocusTraversalPolicy;
-import javax.swing.SwingConstants;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDatePicker;
@@ -50,7 +28,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.streamflow.client.MacOsUIExtension;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -65,288 +42,311 @@ import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
  */
 public class TaskGeneralView extends JScrollPane implements Observer
 {
-	@Service
-	DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-	@Service
-	UncaughtExceptionHandler exception;
+   @Service
+   UncaughtExceptionHandler exception;
 
-	@Uses
-	protected ObjectBuilder<SelectTaskTypeDialog> taskTypeDialog;
+   @Uses
+   protected ObjectBuilder<SelectTaskTypeDialog> taskTypeDialog;
 
-	@Uses
-	protected ObjectBuilder<TaskLabelsDialog> labelSelectionDialog;
+   @Uses
+   protected ObjectBuilder<TaskLabelsDialog> labelSelectionDialog;
 
-	// TaskLabelSelectionView labelSelection;
+   // TaskLabelSelectionView labelSelection;
 
-	private StateBinder taskBinder;
+   private StateBinder taskBinder;
 
-	TaskGeneralModel model;
+   TaskGeneralModel model;
 
-	public ValueBuilder<TaskGeneralDTO> valueBuilder;
-	public JTextField descriptionField;
-	private JScrollPane notePane;
-	public JXDatePicker dueOnField;
-	private JLabel issueLabel;
-	public JPanel leftForm;
-	public JPanel rightForm;
-	public JPanel bottomForm;
-	public TaskLabelsView labels;
-	public PossibleFormsView forms;
-	public RefreshWhenVisible refresher;
-	public JLabel selectedTaskType = new JLabel();
+   public ValueBuilder<TaskGeneralDTO> valueBuilder;
+   public JTextField descriptionField;
+   private JScrollPane notePane;
+   public JXDatePicker dueOnField;
+   private JLabel issueLabel;
+   public JPanel leftForm;
+   public JPanel rightForm;
+   public JPanel bottomForm;
+   public TaskLabelsView labels;
+   public PossibleFormsView forms;
+   public RefreshWhenVisible refresher;
+   public JLabel selectedTaskType = new JLabel();
    public JButton taskTypeButton;
    public JButton labelButton;
 
-   public TaskGeneralView(@Service ApplicationContext appContext,
-			@Uses TaskLabelsView labels, @Uses PossibleFormsView forms)
-	{
-		this.labels = labels;
-		this.forms = forms;
-		getVerticalScrollBar().setUnitIncrement(30);
+   public TaskGeneralView( @Service ApplicationContext appContext,
+                           @Uses TaskLabelsView labels, @Uses PossibleFormsView forms )
+   {
+      this.labels = labels;
+      this.forms = forms;
+      getVerticalScrollBar().setUnitIncrement( 30 );
 
-		// this.labelSelection = labels.labelSelection();
-		setActionMap(appContext.getActionMap(this));
-		MacOsUIExtension.convertAccelerators(appContext.getActionMap(
-				TaskGeneralView.class, this));
+      // this.labelSelection = labels.labelSelection();
+      setActionMap( appContext.getActionMap( this ) );
+      MacOsUIExtension.convertAccelerators( appContext.getActionMap(
+            TaskGeneralView.class, this ) );
 
-		// Layout and form for the left panel
-		FormLayout leftLayout = new FormLayout("165dlu", "");
+      // Layout and form for the left panel
+      FormLayout leftLayout = new FormLayout( "165dlu", "" );
 
-		leftForm = new JPanel();
-		leftForm.setFocusable(false);
-		DefaultFormBuilder leftBuilder = new DefaultFormBuilder(leftLayout,
-				leftForm);
-		leftBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY8,
-				Sizes.DLUX8, Sizes.DLUY2, Sizes.DLUX4));
+      leftForm = new JPanel();
+      leftForm.setFocusable( false );
+      DefaultFormBuilder leftBuilder = new DefaultFormBuilder( leftLayout,
+            leftForm );
+      leftBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY8,
+            Sizes.DLUX8, Sizes.DLUY2, Sizes.DLUX4 ) );
 
-		taskBinder = new StateBinder();
-		taskBinder.addConverter(new StateBinder.Converter()
-		{
-			public Object toComponent(Object value)
-			{
-				if (value instanceof ListItemValue)
-				{
-					return ((ListItemValue) value).description().get();
-				} else
-					return value;
-			}
+      taskBinder = new StateBinder();
+      taskBinder.addConverter( new StateBinder.Converter()
+      {
+         public Object toComponent( Object value )
+         {
+            if (value instanceof ListItemValue)
+            {
+               return ((ListItemValue) value).description().get();
+            } else
+               return value;
+         }
 
-			public Object fromComponent(Object value)
-			{
-				return value;
-			}
-		});
-		taskBinder.setResourceMap(appContext.getResourceMap(getClass()));
-		TaskGeneralDTO template = taskBinder
-				.bindingTemplate(TaskGeneralDTO.class);
+         public Object fromComponent( Object value )
+         {
+            return value;
+         }
+      } );
+      taskBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      TaskGeneralDTO template = taskBinder
+            .bindingTemplate( TaskGeneralDTO.class );
 
-		BindingFormBuilder leftBindingBuilder = new BindingFormBuilder(
-				leftBuilder, taskBinder);
-		leftBindingBuilder.appendLine(WorkspaceResources.id_label,
-				issueLabel = (JLabel) LABEL.newField(), template.taskId());
+      BindingFormBuilder leftBindingBuilder = new BindingFormBuilder(
+            leftBuilder, taskBinder );
+      leftBindingBuilder.appendLine( WorkspaceResources.id_label,
+            issueLabel = (JLabel) LABEL.newField(), template.taskId() );
 
-		leftBindingBuilder.appendLine(WorkspaceResources.title_label,
-				descriptionField = (JTextField) TEXTFIELD.newField(),
-				template.description()).appendLine(
-				WorkspaceResources.due_on_label,
-				dueOnField = (JXDatePicker) DATEPICKER.newField(),
-				template.dueOn());
-        // Limit pickable dates to future
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime( new Date() );
-        calendar.add( Calendar.DAY_OF_MONTH, 1 );
-		dueOnField.getMonthView().setLowerBound( calendar.getTime() );
+      // Layout and form for the right panel
+      FormLayout rightLayout = new FormLayout( "70dlu, 5dlu, 150:grow", "pref, pref, pref, pref, pref, pref, pref, pref");
 
-		// Layout and form for the right panel
-		FormLayout rightLayout = new FormLayout("70dlu, 5dlu, 30:grow",
-				"pref, pref, pref, pref, pref, pref, pref");
+      rightForm = new JPanel( rightLayout );
+      rightForm.setFocusable( false );
+      DefaultFormBuilder rightBuilder = new DefaultFormBuilder( rightLayout,
+            rightForm );
+      rightBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY8,
+            Sizes.DLUX4, Sizes.DLUY2, Sizes.DLUX8 ) );
 
-		rightForm = new JPanel(rightLayout);
-		rightForm.setFocusable(false);
-		DefaultFormBuilder rightBuilder = new DefaultFormBuilder(rightLayout,
-				rightForm);
-		rightBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY8,
-				Sizes.DLUX4, Sizes.DLUY2, Sizes.DLUX8));
+      selectedTaskType.setFont( selectedTaskType.getFont().deriveFont(
+            Font.BOLD ) );
+      taskBinder.bind( selectedTaskType, template.taskType() );
+      CellConstraints cc = new CellConstraints();
+      ActionMap am = getActionMap();
 
-		selectedTaskType.setFont(selectedTaskType.getFont().deriveFont(
-				Font.BOLD));
-		taskBinder.bind(selectedTaskType, template.taskType());
-		CellConstraints cc = new CellConstraints();
-		ActionMap am = getActionMap();
-		javax.swing.Action taskTypeAction = am.get("tasktype");
-      taskTypeButton = new JButton(taskTypeAction);
-		taskTypeButton.registerKeyboardAction(taskTypeAction, (KeyStroke) taskTypeAction
-				.getValue(javax.swing.Action.ACCELERATOR_KEY),
-				JComponent.WHEN_IN_FOCUSED_WINDOW);
-		NotificationGlassPane.registerButton(taskTypeButton);
-		taskTypeButton.setHorizontalAlignment(SwingConstants.LEFT);
-		rightBuilder.add( taskTypeButton, cc.xy(1, 1));
-		rightBuilder.add(selectedTaskType, cc.xy(3, 1));
-		rightBuilder.nextLine();
-		javax.swing.Action labelAction = am.get("label");
-      labelButton = new JButton(labelAction);
+      // Description
+      rightBuilder.setExtent( 3,1 );
+      rightBuilder.add( taskBinder.bind( descriptionField = (JTextField) TEXTFIELD.newField(), template.description() ));
+      rightBuilder.nextLine();
+
+      // Select task type
+      javax.swing.Action taskTypeAction = am.get( "tasktype" );
+      taskTypeButton = new JButton( taskTypeAction );
+      taskTypeButton.registerKeyboardAction( taskTypeAction, (KeyStroke) taskTypeAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+      NotificationGlassPane.registerButton( taskTypeButton );
+      taskTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
+      rightBuilder.setExtent( 1,1 );
+      rightBuilder.add( taskTypeButton);
+      rightBuilder.nextColumn();
+      rightBuilder.nextColumn();
+      rightBuilder.add( selectedTaskType);
+      rightBuilder.nextLine();
+
+      // Select labels
+      javax.swing.Action labelAction = am.get( "label" );
+      labelButton = new JButton( labelAction );
 //		NotificationGlassPane.registerButton(labelButton);
-		labelButton.registerKeyboardAction(labelAction, (KeyStroke) labelAction
-				.getValue(javax.swing.Action.ACCELERATOR_KEY),
-				JComponent.WHEN_IN_FOCUSED_WINDOW);
+      labelButton.registerKeyboardAction( labelAction, (KeyStroke) labelAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
 
-		labelButton.setHorizontalAlignment(SwingConstants.LEFT);
-		rightBuilder.add( labelButton, cc.xyw(1, 2, 1));
-		rightBuilder.nextLine();
-		rightBuilder.add(labels, cc.xyw(1, 3, 3));
-		rightBuilder.nextLine();
-		rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ), cc.xy( 1, 4 ) );
-		rightBuilder.nextLine();
-		rightBuilder.add(forms, cc.xyw(1, 5, 3));
+      labelButton.setHorizontalAlignment( SwingConstants.LEFT );
+      rightBuilder.add( labelButton);
+      rightBuilder.nextLine();
+      rightBuilder.setExtent( 3,1 );
+      rightBuilder.add( labels);
+      rightBuilder.nextLine();
 
-		// Layout and form for the bottom panel
-		FormLayout bottomLayout = new FormLayout("250dlu:grow",
-				"15dlu,fill:pref:grow");
+      // Due date
+      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.due_on_label ) ));
+      rightBuilder.nextLine();
+      rightBuilder.add( taskBinder.bind(dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() ));
+      rightBuilder.nextLine();
 
-		bottomForm = new JPanel();
-		bottomForm.setFocusable(false);
-		DefaultFormBuilder bottomBuilder = new DefaultFormBuilder(bottomLayout,
-				bottomForm);
-		bottomBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY2,
-				Sizes.DLUX8, Sizes.DLUY8, Sizes.DLUX8));
+      // Forms
+      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ));
+      rightBuilder.nextLine();
+      rightBuilder.add( forms);
+      rightBuilder.nextLine();
 
-		notePane = (JScrollPane) TEXTAREA.newField();
-		notePane.setMinimumSize(new Dimension(10, 50));
+      // Limit pickable dates to future
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime( new Date() );
+      calendar.add( Calendar.DAY_OF_MONTH, 1 );
+      dueOnField.getMonthView().setLowerBound( calendar.getTime() );
 
-		BindingFormBuilder bottomBindingBuilder = new BindingFormBuilder(
-				bottomBuilder, taskBinder);
-		bottomBindingBuilder.appendLine(WorkspaceResources.note_label,
-				notePane, template.note());
 
-		JPanel formsContainer = new JPanel(new BorderLayout());
-		formsContainer.add(leftForm, BorderLayout.WEST);
-		formsContainer.add(rightForm, BorderLayout.CENTER);
+      // Layout and form for the bottom panel
+      FormLayout bottomLayout = new FormLayout( "250dlu:grow",
+            "15dlu,fill:pref:grow" );
 
-		JPanel borderLayoutContainer = new JPanel(new BorderLayout());
-		borderLayoutContainer.add(formsContainer, BorderLayout.NORTH);
-		borderLayoutContainer.add(bottomForm, BorderLayout.CENTER);
+      bottomForm = new JPanel();
+      bottomForm.setFocusable( false );
+      DefaultFormBuilder bottomBuilder = new DefaultFormBuilder( bottomLayout,
+            bottomForm );
+      bottomBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
+            Sizes.DLUX8, Sizes.DLUY8, Sizes.DLUX8 ) );
 
-		setViewportView(borderLayoutContainer);
+      notePane = (JScrollPane) TEXTAREA.newField();
+      notePane.setMinimumSize( new Dimension( 10, 50 ) );
 
-		taskBinder.addObserver(this);
+      BindingFormBuilder bottomBindingBuilder = new BindingFormBuilder(
+            bottomBuilder, taskBinder );
+      bottomBindingBuilder.appendLine( WorkspaceResources.note_label,
+            notePane, template.note() );
 
-		setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
-		setFocusCycleRoot(true);
-		setFocusable(true);
+      JPanel formsContainer = new JPanel( new BorderLayout() );
+      formsContainer.add( notePane, BorderLayout.CENTER );
+      formsContainer.add( rightForm, BorderLayout.EAST );
 
-		addFocusListener(new FocusListener()
-		{
-			public void focusGained(FocusEvent e)
-			{
-				Component defaultComp = getFocusTraversalPolicy()
-						.getDefaultComponent(leftForm);
-				if (defaultComp != null)
-				{
-					defaultComp.requestFocusInWindow();
-				}
-			}
+/*
+      JPanel borderLayoutContainer = new JPanel( new BorderLayout() );
+      borderLayoutContainer.add( formsContainer, BorderLayout.NORTH );
+      borderLayoutContainer.add( bottomForm, BorderLayout.CENTER );
+*/
 
-			public void focusLost(FocusEvent e)
-			{
-			}
-		});
+      setViewportView( formsContainer );
 
-		refresher = new RefreshWhenVisible(this);
-		addAncestorListener(refresher);
-	}
+      taskBinder.addObserver( this );
 
-	public void setModel(TaskGeneralModel taskGeneralModel)
-	{
-		if (model != null)
-			model.deleteObserver(this);
+      setFocusTraversalPolicy( new LayoutFocusTraversalPolicy() );
+      setFocusCycleRoot( true );
+      setFocusable( true );
 
-		model = taskGeneralModel;
+      addFocusListener( new FocusListener()
+      {
+         public void focusGained( FocusEvent e )
+         {
+            Component defaultComp = getFocusTraversalPolicy()
+                  .getDefaultComponent( leftForm );
+            if (defaultComp != null)
+            {
+               defaultComp.requestFocusInWindow();
+            }
+         }
 
-		refresher.setRefreshable(model);
+         public void focusLost( FocusEvent e )
+         {
+         }
+      } );
 
-		TaskGeneralDTO general = model.getGeneral();
-		valueBuilder = general.buildWith();
-		taskBinder.updateWith(general);
+      refresher = new RefreshWhenVisible( this );
+      addAncestorListener( refresher );
+   }
 
-		// Check if issue id should be visible
-		boolean issueVisible = model.getGeneral().taskId().get() != null;
-		issueLabel.setVisible(issueVisible);
-		((JLabel) issueLabel.getClientProperty("labeledBy"))
-				.setVisible(issueVisible);
+   public void setModel( TaskGeneralModel taskGeneralModel )
+   {
+      if (model != null)
+         model.deleteObserver( this );
 
-		labels.setLabelsModel(model.labelsModel());
-		forms.setFormsModel(model.formsModel());
+      model = taskGeneralModel;
 
-		ListItemValue value = general.taskType().get();
-		selectedTaskType
-				.setText(value == null ? "" : value.description().get());
+      refresher.setRefreshable( model );
 
-		taskGeneralModel.addObserver(this);
-	}
+      TaskGeneralDTO general = model.getGeneral();
+      valueBuilder = general.buildWith();
+      taskBinder.updateWith( general );
 
-	public void update(Observable o, Object arg)
-	{
-		if (o == taskBinder)
-		{
-			Property property = (Property) arg;
-			if (property.qualifiedName().name().equals("description"))
-			{
-				model.changeDescription((String) property.get());
-			} else if (property.qualifiedName().name().equals("note"))
-			{
-				model.changeNote((String) property.get());
-			} else if (property.qualifiedName().name().equals("dueOn"))
-			{
-				model.changeDueOn((Date) property.get());
-			}
-		} else
-		{
-			ListItemValue value = model.getGeneral().taskType().get();
-			selectedTaskType.setText(value == null ? "" : value.description()
-					.get());
-			forms.setFormsModel(model.formsModel());
-		}
-	}
+      // Check if issue id should be visible
+      boolean issueVisible = model.getGeneral().taskId().get() != null;
+      issueLabel.setVisible( issueVisible );
+      ((JLabel) issueLabel.getClientProperty( "labeledBy" ))
+            .setVisible( issueVisible );
 
-	@Action
-	public void tasktype()
-	{
-		SelectTaskTypeDialog dialog = taskTypeDialog.use(
-				model.getPossibleTaskTypes()).newInstance();
-		dialogs.showOkCancelHelpDialog(taskTypeButton, dialog);
+      labels.setLabelsModel( model.labelsModel() );
+      forms.setFormsModel( model.formsModel() );
 
-		if (dialog.getSelected() != null)
-		{
-			model.taskType(dialog.getSelected());
-			// refresh();
-		}
-	}
+      ListItemValue value = general.taskType().get();
+      selectedTaskType
+            .setText( value == null ? "" : value.description().get() );
 
-	@Action
-	public void label()
-	{
-		TaskLabelsDialog dialog = labelSelectionDialog.use(
-				model.getPossibleLabels()).newInstance();
-		dialogs.showOkCancelHelpDialog(labelButton, dialog);
+      taskGeneralModel.addObserver( this );
+   }
 
-		if (dialog.getSelectedLabels() != null)
-		{
-			for (LinkValue listItemValue : dialog.getSelectedLabels())
-			{
-				model.addLabel( EntityReference.parseEntityReference( listItemValue.id().get()));
-			}
-		}
-	}
+   public void update( Observable o, Object arg )
+   {
+      if (o == taskBinder)
+      {
+         Property property = (Property) arg;
+         if (property.qualifiedName().name().equals( "description" ))
+         {
+            model.changeDescription( (String) property.get() );
+         } else if (property.qualifiedName().name().equals( "note" ))
+         {
+            model.changeNote( (String) property.get() );
+         } else if (property.qualifiedName().name().equals( "dueOn" ))
+         {
+            model.changeDueOn( (Date) property.get() );
+         }
+      } else
+      {
+         ListItemValue value = model.getGeneral().taskType().get();
+         selectedTaskType.setText( value == null ? "" : value.description()
+               .get() );
+         forms.setFormsModel( model.formsModel() );
+      }
+   }
+
+   @Action
+   public void tasktype()
+   {
+      SelectTaskTypeDialog dialog = taskTypeDialog.use(
+            model.getPossibleTaskTypes() ).newInstance();
+      dialogs.showOkCancelHelpDialog( taskTypeButton, dialog );
+
+      if (dialog.getSelected() != null)
+      {
+         model.taskType( dialog.getSelected() );
+         // refresh();
+      }
+   }
+
+   @Action
+   public void label()
+   {
+      TaskLabelsDialog dialog = labelSelectionDialog.use(
+            model.getPossibleLabels() ).newInstance();
+      dialogs.showOkCancelHelpDialog( labelButton, dialog );
+
+      if (dialog.getSelectedLabels() != null)
+      {
+         for (LinkValue listItemValue : dialog.getSelectedLabels())
+         {
+            model.addLabel( EntityReference.parseEntityReference( listItemValue.id().get() ) );
+         }
+      }
+   }
 }

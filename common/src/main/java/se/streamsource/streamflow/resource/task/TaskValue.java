@@ -34,6 +34,9 @@ public interface TaskValue
 {
    Property<Date> creationDate();
 
+   @Optional
+   Property<String> createdBy();
+
    Property<States> status();
 
    Property<String> owner();

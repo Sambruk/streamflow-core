@@ -64,4 +64,10 @@ public class WorkspaceNode
       userNode.notifyEvent( event );
       projectsNode.notifyEvent( event );
    }
+
+   @Override
+   public String toString()
+   {
+      return getUserObject().settings().name().get();
+   }
 }

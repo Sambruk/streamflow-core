@@ -84,7 +84,7 @@ public class WorkspaceWindow
                {
                   AccountModel accountModel = accountSelector.getSelectedAccount();
 
-                  workspaceView.setModel( accountModel.workspace() );
+                  workspaceView.setModel( accountModel );
 
                   cardLayout.show( frame.getContentPane(), "workspace" );
                }

@@ -190,15 +190,15 @@ public class TaskGeneralModel extends Observable implements Refreshable,
 		}
 	}
 
-	public EventList<ListItemValue> getPossibleForms()
+	public EventList<LinkValue> getPossibleForms()
 	{
 		try
 		{
-			BasicEventList<ListItemValue> list = new BasicEventList<ListItemValue>();
+			BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-			ListValue listValue = client
-					.query("possibleforms", ListValue.class);
-			list.addAll(listValue.items().get());
+			LinksValue listValue = client
+					.query("possibleforms", LinksValue.class);
+			list.addAll(listValue.links().get());
 
 			return list;
 		} catch (ResourceException e)

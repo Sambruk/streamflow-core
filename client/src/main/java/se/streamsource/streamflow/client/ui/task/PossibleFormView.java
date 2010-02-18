@@ -2,6 +2,7 @@ package se.streamsource.streamflow.client.ui.task;
 
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.BorderFactory;
@@ -20,10 +21,10 @@ import java.awt.event.MouseListener;
 public class PossibleFormView extends JPanel
       implements FocusListener, KeyListener, MouseListener
 {
-   ListItemValue itemValue;
+   LinkValue itemValue;
    JButton button;
 
-   public PossibleFormView( ListItemValue itemValue )
+   public PossibleFormView( LinkValue itemValue )
    {
       super( new FlowLayout( FlowLayout.LEFT, 2, 1 ) );
       this.itemValue = itemValue;
@@ -31,7 +32,7 @@ public class PossibleFormView extends JPanel
       setFocusable( true );
       this.setRequestFocusEnabled( true );
 
-      button = new JButton( itemValue.description().get(), i18n.icon( Icons.formSubmit, 16 ) );
+      button = new JButton( itemValue.text().get(), i18n.icon( Icons.formSubmit, 16 ) );
 
       this.add( button );
 
@@ -40,7 +41,7 @@ public class PossibleFormView extends JPanel
       addMouseListener( this );
    }
 
-   public ListItemValue form()
+   public LinkValue form()
    {
       return itemValue;
    }

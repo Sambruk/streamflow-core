@@ -58,9 +58,11 @@ public interface TaskContext
 
          prototype.id().set( task.identity().get() );
          prototype.creationDate().set( task.createdOn().get() );
+         if (task.createdBy().get() != null)
+            prototype.createdBy().set( ((Describable)task.createdBy().get()).getDescription() );
          prototype.href().set( task.identity().get()+"/" );
          prototype.rel().set( "task" );
-         prototype.owner().set( task.owner().get().toString() );
+         prototype.owner().set( ((Describable)task.owner().get()).getDescription() );
          prototype.status().set( task.status().get() );
          prototype.text().set( task.description().get() );
 

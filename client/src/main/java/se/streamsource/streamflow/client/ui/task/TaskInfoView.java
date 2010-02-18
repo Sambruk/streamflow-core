@@ -48,6 +48,8 @@ public class TaskInfoView extends JPanel implements Observer
       created.setFont( description.getFont().deriveFont(Font.BOLD ));
       owner.setFont( description.getFont().deriveFont(Font.BOLD ));
 
+      setFont( getFont().deriveFont(getFont().getSize()-2 ));
+
       add(description);
       add(new JLabel(i18n.text( WorkspaceResources.created_column_header )+":"));
       add(created);
@@ -72,7 +74,7 @@ public class TaskInfoView extends JPanel implements Observer
 	{
       TaskValue task = model.getInfo();
       description.setText( task.text().get());
-      created.setText(format.format( task.creationDate().get()));
+      created.setText(format.format( task.creationDate().get())+(task.createdBy().get() != null ? "("+task.createdBy().get()+")":""));
       owner.setText( task.owner().get() );
 
       if (task.assignedTo().get() == null)

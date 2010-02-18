@@ -25,27 +25,37 @@ import org.jdesktop.swingx.renderer.WrappingIconPanel;
 import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.task.AssignmentsTaskTableFormatter;
 import se.streamsource.streamflow.client.ui.task.DelegationsTaskTableFormatter;
 import se.streamsource.streamflow.client.ui.task.InboxTaskTableFormatter;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.ui.task.TaskTableView;
+import se.streamsource.streamflow.client.ui.task.TasksDetailView2;
 import se.streamsource.streamflow.client.ui.task.TasksModel;
+import se.streamsource.streamflow.client.ui.task.TasksView;
 import se.streamsource.streamflow.client.ui.task.WaitingForTaskTableFormatter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -53,11 +63,7 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
@@ -67,10 +73,22 @@ import java.awt.event.KeyEvent;
 public class WorkspaceView
       extends JPanel
 {
+   @Structure ObjectBuilderFactory obf;
+
+   SearchResultTableModel searchResultTableModel;
+
    private JXTree workspaceTree;
-   private JSplitPane pane;
    private WorkspaceModel model;
-   public String accountName = "";
+   private String accountName = "";
+   private JLabel selectedContext;
+   private JButton selectContextButton;
+   private JTextField searchField;
+
+   private Component currentSelection = new JLabel("<html><h1>Welcome to StreamFlow</h1>Begin by selecting a context by using the blue button</html>");
+   public Popup popup;
+   public JPanel contextPanel;
+   public TasksDetailView2 detailView;
+   public TasksModel tasksModel;
 
    public WorkspaceView( final @Service ApplicationContext context,
                          final @Structure ObjectBuilderFactory obf )
@@ -83,21 +101,24 @@ public class WorkspaceView
       setActionMap( context.getActionMap( this ) );
 
 
-      this.model = model;
+      contextPanel = new JPanel( new BorderLayout() );
+      selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
+      contextPanel.add( selectContextButton, BorderLayout.WEST );
+      selectedContext = new JLabel();
+      selectedContext.setFont( selectedContext.getFont().deriveFont(Font.ITALIC ));
+      contextPanel.add( selectedContext, BorderLayout.CENTER );
+      contextPanel.add( new JButton(getActionMap().get("showSearch")), BorderLayout.EAST );
+      searchField = new JTextField();
+      searchField.setAction( getActionMap().get("search" ));
+
+      add( contextPanel, BorderLayout.NORTH);
+      add( currentSelection, BorderLayout.CENTER );
+
       workspaceTree = new JXTree();
       workspaceTree.expandAll();
       workspaceTree.setRootVisible( false );
       workspaceTree.setShowsRootHandles( false );
       workspaceTree.getSelectionModel().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-
-      workspaceTree.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "select" );
-      workspaceTree.getActionMap().put( "select", new AbstractAction()
-      {
-         public void actionPerformed( ActionEvent e )
-         {
-            pane.getRightComponent().requestFocus();
-         }
-      } );
 
       workspaceTree.setCellRenderer( new DefaultTreeRenderer( new WrappingProvider(
             new IconValue()
@@ -165,23 +186,6 @@ public class WorkspaceView
          }
       } );
 
-      JScrollPane workspaceScroll = new JScrollPane( workspaceTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
-
-      pane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
-      pane.setDividerLocation( 170 );
-      pane.setResizeWeight( 0 );
-      pane.setOneTouchExpandable( true );
-
-      pane.setRightComponent( new JPanel() );
-
-      JPanel workspaceOutline = new JPanel( new BorderLayout() );
-      workspaceOutline.add( workspaceScroll, BorderLayout.CENTER );
-      workspaceOutline.setMinimumSize( new Dimension( 150, 300 ) );
-
-      pane.setLeftComponent( workspaceOutline );
-
-      add( pane, BorderLayout.CENTER );
-
       workspaceTree.addTreeSelectionListener( new TreeSelectionListener()
       {
          public void valueChanged( TreeSelectionEvent e )
@@ -202,11 +206,10 @@ public class WorkspaceView
                {
                   WorkspaceUserInboxNode userInboxNode = (WorkspaceUserInboxNode) node;
                   final TaskTableModel inboxModel = userInboxNode.taskTableModel();
-                  TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use( inboxModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( inboxModel, detailView,
                         userInboxNode.getParent(), node,
                         tasksModel, new InboxTaskTableFormatter()
-                        ).newInstance();
+                  ).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -221,11 +224,10 @@ public class WorkspaceView
                {
                   WorkspaceUserAssignmentsNode userAssignmentsNode = (WorkspaceUserAssignmentsNode) node;
                   final TaskTableModel assignmentsModel = userAssignmentsNode.taskTableModel();
-                  TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use( assignmentsModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( assignmentsModel, detailView,
                         userAssignmentsNode.getParent(), node,
                         tasksModel, new AssignmentsTaskTableFormatter()
-                        ).newInstance();
+                  ).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -240,11 +242,10 @@ public class WorkspaceView
                {
                   WorkspaceUserDelegationsNode userDelegationsNode = (WorkspaceUserDelegationsNode) node;
                   final TaskTableModel delegationsModel = userDelegationsNode.taskTableModel();
-                  TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use( delegationsModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( delegationsModel, detailView,
                         userDelegationsNode.getParent(),
                         tasksModel,
-                        new DelegationsTaskTableFormatter()).newInstance();
+                        new DelegationsTaskTableFormatter() ).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -259,11 +260,10 @@ public class WorkspaceView
                {
                   WorkspaceUserWaitingForNode userWaitingForNode = (WorkspaceUserWaitingForNode) node;
                   final TaskTableModel waitingForModel = userWaitingForNode.taskTableModel();
-                  TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use( waitingForModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( waitingForModel, detailView,
                         userWaitingForNode.getParent(),
                         tasksModel,
-                        new WaitingForTaskTableFormatter()).newInstance();
+                        new WaitingForTaskTableFormatter() ).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -278,11 +278,10 @@ public class WorkspaceView
                {
                   WorkspaceProjectInboxNode projectInboxNode = (WorkspaceProjectInboxNode) node;
                   final TaskTableModel inboxModel = projectInboxNode.taskTableModel();
-                  TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use( inboxModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( inboxModel, detailView,
                         projectInboxNode.getParent(),
                         tasksModel,
-                        new InboxTaskTableFormatter()).newInstance();
+                        new InboxTaskTableFormatter() ).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -297,12 +296,11 @@ public class WorkspaceView
                {
                   WorkspaceProjectAssignmentsNode projectAssignmentsNode = (WorkspaceProjectAssignmentsNode) node;
                   final TaskTableModel assignmentsModel = projectAssignmentsNode.taskTableModel();
-                  TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use( assignmentsModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( assignmentsModel, detailView,
                         node,
                         projectAssignmentsNode.getParent(),
                         tasksModel,
-                        new AssignmentsTaskTableFormatter()).newInstance();
+                        new AssignmentsTaskTableFormatter() ).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -318,11 +316,10 @@ public class WorkspaceView
                {
                   WorkspaceProjectDelegationsNode projectDelegationsNode = (WorkspaceProjectDelegationsNode) node;
                   final TaskTableModel delegationsModel = projectDelegationsNode.taskTableModel();
-                  TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use( delegationsModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( delegationsModel, detailView,
                         projectDelegationsNode.getParent(),
                         tasksModel,
-                        new DelegationsTaskTableFormatter()).newInstance();
+                        new DelegationsTaskTableFormatter() ).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -337,11 +334,10 @@ public class WorkspaceView
                {
                   WorkspaceProjectWaitingForNode projectWaitingForNode = (WorkspaceProjectWaitingForNode) node;
                   final TaskTableModel waitingForModel = projectWaitingForNode.taskTableModel();
-                  TasksModel tasksModel = model.getRoot().getUserObject().tasks();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use( waitingForModel,
+                  view = obf.newObjectBuilder( TaskTableView.class ).use( waitingForModel, detailView,
                         projectWaitingForNode.getParent(),
                         tasksModel,
-                        new WaitingForTaskTableFormatter()).newInstance();
+                        new WaitingForTaskTableFormatter() ).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -354,11 +350,27 @@ public class WorkspaceView
                   } );
                }
 
-               pane.setRightComponent( view );
+               if (view != null)
+               {
+                  TasksView tasksView = obf.newObjectBuilder( TasksView.class ).use( view, detailView ).newInstance();
+
+                  remove( currentSelection );
+                  currentSelection = tasksView;
+                  add(currentSelection, BorderLayout.CENTER);
+
+                  String selectedContextText = ((TreeNode)node).getParent()+" : "+node.toString();
+
+                  selectedContext.setText( selectedContextText );
+               }
             } else
             {
-               pane.setRightComponent( new JPanel() );
+               remove( currentSelection );
+               currentSelection = new JLabel();
+               add(currentSelection, BorderLayout.CENTER);
             }
+
+            popup.hide();
+            popup = null;
          }
       } );
 
@@ -386,21 +398,17 @@ public class WorkspaceView
       } );
    }
 
-   public String getSelectedUser()
+   public void setModel( AccountModel model )
    {
-      return model.getRoot().getUserObject().settings().userName().get();
-   }
+      this.model = model.workspace();
+      workspaceTree.setModel( model.workspace() );
+      accountName = model.workspace().getRoot().getUserObject().settings().name().get();
 
-   public JSplitPane getPane()
-   {
-      return pane;
-   }
+      searchResultTableModel = model.search();
 
-   public void setModel( WorkspaceModel model )
-   {
-      this.model = model;
-      workspaceTree.setModel( model );
-      accountName = model.getRoot().getUserObject().settings().name().get();
+      tasksModel = model.workspace().getRoot().getUserObject().tasks();
+      detailView = obf.newObjectBuilder( TasksDetailView2.class ).use( tasksModel ).newInstance();
+
       refreshTree();
    }
 
@@ -419,6 +427,52 @@ public class WorkspaceView
    }
 
    @Action
+   public void selectContext()
+   {
+      if (popup == null)
+      {
+         contextPanel.remove( searchField );
+         contextPanel.add( selectedContext, BorderLayout.CENTER );
+
+         Point location = selectContextButton.getLocationOnScreen();
+         popup = PopupFactory.getSharedInstance().getPopup( this, workspaceTree, (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
+         popup.show();
+      }
+   }
+
+   @Action
+   public void showSearch()
+   {
+      contextPanel.remove( selectedContext );
+      contextPanel.add( searchField, BorderLayout.CENTER );
+      contextPanel.revalidate();
+      contextPanel.repaint();
+      searchField.requestFocusInWindow();
+
+      TaskTableView view = obf.newObjectBuilder(TaskTableView.class ).
+            use( searchResultTableModel,
+                  detailView,
+                  tasksModel,
+                  new InboxTaskTableFormatter()).newInstance();
+
+      TasksView tasksView = obf.newObjectBuilder( TasksView.class ).use( view, detailView ).newInstance();
+
+      remove( currentSelection );
+      currentSelection = tasksView;
+      add(currentSelection, BorderLayout.CENTER);
+
+
+      add(currentSelection, BorderLayout.CENTER);
+   }
+
+   @Action
+   public void search()
+   {
+      searchResultTableModel.search( searchField.getText() );
+      searchResultTableModel.refresh();
+   }
+
+   @Action
    public void selectTree()
    {
       workspaceTree.requestFocusInWindow();
@@ -427,31 +481,22 @@ public class WorkspaceView
    @Action
    public void selectTable()
    {
-      Component right = pane.getRightComponent();
-      if (right != null)
+      if (currentSelection instanceof TaskTableView)
       {
-         if (right instanceof TaskTableView)
-         {
-            TaskTableView ttv = (TaskTableView) right;
-            ttv.getTaskTable().requestFocusInWindow();
-         } else
-            right.requestFocusInWindow();
-
-      }
+         TaskTableView ttv = (TaskTableView) currentSelection;
+         ttv.getTaskTable().requestFocusInWindow();
+      } else
+         currentSelection.requestFocusInWindow();
    }
 
    @Action
    public void selectDetails()
    {
-      Component right = pane.getRightComponent();
-      if (right != null)
+      if (currentSelection instanceof TaskTableView)
       {
-         if (right instanceof TaskTableView)
-         {
-            TaskTableView ttv = (TaskTableView) right;
-            ttv.getTaskDetails().requestFocusInWindow();
-         } else
-            right.requestFocusInWindow();
-      }
+         TaskTableView ttv = (TaskTableView) currentSelection;
+         ttv.getTaskDetails().requestFocusInWindow();
+      } else
+         currentSelection.requestFocusInWindow();
    }
 }

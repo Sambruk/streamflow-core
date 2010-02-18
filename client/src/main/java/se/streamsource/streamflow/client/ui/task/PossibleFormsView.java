@@ -1,17 +1,20 @@
 package se.streamsource.streamflow.client.ui.task;
 
+import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import org.netbeans.api.wizard.WizardDisplayer;
 import org.netbeans.spi.wizard.Wizard;
 import org.netbeans.spi.wizard.WizardException;
 import org.netbeans.spi.wizard.WizardPage;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -56,9 +59,14 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
    {
       formPanel.removeAll();
 
-      for (int i = 0; i < modelForms.getForms().size(); i++)
+      EventList<LinkValue> formList = modelForms.getForms();
+      if (formList.size() > 0)
+         setBorder( BorderFactory.createEtchedBorder() );
+      else
+         setBorder( BorderFactory.createEmptyBorder() );
+
+      for (LinkValue itemValue : formList)
       {
-         ListItemValue itemValue = modelForms.getForms().get( i );
          PossibleFormView formView = new PossibleFormView( itemValue );
          formView.addActionListener( this );
          formPanel.add( formView );
@@ -80,20 +88,20 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
       Component component = ((Component) e.getSource());
       final PossibleFormView formsView = (PossibleFormView) component.getParent();
 
-      FormSubmissionModel model = modelForms.getFormSubmitModel( formsView.form().entity().get().identity() );
+      FormSubmissionModel model = modelForms.getFormSubmitModel( formsView.form().id().get() );
 
       Wizard wizard = WizardPage.createWizard( model.getTitle(), model.getPages(), new WizardPage.WizardResultProducer()
       {
 
          public Object finish( Map map ) throws WizardException
          {
-            modelForms.submit( formsView.form().entity().get() );
+            modelForms.submit( EntityReference.parseEntityReference( formsView.form().id().get()) );
             return null;
          }
 
          public boolean cancel( Map map )
          {
-            modelForms.discard( formsView.form().entity().get() );
+            modelForms.discard( EntityReference.parseEntityReference( formsView.form().id().get()) );
             return true;
          }
       } );
