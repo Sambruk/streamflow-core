@@ -23,22 +23,28 @@ import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ResourceValue;
 import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
+import se.streamsource.streamflow.resource.conversation.ConversationDTO;
+import se.streamsource.streamflow.resource.conversation.ConversationDetailDTO;
+import se.streamsource.streamflow.resource.conversation.ConversationsDTO;
+import se.streamsource.streamflow.resource.conversation.MessageDTO;
+import se.streamsource.streamflow.resource.conversation.NewConversationCommand;
+import se.streamsource.streamflow.resource.conversation.NewMessageCommand;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.task.FieldDTO;
@@ -74,6 +80,8 @@ public class CommonResourceAssembler
             NamedIndexDTO.class,
             EntityReferenceDTO.class,
             NewCommentCommand.class,
+            NewConversationCommand.class,
+            NewMessageCommand.class,
             NewUserCommand.class,
             ResetPasswordCommand.class ).visibleIn( Visibility.application );
 
@@ -95,6 +103,10 @@ public class CommonResourceAssembler
             TaskContactsDTO.class,
             CommentsDTO.class,
             CommentDTO.class,
+            ConversationsDTO.class,
+            ConversationDTO.class,
+            ConversationDetailDTO.class,
+            MessageDTO.class,
             TreeValue.class,
             TreeNodeValue.class,
             ProjectSummaryDTO.class,
