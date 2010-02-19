@@ -29,6 +29,8 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
@@ -85,20 +87,42 @@ public interface FormFieldsContext
                value = selection.newInstance();
                break;
             case comment:
-/* TODO: Why is comment null now??
                ValueBuilder<CommentFieldValue> comment = vbf.newValueBuilder( CommentFieldValue.class );
-               comment.prototype().comment().set( "" );
                value = comment.newInstance();
                break;
-*/
          }
          return value;
       }
 
+      private Class getFieldValueClass( FieldValue fieldValue )
+      {
+         if ( fieldValue instanceof TextFieldValue )
+            return TextFieldValue.class;
+
+         if ( fieldValue instanceof NumberFieldValue )
+            return NumberFieldValue.class;
+         if (fieldValue instanceof DateFieldValue )
+            return DateFieldValue.class;
+         if ( fieldValue instanceof SelectionFieldValue )
+            return SelectionFieldValue.class;
+         if ( fieldValue instanceof CommentFieldValue )
+            return CommentFieldValue.class;
+
+         return FieldValue.class;
+      }
+
       public FormFieldContext context( String id )
       {
-         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ));
-         return null;
+         FieldEntity field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldEntity.class, id );
+
+         if (! context.role( Fields.Data.class ).fields().contains( field ))
+            throw new IllegalArgumentException( "Field is not a member of this page" );
+         context.playRoles( field );
+
+         FieldValue value = field.fieldValue().get();
+         context.playRoles( value, getFieldValueClass( value ) );
+
+         return subContext( FormFieldContext.class );
       }
    }
 }

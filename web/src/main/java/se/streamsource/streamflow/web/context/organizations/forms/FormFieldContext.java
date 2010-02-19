@@ -48,6 +48,33 @@ import se.streamsource.streamflow.web.context.structure.NotableContext;
 public interface FormFieldContext
       extends DeleteContext, DescribableContext, NotableContext, Context
 {
+   FieldDefinitionValue field();
+
+   void updatemandatory( BooleanDTO mandatory );
+
+   //@RequiresRoles(TextFieldValue.class)
+   void changewidth( IntegerDTO newWidth );
+
+   //@RequiresRoles(TextFieldValue.class)
+   void changerows( IntegerDTO newRows );
+
+   //@RequiresRoles(SelectionFieldValue.class)
+   void changemultiple( BooleanDTO multiple );
+
+   //@RequiresRoles(SelectionFieldValue.class)
+   void addselectionelement( StringDTO name );
+
+   //@RequiresRoles(SelectionFieldValue.class)
+   void removeselectionelement( IntegerDTO index );
+
+   //@RequiresRoles(SelectionFieldValue.class)
+   void moveselectionelement( NamedIndexDTO moveElement );
+
+   //@RequiresRoles(SelectionFieldValue.class)
+   void changeselectionelementname( NamedIndexDTO newNameDTO );
+
+   public void move( StringDTO direction );
+
    abstract class Mixin
          extends ContextMixin
          implements FormFieldContext
@@ -55,7 +82,7 @@ public interface FormFieldContext
       @Structure
       Module module;
 
-      public FieldDefinitionValue field() throws ResourceException
+      public FieldDefinitionValue field()
       {
          FieldEntity fieldEntity = context.role( FieldEntity.class );
 
@@ -68,15 +95,14 @@ public interface FormFieldContext
          return builder.newInstance();
       }
 
-      public void updatemandatory( BooleanDTO mandatory ) throws ResourceException
+      public void updatemandatory( BooleanDTO mandatory )
       {
          FieldTemplate fieldEntity = context.role( FieldTemplate.class );
 
          fieldEntity.changeMandatory( mandatory.bool().get() );
       }
 
-      @RequiresRoles(TextFieldValue.class)
-      public void changewidth( IntegerDTO newWidth ) throws ResourceException
+      public void changewidth( IntegerDTO newWidth )
       {
          FieldValueDefinition fieldValueDefinition = context.role( FieldValueDefinition.class );
          TextFieldValue value = context.role( TextFieldValue.class );
@@ -87,8 +113,7 @@ public interface FormFieldContext
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      @RequiresRoles(TextFieldValue.class)
-      public void changerows( IntegerDTO newRows ) throws ResourceException
+      public void changerows( IntegerDTO newRows )
       {
          FieldValueDefinition fieldValueDefinition = context.role( FieldValueDefinition.class );
          TextFieldValue value = context.role( TextFieldValue.class );
@@ -99,8 +124,7 @@ public interface FormFieldContext
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      @RequiresRoles(SelectionFieldValue.class)
-      public void changemultiple( BooleanDTO multiple ) throws ResourceException
+      public void changemultiple( BooleanDTO multiple )
       {
          FieldValueDefinition fieldValueDefinition = context.role( FieldValueDefinition.class );
          SelectionFieldValue value = context.role( SelectionFieldValue.class );
@@ -111,8 +135,7 @@ public interface FormFieldContext
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      @RequiresRoles(SelectionFieldValue.class)
-      public void addselectionelement( StringDTO name ) throws ResourceException
+      public void addselectionelement( StringDTO name )
       {
          FieldValueDefinition fieldValueDefinition = context.role( FieldValueDefinition.class );
          SelectionFieldValue value = context.role( SelectionFieldValue.class );
@@ -122,8 +145,7 @@ public interface FormFieldContext
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      @RequiresRoles(SelectionFieldValue.class)
-      public void removeselectionelement( IntegerDTO index ) throws ResourceException
+      public void removeselectionelement( IntegerDTO index )
       {
          FieldValueDefinition fieldValueDefinition = context.role( FieldValueDefinition.class );
          SelectionFieldValue value = context.role( SelectionFieldValue.class );
@@ -136,8 +158,7 @@ public interface FormFieldContext
          }
       }
 
-      @RequiresRoles(SelectionFieldValue.class)
-      public void moveselectionelement( NamedIndexDTO moveElement ) throws ResourceException
+      public void moveselectionelement( NamedIndexDTO moveElement )
       {
          FieldValueDefinition fieldValueDefinition = context.role( FieldValueDefinition.class );
          SelectionFieldValue value = context.role( SelectionFieldValue.class );
@@ -154,8 +175,7 @@ public interface FormFieldContext
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      @RequiresRoles(SelectionFieldValue.class)
-      public void changeselectionelementname( NamedIndexDTO newNameDTO ) throws ResourceException
+      public void changeselectionelementname( NamedIndexDTO newNameDTO )
       {
          FieldValueDefinition fieldValueDefinition = context.role( FieldValueDefinition.class );
          SelectionFieldValue value = context.role( SelectionFieldValue.class );
@@ -166,19 +186,7 @@ public interface FormFieldContext
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-/*
-      @RequiresRoles(CommentFieldValue.class)
-      public void changecomment( StringDTO newComment ) throws ResourceException
-      {
-         FieldValueDefinition fieldValueDefinition = context.role( FieldValueDefinition.class );
-         CommentFieldValue value = context.role( CommentFieldValue.class );
-         ValueBuilder<CommentFieldValue> builder = value.buildWith();
-         builder.prototype().comment().set( newComment.string().get() );
-         fieldValueDefinition.changeFieldValue( builder.newInstance() );
-      }
-
-*/
-      public void move( StringDTO direction ) throws ResourceException
+      public void move( StringDTO direction )
       {
          Field field = context.role( Field.class );
          Fields fields = context.role( Fields.class );
