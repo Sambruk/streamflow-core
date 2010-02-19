@@ -12,48 +12,13 @@
  *
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.client.ui.task.conversations;
 
 /**
- * Icon enumeration to be used with i18n.icon()
+ * i18n resources for the "Conversations" view
  */
-public enum Icons
+public enum ConversationsResources
 {
-   // General
-   add,
-   remove,
-   refresh,
-
-   user,
-   projects,
-   project,
-
-   assign,
-   forward,
-   delegate,
-   waitingfor,
-
-   details,
-   inbox,
-
-   // Tabs
-   general,
-   metadata,
-   comments,
-   attachments,
-
-   // Admin
-   account,
-   deleteLabel, 
-   organization, 
-
-   // Conversations
-   conversations,
-   participants,
-   
-   // Forms
-   formSubmit,
-   formMandatorySubmit,
-   formSubmitted,
-   
+   internal_participants_label,
+   external_participants_label
 }

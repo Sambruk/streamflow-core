@@ -1,0 +1,143 @@
+package se.streamsource.streamflow.client.ui.task.conversations;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.text.SimpleDateFormat;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.resource.conversation.ConversationDTO;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+
+public class ConversationsListCellRenderer implements ListCellRenderer
+{
+	public Component getListCellRendererComponent(final JList list,
+			Object value, int index, boolean isSelected, boolean cellHasFocus)
+	{
+		// Tweak to make it possible to have different heights of list elements.
+		list.addListSelectionListener(new ListSelectionListener()
+		{
+			public void valueChanged(ListSelectionEvent lse)
+			{
+				if (lse.getValueIsAdjusting() == false)
+					list.setCellRenderer(new ConversationsListCellRenderer());
+			}
+		});
+
+		ConversationDTO conversations = (ConversationDTO) value;
+
+		JPanel renderer = new JPanel(new BorderLayout());
+		renderer.setBorder(new EmptyBorder(3, 3, 3, 3));
+
+		// Layout and form for the header panel
+		FormLayout headerLayout = new FormLayout(
+				"100dlu:grow, 5dlu, pref:grow, pref:grow", "pref");
+		JPanel headerPanel = new JPanel(headerLayout);
+		headerPanel.setFocusable(false);
+		DefaultFormBuilder headerBuilder = new DefaultFormBuilder(headerLayout,
+				headerPanel);
+
+		// Title
+		JLabel title = new JLabel(conversations.description().get());
+		title.setFont(title.getFont().deriveFont(Font.BOLD));
+		headerBuilder.add(title);
+		headerBuilder.nextColumn(2);
+
+		// Participants
+		JLabel participants = new JLabel(String.valueOf(conversations
+				.participants().get()), i18n.icon(Icons.participants, 16),
+				JLabel.LEADING);
+		headerBuilder.add(participants);
+		headerBuilder.nextColumn();
+
+		// Conversations
+		JLabel conversationsLabel = new JLabel(String.valueOf(conversations
+				.messages().get()), i18n.icon(Icons.conversations, 16),
+				JLabel.LEADING);
+		headerBuilder.add(conversationsLabel);
+		renderer.add(headerPanel, BorderLayout.NORTH);
+
+		if (isSelected)
+		{
+			// Layout and form for the content panel
+			JPanel contentPanel = new JPanel(new BorderLayout());
+			contentPanel.setFocusable(false);
+
+			JPanel ingressPanel = new JPanel(new ModifiedFlowLayout(
+					FlowLayout.LEFT));
+			SimpleDateFormat sdf = new SimpleDateFormat(i18n
+					.text(WorkspaceResources.date_format));
+			
+			// Conversation creation date
+			JLabel labelDate = new JLabel(sdf.format(conversations
+					.creationDate().get()));
+			labelDate.setFont(labelDate.getFont().deriveFont(Font.ITALIC));
+			ingressPanel.add(labelDate);
+
+			// Creator
+			JLabel labelCreator = new JLabel(conversations.creator().get().toString());
+			ingressPanel.add(labelCreator);
+			contentPanel.add(ingressPanel, BorderLayout.NORTH);
+
+			// JPanel internalsPanel = new JPanel(new
+			// ModifiedFlowLayout(FlowLayout.LEFT));
+			// JLabel labelInternal = new JLabel(i18n
+			// .text(ConversationsResources.internal_participants_label));
+			// labelInternal
+			// .setFont(labelInternal.getFont().deriveFont(Font.BOLD));
+			// StringBuilder internals = new StringBuilder();
+			// internals.append(array.get(5)).append(",").append(array.get(6))
+			// .append(",").append(array.get(7)).append(",").append(
+			// array.get(8));
+			// internalsPanel.add(labelInternal, FlowLayout.LEFT);
+			// internalsPanel.add(new JLabel(internals.toString()));
+			// contentPanel.add(internalsPanel, BorderLayout.CENTER);
+			//
+			// // contentPanel.add(internals);
+			//
+			// JPanel externalsPanel = new JPanel(new
+			// ModifiedFlowLayout(FlowLayout.LEFT));
+			// JLabel labelExternal = new JLabel(i18n
+			// .text(ConversationsResources.external_participants_label));
+			// labelExternal
+			// .setFont(labelInternal.getFont().deriveFont(Font.BOLD));
+			// externalsPanel.add(labelExternal, FlowLayout.LEFT);
+			// externalsPanel.add(new JLabel(internals.toString()));
+			// contentPanel.add(externalsPanel, BorderLayout.SOUTH);
+
+			renderer.add(contentPanel, BorderLayout.CENTER);
+			renderer.revalidate();
+			renderer.repaint();
+		} else
+		{
+			renderer.setPreferredSize(headerPanel.getPreferredSize());
+			renderer.setBackground(Color.WHITE);
+			headerPanel.setBackground(Color.WHITE);
+		}
+
+		if (list.getSelectedIndex() == index)
+		{
+			renderer.setPreferredSize(new Dimension(300, 40));
+		} else
+		{
+			renderer.setPreferredSize(new Dimension(300, 20));
+		}
+		return renderer;
+	}
+}
