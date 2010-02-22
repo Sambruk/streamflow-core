@@ -14,18 +14,10 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.swing.EventListModel;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.ui.task.conversations.ConversationsListCellRenderer;
-import se.streamsource.streamflow.resource.conversation.ConversationDTO;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+import java.io.IOException;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -33,12 +25,24 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.FlowLayout;
-import java.io.IOException;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXList;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
+
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.ui.task.conversations.ConversationsListCellRenderer;
+import se.streamsource.streamflow.resource.conversation.ConversationDTO;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.swing.EventListModel;
 
 public class TaskConversationsView
       extends JSplitPane
@@ -71,10 +75,12 @@ public class TaskConversationsView
 
       cards.show( right, "EMPTY" );
 
-
       list = new JList();
       list.setCellRenderer( new ConversationsListCellRenderer() );
-
+      list.setFixedCellHeight(-1);
+      list.getSelectionModel().setSelectionMode(
+				ListSelectionModel.SINGLE_SELECTION);
+      
       list.addListSelectionListener( new ListSelectionListener()
       {
 
@@ -140,6 +146,7 @@ public class TaskConversationsView
    public void listChanged( ListEvent listEvent )
    {
       list.removeAll();
+//      list.setModel(model)
       list.setModel( new EventListModel<ConversationDTO>(model.conversations()) );
       list.revalidate();
    }

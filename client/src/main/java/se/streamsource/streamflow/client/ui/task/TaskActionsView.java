@@ -14,23 +14,27 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 
-import se.streamsource.streamflow.client.MacOsUIExtension;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
-
-import javax.swing.*;
-
-import java.awt.*;
 
 /**
  * JAVADOC
@@ -56,7 +60,7 @@ public class TaskActionsView extends JPanel
 		actionsPanel.setLayout(new GridLayout(0, 1));
 		add(actionsPanel, BorderLayout.NORTH);
 		setActionMap(context.getActionMap(this));
-		MacOsUIExtension.convertAccelerators(context.getActionMap(
+		MacOsUIWrapper.convertAccelerators(context.getActionMap(
 				TaskActionsView.class, this));
 	}
 

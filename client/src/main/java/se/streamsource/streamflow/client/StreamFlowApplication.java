@@ -148,26 +148,27 @@ public class StreamFlowApplication
          MacOsUIExtension osUIExtension = new MacOsUIExtension( this );
          osUIExtension.attachMacUIExtension();
          osUIExtension.convertAccelerators();
-         
-         // General UI settings
-         String toolTipDismissDelay = i18n.text( StreamFlowResources.tooltip_delay_dismiss );
-         String toolTipInitialDelay = i18n.text( StreamFlowResources.tooltip_delay_initial );
-         String toolTipReshowDelay = i18n.text( StreamFlowResources.tooltip_delay_reshow );
-         if(toolTipInitialDelay != null && !toolTipInitialDelay.trim().equals(""))
-         {
-            ToolTipManager.sharedInstance().setInitialDelay(Integer.parseInt(toolTipInitialDelay));
-         }
-         if(toolTipDismissDelay != null && !toolTipDismissDelay.trim().equals(""))
-         {
-            ToolTipManager.sharedInstance().setDismissDelay(Integer.parseInt(toolTipDismissDelay));
-         }
-         if(toolTipReshowDelay != null && !toolTipReshowDelay.trim().equals(""))
-         {
-            ToolTipManager.sharedInstance().setReshowDelay(Integer.parseInt(toolTipReshowDelay));
-         }
       } catch (Throwable e)
       {
          //Do nothing
+      }
+
+      
+      // General UI settings
+      String toolTipDismissDelay = i18n.text( StreamFlowResources.tooltip_delay_dismiss );
+      String toolTipInitialDelay = i18n.text( StreamFlowResources.tooltip_delay_initial );
+      String toolTipReshowDelay = i18n.text( StreamFlowResources.tooltip_delay_reshow );
+      if(toolTipInitialDelay != null && !toolTipInitialDelay.trim().equals(""))
+      {
+         ToolTipManager.sharedInstance().setInitialDelay(Integer.parseInt(toolTipInitialDelay));
+      }
+      if(toolTipDismissDelay != null && !toolTipDismissDelay.trim().equals(""))
+      {
+         ToolTipManager.sharedInstance().setDismissDelay(Integer.parseInt(toolTipDismissDelay));
+      }
+      if(toolTipReshowDelay != null && !toolTipReshowDelay.trim().equals(""))
+      {
+         ToolTipManager.sharedInstance().setReshowDelay(Integer.parseInt(toolTipReshowDelay));
       }
 
       this.accountSelector = accountSelector;
