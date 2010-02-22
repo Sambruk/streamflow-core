@@ -91,6 +91,7 @@ public interface FormFieldContext
          builder.prototype().note().set( fieldEntity.note().get() );
          builder.prototype().description().set( fieldEntity.description().get() );
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
+         builder.prototype().mandatory().set( fieldEntity.getMandatory() );
 
          return builder.newInstance();
       }
