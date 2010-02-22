@@ -39,7 +39,7 @@ public class TaskDetailView
 {
    private JTabbedPane tabs = new JTabbedPane(JTabbedPane.BOTTOM);
 
-   private TaskCommentsView commentsView;
+   private TaskConversationsView conversationsView;
    private TaskGeneralView generalView;
    private TaskContactsAdminView contactsView;
    private TaskFormsAdminView formsView;
@@ -50,7 +50,7 @@ public class TaskDetailView
    public TaskDetailView( @Service ApplicationContext appContext,
                           @Uses TaskInfoView infoView,
                           @Uses TaskGeneralView generalView,
-                          @Uses TaskCommentsView commentsView,
+                          @Uses TaskConversationsView conversationsView,
                           @Uses TaskContactsAdminView contactsView,
                           @Uses TaskFormsAdminView formsAdminView,
                           @Uses TaskActionsView actionsView,
@@ -62,14 +62,14 @@ public class TaskDetailView
       this.actionsView = actionsView;
       tabs.setFocusable( true );
 
-      this.commentsView = commentsView;
+      this.conversationsView = conversationsView;
       this.generalView = generalView;
       this.contactsView = contactsView;
       this.formsView = formsAdminView;
 
       tabs.addTab( i18n.text( WorkspaceResources.general_tab ), i18n.icon( Icons.general ), generalView, i18n.text( WorkspaceResources.general_tab ) );
       tabs.addTab( i18n.text( WorkspaceResources.contacts_tab ), i18n.icon( Icons.projects ), contactsView, i18n.text( WorkspaceResources.contacts_tab ) );
-      tabs.addTab( i18n.text( WorkspaceResources.comments_tab ), i18n.icon( Icons.comments ), commentsView, i18n.text( WorkspaceResources.comments_tab ) );
+      tabs.addTab( i18n.text( WorkspaceResources.conversations_tab ), i18n.icon( Icons.comments ), conversationsView, i18n.text( WorkspaceResources.conversations_tab ) );
       tabs.addTab( i18n.text( WorkspaceResources.metadata_tab ), i18n.icon( Icons.metadata ), formsAdminView, i18n.text( WorkspaceResources.metadata_tab ) );
       tabs.addTab( i18n.text( WorkspaceResources.attachments_tab ), i18n.icon( Icons.attachments ), new JLabel( "Attachments" ), i18n.text( WorkspaceResources.attachments_tab ) );
 
@@ -106,7 +106,8 @@ public class TaskDetailView
       this.model = model;
       infoView.setModel( model.info() );
       generalView.setModel( model.general() );
-      commentsView.setModel( model.comments() );
+      //commentsView.setModel( model.comments() );
+      conversationsView.setModel( model.conversations() );
       contactsView.setModel( model.contacts() );
       formsView.setModel( model.forms() );
 

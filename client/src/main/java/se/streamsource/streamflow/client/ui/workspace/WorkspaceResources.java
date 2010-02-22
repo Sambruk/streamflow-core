@@ -73,6 +73,7 @@ public enum WorkspaceResources
    general_tab,
    metadata_tab,
    comments_tab,
+   conversations_tab,
    attachments_tab,
    contacts_tab,
 

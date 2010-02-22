@@ -18,6 +18,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 import java.util.Date;
+import java.util.List;
 
 public interface NewConversationCommand
    extends ValueComposite
@@ -27,4 +28,8 @@ public interface NewConversationCommand
    Property<Date> creationDate();
 
    Property<String> description();
+
+   Property<String> message();
+
+   Property<List<EntityReference>> participants();
 }

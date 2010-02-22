@@ -46,6 +46,18 @@ public class TaskAssembler
       UIAssemblers.addMV( module,
             TaskCommentsModel.class,
             TaskCommentsView.class );
+      
+      UIAssemblers.addMV( module,
+            TaskConversationsModel.class,
+            TaskConversationsView.class );
+
+      UIAssemblers.addMV( module,
+            TaskConversationModel.class,
+            TaskConversationView.class );
+
+      UIAssemblers.addMV( module,
+            TaskConversationParticipantsModel.class,
+            TaskConversationParticipantsView.class );
 
       UIAssemblers.addMV( module,
             TaskContactsModel.class,

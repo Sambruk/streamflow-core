@@ -20,13 +20,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class TaskLabelView extends JPanel
+public class RemovableLabel extends JPanel
       implements FocusListener, KeyListener, MouseListener
 {
    ListItemValue itemValue;
    JButton button;
 
-   public TaskLabelView( ListItemValue itemValue )
+   public RemovableLabel( ListItemValue itemValue )
    {
       super( new FlowLayout( FlowLayout.LEFT, 2, 1 ) );
       this.itemValue = itemValue;
@@ -48,7 +48,7 @@ public class TaskLabelView extends JPanel
       addMouseListener( this );
    }
 
-   public ListItemValue label()
+   public ListItemValue item()
    {
       return itemValue;
    }

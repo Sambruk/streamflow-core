@@ -32,7 +32,7 @@ public class TaskModel
    private TaskActionsModel actions;
 
    @Uses
-   private TaskCommentsModel comments;
+   private TaskConversationsModel conversations;
 
    @Uses
    private TaskGeneralModel general;
@@ -55,10 +55,10 @@ public class TaskModel
    {
       return info;
    }
-
-   public TaskCommentsModel comments()
+   
+   public TaskConversationsModel conversations()
    {
-      return comments;
+      return conversations;
    }
 
    public TaskGeneralModel general()
@@ -84,7 +84,7 @@ public class TaskModel
    public void notifyEvent( DomainEvent event )
    {
       info.notifyEvent( event );
-      comments.notifyEvent( event );
+      conversations.notifyEvent( event );
       general.notifyEvent( event );
       contacts.notifyEvent( event );
       forms.notifyEvent( event );

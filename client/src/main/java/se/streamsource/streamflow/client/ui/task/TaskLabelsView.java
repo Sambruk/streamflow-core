@@ -43,9 +43,9 @@ public class TaskLabelsView extends JPanel implements ListEventListener, ActionL
       for (int i = 0; i < modelTask.getLabels().size(); i++)
       {
          ListItemValue itemValue = modelTask.getLabels().get( i );
-         TaskLabelView labelView = new TaskLabelView( itemValue );
-         labelView.addActionListener( this );
-         labelPanel.add( labelView );
+         RemovableLabel label = new RemovableLabel( itemValue );
+         label.addActionListener( this );
+         labelPanel.add( label );
       }
 
       labelPanel.revalidate();
@@ -61,7 +61,7 @@ public class TaskLabelsView extends JPanel implements ListEventListener, ActionL
    public void actionPerformed( ActionEvent e )
    {
       Component component = ((Component) e.getSource());
-      TaskLabelView labelView = (TaskLabelView) component.getParent();
-      modelTask.removeLabel( labelView.label().entity().get() );
+      RemovableLabel label = (RemovableLabel) component.getParent();
+      modelTask.removeLabel( label.item().entity().get() );
    }
 }

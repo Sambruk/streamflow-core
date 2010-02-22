@@ -56,5 +56,5 @@ public enum TaskResources
    task_status_archived_text,
    task_status_completed_text,
    task_status_done_text,
-   task_status_dropped_text
+   could_not_remove_conversation_participant, could_not_add_conversation_participant, heading_label, message_label, task_status_dropped_text
 }
