@@ -20,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.CardLayout;
 
+import se.streamsource.streamflow.client.infrastructure.ui.ToolTipTableCellRenderer;
+
 /**
  * JAVADOC
  */
@@ -36,6 +38,7 @@ public class TaskSubmittedFormView
       JScrollPane scroll = new JScrollPane();
 
       fieldValues = new JXTable();
+      fieldValues.setDefaultRenderer( Object.class, new ToolTipTableCellRenderer() );
       scroll.setViewportView( fieldValues );
 
       add( new JPanel(), "EMPTY" );

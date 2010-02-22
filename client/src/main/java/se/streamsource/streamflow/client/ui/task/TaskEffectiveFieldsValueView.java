@@ -19,13 +19,19 @@ import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.ToolTipTableCellRenderer;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JComponent;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Component;
 
 /**
  * JAVADOC
@@ -46,6 +52,7 @@ public class TaskEffectiveFieldsValueView
       setMinimumSize( new Dimension( 150, 0 ) );
 
       effectiveValueTable = new JXTable();
+      effectiveValueTable.setDefaultRenderer( Object.class, new ToolTipTableCellRenderer() );
 
       JScrollPane submittedFormsScollPane = new JScrollPane();
       submittedFormsScollPane.setViewportView( effectiveValueTable );
