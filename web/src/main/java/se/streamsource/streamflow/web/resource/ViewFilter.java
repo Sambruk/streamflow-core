@@ -65,8 +65,9 @@ public class ViewFilter
    @Override
    protected int doHandle( final Request request, final Response response )
    {
-      MediaType responseType = request.getClientInfo().getPreferredMediaType( Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML ) );
-      if (responseType != null && responseType.equals( MediaType.TEXT_HTML ))
+      List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
+      MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
+      if (responseType != null && possibleMediaTypes.contains( MediaType.TEXT_HTML ))
       {
          List<Preference<MediaType>> mediaTypes = request.getClientInfo().getAcceptedMediaTypes();
          request.getClientInfo().setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
@@ -121,7 +122,7 @@ public class ViewFilter
                         final JSONObject object = (JSONObject) tokener.nextValue();
 
                         Template template = resolveTemplate( new File( templateName(response) ) );
-
+                        
                         if (template != null)
                         {
                            VelocityContext context = new VelocityContext();
