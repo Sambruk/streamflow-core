@@ -14,15 +14,11 @@
 
 package se.streamsource.streamflow.web.resource;
 
-import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.structure.ModuleSPI;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -40,14 +36,13 @@ import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecifica
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
+import se.streamsource.streamflow.dci.infrastructure.web.TemplateUtil;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * This filter will record all the Events from the call, and if any occured and the

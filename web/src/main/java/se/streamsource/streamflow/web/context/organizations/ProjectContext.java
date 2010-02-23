@@ -18,10 +18,10 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.infrastructure.web.context.Context;
-import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.web.infrastructure.web.context.DeleteContext;
-import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
+import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.dci.infrastructure.web.context.DeleteContext;
+import se.streamsource.streamflow.dci.infrastructure.web.context.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 
 /**

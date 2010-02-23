@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
-import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
@@ -32,10 +31,6 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.resource.user.NewUserCommand;
-import se.streamsource.streamflow.web.context.RootContext;
-import se.streamsource.streamflow.web.context.users.UserContext;
-import se.streamsource.streamflow.web.context.users.UsersContext;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
@@ -60,7 +55,6 @@ import se.streamsource.streamflow.web.domain.structure.task.Task;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
-import se.streamsource.streamflow.web.infrastructure.web.context.InteractionContext;
 
 import java.util.ArrayList;
 import java.util.List;

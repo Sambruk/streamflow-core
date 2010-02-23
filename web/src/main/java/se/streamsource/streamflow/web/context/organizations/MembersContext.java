@@ -18,11 +18,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
@@ -33,10 +30,10 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.streamflow.web.infrastructure.web.context.Context;
-import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.web.infrastructure.web.context.IndexContext;
-import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
+import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.dci.infrastructure.web.context.IndexContext;
+import se.streamsource.streamflow.dci.infrastructure.web.context.SubContexts;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;

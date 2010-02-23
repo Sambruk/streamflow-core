@@ -17,9 +17,9 @@ package se.streamsource.streamflow.web.context.users.workspace;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.streamflow.web.infrastructure.web.context.Context;
-import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
+import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.dci.infrastructure.web.context.SubContext;
 
 /**
  * JAVADOC

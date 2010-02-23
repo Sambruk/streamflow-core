@@ -34,9 +34,9 @@ import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
-import se.streamsource.streamflow.web.infrastructure.web.context.Context;
-import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
+import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.dci.infrastructure.web.context.SubContexts;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 
 import java.io.BufferedReader;

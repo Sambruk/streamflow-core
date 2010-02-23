@@ -21,7 +21,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
-import se.streamsource.streamflow.web.resource.DCICommandQueryServerResource;
+import se.streamsource.streamflow.web.resource.StreamFlowCommandQueryServerResource;
 
 /**
  * JAVADOC
@@ -43,6 +43,6 @@ public class CompositeFinder extends Finder
    {
       Object resource = compositeFactory.newTransientBuilder( getTargetClass() ).use( request, response ).newInstance();
 
-      return factory.newObjectBuilder( DCICommandQueryServerResource.class ).use( resource ).newInstance();
+      return factory.newObjectBuilder( StreamFlowCommandQueryServerResource.class ).use( resource ).newInstance();
    }
 }

@@ -18,16 +18,15 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.Value;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.infrastructure.web.context.Context;
-import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.web.infrastructure.web.context.IndexContext;
-import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
+import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.dci.infrastructure.web.context.IndexContext;
+import se.streamsource.streamflow.dci.infrastructure.web.context.SubContexts;
 
 /**
  * JAVADOC

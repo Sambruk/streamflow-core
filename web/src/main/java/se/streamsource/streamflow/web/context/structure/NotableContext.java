@@ -17,7 +17,7 @@ package se.streamsource.streamflow.web.context.structure;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
 
 /**
  * JAVADOC

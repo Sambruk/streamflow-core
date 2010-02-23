@@ -12,18 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.web.context;
+package se.streamsource.streamflow.dci.infrastructure.web.context;
 
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.concern.Concerns;
-import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
+import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
 
 /**
- * Base interface for interactions
+ * JAVADOC
  */
-@Concerns(InteractionConstraintsConcern.class)
-public interface Context
-   extends TransientComposite
+public interface SubContexts<T extends Context>
 {
-   InteractionContext context();
+   T context(String id);
 }

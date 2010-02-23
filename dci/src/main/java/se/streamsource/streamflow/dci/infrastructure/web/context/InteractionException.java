@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.web.context;
+package se.streamsource.streamflow.dci.infrastructure.web.context;
 
 /**
  * JAVADOC

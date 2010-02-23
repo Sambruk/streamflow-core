@@ -12,12 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.web.context;
+package se.streamsource.streamflow.dci.infrastructure.web.context;
+
+import org.restlet.resource.ResourceException;
 
 /**
  * JAVADOC
  */
-public interface SubContexts<T extends Context>
+public interface DeleteContext
 {
-   T context(String id);
+   void delete()
+      throws ResourceException;
 }

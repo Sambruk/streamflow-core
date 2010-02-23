@@ -18,6 +18,11 @@
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-dci</artifactId>
+        </dependency>
+
 
         <!-- Help contents -->
         <dependency>

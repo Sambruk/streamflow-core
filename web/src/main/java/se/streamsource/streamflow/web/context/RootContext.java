@@ -15,9 +15,9 @@
 package se.streamsource.streamflow.web.context;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.web.infrastructure.web.context.Context;
-import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
+import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.dci.infrastructure.web.context.SubContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationsContext;
 import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.context.users.UsersContext;

@@ -12,12 +12,11 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource;
+package se.streamsource.streamflow.dci.resource;
 
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -52,16 +51,13 @@ import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.dci.infrastructure.web.TemplateUtil;
+import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.streamflow.dci.infrastructure.web.context.IndexContext;
+import se.streamsource.streamflow.dci.infrastructure.web.context.SubContext;
+import se.streamsource.streamflow.dci.infrastructure.web.context.SubContexts;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.web.context.RootContext;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
-import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
-import se.streamsource.streamflow.web.infrastructure.web.context.Context;
-import se.streamsource.streamflow.web.infrastructure.web.context.IndexContext;
-import se.streamsource.streamflow.web.infrastructure.web.context.InteractionContext;
-import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
-import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
 
 import javax.security.auth.Subject;
 import java.io.IOException;
@@ -70,7 +66,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessControlException;
-import java.security.Principal;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
@@ -80,6 +75,9 @@ import java.util.Locale;
 
 /**
  * Handle requests to command/query resources.
+ *
+ * Implement the getRoot method to use this class
+ *
  * <p/>
  * GET:
  * If the URL has does not end with "/" then show XHTML form
@@ -94,15 +92,12 @@ import java.util.Locale;
  * <p/>
  * DELETE: this translates into a call on DeleteContext.delete() on the given resource.
  */
-public class DCICommandQueryServerResource
+public abstract class DCICommandQueryServerResource
       extends ServerResource
 {
    protected
    @Structure
    UnitOfWorkFactory uowf;
-
-   @Structure
-   TransientBuilderFactory tbf;
 
    protected
    @Structure
@@ -160,7 +155,7 @@ public class DCICommandQueryServerResource
          {
             try
             {
-               String template = TemplateUtil.getTemplate( "resources/selectresource.html", getClass() );
+               String template = TemplateUtil.getTemplate( "resources/selectresource.html", DCICommandQueryServerResource.class );
 
                // Show resource selection form
                return new StringRepresentation( template, MediaType.TEXT_HTML );
@@ -224,14 +219,7 @@ public class DCICommandQueryServerResource
       throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
    }
 
-   private RootContext getRoot()
-   {
-      InteractionContext interactionContext = new InteractionContext();
-      interactionContext.playRoles( getActor(), Actor.class );
-      interactionContext.playRoles( resolveRequestLocale(), Locale.class );
-      interactionContext.playRoles( getRequest().getResourceRef(), Reference.class );
-      return tbf.newTransientBuilder( RootContext.class ).use( interactionContext ).newInstance();
-   }
+   protected abstract Object getRoot();
 
    private Representation resourceInfo( final Object resource ) throws IOException
    {
@@ -358,7 +346,7 @@ public class DCICommandQueryServerResource
 
             try
             {
-               String template = TemplateUtil.getTemplate( "resources/query.html", getClass() );
+               String template = TemplateUtil.getTemplate( "resources/query.html", DCICommandQueryServerResource.class );
                String html = TemplateUtil.eval( template,
                      "$name", queryMethod.getName(),
                      "$content", formHtml );
@@ -425,7 +413,7 @@ public class DCICommandQueryServerResource
 
       try
       {
-         String template = TemplateUtil.getTemplate( "resources/command.html", getClass() );
+         String template = TemplateUtil.getTemplate( "resources/command.html", DCICommandQueryServerResource.class );
          String html = TemplateUtil.eval( template,
                "$name", commandMethod.getName(),
                "$content", formHtml );
@@ -803,18 +791,7 @@ public class DCICommandQueryServerResource
       return builder.newInstance();
    }
 
-   private Actor getActor()
-   {
-      List<Principal> principals = getRequest().getClientInfo().getPrincipals();
-      if (!principals.isEmpty())
-      {
-         String userName = principals.get( 0 ).getName();
-         return uowf.currentUnitOfWork().get( Actor.class, userName );
-      } else
-         return null;
-   }
-
-   private Locale resolveRequestLocale()
+   protected Locale resolveRequestLocale()
    {
       Language language = getRequest().getClientInfo().getAcceptedLanguages()
             .get( 0 ).getMetadata();

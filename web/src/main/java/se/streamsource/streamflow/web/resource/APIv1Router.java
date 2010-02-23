@@ -33,6 +33,7 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
+import se.streamsource.streamflow.dci.resource.DCICommandQueryServerResource;
 
 /**
  * Router for v1 of the StreamFlow REST API.
@@ -48,7 +49,7 @@ public class APIv1Router
       this.factory = factory;
 
       attach(new ExtensionMediaTypeFilter( getContext(), factory.newObjectBuilder( EventsFilter.class).use(getContext(), 
-            factory.newObjectBuilder( ViewFilter.class).use(getContext(), createServerResourceFinder( DCICommandQueryServerResource.class )).newInstance()).newInstance()));
+            factory.newObjectBuilder( ViewFilter.class).use(getContext(), createServerResourceFinder( StreamFlowCommandQueryServerResource.class )).newInstance()).newInstance()));
 
 //      attach( createServerResourceFinder( StreamFlowServerResource.class ) );
 /*

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard √ñberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.infrastructure.event.CommandEvents;
-import se.streamsource.streamflow.web.infrastructure.web.TemplateUtil;
+import se.streamsource.streamflow.dci.infrastructure.web.TemplateUtil;
+import se.streamsource.streamflow.dci.resource.DCICommandQueryServerResource;
 
 import javax.security.auth.Subject;
 import java.io.BufferedReader;
@@ -304,7 +305,7 @@ public class CommandQueryServerResource
             {
                try
                {
-                  String template = TemplateUtil.getTemplate( "resources/value.html", CommandQueryServerResource.class );
+                  String template = TemplateUtil.getTemplate( "resources/value.html", DCICommandQueryServerResource.class );
                   String content = TemplateUtil.eval( template, "$content", ((Value) returnValue).toJSON() );
                   return new StringRepresentation( content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8 );
                } catch (IOException e)

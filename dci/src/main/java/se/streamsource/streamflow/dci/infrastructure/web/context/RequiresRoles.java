@@ -12,12 +12,11 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.web.context;
+package se.streamsource.streamflow.dci.infrastructure.web.context;
 
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
-import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -31,6 +31,7 @@
         <module>webstart</module>
         <module>war</module>
         <module>help</module>
+        <module>dci</module>
     </modules>
 
     <scm>
@@ -365,6 +366,12 @@
                 <artifactId>streamflow-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>se.streamsource.streamflow</groupId>
+                <artifactId>streamflow-dci</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 
             <!-- Qi4j -->
             <dependency>

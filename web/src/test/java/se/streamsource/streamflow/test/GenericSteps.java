@@ -29,16 +29,14 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.MemoryEventStoreService;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.web.context.RootContext;
-import se.streamsource.streamflow.web.infrastructure.web.context.Context;
-import se.streamsource.streamflow.web.infrastructure.web.context.InteractionContext;
-import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
+import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.streamflow.dci.infrastructure.web.context.InteractionContext;
+import se.streamsource.streamflow.dci.infrastructure.web.context.SubContexts;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -47,7 +45,6 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.jbehave.Ensure.*;
 
 
 public class GenericSteps

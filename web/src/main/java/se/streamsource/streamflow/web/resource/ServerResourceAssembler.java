@@ -89,6 +89,7 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
+import se.streamsource.streamflow.dci.resource.DCICommandQueryServerResource;
 
 /**
  * Assembler for API resources
@@ -106,7 +107,7 @@ public class ServerResourceAssembler
             UsersRouter.class,
             UserAccessFilter.class,
             StreamFlowServerResource.class,
-            DCICommandQueryServerResource.class,
+            StreamFlowCommandQueryServerResource.class,
 
             // /users
             UsersServerResource.class,
