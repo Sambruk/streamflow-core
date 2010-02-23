@@ -68,10 +68,10 @@
         <developer>
             <id>madsenevoldsen</id>
             <name>Mads Enevoldsen</name>
-            <email>mads.enevoldsen@jayway.dk</email>
-            <url>http://www.jayway.dk</url>
+            <email>mads.enevoldsen@jayway.com</email>
+            <url>http://www.jayway.com</url>
             <organization>Jayway</organization>
-            <organizationUrl>http://www.jayway.dk</organizationUrl>
+            <organizationUrl>http://www.jayway.com</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
