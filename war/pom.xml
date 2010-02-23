@@ -37,6 +37,8 @@
                               <include>version.properties</include>
                               <include>solrconfig.xml</include>
                               <include>schema.xml</include>
+                              <include>velocity.properties</include>
+                              <include>**/*.html</include>
                           </includes>
                       </resource>
                     </resources>
